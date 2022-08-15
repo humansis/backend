@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletOfflineAppMapper implements MapperInterface
 {
@@ -57,7 +57,7 @@ class BookletOfflineAppMapper implements MapperInterface
 
     public function getVoucherValues(): array
     {
-        $fn = function (\VoucherBundle\Entity\Voucher $item) {
+        $fn = function (\NewApiBundle\Entity\Voucher $item) {
             return $item->getValue();
         };
 

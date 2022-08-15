@@ -12,8 +12,8 @@ use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use NewApiBundle\Controller\VendorApp\SmartcardController;
-use VoucherBundle\Entity\Invoice;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Invoice;
+use NewApiBundle\Entity\Vendor;
 use VoucherBundle\Utils\SmartcardService;
 
 class InvoiceController extends AbstractWebAppController

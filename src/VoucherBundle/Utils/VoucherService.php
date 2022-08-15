@@ -15,12 +15,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use NewApiBundle\Entity\User;
 use NewApiBundle\DTO\RedemptionVoucherBatchCheck;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Vendor;
+use NewApiBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use VoucherBundle\Entity\VoucherRecord;
+use NewApiBundle\Entity\VoucherRecord;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 
 class VoucherService
@@ -188,7 +188,7 @@ class VoucherService
         return $check;
     }
 
-    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $batch, User $redeemedBy): \VoucherBundle\Entity\VoucherRedemptionBatch
+    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $batch, User $redeemedBy): \NewApiBundle\Entity\VoucherRedemptionBatch
     {
         $check = $this->checkBatch($batch);
 
@@ -199,7 +199,7 @@ class VoucherService
         $repository = $this->em->getRepository(Voucher::class);
 
         $voucherBatchValue = $repository->countVoucherValue($check->getValidVouchers());
-        $redemptionBatch = new \VoucherBundle\Entity\VoucherRedemptionBatch($vendor, $redeemedBy, $check->getValidVouchers(), $voucherBatchValue);
+        $redemptionBatch = new \NewApiBundle\Entity\VoucherRedemptionBatch($vendor, $redeemedBy, $check->getValidVouchers(), $voucherBatchValue);
 
         $this->em->persist($redemptionBatch);
 

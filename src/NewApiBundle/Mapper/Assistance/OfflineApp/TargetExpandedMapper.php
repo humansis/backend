@@ -8,7 +8,7 @@ use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Mapper\MapperContextTrait;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Voucher;
 
 class TargetExpandedMapper implements MapperInterface
 {

@@ -7,7 +7,7 @@ use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\GeneralReliefItem;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 abstract class AbstractTargetMapper implements MapperInterface
 {

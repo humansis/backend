@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Smartcard;
 
 class SmartcardMapper implements MapperInterface
 {

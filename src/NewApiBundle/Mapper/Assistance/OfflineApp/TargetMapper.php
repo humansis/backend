@@ -6,7 +6,7 @@ namespace NewApiBundle\Mapper\Assistance\OfflineApp;
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Mapper\Assistance\AbstractTargetMapper;
 use NewApiBundle\Mapper\MapperContextTrait;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class TargetMapper extends AbstractTargetMapper
 {

@@ -11,7 +11,7 @@ use NewApiBundle\Utils\FileSystem\PathConstructor;
 use NewApiBundle\Utils\FileSystem\Zip;
 use Symfony\Component\HttpFoundation\File\File;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class LogsStorageService
 {

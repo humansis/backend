@@ -19,7 +19,7 @@ use Doctrine\Persistence\ObjectManager;
 use Exception;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 use VoucherBundle\Utils\BookletService;
 
 class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface

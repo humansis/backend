@@ -13,8 +13,8 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\Voucher;
 use NewApiBundle\InputType;
 
 class BookletService

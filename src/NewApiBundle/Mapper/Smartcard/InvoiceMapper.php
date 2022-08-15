@@ -3,7 +3,7 @@
 namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Invoice;
+use NewApiBundle\Entity\Invoice;
 
 class InvoiceMapper implements MapperInterface
 {

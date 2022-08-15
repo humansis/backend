@@ -9,8 +9,8 @@ use NewApiBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
 use NewApiBundle\Entity\Assistance;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * Read only entity.
@@ -66,7 +66,7 @@ class SmartcardPurchasedItem
     /**
      * @var Product
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Product")
      */
     private $product;
 
@@ -80,7 +80,7 @@ class SmartcardPurchasedItem
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Vendor")
      */
     private $vendor;
 

@@ -20,7 +20,7 @@ services:
             - setPreliminaryInvoiceRepository: ['@NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - VoucherBundle\Entity\Vendor
+            - NewApiBundle\Entity\Vendor
 
 #######################################################################################
 ##                                       CRUD                                        ##
@@ -30,17 +30,17 @@ services:
         class: VoucherBundle\Repository\SmartcardPurchaseRepository
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - VoucherBundle\Entity\SmartcardPurchase
+            - NewApiBundle\Entity\SmartcardPurchase
 
     VoucherBundle\Repository\SmartcardDepositRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
-            - VoucherBundle\Entity\SmartcardDeposit
+            - NewApiBundle\Entity\SmartcardDeposit
 
     VoucherBundle\Repository\SmartcardRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - VoucherBundle\Entity\Smartcard
+            - NewApiBundle\Entity\Smartcard
 
     VoucherBundle\Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository

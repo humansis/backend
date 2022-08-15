@@ -7,8 +7,8 @@ use NewApiBundle\Enum\ProductCategoryType;
 use NewApiBundle\InputType\ProductFilterInputType;
 use NewApiBundle\InputType\ProductOrderInputType;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * ProductRepository
@@ -22,7 +22,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('DISTINCT p.name')
-            ->from(\VoucherBundle\Entity\Booklet::class, 'b')
+            ->from(\NewApiBundle\Entity\Booklet::class, 'b')
             ->join('b.vouchers', 'v')
             ->join('v.voucherPurchase', 'vp')
             ->join('vp.records', 'vpr')

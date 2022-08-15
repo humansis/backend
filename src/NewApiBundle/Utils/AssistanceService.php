@@ -51,7 +51,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Voucher;
 
 /**
  * Class AssistanceService

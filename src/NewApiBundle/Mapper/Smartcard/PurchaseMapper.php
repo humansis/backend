@@ -3,8 +3,8 @@
 namespace NewApiBundle\Mapper\Smartcard;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardPurchaseRecord;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\SmartcardPurchaseRecord;
 
 class PurchaseMapper implements MapperInterface
 {

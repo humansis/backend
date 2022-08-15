@@ -11,7 +11,7 @@ use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 use VoucherBundle\Enum\SmartcardStates;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase

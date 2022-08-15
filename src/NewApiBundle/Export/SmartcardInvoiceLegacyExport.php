@@ -21,8 +21,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\Invoice;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Invoice;
+use NewApiBundle\Entity\Vendor;
 
 class SmartcardInvoiceLegacyExport
 {

@@ -10,8 +10,8 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Enum\SmartcardStates;
 
 class SmartcardDepositControllerTest extends BMSServiceTestCase

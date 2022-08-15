@@ -5,8 +5,8 @@ namespace Tests\NewApiBundle\Controller;
 use Doctrine\ORM\Query;
 use Exception;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Invoice;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\Invoice;
 
 class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
 {

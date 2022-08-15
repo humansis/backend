@@ -8,8 +8,8 @@ use Exception;
 use NewApiBundle\Entity\ProductCategory;
 use NewApiBundle\Enum\ProductCategoryType;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Product;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Product;
+use NewApiBundle\Entity\Vendor;
 
 class ProductCategoryControllerTest extends BMSServiceTestCase
 {

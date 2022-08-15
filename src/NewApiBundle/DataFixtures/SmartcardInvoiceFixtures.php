@@ -5,7 +5,7 @@ namespace NewApiBundle\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use VoucherBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\SmartcardPurchase;
 use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\Utils\SmartcardService;
 

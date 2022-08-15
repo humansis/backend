@@ -5,7 +5,7 @@ namespace NewApiBundle\Mapper;
 use InvalidArgumentException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 class VendorLoginMapper implements MapperInterface
 {

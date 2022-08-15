@@ -10,8 +10,8 @@ use NewApiBundle\Request\Pagination;
 use NewApiBundle\Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use VoucherBundle\Entity\Invoice;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Invoice;
+use NewApiBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardPurchaseController extends AbstractWebAppController
@@ -46,7 +46,7 @@ class SmartcardPurchaseController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
-     * @ParamConverter("redemptionBatch", class="VoucherBundle\Entity\Invoice")
+     * @ParamConverter("redemptionBatch", class="NewApiBundle\Entity\Invoice")
      *
      * @param Invoice                     $redemptionBatch
      * @param Pagination                  $pagination

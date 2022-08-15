@@ -4,7 +4,7 @@ namespace NewApiBundle\Component\Smartcard;
 
 use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Entity\Project;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardPurchaseService

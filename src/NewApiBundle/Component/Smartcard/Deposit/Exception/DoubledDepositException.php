@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\Component\Smartcard\Deposit\Exception;
 
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 class DoubledDepositException extends DepositException
 {

@@ -5,8 +5,8 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Request\Pagination;
-use VoucherBundle\Entity\Invoice;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Invoice;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * Class SmartcardInvoiceRepository.

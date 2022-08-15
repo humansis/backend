@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
@@ -25,7 +25,7 @@ class Invoice implements JsonSerializable
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      */
     private $vendor;
@@ -98,7 +98,7 @@ class Invoice implements JsonSerializable
     /**
      * @var Collection|SmartcardPurchase[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
      */
     private $purchases;
 

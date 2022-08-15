@@ -5,8 +5,8 @@ namespace Tests\NewApiBundle\Controller\WebApp\Smartcards;
 use NewApiBundle\Entity\Beneficiary;
 use Exception;
 use Tests\BMSServiceTestCase;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\Vendor;
 
 class AnalyticsControllerTest extends BMSServiceTestCase
 {

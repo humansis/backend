@@ -4,7 +4,7 @@ namespace TransactionBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
-use VoucherBundle\Entity\Product;
+use NewApiBundle\Entity\Product;
 
 /**
  * Read only entity.
@@ -31,7 +31,7 @@ class PurchasedItem implements \JsonSerializable
     /**
      * @var Product
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Product")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Product")
      */
     private $product;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTime;
 use DateTimeInterface;
@@ -32,7 +32,7 @@ class VoucherPurchase
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
      * @SymfonyGroups({"FullVoucher"})
@@ -42,14 +42,14 @@ class VoucherPurchase
     /**
      * @var Collection|Voucher[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Voucher", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      */
     private $vouchers;
 
     /**
      * @var Collection|VoucherPurchaseRecord[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      *
      * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Mapper;
 
 use NewApiBundle\Serializer\MapperInterface;
-use VoucherBundle\Entity\Product;
+use NewApiBundle\Entity\Product;
 
 class ProductMapper implements MapperInterface
 {

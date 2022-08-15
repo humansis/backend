@@ -7,10 +7,10 @@ use NewApiBundle\Entity\Assistance;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Project;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\Vendor;
 
 class Event implements \JsonSerializable
 {

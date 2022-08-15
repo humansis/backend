@@ -17,7 +17,7 @@ use NewApiBundle\DBAL\SubSectorEnum;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardPurchase;
+use NewApiBundle\Entity\SmartcardPurchase;
 
 /**
  * Assistance
@@ -254,7 +254,7 @@ class Assistance implements ExportableInterface
     /**
      * @var SmartcardPurchase[]|Collection
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="assistanceId")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardPurchase", mappedBy="assistanceId")
      */
     private $smartcardPurchases;
 

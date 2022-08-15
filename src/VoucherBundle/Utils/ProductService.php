@@ -10,7 +10,7 @@ use NewApiBundle\InputType\ProductCreateInputType;
 use NewApiBundle\InputType\ProductUpdateInputType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use VoucherBundle\Entity\Product;
+use NewApiBundle\Entity\Product;
 use Psr\Container\ContainerInterface;
 
 class ProductService

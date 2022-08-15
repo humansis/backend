@@ -16,8 +16,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
 use TransactionBundle\Entity\Transaction;
-use VoucherBundle\Entity\Booklet;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\Booklet;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 /**
  * AssistanceBeneficiary.
@@ -62,7 +62,7 @@ class AssistanceBeneficiary
      * @var Collection|Booklet[]
      * @deprecated you shouldn't know about booklets here
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
     private $booklets;

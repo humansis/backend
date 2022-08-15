@@ -7,7 +7,7 @@ namespace VoucherBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 class SmartcardDepositRepository extends EntityRepository
 {
@@ -33,7 +33,7 @@ class SmartcardDepositRepository extends EntityRepository
     /**
      * @param string $hash
      *
-     * @return object|\VoucherBundle\Entity\SmartcardDeposit|null
+     * @return object|\NewApiBundle\Entity\SmartcardDeposit|null
      */
     public function findByHash(string $hash): ?SmartcardDeposit
     {

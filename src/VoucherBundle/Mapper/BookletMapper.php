@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace VoucherBundle\Mapper;
 
 use Symfony\Component\Serializer\Serializer;
-use VoucherBundle\Entity\Booklet;
+use NewApiBundle\Entity\Booklet;
 
 class BookletMapper
 {

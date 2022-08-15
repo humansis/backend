@@ -4,7 +4,7 @@ namespace NewApiBundle\Entity\Smartcard;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Project;
-use VoucherBundle\Entity\Vendor;
+use NewApiBundle\Entity\Vendor;
 
 /**
  * Read only entity.
@@ -33,7 +33,7 @@ class PreliminaryInvoice
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\Vendor")
      */
     private $vendor;
 

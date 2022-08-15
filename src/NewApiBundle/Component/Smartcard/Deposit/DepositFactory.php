@@ -15,8 +15,8 @@ use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\Smartcard;
+use NewApiBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Repository\SmartcardDepositRepository;
 use VoucherBundle\Utils\SmartcardService;
 

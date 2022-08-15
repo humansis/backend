@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -28,7 +28,7 @@ class VoucherRedemptionBatch
     /**
      * @var Vendor
      *
-     * @ORM\ManyToOne(targetEntity="\VoucherBundle\Entity\Vendor")
+     * @ORM\ManyToOne(targetEntity="\NewApiBundle\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      */
     private $vendor;
@@ -58,7 +58,7 @@ class VoucherRedemptionBatch
     /**
      * @var Collection|Voucher[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\Voucher", cascade={"persist"}, orphanRemoval=false, mappedBy="redemptionBatch")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\Voucher", cascade={"persist"}, orphanRemoval=false, mappedBy="redemptionBatch")
      */
     private $vouchers;
 

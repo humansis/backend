@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Entity;
+namespace NewApiBundle\Entity;
 
 use NewApiBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -51,7 +51,7 @@ class Smartcard
     /**
      * @var Collection|SmartcardDeposit[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $deposites;
@@ -59,7 +59,7 @@ class Smartcard
     /**
      * @var Collection|SmartcardPurchase[]
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      * @SymfonyGroups({"FullSmartcard"})
      */
     private $purchases;

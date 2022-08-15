@@ -12,7 +12,7 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardDeposit;
+use NewApiBundle\Entity\SmartcardDeposit;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\ReliefPackageRepository")
@@ -81,7 +81,7 @@ class ReliefPackage
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
      *
-     * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
     private $smartcardDeposits;
 

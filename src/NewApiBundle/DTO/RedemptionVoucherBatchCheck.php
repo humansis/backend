@@ -2,7 +2,7 @@
 
 namespace NewApiBundle\DTO;
 
-use VoucherBundle\Entity\Voucher;
+use NewApiBundle\Entity\Voucher;
 
 class RedemptionVoucherBatchCheck implements \JsonSerializable
 {
