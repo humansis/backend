@@ -18,21 +18,6 @@ use NewApiBundle\Entity\Vendor;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getNameByBooklet(int $bookletId)
-    {
-        $qb = $this->_em->createQueryBuilder()
-            ->select('DISTINCT p.name')
-            ->from(\NewApiBundle\Entity\Booklet::class, 'b')
-            ->join('b.vouchers', 'v')
-            ->join('v.voucherPurchase', 'vp')
-            ->join('vp.records', 'vpr')
-            ->join('vpr.product', 'p')
-            ->where('b.id = :id')
-            ->setParameter('id', $bookletId);
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function getByCategoryType(?string $country, string $categoryType)
     {
         $qb = $this->createQueryBuilder('p')
