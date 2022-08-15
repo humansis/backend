@@ -427,7 +427,7 @@ services:
 
     NewApiBundle\Component\WingMoney\ImportService:
         arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("TransactionBundle:Transaction")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Transaction")'
             - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Phone")'
 
     NewApiBundle\Component\Smartcard\SmartcardPurchaseService:

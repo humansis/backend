@@ -1,6 +1,6 @@
 <?php
 
-namespace TransactionBundle\Utils\Provider;
+namespace NewApiBundle\Utils\Provider;
 
 use NewApiBundle\Entity\OrganizationServices;
 use NewApiBundle\Entity\AssistanceBeneficiary;
@@ -10,7 +10,7 @@ use NewApiBundle\Entity\Transaction;
 
 /**
  * Class KHMFinancialProvider
- * @package TransactionBundle\Utils\Provider
+ * @package NewApiBundle\Utils\Provider
  */
 class KHMFinancialProvider extends DefaultFinancialProvider
 {

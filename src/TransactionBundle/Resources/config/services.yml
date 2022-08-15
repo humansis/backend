@@ -10,14 +10,14 @@ services:
         tags: [ 'app.controller' ]
 
     transaction.transaction_service:
-        class: TransactionBundle\Utils\TransactionService
+        class: NewApiBundle\Utils\TransactionService
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
     transaction.default_financial_provider:
-        class: TransactionBundle\Utils\Provider\DefaultFinancialProvider
+        class: NewApiBundle\Utils\Provider\DefaultFinancialProvider
         public: true
         abstract: true
         arguments:
@@ -25,7 +25,7 @@ services:
             - '@service_container'
 
     transaction.khm_financial_provider:
-        class: TransactionBundle\Utils\Provider\KHMFinancialProvider
+        class: NewApiBundle\Utils\Provider\KHMFinancialProvider
         parent: transaction.default_financial_provider
         autowire: false
         autoconfigure: false
