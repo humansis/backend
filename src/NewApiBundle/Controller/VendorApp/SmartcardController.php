@@ -8,6 +8,7 @@ use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use VoucherBundle\Entity\Smartcard;
 
 class SmartcardController extends AbstractVendorAppController
 {
@@ -65,5 +66,23 @@ class SmartcardController extends AbstractVendorAppController
         $logFile = fopen($filename, "a+");
         fwrite($logFile, $data);
         fclose($logFile);
+    }
+
+    /**
+     * List of blocked smardcards.
+     * Blocked smartcards are not allowed to pay with.
+     *
+     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
+     *
+     * @param Request $request
+     *
+     * @return Response
+     */
+    public function listOfBlocked(Request $request): Response
+    {
+        $country = $request->headers->get('country');
+        $smartcards = $this->getDoctrine()->getRepository(Smartcard::class)->findBlocked($country);
+
+        return new JsonResponse($smartcards);
     }
 }

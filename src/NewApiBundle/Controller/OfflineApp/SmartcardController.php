@@ -10,9 +10,12 @@ use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationExcep
 use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class SmartcardController extends AbstractOfflineAppController
 {
@@ -65,5 +68,23 @@ class SmartcardController extends AbstractOfflineAppController
         } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
             return Response::create('', Response::HTTP_ACCEPTED);
         }
+    }
+
+    /**
+     * Info about smartcard.
+     *
+     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
+     * @ParamConverter("smartcard")
+     *
+     * @param Smartcard $smartcard
+     * @param Request   $request
+     *
+     * @return Response
+     */
+    public function info(Smartcard $smartcard, Request $request): Response
+    {
+        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+
+        return new Response($json);
     }
 }
