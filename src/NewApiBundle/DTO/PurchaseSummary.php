@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\DTO;
+namespace NewApiBundle\DTO;
 
 /**
  * stores statistics from repository
