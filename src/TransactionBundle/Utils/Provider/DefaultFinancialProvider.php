@@ -198,35 +198,6 @@ abstract class DefaultFinancialProvider
         return $response;
     }
 
-    /**
-     * Update distribution status (check if money has been picked up)
-     * @param  Assistance $assistance
-     * @return AssistanceBeneficiary[]
-     * @throws \Exception
-     */
-    public function updateStatusDistribution(Assistance $assistance): array
-    {
-        $response = array();
-
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $assistance]);
-        $this->logger->info("Recipients to update transaction status: ".count($distributionBeneficiaries), [$assistance]);
-
-        foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
-            /** @var Transaction $successfulTransaction */
-            $successfulTransaction = $this->em->getRepository(Transaction::class)->findOneBy(
-                [
-                    'assistanceBeneficiary' => $assistanceBeneficiary,
-                    'transactionStatus'     => Transaction::SUCCESS,
-                ]
-            );
-            if (null !== $successfulTransaction && $successfulTransaction->hasUpdatableStatus()) {
-                $this->updateStatusTransaction($successfulTransaction);
-                array_push($response, $assistanceBeneficiary);
-            }
-        }
-        return $response;
-    }
-
     public abstract function updateStatusTransaction(Transaction $transaction): Transaction;
 
     /**
