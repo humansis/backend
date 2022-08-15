@@ -22,8 +22,8 @@ use NewApiBundle\Entity\Product;
 use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\InputType\SmartcardPurchase;
-use VoucherBundle\InputType\SmartcardInvoice;
+use NewApiBundle\InputType\SmartcardPurchase;
+use NewApiBundle\InputType\SmartcardInvoice;
 use NewApiBundle\Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase

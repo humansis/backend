@@ -25,10 +25,10 @@ use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Enum\SmartcardStates;
-use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
+use NewApiBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use NewApiBundle\Model\PurchaseService;
 use NewApiBundle\Repository\SmartcardPurchaseRepository;
-use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
+use NewApiBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
 use NewApiBundle\Repository\SmartcardRepository;
 
 class SmartcardService

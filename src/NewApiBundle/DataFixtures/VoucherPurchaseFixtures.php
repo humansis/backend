@@ -103,7 +103,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
     private function generatePurchase(Vendor $vendor, array $vouchers, ObjectManager $manager): VoucherPurchase
     {
-        $input = new \VoucherBundle\InputType\VoucherPurchase();
+        $input = new \NewApiBundle\InputType\VoucherPurchase();
 
         $products = [];
         for ($j = 0; $j < rand(1, 3); ++$j) {

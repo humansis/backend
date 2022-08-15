@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\Voucher;
-use VoucherBundle\InputType\VoucherRedemptionBatch;
+use NewApiBundle\InputType\VoucherRedemptionBatch;
 use NewApiBundle\Utils\VoucherService;
 
 class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInterface
