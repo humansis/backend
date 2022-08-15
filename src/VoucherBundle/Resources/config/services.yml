@@ -61,7 +61,7 @@ services:
 
     voucher.product_service:
         class: VoucherBundle\Utils\ProductService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
         public: true
 
     common.upload_service:
