@@ -11,7 +11,7 @@ use NewApiBundle\Entity\Booklet;
 use NewApiBundle\Entity\Product;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\VoucherPurchase;
-use VoucherBundle\Model\PurchaseService;
+use NewApiBundle\Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface
 {

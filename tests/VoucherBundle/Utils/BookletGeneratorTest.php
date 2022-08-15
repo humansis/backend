@@ -12,7 +12,7 @@ class BookletGeneratorTest extends KernelTestCase
     /** @var ObjectManager|null */
     private $em;
 
-    /** @var \VoucherBundle\Utils\BookletGenerator */
+    /** @var \NewApiBundle\Utils\BookletGenerator */
     private $generator;
 
     public function setUp(): void
@@ -31,7 +31,7 @@ class BookletGeneratorTest extends KernelTestCase
         }
         $this->em->flush();
 
-        $this->generator = new \VoucherBundle\Utils\BookletGenerator($this->em);
+        $this->generator = new \NewApiBundle\Utils\BookletGenerator($this->em);
     }
 
     public function testGenerateOneBooklet(): void

@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use NewApiBundle\Entity\User;
-use VoucherBundle\Utils\VendorService;
+use NewApiBundle\Utils\VendorService;
 
 
 class AuthController extends AbstractVendorAppController

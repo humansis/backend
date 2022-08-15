@@ -9,7 +9,7 @@ use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\Voucher;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
-use VoucherBundle\Utils\VoucherService;
+use NewApiBundle\Utils\VoucherService;
 
 class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInterface
 {

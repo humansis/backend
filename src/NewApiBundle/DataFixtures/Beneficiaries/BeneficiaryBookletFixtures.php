@@ -20,7 +20,7 @@ use Exception;
 use NewApiBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
 use NewApiBundle\Entity\Booklet;
-use VoucherBundle\Utils\BookletService;
+use NewApiBundle\Utils\BookletService;
 
 class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {

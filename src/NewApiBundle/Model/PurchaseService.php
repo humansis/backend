@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Model;
+namespace NewApiBundle\Model;
 
 use NewApiBundle\Entity\Beneficiary;
 use DateTimeInterface;

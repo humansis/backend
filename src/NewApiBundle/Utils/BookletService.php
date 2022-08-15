@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
 use NewApiBundle\Entity\AssistanceBeneficiary;

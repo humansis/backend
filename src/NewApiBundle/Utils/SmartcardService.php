@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace VoucherBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Beneficiary;
 use DateTimeInterface;
@@ -27,7 +27,7 @@ use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
-use VoucherBundle\Model\PurchaseService;
+use NewApiBundle\Model\PurchaseService;
 use NewApiBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
 use NewApiBundle\Repository\SmartcardRepository;
