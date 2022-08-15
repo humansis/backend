@@ -1,6 +1,6 @@
 <?php
 
-namespace TransactionBundle\Utils;
+namespace NewApiBundle\Utils;
 
 use DateTime;
 use NewApiBundle\Entity\AssistanceBeneficiary;
@@ -15,13 +15,13 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use NewApiBundle\Entity\Transaction;
-use TransactionBundle\Utils\Provider\DefaultFinancialProvider;
+use NewApiBundle\Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use NewApiBundle\Entity\User;
 
 /**
  * Class TransactionService
- * @package TransactionBundle\Utils
+ * @package NewApiBundle\Utils
  */
 class TransactionService
 {

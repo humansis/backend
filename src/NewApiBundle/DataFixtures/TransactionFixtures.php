@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Transaction;
-use TransactionBundle\Utils\Provider\KHMFinancialProvider;
+use NewApiBundle\Utils\Provider\KHMFinancialProvider;
 
 class TransactionFixtures extends Fixture implements DependentFixtureInterface
 {

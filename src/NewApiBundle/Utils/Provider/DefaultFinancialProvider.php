@@ -1,6 +1,6 @@
 <?php
 
-namespace TransactionBundle\Utils\Provider;
+namespace NewApiBundle\Utils\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -13,7 +13,7 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 
 /**
  * Class DefaultFinancialProvider
- * @package TransactionBundle\Utils\Provider
+ * @package NewApiBundle\Utils\Provider
  */
 abstract class DefaultFinancialProvider
 {
@@ -197,8 +197,6 @@ abstract class DefaultFinancialProvider
 
         return $response;
     }
-
-    public abstract function updateStatusTransaction(Transaction $transaction): Transaction;
 
     /**
      * Create transaction
