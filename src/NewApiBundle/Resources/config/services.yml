@@ -1358,3 +1358,54 @@ services:
     NewApiBundle\Utils\BookletGenerator:
         public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
+
+#From TransactionBundle:
+    transaction.transaction_service:
+        class: NewApiBundle\Utils\TransactionService
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    transaction.default_financial_provider:
+        class: NewApiBundle\Utils\Provider\DefaultFinancialProvider
+        public: true
+        abstract: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    transaction.khm_financial_provider:
+        class: NewApiBundle\Utils\Provider\KHMFinancialProvider
+        parent: transaction.default_financial_provider
+        autowire: false
+        autoconfigure: false
+        public: true
+
+    export.distributed_summary.spreadsheet:
+        class: NewApiBundle\Export\DistributedSummarySpreadsheetExport
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:DistributedItem')"
+        public: true
+
+    export.purchased_summary.spreadsheet:
+        class: NewApiBundle\Export\PurchasedSummarySpreadsheetExport
+        arguments:
+            - '@translator'
+            - '@NewApiBundle\Component\Country\Countries'
+            - "@=service('doctrine.orm.entity_manager').getRepository('NewApiBundle:PurchasedItem')"
+        public: true
+
+    export.spreadsheet:
+        class: NewApiBundle\Export\AssistanceSpreadsheetExport
+        arguments: [ '@translator' ]
+        public: true
+
+    NewApiBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'
+
+    export.pdf:
+        class: NewApiBundle\Export\AssistancePdfExport
+        arguments: [ '@translator', '@pdf_service', '@Twig\Environment' ]
+        public: true
