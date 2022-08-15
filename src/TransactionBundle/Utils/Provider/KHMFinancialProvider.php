@@ -6,10 +6,7 @@ use NewApiBundle\Entity\OrganizationServices;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 
 use NewApiBundle\Entity\Assistance;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use NewApiBundle\Entity\Transaction;
-use TransactionBundle\TransactionBundle;
 
 /**
  * Class KHMFinancialProvider
@@ -135,35 +132,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             1,
             property_exists($response, 'message') ? $response->message : $sent->passcode
         );
-        
-        return $transaction;
-    }
-
-    /**
-     * Update status of transaction (check if money has been picked up)
-     * @param  Transaction $transaction
-     * @return Transaction
-     * @throws \Exception
-     */
-    public function updateStatusTransaction(Transaction $transaction): Transaction
-    {
-        $requestUnique = uniqid();
-        $requestID = "Update#$requestUnique: ";
-        $this->logger->info("$requestID Transaction {$transaction->getId()} status will be updated");
-
-        $response = $this->getStatus($transaction->getAssistanceBeneficiary()->getAssistance(), $transaction->getTransactionId());
-
-        if (property_exists($response, 'cashout_status') && $response->cashout_status === "Complete") {
-            $transaction->setMoneyReceived(true);
-            $transaction->setPickupDate(new \DateTime());
-            
-            $this->em->persist($transaction);
-            $this->em->flush();
-
-            $this->logger->info("$requestID Transaction {$transaction->getId()} status was set to picked up");
-        } else {
-            $this->logger->debug("$requestID Transaction {$transaction->getId()} status wasn't updated");
-        }
         
         return $transaction;
     }

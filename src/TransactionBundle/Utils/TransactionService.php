@@ -2,8 +2,6 @@
 
 namespace TransactionBundle\Utils;
 
-use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\Household;
 use DateTime;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance;
@@ -12,7 +10,6 @@ use Exception;
 use NewApiBundle\Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Swift_Attachment;
 use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -165,54 +162,6 @@ class TransactionService
     }
 
     /**
-     * Send logs by email
-     * @param User $user
-     * @param Assistance $assistance
-     */
-    public function sendLogsEmail(User $user, Assistance $assistance)
-    {
-        $dir_root = $this->container->get('kernel')->getRootDir();
-        $dir_var = $dir_root . '/../var/data';
-        if (! is_dir($dir_var)) {
-            mkdir($dir_var);
-        }
-        $file_record = $dir_var . '/record_' . $assistance->getId() . '.csv';
-
-        if (is_file($file_record) && file_get_contents($file_record)) {
-            $message = (new Swift_Message('Transaction logs for ' . $assistance->getName()))
-                ->setFrom($this->email)
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->twig->render(
-                        'Emails/logs_transaction.html.twig',
-                        array(
-                            'user' => $user->getUsername(),
-                            'distribution' => $assistance->getName()
-                        )
-                    ),
-                    'text/html'
-                );
-            $message->attach(Swift_Attachment::fromPath($dir_root . '/../var/data/record_' . $assistance->getId() . '.csv')->setFilename('logsTransaction.csv'));
-        } else {
-            $message = (new Swift_Message('Transaction logs for ' . $assistance->getName()))
-                ->setFrom($this->email)
-                ->setTo($user->getEmail())
-                ->setBody(
-                    $this->twig->render(
-                        'Emails/no_logs_transaction.html.twig',
-                        array(
-                            'user' => $user->getUsername(),
-                            'distribution' => $assistance->getName()
-                        )
-                    ),
-                    'text/html'
-                );
-        }
-
-        $this->container->get('mailer')->send($message);
-    }
-
-    /**
      * Verify confirmation code
      * @param  int $code
      * @param User $user
@@ -236,86 +185,6 @@ class TransactionService
             $cache->delete($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
         }
         return $result;
-    }
-
-    /**
-     * Update transaction status
-     *
-     * @param string     $countryISO3
-     * @param Assistance $assistance
-     *
-     * @return AssistanceBeneficiary[]
-     * @throws \Psr\Cache\InvalidArgumentException
-     * @throws Exception
-     */
-    public function updateTransactionStatus(string $countryISO3, Assistance $assistance): array
-    {
-        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-        $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-
-        return $this->financialProvider->updateStatusDistribution($assistance);
-    }
-
-    /**
-     * Test API connection
-     * @param  string $countryISO3
-     * @param  Assistance $assistance
-     * @return string
-     * @throws Exception
-     */
-    public function testConnection(string $countryISO3, Assistance $assistance)
-    {
-        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
-
-        return $this->financialProvider->getToken($assistance);
-    }
-
-    /**
-     * Test API connection
-     * @param User $user
-     * @param  Assistance $assistance
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    public function checkProgression(User $user, Assistance $assistance)
-    {
-        $cache = new FilesystemCache();
-        if ($cache->has($user->getEmail() . '-progression-' . $assistance->getId())) {
-            return $cache->get($user->getEmail() . '-progression-' . $assistance->getId());
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * @param string $country
-     * @return mixed
-     */
-    public function getFinancialCredential(string $country)
-    {
-        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findByCountry($country);
-
-        return $FP;
-    }
-
-    /**
-     * @param array $data
-     * @return FinancialProvider
-     */
-    public function updateFinancialCredential(array $data)
-    {
-        $FP = $this->em->getRepository(DefaultFinancialProvider::class)->findOneByCountry($data['__country']);
-
-        if ($FP) {
-            $FP->setUsername($data['username'])
-                ->setPassword($data['password'])
-                ->setCountry($data['__country']);
-
-            $this->em->persist($FP);
-            $this->em->flush();
-        }
-
-        return $FP;
     }
 
     /**
