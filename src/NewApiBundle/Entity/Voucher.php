@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Voucher.
  *
  * @ORM\Table(name="voucher")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\VoucherRepository")
  */
 class Voucher implements ExportableInterface
 {

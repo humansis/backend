@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Repository\VendorRepository;
+use NewApiBundle\Repository\VendorRepository;
 
 class VendorController extends AbstractController
 {

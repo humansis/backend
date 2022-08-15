@@ -20,7 +20,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use NewApiBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceExport
 {

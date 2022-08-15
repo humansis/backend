@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Voucher purchase.
  *
  * @ORM\Table(name="voucher_purchase")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherPurchaseRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\VoucherPurchaseRepository")
  */
 class VoucherPurchase
 {

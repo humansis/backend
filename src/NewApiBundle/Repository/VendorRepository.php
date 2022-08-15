@@ -1,9 +1,8 @@
 <?php
 
-namespace VoucherBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use NewApiBundle\Entity\Location;
-use NewApiBundle\Repository\LocationRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\VendorFilterInputType;

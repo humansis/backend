@@ -13,7 +13,7 @@ use NewApiBundle\Enum\SmartcardStates;
  * Smartcard instance used by one Beneficiary
  *
  * @ORM\Table(name="smartcard")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\SmartcardRepository")
  */
 class Smartcard
 {

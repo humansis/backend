@@ -29,9 +29,9 @@ use NewApiBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use NewApiBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
-use VoucherBundle\Repository\SmartcardRepository;
+use NewApiBundle\Repository\SmartcardRepository;
 
 class SmartcardService
 {

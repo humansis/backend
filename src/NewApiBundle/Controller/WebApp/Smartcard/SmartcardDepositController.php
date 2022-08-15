@@ -7,7 +7,7 @@ use NewApiBundle\Controller\WebApp\AbstractWebAppController;
 use NewApiBundle\InputType\SmartcardDepositFilterInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use NewApiBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
+use NewApiBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositController extends AbstractWebAppController
 {

@@ -16,7 +16,7 @@ use NewApiBundle\Entity\User;
  * Smartcard purchase batch for redemption feature.
  *
  * @ORM\Table(name="smartcard_redemption_batch")
- * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardInvoiceRepository")
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\SmartcardInvoiceRepository")
  */
 class Invoice implements JsonSerializable
 {

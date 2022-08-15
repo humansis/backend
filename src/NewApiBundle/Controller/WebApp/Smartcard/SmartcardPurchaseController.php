@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
+use NewApiBundle\Repository\SmartcardPurchaseRepository;
 
 class SmartcardPurchaseController extends AbstractWebAppController
 {

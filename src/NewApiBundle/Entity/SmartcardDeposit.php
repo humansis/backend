@@ -15,7 +15,7 @@ use NewApiBundle\Entity\User;
  * Smartcard deposit.
  *
  * @ORM\Table(name="smartcard_deposit")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\SmartcardDepositRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class SmartcardDeposit

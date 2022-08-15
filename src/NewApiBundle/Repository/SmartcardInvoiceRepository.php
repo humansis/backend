@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace VoucherBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;

@@ -14,9 +14,9 @@ use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
-use VoucherBundle\Repository\SmartcardInvoiceRepository;
-use VoucherBundle\Repository\SmartcardRepository;
+use NewApiBundle\Repository\SmartcardPurchaseRepository;
+use NewApiBundle\Repository\SmartcardInvoiceRepository;
+use NewApiBundle\Repository\SmartcardRepository;
 
 class EventService
 {

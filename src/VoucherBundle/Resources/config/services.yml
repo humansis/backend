@@ -13,7 +13,7 @@ services:
             - '@NewApiBundle\Component\Country\Countries'
         public: true
 
-    VoucherBundle\Repository\VendorRepository:
+    NewApiBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
             - setLocationRepository: ['@NewApiBundle\Repository\LocationRepository']
@@ -27,22 +27,22 @@ services:
 #######################################################################################
 
     smartcard_purchase.repository:
-        class: VoucherBundle\Repository\SmartcardPurchaseRepository
+        class: NewApiBundle\Repository\SmartcardPurchaseRepository
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - NewApiBundle\Entity\SmartcardPurchase
 
-    VoucherBundle\Repository\SmartcardDepositRepository:
+    NewApiBundle\Repository\SmartcardDepositRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\SmartcardDeposit
 
-    VoucherBundle\Repository\SmartcardRepository:
+    NewApiBundle\Repository\SmartcardRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - NewApiBundle\Entity\Smartcard
 
-    VoucherBundle\Repository\SmartcardPurchaseRepository:
+    NewApiBundle\Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository
 
     voucher.vendor_service:
@@ -91,7 +91,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
-            - '@VoucherBundle\Repository\SmartcardRepository'
+            - '@NewApiBundle\Repository\SmartcardRepository'
             - '@smartcard_purchase.repository'
         public: true
 

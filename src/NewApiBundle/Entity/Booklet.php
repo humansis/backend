@@ -16,7 +16,7 @@ use NewApiBundle\Entity\Project;
  * Booklet
  *
  * @ORM\Table(name="booklet")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\BookletRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\BookletRepository")
  */
 class Booklet implements ExportableInterface
 {
