@@ -12,7 +12,7 @@ use NewApiBundle\Enum\ReliefPackageState;
 use Tests\BMSServiceTestCase;
 use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
 {

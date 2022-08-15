@@ -31,7 +31,7 @@ use NewApiBundle\DBAL\LivelihoodEnum;
 use NewApiBundle\Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
 use NewApiBundle\Entity\Smartcard;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 
 /**
  * BeneficiaryRepository.

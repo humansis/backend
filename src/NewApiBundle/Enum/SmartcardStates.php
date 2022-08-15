@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace VoucherBundle\Enum;
-
-use NewApiBundle\Enum\EnumTrait;
+namespace NewApiBundle\Enum;
 
 class SmartcardStates
 {

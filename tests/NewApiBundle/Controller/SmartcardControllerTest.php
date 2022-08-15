@@ -17,7 +17,7 @@ use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 

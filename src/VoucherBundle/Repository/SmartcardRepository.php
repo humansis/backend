@@ -6,7 +6,7 @@ use NewApiBundle\Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use NewApiBundle\Entity\Smartcard;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 
 /**
  * Class SmartcardRepository.
