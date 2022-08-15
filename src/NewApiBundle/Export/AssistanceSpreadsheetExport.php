@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransactionBundle\Export;
+namespace NewApiBundle\Export;
 
 use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\Community;

@@ -37,7 +37,7 @@ services:
         public: true
 
     export.distributed_summary.spreadsheet:
-        class: TransactionBundle\Export\DistributedSummarySpreadsheetExport
+        class: NewApiBundle\Export\DistributedSummarySpreadsheetExport
         arguments:
             - '@translator'
             - '@NewApiBundle\Component\Country\Countries'
@@ -45,7 +45,7 @@ services:
         public: true
 
     export.purchased_summary.spreadsheet:
-        class: TransactionBundle\Export\PurchasedSummarySpreadsheetExport
+        class: NewApiBundle\Export\PurchasedSummarySpreadsheetExport
         arguments:
             - '@translator'
             - '@NewApiBundle\Component\Country\Countries'
@@ -53,13 +53,13 @@ services:
         public: true
 
     export.spreadsheet:
-        class: TransactionBundle\Export\AssistanceSpreadsheetExport
+        class: NewApiBundle\Export\AssistanceSpreadsheetExport
         arguments: [ '@translator' ]
         public: true
 
-    TransactionBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'
+    NewApiBundle\Export\AssistanceSpreadsheetExport: '@export.spreadsheet'
 
     export.pdf:
-        class: TransactionBundle\Export\AssistancePdfExport
+        class: NewApiBundle\Export\AssistancePdfExport
         arguments: [ '@translator', '@pdf_service', '@Twig\Environment' ]
         public: true
