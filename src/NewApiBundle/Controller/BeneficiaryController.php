@@ -39,7 +39,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
-use TransactionBundle\Export\AssistanceSpreadsheetExport;
+use NewApiBundle\Export\AssistanceSpreadsheetExport;
 
 class BeneficiaryController extends AbstractController
 {

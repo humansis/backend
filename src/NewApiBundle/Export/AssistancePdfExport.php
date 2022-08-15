@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TransactionBundle\Export;
+namespace NewApiBundle\Export;
 
 use NewApiBundle\Entity\Organization;
 use NewApiBundle\Utils\PdfService;
