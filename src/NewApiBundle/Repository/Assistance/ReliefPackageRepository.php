@@ -27,7 +27,7 @@ use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\Assistance\ReliefPackageFilterInputType;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 
 class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 {

@@ -12,7 +12,7 @@ use NewApiBundle\InputType\Smartcard\DepositInputType;
 use Tests\BMSServiceTestCase;
 use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 
 class SmartcardDepositControllerTest extends BMSServiceTestCase
 {

@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ChangeSmartcardInputType implements InputTypeInterface
 {
     /**
-     * @Enum(enumClass="VoucherBundle\Enum\SmartcardStates")
+     * @Enum(enumClass="NewApiBundle\Enum\SmartcardStates")
      * @var string
      */
     private $state;

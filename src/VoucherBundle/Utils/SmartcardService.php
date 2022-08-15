@@ -25,7 +25,7 @@ use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
-use VoucherBundle\Enum\SmartcardStates;
+use NewApiBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
