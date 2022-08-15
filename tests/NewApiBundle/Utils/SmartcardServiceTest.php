@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Tests\Utils;
+namespace Tests\NewApiBundle\Utils;
 
 use NewApiBundle\Entity\Location;
 use NewApiBundle\Entity\Beneficiary;
