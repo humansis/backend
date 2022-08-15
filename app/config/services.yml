@@ -32,7 +32,6 @@ services:
         class: Twig\Loader\FilesystemLoader
         public: false
         calls:
-            - addPath: ['%kernel.project_dir%/src/VoucherBundle/Resources/views/', "Voucher"]
             - addPath: ['%kernel.project_dir%/src/TransactionBundle/Resources/views/', "Transaction"]
             - addPath: ['%kernel.project_dir%/app/Resources/views/']
 
