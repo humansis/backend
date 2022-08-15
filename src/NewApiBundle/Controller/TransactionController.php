@@ -10,6 +10,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Enum\Domain;
 use NewApiBundle\InputType\TransactionFilterInputType;
 use NewApiBundle\Services\CodeListService;
+use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,20 +49,46 @@ class TransactionController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/{id}/transactions")
      *
      * @param Assistance $assistance
-     * @param Request    $request
+     * @param Request $request
      *
      * @return JsonResponse
+     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @deprecated Probably does not work. Do not try to use transaction before you refactor them, please.
+     *
      */
-    public function createTransactions(Assistance $assistance, Request $request): JsonResponse
+    public function createTransactions(Assistance $assistance, Request $request): Response
     {
         $request->request->set('__country', $request->headers->get('country'));
 
-        $this->forward(\TransactionBundle\Controller\TransactionController::class.'::sendTransactionAction', [
-            'request' => $request,
-            'assistance' => $assistance,
-        ]);
+        $countryISO3 = $request->request->get('__country');
+        $code = $request->request->get('code');
+        $user = $this->getUser();
 
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        /** @var LoggerInterface $logger */
+        $logger = $this->get('monolog.logger.mobile');
+        $logger->error('Sending money requested', [$countryISO3, $user, $assistance]);
+
+        $code = (int) trim(preg_replace('/\s+/', ' ', $code));
+
+        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
+        if (! $validatedTransaction) {
+            $logger->warning('Code: did not match');
+            return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
+        } else {
+            $logger->error('Code: verified');
+        }
+
+        try {
+            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
+        } catch (\Exception $exception) {
+            $logger->error('Sending money failed: '.$exception->getMessage());
+            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+        $json = $this->get('serializer')
+            ->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
+        return new Response($json);
     }
 
     /**
