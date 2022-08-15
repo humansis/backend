@@ -19,22 +19,17 @@ class ProductService
   /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
     /** @var ContainerInterface $container */
     private $container;
 
     /**
      * UserService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
      * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
     {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->container = $container;
     }
 
