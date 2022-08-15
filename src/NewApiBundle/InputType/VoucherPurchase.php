@@ -1,10 +1,10 @@
 <?php
 
-namespace VoucherBundle\InputType;
+namespace NewApiBundle\InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class SmartcardPurchase
+class VoucherPurchase
 {
     /**
      * @var array
@@ -15,16 +15,22 @@ class SmartcardPurchase
      *      @Assert\Collection(fields={
      *          "id" = @Assert\Type("int"),
      *          "quantity" = @Assert\Type("numeric"),
-     *          "value" = @Assert\Type("numeric"),
-     *          "currency" = {
-     *              @Assert\Type("string"),
-     *              @Assert\NotBlank(message="Currency can't be empty"),
-     *              @Assert\Length(min="3",max="3",allowEmptyString=false)
-     *          },
+     *          "value" = @Assert\Type("numeric")
      *      })
      * })
      */
     private $products;
+
+    /**
+     * @var int[]
+     *
+     * @Assert\Valid()
+     * @Assert\NotBlank()
+     * @Assert\All({
+     *     @Assert\Type("int")
+     * })
+     */
+    private $vouchers;
 
     /**
      * @var int ID of vendor/seller
@@ -33,14 +39,6 @@ class SmartcardPurchase
      * @Assert\NotBlank()
      */
     private $vendorId;
-
-    /**
-     * @var int ID of beneficiary/holder
-     *
-     * @Assert\Type("int")
-     * @ Assert\NotBlank() // will be required later
-     */
-    private $beneficiaryId;
 
     /**
      * @var \DateTimeInterface
@@ -67,6 +65,22 @@ class SmartcardPurchase
     }
 
     /**
+     * @return array
+     */
+    public function getVouchers(): array
+    {
+        return $this->vouchers;
+    }
+
+    /**
+     * @param array $vouchers
+     */
+    public function setVouchers(array $vouchers): void
+    {
+        $this->vouchers = $vouchers;
+    }
+
+    /**
      * @return int
      */
     public function getVendorId(): int
@@ -80,22 +94,6 @@ class SmartcardPurchase
     public function setVendorId(int $vendorId): void
     {
         $this->vendorId = $vendorId;
-    }
-
-    /**
-     * @return ?int
-     */
-    public function getBeneficiaryId(): ?int
-    {
-        return $this->beneficiaryId;
-    }
-
-    /**
-     * @param ?int $beneficiaryId
-     */
-    public function setBeneficiaryId(?int $beneficiaryId): void
-    {
-        $this->beneficiaryId = $beneficiaryId;
     }
 
     /**

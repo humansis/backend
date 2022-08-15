@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\InputType;
+namespace NewApiBundle\InputType;
 
 use NewApiBundle\InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;

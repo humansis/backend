@@ -15,7 +15,7 @@ use NewApiBundle\Entity\Booklet;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use VoucherBundle\InputType\VoucherRedemptionBatch;
+use NewApiBundle\InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {

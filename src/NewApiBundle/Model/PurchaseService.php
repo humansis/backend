@@ -18,8 +18,8 @@ use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\Voucher;
 use NewApiBundle\Entity\VoucherPurchase;
-use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
-use VoucherBundle\InputType\VoucherPurchase as VoucherPurchaseInput;
+use NewApiBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
+use NewApiBundle\InputType\VoucherPurchase as VoucherPurchaseInput;
 
 class PurchaseService
 {

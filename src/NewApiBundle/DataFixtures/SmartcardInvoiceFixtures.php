@@ -6,7 +6,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\SmartcardPurchase;
-use VoucherBundle\InputType\SmartcardInvoice;
+use NewApiBundle\InputType\SmartcardInvoice;
 use NewApiBundle\Utils\SmartcardService;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface

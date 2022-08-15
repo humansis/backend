@@ -83,7 +83,7 @@ class InvoiceController extends AbstractWebAppController
     public function create(Vendor $vendor, SmartcardRedemptionBatchCreateInputType $inputType, SmartcardService $smartcardService): JsonResponse
     {
         //backward compatibility
-        $newInvoice = new \VoucherBundle\InputType\SmartcardInvoice();
+        $newInvoice = new \NewApiBundle\InputType\SmartcardInvoice();
         $newInvoice->setPurchases($inputType->getPurchaseIds());
 
         $invoice = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());

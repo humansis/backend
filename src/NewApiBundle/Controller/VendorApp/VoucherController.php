@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
-use VoucherBundle\InputType\VoucherPurchase;
+use NewApiBundle\InputType\VoucherPurchase;
 
 
 class VoucherController extends Controller
