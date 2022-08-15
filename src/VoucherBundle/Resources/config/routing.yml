@@ -1,4 +1,0 @@
-voucher:
-  type:     annotation
-  defaults: { _format: 'json' }
-  resource: '@VoucherBundle/Controller'

@@ -25,12 +25,6 @@ rest_transaction:
     resource: '@TransactionBundle/Controller'
     defaults: { _format: 'json' }
 
-rest_voucher:
-    type: annotation
-    prefix: /api/{firewall}
-    resource: '@VoucherBundle/Controller'
-    defaults: { _format: 'json' }
-
 rest-new:
     type: annotation
     prefix: /api/{firewall}

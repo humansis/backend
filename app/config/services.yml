@@ -1,6 +1,5 @@
 imports:
     - { resource: ../../src/TransactionBundle/Resources/config/services.yml }
-    - { resource: ../../src/VoucherBundle/Resources/config/services.yml }
     - { resource: ../../src/NewApiBundle/Resources/config/services.yml }
 
 services:
