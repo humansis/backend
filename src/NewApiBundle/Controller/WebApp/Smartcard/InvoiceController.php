@@ -11,7 +11,7 @@ use NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository;
 use NewApiBundle\Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use VoucherBundle\Controller\SmartcardController;
+use NewApiBundle\Controller\VendorApp\SmartcardController;
 use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Utils\SmartcardService;

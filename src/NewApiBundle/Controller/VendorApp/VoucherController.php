@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Controller;
+namespace NewApiBundle\Controller\VendorApp;
 
 use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\Annotations as Rest;
