@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Tests\Utils;
+namespace Tests\NewApiBundle\Utils;
 
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Entity\Project;
