@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
+use NewApiBundle\Repository\SmartcardDepositRepository;
 use VoucherBundle\Utils\SmartcardService;
 
 class DepositFactory

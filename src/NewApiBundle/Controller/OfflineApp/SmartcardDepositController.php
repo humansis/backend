@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use NewApiBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
+use NewApiBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {

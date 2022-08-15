@@ -12,7 +12,7 @@ use NewApiBundle\Utils\ExportableInterface;
  * Vendor
  *
  * @ORM\Table(name="vendor")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VendorRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\VendorRepository")
  */
 class Vendor implements ExportableInterface
 {

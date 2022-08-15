@@ -9,7 +9,7 @@ use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
 use NewApiBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
+use NewApiBundle\Repository\SmartcardDepositRepository;
 
 class ReliefPackageService
 {

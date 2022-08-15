@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;

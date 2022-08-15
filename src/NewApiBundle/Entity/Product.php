@@ -13,7 +13,7 @@ use NewApiBundle\Utils\ExportableInterface;
  * Product
  *
  * @ORM\Table(name="product")
- * @ORM\Entity(repositoryClass="VoucherBundle\Repository\ProductRepository")
+ * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ProductRepository")
  * @ORM\HasLifecycleCallbacks()
  */
 class Product implements ExportableInterface

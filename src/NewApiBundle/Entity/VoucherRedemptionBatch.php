@@ -12,7 +12,7 @@ use NewApiBundle\Entity\User;
  * Class VoucherRedemptionBatch.
  *
  * @ORM\Table(name="voucher_redemption_batch")
- * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\VoucherRedemptionBatchRepository")
+ * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\VoucherRedemptionBatchRepository")
  */
 class VoucherRedemptionBatch
 {

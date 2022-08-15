@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Repository;
+namespace NewApiBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use NewApiBundle\Entity\Vendor;

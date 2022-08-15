@@ -13,7 +13,7 @@ use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use NewApiBundle\Entity\Smartcard;
-use VoucherBundle\Repository\SmartcardRepository;
+use NewApiBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 

@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use NewApiBundle\Entity\Product;
-use VoucherBundle\Repository\ProductRepository;
+use NewApiBundle\Repository\ProductRepository;
 
 class ProductController extends AbstractController
 {

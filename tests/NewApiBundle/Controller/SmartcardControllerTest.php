@@ -18,7 +18,7 @@ use NewApiBundle\Entity\SmartcardDeposit;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Enum\SmartcardStates;
-use VoucherBundle\Repository\SmartcardRepository;
+use NewApiBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase

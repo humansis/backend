@@ -19,7 +19,7 @@ use NewApiBundle\Entity\Smartcard;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Vendor;
 use VoucherBundle\Model\PurchaseService;
-use VoucherBundle\Repository\SmartcardRepository;
+use NewApiBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
