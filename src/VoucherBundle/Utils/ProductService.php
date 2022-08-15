@@ -38,35 +38,6 @@ class ProductService
         $this->container = $container;
     }
 
-
-    /**
-     * Creates a new Product entity
-     *
-     * @deprecated Use ProductService::create instead
-     * @param array $productData
-     * @return mixed
-     * @throws \Exception
-     */
-    public function createFromArray($productData)
-    {
-        try {
-            $product = new Product();
-
-            $product->setImage($productData['image'])
-              ->setName($productData['name'])
-              ->setUnit($productData['unit'] ?? null)
-              ->setArchived(false)
-              ->setCountryISO3($productData['__country']);
-
-            $this->em->persist($product);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error while creating a product' . $e->getMessage());
-        }
-
-        return $product;
-    }
-
     /**
      * Creates a new Product entity.
      *
@@ -103,35 +74,6 @@ class ProductService
         } else {
             $product->setProductCategory(null);
         }
-
-        $this->em->persist($product);
-        $this->em->flush();
-
-        return $product;
-    }
-
-    /**
-     * Returns all the products
-     *
-     * @return array
-     */
-    public function findAll($countryIso3)
-    {
-        return $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
-    }
-
-    /**
-     * Updates a product according to the $productData
-     *
-     * @deprecated Use ProductService::update instead
-     * @param Product $product
-     * @param array $productData
-     * @return Product
-     */
-    public function updateFromArray(Product $product, array $productData)
-    {
-        $product->setUnit($productData['unit'])
-            ->setImage($productData['image']);
 
         $this->em->persist($product);
         $this->em->flush();

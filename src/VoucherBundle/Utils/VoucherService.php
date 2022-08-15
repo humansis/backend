@@ -6,21 +6,15 @@ use NewApiBundle\Controller\ExportController;
 use NewApiBundle\InputType\Country;
 use NewApiBundle\InputType\DataTableType;
 use NewApiBundle\InputType\RequestConverter;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use NewApiBundle\Entity\User;
 use NewApiBundle\DTO\RedemptionVoucherBatchCheck;
 use NewApiBundle\Entity\Booklet;
-use NewApiBundle\Entity\Product;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Entity\Voucher;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use NewApiBundle\Entity\VoucherRecord;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 
 class VoucherService
@@ -28,9 +22,6 @@ class VoucherService
 
   /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
 
     /** @var ContainerInterface $container */
     private $container;
@@ -44,14 +35,12 @@ class VoucherService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param Environment            $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $twig)
+    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $twig)
     {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->container = $container;
         $this->twig = $twig;
     }
@@ -113,17 +102,6 @@ class VoucherService
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
         
         return $fullCode;
-    }
-
-
-    /**
-     * Returns all the vouchers
-     *
-     * @return array
-     */
-    public function findAll()
-    {
-        return $this->em->getRepository(Voucher::class)->findAll();
     }
 
     /**
@@ -353,20 +331,6 @@ class VoucherService
     {
         $lastVoucher = $this->em->getRepository(Voucher::class)->findBy([], ['id' => 'DESC'], 1);
         return $lastVoucher ? $lastVoucher[0]->getId() : 0;
-    }
-
-
-    /**
-     * Remove incomplete vouchers in database
-     */
-    public function cleanUp()
-    {
-        $incompleteVoucher = $this->em->getRepository(Voucher::class)->findOneBy(['code' => '']);
-
-        if ($incompleteVoucher) {
-            $this->em->remove($incompleteVoucher);
-            $this->em->flush();
-        }
     }
 
     /**
