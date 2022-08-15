@@ -1,6 +1,6 @@
 <?php
 
-namespace VoucherBundle\Controller;
+namespace NewApiBundle\Controller\VendorApp;
 
 
 use Symfony\Component\HttpKernel\Profiler\Profiler;
