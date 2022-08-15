@@ -6,13 +6,6 @@ services:
         autowire: true
         tags: [ 'app.controller' ]
 
-    VoucherBundle\Controller\SmartcardController:
-        arguments:
-            - '@NewApiBundle\Export\SmartcardInvoiceExport'
-            - '@NewApiBundle\Repository\OrganizationRepository'
-            - '@NewApiBundle\Component\Country\Countries'
-        public: true
-
     NewApiBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
@@ -47,7 +40,7 @@ services:
 
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container', '@Twig\Environment']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
         public: true
 
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
@@ -56,7 +49,6 @@ services:
         class: VoucherBundle\Utils\BookletService
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
             - '@Twig\Environment'
@@ -64,7 +56,7 @@ services:
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@Twig\Environment']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
         public: true
 
     voucher.product_service:

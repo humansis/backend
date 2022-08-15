@@ -3,29 +3,15 @@
 namespace VoucherBundle\Utils;
 
 use NewApiBundle\Entity\Location;
-use NewApiBundle\Entity\Logs;
-use NewApiBundle\Utils\LocationService;
-use Couchbase\DocumentNotFoundException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use NewApiBundle\Exception\NotUniqueException;
 use NewApiBundle\InputType\VendorCreateInputType;
 use NewApiBundle\InputType\VendorUpdateInputType;
-use RuntimeException;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Validation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use NewApiBundle\Entity\User;
 use NewApiBundle\Entity\Vendor;
@@ -37,14 +23,8 @@ class VendorService
   /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
     /** @var ContainerInterface $container */
     private $container;
-
-    /** @var LocationService $locationService */
-    private $locationService;
 
     /**
      * @var Environment
@@ -55,75 +35,19 @@ class VendorService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface     $validator
-     * @param LocationService        $locationService
      * @param ContainerInterface     $container
      * @param Environment            $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        LocationService $locationService,
         ContainerInterface $container,
         Environment $twig
     ) {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->container = $container;
-        $this->locationService = $locationService;
         $this->twig = $twig;
     }
 
-    /**
-     * Creates a new Vendor entity
-     *
-     * @param array $vendorData
-     * @return mixed
-     * @throws \Exception
-     */
-    public function createFromArray($countryISO3, array $vendorData)
-    {
-        $username = $vendorData['username'];
-        $userSaved = $this->em->getRepository(User::class)->findOneByUsername($username);
-        $vendorSaved = $userSaved instanceof User ? $this->em->getRepository(Vendor::class)->getVendorByUser($userSaved) : null;
-
-        if (!($vendorSaved instanceof Vendor)) {
-            $user = $this->container->get('user.user_service')->createFromArray(
-                [
-                    'username' => $username,
-                    'email' => $username,
-                    'roles' => ['ROLE_VENDOR'],
-                    'password' => $vendorData['password'],
-                    'salt' => $vendorData['salt'],
-                    'change_password' => false,
-                    'phone_prefix' => '+34',
-                    'phone_number' => '675676767',
-                    'two_factor_authentication' => false
-                ]
-            );
-
-            $location = $vendorData['location'];
-            $location = $this->locationService->getLocation($countryISO3, $location);
-
-            $vendor = new Vendor();
-            $vendor->setName($vendorData['name'])
-                    ->setShop($vendorData['shop'])
-                    ->setAddressStreet($vendorData['address_street'])
-                    ->setAddressNumber($vendorData['address_number'])
-                    ->setAddressPostcode($vendorData['address_postcode'])
-                    ->setLocation($location)
-                    ->setArchived(false)
-                    ->setUser($user);
-
-            $this->em->persist($vendor);
-            $this->em->flush();
-
-            $createdVendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
-            return $createdVendor;
-        } else {
-            throw new \Exception('A vendor with this username already exists.');
-        }
-    }
 
     /**
      * @param VendorCreateInputType $inputType
@@ -168,62 +92,6 @@ class VendorService
 
         $this->em->persist($vendor);
         $this->em->flush();
-
-        return $vendor;
-    }
-
-    /**
-     * Returns all the vendors
-     *
-     * @return array
-     */
-    public function findAll($countryISO3)
-    {
-        $vendors = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
-        return $vendors;
-    }
-
-
-    /**
-     * Updates a vendor according to $vendorData
-     *
-     * @param Vendor $vendor
-     * @param array $vendorData
-     * @return Vendor
-     */
-    public function updateFromArray($countryISO3, Vendor $vendor, array $vendorData)
-    {
-        try {
-            $user = $vendor->getUser();
-            foreach ($vendorData as $key => $value) {
-                if ($key == 'name') {
-                    $vendor->setName($value);
-                } elseif ($key == 'shop') {
-                    $vendor->setShop($value);
-                } elseif ($key == 'address_street') {
-                    $vendor->setAddressStreet($vendorData['address_street']);
-                } elseif ($key == 'address_number') {
-                    $vendor->setAddressNumber($vendorData['address_number']);
-                } elseif ($key == 'address_postcode') {
-                    $vendor->setAddressPostcode($vendorData['address_postcode']);
-                } elseif ($key == 'username') {
-                    $user->setUsername($value);
-                } elseif ($key == 'password' && !empty($value)) {
-                    $user->setPassword($value);
-                } elseif ($key == 'location' && !empty($value)) {
-                    $location = $value;
-                    if (array_key_exists('id', $location)) {
-                        unset($location['id']); // This is the old id
-                    }
-                    $location = $this->locationService->getLocation($countryISO3, $location);
-                    $vendor->setLocation($location);
-                }
-            }
-            $this->em->persist($vendor);
-            $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Vendor');
-        }
 
         return $vendor;
     }
@@ -281,27 +149,6 @@ class VendorService
             throw new \Exception('Error archiving Vendor');
         }
         return $vendor;
-    }
-
-
-    /**
-     * Permanently deletes the record from the database
-     *
-     * @param Vendor $vendor
-     * @param bool $removeVendor
-     * @return bool
-     */
-    public function deleteFromDatabase(Vendor $vendor, bool $removeVendor = true)
-    {
-        if ($removeVendor) {
-            try {
-                $this->em->remove($vendor);
-                $this->em->flush();
-            } catch (\Exception $exception) {
-                return $exception;
-            }
-        }
-        return true;
     }
 
     /**

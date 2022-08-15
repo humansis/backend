@@ -26,7 +26,6 @@ use NewApiBundle\Entity\Invoice;
 use NewApiBundle\Entity\Vendor;
 use NewApiBundle\Enum\SmartcardStates;
 use VoucherBundle\InputType\SmartcardPurchase as SmartcardPurchaseInput;
-use VoucherBundle\InputType\SmartcardPurchaseDeprecated as SmartcardPurchaseDeprecatedInput;
 use VoucherBundle\Model\PurchaseService;
 use NewApiBundle\Repository\SmartcardPurchaseRepository;
 use VoucherBundle\InputType\SmartcardInvoice as RedemptionBatchInput;
@@ -146,39 +145,6 @@ class SmartcardService
         if ($smartcard->getRegisteredAt()->getTimestamp() === $registrationDateTime->getTimestamp()) {
             throw new SmartcardDoubledRegistrationException($smartcard);
         }
-    }
-
-    /**
-     * @deprecated use version with SC reuse
-     * @see self::purchase
-     */
-    public function purchaseWithoutReusingSC(string $serialNumber, $data): SmartcardPurchase
-    {
-        if ($data instanceof SmartcardPurchaseInput && $data instanceof SmartcardPurchaseDeprecatedInput) {
-            throw new \InvalidArgumentException('Argument 3 must be of type '.SmartcardPurchaseInput::class.' or '.SmartcardPurchaseDeprecatedInput::class);
-        }
-
-        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
-        if (!$smartcard) {
-            $smartcard = $this->createSuspiciousSmartcard($serialNumber, $data->getCreatedAt());
-        }
-
-        if ($data instanceof SmartcardPurchaseDeprecatedInput) {
-            $products = [];
-            foreach ($data->getProducts() as $product) {
-                $product['currency'] = $smartcard->getCurrency();
-                $products[] = $product;
-            }
-
-            $new = new SmartcardPurchaseInput();
-            $new->setCreatedAt($data->getCreatedAt());
-            $new->setVendorId($data->getVendorId());
-            $new->setProducts($products);
-
-            $data = $new;
-        }
-
-        return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
     /**
@@ -350,16 +316,6 @@ class SmartcardService
             }
         }
         return $deposit;
-    }
-
-    protected function createSuspiciousSmartcard(string $serialNumber, DateTimeInterface $createdAt): Smartcard
-    {
-        $smartcard = new Smartcard($serialNumber, $createdAt);
-        $smartcard->setState(SmartcardStates::ACTIVE);
-        $smartcard->setSuspicious(true, 'Smartcard does not exists in database');
-        $this->smartcardRepository->save($smartcard);
-
-        return $smartcard;
     }
 
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string

@@ -3,15 +3,12 @@
 namespace VoucherBundle\Utils;
 
 use NewApiBundle\Entity\AbstractBeneficiary;
-use NewApiBundle\Entity\Beneficiary;
 use NewApiBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Twig\Environment;
 use NewApiBundle\Entity\Booklet;
 use NewApiBundle\Entity\Voucher;
@@ -22,9 +19,6 @@ class BookletService
 
     /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
 
     /** @var ContainerInterface $container */
     private $container;
@@ -39,21 +33,18 @@ class BookletService
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface     $validator
      * @param ContainerInterface     $container
      * @param BookletGenerator       $generator
      * @param Environment            $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface     $validator,
         ContainerInterface     $container,
         BookletGenerator       $generator,
         Environment            $twig
     )
     {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->container = $container;
         $this->generator = $generator;
         $this->twig = $twig;
@@ -69,22 +60,6 @@ class BookletService
     public function getOne(string $code)
     {
         return $this->em->getRepository(Booklet::class)->findOneBy(['code' => $code]);
-    }
-
-    /**
-     * Create new booklets as a background task.
-     * Returns the last booklet id currently in the database and the number of booklets to create.
-     *
-     * @param string $country
-     * @param array $bookletData
-     * @return int
-     * @deprecated
-     */
-    public function backgroundCreate($country, array $bookletData)
-    {
-        $this->create($country, $bookletData);
-
-        return ["lastBooklet" => $this->getLastId(), "expectedNumber" => $bookletData['number_booklets']];
     }
 
     /**
@@ -122,61 +97,6 @@ class BookletService
             $project, $inputType->getIso3(), $inputType->getQuantityOfBooklets(), $inputType->getQuantityOfVouchers(), $inputType->getCurrency(),
             $inputType->getValues(), $inputType->getPassword()
         );
-    }
-
-    /**
-     * Get the last inserted ID in the Booklet table
-     *
-     * @return int
-     */
-    public function getLastId()
-    {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
-
-        return $lastBooklet ? $lastBooklet[0]->getId() : 0;
-    }
-
-    /**
-     * Get the number of insterted booklets in a country since an ID.
-     *
-     * @param string $country
-     * @param int $lastId
-     *
-     * @return int
-     */
-    public function getNumberOfInsertedBooklets(string $country, int $lastId)
-    {
-        $newBooklets = $this->em->getRepository(Booklet::class)->getInsertedBooklets($country, $lastId);
-        if (!empty($newBooklets)) {
-            return count($newBooklets);
-        }
-        return 0;
-    }
-
-    /**
-     * Returns the index of the next booklet to be inserted in the database
-     *
-     * @return int
-     */
-    public function getBookletBatch()
-    {
-        $lastBooklet = $this->em->getRepository(Booklet::class)->findBy([], ['id' => 'DESC'], 1);
-        if ($lastBooklet) {
-            $bookletBatch = $lastBooklet[0]->getId() + 1;
-            return $bookletBatch;
-        } else {
-            return 1;
-        }
-    }
-
-    /**
-     * Get all the non-deactivated booklets from the database
-     *
-     * @return array
-     */
-    public function findAll($countryISO3)
-    {
-        return $this->em->getRepository(Booklet::class)->getActiveBooklets($countryISO3);
     }
 
     /**
@@ -315,33 +235,6 @@ class BookletService
         return "Booklets have been deactivated";
     }
 
-
-    /**
-     * Update the password of the booklet
-     *
-     * @param Booklet $booklet
-     * @param int $code
-     * @return string
-     * @throws \Exception
-     *
-     */
-    public function updatePassword(Booklet $booklet, $password)
-    {
-        if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED) {
-            throw new \Exception("This booklet has already been used and is actually deactivated");
-        }
-
-        $booklet->setPassword($password);
-        $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
-        foreach ($vouchers as $voucher) {
-            $this->updateVoucherCode($voucher, $password, null, null);
-        }
-        $this->em->persist($booklet);
-        $this->em->flush();
-
-        return "Password has been set";
-    }
-
     /**
      * Assign the booklet to a beneficiary
      *
@@ -411,21 +304,6 @@ class BookletService
             return false;
         }
         return true;
-    }
-
-    public function printMany(array $bookletIds)
-    {
-        $booklets = [];
-        foreach ($bookletIds as $bookletId) {
-            $booklet = $this->em->getRepository(Booklet::class)->find($bookletId);
-            $booklets[] = $booklet;
-        }
-
-        try {
-            return $this->generatePdf($booklets);
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
     }
 
     public function generatePdf(array $booklets)
