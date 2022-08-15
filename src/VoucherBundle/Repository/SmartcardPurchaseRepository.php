@@ -9,9 +9,6 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\SmartcardPurchaseFilterInputType;
 use NewApiBundle\Request\Pagination;
-use NewApiBundle\Entity\Project;
-use NewApiBundle\DTO\PurchaseDetail;
-use NewApiBundle\DTO\PreliminaryInvoice;
 use NewApiBundle\DTO\PurchaseSummary;
 use NewApiBundle\Entity\SmartcardPurchase;
 use NewApiBundle\Entity\Invoice;
@@ -108,49 +105,6 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param Invoice $invoice
-     *
-     * @return PurchaseDetail[]
-     */
-    public function getDetailsByBatch(Invoice $invoice): array
-    {
-        $qb = $this->createQueryBuilder('p')
-            ->select(
-                'p.id,
-                SUM(pr.value) as purchaseRecordsValue, 
-                p.createdAt as purchaseDate,
-                person.id as beneficiaryId,
-                person.enGivenName,
-                person.enFamilyName,
-                person.localGivenName,
-                person.localFamilyName'
-            )
-            ->join('p.records', 'pr')
-            ->join('p.vendor', 'v')
-            ->join('p.smartcard', 's')
-            ->join('s.beneficiary', 'b')
-            ->join('b.person', 'person')
-            ->andWhere('p.redemptionBatch = :batch')
-            ->setParameter('batch', $invoice)
-            ->groupBy('p.id');
-
-        $details = [];
-        foreach ($qb->getQuery()->getResult() as $result) {
-            $details[] = new PurchaseDetail(
-                $result['purchaseDate'],
-                $result['beneficiaryId'],
-                $result['enGivenName'],
-                $result['enFamilyName'],
-                $result['localGivenName'],
-                $result['localFamilyName'],
-                $result['purchaseRecordsValue']
-            );
-        }
-
-        return $details;
-    }
-
-    /**
      * @param Invoice         $invoice
      * @param Pagination|null $pagination
      *
@@ -206,48 +160,5 @@ class SmartcardPurchaseRepository extends EntityRepository
         }
 
         return new Paginator($qbr);
-    }
-
-    /**
-     * @param Vendor $vendor
-     *
-     * @return PurchaseDetail[]
-     */
-    public function getUsedUnredeemedDetails(Vendor $vendor): array
-    {
-        $qb = $this->createQueryBuilder('p')
-            ->select(
-                'p.id,
-                SUM(pr.value) as purchaseRecordsValue, 
-                p.createdAt as purchaseDate,
-                person.id as beneficiaryId,
-                person.enGivenName,
-                person.enFamilyName,
-                person.localGivenName,
-                person.localFamilyName'
-            )
-            ->join('p.records', 'pr')
-            ->join('p.vendor', 'v')
-            ->join('p.smartcard', 's')
-            ->join('s.beneficiary', 'b')
-            ->join('b.person', 'person')
-            ->andWhere('p.vendor = :vendor')
-            ->setParameter('vendor', $vendor)
-            ->groupBy('p.id');
-
-        $details = [];
-        foreach ($qb->getQuery()->getResult() as $result) {
-            $details[] = new PurchaseDetail(
-                $result['purchaseDate'],
-                $result['beneficiaryId'],
-                $result['enGivenName'],
-                $result['enFamilyName'],
-                $result['localGivenName'],
-                $result['localFamilyName'],
-                $result['purchaseRecordsValue']
-            );
-        }
-
-        return $details;
     }
 }

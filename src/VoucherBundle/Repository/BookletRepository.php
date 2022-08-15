@@ -3,9 +3,6 @@
 namespace VoucherBundle\Repository;
 
 use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\Assistance;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use NewApiBundle\InputType\BookletFilterInputType;
 use NewApiBundle\InputType\BookletOrderInputType;
@@ -20,26 +17,6 @@ use NewApiBundle\Entity\Booklet;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
-     /**
-     * Finds booklets with same code prefix and return latest
-     *
-     * @param string $prefix
-     * @return Booklet|null
-     */
-    public function findMaxByCodePrefix(string $prefix): ?Booklet
-    {
-        try {
-            $qb = $this->createQueryBuilder('b')
-                ->andWhere('b.code LIKE :prefix')
-                ->setParameter('prefix', $prefix . '%')
-                ->orderBy('b.code', 'DESC');
-
-            return $qb->getQuery()->setMaxResults(1)->getSingleResult();
-        } catch (NonUniqueResultException | NoResultException $ex) {
-            return null;
-        }
-    }
-
     public function getActiveBooklets($countryISO3)
     {
         $qb = $this->createQueryBuilder('b');
@@ -59,18 +36,6 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         
         
         return $q->getQuery()->getResult();
-    }
-
-    public function getActiveBookletsByAssistanceBeneficiary(int $assistanceBeneficiaryId) {
-        $qb = $this->createQueryBuilder('b');
-        
-        $qb->andWhere('db.id = :id')
-                ->setParameter('id', $assistanceBeneficiaryId)
-                ->leftJoin('b.distribution_beneficiary', 'db')
-                ->andWhere('b.status != :status')
-                    ->setParameter('status', 3);
-        
-        return $qb->getQuery()->getResult();
     }
 
     /**
