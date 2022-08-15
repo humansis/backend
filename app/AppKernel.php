@@ -46,7 +46,6 @@ class AppKernel extends Kernel
             new TransactionBundle\TransactionBundle(),
             new RA\RequestValidatorBundle\RARequestValidatorBundle(),
             new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
-            new VoucherBundle\VoucherBundle(),
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new NewApiBundle\NewApiBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),

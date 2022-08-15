@@ -1255,3 +1255,92 @@ services:
     NewApiBundle\Utils\ExportService:
         class: NewApiBundle\Utils\ExportService
         public: true
+
+#From VoucherBundle:
+    NewApiBundle\Repository\VendorRepository:
+        class: Doctrine\ORM\EntityRepository
+        calls:
+            - setLocationRepository: ['@NewApiBundle\Repository\LocationRepository']
+            - setPreliminaryInvoiceRepository: ['@NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository']
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Vendor
+
+    #######################################################################################
+    ##                                       CRUD                                        ##
+    #######################################################################################
+
+    smartcard_purchase.repository:
+        class: NewApiBundle\Repository\SmartcardPurchaseRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - NewApiBundle\Entity\SmartcardPurchase
+
+    NewApiBundle\Repository\SmartcardDepositRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\SmartcardDeposit
+
+    NewApiBundle\Repository\SmartcardRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - NewApiBundle\Entity\Smartcard
+
+    NewApiBundle\Repository\SmartcardPurchaseRepository:
+        alias: smartcard_purchase.repository
+
+    voucher.vendor_service:
+        class: NewApiBundle\Utils\VendorService
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
+        public: true
+
+    NewApiBundle\Utils\VendorService: '@voucher.vendor_service'
+
+    voucher.booklet_service:
+        class: NewApiBundle\Utils\BookletService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@NewApiBundle\Utils\BookletGenerator'
+            - '@Twig\Environment'
+        public: true
+
+    voucher.voucher_service:
+        class: NewApiBundle\Utils\VoucherService
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
+        public: true
+
+    voucher.product_service:
+        class: NewApiBundle\Utils\ProductService
+        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+        public: true
+
+    common.upload_service:
+        class: NewApiBundle\Utils\UploadService
+        arguments: ['%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
+        public: true
+
+    voucher.purchase_service:
+        class: NewApiBundle\Model\PurchaseService
+        public: true
+        arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
+
+    NewApiBundle\Utils\SmartcardService:
+        alias: smartcard_service
+
+    smartcard_service:
+        class: NewApiBundle\Utils\SmartcardService
+        autowire: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@voucher.purchase_service'
+            - '@NewApiBundle\Repository\SmartcardRepository'
+            - '@smartcard_purchase.repository'
+        public: true
+
+    NewApiBundle\Mapper\VoucherRedemptionBatchMapper:
+        tags: [ 'app.mapper' ]
+
+    NewApiBundle\Utils\BookletGenerator:
+        public: true
+        arguments: [ '@doctrine.orm.entity_manager' ]
