@@ -1227,33 +1227,6 @@ services:
         tags:
             - { name: doctrine.fixture.orm }
 
-
-
-    #######################################################################################
-    ##                                       VOTER                                       ##
-    #######################################################################################
-
-    voter_default:
-        class: NewApiBundle\Voter\DefaultVoter
-        public: true
-        arguments:
-            - "@security.role_hierarchy"
-            - "@doctrine.orm.entity_manager"
-            - "@request_stack"
-            - "@logger"
-        tags:
-            - { name: security.voter }
-
-    voter_project:
-        class: NewApiBundle\Voter\ProjectVoter
-        public: true
-        arguments:
-            - "@security.role_hierarchy"
-            - "@doctrine.orm.entity_manager"
-            - "@logger"
-        tags:
-            - { name: security.voter }
-
     #######################################################################################
     ##                                       EXPORT                                      ##
     #######################################################################################
