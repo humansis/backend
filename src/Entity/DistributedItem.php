@@ -79,6 +79,13 @@ class DistributedItem
     private $amount;
 
     /**
+     * @var float|null
+     *
+     * @ORM\Column(type="decimal", precision=10, scale=2)
+     */
+    private $spent;
+    
+    /**
      * @var string
      *
      * @ORM\Column(type="string")
@@ -168,6 +175,16 @@ class DistributedItem
     public function getAmount(): float
     {
         return (float) $this->amount;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getSpent(): ?float
+    {
+        return $this->spent !== null
+            ? (float) $this->spent
+            : null;
     }
 
     /**

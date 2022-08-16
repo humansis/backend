@@ -24,6 +24,7 @@ SELECT
         WHEN b.id   IS NOT NULL THEN b.value
         WHEN pack.amount_distributed > 0 THEN pack.amount_distributed
         END AS amount,
+    pack.amount_spent as spent,
     CASE
         WHEN sd.distributed_by_id IS NOT NULL THEN sd.distributed_by_id
         WHEN t.id  IS NOT NULL THEN t.sent_by_id

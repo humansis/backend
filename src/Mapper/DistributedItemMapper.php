@@ -72,6 +72,11 @@ class DistributedItemMapper implements MapperInterface
         return $this->object->getAmount();
     }
 
+    public function getSpent(): ?float
+    {
+        return $this->object->getSpent();
+    }
+
     public function getLocationId(): int
     {
         return $this->object->getLocation()->getId();
