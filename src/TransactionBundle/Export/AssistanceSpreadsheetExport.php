@@ -419,12 +419,11 @@ class AssistanceSpreadsheetExport
 
     private static function getNationalId(Person $person): ?string
     {
-        foreach ($person->getNationalIds() as $nationalId) {
-            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
-                return $nationalId->getIdNumber();
-            }
+        $ids = $person->getNationalIds();
+        if (count($ids) > 0) {
+            $id = $ids[0];
+            return $id->getIdNumber().PHP_EOL."({$id->getIdType()})";
         }
-
         return null;
     }
 
