@@ -11,11 +11,6 @@ class VaryingListener
      */
     public function onKernelResponse(ResponseEvent $event)
     {
-        // only new api requests are supported
-        if (false === $event->getRequest()->attributes->get('disable-common-request-listener', false)) {
-            return;
-        }
-
         $varyHeaders = ['country', 'origin', 'accept-language'];
 
         if (count($varyHeaders) > 0) {
