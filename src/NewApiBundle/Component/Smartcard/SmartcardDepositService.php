@@ -214,19 +214,22 @@ class SmartcardDepositService
     }
 
     /**
-     * @param AssistanceBeneficiary $distributionBeneficiary
+     * @param AssistanceBeneficiary[] $distributionBeneficiaries
      *
      * @return SmartcardDeposit[]
      */
-    public function getDepositsForDistributionBeneficiary(AssistanceBeneficiary $distributionBeneficiary): array
+    public function getDepositsForDistributionBeneficiaries(array $distributionBeneficiaries): array
     {
         $qb = $this->smartcardDepositRepository->createQueryBuilder('scd')
+            ->select('scd, rp, ab')
             ->innerJoin('scd.reliefPackage', 'rp')
             ->innerJoin('rp.assistanceBeneficiary', 'ab')
             ->where('rp.state = :state')
-            ->andWhere('ab.id = :abstractBeneficiaryId')
+            ->andWhere('ab.id IN (:abstractBeneficiaryIds)')
             ->setParameter('state', ReliefPackageState::DISTRIBUTED)
-            ->setParameter('abstractBeneficiaryId', $distributionBeneficiary->getId());
+            ->setParameter('abstractBeneficiaryIds', array_map(function($distributionBeneficiary) {
+                return $distributionBeneficiary->getId();
+            }, $distributionBeneficiaries));
         /** @var SmartcardDeposit[] $result */
         return $qb->getQuery()->getResult();
     }

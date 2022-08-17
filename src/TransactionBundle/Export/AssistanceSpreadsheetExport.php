@@ -26,6 +26,7 @@ use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Enum\SynchronizationBatchState;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -44,6 +45,11 @@ class AssistanceSpreadsheetExport
     private $translator;
 
     private $smartcardDepositService;
+
+    /**
+     * @var SmartcardDeposit[]
+     */
+    private $smartCardDeposits = [];
 
     public function __construct(TranslatorInterface $translator, SmartcardDepositService $smartcardDepositService)
     {
@@ -331,6 +337,9 @@ class AssistanceSpreadsheetExport
         $worksheet->mergeCells('B20:K20');
     }
 
+    /**
+     * @throws Exception
+     */
     private function buildBody(Worksheet $worksheet, Assistance $assistance)
     {
         $rowStyle = [
@@ -360,6 +369,7 @@ class AssistanceSpreadsheetExport
         if ($this->shouldDistributionContainDate($assistance)) {
             $worksheet->getCell('K22')->setValue('Distributed');
             $worksheet->setCellValue('K23', $this->translator->trans('Distributed'));
+            $this->smartCardDeposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiaries($assistance->getDistributionBeneficiaries()->toArray());
         } else {
             $worksheet->getCell('K22')->setValue('Signature');
             $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
@@ -427,7 +437,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
 
         if ($shouldContainDate) {
-            $this->applyDistributionTime($worksheet, $distributionBeneficiary, $rowNumber);
+            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionTime($distributionBeneficiary));
         }
 
         $nextRowNumber = $rowNumber + 1;
@@ -526,15 +536,18 @@ class AssistanceSpreadsheetExport
         return $assistance->isRemoteDistributionAllowed() === true;
     }
 
-    private function applyDistributionTime(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, int $rowNumber): void
+    private function getDistributionTime(AssistanceBeneficiary $distributionBeneficiary): string
     {
-        $deposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiary($distributionBeneficiary);
+        $deposits = array_filter($this->smartCardDeposits, function($smartcardDeposit) use($distributionBeneficiary) {
+           return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
+        });
 
-        if (sizeof($deposits) > 0) {
-            $cellValue = implode("\n", array_map(function($deposit) {
-                return $deposit->getDistributedAt()->format('d. m. Y H:i');
-            }, $deposits));
-            $worksheet->setCellValue('K'.$rowNumber, $cellValue);
+        if (empty($deposits)) {
+            return "";
         }
+
+        return implode("\n", array_map(function($deposit) {
+            return $deposit->getDistributedAt()->format('d. m. Y H:i');
+        }, $deposits));
     }
 }

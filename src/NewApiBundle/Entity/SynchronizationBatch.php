@@ -9,8 +9,6 @@ use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\Source;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
-use NewApiBundle\Enum\SynchronizationBatchValidationType;
-use NewApiBundle\Utils\Synchronization\RequestDataRecord;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
