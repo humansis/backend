@@ -51,6 +51,8 @@ class TestReportImportCommand extends KernelTestCase
 
         $oldTransactions = $this->entityManager->getRepository(Transaction::class)->findBy(['transactionId' => 'AMC6666666'], ['id' => 'asc']);
 
+        $user = $this->entityManager->getRepository(User::class)->findOneBy([]);
+
         foreach ($oldTransactions as $oldTransaction) {
             $this->entityManager->remove($oldTransaction);
         }
@@ -60,7 +62,7 @@ class TestReportImportCommand extends KernelTestCase
         $assistance->setUpdatedOn(new DateTime());
         $assistance->setDateDistribution(new DateTime());
         $assistance->setArchived(false);
-        $assistance->setValidated(true);
+        $assistance->setValidatedBy($user);
         $assistance->setCompleted(false);
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setTargetType(AssistanceTargetType::INDIVIDUAL);

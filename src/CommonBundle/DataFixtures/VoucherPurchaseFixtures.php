@@ -54,7 +54,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         foreach ($booklets as $booklet) {
             /** @var Assistance $assistance */
             $assistance = $booklet->getAssistanceBeneficiary()->getAssistance();
-            if (!$assistance->getValidated()) {
+            if (!$assistance->isValidated()) {
                 continue;
             }
 
