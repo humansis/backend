@@ -414,6 +414,15 @@ class AssistanceService
         $this->em->flush();
     }
 
+    public function updateRound(Assistance $assistance, ?int $round): void
+    {
+        $assistance->setRound($round);
+        $assistance->setUpdatedOn(new DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
     /**
      * @param int $projectId
      * @param string $type
@@ -502,7 +511,7 @@ class AssistanceService
                 $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
                 $this->translator->trans("DISTR. NO.") => $assistance->getId(),
                 $this->translator->trans("Distributed by") => " ",
-                $this->translator->trans("Round") => " ",
+                $this->translator->trans("Round") => ($assistance->getRound() === null ? $this->translator->trans("N/A") : $assistance->getRound()),
                 $this->translator->trans("Donor") => $donors,
                 $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
                 $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",

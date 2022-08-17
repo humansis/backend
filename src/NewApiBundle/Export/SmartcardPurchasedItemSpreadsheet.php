@@ -74,19 +74,20 @@ class SmartcardPurchasedItemSpreadsheet
         $worksheet->getColumnDimension('J')->setWidth(14.853);
         $worksheet->getColumnDimension('K')->setWidth(14.853);
         $worksheet->getColumnDimension('L')->setWidth(14.853);
-        $worksheet->getColumnDimension('M')->setWidth(19.136);
-        $worksheet->getColumnDimension('N')->setWidth(14.423);
+        $worksheet->getColumnDimension('M')->setWidth(14.853);
+        $worksheet->getColumnDimension('N')->setWidth(19.136);
         $worksheet->getColumnDimension('O')->setWidth(14.423);
-        $worksheet->getColumnDimension('P')->setWidth(08.837);
-        $worksheet->getColumnDimension('Q')->setWidth(14.423);
+        $worksheet->getColumnDimension('P')->setWidth(14.423);
+        $worksheet->getColumnDimension('Q')->setWidth(08.837);
         $worksheet->getColumnDimension('R')->setWidth(14.423);
-        $worksheet->getColumnDimension('S')->setWidth(28.080);
-        $worksheet->getColumnDimension('T')->setWidth(14.423);
+        $worksheet->getColumnDimension('S')->setWidth(14.423);
+        $worksheet->getColumnDimension('T')->setWidth(28.080);
         $worksheet->getColumnDimension('U')->setWidth(14.423);
-        $worksheet->getColumnDimension('V')->setWidth(28.080);
+        $worksheet->getColumnDimension('V')->setWidth(14.423);
+        $worksheet->getColumnDimension('W')->setWidth(28.080);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:U1')->applyFromArray([
+        $worksheet->getStyle('A1:W1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
@@ -108,20 +109,21 @@ class SmartcardPurchasedItemSpreadsheet
         $worksheet->setCellValue('F1', $this->translator->trans('Phone'));
         $worksheet->setCellValue('G1', $this->translator->trans('Project Name'));
         $worksheet->setCellValue('H1', $this->translator->trans('Distribution Name'));
-        $worksheet->setCellValue('I1', $this->translator->trans($country->getAdm1Name()));
-        $worksheet->setCellValue('J1', $this->translator->trans($country->getAdm2Name()));
-        $worksheet->setCellValue('K1', $this->translator->trans($country->getAdm3Name()));
-        $worksheet->setCellValue('L1', $this->translator->trans($country->getAdm4Name()));
-        $worksheet->setCellValue('M1', $this->translator->trans('Purchase Date & Time'));
-        $worksheet->setCellValue('N1', $this->translator->trans('Smartcard code'));
-        $worksheet->setCellValue('O1', $this->translator->trans('Item Purchased'));
-        $worksheet->setCellValue('P1', $this->translator->trans('Unit'));
-        $worksheet->setCellValue('Q1', $this->translator->trans('Total Cost'));
-        $worksheet->setCellValue('R1', $this->translator->trans('Currency'));
-        $worksheet->setCellValue('S1', $this->translator->trans('Vendor Name'));
-        $worksheet->setCellValue('T1', $this->translator->trans('Vendor Humansis ID'));
-        $worksheet->setCellValue('U1', $this->translator->trans('Vendor Nr.'));
-        $worksheet->setCellValue('V1', $this->translator->trans('Humansis Invoice Nr.'));
+        $worksheet->setCellValue('I1', $this->translator->trans('Round'));
+        $worksheet->setCellValue('J1', $this->translator->trans($country->getAdm1Name()));
+        $worksheet->setCellValue('K1', $this->translator->trans($country->getAdm2Name()));
+        $worksheet->setCellValue('L1', $this->translator->trans($country->getAdm3Name()));
+        $worksheet->setCellValue('M1', $this->translator->trans($country->getAdm4Name()));
+        $worksheet->setCellValue('N1', $this->translator->trans('Purchase Date & Time'));
+        $worksheet->setCellValue('O1', $this->translator->trans('Smartcard code'));
+        $worksheet->setCellValue('P1', $this->translator->trans('Item Purchased'));
+        $worksheet->setCellValue('Q1', $this->translator->trans('Unit'));
+        $worksheet->setCellValue('R1', $this->translator->trans('Total Cost'));
+        $worksheet->setCellValue('S1', $this->translator->trans('Currency'));
+        $worksheet->setCellValue('T1', $this->translator->trans('Vendor Name'));
+        $worksheet->setCellValue('U1', $this->translator->trans('Vendor Humansis ID'));
+        $worksheet->setCellValue('V1', $this->translator->trans('Vendor Nr.'));
+        $worksheet->setCellValue('W1', $this->translator->trans('Humansis Invoice Nr.'));
 
         $i = 1;
         foreach ($this->repository->findByParams($country->getIso3(), $filter) as $purchasedItem) {
@@ -139,20 +141,21 @@ class SmartcardPurchasedItemSpreadsheet
             $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('G'.$i, $purchasedItem->getProject()->getName());
             $worksheet->setCellValue('H'.$i, $assistance->getName());
-            $worksheet->setCellValue('I'.$i, $fullLocation[0]);
-            $worksheet->setCellValue('J'.$i, $fullLocation[1]);
-            $worksheet->setCellValue('K'.$i, $fullLocation[2]);
-            $worksheet->setCellValue('L'.$i, $fullLocation[3]);
-            $worksheet->setCellValue('M'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
-            $worksheet->setCellValue('N'.$i, $purchasedItem->getSmartcardCode() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('O'.$i, $purchasedItem->getProduct()->getName());
-            $worksheet->setCellValue('P'.$i, $purchasedItem->getProduct()->getUnit());
-            $worksheet->setCellValue('Q'.$i, $purchasedItem->getValue());
-            $worksheet->setCellValue('R'.$i, $purchasedItem->getCurrency());
-            $worksheet->setCellValue('S'.$i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('T'.$i, $purchasedItem->getVendor()->getId());
-            $worksheet->setCellValue('U'.$i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('V'.$i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('I'.$i, $assistance->getRound() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('J'.$i, $fullLocation[0]);
+            $worksheet->setCellValue('K'.$i, $fullLocation[1]);
+            $worksheet->setCellValue('L'.$i, $fullLocation[2]);
+            $worksheet->setCellValue('M'.$i, $fullLocation[3]);
+            $worksheet->setCellValue('N'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue('O'.$i, $purchasedItem->getSmartcardCode() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('Q'.$i, $purchasedItem->getProduct()->getUnit());
+            $worksheet->setCellValue('P'.$i, $purchasedItem->getProduct()->getName());
+            $worksheet->setCellValue('R'.$i, $purchasedItem->getValue());
+            $worksheet->setCellValue('S'.$i, $purchasedItem->getCurrency());
+            $worksheet->setCellValue('T'.$i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('U'.$i, $purchasedItem->getVendor()->getId());
+            $worksheet->setCellValue('W'.$i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('V'.$i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
         }
     }
 

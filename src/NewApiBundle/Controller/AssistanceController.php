@@ -242,6 +242,23 @@ class AssistanceController extends AbstractController
             $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
         }
 
+        if ($request->request->has('round')) {
+            $round = is_null($request->request->get('round')) ? null : intval($request->request->get('round'));
+            if ($round < 1 || $round > 99) {
+                throw new ConstraintViolationException(new ConstraintViolation(
+                    "{$request->request->get('round')} is not within 1-99 range!",
+                    null,
+                    [],
+                    [],
+                    'round',
+                    $request->request->get('round')
+                ));
+            }
+            $this->assistanceService->updateRound($assistanceRoot, $round);
+        }
+
+
+
         if ($request->request->has('note')) {
             if ($assistanceRoot->getCompleted()) {
                 throw new ConstraintViolationException(new ConstraintViolation(

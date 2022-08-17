@@ -149,6 +149,7 @@ class AssistanceFactory
         $assistanceRoot->setDateExpiration($inputType->getDateExpiration());
         $assistanceRoot->setSector($inputType->getSector());
         $assistanceRoot->setSubSector($inputType->getSubsector());
+        $assistanceRoot->setRound($inputType->getRound());
 
         $assistanceRoot->setHouseholdsTargeted($inputType->getHouseholdsTargeted());
         $assistanceRoot->setIndividualsTargeted($inputType->getIndividualsTargeted());
@@ -162,8 +163,8 @@ class AssistanceFactory
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
-        $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
-        
+        $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution(), $inputType->getRound()));
+
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
             if (!$scoringBlueprint) {
@@ -171,7 +172,6 @@ class AssistanceFactory
             }
             $assistanceRoot->setScoringBlueprint($scoringBlueprint);
         }
-
 
         $assistance = $this->hydrate($assistanceRoot);
 
@@ -234,15 +234,15 @@ class AssistanceFactory
         }
     }
 
-    private static function generateName(Location $location, ?DateTimeInterface $date = null): string
+    private static function generateName(Location $location, ?DateTimeInterface $date = null, ?int $round = null): string
     {
         $adm = $location->getName();
 
-        if ($date) {
-            return $adm.'-'.$date->format('d-m-Y');
-        } else {
-            return $adm.'-'.date('d-m-Y');
+        if ($round !== null) {
+            $adm .= " #$round";
         }
+
+        return $adm . " • " . ($date === null ? date('Y-m-d') : $date->format('Y-m-d'));
     }
 
     public function hydrate(Entity\Assistance $assistance): Domain\Assistance
