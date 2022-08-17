@@ -179,6 +179,14 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $note;
 
     /**
+     * @var int|null
+     * @Assert\Type("integer")
+     * @Assert\GreaterThan("0")
+     * @Assert\LessThan("100")
+     */
+    private $round;
+
+    /**
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
@@ -672,5 +680,23 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         $this->note = $note;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getRound()
+    {
+        return $this->round;
+    }
+
+    /**
+     * @param int|null $round
+     */
+    public function setRound(?int $round): void
+    {
+        $this->round = $round;
+    }
+
+
 
 }

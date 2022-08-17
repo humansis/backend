@@ -242,6 +242,13 @@ class Assistance implements ExportableInterface
     private $cashbackLimit;
 
     /**
+     * @var int|null
+     *
+     * @ORM\Column(name="round", type="smallint", nullable=true)
+     */
+    private $round;
+
+    /**
      * @var string[]
      *
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
@@ -268,9 +275,9 @@ class Assistance implements ExportableInterface
      */
     public function __construct()
     {
-        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reportingDistribution = new ArrayCollection();
+        $this->distributionBeneficiaries = new ArrayCollection();
+        $this->commodities = new ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
         $this->allowedProductCategoryTypes = [];
@@ -650,7 +657,7 @@ class Assistance implements ExportableInterface
     public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
-            $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->distributionBeneficiaries = new ArrayCollection();
         }
         $this->distributionBeneficiaries[] = $assistanceBeneficiary;
 
@@ -1094,6 +1101,22 @@ class Assistance implements ExportableInterface
     public function setSmartcardPurchases(Collection $smartcardPurchases): void
     {
         $this->smartcardPurchases = $smartcardPurchases;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRound(): ?int
+    {
+        return $this->round;
+    }
+
+    /**
+     * @param int|null $round
+     */
+    public function setRound(?int $round): void
+    {
+        $this->round = $round;
     }
 
     /**

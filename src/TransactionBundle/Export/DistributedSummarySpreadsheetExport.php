@@ -70,20 +70,21 @@ class DistributedSummarySpreadsheetExport
         $worksheet->getColumnDimension('E')->setWidth(13.565);
         $worksheet->getColumnDimension('F')->setWidth(13.565);
         $worksheet->getColumnDimension('G')->setWidth(12.565);
-        $worksheet->getColumnDimension('H')->setWidth(14.853);
+        $worksheet->getColumnDimension('H')->setWidth(12.565);
         $worksheet->getColumnDimension('I')->setWidth(14.853);
         $worksheet->getColumnDimension('J')->setWidth(14.853);
         $worksheet->getColumnDimension('K')->setWidth(14.853);
         $worksheet->getColumnDimension('L')->setWidth(14.853);
-        $worksheet->getColumnDimension('M')->setWidth(19.136);
-        $worksheet->getColumnDimension('N')->setWidth(14.423);
+        $worksheet->getColumnDimension('M')->setWidth(14.853);
+        $worksheet->getColumnDimension('N')->setWidth(19.136);
         $worksheet->getColumnDimension('O')->setWidth(14.423);
         $worksheet->getColumnDimension('P')->setWidth(14.423);
-        $worksheet->getColumnDimension('Q')->setWidth(08.837);
-        $worksheet->getColumnDimension('R')->setWidth(28.997);
+        $worksheet->getColumnDimension('Q')->setWidth(14.423);
+        $worksheet->getColumnDimension('R')->setWidth(08.837);
+        $worksheet->getColumnDimension('S')->setWidth(28.997);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
         $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:R1')->applyFromArray([
+        $worksheet->getStyle('A1:S1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
@@ -104,17 +105,18 @@ class DistributedSummarySpreadsheetExport
         $worksheet->setCellValue('E1', $this->translator->trans('ID Number'));
         $worksheet->setCellValue('F1', $this->translator->trans('Phone'));
         $worksheet->setCellValue('G1', $this->translator->trans('Distribution Name'));
-        $worksheet->setCellValue('H1', $this->translator->trans($country->getAdm1Name()));
-        $worksheet->setCellValue('I1', $this->translator->trans($country->getAdm2Name()));
-        $worksheet->setCellValue('J1', $this->translator->trans($country->getAdm3Name()));
-        $worksheet->setCellValue('K1', $this->translator->trans($country->getAdm4Name()));
-        $worksheet->setCellValue('L1', $this->translator->trans('Date of Distribution'));
-        $worksheet->setCellValue('M1', $this->translator->trans('Commodity Type'));
-        $worksheet->setCellValue('N1', $this->translator->trans('Carrier No.'));
-        $worksheet->setCellValue('O1', $this->translator->trans('Quantity'));
-        $worksheet->setCellValue('P1', $this->translator->trans('Amount Distributed'));
-        $worksheet->setCellValue('Q1', $this->translator->trans('Unit'));
-        $worksheet->setCellValue('R1', $this->translator->trans('Field Officer Email'));
+        $worksheet->setCellValue('H1', $this->translator->trans('Round'));
+        $worksheet->setCellValue('I1', $this->translator->trans($country->getAdm1Name()));
+        $worksheet->setCellValue('J1', $this->translator->trans($country->getAdm2Name()));
+        $worksheet->setCellValue('K1', $this->translator->trans($country->getAdm3Name()));
+        $worksheet->setCellValue('L1', $this->translator->trans($country->getAdm4Name()));
+        $worksheet->setCellValue('M1', $this->translator->trans('Date of Distribution'));
+        $worksheet->setCellValue('N1', $this->translator->trans('Commodity Type'));
+        $worksheet->setCellValue('O1', $this->translator->trans('Carrier No.'));
+        $worksheet->setCellValue('P1', $this->translator->trans('Quantity'));
+        $worksheet->setCellValue('Q1', $this->translator->trans('Amount Distributed'));
+        $worksheet->setCellValue('R1', $this->translator->trans('Unit'));
+        $worksheet->setCellValue('S1', $this->translator->trans('Field Officer Email'));
 
         $i = 1;
         foreach ($this->repository->findByParams($country->getIso3(), $filter) as $distributedItem) {
@@ -133,17 +135,18 @@ class DistributedSummarySpreadsheetExport
             $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('G'.$i, $assistance->getName());
-            $worksheet->setCellValue('H'.$i, $fullLocation[0]);
-            $worksheet->setCellValue('I'.$i, $fullLocation[1]);
-            $worksheet->setCellValue('J'.$i, $fullLocation[2]);
-            $worksheet->setCellValue('K'.$i, $fullLocation[3]);
-            $worksheet->setCellValue('L'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
-            $worksheet->setCellValue('M'.$i, $distributedItem->getModalityType());
-            $worksheet->setCellValue('N'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('O'.$i, $commodity->getValue());
-            $worksheet->setCellValue('P'.$i, $distributedItem->getAmount());
-            $worksheet->setCellValue('Q'.$i, $commodity->getUnit());
-            $worksheet->setCellValue('R'.$i, $fieldOfficerEmail ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('H'.$i, $assistance->getRound() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('I'.$i, $fullLocation[0]);
+            $worksheet->setCellValue('J'.$i, $fullLocation[1]);
+            $worksheet->setCellValue('K'.$i, $fullLocation[2]);
+            $worksheet->setCellValue('L'.$i, $fullLocation[3]);
+            $worksheet->setCellValue('M'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue('N'.$i, $distributedItem->getModalityType());
+            $worksheet->setCellValue('O'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('P'.$i, $commodity->getValue());
+            $worksheet->setCellValue('Q'.$i, $distributedItem->getAmount());
+            $worksheet->setCellValue('R'.$i, $commodity->getUnit());
+            $worksheet->setCellValue('S'.$i, $fieldOfficerEmail ?? $this->translator->trans('N/A'));
         }
     }
 

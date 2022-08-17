@@ -129,6 +129,7 @@ class AssistanceMapper
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
             'note' => $assistance->getNote(),
+            'round' => $assistance->getRound()
         ];
 
         return $assistanceArray;

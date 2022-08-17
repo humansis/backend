@@ -263,6 +263,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
+        $worksheet->getCell('J7')->setValue($assistance->getRound() === null ? $this->translator->trans('N/A') : $assistance->getRound());
         $worksheet->mergeCells('J7:J8');
 
         $worksheet->getCell('C10')->setValue("Distributed by:");

@@ -140,4 +140,9 @@ class AssistanceMapper implements MapperInterface
     {
         return $this->object->getNote();
     }
+
+    public function getRound(): ?int
+    {
+        return $this->object->getRound();
+    }
 }
