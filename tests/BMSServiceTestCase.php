@@ -3,20 +3,20 @@
 
 namespace Tests;
 
-use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\CountrySpecific;
-use NewApiBundle\Entity\CountrySpecificAnswer;
-use NewApiBundle\Entity\Household;
-use NewApiBundle\Entity\NationalId;
-use NewApiBundle\Entity\Phone;
-use NewApiBundle\Entity\Profile;
-use NewApiBundle\Entity\VulnerabilityCriterion;
-use NewApiBundle\Utils\HouseholdService;
-use NewApiBundle\Utils\CommodityService;
-use NewApiBundle\Utils\CriteriaAssistanceService;
+use Entity\Beneficiary;
+use Entity\CountrySpecific;
+use Entity\CountrySpecificAnswer;
+use Entity\Household;
+use Entity\NationalId;
+use Entity\Phone;
+use Entity\Profile;
+use Entity\VulnerabilityCriterion;
+use Utils\HouseholdService;
+use Utils\CommodityService;
+use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
-use NewApiBundle\Entity\Project;
+use Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
@@ -25,8 +25,8 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use NewApiBundle\Entity\User;
-use NewApiBundle\Security\Authentication\Token\WsseUserToken;
+use Entity\User;
+use Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase
 {
@@ -67,7 +67,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
-        "livelihood" => \NewApiBundle\Enum\Livelihood::FARMING_LIVESTOCK,
+        "livelihood" => \Enum\Livelihood::FARMING_LIVESTOCK,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
@@ -484,7 +484,7 @@ class BMSServiceTestCase extends KernelTestCase
      */
     public static function assertArrayFragment($expected, $actual, $message = '')
     {
-        $constraint = new \NewApiBundle\Utils\Test\Contraint\MatchArrayFragment($expected);
+        $constraint = new \Utils\Test\Contraint\MatchArrayFragment($expected);
 
         static::assertThat($actual, $constraint, $message);
     }

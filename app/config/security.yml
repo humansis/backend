@@ -5,15 +5,15 @@ security:
     providers:
         our_db_provider:
             entity:
-                class: NewApiBundle:User
+                class: Entity\User
                 property: id
         basic-auth-provider:
             entity:
-                class: NewApiBundle:User
+                class: Entity\User
                 property: username
         jwt_provider:
             entity:
-                class: NewApiBundle\Entity\User
+                class: Entity\User
                 property: username
     firewalls:
         dev:

@@ -19,8 +19,8 @@ control_path:
         _controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::templateAction
         template:    default/index.html.twig
 
-rest-new:
+rest:
     type: annotation
     prefix: /api/{firewall}
-    defaults: { _format: 'json', disable-common-request-listener: true }
-    resource: '@NewApiBundle/Controller'
+    defaults: { _format: 'json'}
+    resource: '../../src/Controller/'

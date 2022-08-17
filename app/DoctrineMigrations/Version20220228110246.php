@@ -4,9 +4,9 @@ namespace Application\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use NewApiBundle\DBAL\NationalIdTypeEnum;
-use NewApiBundle\Enum\EnumValueNoFoundException;
-use NewApiBundle\Enum\NationalIdType;
+use DBAL\NationalIdTypeEnum;
+use Enum\EnumValueNoFoundException;
+use Enum\NationalIdType;
 
 /**
  * Auto-generated Migration: Please modify to your needs!

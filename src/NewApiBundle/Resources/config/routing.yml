@@ -1,4 +1,0 @@
-newApi:
-    type:     annotation
-    defaults: { _format: 'json', disable-common-request-listener: true }
-    resource: '@NewApiBundle/Controller'

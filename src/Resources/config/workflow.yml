@@ -1,0 +1,317 @@
+framework:
+  workflows:
+    reliefPackage:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - Entity\Assistance\ReliefPackage
+      initial_marking: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+      places:
+        - !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+        - !php/const Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+        - !php/const Enum\ReliefPackageState::DISTRIBUTED
+        - !php/const Enum\ReliefPackageState::EXPIRED
+        - !php/const Enum\ReliefPackageState::CANCELED
+      transitions:
+        !php/const Workflow\ReliefPackageTransitions::START_PARTIAL_DISTRIBUTION:
+          from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+        !php/const Workflow\ReliefPackageTransitions::FINISH_PARTIAL_DISTRIBUTION:
+          from: !php/const Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
+          to: !php/const Enum\ReliefPackageState::DISTRIBUTED
+        !php/const Workflow\ReliefPackageTransitions::DISTRIBUTE:
+          from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const Enum\ReliefPackageState::DISTRIBUTED
+        !php/const Workflow\ReliefPackageTransitions::EXPIRE:
+          from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const Enum\ReliefPackageState::EXPIRED
+        !php/const Workflow\ReliefPackageTransitions::CANCEL:
+          from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+          to: !php/const Enum\ReliefPackageState::CANCELED
+    synchronizationBatch:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - Entity\SynchronizationBatch
+      initial_marking: !php/const Enum\SynchronizationBatchState::UPLOADED
+      places:
+        - !php/const Enum\SynchronizationBatchState::UPLOADED
+        - !php/const Enum\SynchronizationBatchState::CORRECT
+        - !php/const Enum\SynchronizationBatchState::INCORRECT
+        - !php/const Enum\SynchronizationBatchState::ARCHIVED
+      transitions:
+        !php/const Workflow\SynchronizationBatchTransitions::COMPLETE_VALIDATION:
+          from:
+            - !php/const Enum\SynchronizationBatchState::UPLOADED
+          to:
+            - !php/const Enum\SynchronizationBatchState::CORRECT
+        !php/const Workflow\SynchronizationBatchTransitions::FAIL_VALIDATION:
+          from:
+            - !php/const Enum\SynchronizationBatchState::UPLOADED
+          to:
+            - !php/const Enum\SynchronizationBatchState::INCORRECT
+        !php/const Workflow\SynchronizationBatchTransitions::ARCHIVE:
+          from:
+            - !php/const Enum\SynchronizationBatchState::UPLOADED
+            - !php/const Enum\SynchronizationBatchState::CORRECT
+            - !php/const Enum\SynchronizationBatchState::INCORRECT
+          to: !php/const Enum\SynchronizationBatchState::ARCHIVED
+
+    import:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - Entity\Import
+      initial_marking: !php/const Enum\ImportState::NEW
+      places:
+        - !php/const Enum\ImportState::NEW
+        - !php/const Enum\ImportState::UPLOADING
+        - !php/const Enum\ImportState::UPLOAD_FAILED
+        - !php/const Enum\ImportState::INTEGRITY_CHECKING
+        - !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
+        - !php/const Enum\ImportState::INTEGRITY_CHECK_FAILED
+        - !php/const Enum\ImportState::IDENTITY_CHECKING
+        - !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+        - !php/const Enum\ImportState::IDENTITY_CHECK_FAILED
+        - !php/const Enum\ImportState::SIMILARITY_CHECKING
+        - !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+        - !php/const Enum\ImportState::SIMILARITY_CHECK_FAILED
+        - !php/const Enum\ImportState::IMPORTING
+        - !php/const Enum\ImportState::FINISHED
+        - !php/const Enum\ImportState::CANCELED
+      transitions:
+
+        # Upload
+        !php/const Workflow\ImportTransitions::UPLOAD:
+          from:
+            - !php/const Enum\ImportState::NEW
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::UPLOADING
+        !php/const Workflow\ImportTransitions::FAIL_UPLOAD:
+          from: !php/const Enum\ImportState::UPLOADING
+          to: !php/const Enum\ImportState::UPLOAD_FAILED
+
+        # INTEGRITY
+        !php/const Workflow\ImportTransitions::CHECK_INTEGRITY:
+          from:
+            - !php/const Enum\ImportState::UPLOADING
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::INTEGRITY_CHECKING
+        !php/const Workflow\ImportTransitions::COMPLETE_INTEGRITY:
+          from: !php/const Enum\ImportState::INTEGRITY_CHECKING
+          to: !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
+        !php/const Workflow\ImportTransitions::FAIL_INTEGRITY:
+          from: !php/const Enum\ImportState::INTEGRITY_CHECKING
+          to: !php/const Enum\ImportState::INTEGRITY_CHECK_FAILED
+        !php/const Workflow\ImportTransitions::REDO_INTEGRITY:
+          from: !php/const Enum\ImportState::INTEGRITY_CHECKING
+          to: !php/const Enum\ImportState::INTEGRITY_CHECKING
+
+        # IDENTITY
+        !php/const Workflow\ImportTransitions::CHECK_IDENTITY:
+          from:
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::IDENTITY_CHECKING
+            - !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+          to: !php/const Enum\ImportState::IDENTITY_CHECKING
+        !php/const Workflow\ImportTransitions::COMPLETE_IDENTITY:
+          from: !php/const Enum\ImportState::IDENTITY_CHECKING
+          to: !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+        !php/const Workflow\ImportTransitions::FAIL_IDENTITY:
+          from: !php/const Enum\ImportState::IDENTITY_CHECKING
+          to: !php/const Enum\ImportState::IDENTITY_CHECK_FAILED
+        !php/const Workflow\ImportTransitions::REDO_IDENTITY:
+          from: !php/const Enum\ImportState::IDENTITY_CHECKING
+          to: !php/const Enum\ImportState::IDENTITY_CHECKING
+        !php/const Workflow\ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES:
+          from: !php/const Enum\ImportState::IDENTITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+
+        # SIMILARITY
+        !php/const Workflow\ImportTransitions::CHECK_SIMILARITY:
+          from: !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+          to: !php/const Enum\ImportState::SIMILARITY_CHECKING
+        !php/const Workflow\ImportTransitions::COMPLETE_SIMILARITY:
+          from: !php/const Enum\ImportState::SIMILARITY_CHECKING
+          to: !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+        !php/const Workflow\ImportTransitions::FAIL_SIMILARITY:
+          from: !php/const Enum\ImportState::SIMILARITY_CHECKING
+          to: !php/const Enum\ImportState::SIMILARITY_CHECK_FAILED
+        !php/const Workflow\ImportTransitions::REDO_SIMILARITY:
+          from: !php/const Enum\ImportState::SIMILARITY_CHECKING
+          to: !php/const Enum\ImportState::SIMILARITY_CHECKING
+        !php/const Workflow\ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES:
+          from: !php/const Enum\ImportState::SIMILARITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+
+        !php/const Workflow\ImportTransitions::RESET:
+          from:
+            - !php/const Enum\ImportState::IDENTITY_CHECKING
+            - !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::SIMILARITY_CHECKING
+            - !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::SIMILARITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::IDENTITY_CHECKING
+        !php/const Workflow\ImportTransitions::IMPORT:
+          from:
+            - !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+          to: !php/const Enum\ImportState::IMPORTING
+        !php/const Workflow\ImportTransitions::FINISH:
+          from: !php/const Enum\ImportState::IMPORTING
+          to: !php/const Enum\ImportState::FINISHED
+        !php/const Workflow\ImportTransitions::CANCEL:
+          from:
+            - !php/const Enum\ImportState::NEW
+            - !php/const Enum\ImportState::UPLOAD_FAILED
+            - !php/const Enum\ImportState::INTEGRITY_CHECKING
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::INTEGRITY_CHECK_FAILED
+            - !php/const Enum\ImportState::IDENTITY_CHECKING
+            - !php/const Enum\ImportState::IDENTITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::IDENTITY_CHECK_FAILED
+            - !php/const Enum\ImportState::SIMILARITY_CHECKING
+            - !php/const Enum\ImportState::SIMILARITY_CHECK_CORRECT
+            - !php/const Enum\ImportState::SIMILARITY_CHECK_FAILED
+          to: !php/const Enum\ImportState::CANCELED
+
+    import_queue:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - Entity\ImportQueue
+      initial_marking: !php/const Enum\ImportQueueState::NEW
+      places:
+        - !php/const Enum\ImportQueueState::NEW
+        - !php/const Enum\ImportQueueState::VALID
+        - !php/const Enum\ImportQueueState::INVALID
+        - !php/const Enum\ImportQueueState::INVALID_EXPORTED
+        - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+        - !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+        - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+        - !php/const Enum\ImportQueueState::TO_CREATE
+        - !php/const Enum\ImportQueueState::TO_UPDATE
+        - !php/const Enum\ImportQueueState::TO_LINK
+        - !php/const Enum\ImportQueueState::TO_IGNORE
+        - !php/const Enum\ImportQueueState::CREATED
+        - !php/const Enum\ImportQueueState::UPDATED
+        - !php/const Enum\ImportQueueState::LINKED
+        - !php/const Enum\ImportQueueState::IGNORED
+        - !php/const Enum\ImportQueueState::ERROR
+      transitions:
+
+        # integrity
+        !php/const Workflow\ImportQueueTransitions::VALIDATE:
+          from: !php/const Enum\ImportQueueState::NEW
+          to: !php/const Enum\ImportQueueState::VALID
+        !php/const Workflow\ImportQueueTransitions::INVALIDATE:
+          from: !php/const Enum\ImportQueueState::NEW
+          to: !php/const Enum\ImportQueueState::INVALID
+        !php/const Workflow\ImportQueueTransitions::INVALIDATE_EXPORT:
+          from: !php/const Enum\ImportQueueState::INVALID
+          to: !php/const Enum\ImportQueueState::INVALID_EXPORTED
+
+        # identity
+        !php/const Workflow\ImportQueueTransitions::IDENTITY_CANDIDATE:
+          from: !php/const Enum\ImportQueueState::VALID
+          to: !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+        !php/const Workflow\ImportQueueTransitions::UNIQUE_CANDIDATE:
+          from: !php/const Enum\ImportQueueState::VALID
+          to: !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+
+        # similarity
+        !php/const Workflow\ImportQueueTransitions::SIMILARITY_CANDIDATE:
+          from: !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+          to: !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+
+        # duplicity resolving
+        !php/const Workflow\ImportQueueTransitions::TO_CREATE:
+          from:
+            - !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_LINK
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::TO_CREATE
+        !php/const Workflow\ImportQueueTransitions::TO_UPDATE:
+          from:
+            - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_LINK
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::TO_UPDATE
+        # to_ignore is reserved for duplicities between queue and queue, and it means it shouldn't be imported
+        !php/const Workflow\ImportQueueTransitions::TO_IGNORE:
+          from:
+            - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_LINK
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::TO_IGNORE
+        !php/const Workflow\ImportQueueTransitions::TO_LINK:
+          from:
+            - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_LINK
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::TO_LINK
+
+        # reset
+        !php/const Workflow\ImportQueueTransitions::RESET:
+          from:
+            - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+            - !php/const Enum\ImportQueueState::TO_LINK
+          to:
+            - !php/const Enum\ImportQueueState::VALID
+
+        # finish
+        !php/const Workflow\ImportQueueTransitions::CREATE:
+          from: !php/const Enum\ImportQueueState::TO_CREATE
+          to: !php/const Enum\ImportQueueState::CREATED
+        !php/const Workflow\ImportQueueTransitions::UPDATE:
+          from: !php/const Enum\ImportQueueState::TO_UPDATE
+          to: !php/const Enum\ImportQueueState::UPDATED
+        !php/const Workflow\ImportQueueTransitions::LINK:
+          from:
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+            - !php/const Enum\ImportQueueState::TO_LINK
+          to: !php/const Enum\ImportQueueState::LINKED
+        !php/const Workflow\ImportQueueTransitions::IGNORE:
+          from:
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::IGNORED
+
+        # errors, from ALL states where is anything happening
+        !php/const Workflow\ImportQueueTransitions::FAIL_UNEXPECTED:
+          from:
+            - !php/const Enum\ImportQueueState::NEW
+            - !php/const Enum\ImportQueueState::VALID
+            - !php/const Enum\ImportQueueState::INVALID
+            - !php/const Enum\ImportQueueState::IDENTITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::UNIQUE_CANDIDATE
+            - !php/const Enum\ImportQueueState::SIMILARITY_CANDIDATE
+            - !php/const Enum\ImportQueueState::TO_CREATE
+            - !php/const Enum\ImportQueueState::TO_UPDATE
+            - !php/const Enum\ImportQueueState::TO_LINK
+            - !php/const Enum\ImportQueueState::TO_IGNORE
+          to: !php/const Enum\ImportQueueState::ERROR
