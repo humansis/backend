@@ -3,6 +3,9 @@ namespace MapperDeprecated;
 
 use Entity\Location;
 
+/**
+ * @deprecated
+ */
 class LocationMapper
 {
     public function toFlatArray(?Location $location): ?array

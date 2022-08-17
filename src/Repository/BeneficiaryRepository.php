@@ -360,30 +360,6 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    /**
-     * Get the head of household.
-     *
-     * @param $householdId
-     *
-     * @return mixed
-     */
-    public function getHeadOfHouseholdId($householdId)
-    {
-        $qb = $this->createQueryBuilder('b');
-        $q = $qb->leftJoin('b.household', 'hh')
-            ->andWhere('hh.id = :id')
-            ->andWhere('b.status = 1')
-            ->setParameter('id', $householdId);
-
-        try {
-            return $q->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-            return null;
-        } catch (NonUniqueResultException $e) {
-            return null;
-        }
-    }
-
     public function countByResidencyStatus(Assistance $assistance, string $residencyStatus): int
     {
         if (AssistanceTargetType::HOUSEHOLD === $assistance->getTargetType()) {

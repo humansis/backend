@@ -48,19 +48,6 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         ], ['id' => 'asc']);
     }
 
-    public function findAssignable(Assistance $assistance)
-    {
-        $qb = $this->createQueryBuilder("db");
-        $q = $qb->where("db.assistance = :dd")
-            ->setParameter("dd", $assistance)
-            ->leftJoin("db.booklets", "b")
-            ->andWhere('b IS NULL')
-            ->orWhere("b.status = :s")
-            ->setParameter(':s', Booklet::UNASSIGNED);
-
-        return $q->getQuery()->getResult();
-    }
-
     /**
      * @param Assistance $assistance
      *
