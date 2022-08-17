@@ -67,41 +67,6 @@ class AssistanceMapper
         }
     }
 
-    public function toFullArray(?Assistance $assistance): ?array
-    {
-        if (!$assistance) {
-            return null;
-        }
-        $assistanceArray = [
-            'id' => $assistance->getId(),
-            'name' => $assistance->getName(),
-            'updated_on' => $assistance->getUpdatedOnDateTime()->format('d-m-Y H:i'),
-            'date_distribution' => $assistance->getDateDistribution(),
-            'date_expiration' => $assistance->getDateExpiration(),
-            'location' => $assistance->getLocation(),
-            'project' => $assistance->getProject(),
-            'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
-            'archived' => $assistance->getArchived(),
-            'validated' => $assistance->isValidated(),
-            'reporting_distribution' => '',
-            'type' => self::TARGET_TYPE_TO_TYPE_MAPPING[$assistance->getTargetType()] ?? null,
-            'assistance_type' => $assistance->getAssistanceType(),
-            'target_type' => $assistance->getTargetType(),
-            'commodities' => $assistance->getCommodities(),
-            'completed' => $assistance->getCompleted(),
-            'beneficiaries_count' => $this->distributionBNFRepo->countActive($assistance),
-            'sector' => $assistance->getSector(),
-            'subsector' => $assistance->getSubSector(),
-            'description' => $assistance->getDescription(),
-            'households_targeted' => $assistance->getHouseholdsTargeted(),
-            'individuals_targeted' => $assistance->getIndividualsTargeted(),
-            'note' => $assistance->getNote(),
-            'round' => $assistance->getRound()
-        ];
-
-        return $assistanceArray;
-    }
-
     /**
      * @param Assistance|null $assistance
      *
@@ -167,19 +132,5 @@ class AssistanceMapper
         foreach ($assistances as $assistance) {
             yield $this->toOldMobileArray($assistance);
         }
-    }
-
-    /**
-     * @param \Entity\Assistance\SelectionCriteria[] $criteria
-     */
-    private function transformSelectionCriteria(iterable $criteria)
-    {
-        $result = [];
-
-        foreach ($criteria as $criterion) {
-            $result[][] = $criterion;
-        }
-
-        return $result;
     }
 }
