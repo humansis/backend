@@ -394,7 +394,6 @@ class AssistanceSpreadsheetExport
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
             $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle, $this->shouldDistributionContainDate($assistance));
         }
-        //die();
     }
 
     private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle, bool $shouldContainDate) {
