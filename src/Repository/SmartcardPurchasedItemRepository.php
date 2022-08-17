@@ -4,14 +4,7 @@ declare(strict_types=1);
 namespace Repository;
 
 use Entity\Beneficiary;
-use Entity\NationalId;
 use Entity\Location;
-use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\NationalId;
-use NewApiBundle\Entity\Location;
-use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\SmartcardPurchasedItem;

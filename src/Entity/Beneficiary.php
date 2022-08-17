@@ -8,14 +8,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
-use Entity\ImportBeneficiary;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
 use Enum\PersonGender;
 use Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
-use Entity\Smartcard;
 
 /**
  * Beneficiary

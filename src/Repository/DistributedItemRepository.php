@@ -5,16 +5,7 @@ namespace Repository;
 
 use Entity\Beneficiary;
 use Entity\Household;
-use Entity\NationalId;
 use Entity\Location;
-use NewApiBundle\Entity\Beneficiary;
-use NewApiBundle\Entity\Household;
-use NewApiBundle\Entity\NationalId;
-use NewApiBundle\Entity\Location;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use CommonBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\DistributedItem;

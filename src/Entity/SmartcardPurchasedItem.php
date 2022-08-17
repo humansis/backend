@@ -3,14 +3,7 @@ declare(strict_types=1);
 
 namespace Entity;
 
-use Entity\Beneficiary;
-use Entity\Household;
-use Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use Entity\Project;
-use Entity\Assistance;
-use Entity\Product;
-use Entity\Vendor;
 
 /**
  * Read only entity.

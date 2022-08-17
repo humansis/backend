@@ -2,8 +2,8 @@
 
 namespace Component\SelectionCriteria\Loader;
 
-use http\Exception\InvalidArgumentException;
-use NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
+use Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
+use InvalidArgumentException;
 
 class CriterionConfiguration
 {
