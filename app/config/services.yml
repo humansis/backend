@@ -1,5 +1,5 @@
 imports:
-    - { resource: ../../src/NewApiBundle/Resources/config/services.yml }
+    - { resource: ../../src/Resources/config/services.yml }
 
 services:
     monolog.gelf_handler:

@@ -1,0 +1,48 @@
+<?php
+
+
+namespace Utils;
+
+use Entity\Modality;
+use Entity\ModalityType;
+use Doctrine\ORM\EntityManagerInterface;
+
+/**
+ * Class ModalityService
+ * @package Utils
+ */
+class ModalityService
+{
+
+    /** @var EntityManagerInterface $em */
+    private $em;
+
+
+    /**
+     * ModalityService constructor.
+     * @param EntityManagerInterface $manager
+     */
+    public function __construct(EntityManagerInterface $manager)
+    {
+        $this->em = $manager;
+    }
+
+    /**
+     * @return object[]
+     */
+    public function getAll()
+    {
+        return $this->em->getRepository(Modality::class)->findAll();
+    }
+
+    /**
+     * @param Modality $modality
+     * @return array
+     */
+    public function getAllModalityTypes(Modality $modality)
+    {
+        return $modality->getModalityTypes()->filter(function (ModalityType $mt) {
+            return !$mt->isInternal();
+        })->getValues();
+    }
+}
