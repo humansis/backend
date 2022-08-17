@@ -7,7 +7,6 @@ use Entity\VulnerabilityCriterion;
 use Repository\CountrySpecificRepository;
 use Repository\VulnerabilityCriterionRepository;
 use Repository\LocationRepository;
-use Entity\Assistance;
 use Doctrine\ORM\EntityNotFoundException;
 use Component\Assistance\Domain\SelectionCriteria;
 use Component\Assistance\DTO\CriteriaGroup;

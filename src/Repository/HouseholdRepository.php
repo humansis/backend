@@ -4,16 +4,6 @@ namespace Repository;
 
 use Entity\Household;
 use Entity\HouseholdLocation;
-use Repository\LocationRepository;
-use NewApiBundle\Entity\Household;
-use NewApiBundle\Entity\HouseholdLocation;
-use NewApiBundle\Repository\LocationRepository;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
-use CommonBundle\Entity\Adm3;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\HouseholdLocation;
-use CommonBundle\Repository\LocationRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;

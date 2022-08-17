@@ -9,9 +9,6 @@ use Entity\ImportQueue;
 use Enum\ImportQueueState;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use NewApiBundle\Entity\Import;
-use NewApiBundle\Entity\ImportQueue;
-use NewApiBundle\Enum\ImportQueueState;
 
 class ImportQueueRepository extends EntityRepository
 {

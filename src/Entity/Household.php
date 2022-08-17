@@ -11,11 +11,11 @@ use DBAL\HouseholdAssetsEnum;
 use DBAL\HouseholdShelterStatusEnum;
 use DBAL\HouseholdSupportReceivedTypeEnum;
 use Entity\Helper\EnumTrait;
-use Entity\ImportHouseholdDuplicity;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
 use DBAL\LivelihoodEnum;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Household
@@ -80,7 +80,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var Collection|Beneficiary[]
      *
-     * @ORM\OneToMany(targetEntity="BeneficiaryBundle\Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
     private $beneficiaries;
