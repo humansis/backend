@@ -44,6 +44,7 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use NewApiBundle\Component\Assistance\Domain\Assistance as DomainAssistance;
+use UserBundle\Entity\User;
 
 class AssistanceController extends AbstractController
 {
@@ -196,8 +197,10 @@ class AssistanceController extends AbstractController
     {
         $assistance = $factory->hydrate($assistanceRoot);
         if ($request->request->has('validated')) {
+            /** @var User $user */
+            $user = $this->getUser();
             if ($request->request->get('validated', true)) {
-                $assistance->validate();
+                $assistance->validate($user);
             } else {
                 $assistance->unvalidate();
             }
@@ -304,7 +307,7 @@ class AssistanceController extends AbstractController
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
         $type = $request->query->get('type', 'csv');
-        if (!$assistance->getValidated()) {
+        if (!$assistance->isValidated()) {
             throw new BadRequestHttpException('Cannot download bank report for assistance which is not validated.');
         }
         if ($assistance->getAssistanceType() !== AssistanceType::DISTRIBUTION) {

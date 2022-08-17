@@ -132,15 +132,18 @@ class AssistanceSpreadsheetExport
         $worksheet->getRowDimension(7)->setRowHeight(15.12);
         $worksheet->getRowDimension(8)->setRowHeight(15.12);
         $worksheet->getRowDimension(9)->setRowHeight(09.36);
-        $worksheet->getRowDimension(10)->setRowHeight(13.00);
-        $worksheet->getRowDimension(11)->setRowHeight(13.00);
-        $worksheet->getRowDimension(12)->setRowHeight(13.00);
+        $worksheet->getRowDimension(10)->setRowHeight(15.12);
+        $worksheet->getRowDimension(11)->setRowHeight(15.12);
+        $worksheet->getRowDimension(12)->setRowHeight(09.36);
         $worksheet->getRowDimension(13)->setRowHeight(13.00);
-        $worksheet->getRowDimension(14)->setRowHeight(09.36);
-        $worksheet->getRowDimension(15)->setRowHeight(12.24);
-        $worksheet->getRowDimension(16)->setRowHeight(18.00);
-        $worksheet->getRowDimension(17)->setRowHeight(18.00);
+        $worksheet->getRowDimension(14)->setRowHeight(13.00);
+        $worksheet->getRowDimension(15)->setRowHeight(13.00);
+        $worksheet->getRowDimension(16)->setRowHeight(13.00);
+        $worksheet->getRowDimension(17)->setRowHeight(09.36);
         $worksheet->getRowDimension(18)->setRowHeight(12.24);
+        $worksheet->getRowDimension(19)->setRowHeight(18.00);
+        $worksheet->getRowDimension(20)->setRowHeight(18.00);
+        $worksheet->getRowDimension(21)->setRowHeight(12.24);
 
         $worksheet->getCell('B2')->setValue('DISTRIBUTION LIST');
         $worksheet->getCell('B2')->getStyle()->applyFromArray($titleStyle);
@@ -175,10 +178,10 @@ class AssistanceSpreadsheetExport
             $drawing->setWorksheet($worksheet);
         }
 
-        $worksheet->getStyle('B3:K14')->getBorders()
+        $worksheet->getStyle('B3:K17')->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B3:K14')->getAlignment()
+        $worksheet->getStyle('B3:K17')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_RIGHT)
             ->setVertical(Alignment::VERTICAL_CENTER);
 
@@ -241,7 +244,7 @@ class AssistanceSpreadsheetExport
 
             $worksheet->getCell('F7')->setValue($assistance->getCommodities()->get(1)->getModalityType()->getName());
             $worksheet->getCell('F7')->getStyle()->applyFromArray($userInputStyle);
-            $worksheet->getStyle('F7:F8')->applyFromArray($userInputStyle);
+            $worksheet->mergeCells('F7:F8');
         }
 
         if ($assistance->getCommodities()->get(2)) {
@@ -265,42 +268,55 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
         $worksheet->getCell('J7')->setValue($assistance->getRound() === null ? $this->translator->trans('N/A') : $assistance->getRound());
         $worksheet->mergeCells('J7:J8');
+        
+        $worksheet->getStyle('F7')->applyFromArray($userInputStyle);
+        $worksheet->mergeCells('F7:F8');
 
-        $worksheet->getCell('C10')->setValue("Distributed by:");
-        $worksheet->getCell('C11')->setValue("(name, position, signature)");
-        $worksheet->getCell('C12')->setValue($this->translator->trans('Distributed by'));
-        $worksheet->getCell('C13')->setValue($this->translator->trans('(name, position, signature)'));
+        $worksheet->getCell('C10')->setValue('Validated by:');
         $worksheet->getCell('C10')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('C11')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('C11')->getStyle()->getFont()->setSize(8);
-        $worksheet->getCell('C12')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('C13')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('C13')->getStyle()->getFont()->setSize(8);
 
-        $worksheet->mergeCells('D10:F13');
-        $worksheet->getStyle('D10')->applyFromArray($userInputStyle);
+        $worksheet->getCell('C11')->setValue($this->translator->trans('Validated by').':');
+        $worksheet->getCell('C11')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('G10')->setValue("Approved by:");
-        $worksheet->getCell('G11')->setValue("(name, position, signature)");
-        $worksheet->getCell('G12')->setValue($this->translator->trans('Approved by'));
-        $worksheet->getCell('G13')->setValue($this->translator->trans('(name, position, signature)'));
-        $worksheet->getCell('G10')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('G11')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('G11')->getStyle()->getFont()->setSize(8);
-        $worksheet->getCell('G12')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('G13')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('G13')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
+        $worksheet->getCell('D10')->setValue($assistance->isValidated() ? $assistance->getValidatedBy()->getUsernameCanonical() : "");
+        $worksheet->mergeCells('D10:F11');
 
-        $worksheet->getStyle('H10')->applyFromArray($userInputStyle);
-        $worksheet->mergeCells('H10:J13');
+        $worksheet->getCell('C13')->setValue("Distributed by:");
+        $worksheet->getCell('C14')->setValue("(name, position, signature)");
+        $worksheet->getCell('C15')->setValue($this->translator->trans('Distributed by'));
+        $worksheet->getCell('C16')->setValue($this->translator->trans('(name, position, signature)'));
+        $worksheet->getCell('C13')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('C14')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('C14')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('C15')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('C16')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('C16')->getStyle()->getFont()->setSize(8);
 
-        $worksheet->getCell('B16')->setValue('The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.');
-        $worksheet->mergeCells('B16:K16');
+        $worksheet->mergeCells('D13:F16');
+        $worksheet->getStyle('D13')->applyFromArray($userInputStyle);
 
-        $worksheet->getCell('B17')->setValue($this->translator->trans('The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.'));
-        $worksheet->getStyle('B17')->getFont()->setItalic(true);
-        $worksheet->getStyle('B16:K17')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-        $worksheet->mergeCells('B17:K17');
+        $worksheet->getCell('G13')->setValue("Approved by:");
+        $worksheet->getCell('G14')->setValue("(name, position, signature)");
+        $worksheet->getCell('G15')->setValue($this->translator->trans('Approved by'));
+        $worksheet->getCell('G16')->setValue($this->translator->trans('(name, position, signature)'));
+        $worksheet->getCell('G13')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('G14')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('G14')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('G15')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('G16')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('G16')->getStyle()->getFont()->setSize(8);
+
+        $worksheet->getStyle('H13')->applyFromArray($userInputStyle);
+        $worksheet->mergeCells('H13:J16');
+
+        $worksheet->getCell('B19')->setValue('The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.');
+        $worksheet->mergeCells('B19:K19');
+
+        $worksheet->getCell('B20')->setValue($this->translator->trans('The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.'));
+        $worksheet->getStyle('B20')->getFont()->setItalic(true);
+        $worksheet->getStyle('B19:K20')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $worksheet->mergeCells('B20:K20');
     }
 
     private function buildBody(Worksheet $worksheet, Assistance $assistance)
@@ -316,48 +332,48 @@ class AssistanceSpreadsheetExport
             ],
         ];
 
-        $worksheet->getCell('B19')->setValue('No.');
-        $worksheet->getCell('C19')->setValue('First Name');
-        $worksheet->getCell('D19')->setValue('Second Name');
-        $worksheet->getCell('E19')->setValue('ID No.');
-        $worksheet->getCell('F19')->setValue('Phone No.');
-        $worksheet->getCell('G19')->setValue('Proxy First Name');
-        $worksheet->getCell('H19')->setValue('Proxy Second Name');
-        $worksheet->getCell('I19')->setValue('Proxy ID No.');
-        $worksheet->getCell('J19')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
-        $worksheet->getCell('K19')->setValue('Signature');
-        $worksheet->getStyle('B19:K19')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B19:K19')->getFont()->setBold(true);
-        $worksheet->getRowDimension(19)->setRowHeight(42.00);
+        $worksheet->getCell('B22')->setValue('No.');
+        $worksheet->getCell('C22')->setValue('First Name');
+        $worksheet->getCell('D22')->setValue('Second Name');
+        $worksheet->getCell('E22')->setValue('ID No.');
+        $worksheet->getCell('F22')->setValue('Phone No.');
+        $worksheet->getCell('G22')->setValue('Proxy First Name');
+        $worksheet->getCell('H22')->setValue('Proxy Second Name');
+        $worksheet->getCell('I22')->setValue('Proxy ID No.');
+        $worksheet->getCell('J22')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
+        $worksheet->getCell('K22')->setValue('Signature');
+        $worksheet->getStyle('B22:K22')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B22:K22')->getFont()->setBold(true);
+        $worksheet->getRowDimension(22)->setRowHeight(42.00);
 
-        $worksheet->setCellValue('B20', $this->translator->trans('No.'));
-        $worksheet->setCellValue('C20', $this->translator->trans('First Name'));
-        $worksheet->setCellValue('D20', $this->translator->trans('Second Name'));
-        $worksheet->setCellValue('E20', $this->translator->trans('ID No.'));
-        $worksheet->setCellValue('F20', $this->translator->trans('Phone No.'));
-        $worksheet->setCellValue('G20', $this->translator->trans('Proxy First Name'));
-        $worksheet->setCellValue('H20', $this->translator->trans('Proxy Second Name'));
-        $worksheet->setCellValue('I20', $this->translator->trans('Proxy ID No.'));
-        $worksheet->setCellValue('J20', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
-        $worksheet->setCellValue('K20', $this->translator->trans('Signature'));
-        $worksheet->getStyle('B20:K20')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B20:K20')->getFont()->setItalic(true);
-        $worksheet->getRowDimension(20)->setRowHeight(42.00);
+        $worksheet->setCellValue('B23', $this->translator->trans('No.'));
+        $worksheet->setCellValue('C23', $this->translator->trans('First Name'));
+        $worksheet->setCellValue('D23', $this->translator->trans('Second Name'));
+        $worksheet->setCellValue('E23', $this->translator->trans('ID No.'));
+        $worksheet->setCellValue('F23', $this->translator->trans('Phone No.'));
+        $worksheet->setCellValue('G23', $this->translator->trans('Proxy First Name'));
+        $worksheet->setCellValue('H23', $this->translator->trans('Proxy Second Name'));
+        $worksheet->setCellValue('I23', $this->translator->trans('Proxy ID No.'));
+        $worksheet->setCellValue('J23', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
+        $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
+        $worksheet->getStyle('B23:K23')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B23:K23')->getFont()->setItalic(true);
+        $worksheet->getRowDimension(23)->setRowHeight(42.00);
 
-        $worksheet->getStyle('B19:K19')->getBorders()
+        $worksheet->getStyle('B22:K22')->getBorders()
             ->getTop()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B20:K20')->getBorders()
+        $worksheet->getStyle('B23:K23')->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B22:K23')->getBorders()
             ->getLeft()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B22:K23')->getBorders()
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
-        $rowNumber = 21;
+        $rowNumber = 24;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
             $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
         }

@@ -10,6 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use UserBundle\Entity\User;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
@@ -42,11 +43,14 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             return;
         }
 
+        /** @var User $user */
+        $user = $this->getReference('user_admin');
+
         foreach ($this->countries->getAll() as $country) {
             $project = $manager->getRepository(Project::class)->findOneBy([], ['id' => 'desc']);
 
             foreach ($project->getDistributions() as $assistance) {
-                $this->assistanceService->validateDistribution($assistance);
+                $this->assistanceService->validateDistribution($assistance, $user);
                 $manager->persist($assistance);
                 echo ".";
             }

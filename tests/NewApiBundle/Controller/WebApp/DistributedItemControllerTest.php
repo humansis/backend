@@ -100,8 +100,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         $assistance = $this->em->createQueryBuilder()
             ->select('a')
             ->from(Assistance::class, 'a')
-                ->andWhere('a.validated = :validated')
-                ->setParameter('validated', true)
+                ->andWhere('a.validatedBy IS NOT NULL')
             ->innerJoin('a.commodities', 'c')
             ->innerJoin('c.modalityType', 'm')
                 ->andWhere('m.name = :modalityType')
@@ -123,7 +122,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         );
 
         $items = json_decode($this->client->getResponse()->getContent());
-        echo $items->totalCount;
 
         $beneficiaryAmounts = [];
         foreach ($items->data as $distributedItem) {

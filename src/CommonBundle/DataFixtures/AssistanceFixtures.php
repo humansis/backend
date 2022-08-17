@@ -23,6 +23,7 @@ use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
+use UserBundle\Entity\User;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
@@ -115,6 +116,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         srand(42);
 
+        $user = $this->getReference('user_admin');
+
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
             echo $project->getName()." ";
@@ -128,18 +131,18 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
         $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
-        $this->distributionService->validateDistribution($khmKhrAssistance);
+        $this->distributionService->validateDistribution($khmKhrAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
         $khmUsdAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[1], 'USD');
-        $this->distributionService->validateDistribution($khmUsdAssistance);
+        $this->distributionService->validateDistribution($khmUsdAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
 
         $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
-        $this->distributionService->validateDistribution($syrSypAssistance);
+        $this->distributionService->validateDistribution($syrSypAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);
         $syrUsdAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[1], 'USD');
-        $this->distributionService->validateDistribution($syrUsdAssistance);
+        $this->distributionService->validateDistribution($syrUsdAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance);
     }
 

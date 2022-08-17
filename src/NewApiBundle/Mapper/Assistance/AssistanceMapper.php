@@ -167,7 +167,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getValidated(): bool
     {
-        return (bool) $this->object->getValidated();
+        return $this->object->isValidated();
     }
 
     public function getCompleted(): bool
@@ -182,7 +182,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDeletable(): bool
     {
-        return !$this->object->getValidated();
+        return !$this->object->isValidated();
     }
 
     public function getSelectionId(): int

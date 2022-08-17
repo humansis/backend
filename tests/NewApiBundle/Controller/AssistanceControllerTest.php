@@ -11,6 +11,7 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
+use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\ProductCategoryType;
@@ -63,14 +64,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
             "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
-            "validated": '.($assistance->getValidated() ? 'true' : 'false').',
+            "validated": '.($assistance->isValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
             "foodLimit": "*",
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
             "threshold": '.($assistance->getAssistanceSelection()->getThreshold() ?: 'null').',
-            "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
+            "deletable": '.($assistance->isValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
 
@@ -311,7 +312,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateDistributionDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime();
@@ -335,7 +336,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateExpirationDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
@@ -708,7 +709,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $cashModality = $modalityTypeRepository->findOneBy(['name' => \NewApiBundle\Enum\ModalityType::CASH]);
         $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ['id' => $cashModality->getId()], 'description' => 'Note'];
-        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
@@ -728,7 +729,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
 
-        $assistance = $assistanceRepository->findOneBy(['validated' => false]);
+        $assistance = $assistanceRepository->findOneBy(['validatedBy' => null]);
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
