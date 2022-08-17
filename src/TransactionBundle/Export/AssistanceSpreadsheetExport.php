@@ -437,7 +437,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
 
         if ($shouldContainDate) {
-            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionTime($distributionBeneficiary));
+            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
         }
 
         $nextRowNumber = $rowNumber + 1;
@@ -536,7 +536,7 @@ class AssistanceSpreadsheetExport
         return $assistance->isRemoteDistributionAllowed() === true;
     }
 
-    private function getDistributionTime(AssistanceBeneficiary $distributionBeneficiary): string
+    private function getDistributionDateTime(AssistanceBeneficiary $distributionBeneficiary): string
     {
         $deposits = array_filter($this->smartCardDeposits, function($smartcardDeposit) use($distributionBeneficiary) {
            return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
