@@ -15,10 +15,18 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Entity\GeneralReliefItem;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\SynchronizationBatch;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Enum\SynchronizationBatchState;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -28,15 +36,25 @@ use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use ProjectBundle\Entity\Donor;
 use Symfony\Component\Translation\TranslatorInterface;
+use VoucherBundle\Entity\SmartcardDeposit;
+use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class AssistanceSpreadsheetExport
 {
     /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
+    private $smartcardDepositService;
+
+    /**
+     * @var SmartcardDeposit[]
+     */
+    private $smartCardDeposits = [];
+
+    public function __construct(TranslatorInterface $translator, SmartcardDepositService $smartcardDepositService)
     {
         $this->translator = $translator;
+        $this->smartcardDepositService = $smartcardDepositService;
     }
 
     public function export(Assistance $assistance, Organization $organization, string $filetype)
@@ -319,6 +337,9 @@ class AssistanceSpreadsheetExport
         $worksheet->mergeCells('B20:K20');
     }
 
+    /**
+     * @throws Exception
+     */
     private function buildBody(Worksheet $worksheet, Assistance $assistance)
     {
         $rowStyle = [
@@ -341,21 +362,27 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('H22')->setValue('Proxy Second Name');
         $worksheet->getCell('I22')->setValue('Proxy ID No.');
         $worksheet->getCell('J22')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
-        $worksheet->getCell('K22')->setValue('Signature');
         $worksheet->getStyle('B22:K22')->applyFromArray($rowStyle);
         $worksheet->getStyle('B22:K22')->getFont()->setBold(true);
         $worksheet->getRowDimension(22)->setRowHeight(42.00);
 
+        if ($this->shouldDistributionContainDate($assistance)) {
+            $worksheet->getCell('K22')->setValue('Distributed');
+            $worksheet->setCellValue('K23', $this->translator->trans('Distributed'));
+            $this->smartCardDeposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiaries($assistance->getDistributionBeneficiaries()->toArray());
+        } else {
+            $worksheet->getCell('K22')->setValue('Signature');
+            $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
+        }
         $worksheet->setCellValue('B23', $this->translator->trans('No.'));
         $worksheet->setCellValue('C23', $this->translator->trans('First Name'));
         $worksheet->setCellValue('D23', $this->translator->trans('Second Name'));
         $worksheet->setCellValue('E23', $this->translator->trans('ID No.'));
         $worksheet->setCellValue('F23', $this->translator->trans('Phone No.'));
-        $worksheet->setCellValue('G23', $this->translator->trans('Proxy First Name'));
         $worksheet->setCellValue('H23', $this->translator->trans('Proxy Second Name'));
+        $worksheet->setCellValue('G23', $this->translator->trans('Proxy First Name'));
         $worksheet->setCellValue('I23', $this->translator->trans('Proxy ID No.'));
         $worksheet->setCellValue('J23', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
-        $worksheet->setCellValue('K23', $this->translator->trans('Signature'));
         $worksheet->getStyle('B23:K23')->applyFromArray($rowStyle);
         $worksheet->getStyle('B23:K23')->getFont()->setItalic(true);
         $worksheet->getRowDimension(23)->setRowHeight(42.00);
@@ -375,11 +402,11 @@ class AssistanceSpreadsheetExport
 
         $rowNumber = 24;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
-            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
+            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle, $this->shouldDistributionContainDate($assistance));
         }
     }
 
-    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle) {
+    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle, bool $shouldContainDate) {
         $bnf = $distributionBeneficiary->getBeneficiary();
         if ($bnf instanceof Household) {
             $person = $bnf->getHouseholdHead()->getPerson();
@@ -408,6 +435,10 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
         $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+
+        if ($shouldContainDate) {
+            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
+        }
 
         $nextRowNumber = $rowNumber + 1;
 
@@ -498,5 +529,25 @@ class AssistanceSpreadsheetExport
             default:
                 throw new \LogicException('Unsupported filetype '.strtolower(pathinfo($filename, PATHINFO_EXTENSION)));
         }
+    }
+
+    private function shouldDistributionContainDate(Assistance $assistance): bool
+    {
+        return $assistance->isRemoteDistributionAllowed() === true;
+    }
+
+    private function getDistributionDateTime(AssistanceBeneficiary $distributionBeneficiary): string
+    {
+        $deposits = array_filter($this->smartCardDeposits, function($smartcardDeposit) use($distributionBeneficiary) {
+           return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
+        });
+
+        if (empty($deposits)) {
+            return "";
+        }
+
+        return implode("\n", array_map(function($deposit) {
+            return $deposit->getDistributedAt()->format('d. m. Y H:i');
+        }, $deposits));
     }
 }
