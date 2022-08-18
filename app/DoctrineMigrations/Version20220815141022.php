@@ -61,7 +61,7 @@ final class Version20220815141022 extends AbstractMigration
                         AND sp.assistance_id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                     JOIN smartcard s
                         ON sp.smartcard_id = s.id
-                        AND s.id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
+                        AND s.id = (SELECT smartcard_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                 )
                 WHERE arp.assistance_beneficiary_id in (
                     SELECT db.id
@@ -77,7 +77,7 @@ final class Version20220815141022 extends AbstractMigration
                             AND sp.assistance_id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                         JOIN smartcard s
                             ON sp.smartcard_id = s.id
-                            AND s.id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
+                            AND s.id = (SELECT smartcard_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                         GROUP by aid, bid
                     ) ps
                         ON db.assistance_id = ps.aid
