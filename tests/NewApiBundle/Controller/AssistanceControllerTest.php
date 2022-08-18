@@ -7,13 +7,13 @@ use CommonBundle\Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\ModalityType;
+use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Repository\ModalityTypeRepository;
 use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
@@ -38,7 +38,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         /** @var Assistance $assistance */
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
-        $commodityIds = array_map(function (\DistributionBundle\Entity\Commodity $commodity) {
+        $commodityIds = array_map(function (Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
 
@@ -117,36 +117,36 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function commodityGenerator(): iterable
     {
-        yield \NewApiBundle\Enum\ModalityType::SMART_CARD => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+        yield ModalityType::SMART_CARD => [[
+            'modalityType' => ModalityType::SMART_CARD,
             'unit' => 'CZK',
             'value' => 1000,
             'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
         ]];
-        yield \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
+        yield ModalityType::PAPER_VOUCHER => [[
+            'modalityType' => ModalityType::PAPER_VOUCHER,
             'unit' => 'CZK',
             'value' => '1000',
             'description' => 'something important',
             "remoteDistributionAllowed" => false,
             'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
         ]];
-        yield \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER,
+        yield ModalityType::QR_CODE_VOUCHER => [[
+            'modalityType' => ModalityType::QR_CODE_VOUCHER,
             'unit' => 'CZK',
             'value' => "1000.00",
             'description' => '',
             "remoteDistributionAllowed" => false,
             'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
         ]];
-        yield \NewApiBundle\Enum\ModalityType::MOBILE_MONEY => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::MOBILE_MONEY,
+        yield ModalityType::MOBILE_MONEY => [[
+            'modalityType' => ModalityType::MOBILE_MONEY,
             'unit' => 'CZK',
             'value' => '0.00',
             'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
         ]];
-        yield \NewApiBundle\Enum\ModalityType::BREAD => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::BREAD,
+        yield ModalityType::BREAD => [[
+            'modalityType' => ModalityType::BREAD,
             'unit' => 'ks',
             'value' => 1,
             'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
@@ -193,7 +193,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'foodLimit' => 10.99,
             'nonFoodLimit' => null,
             'cashbackLimit' => 1024,
-            'remoteDistributionAllowed' => $commodity['modalityType']==\NewApiBundle\Enum\ModalityType::SMART_CARD ? false : null,
+            'remoteDistributionAllowed' => $commodity['modalityType']== ModalityType::SMART_CARD ? false : null,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
@@ -241,8 +241,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
-        $smartcardModalityType = \NewApiBundle\Enum\ModalityType::SMART_CARD;
-        $cashModalityType = \NewApiBundle\Enum\ModalityType::CASH;
+        $smartcardModalityType = ModalityType::SMART_CARD;
+        $cashModalityType = ModalityType::CASH;
 
         $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
             'iso3' => 'KHM',
@@ -299,7 +299,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($contentArray['data'] as $summary) {
-            $this->assertTrue(in_array($summary['modalityType'], [\NewApiBundle\Enum\ModalityType::SMART_CARD, \NewApiBundle\Enum\ModalityType::CASH]));
+            $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
             $this->assertGreaterThan(0, $summary['value']);
         }
@@ -374,7 +374,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -441,7 +441,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -504,7 +504,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 1000],
             ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
@@ -558,7 +558,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -642,7 +642,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
             ],
             'selectionCriteria' => [
                 [
@@ -689,7 +689,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
         /** @var Assistance $assistance */
 
-        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => \NewApiBundle\Enum\ModalityType::CASH, 'description' => 'Note'];
+        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ModalityType::CASH, 'description' => 'Note'];
         $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);

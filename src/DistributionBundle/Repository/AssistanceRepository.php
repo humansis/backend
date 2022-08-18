@@ -44,7 +44,8 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->where("p.iso3 = :country")
                 ->setParameter("country", $country)
             ->leftJoin("dd.commodities", "c")
-            ->andWhere("c.modalityType = 'Mobile'");
+            ->andWhere("c.modalityType = :modalityType")
+            ->setParameter('modalityType', ModalityType::MOBILE_MONEY);
 
         return $qb->getQuery()->getSingleScalarResult();
     }

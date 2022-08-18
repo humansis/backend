@@ -23,11 +23,6 @@ class ModalityEnum extends AbstractEnum
 
     public static function databaseMap(): array
     {
-        return [
-            Modality::CASH => Modality::CASH,
-            Modality::VOUCHER => Modality::VOUCHER,
-            Modality::IN_KIND => Modality::IN_KIND,
-            Modality::OTHER => Modality::OTHER,
-        ];
+        return array_combine(Modality::values(), Modality::values());
     }
 }
