@@ -60,8 +60,6 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
      * @return \Generator
      */
     private function getStaticFields(): \Generator {
-        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
         yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
