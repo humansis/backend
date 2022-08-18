@@ -247,8 +247,7 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('idType', $idType);
 
         if (null !== $iso3) {
-            $qb->join('hh.projects', 'project')
-                ->andWhere('project.countryIso3 = :country')
+            $qb->andWhere('hh.countryIso3 = :country')
                 ->setParameter('country', $iso3);
         }
 
@@ -343,14 +342,10 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('hh.archived = 0')
             ->andWhere('id.idNumber IN (:idNumbers)')
             ->andWhere('id.idType IN (:idTypes)')
+            ->andWhere('hh.countryIso3 = :country')
             ->setParameter('idNumbers', $ids->getNumbers())
-            ->setParameter('idTypes', $ids->getTypes());
-
-        if (null !== $iso3) {
-            $qb->join('hh.projects', 'project')
-                ->andWhere('project.countryIso3 = :country')
-                ->setParameter('country', $iso3);
-        }
+            ->setParameter('idTypes', $ids->getTypes())
+            ->setParameter('country', $iso3);
 
         return $qb->getQuery()
             ->getResult();
@@ -505,6 +500,31 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
+    /**
+     * @param bool         $onlyCount
+     * @param string       $countryISO3
+     * @param Project|null $project
+     *
+     * @return QueryBuilder
+     */
+    public function configurationQueryBuilder(bool $onlyCount, string $countryISO3, Project $project = null): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('b');
+
+        if ($onlyCount) {
+            $qb->select('count(b)');
+        }
+        if (null !== $project) {
+            $qb->where(':idProject MEMBER OF hh.projects')
+                ->setParameter('idProject', $project->getId());
+        }
+        $qb->leftJoin('b.household', 'hh');
+        $qb->andWhere('hh.countryIso3 = :iso3')
+            ->setParameter('iso3', $countryISO3);
+
+        return $qb;
+    }
+
     protected function whereInDistribution(QueryBuilder $qb, Assistance $assistance)
     {
         if (!in_array('db', $qb->getAllAliases())) {
@@ -550,12 +570,11 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function beneficiariesInCountry(QueryBuilder &$qb, $countryISO3)
+    private function beneficiariesInCountry(QueryBuilder &$qb, string $countryISO3)
     {
-        $qb->leftJoin('b.household', 'hh');
-
-        $householdRepository = $this->getEntityManager()->getRepository(Household::class);
-        $householdRepository->whereHouseholdInCountry($qb, $countryISO3);
+        $qb->leftJoin('b.household', 'hh')
+            ->andWhere('hh.countryIso3 = :countryIso3')
+            ->setParameter('countryIso3', $countryISO3);
     }
 
     public function getDistributionBeneficiaries(CriteriaGroup $criteriaGroup, Project $project)

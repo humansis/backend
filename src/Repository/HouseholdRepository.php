@@ -40,9 +40,10 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findAllByCountry(string $iso3)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $this->whereHouseholdInCountry($qb, $iso3);
-        $qb->andWhere('hh.archived = 0');
+        $qb = $this->createQueryBuilder("hh")
+                ->where('hh.countryIso3 = :countryIso3')
+                ->andWhere('hh.archived = 0')
+                ->setParameter('countryIso3', $iso3);
 
         return $qb;
     }
@@ -421,31 +422,5 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin("ca.camp", "c")
             ->leftJoin("hl.address", "ad")
             ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
-    }
-
-    /**
-     * Create sub request to get households in country.
-     * The household address location must be in the country ($countryISO3).
-     *
-     * @param QueryBuilder $qb
-     * @param $countryISO3
-     */
-    public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
-    {
-        $this->getHouseholdLocation($qb);
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $countryISO3);
-    }
-
-    /**
-     * Create sub request to get the country of the household
-     *
-     * @param QueryBuilder $qb
-     */
-    public function getHouseholdCountry(QueryBuilder &$qb)
-    {
-        $this->getHouseholdLocation($qb);
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->getCountry($qb);
     }
 }
