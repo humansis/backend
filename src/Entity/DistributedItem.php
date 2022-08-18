@@ -81,6 +81,8 @@ class DistributedItem
     /**
      * @var float|null
      *
+     * controlled by database triggers on smartcard_payment_record table
+     *
      * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     private $spent;
