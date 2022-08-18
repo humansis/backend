@@ -191,6 +191,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $purchasesCount = $this->generateRandomNumbers($max, rand(1, 10));
         
         foreach ($purchasesCount as $index => $purchaseMax) {
+            if ($purchaseMax === 0) {
+                continue;
+            }
             $this->generatePurchase($index, $smartcard, $vendor, $ab->getAssistance(), $manager, $purchaseMax);
         }
     }
@@ -259,7 +262,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $numbers = [];
 
         for ($i = 1; $i < $count; $i++) {
-            $random = mt_rand(0, $max / ($count - $i));
+            $random = rand(1, $max / ($count - $i));
             $numbers[] = $random;
             $max -= $random;
         }
