@@ -82,24 +82,9 @@ class DistributedItemMapper implements MapperInterface
         return $this->object->getLocation()->getId();
     }
 
-    public function getAdm1Id(): ?int
+    public function getFullLocationNames(): string
     {
-        return $this->object->getLocation()->getAdm1Id() ?: null;
-    }
-
-    public function getAdm2Id(): ?int
-    {
-        return $this->object->getLocation()->getAdm2Id() ?: null;
-    }
-
-    public function getAdm3Id(): ?int
-    {
-        return $this->object->getLocation()->getAdm3Id() ?: null;
-    }
-
-    public function getAdm4Id(): ?int
-    {
-        return $this->object->getLocation()->getAdm4Id() ?: null;
+        return $this->object->getLocation()->getFullPathNames();
     }
 
     public function getCarrierNumber(): ?string

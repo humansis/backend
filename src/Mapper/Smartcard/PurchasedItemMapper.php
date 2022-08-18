@@ -66,6 +66,11 @@ class PurchasedItemMapper implements MapperInterface
         return $this->object->getLocation()->getId();
     }
 
+    public function getFullLocationNames(): string
+    {
+        return $this->object->getLocation()->getFullPathNames();
+    }
+
     public function getAdm1Id(): ?int
     {
         return $this->object->getLocation()->getAdm1Id();

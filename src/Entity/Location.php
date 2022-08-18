@@ -192,6 +192,25 @@ class Location implements TreeInterface
         return $this->enumNormalizedName;
     }
 
+    /**
+     * @param string $separator
+     * @return string
+     */
+    public function getFullPathNames(string $separator = ', '): string
+    {
+        $names = [];
+
+        $location = $this;
+        $names[] = $location->getName();
+
+        while ($location->getParent() !== null) {
+            $location = $location->getParent();
+            $names[] = $location->getName();
+        }
+
+        return implode($separator, array_reverse($names));
+    }
+
     //region backward compatibility
     public function getAdm1Name(): string
     {
