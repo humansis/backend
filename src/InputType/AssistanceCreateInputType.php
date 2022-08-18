@@ -257,6 +257,18 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     }
 
     /**
+     * @Assert\IsTrue(groups="AdditionalChecks", message="Assistance cannot have more than one smartcard commodity.")
+     */
+    public function hasMaxOneSmartcardCommodity(): bool
+    {
+        $smartcardCommodities = array_filter($this->commodities, function (CommodityInputType $commodity) {
+            return $commodity->getModalityType() === ModalityType::SMART_CARD;
+        });
+
+        return count($smartcardCommodities) <= 1;
+    }
+
+    /**
      * @return string
      */
     public function getIso3()

@@ -2,18 +2,14 @@
 
 namespace Tests\Controller;
 
-use DBAL\SectorEnum;
 use Doctrine\Common\Collections\Criteria;
-use Entity\Commodity;
 use Entity\Community;
 use Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use Entity\Assistance;
-use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
 use Enum\ModalityType;
-use Enum\SelectionCriteriaTarget;
 use Repository\AssistanceRepository;
 use Exception;
 use Component\Assistance\Enum\CommodityDivision;
@@ -40,46 +36,42 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testGetItem()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
-            ->findBy([], ['id' => 'asc'])[0];
-        $commodityIds = array_map(function (Commodity $commodity) {
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $commodityIds = array_map(function (\Entity\Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId());
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
-            "id": ' . $assistance->getId() . ',
-            "name": "' . $assistance->getName() . '",
-            "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTime::ISO8601) . '",
+        $this->assertJsonFragment('{
+            "id": '.$assistance->getId().',
+            "name": "'.$assistance->getName().'",
+            "dateDistribution": "'.$assistance->getDateDistribution()->format(\DateTime::ISO8601).'",
             "dateExpiration": "*",
-            "projectId": ' . $assistance->getProject()->getId() . ',
-            "locationId": ' . $assistance->getLocation()->getId() . ',
-            "target": "' . $assistance->getTargetType() . '",
-            "type": "' . $assistance->getAssistanceType() . '",
-            "sector": "' . $assistance->getSector() . '",
+            "projectId": '.$assistance->getProject()->getId().',
+            "locationId": '.$assistance->getLocation()->getId().',
+            "target": "'.$assistance->getTargetType().'",
+            "type": "'.$assistance->getAssistanceType().'",
+            "sector": "'.$assistance->getSector().'",
             "subsector": "*",
             "scoringBlueprint": "*",
-            "householdsTargeted": ' . ($assistance->getHouseholdsTargeted() ?: 'null') . ',
-            "individualsTargeted": ' . ($assistance->getIndividualsTargeted() ?: 'null') . ',
+            "householdsTargeted": '.($assistance->getHouseholdsTargeted() ?: 'null').',
+            "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
             "description": "*",
-            "commodityIds": [' . implode(',', $commodityIds) . '],
-            "validated": ' . ($assistance->isValidated() ? 'true' : 'false') . ',
-            "completed": ' . ($assistance->getCompleted() ? 'true' : 'false') . ',
+            "commodityIds": ['.implode(',', $commodityIds).'],
+            "validated": '.($assistance->isValidated() ? 'true' : 'false').',
+            "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
             "foodLimit": "*",
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
-            "threshold": ' . ($assistance->getAssistanceSelection()->getThreshold() ?: 'null') . ',
-            "deletable": ' . ($assistance->isValidated() ? 'false' : 'true') . '
-        }',
-            $this->client->getResponse()->getContent()
-        );
+            "threshold": '.($assistance->getAssistanceSelection()->getThreshold() ?: 'null').',
+            "deletable": '.($assistance->isValidated() ? 'false' : 'true').'
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testList()
@@ -89,19 +81,16 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request(
-            'GET',
-            '/api/basic/web-app/v1/assistances?filter[type]=' . AssistanceType::DISTRIBUTION .
-            '&filter[modalityTypes][]=Smartcard' .
-            '&filter[projects][]=' . $project->getId() .
-            '&filter[locations][]=' . $location->getId()
-        );
+        $this->request('GET', '/api/basic/web-app/v1/assistances?filter[type]='.AssistanceType::DISTRIBUTION.
+                                                    '&filter[modalityTypes][]=Smartcard'.
+                                                    '&filter[projects][]='.$project->getId().
+                                                    '&filter[locations][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -112,13 +101,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
     {
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/' . $project->getId() . '/assistances');
+        $this->request('GET', '/api/basic/web-app/v1/projects/'.$project->getId().'/assistances');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -127,262 +116,236 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function commodityGenerator(): iterable
     {
-        yield ModalityType::SMART_CARD => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => null,
-                    ],
+        yield ModalityType::SMART_CARD => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield ModalityType::PAPER_VOUCHER => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::PAPER_VOUCHER,
-                    'unit' => 'CZK',
-                    'value' => '1000',
-                    'description' => 'something important',
-                    "remoteDistributionAllowed" => false,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => null,
-                    ],
+            'response' => true,
+        ]];
+        yield ModalityType::PAPER_VOUCHER => [[
+            'commodity' => [
+                'modalityType' => ModalityType::PAPER_VOUCHER,
+                'unit' => 'CZK',
+                'value' => '1000',
+                'description' => 'something important',
+                "remoteDistributionAllowed" => false,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield ModalityType::QR_CODE_VOUCHER => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::QR_CODE_VOUCHER,
-                    'unit' => 'CZK',
-                    'value' => "1000.00",
-                    'description' => '',
-                    "remoteDistributionAllowed" => false,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => null,
-                    ],
+            'response' => true
+        ]];
+        yield ModalityType::QR_CODE_VOUCHER => [[
+            'commodity' => [
+                'modalityType' => ModalityType::QR_CODE_VOUCHER,
+                'unit' => 'CZK',
+                'value' => "1000.00",
+                'description' => '',
+                "remoteDistributionAllowed" => false,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield ModalityType::MOBILE_MONEY => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::MOBILE_MONEY,
-                    'unit' => 'CZK',
-                    'value' => '0.00',
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => null,
-                    ],
+            'response' => true,
+        ]];
+        yield ModalityType::MOBILE_MONEY => [[
+            'commodity' => [
+                'modalityType' => ModalityType::MOBILE_MONEY,
+                'unit' => 'CZK',
+                'value' => '0.00',
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield ModalityType::BREAD => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::BREAD,
-                    'unit' => 'ks',
-                    'value' => 1,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => null,
-                    ],
+            'response' => true,
+        ]];
+        yield ModalityType::BREAD => [[
+            'commodity' => [
+                'modalityType' => ModalityType::BREAD,
+                'unit' => 'ks',
+                'value' => 1,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield 'Smartcard for household' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD,
-                        'quantities' => null,
-                    ],
+            'response' => true,
+        ]];
+        yield 'Smartcard for household' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD,
+                    'quantities' => null
                 ],
-                'response' => true,
             ],
-        ];
-        yield 'No quantities for members' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => null,
-                    ],
+            'response' => true,
+        ]];
+        yield 'No quantities for members' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => null
                 ],
-                'response' => false,
             ],
-        ];
-        yield 'Empty quantities for members' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => [],
-                    ],
+            'response' => false,
+        ]];
+        yield 'Empty quantities for members' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => []
                 ],
-                'response' => false,
             ],
-        ];
-        yield 'Quantities for member' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
-                        'quantities' => [
-                            [
-                                'rangeFrom' => 1,
-                                'rangeTo' => null,
-                                'value' => 1000,
-                            ],
+            'response' => false,
+        ]];
+        yield 'Quantities for member' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => null,
+                            'value' => 1000
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Correct quantities for members' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
                         ],
-                    ],
-                ],
-                'response' => false,
-            ],
-        ];
-        yield 'Correct quantities for members' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => [
-                            [
-                                'rangeFrom' => 1,
-                                'rangeTo' => 5,
-                                'value' => 100,
-                            ],
-                            [
-                                'rangeFrom' => 6,
-                                'rangeTo' => 8,
-                                'value' => 120,
-                            ],
-                            [
-                                'rangeFrom' => 9,
-                                'rangeTo' => null,
-                                'value' => 150,
-                            ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
                         ],
-                    ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
                 ],
-                'response' => true,
             ],
-        ];
-        yield 'Not correct quantities for members - missing range from 1' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => [
-                            [
-                                'rangeFrom' => 2,
-                                'rangeTo' => 5,
-                                'value' => 100,
-                            ],
-                            [
-                                'rangeFrom' => 6,
-                                'rangeTo' => 8,
-                                'value' => 120,
-                            ],
-                            [
-                                'rangeFrom' => 9,
-                                'rangeTo' => null,
-                                'value' => 150,
-                            ],
+            'response' => true,
+        ]];
+        yield 'Not correct quantities for members - missing range from 1' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 2,
+                            'rangeTo' => 5,
+                            'value' => 100
                         ],
-                    ],
-                ],
-                'response' => false,
-            ],
-        ];
-        yield 'Not correct quantities for members - missing range to null' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => [
-                            [
-                                'rangeFrom' => 1,
-                                'rangeTo' => 5,
-                                'value' => 100,
-                            ],
-                            [
-                                'rangeFrom' => 6,
-                                'rangeTo' => 8,
-                                'value' => 120,
-                            ],
-                            [
-                                'rangeFrom' => 9,
-                                'rangeTo' => 10,
-                                'value' => 150,
-                            ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
                         ],
-                    ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
                 ],
-                'response' => false,
             ],
-        ];
-        yield 'Not correct quantities for members - not following up ranges' => [
-            [
-                'commodity' => [
-                    'modalityType' => ModalityType::SMART_CARD,
-                    'unit' => 'CZK',
-                    'value' => 1000,
-                    'division' => [
-                        'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
-                        'quantities' => [
-                            [
-                                'rangeFrom' => 1,
-                                'rangeTo' => 5,
-                                'value' => 100,
-                            ],
-                            [
-                                'rangeFrom' => 7,
-                                'rangeTo' => 8,
-                                'value' => 120,
-                            ],
-                            [
-                                'rangeFrom' => 9,
-                                'rangeTo' => null,
-                                'value' => 150,
-                            ],
+            'response' => false,
+        ]];
+        yield 'Not correct quantities for members - missing range to null' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
                         ],
-                    ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => 10,
+                            'value' => 150
+                        ]
+                    ]
                 ],
-                'response' => false,
             ],
-        ];
+            'response' => false,
+        ]];
+        yield 'Not correct quantities for members - not following up ranges' => [[
+            'commodity' => [
+                'modalityType' => ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
+                        ],
+                        [
+                            'rangeFrom' => 7,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
+        ]];
     }
 
     /**
@@ -397,9 +360,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
-            $this->markTestSkipped(
-                'There needs to be at least one project and location in system for completing this test'
-            );
+            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
@@ -407,17 +368,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
-            'sector' => SectorEnum::FOOD_SECURITY,
-            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => AssistanceTargetType::HOUSEHOLD,
+            'target' => \Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [$commodity['commodity']],
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'dateOfBirth',
                     'condition' => '<',
                     'weight' => 1,
@@ -431,13 +392,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
-        if ($commodity['response']) {
+        if($commodity['response']) {
             $this->assertTrue(
                 $this->client->getResponse()->isSuccessful(),
-                'Request failed: ' . $this->client->getResponse()->getContent()
+                'Request failed: '.$this->client->getResponse()->getContent()
             );
-            $this->assertJsonFragment(
-                '{
+            $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -458,9 +418,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "cashbackLimit": 1024,
             "allowedProductCategoryTypes": ["*"],
             "remoteDistributionAllowed": "*"
-        }',
-                $this->client->getResponse()->getContent()
-            );
+        }', $this->client->getResponse()->getContent());
 
             $contentArray = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -468,11 +426,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
         } else {
             $this->assertTrue(
                 $this->client->getResponse()->isClientError(),
-                'Request should return client error. ' . $this->client->getResponse()->getContent() . ' given'
+                'Request should return client error. '.$this->client->getResponse()->getContent().' given'
             );
 
             return null;
         }
+
     }
 
     public function testCommodityCountOfCreatedAssistance()
@@ -484,9 +443,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
-            $this->markTestSkipped(
-                'There needs to be at least one project and location in system for completing this test'
-            );
+            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
         }
 
         $smartcardModalityType = ModalityType::SMART_CARD;
@@ -497,15 +454,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
-            'sector' => SectorEnum::FOOD_SECURITY,
-            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => AssistanceTargetType::HOUSEHOLD,
+            'target' => \Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 2000],
                 ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
                 ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 100],
                 ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 200],
@@ -514,7 +469,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'dateOfBirth',
                     'condition' => '<',
                     'weight' => 1,
@@ -530,12 +485,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment(
-            '{
-            "totalCount": 4,
+
+        $this->assertJsonFragment('{
+            "totalCount": 3, 
             "data": [
                 {
                 "modalityType": "*",
@@ -543,8 +498,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 "value": "*"
                 }
              ]
-        }',
-            $this->client->getResponse()->getContent(),
+        }', $this->client->getResponse()->getContent(),
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($contentArray['data'] as $summary) {
@@ -565,13 +519,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ], ['updatedOn' => 'desc']);
         $date = new DateTime();
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
@@ -589,13 +543,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/".$assistance->getId(), [
             'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
@@ -618,11 +572,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
-            'sector' => SectorEnum::FOOD_SECURITY,
-            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => AssistanceTargetType::INDIVIDUAL,
+            'target' => \Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -630,7 +584,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'dateOfBirth',
                     'condition' => '<',
                     'weight' => 1,
@@ -645,10 +599,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
+        $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "2021-03-10T13:45:32+0000",
@@ -669,9 +622,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "nonFoodLimit": null,
             "cashbackLimit": null,
             "commodityIds": ["*"]
-        }',
-            $this->client->getResponse()->getContent()
-        );
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateActivity()
@@ -689,11 +640,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2000-12-01T01:01:01+00:00',
-            'sector' => SectorEnum::LIVELIHOODS,
-            'subsector' => SubSectorEnum::SKILLS_TRAINING,
+            'sector' => \DBAL\SectorEnum::LIVELIHOODS,
+            'subsector' => \DBAL\SubSectorEnum::SKILLS_TRAINING,
             'scoringBlueprint' => null,
             'type' => AssistanceType::ACTIVITY,
-            'target' => AssistanceTargetType::INDIVIDUAL,
+            'target' => \Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -701,7 +652,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'gender',
                     'condition' => '=',
                     'weight' => 1,
@@ -714,10 +665,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
+        $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -734,9 +684,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "deletable": true,
             "description": "*",
             "commodityIds": "*"
-        }',
-            $this->client->getResponse()->getContent()
-        );
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateCommunityActivity()
@@ -753,16 +701,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var ModalityType $modalityType */
         $modalityType = ModalityType::CASH;
 
+
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2000-12-01T01:01:01+0000',
-            'sector' => SectorEnum::SHELTER,
-            'subsector' => SubSectorEnum::CONSTRUCTION,
+            'sector' => \DBAL\SectorEnum::SHELTER,
+            'subsector' => \DBAL\SubSectorEnum::CONSTRUCTION,
             //'scoringBlueprint' => null,
             'type' => AssistanceType::ACTIVITY,
-            'target' => AssistanceTargetType::COMMUNITY,
+            'target' => \Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
@@ -775,10 +724,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
+        $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -795,9 +743,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "deletable": true,
             "description": "*",
             "commodityIds": []
-        }',
-            $this->client->getResponse()->getContent()
-        );
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateRemoteDistributionWithValidSmartcard(): void
@@ -816,11 +762,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
-            'sector' => SectorEnum::FOOD_SECURITY,
-            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => AssistanceTargetType::INDIVIDUAL,
+            'target' => \Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -828,7 +774,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
                     'field' => 'hasValidSmartcard',
                     'condition' => '=',
                     'weight' => 1,
@@ -836,7 +782,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'gender',
                     'condition' => '=',
                     'weight' => 1,
@@ -844,7 +790,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
                 [
                     'group' => 2,
-                    'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
                     'field' => 'hasValidSmartcard',
                     'condition' => '=',
                     'weight' => 1,
@@ -855,15 +801,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'nonFoodLimit' => null,
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
-            'remoteDistributionAllowed' => true,
+            'remoteDistributionAllowed' => true
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
+        $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "2021-03-10T13:45:32+0000",
@@ -884,9 +829,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "nonFoodLimit": null,
             "cashbackLimit": null,
             "commodityIds": ["*"]
-        }',
-            $this->client->getResponse()->getContent()
-        );
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testCreateRemoteDistributionWithInvalidSmartcard(): void
@@ -905,11 +848,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
-            'sector' => SectorEnum::FOOD_SECURITY,
-            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
+            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => AssistanceTargetType::INDIVIDUAL,
+            'target' => \Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
@@ -917,7 +860,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'selectionCriteria' => [
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
                     'field' => 'hasValidSmartcard',
                     'condition' => '=',
                     'weight' => 1,
@@ -925,7 +868,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
                 [
                     'group' => 1,
-                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
                     'field' => 'gender',
                     'condition' => '=',
                     'weight' => 1,
@@ -933,7 +876,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ],
                 [
                     'group' => 2,
-                    'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+                    'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
                     'field' => 'hasValidSmartcard',
                     'condition' => '=',
                     'weight' => 1,
@@ -944,7 +887,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'nonFoodLimit' => null,
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
-            'remoteDistributionAllowed' => true,
+            'remoteDistributionAllowed' => true
         ]);
 
         $this->assertTrue(
@@ -953,37 +896,30 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
     }
 
-    public function testBankReportExportsSuccess()
-    {
+    public function testBankReportExportsSuccess() {
+
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
-
-        $commodityData = [
-            'value' => 1,
-            'unit' => 'USD',
-            'modality_type' => ModalityType::CASH,
-            'description' => 'Note',
-        ];
+        
+        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ModalityType::CASH, 'description' => 'Note'];
         /** @var Assistance $assistance */
-        $assistance = $assistanceRepository->matching(
-            Criteria::create()->where(Criteria::expr()->neq('validatedBy', null))
-        )->first();
+        $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
-            'type' => 'csv',
+            'type' => 'csv'
         ]);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
 
-    public function testBankReportExportsNotValidated()
-    {
+    public function testBankReportExportsNotValidated() {
+
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
 
@@ -991,11 +927,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
-            'type' => 'csv',
+            'type' => 'csv'
         ]);
         $this->assertFalse(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
 }
