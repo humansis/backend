@@ -118,7 +118,7 @@ class FinishSubscriber implements EventSubscriberInterface
         $import = $event->getSubject();
 
         if (!$this->importRepository->isCountryFreeFromImporting($import, $import->getCountryIso3())) {
-            $event->addTransitionBlocker(new TransitionBlocker('There can be only one finishing import in country in single time.', '0'));
+            $event->addTransitionBlocker(new TransitionBlocker('Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.', '0'));
         }
     }
 
