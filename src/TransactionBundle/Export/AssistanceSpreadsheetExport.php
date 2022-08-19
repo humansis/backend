@@ -366,7 +366,7 @@ You have the following rights: 1) right to request information on which personal
         $rowStyle = [
             'borders' => [
                 'allBorders' => [
-                    'borderStyle' => Border::BORDER_HAIR,
+                    'borderStyle' => Border::BORDER_THIN,
                 ],
             ],
             'alignment' => [
