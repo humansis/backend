@@ -174,7 +174,7 @@ class AssistanceSpreadsheetExport
             $this->translator->trans('DISTRIBUTION PROTOCOL', [], null, $languageCode)
         );
         $worksheet->getCell('B2')->getStyle()->applyFromArray($titleStyle);
-        $worksheet->mergeCells('B2:G2');
+        $worksheet->mergeCells('B2:F2');
 
         if ($organization->getLogo()) {
             $resource = $this->getImageResource($organization->getLogo());
