@@ -128,7 +128,7 @@ class HouseholdMapper implements MapperInterface
             }, $beneficiary->getVulnerabilityCriteria()->toArray());
             $vulnerabilities = array_merge($vulnerabilities, $vulnerabilityNames);
         }
-        return array_unique(array_values($vulnerabilities));
+        return array_values(array_unique($vulnerabilities));
     }
 
     public function getIncomeLevel(): ?int
