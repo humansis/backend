@@ -18,6 +18,7 @@ use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Event\EnteredEvent;
 use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\TransitionBlocker;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FinishSubscriber implements EventSubscriberInterface
 {
@@ -36,16 +37,23 @@ class FinishSubscriber implements EventSubscriberInterface
     /** @var ImportReset */
     private $importReset;
 
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     public function __construct(
         ImportReset           $importReset,
         ImportQueueRepository $queueRepository,
         MessageBusInterface   $messageBus,
-        ImportRepository      $importRepository
+        ImportRepository      $importRepository,
+        TranslatorInterface   $translator
     ) {
         $this->importReset = $importReset;
         $this->queueRepository = $queueRepository;
         $this->messageBus = $messageBus;
         $this->importRepository = $importRepository;
+        $this->translator = $translator;
     }
 
     public static function getSubscribedEvents(): array
@@ -118,7 +126,7 @@ class FinishSubscriber implements EventSubscriberInterface
         $import = $event->getSubject();
 
         if (!$this->importRepository->isCountryFreeFromImporting($import, $import->getCountryIso3())) {
-            $event->addTransitionBlocker(new TransitionBlocker('Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.', '0'));
+            $event->addTransitionBlocker(new TransitionBlocker($this->translator->trans('Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.'), '0'));
         }
     }
 
