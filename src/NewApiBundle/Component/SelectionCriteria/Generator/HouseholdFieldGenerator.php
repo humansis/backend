@@ -25,30 +25,49 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
-        yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'double');
-        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
-        yield new Field('location', 'Location', ['='], 'location', 'is_int');
-        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
-
+        yield from $this->getStaticFields();
         foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             switch ($type) {
-                case "integer":
+                case "double":
                     $conditionList = ['=', '<', '>', '<=', '>='];
+                    /*
+                     * Nelze pouzit implicitni validaci.
+                     * Implicitni validace pouzije podle hodnoty type kontrolu pouzitim is_double().
+                     * Pro cislo zadane bez desetinne tecky vraci is_double() false
+                     * is_double(1) vraci false, is_double(1.1) vraci true
+                     */
+                    $validator = function ($value) {
+                        return is_numeric($value);
+                    };
                     break;
 
                 case "string":
                 default:
                     $conditionList = ['='];
+                    $validator = function ($value) {
+                        return is_string($value);
+                    };
                     break;
             }
 
-            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type);
+            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type, $validator);
         }
+    }
+
+    /**
+     * @return \Generator
+     */
+    private function getStaticFields(): \Generator {
+        //yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'integer');
+        //yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
+        yield new Field('income', 'Income', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
+        yield new Field('location', 'Location', ['='], 'location', 'is_int');
+        yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
+
     }
 
     /**
@@ -62,7 +81,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
     public function transformCountrySpecificType($type): string
     {
         if ('number' === $type) {
-            return 'integer';
+            return 'double';
         } elseif ('text' === $type) {
             return 'string';
         } else {

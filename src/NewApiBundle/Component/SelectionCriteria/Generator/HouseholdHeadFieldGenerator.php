@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Component\SelectionCriteria\Generator;
 
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Component\SelectionCriteria\FieldGeneratorInterface;
 use NewApiBundle\Component\SelectionCriteria\Structure\Field;
 use NewApiBundle\Enum\EnumValueNoFoundException;
@@ -17,7 +18,7 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
     {
         yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
         yield new Field('headOfHouseholdDateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('disabledHeadOfHousehold', 'Disabled', ['='], 'boolean');
+        yield new Field('disabledHeadOfHousehold', VulnerabilityCriterion::all()[VulnerabilityCriterion::CRITERION_DISABLED], ['='], 'boolean');
         yield new Field('hasValidSmartcard', 'Has valid card', ['='], 'boolean');
     }
 

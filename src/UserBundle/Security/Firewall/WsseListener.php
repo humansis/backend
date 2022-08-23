@@ -1,6 +1,7 @@
 <?php
 namespace UserBundle\Security\Firewall;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
@@ -44,8 +45,9 @@ class WsseListener implements ListenerInterface
             // ... you might log something here
             // To deny the authentication clear the token. This will redirect to the login page.
             // Make sure to only clear your token, not those of other authentication listeners.
+            /** @var JWTUserToken $token */
             $token = $this->tokenStorage->getToken();
-            if ($token instanceof WsseUserToken && null === $token->getProviderKey()) {
+            if ($token instanceof WsseUserToken && null === $token->getFirewallName()) {
                 $this->tokenStorage->setToken(null);
             }
 

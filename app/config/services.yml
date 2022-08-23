@@ -33,3 +33,20 @@ services:
     gelf.formatter:
         class: Monolog\Formatter\GelfMessageFormatter
         arguments: [ "%gelf_server_name%" ]
+
+    Twig\Loader\FilesystemLoader:
+        class: Twig\Loader\FilesystemLoader
+        public: false
+        calls:
+            - addPath: ['%kernel.project_dir%/src/VoucherBundle/Resources/views/', "Voucher"]
+            - addPath: ['%kernel.project_dir%/src/CommonBundle/Resources/views/', "Common"]
+            - addPath: ['%kernel.project_dir%/src/DistributionBundle/Resources/views/', "Distribution"]
+            - addPath: ['%kernel.project_dir%/src/TransactionBundle/Resources/views/', "Transaction"]
+            - addPath: ['%kernel.project_dir%/app/Resources/views/']
+
+    Twig\Environment:
+        class: Twig\Environment
+        public: true
+        autowire: true
+        arguments: [ '@Twig\Loader\FilesystemLoader' ]
+

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CampInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("string")
+     * @Assert\Type(type={"string", "numeric"})
      * @Assert\Length(max="45")
      * @Assert\NotBlank
      * @Assert\NotNull

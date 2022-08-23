@@ -3,21 +3,21 @@
 namespace BeneficiaryBundle\Model;
 
 use BeneficiaryBundle\Exception\CsvParserException;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringRule;
 
 abstract class AbstractCsvParser
 {
-    abstract protected function processCsv(array $csv): object;
+    abstract protected function processCsv(array $csv);
 
     abstract protected function mandatoryColumns(): array;
-
 
     /**
      * @param string $pathToCsv
      *
-     * @return object
+     * @return mixed
      * @throws CsvParserException
      */
-    public function parse(string $pathToCsv): object
+    public function parse(string $pathToCsv)
     {
         if (!file_exists($pathToCsv)) {
             throw new CsvParserException($pathToCsv,'File not found');
@@ -28,12 +28,22 @@ abstract class AbstractCsvParser
             throw new CsvParserException($pathToCsv, 'Failed to open file');
         }
 
-        $csvHead = (array) fgetcsv($fileHandler);
+        return $this->parseStream($fileHandler, $pathToCsv);
+    }
 
+    /**
+     * @param        $csvStream
+     * @param string $pathToCsv
+     *
+     * @return mixed
+     * @throws CsvParserException
+     */
+    public function parseStream($csvStream, string $pathToCsv = 'streamed')
+    {
+        $csvHead = fgetcsv($csvStream);
         $this->checkMandatoryColumns($pathToCsv, $csvHead);
-
         $csv = [];
-        while (false !== ($row = fgetcsv($fileHandler))) {
+        while (false !== ($row = fgetcsv($csvStream))) {
             $trimmedRow = array_map(function (string $cell) {
                 return trim($cell);
             }, $row);
@@ -41,7 +51,7 @@ abstract class AbstractCsvParser
             $csv[] = array_combine($csvHead, $trimmedRow);
         }
 
-        fclose($fileHandler);
+        fclose($csvStream);
 
         return $this->processCsv($csv);
     }

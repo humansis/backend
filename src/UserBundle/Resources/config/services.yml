@@ -36,3 +36,13 @@ services:
         public: false
         tags:
             - { name: monolog.logger, channel: wsse }
+
+    UserBundle\Repository\UserRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - UserBundle\Entity\User
+
+    UserBundle\Repository\UserCountryRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - UserBundle\Entity\UserCountry

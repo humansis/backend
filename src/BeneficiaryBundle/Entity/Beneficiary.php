@@ -786,18 +786,18 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $livelihood = Livelihood::translate($this->getHousehold()->getLivelihood());
         }
 
-        $assets = array_map(function ($value) {
+        $assets = array_values(array_map(function ($value) {
             return HouseholdAssets::valueToAPI($value);
-        }, (array) $this->getHousehold()->getAssets());
+        }, (array) $this->getHousehold()->getAssets()));
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
             $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
         }
 
-        $supportReceivedTypes = array_map(function ($value) {
+        $supportReceivedTypes = array_values(array_map(function ($value) {
             return HouseholdSupportReceivedType::valueFromAPI($value);
-        }, (array) $this->getHousehold()->getSupportReceivedTypes());
+        }, (array) $this->getHousehold()->getSupportReceivedTypes()));
 
         $supportDateReceived = null;
         if (null !== $this->getHousehold()->getSupportDateReceived()) {

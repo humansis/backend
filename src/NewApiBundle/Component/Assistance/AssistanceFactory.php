@@ -2,26 +2,32 @@
 
 namespace NewApiBundle\Component\Assistance;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
+use BeneficiaryBundle\Exception\CsvParserException;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CommunityRepository;
 use BeneficiaryBundle\Repository\InstitutionRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use DateTimeInterface;
-use DistributionBundle\Entity\SelectionCriteria;
+use DistributionBundle\Entity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\CriteriaAssistanceService;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Assistance\Domain;
-use DistributionBundle\Entity;
 use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
+use ProjectBundle\Entity\Project;
 use ProjectBundle\Repository\ProjectRepository;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -33,9 +39,6 @@ class AssistanceFactory
 
     /** @var CriteriaAssistanceService */
     private $criteriaAssistanceService;
-
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
 
     /** @var SerializerInterface */
     private $serializer;
@@ -67,10 +70,15 @@ class AssistanceFactory
     /** @var AssistanceBeneficiaryRepository */
     private $targetRepository;
 
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
+
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
+
     /**
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
-     * @param FieldDbTransformer              $fieldDbTransformer
      * @param SerializerInterface             $serializer
      * @param ModalityTypeRepository          $modalityTypeRepository
      * @param LocationRepository              $locationRepository
@@ -81,25 +89,27 @@ class AssistanceFactory
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
+     * @param ScoringBlueprintRepository      $scoringBlueprintRepository
      */
     public function __construct(
-        CacheInterface                                                 $cache,
-        CriteriaAssistanceService                                      $criteriaAssistanceService,
-        FieldDbTransformer                                             $fieldDbTransformer,
-        SerializerInterface                                            $serializer,
-        ModalityTypeRepository                                         $modalityTypeRepository,
-        LocationRepository                                             $locationRepository,
-        ProjectRepository                                              $projectRepository,
-        CommunityRepository                                            $communityRepository,
-        InstitutionRepository                                          $institutionRepository,
-        BeneficiaryRepository                                          $beneficiaryRepository,
-        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        Registry                                                       $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository
+        CacheInterface                  $cache,
+        CriteriaAssistanceService       $criteriaAssistanceService,
+        SerializerInterface             $serializer,
+        ModalityTypeRepository          $modalityTypeRepository,
+        LocationRepository              $locationRepository,
+        ProjectRepository               $projectRepository,
+        CommunityRepository             $communityRepository,
+        InstitutionRepository           $institutionRepository,
+        BeneficiaryRepository           $beneficiaryRepository,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository,
+        SelectionCriteriaFactory        $selectionCriteriaFactory,
+        ScoringBlueprintRepository      $scoringBlueprintRepository
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->serializer = $serializer;
         $this->modalityTypeRepository = $modalityTypeRepository;
         $this->locationRepository = $locationRepository;
@@ -110,17 +120,36 @@ class AssistanceFactory
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
+    /**
+     * @throws CsvParserException
+     * @throws ORMException
+     * @throws NonUniqueResultException
+     * @throws EntityNotFoundException
+     * @throws NoResultException
+     */
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
     {
+        /** @var Project $project */
+        $project = $this->projectRepository->find($inputType->getProjectId());
+        if (!$project) {
+            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        }
+
+        $this->checkExpirationDate($inputType, $project);
+
         $assistanceRoot = new Entity\Assistance();
+        $assistanceRoot->setProject($project);
         $assistanceRoot->setAssistanceType($inputType->getType());
         $assistanceRoot->setTargetType($inputType->getTarget());
         $assistanceRoot->setDateDistribution($inputType->getDateDistribution());
         $assistanceRoot->setDateExpiration($inputType->getDateExpiration());
         $assistanceRoot->setSector($inputType->getSector());
         $assistanceRoot->setSubSector($inputType->getSubsector());
+
         $assistanceRoot->setHouseholdsTargeted($inputType->getHouseholdsTargeted());
         $assistanceRoot->setIndividualsTargeted($inputType->getIndividualsTargeted());
         $assistanceRoot->setDescription($inputType->getDescription());
@@ -129,16 +158,20 @@ class AssistanceFactory
         $assistanceRoot->setCashbackLimit($inputType->getCashbackLimit());
         $assistanceRoot->setRemoteDistributionAllowed($inputType->getRemoteDistributionAllowed());
         $assistanceRoot->setAllowedProductCategoryTypes($inputType->getAllowedProductCategoryTypes());
+        $assistanceRoot->setNote($inputType->getNote());
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
         $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
-
-        $project = $this->projectRepository->find($inputType->getProjectId());
-        if (!$project) {
-            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+        
+        if (!is_null($inputType->getScoringBlueprintId())) {
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
+            if (!$scoringBlueprint) {
+                throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprintId().' does not exists.');
+            }
+            $assistanceRoot->setScoringBlueprint($scoringBlueprint);
         }
-        $assistanceRoot->setProject($project);
+
 
         $assistance = $this->hydrate($assistanceRoot);
 
@@ -155,6 +188,7 @@ class AssistanceFactory
                 break;
             case AssistanceTargetType::INSTITUTION:
                 foreach ($inputType->getInstitutions() as $institutionId) {
+                    /** @var AbstractBeneficiary $individualOrHHH */
                     $individualOrHHH = $this->institutionRepository->find($institutionId);
                     $assistance->addBeneficiary($individualOrHHH);
                 }
@@ -162,26 +196,27 @@ class AssistanceFactory
             case AssistanceTargetType::INDIVIDUAL:
             case AssistanceTargetType::HOUSEHOLD:
             default:
-                $selectionCriteriaShitArray = [];
-                foreach ($inputType->getSelectionCriteria() as $criterion) {
-                    $selectionCriteriaShitArray[$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
+                $groups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+                foreach ($groups as $criteriumGroup) {
+                    foreach ($criteriumGroup->getCriteria() as $criterion) {
+                        $assistance->addSelectionCriteria($criterion);
+                    }
                 }
-                // TODO: replace by SelectionCriteriaFactory::create
-                $criteria['criteria'] = $this->makeSelectionCriteriaBlackMagick($assistanceRoot, $selectionCriteriaShitArray);
-                $criteria['countryIso3'] = $inputType->getIso3();
                 $assistanceRoot->getAssistanceSelection()->setThreshold($inputType->getThreshold());
                 // WARNING: those are mixed Individual BNF IDs or HHH IDs of HH (HH ID aren't currently used)
                 $beneficiaryIds = $this->criteriaAssistanceService->load(
-                    $criteria,
+                    $assistance->getSelectionCriteriaGroups(),
                     $project,
                     $assistanceRoot->getTargetType(),
                     $assistanceRoot->getSector(),
                     $assistanceRoot->getSubSector(),
                     $inputType->getThreshold(),
-                    false
+                    false,
+                    $inputType->getScoringBlueprintId()
                 );
                 foreach ($beneficiaryIds['finalArray'] as $beneficiaryId => $vulnerabilityScore) {
                     $individualOrHHH = $this->beneficiaryRepository->find($beneficiaryId);
+                    /** @var AbstractBeneficiary $individualOrHHH */
                     $assistance->addBeneficiary($individualOrHHH, null, $vulnerabilityScore);
                 }
                 break;
@@ -190,18 +225,18 @@ class AssistanceFactory
         return $assistance;
     }
 
+    private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
+    {
+        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution() : $inputType->getDateExpiration();
+
+        if ($dateToCheck > $project->getEndDate()) {
+            throw new BadRequestHttpException('Expiration / Distribution date of assistance must be earlier than the end of project');
+        }
+    }
+
     private static function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
-        $adm = '';
-        if ($location->getAdm4()) {
-            $adm = $location->getAdm4()->getName();
-        } elseif ($location->getAdm3()) {
-            $adm = $location->getAdm3()->getName();
-        } elseif ($location->getAdm2()) {
-            $adm = $location->getAdm2()->getName();
-        } elseif ($location->getAdm1()) {
-            $adm = $location->getAdm1()->getName();
-        }
+        $adm = $location->getName();
 
         if ($date) {
             return $adm.'-'.$date->format('d-m-Y');
@@ -218,32 +253,8 @@ class AssistanceFactory
             $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
             $this->workflowRegistry,
-            $this->targetRepository
+            $this->targetRepository,
+            $this->selectionCriteriaFactory
         );
-    }
-
-    /**
-     * @deprecated rewrite or remove after use SelectionCriteriaFactory::create
-     * @param Entity\Assistance $assistance
-     * @param array             $selectionCriteriaShitArray
-     *
-     * @return array
-     */
-    private function makeSelectionCriteriaBlackMagick(Entity\Assistance $assistance, array $selectionCriteriaShitArray): array
-    {
-        $criteria = [];
-        foreach ($selectionCriteriaShitArray as $i => $criteriaData) {
-            foreach ($criteriaData as $j => $criterionArray) {
-                /** @var SelectionCriteria $criterion */
-                $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
-                    PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
-                ]);
-                $criterion->setGroupNumber($i);
-                $this->criteriaAssistanceService->save($assistance, $criterion);
-                $criteria[$i][$j] = $criterionArray;
-            }
-        }
-
-        return $criteria;
     }
 }

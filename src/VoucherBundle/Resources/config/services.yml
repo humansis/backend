@@ -6,10 +6,18 @@ services:
         autowire: true
         tags: [ 'app.controller' ]
 
+    VoucherBundle\Controller\SmartcardController:
+        arguments:
+            - '@DistributionBundle\Export\SmartcardInvoiceExport'
+            - '@CommonBundle\Repository\OrganizationRepository'
+            - '@NewApiBundle\Component\Country\Countries'
+        public: true
+
     VoucherBundle\Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
         calls:
             - setLocationRepository: ['@CommonBundle\Repository\LocationRepository']
+            - setPreliminaryInvoiceRepository: ['@NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - VoucherBundle\Entity\Vendor
@@ -24,12 +32,22 @@ services:
         arguments:
             - VoucherBundle\Entity\SmartcardPurchase
 
+    VoucherBundle\Repository\SmartcardDepositRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - VoucherBundle\Entity\SmartcardDeposit
+
+    VoucherBundle\Repository\SmartcardRepository:
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - VoucherBundle\Entity\Smartcard
+
     VoucherBundle\Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository
 
     voucher.vendor_service:
         class: VoucherBundle\Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@location_service', '@service_container', '@Twig\Environment']
         public: true
 
     VoucherBundle\Utils\VendorService: '@voucher.vendor_service'
@@ -41,11 +59,12 @@ services:
             - '@validator'
             - '@service_container'
             - '@VoucherBundle\Utils\BookletGenerator'
+            - '@Twig\Environment'
         public: true
 
     voucher.voucher_service:
         class: VoucherBundle\Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@Twig\Environment']
         public: true
 
     voucher.product_service:
@@ -63,16 +82,17 @@ services:
         public: true
         arguments: [ '@doctrine.orm.entity_manager', '@logger' ]
 
+    VoucherBundle\Utils\SmartcardService:
+        alias: smartcard_service
+
     smartcard_service:
         class: VoucherBundle\Utils\SmartcardService
+        autowire: true
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@voucher.purchase_service'
-            - '@workflow.registry'
-            - '@logger'
-            - '@cache.app'
-            - '@=service("doctrine.orm.entity_manager").getRepository("DistributionBundle:AssistanceBeneficiary")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("NewApiBundle:Assistance\\ReliefPackage")'
+            - '@VoucherBundle\Repository\SmartcardRepository'
+            - '@smartcard_purchase.repository'
         public: true
 
     VoucherBundle\Mapper\SmartcardMapper:
@@ -89,3 +109,6 @@ services:
     VoucherBundle\Utils\BookletGenerator:
         public: true
         arguments: [ '@doctrine.orm.entity_manager' ]
+
+
+

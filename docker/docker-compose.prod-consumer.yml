@@ -1,0 +1,24 @@
+version: '3.7'
+
+networks:
+    backend:
+        external: false
+
+services:
+    consumer:
+        # CAREFUL: "production" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-php:production
+        volumes:
+            - /opt/humansis/var:/var/www/html/var
+            - /var/cache/humansis:/var/www/html/var/cache
+            - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
+        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100"
+        networks:
+            - backend
+        restart: always
+        environment:
+            ENVIRONMENT: prod
+        logging:
+            driver: "syslog"
+            options:
+                tag: docker-consumer

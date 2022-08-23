@@ -1,18 +1,16 @@
 <?php
-
 declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
 use CommonBundle\Pagination\Paginator;
-use DistributionBundle\Entity\Commodity;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\InputType\AssistanceTargetFilterInputType;
 use NewApiBundle\InputType\AssistanceTypeFilterInputType;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,15 +25,21 @@ class AssistanceCodelistController extends AbstractController
      */
     private $sectorService;
 
+    /** @var CodeListService */
+    private $codeListService;
+
     /**
      * AssistanceCodelistController constructor.
      * @param SectorService $sectorService
+     * @param CodeListService $codeListService
      */
     public function __construct(
-        SectorService $sectorService
+        SectorService $sectorService,
+        CodeListService $codeListService
     )
     {
         $this->sectorService = $sectorService;
+        $this->codeListService = $codeListService;
     }
 
     /**
@@ -53,7 +57,7 @@ class AssistanceCodelistController extends AbstractController
             $data = $this->sectorService->findTargetsByType($targetTypeFilterType->getType());
         }
 
-        $targets = CodeLists::mapEnum($data);
+        $targets = $this->codeListService->mapEnum($data);
 
         return $this->json(new Paginator($targets));
     }
@@ -81,7 +85,7 @@ class AssistanceCodelistController extends AbstractController
             }
         }
 
-        $assistanceTypes = CodeLists::mapEnum($data);
+        $assistanceTypes = $this->codeListService->mapEnum($data);
 
         return $this->json(new Paginator($assistanceTypes));
     }
@@ -93,8 +97,8 @@ class AssistanceCodelistController extends AbstractController
      */
     public function getCommodityDivision(): JsonResponse
     {
-        $targets = CodeLists::mapEnum(CommodityDivision::values());
+        $data = $this->codeListService->mapEnum(CommodityDivision::values());
 
-        return $this->json(new Paginator($targets));
+        return $this->json(new Paginator($data));
     }
 }

@@ -29,8 +29,8 @@ services:
             - '@location_service'
             - '@distribution.commodity_service'
             - '@distribution.criteria_assistance_service'
-            - '@transformer.selection_criterion_field'
             - '@service_container'
+            - '@Twig\Environment'
 
     distribution.assistance_beneficiary_service:
         class: DistributionBundle\Utils\AssistanceBeneficiaryService
@@ -44,15 +44,12 @@ services:
         public: true
 
     DistributionBundle\Utils\CriteriaAssistanceService:
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@distribution.configuration_loader'
-            - '@beneficiary.vulnerability_resolver'
-            - '@serializer'
 
     distribution.configuration_loader:
-        class: DistributionBundle\Utils\ConfigurationLoader
+        alias: DistributionBundle\Utils\ConfigurationLoader
         public: true
+
+    DistributionBundle\Utils\ConfigurationLoader:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '%distribution.criteria%'

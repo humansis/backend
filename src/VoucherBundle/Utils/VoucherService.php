@@ -12,6 +12,7 @@ use Doctrine\ORM\Query;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 use VoucherBundle\DTO\RedemptionVoucherBatchCheck;
 use VoucherBundle\Entity\Booklet;
@@ -35,26 +36,36 @@ class VoucherService
     private $container;
 
     /**
-     * UserService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @var Environment
      */
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container)
+    private $twig;
+
+    /**
+     * UserService constructor.
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param ValidatorInterface     $validator
+     * @param ContainerInterface     $container
+     * @param Environment            $twig
+     */
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator, ContainerInterface $container, Environment $twig)
     {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
+        $this->twig = $twig;
     }
 
     /**
      * Creates a new Voucher entity
      *
      * @param array $vouchersData
+     * @param bool  $flush
+     *
      * @return array
      * @throws \Exception
      */
-    public function create(array $vouchersData, $flush = true)
+    public function create(array $vouchersData, bool $flush = true)
     {
         $vouchers = [];
         try {
@@ -322,7 +333,7 @@ class VoucherService
         }
 
         try {
-            $html =  $this->container->get('templating')->render(
+            $html =  $this->twig->render(
                 '@Voucher/Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],

@@ -174,42 +174,4 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('type', $item, "Part of answer missing: type in institution list");
         }
     }
-
-    /**
-     * @depends testCreateInstitution
-     * @return bool|void
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function testGetInstitutionByPaginator()
-    {
-        // Log a user in order to go through the security firewall
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-        
-        $body = [
-            "pageIndex" => 0,
-            "pageSize" => 1,
-            "filter" => [],
-            "sort" => []
-        ];
-        $crawler = $this->request('POST', '/api/wsse/institutions/get/all', $body);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
-        $institutionsArray = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertSame(1, count($institutionsArray[1]));
-        $institutions = $institutionsArray[1];
-        if (!empty($institutions)) {
-            $institution = current($institutions);
-
-            $this->assertArrayHasKey('type', $institution, "Part of answer missing: type");
-            $this->assertArrayHasKey('longitude', $institution,"Part of answer missing: longitude");
-            $this->assertArrayHasKey('latitude', $institution,"Part of answer missing: latitude");
-            $this->assertArrayHasKey('address', $institution,"Part of answer missing: address");
-        } else {
-            $this->markTestIncomplete("You currently don't have any institution in your database.");
-        }
-    }
-
 }

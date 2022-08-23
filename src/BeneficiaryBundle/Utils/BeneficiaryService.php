@@ -20,6 +20,7 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Utils\Exception\ExportNoDataException;
 use CommonBundle\Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
+use NewApiBundle\Entity\ImportBeneficiaryDuplicity;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\BenefciaryPatchInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
@@ -542,32 +543,10 @@ class BeneficiaryService
 
     /**
      * @param Beneficiary $beneficiary
-     * @return bool
      */
-    public function remove(Beneficiary $beneficiary)
+    public function remove(Beneficiary $beneficiary): void
     {
-        if ($beneficiary->isHead()) {
-            return false;
-        }
-
-        foreach ($beneficiary->getImportBeneficiaries() as $importLink) {
-            $this->em->remove($importLink);
-        }
-
-        $nationalIds = $this->nationalIdRepository->findByPerson($beneficiary->getPerson());
-        $profile = $this->profileRepository->find($beneficiary->getProfile());
-        foreach ($nationalIds as $nationalId) {
-            $this->em->remove($nationalId);
-        }
-
-        $phones = $this->phoneRepository->findByPerson($beneficiary->getPerson());
-        foreach ($phones as $phone) {
-            $this->em->remove($phone);
-        }
-        $this->em->remove($beneficiary);
-        $this->em->remove($profile);
-        $this->em->flush();
-        return true;
+        $beneficiary->setArchived();
     }
 
     /**

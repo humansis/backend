@@ -11,12 +11,15 @@ use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
 use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
 use NewApiBundle\Component\Assistance\DTO\CommoditySummary;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
@@ -43,6 +46,8 @@ class Assistance
     private $targetRepository;
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
 
     /**
      * @param Entity\Assistance               $assistanceEntity
@@ -51,14 +56,16 @@ class Assistance
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
      */
     public function __construct(
-        Entity\Assistance                                              $assistanceEntity,
-        CacheInterface                                                 $cache,
-        ModalityTypeRepository                                         $modalityTypeRepository,
-        AssistanceStatisticsRepository                                 $assistanceStatisticRepository,
-        Registry                                                       $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository
+        Entity\Assistance               $assistanceEntity,
+        CacheInterface                  $cache,
+        ModalityTypeRepository          $modalityTypeRepository,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
+        AssistanceBeneficiaryRepository $targetRepository,
+        SelectionCriteriaFactory        $selectionCriteriaFactory
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
@@ -66,6 +73,7 @@ class Assistance
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
     public function getStatistics(?string $countryIso3 = null): array
@@ -270,8 +278,8 @@ class Assistance
 
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
                 }
             }
         }
@@ -280,11 +288,11 @@ class Assistance
     /**
      * @param AbstractBeneficiary $beneficiary
      * @param string|null         $justification
-     * @param array|null          $vulnerabilityScore TODO: replace by class or serializable interface
+     * @param ScoringProtocol|null          $vulnerabilityScore
      *
      * @return Assistance
      */
-    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?array $vulnerabilityScore = null): self
+    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
     {
         if ($this->assistanceRoot->getValidated() == 1) {
             throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
@@ -297,8 +305,8 @@ class Assistance
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(false);
             $this->assistanceRoot->addAssistanceBeneficiary($target);
-            if (!empty($vulnerabilityScore)) {
-                $target->setVulnerabilityScores(json_encode($vulnerabilityScore));
+            if (!is_null($vulnerabilityScore)) {
+                $target->setVulnerabilityScores($vulnerabilityScore);
             }
         } else {
             $target->setRemoved(false);
@@ -326,6 +334,7 @@ class Assistance
             throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
         }
 
+        /** @var AssistanceBeneficiary $target */
         $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if ($target === null) return $this;
 
@@ -334,8 +343,10 @@ class Assistance
         }
         $target->setRemoved(true)
             ->setJustification($justification);
-        $this->cancelUnusedReliefPackages([$target]);
         $this->assistanceRoot->setUpdatedOn(new \DateTime());
+
+        $this->cancelUnusedReliefPackages([$target]);
+
         $this->cleanCache();
 
         return $this;
@@ -375,6 +386,49 @@ class Assistance
             }
         }
         return $summaries;
+    }
+
+    /**
+     * Get all active beneficiaries (not removed or archived)
+     *
+     * @return ArrayCollection
+     */
+    public function getBeneficiaries(): ArrayCollection
+    {
+        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(function ($item) {
+            /**
+             * @var AssistanceBeneficiary $item
+             */
+            return ($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false);
+        });
+    }
+
+    public function addSelectionCriteria(SelectionCriteria $selectionCriteria): void
+    {
+        $this->assistanceRoot
+            ->getAssistanceSelection()
+            ->getSelectionCriteria()
+            ->add($selectionCriteria->getCriteriaRoot())
+        ;
+        $selectionCriteria
+            ->getCriteriaRoot()
+            ->setAssistanceSelection($this->assistanceRoot->getAssistanceSelection())
+        ;
+    }
+
+    /**
+     * @return CriteriaGroup[]
+     */
+    public function getSelectionCriteriaGroups(): iterable
+    {
+        $selectionCriteria = [];
+        /** @var \NewApiBundle\Entity\Assistance\SelectionCriteria $criterion */
+        foreach ($this->assistanceRoot->getSelectionCriteria() as $criterion) {
+            $selectionCriteria[$criterion->getGroupNumber()][] = $this->selectionCriteriaFactory->hydrate($criterion);
+        }
+        foreach ($selectionCriteria as $groupNumber => $criteria) {
+            yield new CriteriaGroup($groupNumber, $criteria);
+        }
     }
 
 }

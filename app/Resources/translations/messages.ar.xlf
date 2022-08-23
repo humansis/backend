@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="ar" datatype="plaintext" original="file.ext">
     <header>
@@ -19,6 +19,10 @@
       </trans-unit>
       <trans-unit id="dcFiFi1" resname="Active projects">
         <source>Active projects</source>
+        <target>المشاريع النشطة</target>
+      </trans-unit>
+      <trans-unit id="gOUCFfW" resname="Active Projects">
+        <source>Active Projects</source>
         <target>المشاريع النشطة</target>
       </trans-unit>
       <trans-unit id="4ZaJUj7" resname="Activity Description">
@@ -199,6 +203,10 @@
       </trans-unit>
       <trans-unit id="u1AdeHf" resname="Community">
         <source>Community</source>
+        <target>مجتمع</target>
+      </trans-unit>
+      <trans-unit id="81TumeK" resname="community">
+        <source>community</source>
         <target>مجتمع</target>
       </trans-unit>
       <trans-unit id="ObNtONb" resname="Condition">
@@ -397,6 +405,10 @@
         <source>Enrolled beneficiaries</source>
         <target>المستفيدين المسجلين</target>
       </trans-unit>
+      <trans-unit id="LAlAY4Z" resname="Enrolled Beneficiaries">
+        <source>Enrolled Beneficiaries</source>
+        <target>المستفيدين المسجلين</target>
+      </trans-unit>
       <trans-unit id="sKv_7qu" resname="Enumerator">
         <source>Enumerator</source>
         <target>العداد</target>
@@ -481,6 +493,10 @@
         <source>Has Not Been In Distribution Since</source>
         <target>لم يكن في التوزيع منذ</target>
       </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>الصحة</target>
+      </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
         <target>الصحة</target>
@@ -509,6 +525,10 @@
         <source>Household</source>
         <target>الأسرة</target>
       </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>الأسرة</target>
+      </trans-unit>
       <trans-unit id="dJOqWjY" resname="Household Head">
         <source>Household Head</source>
         <target>رب الأسرة</target>
@@ -532,10 +552,6 @@
       <trans-unit id="7i56ctq" resname="Household Size">
         <source>Household Size</source>
         <target>حجم الأسرة</target>
-      </trans-unit>
-      <trans-unit id="i9HzhQO" resname="Households Targeted">
-        <source>Households Targeted</source>
-        <target>الأسر المستهدفة</target>
       </trans-unit>
       <trans-unit id="98f8lQA" resname="Household Status">
         <source>Household Status</source>
@@ -573,8 +589,15 @@
         <source>Import from file</source>
         <target>استيراد من ملف</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
+      <trans-unit id="TKbwbtO" resname="Import from File">
+        <source>Import from File</source>
+        <target>استيراد من ملف</target>
+      </trans-unit>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
         <target>قم باستيراد الملف الذي يحتوي على التوزيع المعدّل. سيتم تحديث قاعدة البيانات بقائمة</target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
@@ -591,6 +614,10 @@
       </trans-unit>
       <trans-unit id="ZaFVNyn" resname="Institution">
         <source>Institution</source>
+        <target>المؤسسة</target>
+      </trans-unit>
+      <trans-unit id="gi.jZ5y" resname="institution">
+        <source>institution</source>
         <target>المؤسسة</target>
       </trans-unit>
       <trans-unit id="Uq.Myb0" resname="Institutions">
@@ -617,13 +644,13 @@
         <source>Latitude</source>
         <target>خط العرض</target>
       </trans-unit>
-      <trans-unit id="wd4uQBu" resname="livelihood">
-        <source>livelihood</source>
-        <target>سبل العيش</target>
-      </trans-unit>
       <trans-unit id="So3CbB1" resname="Livelihood">
         <source>Livelihood</source>
         <target>الوظيفة</target>
+      </trans-unit>
+      <trans-unit id="wd4uQBu" resname="livelihood">
+        <source>livelihood</source>
+        <target>سبل العيش</target>
       </trans-unit>
       <trans-unit id="coTSxPT" resname="Livelihoods Support">
         <source>Livelihoods Support</source>
@@ -965,6 +992,10 @@
         <source>Served beneficiaries</source>
         <target>المستفيدين خدم</target>
       </trans-unit>
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
+        <source>Served Beneficiaries</source>
+        <target>المستفيدين خدم</target>
+      </trans-unit>
       <trans-unit id="SQmtaXI" resname="Set As Distributed">
         <source>Set As Distributed</source>
         <target>تعيين انتهاء التوزيع</target>
@@ -1109,12 +1140,12 @@
         <source>Validate and Lock</source>
         <target>التحقق والقفل</target>
       </trans-unit>
-      <trans-unit id="jjeVPSP" resname="Value">
-        <source>Value</source>
-        <target>القيمة</target>
-      </trans-unit>
       <trans-unit id="zUJATVK" resname="value">
         <source>value</source>
+        <target>القيمة</target>
+      </trans-unit>
+      <trans-unit id="jjeVPSP" resname="Value">
+        <source>Value</source>
         <target>القيمة</target>
       </trans-unit>
       <trans-unit id="_KqCtC0" resname="Vendor">
@@ -1132,10 +1163,6 @@
       <trans-unit id="m5jpuf8" resname="Village">
         <source>Village</source>
         <target>القرية</target>
-      </trans-unit>
-      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
-        <source>Village/Neighbourhood</source>
-        <target>قرية</target>
       </trans-unit>
       <trans-unit id="9nNksbD" resname="Vocational Training">
         <source>Vocational Training</source>
@@ -1164,6 +1191,14 @@
       <trans-unit id="oCQ66J1" resname="You can select only one country">
         <source>You can select only one country</source>
         <target>يمكنك اختيار دولة واحدة فقط</target>
+      </trans-unit>
+      <trans-unit id="i9HzhQO" resname="Households Targeted">
+        <source>Households Targeted</source>
+        <target>الأسر المستهدفة</target>
+      </trans-unit>
+      <trans-unit id="pPmun0d" resname="Village/Neighbourhood">
+        <source>Village/Neighbourhood</source>
+        <target>قرية</target>
       </trans-unit>
     </body>
   </file>

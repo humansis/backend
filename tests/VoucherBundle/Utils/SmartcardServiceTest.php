@@ -3,22 +3,27 @@
 namespace VoucherBundle\Tests\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Location;
+use DateTime;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
+use NewApiBundle\Component\Smartcard\Deposit\DepositFactory;
+use NewApiBundle\Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\Enum\ModalityType;
+use NewApiBundle\InputType\Smartcard\DepositInputType;
+use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use UserBundle\Entity\User;
-use VoucherBundle\DTO\PurchaseRedemptionBatch;
 use VoucherBundle\Entity\Product;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\InputType\SmartcardPurchase;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
@@ -37,6 +42,9 @@ class SmartcardServiceTest extends KernelTestCase
     /** @var string */
     private $smartcardNumber = '';
 
+    /** @var DepositFactory */
+    private $depositFactory;
+
     public function setUp()
     {
         self::bootKernel();
@@ -47,6 +55,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->getManager();
 
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
+        $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -178,7 +187,7 @@ class SmartcardServiceTest extends KernelTestCase
         $assistanceRepository = $this->em->getRepository(Assistance::class);
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
-        $date = \DateTime::createFromFormat('Y-m-d', '2000-01-01');
+        $date = DateTime::createFromFormat('Y-m-d', '2000-01-01');
         foreach ($actions as $actionData) {
             switch ($actionData[1]) {
                 case 'register':
@@ -186,7 +195,11 @@ class SmartcardServiceTest extends KernelTestCase
                     /** @var Assistance $assistance */
                     $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
                     $beneficiary = $assistance->getDistributionBeneficiaries()->get(0)->getBeneficiary();
-                    $this->smartcardService->register($this->smartcardNumber, $beneficiaryId, $date);
+                    $registerInputType = SmartcardRegisterInputType::create($this->smartcardNumber, $beneficiaryId, $date->format(\DateTimeInterface::ATOM));
+                    try {
+                        $this->smartcardService->register($registerInputType);
+                    } catch (SmartcardDoubledRegistrationException $e) {
+                    }
                     break;
                 case 'purchase':
                     [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
@@ -228,12 +241,14 @@ class SmartcardServiceTest extends KernelTestCase
                     $this->em->persist($reliefPackage);
                     $this->em->flush();
 
-                    $this->smartcardService->deposit(
+                    $this->depositFactory->create(
                         $this->smartcardNumber,
-                        $reliefPackage->getId(),
-                        $value,
-                        $value, // balance is rewritten by new value
-                        $date,
+                        DepositInputType::create(
+                            $reliefPackage->getId(),
+                            $value,
+                            $value, // balance is rewritten by new value
+                            $date
+                        ),
                         $admin
                     );
                     break;
@@ -241,14 +256,14 @@ class SmartcardServiceTest extends KernelTestCase
             $date = clone $date;
             $date->modify('+1 day');
         }
-        /** @var PurchaseRedemptionBatch[] $batchCandidates */
-        $batchCandidates = $this->smartcardService->getRedemptionCandidates($this->vendor);
-        $this->assertIsArray($batchCandidates, "Redemption candidates must be array");
-        $this->assertCount(count($expectedResults), $batchCandidates, "Wrong count of redemption candidates");
-        foreach ($batchCandidates as $candidate) {
-            $this->assertContains([$candidate->getValue(), $candidate->getCurrency(), $candidate->getProjectId()], $expectedResults, "Result was unexpected");
+        /** @var PreliminaryInvoice[] $preliminaryInvoices */
+        $preliminaryInvoices = $this->smartcardService->getRedemptionCandidates($this->vendor);
+        $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
+        $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
 
-            foreach ($candidate->getPurchasesIds() as $purchaseId) {
+            foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
                 $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
                 $this->assertNotNull($purchase, "Purchase must exists");
@@ -256,19 +271,19 @@ class SmartcardServiceTest extends KernelTestCase
             }
         }
         // redeem test
-        foreach ($batchCandidates as $candidateToSave) {
-            $batchRequest = new SmartcardRedemtionBatch();
-            $batchRequest->setPurchases($candidateToSave->getPurchasesIds());
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            $batchRequest = new SmartcardInvoice();
+            $batchRequest->setPurchases($preliminaryInvoice->getPurchaseIds());
 
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
 
             foreach ($batch->getPurchases() as $purchase) {
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
             }
-            $this->assertEquals($candidateToSave->getValue(), $batch->getValue(), "Redemption value of batch is different");
-            $this->assertEquals($candidateToSave->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($candidateToSave->getProjectId(), $batch->getProject()->getId(), "Redemption project of batch is different");
-            $this->assertEquals($candidateToSave->getPurchasesCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+            $this->assertEquals($preliminaryInvoice->getValue(), $batch->getValue(), "Redemption value of batch is different");
+            $this->assertEquals($preliminaryInvoice->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
+            $this->assertEquals($preliminaryInvoice->getProject()->getId(), $batch->getProject()->getId(), "Redemption project of batch is different");
+            $this->assertEquals($preliminaryInvoice->getPurchaseCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
         }
     }
 
@@ -483,7 +498,12 @@ class SmartcardServiceTest extends KernelTestCase
             foreach ($subActions as $action) {
                 switch ($action) {
                     case 'register':
-                        $this->smartcardService->register($serialNumber, $beneficiaryId, \DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        $createdAt = DateTime::createFromFormat('Y-m-d', $dateOfEvent);
+                        $registerInputType = SmartcardRegisterInputType::create($serialNumber, $beneficiaryId, $createdAt->format(\DateTimeInterface::ATOM));
+                        try {
+                            $this->smartcardService->register($registerInputType);
+                        } catch (SmartcardDoubledRegistrationException $e) {
+                        }
                         break;
                     case 'deposit':
                         /** @var Assistance $assistance */
@@ -506,13 +526,22 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->em->persist($reliefPackage);
                         $this->em->flush();
 
-                        $this->smartcardService->deposit($serialNumber, $reliefPackage->getId(), 100, null, \DateTime::createFromFormat('Y-m-d', $dateOfEvent), $admin);
+                        $this->depositFactory->create(
+                            $serialNumber,
+                            DepositInputType::create(
+                                $reliefPackage->getId(),
+                                100,
+                                null,
+                                \DateTime::createFromFormat('Y-m-d', $dateOfEvent)
+                            ),
+                            $admin
+                        );
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];
                         $purchaseData = new SmartcardPurchase();
                         $purchaseData->setBeneficiaryId($beneficiaryId);
-                        $purchaseData->setCreatedAt(\DateTime::createFromFormat('Y-m-d', $dateOfEvent));
+                        $purchaseData->setCreatedAt(DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         $purchaseData->setVendorId($vendorId);
                         $purchaseData->setProducts([
                             [
@@ -563,27 +592,26 @@ class SmartcardServiceTest extends KernelTestCase
 
         foreach ($expectedVendorResults as $vendorId => $values) {
             $vendor = $this->em->getRepository(Vendor::class)->find($vendorId);
-            $redemptionCandidates = $this->smartcardService->getRedemptionCandidates($vendor);
+            $preliminaryInvoice = $this->smartcardService->getRedemptionCandidates($vendor);
             if (is_array($values)) {
-                $this->assertCount(1, $redemptionCandidates, "Wrong number of invoice candidates");
-                /** @var PurchaseRedemptionBatch $invoice */
-                $invoice = $redemptionCandidates[0];
-                $this->assertEquals($values['purchases'], $invoice->getPurchasesCount(), "Wrong redeemable purchases count");
+                $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
+                /** @var PreliminaryInvoice $invoice */
+                $invoice = $preliminaryInvoice[0];
+                $this->assertEquals($values['purchases'], $invoice->getPurchaseCount(), "Wrong redeemable purchases count");
                 $this->assertEquals($values['value'], $invoice->getValue(), "Wrong redeemable value");
-                $this->assertEquals($projectA, $invoice->getProjectId(), "Wrong redeemable project");
+                $this->assertEquals($projectA, $invoice->getProject()->getId(), "Wrong redeemable project");
             } elseif (null === $values) {
-                $this->assertEmpty($redemptionCandidates, "Wrong number of invoice candidates");
+                $this->assertEmpty($preliminaryInvoice, "Wrong number of invoice candidates");
             } else {
                 $this->fail("Wrong test data.");
             }
         }
     }
 
-    private function createTempVendor(\Doctrine\ORM\EntityManagerInterface $em): void
+    private function createTempVendor(EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
-        $adm1 = $this->em->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR'], ['id' => 'asc']);
-        $adm2 = $this->em->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
+        $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryISO3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
         $user = new User();
         $user->injectObjectManager($em);
@@ -605,7 +633,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation());
+            ->setLocation($adm2);
         $this->vendor->setName("Test Vendor for ".__CLASS__);
     }
 }

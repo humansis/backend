@@ -26,6 +26,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Twig\Environment;
 use UserBundle\Entity\User;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\VoucherPurchase;
@@ -46,22 +47,31 @@ class VendorService
     private $locationService;
 
     /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
-     * @param LocationService $locationService
+     * @param ValidatorInterface     $validator
+     * @param LocationService        $locationService
+     * @param ContainerInterface     $container
+     * @param Environment            $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         LocationService $locationService,
-        ContainerInterface $container
+        ContainerInterface $container,
+        Environment $twig
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
         $this->container = $container;
         $this->locationService = $locationService;
+        $this->twig = $twig;
     }
 
     /**
@@ -323,35 +333,20 @@ class VendorService
             }
 
             $location = $vendor->getLocation();
+            $locationCountry = $location ? $location->getCountryISO3() : null; 
+            $locationNames = [
+                'adm1' => null,
+                'adm2' => null,
+                'adm3' => null,
+                'adm4' => null,
+            ];
 
-            if ($location && $location->getAdm4()) {
-                $village = $location->getAdm4();
-                $commune = $village->getAdm3();
-                $district = $commune->getAdm2();
-                $province = $district->getAdm1();
-            } elseif ($location && $location->getAdm3()) {
-                $commune = $location->getAdm3();
-                $district = $commune->getAdm2();
-                $province = $district->getAdm1();
-                $village = null;
-            } elseif ($location && $location->getAdm2()) {
-                $district = $location->getAdm2();
-                $province = $district->getAdm1();
-                $village = null;
-                $commune = null;
-            } elseif ($location && $location->getAdm1()) {
-                $province = $location->getAdm1();
-                $village = null;
-                $commune = null;
-                $district = null;
-            } else {
-                $village = null;
-                $commune = null;
-                $district = null;
-                $province = null;
+            while ($location !== null) {
+                $locationNames['adm' . $location->getLvl()] = $location->getName();
+                $location = $location->getParent();
             }
 
-            $html = $this->container->get('templating')->render(
+            $html = $this->twig->render(
                 '@Voucher/Pdf/invoice.html.twig',
                 array_merge(
                     array(
@@ -362,11 +357,11 @@ class VendorService
                         'addressNumber'  => $vendor->getAddressNumber(),
                         'vendorNo' => $vendor->getVendorNo(),
                         'contractNo' => $vendor->getContractNo(),
-                        'addressVillage' => $village ? $village->getName() : null,
-                        'addressCommune' => $commune ? $commune->getName() : null,
-                        'addressDistrict' => $district ? $district->getName() : null,
-                        'addressProvince' => $province ? $province->getName() : null,
-                        'addressCountry' => $province ? $province->getCountryISO3() : null,
+                        'addressVillage' => $locationNames['adm4'],
+                        'addressCommune' => $locationNames['adm3'],
+                        'addressDistrict' => $locationNames['adm2'],
+                        'addressProvince' => $locationNames['adm1'],
+                        'addressCountry' => $locationCountry,
                         'date'  => (new DateTime())->format('d-m-Y'),
                         'voucherPurchases' => $voucherPurchases,
                         'totalValue' => $totalValue

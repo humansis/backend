@@ -81,45 +81,6 @@ class HouseholdController extends Controller
     }
 
     /**
-     * @Rest\Post("/households/get/all", name="all_households")
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_READ')")
-     *
-     * @SWG\Tag(name="Households")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="All households",
-     *     @SWG\Schema(
-     *          type="array",
-     *          @SWG\Items(ref=@Model(type=Household::class))
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function allAction(Request $request)
-    {
-        $filters = $request->request->all();
-        /** @var HouseholdService $householdService */
-        $householdService = $this->get('beneficiary.household_service');
-
-        try {
-            $households = $householdService->getAll($filters['__country'], $filters);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-        $json = $this->get('serializer')
-            ->serialize(
-                $households,
-                'json',
-                ['groups' => ["SmallHousehold"], 'datetime_format' => 'd-m-Y']
-            );
-
-        return new Response($json);
-    }
-
-    /**
      * @Rest\Put("/households", name="add_household_projects")
      * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE')")
      *

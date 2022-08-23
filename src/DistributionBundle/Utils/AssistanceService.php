@@ -16,7 +16,6 @@ use DistributionBundle\DTO\VulnerabilityScore;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use DistributionBundle\Entity\ModalityType;
-use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
@@ -27,11 +26,13 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
+use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
 use Psr\Container\ContainerInterface;
@@ -42,6 +43,8 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -72,9 +75,6 @@ class AssistanceService
     /** @var ContainerInterface $container */
     private $container;
 
-    /** @var FieldDbTransformer */
-    private $fieldDbTransformer;
-
     /** @var CacheInterface */
     private $cache;
 
@@ -83,6 +83,20 @@ class AssistanceService
 
     /** @var AssistanceRepository */
     private $assistanceRepository;
+
+    /** @var SelectionCriteriaFactory */
+    private $selectionCriteriaFactory;
+
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
+
+    /** @var TranslatorInterface */
+    private $translator;
+
+    /**
+     * @var Environment
+     */
+    private $twig;
 
     /**
      * AssistanceService constructor.
@@ -93,11 +107,11 @@ class AssistanceService
      * @param LocationService           $locationService
      * @param CommodityService          $commodityService
      * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param FieldDbTransformer        $fieldDbTransformer
      * @param ContainerInterface        $container
      * @param FilesystemAdapter         $cache
      * @param AssistanceFactory         $assistanceFactory
      * @param AssistanceRepository      $assistanceRepository
+     * @param SelectionCriteriaFactory  $selectionCriteriaFactory
      */
     public function __construct(
         EntityManagerInterface    $entityManager,
@@ -106,11 +120,13 @@ class AssistanceService
         LocationService           $locationService,
         CommodityService          $commodityService,
         CriteriaAssistanceService $criteriaAssistanceService,
-        FieldDbTransformer        $fieldDbTransformer,
         ContainerInterface        $container,
+        Environment               $twig,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
-        AssistanceRepository      $assistanceRepository
+        AssistanceRepository      $assistanceRepository,
+        SelectionCriteriaFactory  $selectionCriteriaFactory,
+        TranslatorInterface $translator
     ) {
         $this->em = $entityManager;
         $this->serializer = $serializer;
@@ -118,11 +134,13 @@ class AssistanceService
         $this->locationService = $locationService;
         $this->commodityService = $commodityService;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->fieldDbTransformer = $fieldDbTransformer;
         $this->container = $container;
         $this->cache = $cache;
         $this->assistanceFactory = $assistanceFactory;
         $this->assistanceRepository = $assistanceRepository;
+        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
+        $this->twig = $twig;
+        $this->translator = $translator;
     }
 
     /**
@@ -145,10 +163,8 @@ class AssistanceService
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
 
-        $filters = $this->mapping($inputType);
-        $filters['criteria'] = $filters['selection_criteria'];
-
-        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -176,13 +192,9 @@ class AssistanceService
         if (!$project) {
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
-        // FIXME: disabled for performance reasons, see PIN-2630 for further details
-        return new Paginator([], -1);
 
-        $filters = $this->mapping($inputType);
-        $filters['criteria'] = $filters['selection_criteria'];
-
-        $result = $this->criteriaAssistanceService->load($filters, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false);
+        $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
+        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringBlueprintId());
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -246,7 +258,7 @@ class AssistanceService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName(self::generateName($location, $distribution->getDateDistribution()));
+        $distribution->setName($this->generateName($location, $distribution->getDateDistribution()));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -291,19 +303,27 @@ class AssistanceService
             $criteria = [];
             foreach ($selectionCriteriaGroup as $i => $criteriaData) {
                 foreach ($criteriaData as $j => $criterionArray) {
-                    /** @var SelectionCriteria $criterion */
-                    $criterion = $this->serializer->deserialize(json_encode($criterionArray), SelectionCriteria::class, 'json', [
-                        PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
-                    ]);
-                    $criterion->setGroupNumber($i);
-                    $this->criteriaAssistanceService->save($distribution, $criterion);
-                    $this->em->persist($criterion);
-                    $criteria[$i][$j] = $criterionArray;
+                    $criterium = new SelectionCriterionInputType();
+                    $criterium->setWeight($criterionArray['weight']);
+                    $criterium->setGroup($j);
+                    $criterium->setTarget($criterionArray['target']);
+                    $criterium->setCondition($criterionArray['condition_string']);
+                    $criterium->setField($criterionArray['field_string']);
+                    $criterium->setValue($criterionArray['value'] ?? $criterionArray['value_string'] );
+                    $criteria[] = $criterium;
                 }
             }
-
-            $distributionArray['selection_criteria'] = $criteria;
-            $listReceivers = $this->guessBeneficiaries($distributionArray, $countryISO3, $projectTmp, $distribution->getTargetType(), $sector, $subsector, $distributionArray['threshold']);
+            $selectionGroups = $this->selectionCriteriaFactory->createGroups($criteria);
+            $listReceivers = $this->container->get('distribution.criteria_assistance_service')
+                ->load(
+                    $selectionGroups,
+                    $project,
+                    $distribution->getTargetType(),
+                    $sector,
+                    $subsector,
+                    $distributionArray['threshold'],
+                    false
+                );
             $this->saveReceivers($distribution, $listReceivers);
         }
 
@@ -322,26 +342,6 @@ class AssistanceService
     }
 
     /**
-     * @deprecated dont use at all
-     * @param array   $criteria
-     * @param         $countryISO3
-     * @param Project $project
-     * @param string  $targetType
-     * @param         $sector
-     * @param         $subsector
-     * @param int     $threshold
-     *
-     * @return mixed
-     */
-    private function guessBeneficiaries(array $criteria, $countryISO3, Project $project, string $targetType, $sector, $subsector, int $threshold)
-    {
-        $criteria['criteria'] = $criteria['selection_criteria'];
-        $criteria['countryIso3'] = $countryISO3;
-
-        return $this->container->get('distribution.criteria_assistance_service')->load($criteria, $project, $targetType, $sector, $subsector, $threshold, false);
-    }
-
-    /**
      * @param Assistance $assistance
      * @param array      $listReceivers
      *
@@ -349,7 +349,7 @@ class AssistanceService
      */
     private function saveReceivers(Assistance $assistance, array $listReceivers)
     {
-        foreach ($listReceivers['finalArray'] as $receiver => $scores) {
+        foreach ($listReceivers['finalArray'] as $receiver => $scoreProtocol) {
             /** @var Beneficiary $beneficiary */
             $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $receiver);
 
@@ -357,7 +357,7 @@ class AssistanceService
                 ->setAssistance($assistance)
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(0)
-                ->setVulnerabilityScores(json_encode($scores));
+                ->setVulnerabilityScores($scoreProtocol);
 
             $this->em->persist($assistanceBeneficiary);
         }
@@ -385,7 +385,7 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
     {
-        $newDistributionName = self::generateName($assistance->getLocation(), $date);
+        $newDistributionName = $this->generateName($assistance->getLocation(), $date);
 
         $assistance
             ->setDateDistribution($date)
@@ -399,6 +399,15 @@ class AssistanceService
     public function updateDateExpiration(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
+        $assistance->setUpdatedOn(new DateTime());
+
+        $this->em->persist($assistance);
+        $this->em->flush();
+    }
+
+    public function updateNote(Assistance $assistance, ?string $note): void
+    {
+        $assistance->setNote($note);
         $assistance->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
@@ -490,56 +499,56 @@ class AssistanceService
             
             
             $row = [
-                "Navi/Elo number" => $assistance->getProject()->getInternalId() ?? " ",
-                "DISTR. NO." => $assistance->getId(),
-                "Distributed by" => " ",
-                "Round" => " ",
-                "Donor" => $donors,
-                "Starting Date" => $assistance->getDateDistribution(),
-                "Ending Date" => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
-                "Governorate" => $assistance->getLocation()->getAdm1Name(),
-                "District" => $assistance->getLocation()->getAdm2Name(),
-                "Sub-District" => $assistance->getLocation()->getAdm3Name(),
-                "Town, Village" => $assistance->getLocation()->getAdm4Name(),
-                "Location = School/Camp" => " ",
-                "Neighbourhood (Camp Name)" => " ",
-                "Latitude" => " ",
-                "Longitude" => " ",
-                // "Location Code" => $distribution->getLocation()->getCode(),
-                "Activity (Modality)" => $commodityNames,
-                "UNIT" => $commodityUnit,
-                "Nº Of Units" => $numberOfUnits,
-                "Amount (USD/SYP)" => " ",
-                "Total Amount" => $totalAmount,
-                "Bebelac Type" => " ",
-                "Water\nNº of 1.5 bottles " => " ",
-                "Bebelac kg" => " ",
-                "Nappies Pack" => " ",
-                "IDPs" => $idps,
-                "Residents" => $residents,
-                "Nº FAMILIES" => $noFamilies,
-                "FEMALE\nHead of Family gender" => $femaleHHH,
-                "MALE\nHead of Family gender" => $maleHHH,
+                $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
+                $this->translator->trans("DISTR. NO.") => $assistance->getId(),
+                $this->translator->trans("Distributed by") => " ",
+                $this->translator->trans("Round") => " ",
+                $this->translator->trans("Donor") => $donors,
+                $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
+                $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
+                $this->translator->trans("Governorate") => $assistance->getLocation()->getAdm1Name(),
+                $this->translator->trans("District") => $assistance->getLocation()->getAdm2Name(),
+                $this->translator->trans("Sub-District") => $assistance->getLocation()->getAdm3Name(),
+                $this->translator->trans("Town, Village") => $assistance->getLocation()->getAdm4Name(),
+                $this->translator->trans("Location = School/Camp") => " ",
+                $this->translator->trans("Neighbourhood (Camp Name)") => " ",
+                $this->translator->trans("Latitude") => " ",
+                $this->translator->trans("Longitude") => " ",
+                // $this->translator->trans("Location Code") => $distribution->getLocation()->getCode(),
+                $this->translator->trans("Activity (Modality)") => $commodityNames,
+                $this->translator->trans("UNIT") => $commodityUnit,
+                $this->translator->trans("Nº Of Units") => $numberOfUnits,
+                $this->translator->trans("Amount (USD/SYP)") => " ",
+                $this->translator->trans("Total Amount") => $totalAmount,
+                $this->translator->trans("Bebelac Type") => " ",
+                $this->translator->trans("Water\nNº of 1.5 bottles ") => " ",
+                $this->translator->trans("Bebelac kg") => " ",
+                $this->translator->trans("Nappies Pack") => " ",
+                $this->translator->trans("IDPs") => $idps,
+                $this->translator->trans("Residents") => $residents,
+                $this->translator->trans("Nº FAMILIES") => $noFamilies,
+                $this->translator->trans("FEMALE\nHead of Family gender") => $femaleHHH,
+                $this->translator->trans("MALE\nHead of Family gender") => $maleHHH,
                 /*
                 * Male and Female children from 0 to 17 months
                 */
-                "Children\n0-23 months\nMale" => $maleChildrenUnder23month,
-                "Children\n0-23 months\nFemale" => $femaleChildrenUnder23month,
-                //"Children\n2-5" => $childrenUnder5years
-                "Children\n2-5\nMale" => $maleChildrenUnder5years,
-                "Children\n2-5\nFemale" => $femaleChildrenUnder5years,
-                "Males\n6-17" => $maleUnder17years,
-                "Females\n6-17" => $femaleUnder17years,
-                "Males\n18-59" => $maleUnder59years,
-                "Females\n18-59" => $femaleUnder59years,
-                "Males\n60+" => $maleOver60years,
-                "Females\n60+" => $femaleOver60years,
-                "Total\nMales" => $maleTotal,
-                "Total\nFemales" => $femaleTotal,
-                "Individ. Benef.\nServed" => $beneficiaryServed,
-                "Family\nSize" => $familySize
+                $this->translator->trans("Children\n0-23 months\nMale") => $maleChildrenUnder23month,
+                $this->translator->trans("Children\n0-23 months\nFemale") => $femaleChildrenUnder23month,
+                //$this->translator->trans("Children\n2-5") => $childrenUnder5years
+                $this->translator->trans("Children\n2-5\nMale") => $maleChildrenUnder5years,
+                $this->translator->trans("Children\n2-5\nFemale") => $femaleChildrenUnder5years,
+                $this->translator->trans("Males\n6-17") => $maleUnder17years,
+                $this->translator->trans("Females\n6-17") => $femaleUnder17years,
+                $this->translator->trans("Males\n18-59") => $maleUnder59years,
+                $this->translator->trans("Females\n18-59") => $femaleUnder59years,
+                $this->translator->trans("Males\n60+") => $maleOver60years,
+                $this->translator->trans("Females\n60+") => $femaleOver60years,
+                $this->translator->trans("Total\nMales") => $maleTotal,
+                $this->translator->trans("Total\nFemales") => $femaleTotal,
+                $this->translator->trans("Individ. Benef.\nServed") => $beneficiaryServed,
+                $this->translator->trans("Family\nSize") => $familySize
             ];
-            array_push($exportableTable, $row);
+            $exportableTable[] = $row;
         }
         return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
     }
@@ -597,7 +606,7 @@ class AssistanceService
         $project = $this->em->getRepository(Project::class)->find($projectId);
 
         try {
-            $html =  $this->container->get('templating')->render(
+            $html =  $this->twig->render(
                 '@Distribution/Pdf/distributions.html.twig',
                 array_merge(
                     ['project' => $project,
@@ -673,16 +682,7 @@ class AssistanceService
 
     private function generateName(Location $location, ?DateTimeInterface $date = null): string
     {
-        $adm = '';
-        if ($location->getAdm4()) {
-            $adm = $location->getAdm4()->getName();
-        } elseif ($location->getAdm3()) {
-            $adm = $location->getAdm3()->getName();
-        } elseif ($location->getAdm2()) {
-            $adm = $location->getAdm2()->getName();
-        } elseif ($location->getAdm1()) {
-            $adm = $location->getAdm1()->getName();
-        }
+        $adm = $location->getName();
 
         if ($date) {
             return $adm.'-'.$date->format('d-m-Y');
@@ -768,7 +768,7 @@ class AssistanceService
         }
 
         foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->fieldDbTransformer->toDbArray($criterion);
+            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->create($criterion);
         }
 
         return $distributionArray;
@@ -802,15 +802,14 @@ class AssistanceService
 
             $commonFields = $beneficiary->getCommonExportFields();
 
-            array_push($exportableTable,
-                array_merge($commonFields, array(
-                    "Commodity" => $commodityNames,
-                    "Value" => $commodityValues,
-                    "Distributed At" => $relief->getLastModifiedAt(),
-                    "Notes Distribution" => $relief->getNotes(),
-                    "Removed" => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $relief->getAssistanceBeneficiary()->getJustification(),
-                ))
+            $exportableTable[] = array_merge($commonFields, array(
+                    $this->translator->trans("Commodity") => $commodityNames,
+                    $this->translator->trans("Value") => $commodityValues,
+                    $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
+                    $this->translator->trans("Notes Distribution") => $relief->getNotes(),
+                    $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
+                    $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary()->getJustification(),
+                )
             );
         }
 
@@ -860,17 +859,15 @@ class AssistanceService
             }
             $products = implode(', ', array_unique($products));
 
-            array_push(
-                $exportableTable,
-                array_merge($commonFields, array(
-                    "Booklet" => $transactionBooklet ? $transactionBooklet->getCode() : null,
-                    "Status" => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                    "Value" => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
-                    "Used At" => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
-                    "Purchased items" => $products,
-                    "Removed" => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    "Justification for adding/removing" => $assistanceBeneficiary->getJustification(),
-                ))
+            $exportableTable[] = array_merge($commonFields, array(
+                    $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                    $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                    $this->translator->trans("Value") => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                    $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                    $this->translator->trans("Purchased items") => $products,
+                    $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                    $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary->getJustification(),
+                )
             );
         }
 

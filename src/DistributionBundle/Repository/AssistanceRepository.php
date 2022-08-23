@@ -59,30 +59,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getCodeOfUpcomingDistribution(string $countryISO)
-    {
-        $qb = $this->createQueryBuilder('dd');
-        $qb
-            ->addSelect('p')
-            ->addSelect('l')
-            ->addSelect('adm1')
-            ->addSelect('adm2')
-            ->addSelect('adm3')
-            ->addSelect('adm4')
-            ->innerJoin('dd.project', 'p')
-            ->innerJoin('dd.location', 'l')
-            ->leftJoin('l.adm1', 'adm1')
-            ->leftJoin('l.adm2', 'adm2')
-            ->leftJoin('l.adm3', 'adm3')
-            ->leftJoin('l.adm4', 'adm4')
-            ->andWhere('p.iso3 = :country')
-                ->setParameter('country', $countryISO)
-            ->andWhere('dd.dateDistribution > :now')
-                ->setParameter('now', new DateTime());
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function countCompleted(string $countryISO3): int
     {
         $qb = $this->createQueryBuilder('dd');

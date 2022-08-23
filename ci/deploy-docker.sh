@@ -14,15 +14,20 @@ echo "Configuring application build"
 export ec2_user="ec2-user"
 if [[ $1 == "production" ]]; then
   EC2_ASG=prod-asg
+  CONSUMER_EC2_ASG=consumer-prod-asg
   mv docker/docker-compose.prod.yml docker-compose.yml
+  mv docker/docker-compose.prod-consumer.yml docker-compose.consumer.yml
   # CAREFUL: replaces tokens in docker-compose.yml
   sed -i -e "s|production|${CI_COMMIT_TAG}|g" docker-compose.yml
+  sed -i -e "s|production|${CI_COMMIT_TAG}|g" docker-compose.consumer.yml
 elif [[ $1 == "demo" ]]; then
   EC2_ASG=demo-asg
   mv docker/docker-compose.demo.yml docker-compose.yml
 elif [[ $1 == "stage" ]]; then
   EC2_ASG=stage-asg
+  CONSUMER_EC2_ASG=consumer-stage-asg
   mv docker/docker-compose.stage.yml docker-compose.yml
+  mv docker/docker-compose.stage-consumer.yml docker-compose.consumer.yml
 elif [[ $1 == "test" ]]; then
   EC2_ASG=test-asg
   mv docker/docker-compose.test.yml docker-compose.yml
@@ -54,11 +59,24 @@ echo "...done"
 while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -gt 1 ] ; do
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${EC2_ASG} --desired-capacity 1
   echo "waiting for scale down, sleep for 20s"
+  if [[ -f docker-compose.consumer.yml ]]; then
+    # turn off consumer instance before deployment
+    aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 0
+  fi
   sleep 20;
 done
 INSTANCE_ID=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --output text --query 'AutoScalingGroups[*].Instances[?LifecycleState==`InService`].InstanceId')
 ec2_host=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --output text --query 'Reservations[*].Instances[*].PublicIpAddress')
 
+# safely wait for the consumer instance to be turned off
+if [[ -f docker-compose.consumer.yml ]]; then
+  while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${CONSUMER_EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -gt 0 ] ; do
+    echo "waiting for scale down, sleep for 20s"
+    # turn off consumer instance before deployment
+    aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 0
+    sleep 20;
+  done
+fi
 # add host to known_hosts
 if [[ -z `ssh-keygen -F $ec2_host` ]]; then
   ssh-keyscan -H $ec2_host >> ~/.ssh/known_hosts
@@ -66,17 +84,26 @@ fi
 
 echo "Starting application containers"
 scp docker-compose.yml app/config/parameters.yml ci/cron.sh $ec2_user@$ec2_host:/opt/humansis
+if [[ -f docker-compose.consumer.yml ]]; then
+  scp docker-compose.consumer.yml $ec2_user@$ec2_host:/opt/humansis
+fi
 rsync --chmod=u+rw,g-rwx,o-rwx $JWT_KEY $ec2_user@$ec2_host:/opt/humansis/jwt/private.pem
 rsync --chmod=u+rw,g+rw,o+r $JWT_CERT $ec2_user@$ec2_host:/opt/humansis/jwt/public.pem
 start_app="cd /opt/humansis && sudo docker-compose pull && sudo docker-compose up -d"
 ssh $ec2_user@$ec2_host $start_app
 
+if [[ ! -f docker-compose.consumer.yml ]]; then
+  stop_consumer="cd /opt/humansis && sudo docker-compose stop consumer"
+  ssh $ec2_user@$ec2_host $stop_consumer
+fi
+
 # clean database
-echo "Cleaning database"
 if [[ $2 == "true" ]]; then
+  echo "Cleaning database"
   clean_database="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'bash clean-database.sh migrations'"
   ssh $ec2_user@$ec2_host $clean_database
 elif [[ $2 == "database" ]]; then
+  echo "Cleaning database - copying ${DB_DEPLOY_NAME} database"
   clean_database="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'bash clean-database.sh'"
   ssh $ec2_user@$ec2_host $clean_database
   # get database
@@ -85,6 +112,7 @@ elif [[ $2 == "database" ]]; then
   migrations="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh $ec2_user@$ec2_host $migrations
 elif [[ $2 == "false" ]]; then
+  echo "Running migrations only, keeping database intact"
   # run database migrations
   migrations="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
   ssh $ec2_user@$ec2_host $migrations
@@ -119,6 +147,20 @@ scp ./ci/clear-cache.sh $ec2_user@$ec2_host:/opt/humansis
 cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
 ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
+
+# create default admin user
+if [[ $1 == "stage" ]]; then
+  admin_user="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console app:default-credentials'"
+  ssh $ec2_user@$ec2_host $admin_user
+fi
+
+if [[ -f docker-compose.consumer.yml ]]; then
+  # turn on consumer instance before deployment
+  aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 1
+else
+  start_consumer="cd /opt/humansis && sudo docker-compose start consumer"
+  ssh $ec2_user@$ec2_host $start_consumer
+fi
 
 rm_old_images="sudo docker system prune -f"
 ssh $ec2_user@$ec2_host $rm_old_images

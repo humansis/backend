@@ -4,6 +4,8 @@ namespace CommonBundle\Utils;
 
 use BeneficiaryBundle\Utils\ExcelColumnsGenerator;
 use CommonBundle\Utils\Exception\ExportNoDataException;
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -69,13 +71,14 @@ class ExportService
         $exportableTable,
         string $name,
         string $type,
-        bool $headerDown = false
+        bool $headerDown = false,
+        bool $headerBold = false
     ): string {
         if (0 === count($exportableTable)) {
             throw new ExportNoDataException('No data to export');
         }
 
-        $spreadsheet = $this->generateSpreadsheet($exportableTable, $headerDown);
+        $spreadsheet = $this->generateSpreadsheet($exportableTable, $headerDown, $headerBold);
 
         return $this->generateFile($spreadsheet, $name, $type);
     }
@@ -83,7 +86,7 @@ class ExportService
     /**
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    public function generateSpreadsheet($tableData, bool $headerDown = true): Spreadsheet
+    public function generateSpreadsheet($tableData, bool $headerDown = true, bool $headerBold = false): Spreadsheet
     {
         $rows = $this->normalize($tableData);
 
@@ -97,31 +100,49 @@ class ExportService
 
         $rowIndex = 1;
         if ($headerDown === false) {
-            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex);
+            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex, $headerBold);
             $rowIndex = 2;
             $this->generateData($worksheet, $tableHeaders, $generator, $rowIndex, $rows);
         } else {
             $this->generateData($worksheet, $tableHeaders, $generator, $rowIndex, $rows);
-            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex);
+            $this->generateHeader($worksheet, $tableHeaders, $generator, $rowIndex, $headerBold);
         }
 
         return $spreadsheet;
     }
 
-    private function generateHeader($worksheet, $tableHeaders, $generator, $rowIndex)
+    private function generateHeader($worksheet, $tableHeaders, $generator, $rowIndex, bool $headerBold)
     {
         $generator->reset();
         foreach ($tableHeaders as $value) {
-            $worksheet->setCellValue($generator->getNext().$rowIndex, $value);
+            $cellCoords = $generator->getNext().$rowIndex;
+            $worksheet->setCellValue($cellCoords, $value);
+            $worksheet->getStyle($cellCoords)->getFont()->setBold($headerBold);
         }
     }
 
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
     private function generateData($worksheet, $tableHeaders, $generator, &$rowIndex, $rows)
     {
         foreach ($rows as $value) {
             $generator->reset();
             foreach ($tableHeaders as $header) {
-                $worksheet->setCellValue($generator->getNext().$rowIndex, $value[$header] ?? null);
+                $cellCoords = $generator->getNext().$rowIndex;
+                /**
+                 * @var Cell $cell
+                 */
+                $cell = $worksheet->getCell($cellCoords);
+                $dataToWrite = $value[$header] ?? null;
+
+                if ($dataToWrite instanceof Hyperlink) {
+                    $url = $dataToWrite->getUrl();
+                    $toolTip = $dataToWrite->getTooltip();
+                    $cell->setValue('=Hyperlink("'.$url.'","'.$toolTip.'")');
+                } else {
+                    $cell->setValue($dataToWrite);
+                }
             }
             ++$rowIndex;
         }

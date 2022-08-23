@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * Class ConfigurationLoader
  * @package DistributionBundle\Utils
+ * @deprecated
  */
 class ConfigurationLoader
 {

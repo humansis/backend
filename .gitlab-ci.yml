@@ -44,7 +44,7 @@ stages:
     - dind
 
 static_analysis:
-  image: php:7.4-fpm
+  image: php:7.3-fpm
   stage: static_analysis
   script:
     - apt-get update
@@ -68,7 +68,7 @@ test:
     GELF_HOST: 10.0.0.1
     GELF_PORT: 10001
   before_script:
-    - sudo composer self-update --1
+    - sudo composer self-update
     - cp app/config/parameters.yml.test app/config/parameters.yml
     - composer install
     - php bin/console doctrine:database:create --env=test || true

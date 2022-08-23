@@ -198,7 +198,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('E5')->setValue($this->translator->trans('Location').':');
         $worksheet->getCell('E5')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('F4')->setValue($assistance->getLocation()->getLocationName());
+        $worksheet->getCell('F4')->setValue($assistance->getLocation()->getName());
         $worksheet->getCell('F4')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('F4:F5');
 
@@ -419,12 +419,11 @@ class AssistanceSpreadsheetExport
 
     private static function getNationalId(Person $person): ?string
     {
-        foreach ($person->getNationalIds() as $nationalId) {
-            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
-                return $nationalId->getIdNumber();
-            }
+        $ids = $person->getNationalIds();
+        if (count($ids) > 0) {
+            $id = $ids[0];
+            return $id->getIdNumber().PHP_EOL."({$id->getIdType()})";
         }
-
         return null;
     }
 

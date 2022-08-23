@@ -12,10 +12,10 @@ use NewApiBundle\Repository\SynchronizationBatchRepository;
 use VoucherBundle\Entity\Smartcard;
 use VoucherBundle\Entity\SmartcardDeposit;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
-use VoucherBundle\Repository\SmartcardRedemptionBatchRepository;
+use VoucherBundle\Repository\SmartcardInvoiceRepository;
 use VoucherBundle\Repository\SmartcardRepository;
 
 class EventService
@@ -28,8 +28,8 @@ class EventService
     private $purchaseSyncRepository;
     /** @var SynchronizationBatchRepository */
     private $depositSyncRepository;
-    /** @var SmartcardRedemptionBatchRepository */
-    private $redemptionBatchRepository;
+    /** @var SmartcardInvoiceRepository */
+    private $invoiceRepository;
 
     /**
      * @param EntityManagerInterface $entityManager
@@ -40,7 +40,7 @@ class EventService
         $this->smartcardRepository = $entityManager->getRepository(Smartcard::class);
         $this->depositSyncRepository = $entityManager->getRepository(SynchronizationBatch\Deposits::class);
         $this->purchaseSyncRepository = $entityManager->getRepository(SynchronizationBatch\Purchases::class);
-        $this->redemptionBatchRepository = $entityManager->getRepository(SmartcardRedemptionBatch::class);
+        $this->invoiceRepository = $entityManager->getRepository(Invoice::class);
     }
 
     public function getBeneficiaryEvents(Beneficiary $beneficiary): array
@@ -104,14 +104,14 @@ class EventService
         foreach ($this->purchaseRepository->findBy(['vendor'=>$vendor]) as $purchase) {
             $this->collectPurchaseEvents($collector, $purchase, false);
         }
-        foreach ($this->redemptionBatchRepository->findByVendor($vendor) as $invoice) {
-            $collector->add(new Event('invoice', 'made', $invoice->getRedeemedAt(), [
+        foreach ($this->invoiceRepository->findByVendor($vendor) as $invoice) {
+            $collector->add(new Event('invoice', 'made', $invoice->getInvoicedAt(), [
                 $invoice->getProject(),
                 $invoice->getVendor(),
             ], [
                 'value' => $invoice->getValue().' '.$invoice->getCurrency(),
-                'accountantId' => $invoice->getRedeemedBy()->getId(),
-                'accountantName' => $invoice->getRedeemedBy()->getUsername(),
+                'accountantId' => $invoice->getInvoicedBy()->getId(),
+                'accountantName' => $invoice->getInvoicedBy()->getUsername(),
             ]));
         }
         foreach ($this->depositSyncRepository->findBy(['createdBy' => $vendor]) as $sync) {

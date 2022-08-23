@@ -9,14 +9,20 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 trait CliTrait
 {
+
+    private function userStartedUploading(Import $import, bool $shouldEndCorrect): void
+    {
+        $this->importService->updateStatus($import, ImportState::UPLOADING);
+        if ($shouldEndCorrect) {
+            $this->assertEquals(ImportState::UPLOADING, $import->getState());
+        } else {
+            $this->assertEquals(ImportState::UPLOAD_FAILED, $import->getState());
+        }
+    }
+
     private function userStartedIntegrityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::INTEGRITY_CHECKING);
-        $this->assertEquals(ImportState::INTEGRITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:integrity', $import);
-        }
-        $this->cli('app:import:integrity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::INTEGRITY_CHECK_CORRECT, $import->getState());
         } else {
@@ -27,11 +33,6 @@ trait CliTrait
     private function userStartedIdentityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::IDENTITY_CHECKING);
-        $this->assertEquals(ImportState::IDENTITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:identity', $import);
-        }
-        $this->cli('app:import:identity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
         } else {
@@ -42,11 +43,6 @@ trait CliTrait
     private function userStartedSimilarityCheck(Import $import, bool $shouldEndCorrect, int $commandCallCount = 1): void
     {
         $this->importService->updateStatus($import, ImportState::SIMILARITY_CHECKING);
-        $this->assertEquals(ImportState::SIMILARITY_CHECKING, $import->getState());
-        for ($i=0; $i<$commandCallCount; $i++) {
-            $this->cli('app:import:similarity', $import);
-        }
-        $this->cli('app:import:similarity', $import);
         if ($shouldEndCorrect) {
             $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
         } else {
@@ -54,12 +50,15 @@ trait CliTrait
         }
     }
 
-    private function userStartedFinishing(Import $import): void
+    private function userStartedFinishing(Import $import, bool $skipSimilarityCheck = false): void
     {
-        $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        if ($skipSimilarityCheck) {
+            $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+        } else {
+            $this->assertEquals(ImportState::SIMILARITY_CHECK_CORRECT, $import->getState());
+        }
+
         $this->importService->updateStatus($import, ImportState::IMPORTING);
-        $this->assertEquals(ImportState::IMPORTING, $import->getState());
-        $this->cli('app:import:finish', $import);
         $this->assertEquals(ImportState::FINISHED, $import->getState());
     }
 

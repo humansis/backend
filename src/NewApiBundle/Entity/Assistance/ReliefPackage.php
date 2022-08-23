@@ -236,14 +236,14 @@ class ReliefPackage
      *
      * @return void
      */
-    public function addAmountOfDistributed($amountDistributed): void
+    public function addDistributedAmount($amountDistributed): void
     {
         $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
 
     public function distributeRest(): void
     {
-        $this->addAmountOfDistributed($this->getCurrentUndistributedAmount());
+        $this->addDistributedAmount($this->getCurrentUndistributedAmount());
     }
 
     /**
@@ -326,4 +326,22 @@ class ReliefPackage
         $this->distributedBy = $distributedBy;
     }
 
+    /**
+     * @return bool
+     */
+    public function isOnStartupState(): bool
+    {
+        return in_array($this->state, ReliefPackageState::startupValues());
+    }
+
+    /**
+     * @param string $modalityName
+     * @param string $unit
+     *
+     * @return bool
+     */
+    public function isSameModalityAndUnit(string $modalityName, string $unit): bool
+    {
+        return $this->getModalityType() === $modalityName && $this->getUnit() === $unit;
+    }
 }

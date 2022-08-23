@@ -6,9 +6,8 @@ namespace NewApiBundle\Component\Import;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
-use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Finishing;
-use NewApiBundle\Component\Import\Finishing\BeneficiaryDecoratorBuilder;
+use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Integrity\DuplicityService;
 use NewApiBundle\Component\Import\Integrity\ImportLineFactory;
 use NewApiBundle\Entity\Import;
@@ -41,7 +40,7 @@ class IntegrityChecker
     /** @var Finishing\HouseholdDecoratorBuilder */
     private $householdDecoratorBuilder;
 
-    /** @var BeneficiaryDecoratorBuilder */
+    /** @var Finishing\BeneficiaryDecoratorBuilder */
     private $beneficiaryDecoratorBuilder;
 
     /** @var WorkflowInterface */
@@ -61,11 +60,12 @@ class IntegrityChecker
         Integrity\ImportLineFactory           $importLineFactory,
         Integrity\DuplicityService            $duplicityService,
         Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
-        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
+        ImportQueueRepository                 $queueRepository
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
-        $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
+        $this->queueRepository = $queueRepository;
         $this->importStateMachine = $importStateMachine;
         $this->importQueueStateMachine = $importQueueStateMachine;
         $this->importLineFactory = $importLineFactory;
@@ -75,6 +75,7 @@ class IntegrityChecker
     }
 
     /**
+     * @deprecated This was reworked to queues if you want to use this beaware of flush at checkOne method
      * @param Import   $import
      * @param int|null $batchSize if null => all
      */
@@ -101,7 +102,7 @@ class IntegrityChecker
     /**
      * @param ImportQueue $item
      */
-    protected function checkOne(ImportQueue $item): void
+    public function checkOne(ImportQueue $item): void
     {
         if (in_array($item->getState(), [ImportQueueState::INVALID, ImportQueueState::VALID])) {
             return; // there is nothing to check
@@ -117,6 +118,7 @@ class IntegrityChecker
         }
 
         $this->entityManager->persist($item);
+        $this->entityManager->flush();
     }
 
     /**

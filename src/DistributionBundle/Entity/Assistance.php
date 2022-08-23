@@ -10,13 +10,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\ScoringBlueprint;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
-
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use TransactionBundle\Entity\Transaction;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
@@ -180,6 +179,14 @@ class Assistance implements ExportableInterface
     private $subSector;
 
     /**
+     * @var ScoringBlueprint|null
+     * @ORM\ManyToOne(targetEntity="NewApiBundle\Entity\ScoringBlueprint")
+     *
+     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
+     */
+    private $scoringBlueprint;
+
+    /**
      * @var string|null
      *
      * @ORM\Column(name="description", type="text", nullable=true)
@@ -247,6 +254,14 @@ class Assistance implements ExportableInterface
      * @ORM\OneToMany(targetEntity="VoucherBundle\Entity\SmartcardPurchase", mappedBy="assistanceId")
      */
     private $smartcardPurchases;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="note", type="text", length=65535, nullable=true)
+     */
+    private $note;
+
 
     /**
      * Constructor
@@ -511,11 +526,11 @@ class Assistance implements ExportableInterface
     /**
      * Add selectionCriterion.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param SelectionCriteria $selectionCriterion
      *
      * @return Assistance
      */
-    public function addSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function addSelectionCriterion(SelectionCriteria $selectionCriterion)
     {
         $this->getAssistanceSelection()->getSelectionCriteria()->add($selectionCriterion);
         $selectionCriterion->setAssistanceSelection($this->getAssistanceSelection());
@@ -526,11 +541,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove selectionCriterion.
      *
-     * @param \DistributionBundle\Entity\SelectionCriteria $selectionCriterion
+     * @param SelectionCriteria $selectionCriterion
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSelectionCriterion(\DistributionBundle\Entity\SelectionCriteria $selectionCriterion)
+    public function removeSelectionCriterion(SelectionCriteria $selectionCriterion)
     {
         return $this->getAssistanceSelection()->getSelectionCriteria()->removeElement($selectionCriterion);
     }
@@ -540,7 +555,7 @@ class Assistance implements ExportableInterface
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|SelectionCriteria[]
      */
     public function getSelectionCriteria()
     {
@@ -733,6 +748,47 @@ class Assistance implements ExportableInterface
     }
 
     /**
+     * @return ArrayCollection
+     */
+    public function getReportingDistribution(): ArrayCollection
+    {
+        return $this->reportingDistribution;
+    }
+
+    /**
+     * @param ArrayCollection $reportingDistribution
+     *
+     * @return Assistance
+     */
+    public function setReportingDistribution(ArrayCollection $reportingDistribution): Assistance
+    {
+        $this->reportingDistribution = $reportingDistribution;
+
+        return $this;
+    }
+
+    /**
+     * @return ScoringBlueprint|null
+     */
+    public function getScoringBlueprint(): ?ScoringBlueprint
+    {
+        return $this->scoringBlueprint;
+    }
+
+    /**
+     * @param ScoringBlueprint|null $scoringBlueprint
+     *
+     * @return Assistance
+     */
+    public function setScoringBlueprint(?ScoringBlueprint $scoringBlueprint): Assistance
+    {
+        $this->scoringBlueprint = $scoringBlueprint;
+
+        return $this;
+    }
+
+
+    /**
      * @param string|null $description
      *
      * @return $this
@@ -785,12 +841,28 @@ class Assistance implements ExportableInterface
     }
 
     /**
+     * @return string|null
+     */
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param string|null $note
+     */
+    public function setNote(?string $note): void
+    {
+        $this->note = $note;
+    }
+
+    /**
      * @param string|null $subSector
      */
     public function setSubSector(?string $subSector): void
     {
         if (null !== $subSector && !in_array($subSector, SubSectorEnum::all())) {
-            throw new InvalidArgumentException("Invalid subBector: '$subSector'");
+            throw new InvalidArgumentException("Invalid subSector: '$subSector'");
         }
 
         $this->subSector = $subSector;

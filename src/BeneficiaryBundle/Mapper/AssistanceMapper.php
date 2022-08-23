@@ -6,9 +6,9 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
 use NewApiBundle\Enum\ProductCategoryType;
 
 class AssistanceMapper
@@ -128,6 +128,7 @@ class AssistanceMapper
             'description' => $assistance->getDescription(),
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
+            'note' => $assistance->getNote(),
         ];
 
         return $assistanceArray;
@@ -208,7 +209,7 @@ class AssistanceMapper
     }
 
     /**
-     * @param SelectionCriteria[] $criteria
+     * @param \NewApiBundle\Entity\Assistance\SelectionCriteria[] $criteria
      */
     private function transformSelectionCriteria(iterable $criteria)
     {

@@ -104,24 +104,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
             ->leftJoin("ca$i.camp", "c$i")
             ->leftJoin("hl$i.address", "ad$i")
             ->leftJoin(Location::class, "l$i", Join::WITH, "l.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
-        
-            ->leftJoin("l$i.adm1", "adm1$i")
-            ->andWhere("adm1$i.countryISO3 = :iso3 AND hh$i.archived = 0")
-
-            ->leftJoin("l$i.adm4", "adm4$i")
-            ->leftJoin("adm4$i.adm3", "adm3b$i")
-            ->leftJoin("adm3b$i.adm2", "adm2b$i")
-            ->leftJoin("adm2b$i.adm1", "adm1b$i")
-            ->orWhere("adm1b$i.countryISO3 = :iso3 AND hh$i.archived = 0")
-
-            ->leftJoin("l$i.adm3", "adm3$i")
-            ->leftJoin("adm3$i.adm2", "adm2c$i")
-            ->leftJoin("adm2c$i.adm1", "adm1c$i")
-            ->orWhere("adm1c$i.countryISO3 = :iso3 AND hh$i.archived = 0")
-
-            ->leftJoin("l$i.adm2", "adm2$i")
-            ->leftJoin("adm2$i.adm1", "adm1d$i")
-            ->orWhere("adm1d$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+            ->andWhere("l$i.countryISO3 = :iso3 AND hh$i.archived = 0")
 
             ->setParameter("iso3", $countryISO3);
     }

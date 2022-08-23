@@ -7,6 +7,7 @@ use DistributionBundle\Entity;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
 use DistributionBundle\Utils\AssistanceService;
+use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
@@ -130,6 +131,11 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getSubSector();
     }
 
+    public function getScoringBlueprint(): ?ScoringBlueprint
+    {
+        return $this->object->getScoringBlueprint();
+    }
+
     public function getCommodityIds(): array
     {
         $result = [];
@@ -184,9 +190,19 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceSelection()->getId();
     }
 
+    public function getThreshold(): ?int
+    {
+        return $this->object->getAssistanceSelection()->getThreshold();
+    }
+
     public function getRemoteDistributionAllowed(): ?bool
     {
         return $this->object->isRemoteDistributionAllowed();
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->object->getNote();
     }
 
     /**

@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
+use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Serializer\MapperInterface;
 
 class HouseholdMapper implements MapperInterface
@@ -51,9 +52,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getAssets(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return (string) $item;
-        }, $this->object->getAssets());
+        }, $this->object->getAssets()));
     }
 
     public function getShelterStatus(): ?string
@@ -66,9 +67,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getProjectIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getProjects()->toArray());
+        }, $this->object->getProjects()->toArray()));
     }
 
     public function getNotes(): ?string
@@ -100,9 +101,9 @@ class HouseholdMapper implements MapperInterface
 
     public function getCountrySpecificAnswerIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getCountrySpecificAnswers()->toArray());
+        }, $this->object->getCountrySpecificAnswers()->toArray()));
     }
 
     /**
@@ -110,9 +111,24 @@ class HouseholdMapper implements MapperInterface
      */
     public function getBeneficiaryIds(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getBeneficiaries()->toArray());
+        }, $this->object->getBeneficiaries()->toArray()));
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getVulnerabilities(): iterable
+    {
+        $vulnerabilities = [];
+        foreach ($this->object->getBeneficiaries() as $beneficiary) {
+            $vulnerabilityNames = array_map(function (VulnerabilityCriterion $vulnerability) {
+                return $vulnerability->getFieldString();
+            }, $beneficiary->getVulnerabilityCriteria()->toArray());
+            $vulnerabilities = array_merge($vulnerabilities, $vulnerabilityNames);
+        }
+        return array_values(array_unique($vulnerabilities));
     }
 
     public function getIncomeLevel(): ?int
@@ -145,9 +161,9 @@ class HouseholdMapper implements MapperInterface
      */
     public function getSupportReceivedTypes(): iterable
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return (string) $item;
-        }, $this->object->getSupportReceivedTypes());
+        }, $this->object->getSupportReceivedTypes()));
     }
 
     public function getSupportOrganizationName(): ?string

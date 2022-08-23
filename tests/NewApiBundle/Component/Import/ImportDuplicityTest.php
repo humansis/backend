@@ -88,12 +88,7 @@ class ImportDuplicityTest extends KernelTestCase
 
         $this->importService = $kernel->getContainer()->get(ImportService::class);
 
-        $this->uploadService = new UploadImportService(
-            $this->entityManager,
-            $kernel->getContainer()->getParameter('import.uploadedFilesDirectory'),
-            $kernel->getContainer()->get(ImportFileValidator::class),
-            $kernel->getContainer()->get(DuplicityService::class)
-        );
+        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
         $this->projectService = $kernel->getContainer()->get('project.project_service');
 
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
@@ -174,6 +169,7 @@ class ImportDuplicityTest extends KernelTestCase
         foreach (['first', 'second'] as $runName) {
             $import = $this->createImport("testUpdateSimpleDuplicity[$runName]", $project, $testFiles[$runName]);
 
+            $this->userStartedUploading($import, true);
             $this->userStartedIntegrityCheck($import, true);
             $this->userStartedIdentityCheck($import, true);
             $this->userStartedSimilarityCheck($import, true);
@@ -188,10 +184,6 @@ class ImportDuplicityTest extends KernelTestCase
         $this->userStartedFinishing($firstImport);
 
         $this->entityManager->refresh($firstImport);
-        $this->entityManager->refresh($secondImport);
-
-        //check identity again on second import
-        $this->userStartedIdentityCheck($secondImport, false);
         $this->entityManager->refresh($secondImport);
 
         return $secondImport;

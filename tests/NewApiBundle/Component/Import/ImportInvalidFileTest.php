@@ -60,8 +60,7 @@ class ImportInvalidFileTest extends KernelTestCase
 
         $uploadFile = new UploadedFile($uploadedFilePath, $invalidFilePath->getFilename(), null, null, true);
 
-        $importFile = self::$importUploadService->uploadFile($import, $uploadFile, $user);
-        self::$importUploadService->load($importFile);
+        self::$importUploadService->uploadFile($import, $uploadFile, $user);
 
         $importedFile = self::$entityManager->getRepository(ImportFile::class)
             ->findOneBy([

@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use NewApiBundle\DBAL\NationalIdTypeEnum;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\NationalIdType;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\BeneficiaryFilterInputType;
 use NewApiBundle\InputType\BeneficiaryOrderInputType;
 use NewApiBundle\InputType\CommunityFilterType;
@@ -36,6 +37,20 @@ use VoucherBundle\Entity\SmartcardDeposit;
 class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
 {
     public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
+
+    /**
+     * @param int $assistanceId
+     * @param int $beneficiaryId
+     *
+     * @return AssistanceBeneficiary|null
+     */
+    public function findByAssistanceAndBeneficiary(int $assistanceId, int $beneficiaryId): ?AssistanceBeneficiary
+    {
+        return $this->findOneBy([
+            'assistance' => $assistanceId,
+            'beneficiary' => $beneficiaryId,
+        ], ['id' => 'asc']);
+    }
 
     public function countAll(string $iso3)
     {
@@ -524,4 +539,5 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('modalityType', 'Cash');
         return $qb->getQuery()->getResult();
     }
+
 }

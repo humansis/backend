@@ -44,7 +44,6 @@ class PatchInputType implements InputTypeInterface
     public static function allowedStates(): array
     {
         return [
-            ImportState::INTEGRITY_CHECKING,
             ImportState::IDENTITY_CHECKING,
             ImportState::SIMILARITY_CHECKING,
             ImportState::IMPORTING,

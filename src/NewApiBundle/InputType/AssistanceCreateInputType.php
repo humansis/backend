@@ -87,6 +87,12 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $subsector;
 
     /**
+     * @var int
+     * @Assert\Type("integer")
+     */
+    private $scoringBlueprintId;
+
+    /**
      * @Assert\Type("array")
      * @Assert\Valid
      */
@@ -100,7 +106,6 @@ class AssistanceCreateInputType implements InputTypeInterface
 
     /**
      * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
      */
     private $threshold;
 
@@ -169,6 +174,11 @@ class AssistanceCreateInputType implements InputTypeInterface
     private $remoteDistributionAllowed;
 
     /**
+     * @Assert\Type("string")
+     */
+    private $note;
+
+    /**
      * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
@@ -178,6 +188,15 @@ class AssistanceCreateInputType implements InputTypeInterface
      * )
      */
     private $allowedProductCategoryTypes;
+
+    /**
+     * @Assert\IsTrue(groups="Strict", message="Expiration date must be greater than distribution date")
+     * @return bool
+     */
+    public function isExpirationDateValid(): bool
+    {
+        return $this->getDateExpiration() == null || $this->getDateExpiration() >= $this->getDateDistribution();
+    }
 
     /**
      * @Assert\IsTrue(groups="AdditionalChecks", message="Please add BNF has valid card criterion for each group")
@@ -385,6 +404,26 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setSubsector($subsector)
     {
         $this->subsector = $subsector;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getScoringBlueprintId(): ?int
+    {
+        return $this->scoringBlueprintId;
+    }
+
+    /**
+     * @param int|null $scoringBlueprintId
+     *
+     * @return AssistanceCreateInputType
+     */
+    public function setScoringBlueprintId(?int $scoringBlueprintId): AssistanceCreateInputType
+    {
+        $this->scoringBlueprintId = $scoringBlueprintId;
+
+        return $this;
     }
 
     /**
@@ -619,6 +658,19 @@ class AssistanceCreateInputType implements InputTypeInterface
     public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
     {
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note = null): void
+    {
+        $this->note = $note;
     }
 
 }

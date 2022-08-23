@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Component\Import;
 
+use BadMethodCallException;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -9,9 +10,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
-use NewApiBundle\Workflow\ImportQueueTransitions;
 use NewApiBundle\Workflow\ImportTransitions;
-use NewApiBundle\Workflow\WorkflowTool;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
@@ -46,12 +45,12 @@ class DuplicityResolver
     private $importStateMachine;
 
     public function __construct(
-        EntityManagerInterface                        $entityManager,
-        LoggerInterface                               $logger,
-        IdentityChecker                               $identityChecker,
-        SimilarityChecker                             $similarityChecker,
-        WorkflowInterface                             $importQueueStateMachine,
-        WorkflowInterface $importStateMachine
+        EntityManagerInterface $entityManager,
+        LoggerInterface        $logger,
+        IdentityChecker        $identityChecker,
+        SimilarityChecker      $similarityChecker,
+        WorkflowInterface      $importQueueStateMachine,
+        WorkflowInterface      $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;
@@ -78,7 +77,7 @@ class DuplicityResolver
             ImportState::SIMILARITY_CHECK_CORRECT,
             ImportState::SIMILARITY_CHECK_FAILED,
         ])) {
-            throw new \BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
+            throw new BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
         }
 
         /** @var ImportHouseholdDuplicity[] $duplicities */

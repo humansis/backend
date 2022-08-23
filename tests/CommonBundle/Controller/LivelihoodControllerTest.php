@@ -52,7 +52,7 @@ class LivelihoodControllerTest extends BMSServiceTestCase
         $token = $this->getUserToken($user);
         $this->tokenStorage->setToken($token);
 
-        $this->request('GET', '/api/wsse/livelihoods?values[]='.Livelihood::DAILY_LABOUR.'&values[]='.Livelihood::GOVERNMENT);
+        $this->request('GET', '/api/wsse/livelihoods?values[]='.Livelihood::IRREGULAR_EARNINGS.'&values[]='.Livelihood::REGULAR_SALARY_PUBLIC);
         $data = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
@@ -63,7 +63,7 @@ class LivelihoodControllerTest extends BMSServiceTestCase
             return $item['value'];
         }, $data);
 
-        $this->assertTrue(in_array(Livelihood::DAILY_LABOUR, $values));
-        $this->assertTrue(in_array(Livelihood::GOVERNMENT, $values));
+        $this->assertTrue(in_array(Livelihood::IRREGULAR_EARNINGS, $values));
+        $this->assertTrue(in_array(Livelihood::REGULAR_SALARY_PUBLIC, $values));
     }
 }

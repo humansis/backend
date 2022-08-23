@@ -16,14 +16,7 @@ class VaryingListener
             return;
         }
 
-        $checkHeaders = ['country', 'origin'];
-        $varyHeaders = [];
-
-        foreach ($checkHeaders as $header) {
-            if ($event->getRequest()->headers->has($header)) {
-                $varyHeaders[] = $header;
-            }
-        }
+        $varyHeaders = ['country', 'origin', 'accept-language'];
 
         if (count($varyHeaders) > 0) {
             $event->getResponse()->setVary(join(', ', $varyHeaders), false);

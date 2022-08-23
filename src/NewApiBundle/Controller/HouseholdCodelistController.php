@@ -4,32 +4,30 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
 use BeneficiaryBundle\Entity\Referral;
 use CommonBundle\Pagination\Paginator;
-use NewApiBundle\Component\Codelist\CodeItem;
-use NewApiBundle\Component\Codelist\CodeLists;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Services\CodeListService;
 use ProjectBundle\Enum\Livelihood;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class HouseholdCodelistController extends AbstractController
 {
-    /** @var TranslatorInterface */
-    private $translator;
+    /** @var CodeListService */
+    private $codeListService;
 
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(CodeListService $codeListService)
     {
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
     
     /**
@@ -39,10 +37,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLivelihoods(): JsonResponse
     {
-        $data = [];
-        foreach (Livelihood::values() as $code) {
-            $data[] = new CodeItem($code, $this->translator->trans($code));
-        }
+        $data = $this->codeListService->mapEnum(Livelihood::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -54,7 +49,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getAssets(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdAssets::values());
+        $data = $this->codeListService->mapEnum(HouseholdAssets::values());
 
         return $this->json(new Paginator($data));
     }
@@ -66,7 +61,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function supportReceivedTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdSupportReceivedType::values());
+        $data = $this->codeListService->mapEnum(HouseholdSupportReceivedType::values());
 
         return $this->json(new Paginator($data));
     }
@@ -78,7 +73,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getShelterStatuses(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdShelterStatus::values());
+        $data = $this->codeListService->mapEnum(HouseholdShelterStatus::values());
 
         return $this->json(new Paginator($data));
     }
@@ -90,7 +85,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLocationTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(HouseholdLocation::LOCATION_TYPES);
+        $data = $this->codeListService->mapArray(HouseholdLocation::LOCATION_TYPES, Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -102,7 +97,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function referralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES, Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }

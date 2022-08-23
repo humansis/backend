@@ -61,9 +61,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'donors' => [],
             'donors_name' => [],
             'id' => '?',
-            'name' => '',
-            'sectors' => [],
-            'sectors_name' => [],
+            'name' => 'Test assistance project',
+            'iso3' => 'KHM',
         ],
         'selection_criteria' => [
             0 => [
@@ -74,6 +73,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                     'target' => 'Beneficiary',
                     'table_string' => 'vulnerabilityCriteria',
                     'weight' => 1,
+                    'group' => 0,
                 ],
             ],
         ],
@@ -274,6 +274,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
                     'type' => 'table_field',
                     'value_string' => '0',
                     'weight' => 1,
+                    'group' => 0,
                 ],
             ],
         ];

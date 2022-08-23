@@ -78,9 +78,16 @@ services:
         arguments:
           - '%app.translations_dir%'
 
+    NewApiBundle\Command\CredentialsCommand:
+        arguments:
+            - '%default_account%'
+            - '%default_account_salt%'
+            - '%default_account_encoded_password%'
+        public: true
+        tags: [ 'console.command' ]
+
     NewApiBundle\Component\Assistance\AssistanceFactory:
         arguments:
-
 
     NewApiBundle\Component\Assistance\AssistanceQuery:
 
@@ -161,11 +168,21 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\Import
+            -
+    NewApiBundle\Repository\ImportFileRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\ImportFile
 
     NewApiBundle\Repository\ImportQueueRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - NewApiBundle\Entity\ImportQueue
+
+    NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - NewApiBundle\Entity\Smartcard\PreliminaryInvoice
 
     NewApiBundle\Controller\OfflineApp\AssistanceController:
         arguments:
@@ -178,22 +195,26 @@ services:
             - '@NewApiBundle\Export\VulnerabilityScoreExport'
             - '@distribution.assistance_service'
 
-    NewApiBundle\Controller\AssistanceSelectionController:
-        arguments:
-            - "@transformer.selection_criterion_field"
 
     NewApiBundle\Controller\CommonController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
-            - '%app.translations_dir%'
 
     NewApiBundle\Controller\DonorController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
 
+    NewApiBundle\Controller\InstitutionCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
+
     NewApiBundle\Controller\LocationController:
         arguments:
             - '@NewApiBundle\Component\Country\Countries'
+
+    NewApiBundle\Controller\ModalityCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\OrganizationController:
         arguments:
@@ -204,29 +225,45 @@ services:
             - '@NewApiBundle\Component\File\UploadService'
 
     NewApiBundle\Controller\AssistanceCodelistController:
-        arguments: ['@project.sector_service']
+        arguments: 
+            - '@project.sector_service'
+            - '@NewApiBundle\Services\CodeListService'
+
+    NewApiBundle\Controller\ProductCategoryCodelistController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
+
+    NewApiBundle\Controller\ScoringBlueprintController:
 
     NewApiBundle\Controller\SectorsCodelistController:
         arguments:
             - "@project.sector_service"
+            - '@NewApiBundle\Services\CodeListService'
 
     NewApiBundle\Controller\SelectionCriterionController:
         arguments:
-            - "@transformer.selection_criterion_field"
+            - '@NewApiBundle\Services\CodeListService'
+
 
     NewApiBundle\Controller\SmartcardPurchaseController:
         arguments:
             - '@NewApiBundle\Component\Smartcard\SmartcardPurchaseService'
 
+    NewApiBundle\Controller\TransactionController:
+        arguments:
+            - '@NewApiBundle\Services\CodeListService'
+
     NewApiBundle\Controller\BeneficiaryCodelistController:
         public: true
         arguments:
-            - '@translator' 
-            - "@doctrine.orm.entity_manager"
+            - '@NewApiBundle\Services\CodeListService'
               
     NewApiBundle\Controller\HouseholdCodelistController:
         arguments:
-          - '@translator'
+            - '@NewApiBundle\Services\CodeListService'
+
+    NewApiBundle\Controller\WebApp\Smartcard\InvoiceController:
+        public: true
 
     NewApiBundle\Request\ParamConverter\:
         resource: '../../Request/ParamConverter'
@@ -264,20 +301,13 @@ services:
         class: NewApiBundle\Component\SelectionCriteria\Generator\BeneficiaryFieldGenerator
         arguments: [ "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')" ]
 
+    NewApiBundle\Component\SelectionCriteria\SelectionCriterionService: "@service.selection_criterion"
+
     service.selection_criterion:
         public: true
         class: NewApiBundle\Component\SelectionCriteria\SelectionCriterionService
         arguments:
             - [ '@generator.beneficiary', '@generator.household', '@generator.household_head' ]
-
-    transformer.selection_criterion_field:
-        alias: NewApiBundle\Component\SelectionCriteria\FieldDbTransformer
-
-    NewApiBundle\Component\SelectionCriteria\FieldDbTransformer:
-        arguments:
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:CountrySpecific')"
-            - "@=service('doctrine.orm.entity_manager').getRepository('BeneficiaryBundle:VulnerabilityCriterion')"
-            - "@=service('doctrine.orm.entity_manager').getRepository('CommonBundle:Location')"
 
     NewApiBundle\Validator\Constraints\SelectionCriterionFieldValidator:
         arguments: [ '@service.selection_criterion' ]
@@ -308,18 +338,20 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
+
+    NewApiBundle\Component\Import\Messaging\Handler\ItemBatchHandler:
+        tags: [ 'messenger.message_handler' ]
+
+    NewApiBundle\Component\Import\Messaging\Handler\ImportCheckHandler:
+        tags: [ 'messenger.message_handler' ]
+
+    NewApiBundle\Component\Import\Messaging\Handler\UploadImportHandler:
+        tags: [ 'messenger.message_handler' ]
 
     NewApiBundle\Component\Import\UploadImportService:
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%import.uploadedFilesDirectory%'
-            - '@NewApiBundle\Component\Import\ImportFileValidator'
-            - '@NewApiBundle\Component\Import\Integrity\DuplicityService'
         public: true
+        arguments:
+            - '%import.uploadedFilesDirectory%'
 
     NewApiBundle\Component\Import\IntegrityChecker:
         arguments:
@@ -339,7 +371,6 @@ services:
 
     NewApiBundle\Component\Import\ImportFinisher:
         arguments:
-            - "%import.batch_size.finalization%"
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.household_service"
             - '@monolog.logger.import'
@@ -354,8 +385,6 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@monolog.logger.import"
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
 
     NewApiBundle\Component\Import\ImportInvalidFileService:
         public: true
@@ -369,9 +398,10 @@ services:
 
     NewApiBundle\Export\VulnerabilityScoreExport:
         arguments:
+            - '%frontendUrl%'
             - '@export_csv_service'
             - '@translator'
-            - '@doctrine.orm.entity_manager'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:Beneficiary")'
 
     NewApiBundle\Controller\ImportController:
         arguments:
@@ -379,6 +409,10 @@ services:
             - '@NewApiBundle\Component\Import\UploadImportService'
             - '%import.invalidFilesDirectory%'
             - '%import.maxFileSizeToLoad%'
+
+    NewApiBundle\Controller\OfflineApp\SmartcardDepositController:
+        arguments:
+            - '%kernel.logs_dir%'
 
     NewApiBundle\Component\Product\ProductCategoryService:
 
@@ -402,9 +436,18 @@ services:
     NewApiBundle\Component\Smartcard\SmartcardDepositService:
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@smartcard_service'
             - '@workflow.registry'
             - '@validator'
+
+    NewApiBundle\Component\Smartcard\Deposit\DepositFactory:
+        public: true
+        arguments:
+            - '@VoucherBundle\Repository\SmartcardDepositRepository'
+            - '@smartcard_service'
+            - '@NewApiBundle\Repository\Assistance\ReliefPackageRepository'
+            - '@cache.app'
+            - '@NewApiBundle\Component\ReliefPackage\ReliefPackageService'
+            - '@logger'
 
     NewApiBundle\Export\SmartcardPurchasedItemSpreadsheet:
         arguments:
@@ -414,38 +457,21 @@ services:
 
     workflow.import.integrity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IntegritySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IntegrityChecker'
-            - '@NewApiBundle\Component\Import\ImportInvalidFileService'
-            - '%import.batch_size.integrity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.identity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\IdentitySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\IdentityChecker'
-            - '%import.batch_size.identity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.similarity_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\SimilaritySubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\SimilarityChecker'
-            - '%import.batch_size.similarity_check%'
         tags:
             - { name: kernel.event_subscriber }
 
     workflow.import.finisher_subscriber:
         class: NewApiBundle\Event\Subscriber\Import\FinishSubscriber
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@NewApiBundle\Component\Import\ImportFinisher'
-            - '@NewApiBundle\Component\Import\ImportReset'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -459,6 +485,8 @@ services:
     NewApiBundle\Component\Assistance\ReliefPackageSubscriber:
         tags:
             - { name: kernel.event_subscriber }
+
+    NewApiBundle\Component\Assistance\SelectionCriteriaFactory:
 
     NewApiBundle\Factory\AwsStorageFactory:
         public: true
@@ -478,4 +506,53 @@ services:
             - '%logs.fieldAppPath%'
             - '%logs.lifetime%'
 
+    NewApiBundle\InputType\Assistance\Scoring\ScoringService:
+
+    NewApiBundle\Component\Assistance\Scoring\RulesCalculation:
+      
+    NewApiBundle\Component\Assistance\Scoring\RulesEnum:
+
+    NewApiBundle\Component\Assistance\Scoring\ScoringResolver:
+        public: true
+        arguments:
+            - '@NewApiBundle\Component\Assistance\Scoring\RulesCalculation'
+            - '@NewApiBundle\Component\Assistance\Scoring\RulesEnum'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecific")'
+            - '@=service("doctrine.orm.entity_manager").getRepository("BeneficiaryBundle:CountrySpecificAnswer")'
+
+    NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory:
+        public: true
+
+    NewApiBundle\Component\Assistance\Scoring\Validator\ScoringTypeValidator:
+        public: true
+
+    BeneficiaryBundle\Model\Vulnerability\Resolver:
+        public: true
+        arguments:
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/weighting.csv'
+            - '%kernel.project_dir%/src/BeneficiaryBundle/Resources/config/vulnerability/scoring_<<COUNTRY>>.csv'
+
     NewApiBundle\Services\AssistanceDistributionService:
+
+    NewApiBundle\Services\CodeListService:
+        arguments:
+          - '@translator'
+
+    NewApiBundle\Services\ScoringBlueprintService:
+
+    NewApiBundle\Services\TranslationExportService:
+        arguments:
+            - '@CommonBundle\Utils\ExportService'
+            - '%app.translations_dir%'
+            - '%app.locales%'
+
+    NewApiBundle\Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
+        arguments:
+            - '%distribution.criteria%'
+
+    NewApiBundle\Component\ReliefPackage\ReliefPackageService:
+
+    NewApiBundle\Repository\ScoringBlueprintRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - \NewApiBundle\Entity\ScoringBlueprint

@@ -15,7 +15,7 @@ parameters:
     email: support@humansis.org
 
     # allowed languages in application
-    app.locales: [ en, ar, ua, ru, am, fr, hy, km, mn ]
+    app.locales: [ en, ar, uk, ru, am, fr, hy, km, mn ]
 
     # allowed currencies in application - it contains all circulating currencies
     app.currencies: [ AED, AFN, ALL, AMD, ANG, AOA, ARS, AUD, AWG, AZN, BAM, BBD, BDT, BGN, BHD, BIF, BMD, BND, BOB, BRL,
@@ -98,20 +98,42 @@ framework:
     serializer:
         enable_annotations: true
         name_converter: 'serializer.name_converter.camel_case_to_snake_case'
-    templating:
-        engines: ['twig']
+    fragments: ~
     default_locale: '%locale%'
     trusted_hosts: ~
     session:
         # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id: session.handler.native_file
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
-    fragments: ~
     http_method_override: true
     assets: ~
     php_errors:
         log: true
-
+    messenger:
+        serializer:
+            default_serializer: messenger.transport.symfony_serializer
+            symfony_serializer:
+                format: json
+                context: { }
+        failure_transport: failed
+        transports:
+            #        async: "%env(MESSENGER_TRANSPORT_DSN)%"
+            import:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: import_items
+                    auto_setup: false
+            incoming_big_data:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: incoming_big_data
+                    auto_setup: false
+            failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+        routing:
+            'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': import
+            'NewApiBundle\Component\Import\Messaging\Message\ItemBatch': import
+            'NewApiBundle\Component\Import\Messaging\Message\UploadFile': incoming_big_data
 
 sensio_framework_extra:
     router:
@@ -121,6 +143,7 @@ sensio_framework_extra:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    exception_controller: null
 
 # Doctrine Configuration
 doctrine:
@@ -134,7 +157,8 @@ doctrine:
         server_version: '8.0'
         mapping_types:
             enum: string
-        schema_filter: ~^(?!view_)~ # support views with prefix "view_"
+        schema_filter: '~^(?!view_)~' # support views with prefix "view_"
+#            - '~^(?!messenger_messages)~'
         types:
             enum_source_type: NewApiBundle\DBAL\SourceEnum
             enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
@@ -208,6 +232,8 @@ fos_user:
     from_email:
         address: "%email%"
         sender_name: "BMS Support"
+    service:
+        mailer: fos_user.mailer.twig_swift
 
 fos_rest:
     param_fetcher_listener: true
@@ -265,11 +291,13 @@ distribution:
             },
             disabledHeadOfHousehold: {
                 type: other,
-                target: Head
+                target: Head,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             hasValidSmartcard: {
                 type: other,
-                target: Head
+                target: Head,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             headOfHouseholdDateOfBirth: {
                 type: table_field,
@@ -299,25 +327,10 @@ distribution:
                 type: other,
                 target: Household
             },
-            currentLocation: {
+            location: {
                 type: other,
-                target: Household
-            },
-            currentAdm1: {
-                type: other,
-                target: Household
-            },
-            currentAdm2: {
-                type: other,
-                target: Household
-            },
-            currentAdm3: {
-                type: other,
-                target: Household
-            },
-            currentAdm4: {
-                type: other,
-                target: Household
+                target: Household,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
             },
             locationType: {
                 type: other,
@@ -329,7 +342,8 @@ distribution:
             },
             vulnerabilityCriteria: {
                 type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-                target: Beneficiary
+                target: Beneficiary,
+                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
             },
             countrySpecific: {
                 type: BeneficiaryBundle\Entity\CountrySpecific,

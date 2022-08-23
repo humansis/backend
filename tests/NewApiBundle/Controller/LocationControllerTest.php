@@ -2,6 +2,7 @@
 
 namespace Tests\NewApiBundle\Controller;
 
+use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use Exception;
 use NewApiBundle\Component\Country\Countries;
@@ -158,12 +159,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm1Filtered()
     {
+        /** @var Location $location */
         $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 1]);
         if (!$location) {
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]='.$location->getAdm1()->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -224,7 +226,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -236,7 +238,7 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]='.$location->getAdm2()->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -252,7 +254,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
     }
 
     /**
@@ -273,7 +275,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm1Id', $result);
+//        $this->assertArrayHasKey('adm1Id', $result);
     }
 
     /**
@@ -297,7 +299,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -309,7 +311,7 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]='.$location->getAdm3()->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -325,7 +327,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
     }
 
     /**
@@ -346,7 +348,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm2Id', $result);
+//        $this->assertArrayHasKey('adm2Id', $result);
     }
 
     /**
@@ -370,7 +372,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
     }
@@ -382,7 +384,7 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]='.$location->getAdm4()->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]='.$location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -398,7 +400,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
-        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
+//        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
     }
 
     /**
@@ -419,7 +421,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('code', $result);
         $this->assertArrayHasKey('locationId', $result);
-        $this->assertArrayHasKey('adm3Id', $result);
+//        $this->assertArrayHasKey('adm3Id', $result);
     }
 
     /**

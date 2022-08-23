@@ -4,16 +4,19 @@
 namespace DistributionBundle\Utils;
 
 use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Model\Vulnerability\CategoryEnum;
-use BeneficiaryBundle\Model\Vulnerability\Resolver;
+use BeneficiaryBundle\Entity\Camp;
+use BeneficiaryBundle\Model\Vulnerability\Resolver as OldResolver;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\SelectionCriteria;
 use DistributionBundle\Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
+use NewApiBundle\Component\Assistance\DTO\CriteriaGroup;
+use NewApiBundle\Component\Assistance\Scoring\Model\Factory\ScoringFactory;
+use NewApiBundle\Component\Assistance\Scoring\ScoringResolver;
+use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\ScoringBlueprint;
+use NewApiBundle\Repository\ScoringBlueprintRepository;
 use ProjectBundle\Entity\Project;
-use BeneficiaryBundle\Entity\Camp;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class CriteriaAssistanceService
@@ -28,51 +31,61 @@ class CriteriaAssistanceService
     /** @var ConfigurationLoader $configurationLoader */
     private $configurationLoader;
 
-    /** @var Resolver */
+    /** @var OldResolver */
+    private $oldResolver;
+
+    /** @var ScoringFactory */
+    private $scoringFactory;
+
+    /** @var ScoringResolver */
     private $resolver;
 
-    /** @var Serializer */
-    private $serializer;
+    /** @var ScoringBlueprintRepository */
+    private $scoringBlueprintRepository;
 
     /**
      * CriteriaAssistanceService constructor.
-     * @param EntityManagerInterface $entityManager
-     * @param ConfigurationLoader    $configurationLoader
-     * @param Resolver               $resolver
+     * @param EntityManagerInterface        $entityManager
+     * @param ConfigurationLoader           $configurationLoader
+     * @param OldResolver                   $oldResolver
+     * @param ScoringResolver               $resolver
+     * @param ScoringBlueprintRepository    $scoringBlueprintRepository
      * @throws \Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ConfigurationLoader $configurationLoader,
-        Resolver $resolver,
-        Serializer $serializer
+        OldResolver $oldResolver,
+        ScoringFactory $scoringFactory,
+        ScoringResolver $resolver,
+        ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
         $this->em = $entityManager;
         $this->configurationLoader = $configurationLoader;
+        $this->oldResolver = $oldResolver;
+        $this->scoringFactory = $scoringFactory;
         $this->resolver = $resolver;
-        $this->serializer = $serializer;
+        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
     /**
-     * @deprecated replace by new method with type control of incoming criteria objects and country code
-     * @param array       $filters
-     * @param Project     $project
-     * @param string      $targetType
-     * @param string      $sector
-     * @param string|null $subsector
-     * @param int         $threshold
-     * @param bool        $isCount
+     * @param iterable|CriteriaGroup[] $criteriaGroups
+     * @param Project         $project
+     * @param string          $targetType
+     * @param string          $sector
+     * @param string|null     $subsector
+     * @param int             $threshold
+     * @param bool            $isCount
      *
      * @return array
      * @throws \BeneficiaryBundle\Exception\CsvParserException
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
+     *@deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(array $filters, Project $project, string $targetType, string $sector, ?string $subsector, int $threshold, bool $isCount)
+    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, ?int $threshold, bool $isCount, int $scoringBlueprintId = null)
     {
-        $countryISO3 = $filters['countryIso3'];
-
         if (!in_array($targetType, [
             AssistanceTargetType::INDIVIDUAL,
             AssistanceTargetType::HOUSEHOLD,
@@ -81,16 +94,10 @@ class CriteriaAssistanceService
         }
 
         $reachedBeneficiaries = [];
-
-        foreach ($filters['criteria'] as $group) {
-            foreach ($group as $index => $criterion) {
-                if ($criterion['table_string'] === 'Personnal') {
-                    // TODO: move criteria enhancing into SelectionCriteria domain object/happens in SelectionCriteriaFactory
-                    $criterion['type'] = $this->configurationLoader->criteria[$criterion['field_string']]['type'];
-                    $group[$index] = $criterion;
-                }
-            }
-
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getIso3());
+        $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
+        foreach ($criteriaGroups as $group)
+        {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($group, $project);
 
@@ -98,36 +105,26 @@ class CriteriaAssistanceService
                 /** @var Beneficiary $beneficiary */
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
-                if (AssistanceTargetType::INDIVIDUAL === $targetType) {
-                    $BNFId = $beneficiary->getId();
-                    $reachedBeneficiaries[$BNFId] = ["Vulnerability feature was temporary disabled"];
-                } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
-                    $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
-                    $reachedBeneficiaries[$HHHId] = ["Vulnerability feature was temporary disabled"];
+                if (!isset($scoring)) {
+                    $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
+                } else {
+                    $protocol = $this->resolver->compute(
+                        $beneficiary->getHousehold(),
+                        $scoring,
+                        $project->getIso3()
+                    );
+                }
+
+                if (is_null($threshold) || $protocol->getTotalScore() >= $threshold) {
+                    if (AssistanceTargetType::INDIVIDUAL === $targetType) {
+                        $BNFId = $beneficiary->getId();
+                        $reachedBeneficiaries[$BNFId] = $protocol;
+                    } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
+                        $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
+                        $reachedBeneficiaries[$HHHId] = $protocol;
+                    }
                 }
             }
-
-            // FIXME: disabled for performance reasons, see PIN-2630 for further details
-            // foreach ($selectableBeneficiaries as $bnf) {
-            //     /** @var Beneficiary $beneficiary */
-            //     $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
-            //
-            //     $protocol = $this->resolver->compute($beneficiary->getHousehold(), $countryISO3, $sector);
-            //     $scores = ['totalScore' => $protocol->getTotalScore()];
-            //     foreach (CategoryEnum::all() as $value) {
-            //         $scores[$value] = $protocol->getCategoryScore($value);
-            //     }
-            //
-            //     if ($protocol->getTotalScore() >= $threshold) {
-            //         if (AssistanceTargetType::INDIVIDUAL === $targetType) {
-            //             $BNFId = $beneficiary->getId();
-            //             $reachedBeneficiaries[$BNFId] = $scores;
-            //         } elseif (AssistanceTargetType::HOUSEHOLD === $targetType) {
-            //             $HHHId = $beneficiary->getHousehold()->getHouseholdHead()->getId();
-            //             $reachedBeneficiaries[$HHHId] = $scores;
-            //         }
-            //     }
-            // }
         }
         
 
@@ -137,42 +134,6 @@ class CriteriaAssistanceService
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' => $reachedBeneficiaries];
         }
-    }
-
-    /**
-     * @param array   $filters
-     * @param Project $project
-     * @param string  $targetType
-     * @param int     $threshold
-     * @param int     $limit
-     * @param int     $offset
-     *
-     * @return Beneficiary[]
-     * @throws \BeneficiaryBundle\Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function getList(array $filters, Project $project, string $targetType, int $threshold, int $limit, int $offset)
-    {
-        $result = $this->load($filters, $project, $targetType, $filters['sector'], $filters['subsector'], $threshold, false);
-
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy(['id' => array_keys($result['finalArray'])], null, $limit, $offset);
-
-        $data = [];
-        foreach ($beneficiaries as $beneficiary) {
-            $serialized = $this->serializer->serialize($beneficiary, 'json', ['groups' => ['SmallHousehold']]);
-            $deserialized = json_decode($serialized, true);
-            $deserialized['scores'] = $result['finalArray'][$beneficiary->getId()];
-
-            $data[] = $deserialized;
-        }
-
-        usort($data, function ($a, $b) {
-            return $b['scores']['totalScore'] <=> $a['scores']['totalScore'];
-        });
-
-        return $data;
     }
 
     /**

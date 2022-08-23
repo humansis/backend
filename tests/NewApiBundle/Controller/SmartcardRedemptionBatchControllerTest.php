@@ -6,7 +6,7 @@ use Doctrine\ORM\Query;
 use Exception;
 use Tests\BMSServiceTestCase;
 use VoucherBundle\Entity\SmartcardPurchase;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 
 class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
 {
@@ -27,7 +27,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
     {
         $vendorId = $this->em->createQueryBuilder()
             ->select('v.id')
-            ->from(SmartcardRedemptionBatch::class, 'srb')
+            ->from(Invoice::class, 'srb')
             ->join('srb.vendor', 'v')
             ->getQuery()
             ->setMaxResults(1)

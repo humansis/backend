@@ -8,7 +8,12 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * CountrySpecificAnswer
  *
- * @ORM\Table(name="country_specific_answer")
+ * @ORM\Table(
+ *     name="country_specific_answer",
+ *     uniqueConstraints={
+ *        @ORM\UniqueConstraint(name="only_one_household_answer", columns={"country_specific_id", "household_id"})
+ *    }
+ * )
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificAnswerRepository")
  */
 class CountrySpecificAnswer

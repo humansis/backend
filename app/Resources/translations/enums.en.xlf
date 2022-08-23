@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
     <header>
@@ -8,6 +8,58 @@
       <trans-unit id="7eW_LtJ" resname="National ID">
         <source>National ID</source>
         <target>National ID</target>
+      </trans-unit>
+      <trans-unit id="_X6doOO" resname="Other">
+        <source>Other</source>
+        <target>Other</target>
+      </trans-unit>
+      <trans-unit id="3JN7WYk" resname="None">
+        <source>None</source>
+        <target>None</target>
+      </trans-unit>
+      <trans-unit id="GP3VSbL" resname="New">
+        <source>New</source>
+        <target>New</target>
+      </trans-unit>
+      <trans-unit id="BOHvfR6" resname="Distributed">
+        <source>Distributed</source>
+        <target>Distributed</target>
+      </trans-unit>
+      <trans-unit id="RdsYeVs" resname="Hygiene kit">
+        <source>Hygiene kit</source>
+        <target>Hygiene kit</target>
+      </trans-unit>
+      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
+        <source>Farming - Agriculture</source>
+        <target>Farming - Agriculture</target>
+      </trans-unit>
+      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
+        <source>Farming - Livestock</source>
+        <target>Farming - Livestock</target>
+      </trans-unit>
+      <trans-unit id="HvL_92f" resname="Home Duties">
+        <source>Home Duties</source>
+        <target>Home Duties</target>
+      </trans-unit>
+      <trans-unit id="OkyagQ9" resname="Beneficiary">
+        <source>Beneficiary</source>
+        <target>Beneficiary</target>
+      </trans-unit>
+      <trans-unit id="ocbJf0F" resname="Household">
+        <source>Household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>Household</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Family name</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>First name</target>
       </trans-unit>
       <trans-unit id="GdgnfPj" resname="Tax Number">
         <source>Tax Number</source>
@@ -36,18 +88,6 @@
       <trans-unit id="Qb.gbSk" resname="Social Service Card">
         <source>Social Service Card</source>
         <target>Social Service Card</target>
-      </trans-unit>
-      <trans-unit id="_X6doOO" resname="Other">
-        <source>Other</source>
-        <target>Other</target>
-      </trans-unit>
-      <trans-unit id="3JN7WYk" resname="None">
-        <source>None</source>
-        <target>None</target>
-      </trans-unit>
-      <trans-unit id="GP3VSbL" resname="New">
-        <source>New</source>
-        <target>New</target>
       </trans-unit>
       <trans-unit id="f7ZNUGA" resname="Integrity Checking">
         <source>Integrity Checking</source>
@@ -125,10 +165,6 @@
         <source>Distribution in progress</source>
         <target>Distribution in progress</target>
       </trans-unit>
-      <trans-unit id="BOHvfR6" resname="Distributed">
-        <source>Distributed</source>
-        <target>Distributed</target>
-      </trans-unit>
       <trans-unit id="QkolUdN" resname="Expired">
         <source>Expired</source>
         <target>Expired</target>
@@ -200,10 +236,6 @@
       <trans-unit id="AuaaspL" resname="Shelter tool kit">
         <source>Shelter tool kit</source>
         <target>Shelter tool kit</target>
-      </trans-unit>
-      <trans-unit id="RdsYeVs" resname="Hygiene kit">
-        <source>Hygiene kit</source>
-        <target>Hygiene kit</target>
       </trans-unit>
       <trans-unit id="swOidc3" resname="Dignity kit">
         <source>Dignity kit</source>
@@ -289,14 +321,6 @@
         <source>Irregular earnings</source>
         <target>Irregular earnings</target>
       </trans-unit>
-      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
-        <source>Farming - Agriculture</source>
-        <target>Farming - Agriculture</target>
-      </trans-unit>
-      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
-        <source>Farming - Livestock</source>
-        <target>Farming - Livestock</target>
-      </trans-unit>
       <trans-unit id="413RaGm" resname="Regular salary - private sector">
         <source>Regular salary - private sector</source>
         <target>Regular salary - private sector</target>
@@ -312,10 +336,6 @@
       <trans-unit id="7fFCE2i" resname="Pension">
         <source>Pension</source>
         <target>Pension</target>
-      </trans-unit>
-      <trans-unit id="HvL_92f" resname="Home Duties">
-        <source>Home Duties</source>
-        <target>Home Duties</target>
       </trans-unit>
       <trans-unit id="V8eE5pP" resname="Own business/trading">
         <source>Own business/trading</source>
@@ -341,25 +361,9 @@
         <source>Refused to answer</source>
         <target>Refused to answer</target>
       </trans-unit>
-      <trans-unit id="OkyagQ9" resname="Beneficiary">
-        <source>Beneficiary</source>
-        <target>Beneficiary</target>
-      </trans-unit>
       <trans-unit id="m7CqzG1" resname="Head">
         <source>Head</source>
         <target>Head</target>
-      </trans-unit>
-      <trans-unit id="ocbJf0F" resname="Household">
-        <source>Household</source>
-        <target>Household</target>
-      </trans-unit>
-      <trans-unit id="4ZIYuvi" resname="Family name">
-        <source>Family name</source>
-        <target>Family name</target>
-      </trans-unit>
-      <trans-unit id="cC75Ie0" resname="First name">
-        <source>First name</source>
-        <target>First name</target>
       </trans-unit>
       <trans-unit id="KZ_59GN" resname="Selected (YES/NO)">
         <source>Selected (YES/NO)</source>
@@ -436,6 +440,42 @@
       <trans-unit id="M0qRf3z" resname="Cashback">
         <source>Cashback</source>
         <target>Cashback</target>
+      </trans-unit>
+      <trans-unit id="00vJDlK" resname="IDP">
+        <source>IDP</source>
+        <target>IDP</target>
+      </trans-unit>
+      <trans-unit id="hIFv84P" resname="resident">
+        <source>resident</source>
+        <target>Resident</target>
+      </trans-unit>
+      <trans-unit id="1IV1GDa" resname="returnee">
+        <source>returnee</source>
+        <target>Returnee</target>
+      </trans-unit>
+      <trans-unit id="Im.P7O." resname="temporary_settlement">
+        <source>temporary_settlement</source>
+        <target>Temporary Settlement</target>
+      </trans-unit>
+      <trans-unit id="E9ALT1C" resname="residence">
+        <source>residence</source>
+        <target>Residence</target>
+      </trans-unit>
+      <trans-unit id="8MkT7PE" resname="refugee">
+        <source>refugee</source>
+        <target>Refugee</target>
+      </trans-unit>
+      <trans-unit id="l7BWAoD" resname="current">
+        <source>current</source>
+        <target>Current</target>
+      </trans-unit>
+      <trans-unit id="h44FifP" resname="In Kind">
+        <source>In Kind</source>
+        <target>In Kind</target>
+      </trans-unit>
+      <trans-unit id="SGYkRqi" resname="Voucher">
+        <source>Voucher</source>
+        <target>Voucher</target>
       </trans-unit>
     </body>
   </file>

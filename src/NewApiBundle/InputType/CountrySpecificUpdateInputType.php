@@ -29,7 +29,7 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
      */
     public function getField()
     {
-        return $this->field;
+        return trim($this->field);
     }
 
     public function setField($field)

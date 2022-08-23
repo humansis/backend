@@ -2,11 +2,13 @@
 
 namespace NewApiBundle\Command;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use SimpleXMLElement;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Generate translations .xlf files from source .csv (with ";" as divider).
@@ -50,38 +52,35 @@ class TranslationsUpdateGenerateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $finder = new Finder();
-        $finder->files()->in($this->translationsDir)->name('translations.csv');
-
-        $iterator = $finder->getIterator();
-        $iterator->rewind();
-        $file = $iterator->current();
-
-        $lines = preg_split("/\r?\n/", $file->getContents());
-
+        
+        $file = new File($this->translationsDir.'/translations.xlsx');
+        $reader = IOFactory::createReaderForFile($file->getRealPath());
+        $worksheet = $reader->load($file->getRealPath())->getActiveSheet();
+        $lines = $worksheet->toArray();
+        
         array_shift($lines); // remove first line
 
         //get languages and remove second line
-        $headers = explode(';', array_shift($lines));
-        $this->languages = array_slice($headers, 3);
+        $headers = array_shift($lines);
+        
+        $this->languages = array_slice($headers, 4);
+        
+        foreach ($lines as $index => $cells) {
 
-        foreach ($lines as $index => $line) {
-            $cells = explode(';', $line);
-
-            if ($cells[0] === '') { // skip empty row
+            if (empty($cells[0])) { // skip empty row
                 continue;
             }
 
-            if (count($cells) !== 3 + count($this->languages)) {
+            if (count($cells) !== 4 + count($this->languages)) {
                 throw new \Exception(
                     'Invalid number of cells (check source csv for multiline translations near line #'
-                    .($index + 3).',  "'.$line.'"'
+                    .($index + 3).',  "'.$cells.'"'
                 );
             }
-
-            if (preg_match('/([\w-]+?)\.\w{2}\.xlf$/', $cells[0], $matches)) {
+            
+            if ($cells[1] === $cells[3] && empty($cells[3])) {
                 $this->storeFiles();
-                $this->initFiles($matches[1]);
+                $this->initFiles($cells[0]);
             } else {
                 $this->addRow($cells);
             }
@@ -95,13 +94,22 @@ class TranslationsUpdateGenerateCommand extends Command
     private function addRow($cells): void
     {
         foreach ($this->languages as $index => $language) {
+
+            // skip empty translation
+            if (
+                $cells[4 + $index] === null
+                || $cells[4 + $index] === ''
+            ) { 
+                continue;
+            }
+            
             /** @var SimpleXMLElement $tu */
             $tu = $this->files[$language]['xml']->file[0]->body[0]->addChild('trans-unit');
             $tu->addAttribute('id', $cells[0]);
             $tu->addAttribute('resname', $cells[1]);
 
-            $tu->source = $cells[2];
-            $tu->target = $cells[3 + $index] === '' ? $cells[2] : $cells[3 + $index];
+            $tu->source = $cells[3];
+            $tu->target = $cells[4 + $index];
         }
     }
 

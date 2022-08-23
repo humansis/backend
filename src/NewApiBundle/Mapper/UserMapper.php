@@ -77,9 +77,9 @@ class UserMapper implements MapperInterface
 
     public function getCountries(): array
     {
-        return array_map(function (UserCountry $item) {
+        return array_values(array_map(function (UserCountry $item) {
             return $item->getIso3();
-        }, $this->object->getCountries()->toArray());
+        }, $this->object->getCountries()->toArray()));
     }
 
     public function getLanguage(): ?string
@@ -94,9 +94,9 @@ class UserMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        return array_map(function (UserProject $item) {
+        return array_values(array_map(function (UserProject $item) {
             return $item->getProject()->getId();
-        }, $this->object->getProjects()->toArray());
+        }, $this->object->getProjects()->toArray()));
     }
 
     public function getChangePassword(): bool

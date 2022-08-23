@@ -11,7 +11,6 @@ use CommonBundle\Controller\ExportController;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\InputType\BookletBatchCreateInputType;
 use NewApiBundle\InputType\BookletExportFilterInputType;
 use NewApiBundle\InputType\BookletFilterInputType;
@@ -19,6 +18,7 @@ use NewApiBundle\InputType\BookletOrderInputType;
 use NewApiBundle\InputType\BookletPrintFilterInputType;
 use NewApiBundle\InputType\BookletUpdateInputType;
 use NewApiBundle\Request\Pagination;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +28,14 @@ use VoucherBundle\Entity\Booklet;
 
 class BookletController extends AbstractController
 {
+    /** @var CodeListService */
+    private $codeListService;
+
+    public function __construct(CodeListService $codeListService)
+    {
+        $this->codeListService = $codeListService;
+    }
+    
     /**
      * @Rest\Get("/web-app/v1/booklets/statuses")
      *
@@ -35,7 +43,7 @@ class BookletController extends AbstractController
      */
     public function statuses(): JsonResponse
     {
-        $data = CodeLists::mapArray(Booklet::statuses());
+        $data = $this->codeListService->mapArray(Booklet::statuses());
 
         return $this->json(new Paginator($data));
     }

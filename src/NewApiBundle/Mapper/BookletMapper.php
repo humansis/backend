@@ -66,7 +66,7 @@ class BookletMapper implements MapperInterface
             return $item->getValue();
         };
 
-        return array_map($fn, $this->object->getVouchers()->toArray());
+        return array_values(array_map($fn, $this->object->getVouchers()->toArray()));
     }
 
     public function getQuantityOfVouchers(): int

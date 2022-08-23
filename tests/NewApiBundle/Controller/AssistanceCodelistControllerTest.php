@@ -25,6 +25,7 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
     }
+    
 
     /**
      * @throws Exception

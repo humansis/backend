@@ -6,6 +6,7 @@ namespace DistributionBundle\Export;
 
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\ProductCategoryType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -17,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Translation\TranslatorInterface;
 use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
+use VoucherBundle\Entity\Invoice;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
 
@@ -52,34 +53,34 @@ class SmartcardInvoiceExport
         $this->purchaseRepository = $purchaseRepository;
     }
 
-    public function export(SmartcardRedemptionBatch $batch, Organization $organization, User $user, string $language)
+    public function export(Invoice $invoice, Organization $organization, User $user, string $language)
     {
-        $countryIso3 = self::extractCountryIso3($batch->getVendor());
+        $countryIso3 = self::extractCountryIso3($invoice->getVendor());
 
         $this->translator->setLocale($language);
 
-        $foodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::FOOD);
-        $nonFoodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::NONFOOD);
-        $cashValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($batch, ProductCategoryType::CASHBACK);
-        $currency = $batch->getCurrency();
+        $foodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($invoice, ProductCategoryType::FOOD);
+        $nonFoodValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($invoice, ProductCategoryType::NONFOOD);
+        $cashValue = $this->purchaseRepository->sumPurchasesRecordsByCategoryType($invoice, ProductCategoryType::CASHBACK);
+        $currency = $invoice->getCurrency();
 
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
 
         self::formatCells($worksheet);
 
-        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $batch, $this->locationMapper);
-        $lastRow = self::buildBody($worksheet, $this->translator, $batch->getValue(), $foodValue, $nonFoodValue, $cashValue, $currency, $lastRow + 1);
+        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $invoice, $this->locationMapper);
+        $lastRow = self::buildBody($worksheet, $this->translator, $invoice->getValue(), $foodValue, $nonFoodValue, $cashValue, $currency, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
-        $lastRow = self::buildAnnex($worksheet, $this->translator, $this->purchaseRepository, $batch, $lastRow + 2);
+        $lastRow = self::buildAnnex($worksheet, $this->translator, $this->purchaseRepository, $invoice, $lastRow + 2);
         self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
 
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
 
         $slugger = new AsciiSlugger();
 
-        $id = sprintf('%05d', $batch->getId());
-        $vendorName = $slugger->slug($batch->getVendor()->getName());
+        $id = sprintf('%05d', $invoice->getId());
+        $vendorName = $slugger->slug($invoice->getVendor()->getName());
         $invoiceName = "{$countryIso3}EFV{$id}{$vendorName}.xlsx";
 
         $writer->save($invoiceName);
@@ -108,13 +109,13 @@ class SmartcardInvoiceExport
             ->setVertical(Alignment::VERTICAL_CENTER);
     }
 
-    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper): int
+    private static function buildHeader(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, LocationMapper $locationMapper): int
     {
-        self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $batch);
+        self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $invoice);
 
-        self::buildHeaderSecondLine($worksheet, $translator, $organization, $batch, $locationMapper, 7);
-        self::buildHeaderThirdLine($worksheet, $translator, $organization, $batch, 9);
-        self::buildHeaderFourthLine($worksheet, $translator, $organization, $batch, 11);
+        self::buildHeaderSecondLine($worksheet, $translator, $organization, $invoice, $locationMapper, 7);
+        self::buildHeaderThirdLine($worksheet, $translator, $organization, $invoice, 9);
+        self::buildHeaderFourthLine($worksheet, $translator, $organization, $invoice, 11);
 
         // self::setSmallBorder($worksheet, 'B7:J10');
 
@@ -124,24 +125,24 @@ class SmartcardInvoiceExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet                $worksheet
-     * @param TranslatorInterface      $translator
-     * @param Organization             $organization
-     * @param SmartcardRedemptionBatch $batch
+     * @param Worksheet           $worksheet
+     * @param TranslatorInterface $translator
+     * @param Organization        $organization
+     * @param Invoice             $invoice
      *
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
-    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch): void
+    private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice): void
     {
         $worksheet->getRowDimension(2)->setRowHeight(24.02);
         $worksheet->getRowDimension(3)->setRowHeight(19.70);
         $worksheet->getRowDimension(5)->setRowHeight(26.80);
 
         // Temporary Invoice No. box
-        $countryIso3 = self::extractCountryIso3($batch->getVendor());
-        $humansisInvoiceNo = $batch->getInvoiceNo();
-        $vendor = sprintf('%03d', $batch->getVendor()->getId());
-        $date = $batch->getRedeemedAt()->format('y');
+        $countryIso3 = self::extractCountryIso3($invoice->getVendor());
+        $humansisInvoiceNo = $invoice->getInvoiceNo();
+        $vendor = sprintf('%03d', $invoice->getVendor()->getId());
+        $date = $invoice->getInvoicedAt()->format('y');
         $worksheet->setCellValue('B2', 'Temporary Invoice No.');
         $worksheet->setCellValue('B3', "{$countryIso3}EV{$date}{$humansisInvoiceNo}");
         self::setSmallHeadline($worksheet, 'B2:B3');
@@ -164,7 +165,7 @@ class SmartcardInvoiceExport
 
         // wide header "Invoice"
         $worksheet->mergeCells('B5:J5');
-        $worksheet->setCellValue("B5", "Invoice".' '.$translator->trans("Invoice", [], 'invoice'));
+        $worksheet->setCellValue("B5", "Invoice".' '.$translator->trans("Invoice", [], Domain::INVOICE));
         $worksheet->getStyle('B5')->getFont()
             ->setBold(true)
             ->setSize(22)
@@ -173,7 +174,7 @@ class SmartcardInvoiceExport
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, LocationMapper $locationMapper, int $row1): void
+    private static function buildHeaderSecondLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, LocationMapper $locationMapper, int $row1): void
     {
         $row2 = $row1 + 1;
 
@@ -185,14 +186,14 @@ class SmartcardInvoiceExport
         self::undertranslatedSmallHeadline($worksheet, $translator, "Customer", "B", $row1);
         $worksheet->setCellValue("C$row1", self::addTrans($translator, $organization->getName(), self::EOL));
 
-        if (null === $batch->getProjectInvoiceAddressLocal() && null === $batch->getProjectInvoiceAddressEnglish()) {
-            $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address missing", [], 'invoice'));
+        if (null === $invoice->getProjectInvoiceAddressLocal() && null === $invoice->getProjectInvoiceAddressEnglish()) {
+            $worksheet->setCellValue("E$row1", $translator->trans("{$organization->getName()} address missing", [], Domain::INVOICE));
         } else {
-            $worksheet->setCellValue("E$row1",$batch->getProjectInvoiceAddressEnglish() . "\n" . $batch->getProjectInvoiceAddressLocal());
+            $worksheet->setCellValue("E$row1",$invoice->getProjectInvoiceAddressEnglish() . "\n" . $invoice->getProjectInvoiceAddressLocal());
             $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
         }
 
-        $worksheet->setCellValue("I$row1", $batch->getRedeemedAt()->format(self::DATE_FORMAT));
+        $worksheet->setCellValue("I$row1", $invoice->getInvoicedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
         $worksheet->getRowDimension("$row1")->setRowHeight(25);
@@ -208,7 +209,7 @@ class SmartcardInvoiceExport
         self::setSmallBorder($worksheet, "I$row1:J$row2");
     }
 
-    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, int $row1): void
+    private static function buildHeaderThirdLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, int $row1): void
     {
         $row2 = $row1 + 1;
         
@@ -217,9 +218,9 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("I$row1:J$row2");
         // data
         self::undertranslatedSmallHeadline($worksheet, $translator, "Supplier", "B", $row1);
-        $worksheet->setCellValue("C$row1", $batch->getVendor()->getName());
+        $worksheet->setCellValue("C$row1", $invoice->getVendor()->getName());
         self::undertranslatedSmallHeadline($worksheet, $translator, "Vendor No.", "H", $row1);
-        $worksheet->setCellValue("I$row1", $batch->getVendorNo());
+        $worksheet->setCellValue("I$row1", $invoice->getVendorNo());
         // style
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
@@ -234,7 +235,7 @@ class SmartcardInvoiceExport
             ->setBorderStyle(Border::BORDER_THIN);
     }
 
-    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, SmartcardRedemptionBatch $batch, int $row1): void
+    private static function buildHeaderFourthLine(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice, int $row1): void
     {
         $row2 = $row1+1;
         $row3 = $row1+2;
@@ -246,17 +247,17 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("C$row1:C$row3");
         // data
         $worksheet->setCellValue("B$row1", self::addTrans($translator, 'Contract No.', self::EOL));
-        $worksheet->setCellValue("C$row1", $batch->getContractNo());
+        $worksheet->setCellValue("C$row1", $invoice->getContractNo());
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period Start', 'D', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Period End', 'E', $row1);
         $worksheet->setCellValue("F$row1", self::addTrans($translator, 'Project'));
-        $worksheet->setCellValue("F$row2", $batch->getProject() ? $batch->getProject()->getName() : '~');
+        $worksheet->setCellValue("F$row2", $invoice->getProject() ? $invoice->getProject()->getName() : '~');
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cash', 'H', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Cheque', 'I', $row1);
         self::undertranslatedSmallHeadline($worksheet, $translator, 'Bank', 'J', $row1);
         $firstPurchaseDate = null;
         $lastPurchaseDate = null;
-        foreach ($batch->getPurchases() as $purchase) {
+        foreach ($invoice->getPurchases() as $purchase) {
             if (null === $firstPurchaseDate || $firstPurchaseDate > $purchase->getCreatedAt()->getTimestamp()) {
                 $firstPurchaseDate = $purchase->getCreatedAt()->getTimestamp();
             }
@@ -398,7 +399,7 @@ class SmartcardInvoiceExport
     }
 
 
-    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardPurchaseRepository $purchaseRepository, SmartcardRedemptionBatch $batch, int $lineStart): int
+    private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, SmartcardPurchaseRepository $purchaseRepository, Invoice $invoice, int $lineStart): int
     {
         // header
         $worksheet->mergeCells("C$lineStart:E$lineStart");
@@ -426,7 +427,7 @@ class SmartcardInvoiceExport
 
         // table with purchases
         $lineStart += 3;
-        $purchasedProducts = $purchaseRepository->countPurchasesRecordsByBatch($batch);
+        $purchasedProducts = $purchaseRepository->countPurchasesRecordsByInvoice($invoice);
         foreach ($purchasedProducts as $purchasedProduct) {
             ++$lineStart;
             $worksheet->mergeCells("B$lineStart:C$lineStart");
@@ -452,12 +453,12 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells('C'.$lineStart.':F'.$lineStart);
         $worksheet->mergeCells('G'.$lineStart.':H'.$lineStart);
         $currency = '';
-        foreach ($batch->getPurchases() as $purchase) {
+        foreach ($invoice->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Total per Vendor and Period', "C", $lineStart);
-        $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $batch->getValue()));
+        $worksheet->setCellValue('G'.$lineStart, sprintf('%.2f', $invoice->getValue()));
         $worksheet->setCellValue('I'.$lineStart, $currency);
         self::setSmallHeadline($worksheet,"C$lineStart:I$lineStart");
         self::setSmallBorder($worksheet,"C$lineStart:I$lineStart");
@@ -513,18 +514,18 @@ class SmartcardInvoiceExport
         // Template version: [v]
         ++$nextRow;
         self::setMinorText($worksheet, 'H'.$nextRow.':H'.($nextRow+2));
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('Invoice template version', ['versionNumber'=>self::TEMPLATE_VERSION], 'invoice'));
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('Invoice template version', ['versionNumber'=>self::TEMPLATE_VERSION], Domain::INVOICE));
         // Generated by: [login or PIN staff name]
         ++$nextRow;
         self::setMinorText($worksheet, 'H'.$nextRow.':H'.($nextRow+2));
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_by', ['username'=>$user->getUsername()], 'invoice'));
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_by', ['username'=>$user->getUsername()], Domain::INVOICE));
         // Generated on: [date]
         ++$nextRow;
         $today = new \DateTime();
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_on', ['date'=>$today->format(self::DATE_FORMAT)], 'invoice'));
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_on', ['date'=>$today->format(self::DATE_FORMAT)], Domain::INVOICE));
         // Unique document integrity ID: BLANK
         ++$nextRow;
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('checksum', ['checksum'=>''], 'invoice'));
+        $worksheet->setCellValue('H'.$nextRow, $translator->trans('checksum', ['checksum'=>''], Domain::INVOICE));
 
         // delimiter of page end
         ++$nextRow;
@@ -609,7 +610,7 @@ class SmartcardInvoiceExport
 
     private static function addTrans(TranslatorInterface $translator, string $text, string $delimiter = ' '): string
     {
-        $translation = $translator->trans($text, [], 'invoice');
+        $translation = $translator->trans($text, [], Domain::INVOICE);
         if ($translation == $text) {
             return $text;
         }
@@ -618,7 +619,7 @@ class SmartcardInvoiceExport
 
     private static function translate(TranslatorInterface $translator, string $text): string
     {
-        $translation = $translator->trans($text, [], 'invoice');
+        $translation = $translator->trans($text, [], Domain::INVOICE);
         if ($translation == $text) {
             return '';
         }
@@ -636,22 +637,7 @@ class SmartcardInvoiceExport
         if (!$vendor->getLocation()) {
            return 'ALL';
         }
-        $adm1 = null;
-        if ($vendor->getLocation()->getAdm1()) {
-            $adm1 = $vendor->getLocation()->getAdm1();
-        }
-        if ($vendor->getLocation()->getAdm2()) {
-            $adm1 = $vendor->getLocation()->getAdm2()->getAdm1();
-        }
-        if ($vendor->getLocation()->getAdm3()) {
-            $adm1 = $vendor->getLocation()->getAdm3()->getAdm2()->getAdm1();
-        }
-        if ($vendor->getLocation()->getAdm4()) {
-            $adm1 = $vendor->getLocation()->getAdm4()->getAdm3()->getAdm2()->getAdm1();
-        }
-        if (!$adm1) {
-            return 'ALL';
-        }
-        return $adm1->getCountryISO3();
+
+        return $vendor->getLocation()->getCountryISO3();
     }
 }

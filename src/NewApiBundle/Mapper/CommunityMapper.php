@@ -59,9 +59,9 @@ class CommunityMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getProjects()->toArray());
+        }, $this->object->getProjects()->toArray()));
     }
 
     /**

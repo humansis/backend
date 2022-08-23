@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Controller;
 
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Referral;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Enum\ResidencyStatus;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Codelist\CodeLists;
 use NewApiBundle\Enum\BeneficiaryType;
+use NewApiBundle\Enum\Domain;
 use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PhoneTypes;
+use NewApiBundle\Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Cache(expires="+5 days", public=true)
  */
 class BeneficiaryCodelistController extends AbstractController
 {
-    /** @var TranslatorInterface */
-    private $translator;
+    /** @var CodeListService */
+    private $codeListService;
     
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(CodeListService $codeListService)
     {
-        $this->translator = $translator;
+        $this->codeListService = $codeListService;
     }
 
     /**
@@ -38,7 +37,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(BeneficiaryType::values());
+        $data = $this->codeListService->mapEnum(BeneficiaryType::values());
 
         return $this->json(new Paginator($data));
     }
@@ -50,7 +49,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getReferralTypes(): JsonResponse
     {
-        $data = CodeLists::mapArray(Referral::REFERRALTYPES);
+        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES, Domain::SECTORS);
 
         return $this->json(new Paginator($data));
     }
@@ -62,7 +61,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getResidencyStatuses(): JsonResponse
     {
-        $data = CodeLists::mapEnum(ResidencyStatus::all());
+        $data = $this->codeListService->mapEnum(ResidencyStatus::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -77,7 +76,7 @@ class BeneficiaryCodelistController extends AbstractController
         $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
-        return $this->json(new Paginator(CodeLists::mapCriterion($criterion, $this->translator)));
+        return $this->json(new Paginator($this->codeListService->mapCriterion($criterion)));
     }
 
     /**
@@ -87,7 +86,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(NationalIdType::values());
+        $data = $this->codeListService->mapEnum(NationalIdType::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -99,7 +98,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getPhoneTypes(): JsonResponse
     {
-        $data = CodeLists::mapEnum(PhoneTypes::values());
+        $data = $this->codeListService->mapEnum(PhoneTypes::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

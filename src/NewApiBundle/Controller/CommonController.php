@@ -6,13 +6,11 @@ namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
 use CommonBundle\Pagination\Paginator;
-use CommonBundle\Utils\ExportService;
 use DistributionBundle\Repository\AssistanceRepository;
-use DistributionBundle\Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Country\Countries;
+use NewApiBundle\Services\TranslationExportService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,15 +26,11 @@ class CommonController extends AbstractController
 
     /** @var TranslatorInterface */
     private $translator;
-    
-    /** @var string */
-    private $translationsDir;
 
-    public function __construct(Countries $countries, string $translationsDir, TranslatorInterface $translator)
+    public function __construct(Countries $countries, TranslatorInterface $translator)
     {
         $this->countries = $countries;
         $this->translator = $translator;
-        $this->translationsDir = $translationsDir;
     }
 
     /**
@@ -181,39 +175,9 @@ class CommonController extends AbstractController
      * @return BinaryFileResponse
      * @throws \Exception
      */
-    public function translationsDownload(ExportService $exporter): BinaryFileResponse
+    public function translationsDownload(TranslationExportService $translationExportService): BinaryFileResponse
     {
-        $finder = new Finder();
-        $finder->files()->in($this->translationsDir)->name('*.en.xlf');
-
-        if (!$finder->hasResults()) {
-            throw new \UnexpectedValueException('No translations found');
-        }
-
-        $lines = [];
-
-        $lines[] = ['id','resname','source','target'];
-        $lines[] = [];
-
-        foreach ($finder as $file) {
-            $xml = new \SimpleXMLElement(file_get_contents($file->getRealPath()));
-
-            $lines[] = [$file->getFilename()];
-
-            foreach ($xml->file->body->{'trans-unit'} as $item) {
-                $attr = $item->attributes();
-                $lines[] = [
-                    (string)$attr['id'],
-                    (string)$attr['resname'],
-                    (string)$item->source,
-                    (string)$item->target,
-                ];
-            }
-
-            $lines[] = [];
-        }
-
-        $filename = $exporter->export($lines, 'translations', 'xlsx');
+        $filename = $translationExportService->prepareExport();
         $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);

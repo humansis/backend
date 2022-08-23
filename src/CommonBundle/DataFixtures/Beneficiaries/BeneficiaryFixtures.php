@@ -19,7 +19,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             [
-            "livelihood" => Livelihood::valueToAPI(Livelihood::GOVERNMENT),
+            "livelihood" => Livelihood::valueToAPI(Livelihood::REGULAR_SALARY_PUBLIC),
             "income" => 3,
             "notes" => null,
             "latitude" => null,
@@ -56,6 +56,12 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     "country_specific" => [
                         "id" => 2
                     ],
+                ],
+                [
+                    "answer" => 0.0000000,
+                    "country_specific" => [
+                        "id" => 3
+                    ],
                 ]
             ],
             "beneficiaries" => [
@@ -84,7 +90,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
             "__country" => "KHM"
         ],
             [
-              "livelihood" => Livelihood::valueToAPI(Livelihood::DAILY_LABOUR),
+              "livelihood" => Livelihood::valueToAPI(Livelihood::IRREGULAR_EARNINGS),
               "income" => 3,
               "notes" => null,
               "latitude" => null,
@@ -120,6 +126,12 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                       "answer" => "111222333",
                       "country_specific" => [
                           "id" => 2
+                      ],
+                  ],
+                  [
+                      "answer" => 0.99999999,
+                      "country_specific" => [
+                          "id" => 3
                       ],
                   ]
               ],
@@ -246,6 +258,12 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "answer" => null,
                         "country_specific" => [
                             "id" => 2
+                        ],
+                    ],
+                    [
+                        "answer" => 0.5,
+                        "country_specific" => [
+                            "id" => 3
                         ],
                     ]
                 ],

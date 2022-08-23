@@ -4,6 +4,8 @@ namespace NewApiBundle\Component\Import;
 
 use BeneficiaryBundle\Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use InvalidArgumentException;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
@@ -16,6 +18,7 @@ use NewApiBundle\Repository\ImportQueueRepository;
 use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Workflow\TransitionBlocker;
 use Symfony\Component\Workflow\WorkflowInterface;
 use UserBundle\Entity\User;
 
@@ -144,7 +147,16 @@ class ImportService
             $this->logImportInfo($import, "Changed state from '$before' to '{$import->getState()}'");
             $this->em->flush();
         }else{
-            throw new BadRequestHttpException("You can't do transition '$status' state from '$before'.");
+            $this->logImportTransitionConstraints($this->importStateMachine, $import, $status);
+            $reasons = [];
+            foreach ($this->importStateMachine->buildTransitionBlockerList($import,$status)->getIterator() as $reason) {
+                /**
+                 * @var $reason TransitionBlocker
+                 */
+                $reasons[] = $reason->getMessage();
+            }
+
+            throw new BadRequestHttpException(join(',' , $reasons));
         }
     }
 
@@ -159,6 +171,10 @@ class ImportService
         $this->logImportInfo($importFile->getImport(), "Removed file '{$importFile->getFilename()}'");
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getStatistics(Entity\Import $import): ImportStatisticsValueObject
     {
         $statistics = new ImportStatisticsValueObject();
@@ -171,7 +187,7 @@ class ImportService
 
         $statistics->setTotalEntries($importQueueRepository->count(['import'=>$import]));
         $statistics->setAmountIntegrityCorrect($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::VALID));
-        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID));
+        $statistics->setAmountIntegrityFailed($importQueueRepository->getTotalByImportAndStatuses($import, [ImportQueueState::INVALID, ImportQueueState::INVALID_EXPORTED]));
         $statistics->setAmountIdentityDuplicities($importBeneficiaryDuplicityRepository->getTotalByImport($import));
         $statistics->setAmountIdentityDuplicitiesResolved($importQueueRepository->getTotalResolvedDuplicities($import));
         $statistics->setAmountEntriesToImport($importQueueRepository->getTotalReadyForSave($import));

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType;
 
-use NewApiBundle\Enum\VariableBool;
+use NewApiBundle\Enum\VendorInvoicingState;
 use NewApiBundle\InputType\FilterFragment\FulltextFilterTrait;
 use NewApiBundle\InputType\FilterFragment\LocationFilterTrait;
 use NewApiBundle\InputType\FilterFragment\PrimaryIdFilterTrait;
@@ -21,22 +21,26 @@ class VendorFilterInputType extends AbstractFilterInputType
     use LocationFilterTrait;
 
     /**
-     * @var bool|null
-     * @Enum(enumClass="NewApiBundle\Enum\VariableBool")
+     * @var string|null
+     * @Enum(enumClass="NewApiBundle\Enum\VendorInvoicingState")
      */
-    protected $isInvoiced;
+    protected $invoicing;
 
-    public function hasIsInvoiced(): bool
+    /**
+     * @return bool
+     */
+    public function hasInvoicing(): bool
     {
-        return $this->has('isInvoiced');
+        return $this->has('invoicing');
     }
 
     /**
-     * @return bool|null
+     * @return string
      * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
-    public function getIsInvoiced(): ?bool
+    public function getInvoicing(): string
     {
-        return VariableBool::valueFromAPI($this->isInvoiced);
+        return VendorInvoicingState::valueFromAPI($this->invoicing);
     }
+
 }

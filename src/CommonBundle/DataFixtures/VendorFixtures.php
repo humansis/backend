@@ -2,8 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
-use CommonBundle\Entity\Adm1;
-use CommonBundle\Entity\Adm2;
+use CommonBundle\Entity\Location;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -80,8 +79,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
 
-        $adm1 = $manager->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'SYR'], ['id' => 'asc']);
-        $adm2 = $manager->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryISO3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
         $vendor = new Vendor();
         $vendor
@@ -92,7 +90,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation())
+            ->setLocation($adm2)
             ->setVendorNo('SYR'.sprintf('%07d', random_int(100, 10000)))
             ->setContractNo('SYRSP'.sprintf('%06d', random_int(100, 10000)))
         ;
@@ -104,8 +102,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_KHM);
 
-        $adm1 = $manager->getRepository(Adm1::class)->findOneBy(['countryISO3' => 'KHM'], ['id' => 'asc']);
-        $adm2 = $manager->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryISO3' => 'KHM', 'lvl' => 2], ['id' => 'asc']);
 
         $vendor = new Vendor();
         $vendor
@@ -116,7 +113,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode('54321')
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation())
+            ->setLocation($adm2)
             ->setVendorNo('KHM'.sprintf('%07d', random_int(100, 10000)))
             ->setContractNo('KHMSP'.sprintf('%06d', random_int(100, 10000)))
         ;
@@ -128,8 +125,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->makeGenericUser($manager, $country);
 
-        $adm1 = $manager->getRepository(Adm1::class)->findOneBy(['countryISO3' => $country], ['id' => 'asc']);
-        $adm2 = $manager->getRepository(Adm2::class)->findOneBy(['adm1' => $adm1], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryISO3' => $country, 'lvl' => 2], ['id' => 'asc']);
 
         $vendor = new Vendor();
         $vendor
@@ -140,7 +136,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setAddressPostcode(rand(10000, 99999))
             ->setArchived(false)
             ->setUser($user)
-            ->setLocation($adm2->getLocation())
+            ->setLocation($adm2)
             ->setVendorNo($country.sprintf('%07d', random_int(100, 10000)))
             ->setContractNo($country.'SP'.sprintf('%06d', random_int(100, 10000)))
         ;

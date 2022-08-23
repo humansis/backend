@@ -48,6 +48,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => \ProjectBundle\DBAL\SectorEnum::FOOD_SECURITY,
             'subsector' => \ProjectBundle\DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
@@ -127,13 +128,37 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'weight' => 1,
             'value' => '111222333',
         ];
+        $CSOFloatGtInt = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '>',
+            'weight' => 1,
+            'value' => 0,
+        ];
+        $CSOFloatLtFloat = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '<',
+            'weight' => 1,
+            'value' => 1.00000001,
+        ];
+        $CSOFloatGteFloat = [
+            'group' => $group++,
+            'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'field' => 'CSO float property',
+            'condition' => '>=',
+            'weight' => 1,
+            'value' => 0.5,
+        ];
         $workForGovernment = [
             'group' => $group++,
             'target' => \NewApiBundle\Enum\SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'livelihood',
             'condition' => '=',
             'weight' => 1,
-            'value' => 'Government',
+            'value' => 'Regular salary - public sector',
         ];
         yield 'female head' => [$this->assistanceWithCriteria([$femaleHead])];
         yield 'female head (long string)' => [$this->assistanceWithCriteria([$femaleHeadLongString])];
@@ -141,9 +166,12 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'has any income (string value)' => [$this->assistanceWithCriteria([$hasAnyIncomeString])];
         yield 'has any income (int value)' => [$this->assistanceWithCriteria([$hasAnyIncomeInt])];
         yield 'is in location Banteay Meanchey' => [$this->assistanceWithCriteria([$location])];
-        yield 'CSO equity card' => [$this->assistanceWithCriteria([$CSOEquityCard])];
+        yield 'CSO equity card exact string value' => [$this->assistanceWithCriteria([$CSOEquityCard])];
+        yield 'CSO float property higher integer value' => [$this->assistanceWithCriteria([$CSOFloatGtInt])];
+        yield 'CSO float property lower float value' => [$this->assistanceWithCriteria([$CSOFloatLtFloat])];
+        yield 'CSO float property greater or equal float value' => [$this->assistanceWithCriteria([$CSOFloatGteFloat])];
         yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
-        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $workForGovernment])];
+        yield 'all in one' => [$this->assistanceWithCriteria([$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $CSOFloatGtInt, $CSOFloatLtFloat, $CSOFloatGteFloat, $workForGovernment])];
     }
 
     /**
@@ -189,6 +217,8 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: '.$this->client->getResponse()->getContent()
         );
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertGreaterThan(0, $contentArray['totalCount']);
     }
 
     /**

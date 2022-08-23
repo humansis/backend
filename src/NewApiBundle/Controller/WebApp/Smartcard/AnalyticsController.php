@@ -5,19 +5,11 @@ namespace NewApiBundle\Controller\WebApp\Smartcard;
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Smartcard\Analytics\Event;
-use NewApiBundle\Component\Smartcard\Analytics\EventCollector;
 use NewApiBundle\Component\Smartcard\Analytics\EventService;
 use NewApiBundle\Controller\WebApp\AbstractWebAppController;
-use NewApiBundle\Entity\SynchronizationBatch;
-use NewApiBundle\Enum\SourceType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\SmartcardRedemptionBatch;
 use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Repository\SmartcardPurchaseRepository;
-use VoucherBundle\Repository\SmartcardRedemptionBatchRepository;
-use VoucherBundle\Repository\SmartcardRepository;
 
 /**
  * properties *Name are there only for reason of nonexistent frontend

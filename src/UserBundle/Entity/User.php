@@ -517,8 +517,8 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      */
     public function getRoles()
     {
-        return array_map(function (Role $role) {
+        return array_values(array_map(function (Role $role) {
             return $role->getCode();
-        }, $this->roles->toArray());
+        }, $this->roles->toArray()));
     }
 }

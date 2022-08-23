@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="fr" datatype="plaintext" original="file.ext">
     <header>
@@ -15,6 +15,10 @@
       </trans-unit>
       <trans-unit id="dcFiFi1" resname="Active projects">
         <source>Active projects</source>
+        <target>Projets en cours</target>
+      </trans-unit>
+      <trans-unit id="gOUCFfW" resname="Active Projects">
+        <source>Active Projects</source>
         <target>Projets en cours</target>
       </trans-unit>
       <trans-unit id="n9coxmy" resname="Add">
@@ -321,6 +325,10 @@
         <source>Enrolled beneficiaries</source>
         <target>Bénéficiaires enregistrés</target>
       </trans-unit>
+      <trans-unit id="LAlAY4Z" resname="Enrolled Beneficiaries">
+        <source>Enrolled Beneficiaries</source>
+        <target>Bénéficiaires enregistrés</target>
+      </trans-unit>
       <trans-unit id="sKv_7qu" resname="Enumerator">
         <source>Enumerator</source>
         <target>Enumérateur</target>
@@ -381,6 +389,10 @@
         <source>Has Not Been In Distribution Since</source>
         <target>N'a pas été dans une distribution depuis</target>
       </trans-unit>
+      <trans-unit id="YkhOIqa" resname="health">
+        <source>health</source>
+        <target>Santé</target>
+      </trans-unit>
       <trans-unit id="VYmESet" resname="Health">
         <source>Health</source>
         <target>Santé</target>
@@ -403,6 +415,10 @@
       </trans-unit>
       <trans-unit id="ocbJf0F" resname="Household">
         <source>Household</source>
+        <target>Ménage</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
         <target>Ménage</target>
       </trans-unit>
       <trans-unit id="dJOqWjY" resname="Household Head">
@@ -428,10 +444,6 @@
       <trans-unit id="7i56ctq" resname="Household Size">
         <source>Household Size</source>
         <target>Taille du foyer</target>
-      </trans-unit>
-      <trans-unit id="i9HzhQO" resname="Households Targeted">
-        <source>Households Targeted</source>
-        <target>គ្រួសារគោលដៅ</target>
       </trans-unit>
       <trans-unit id="UzRheu5" resname="Hygiene Kit">
         <source>Hygiene Kit</source>
@@ -459,15 +471,24 @@
       </trans-unit>
       <trans-unit id="Qptrdl5" resname="Import &amp; compare">
         <source>Import &amp; compare</source>
-        <target><![CDATA[Importer & comparer]]></target>
+        <target>Importer &amp; comparer</target>
       </trans-unit>
       <trans-unit id="FUBfiFA" resname="Import from file">
         <source>Import from file</source>
         <target>Import depuis un fichier</target>
       </trans-unit>
-      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
-        <target>Importez le fichier contenant la distribution après modifications. La base de donnée sera mise à jour lorsque vous cliquerez sur "upload" après validation de l'import. Les bénéficiaires inconnus seront ignorés.</target>
+      <trans-unit id="TKbwbtO" resname="Import from File">
+        <source>Import from File</source>
+        <target>Import depuis un fichier</target>
+      </trans-unit>
+      <trans-unit id="BdazhEU"
+                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
+          importing.
+        </source>
+        <target>"Importez le fichier contenant la distribution après modifications. La base de donnée sera mise à jour lorsque vous cliquerez sur ""upload"" après validation de l'import. Les
+          bénéficiaires inconnus seront ignorés."
+        </target>
       </trans-unit>
       <trans-unit id="27t7txq" resname="Income Level">
         <source>Income Level</source>
@@ -769,6 +790,10 @@
         <source>Served beneficiaries</source>
         <target>Bénéficiaires servis</target>
       </trans-unit>
+      <trans-unit id="Ylj6.eN" resname="Served Beneficiaries">
+        <source>Served Beneficiaries</source>
+        <target>Bénéficiaires servis</target>
+      </trans-unit>
       <trans-unit id="SQmtaXI" resname="Set As Distributed">
         <source>Set As Distributed</source>
         <target>Définir comme distribué</target>
@@ -879,14 +904,14 @@
       </trans-unit>
       <trans-unit id="oP0g0kS" resname="Validate and Lock">
         <source>Validate and Lock</source>
-        <target><![CDATA[Valider & verouiller]]></target>
-      </trans-unit>
-      <trans-unit id="jjeVPSP" resname="Value">
-        <source>Value</source>
-        <target>Valeur</target>
+        <target>Valider &amp; verouiller</target>
       </trans-unit>
       <trans-unit id="zUJATVK" resname="value">
         <source>value</source>
+        <target>Valeur</target>
+      </trans-unit>
+      <trans-unit id="jjeVPSP" resname="Value">
+        <source>Value</source>
         <target>Valeur</target>
       </trans-unit>
       <trans-unit id="_KqCtC0" resname="Vendor">
@@ -913,13 +938,17 @@
         <source>Vulnerabilities</source>
         <target>Vulnérabilités</target>
       </trans-unit>
-      <trans-unit id="o_20tzp" resname="Woreda">
-        <source>Woreda</source>
-        <target>Woreda</target>
-      </trans-unit>
       <trans-unit id="oCQ66J1" resname="You can select only one country">
         <source>You can select only one country</source>
         <target>Vous ne pouvez sélectionner qu'un pays</target>
+      </trans-unit>
+      <trans-unit id="i9HzhQO" resname="Households Targeted">
+        <source>Households Targeted</source>
+        <target>គ្រួសារគោលដៅ</target>
+      </trans-unit>
+      <trans-unit id="o_20tzp" resname="Woreda">
+        <source>Woreda</source>
+        <target>Woreda</target>
       </trans-unit>
     </body>
   </file>

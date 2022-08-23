@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Serializer\MapperInterface;
+use NewApiBundle\Utils\DateTime\DateOnlyFormat;
 
 class BeneficiaryMapper implements MapperInterface
 {
@@ -49,16 +50,16 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getNationalIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray());
+        }, $this->object->getPerson()->getNationalIds()->toArray()));
     }
 
     public function getPhoneIds(): array
     {
-        return array_map(function ($item) {
+        return array_values(array_map(function ($item) {
             return $item->getId();
-        }, $this->object->getPerson()->getPhones()->toArray());
+        }, $this->object->getPerson()->getPhones()->toArray()));
     }
 
     public function getResidencyStatus(): string
@@ -101,7 +102,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getDateOfBirth(): ?string
     {
-        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(\DateTime::ISO8601) : null;
+        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(DateOnlyFormat::FORMAT) : null;
     }
 
     public function getLocalFamilyName(): string

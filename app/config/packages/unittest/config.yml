@@ -4,6 +4,11 @@ framework:
         storage_id: session.storage.mock_file
     profiler:
         collect: false
+    messenger:
+        routing:
+            'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': sync
+            'NewApiBundle\Component\Import\Messaging\Message\ItemBatch': sync
+            'NewApiBundle\Component\Import\Messaging\Message\UploadFile': sync
 
 swiftmailer:
     disable_delivery: true
@@ -16,3 +21,6 @@ monolog:
             path: '%kernel.logs_dir%/imports.log'
             level: debug
             channels: [import]
+
+parameters:
+    frontendUrl: 'http://localhost:8080'

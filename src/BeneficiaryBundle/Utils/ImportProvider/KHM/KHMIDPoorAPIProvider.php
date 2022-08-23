@@ -8,21 +8,15 @@ use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Entity\CountrySpecificAnswer;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\HouseholdLocation;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Utils\ImportProvider\DefaultAPIProvider;
-use CommonBundle\Entity\Adm3;
-use CommonBundle\Entity\Adm4;
+use CommonBundle\Entity\Location;
 use CommonBundle\Entity\OrganizationServices;
-use CommonBundle\Entity\Service;
 use CommonBundle\Utils\LocationService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use ProjectBundle\Entity\Project;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -396,21 +390,21 @@ class KHMIDPoorAPIProvider extends DefaultAPIProvider
     private function saveAdm4(array $village, string $locationCode)
     {
         /** @var Adm3 $adm3 */
-        $adm3 = $this->em->getRepository(Adm3::class)->findOneBy(['code' => $locationCode]);
+        $adm3 = $this->em->getRepository(Location::class)->findOneBy(['code' => $locationCode]);
         if ($adm3 == null) {
             throw new \Exception("Adm3 was not found.");
         }
         
-        $adm4 = $this->em->getRepository(Adm4::class)->findOneBy(['name' => $village['VillageName'], 'adm3' => $adm3]);
+        $adm4 = $this->em->getRepository(Location::class)->findOneBy(['name' => $village['VillageName'], 'parentLocation' => $adm3]);
         if (!$adm4) {
-            $adm4 = new Adm4($adm3);
-            $adm4->setName($village['VillageName'])
-                ->setCode('KH' . $village['VillageCode']);
+            $adm4 = new Location($adm3);
+            $adm4->setName($village['VillageName']);
+            $adm4->setCode('KH' . $village['VillageCode']);
             $this->em->persist($adm4);
             $this->em->flush();
         }
         
-        return $adm4->getLocation();
+        return $adm4;
     }
 
     /**

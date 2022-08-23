@@ -91,4 +91,19 @@ class LocationType implements InputTypeInterface
         $this->adm4 = $adm4;
     }
 
+    public function getAdmByLevel(int $level): ?int
+    {
+        switch ($level) {
+            case 1:
+                return $this->getAdm1();
+            case 2:
+                return $this->getAdm2();
+            case 3:
+                return $this->getAdm3();
+            case 4:
+                return $this->getAdm4();
+            default:
+                return null;
+        }
+    }
 }

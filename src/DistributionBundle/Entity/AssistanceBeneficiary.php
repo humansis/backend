@@ -7,6 +7,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -330,19 +331,32 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @return string|null valid JSON string
+     * @return ScoringProtocol|null valid JSON string
+     *
+     * @throws \JsonException
      */
-    public function getVulnerabilityScores(): ?string
+    public function getVulnerabilityScores(): ?ScoringProtocol
     {
-        return $this->vulnerabilityScores;
+        if (is_null($this->vulnerabilityScores)) {
+            return null;
+        }
+
+        $protocol = new ScoringProtocol();
+        $protocol->unserialize($this->vulnerabilityScores);
+
+        return $protocol;
     }
 
     /**
-     * @param string $vulnerabilityScores
+     * @param ScoringProtocol $vulnerabilityScores
+     *
+     * @return AssistanceBeneficiary
+     *
+     * @throws \JsonException
      */
-    public function setVulnerabilityScores(string $vulnerabilityScores): self
+    public function setVulnerabilityScores(ScoringProtocol $vulnerabilityScores): self
     {
-        $this->vulnerabilityScores = $vulnerabilityScores;
+        $this->vulnerabilityScores = $vulnerabilityScores->serialize();
 
         return $this;
     }
@@ -383,8 +397,8 @@ class AssistanceBeneficiary
     public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
     {
         foreach ($this->reliefPackages as $package) {
-            if ($package->getState() !== ReliefPackageState::TO_DISTRIBUTE) {
-                continue; // we can't change closed or started packages
+            if(!$package->isOnStartupState() && !$package->isSameModalityAndUnit($modalityName, $unit)) {
+                continue;
             }
             if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
                 $package->setAmountToDistribute($value);

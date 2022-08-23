@@ -26,7 +26,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
 use VoucherBundle\Entity\Vendor;
 use VoucherBundle\Entity\Voucher;
 use VoucherBundle\Entity\VoucherPurchaseRecord;
-use VoucherBundle\InputType\SmartcardRedemtionBatch;
+use VoucherBundle\InputType\SmartcardInvoice;
 use VoucherBundle\InputType\VoucherPurchase;
 use VoucherBundle\InputType\VoucherRedemptionBatch;
 use VoucherBundle\Repository\SmartcardPurchaseRepository;
