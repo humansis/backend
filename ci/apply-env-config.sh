@@ -41,6 +41,7 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(BATCH_SIZE_FINALIZATION)%|${BATCH_SIZE_FINALIZATION}|g" \
   -e "s|%env(DEFAULT_ACCOUNT_PASSWORD)%|${DEFAULT_ACCOUNT_PASSWORD}|g" \
   -e "s|%env(DEFAULT_ACCOUNT_SALT)%|${DEFAULT_ACCOUNT_SALT}|g" \
+  -e "s|%env(SYMFONY_SECRET)%|${SYMFONY_SECRET}|g" \
   -e "s|%env(ENVIRONMENT)%|${ENVIRONMENT}|g" app/config/parameters.yml
 
 
