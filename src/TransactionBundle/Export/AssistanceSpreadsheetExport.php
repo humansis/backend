@@ -17,6 +17,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Services\CountryLocaleResolverService;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -465,7 +466,7 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
         $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
         $worksheet->setCellValue('E'.$rowNumber, self::getNationalId($person));
-        $worksheet->setCellValue('F'.$rowNumber, self::getPhone($person));
+        $worksheet->setCellValueExplicit('F'.$rowNumber, self::getPhone($person), DataType::TYPE_STRING);
         $worksheet->setCellValue('G'.$rowNumber, null);
         $worksheet->setCellValue('H'.$rowNumber, null);
         $worksheet->setCellValue('I'.$rowNumber, self::getProxyPhone($person));
