@@ -538,6 +538,10 @@ services:
         arguments:
           - '@translator'
 
+    NewApiBundle\Services\CountryLocaleResolverService:
+        arguments:
+            - '%app.countries%'
+
     NewApiBundle\Services\ScoringBlueprintService:
 
     NewApiBundle\Services\TranslationExportService:

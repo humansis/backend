@@ -3694,6 +3694,58 @@
         <source>Scoring</source>
         <target>Подсчет очков</target>
       </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Фамилия</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>Имя</target>
+      </trans-unit>
+      <trans-unit id="UPAHiBI" resname="Amount per househould [%unit%]">
+        <source>Amount per househould [%unit%]</source>
+        <target>Сумма на домохозяйство</target>
+      </trans-unit>
+      <trans-unit id="QyUfYPk" resname="Amount per household []">
+        <source>Amount per household []</source>
+        <target>Сумма на домохозяйство</target>
+      </trans-unit>
+      <trans-unit id="sGExlXh" resname="Cumulative amount []">
+        <source>Cumulative amount []</source>
+        <target>Общая сумма []</target>
+      </trans-unit>
+      <trans-unit id="tsRYY4d" resname="customer">
+        <source>customer</source>
+        <target>покупатель</target>
+      </trans-unit>
+      <trans-unit id="uEaRUvy" resname="contract_no">
+        <source>contract_no</source>
+        <target>договор №</target>
+      </trans-unit>
+      <trans-unit id="qw.OwI4" resname="cash">
+        <source>cash</source>
+        <target>наличные</target>
+      </trans-unit>
+      <trans-unit id="Q4HcKrF" resname="bank">
+        <source>bank</source>
+        <target>банк</target>
+      </trans-unit>
+      <trans-unit id="zzjZXJx" resname="amount">
+        <source>amount</source>
+        <target>количество</target>
+      </trans-unit>
+      <trans-unit id="Rm5bnNV" resname="currency">
+        <source>currency</source>
+        <target>валюта</target>
+      </trans-unit>
+      <trans-unit id="sRm9pCB" resname="annex">
+        <source>annex</source>
+        <target>Приложение</target>
+      </trans-unit>
+      <trans-unit id="vvkc5PR" resname="annex_description">
+        <source>annex_description</source>
+        <target>Приложение 1</target>
+      </trans-unit>
       <trans-unit id="SZ8TjP8" resname="Navi/Elo number">
         <source>Navi/Elo number</source>
         <target>Номер Navi/Elo</target>
