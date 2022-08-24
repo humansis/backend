@@ -186,7 +186,6 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('hh');
-        $this->getHouseholdLocation($qb);
         
         $qb->leftJoin('hh.beneficiaries', 'b')
             ->leftJoin('hh.projects', 'p')
@@ -211,6 +210,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter->hasFulltext()) {
+            $this->getHouseholdLocation($qb);
 
             $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(1, 'l', 'l1');
             $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(2, 'l', 'l2');
@@ -243,11 +243,6 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             foreach ($qbl3->getParameters() as $parameter) {
                 $qb->setParameter($parameter->getName(), $parameter->getValue());
             }
-        }
-
-        if ($filter->hasGender()) {
-            $qb->andWhere('per.gender = :gender')
-                ->setParameter('gender', 'M' === $filter->getGender() ? 1 : 0);
         }
 
         if ($filter->hasGender()) {
@@ -291,6 +286,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter->hasLocations()) {
+            $this->getHouseholdLocation($qb);
             $qb->andWhere('l.id  IN (:locations)')
                 ->setParameter('locations', $filter->getLocations());
         }
@@ -299,6 +295,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
+                        $this->getHouseholdLocation($qb);
                         $qb->addGroupBy('l.id')->addOrderBy('l.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
@@ -417,10 +414,13 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     protected function getHouseholdLocation(QueryBuilder &$qb)
     {
-        $qb->leftJoin("hh.householdLocations", "hl")
-            ->leftJoin("hl.campAddress", "ca")
-            ->leftJoin("ca.camp", "c")
-            ->leftJoin("hl.address", "ad")
-            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+        // Condition to make sure that tables are joined at most once
+        if (!in_array('l', $qb->getAllAliases())) {
+            $qb->leftJoin("hh.householdLocations", "hl")
+                ->leftJoin("hl.campAddress", "ca")
+                ->leftJoin("ca.camp", "c")
+                ->leftJoin("hl.address", "ad")
+                ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+        }
     }
 }

@@ -367,7 +367,7 @@ class HouseholdService
             ->setIncomeSpentOnFood($householdArray["income_spent_on_food"] ?? null)
             ->setHouseholdIncome($householdArray["household_income"] ?? null)
             ->setEnumeratorName($householdArray["enumerator_name"] ?? null)
-            ->setCountryIso3($householdArray["iso3"] ?? 'KHM');
+            ->setCountryIso3($householdArray["__country"]);
 
         $dateReceived = null;
         if (isset($householdArray["support_date_received"]) && $householdArray["support_date_received"]) {
