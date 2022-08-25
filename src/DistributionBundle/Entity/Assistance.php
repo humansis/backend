@@ -934,7 +934,7 @@ class Assistance implements ExportableInterface
         $percentage = '';
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
-            if ($this->getValidated()) {
+            if ($this->isValidated()) {
                 $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType();
             } else {
                 $percentage .= '0% '.$commodity->getModalityType();
