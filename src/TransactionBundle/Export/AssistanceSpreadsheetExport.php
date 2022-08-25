@@ -43,6 +43,9 @@ class AssistanceSpreadsheetExport
     /** @var SmartcardDeposit[] */
     private $smartCardDeposits = [];
 
+    private const GDPR_TEXT_1 = "Privacy notice: Please note that PIN as the Personal Data Controller (contact details of the Data Protection Officer: dpo@clovekvtisni.cz), will be processing your above-mentioned personal data. PIN will use the data only for the purpose of providing assistance within the project you agreed to participate in. PIN needs these data because 1) it is necessary for the provision of assistance to you according to the project terms, and 2) PIN has a legitimate interest in reporting of the project results to the donor. PIN will keep the data only for the period required by the donors financing the project, or by the legislation binding for PIN; however, the maximum period of storage is 10 years. Your data may also be shared with other persons for the purpose of implementation and verification of the project, i.e. the service providers of PIN's systems and software, where your data are stored, our project partners, donors and the auditors.";
+    private const GDPR_TEXT_2 = "You have the following rights: 1) right to request information on which personal data of yours PIN is processing, 2) right to request explanation from PIN regarding the processing of personal data, 3) right to request access to such data from PIN, right to have the data updated, corrected or restricted, as the case may be, and right to object to processing, 4) the right to obtain personal data in a structured, commonly used and machine-readable format, 5) right to request the deletion of such personal data from PIN, 6) right to address the Controller or lodge a complaint to the Office for Personal Data Protection in case of doubt regarding the compliance with the obligations related to the processing of personal data.";
+
     public function __construct(
         TranslatorInterface $translator,
         SmartcardDepositService $smartcardDepositService,
@@ -343,14 +346,20 @@ class AssistanceSpreadsheetExport
         $worksheet->mergeCells('B20:K20');
 
         $worksheet->getCell('B22')->setValue(
-            "Privacy notice: Please note that PIN as the Personal Data Controller (contact details of the Data Protection Officer: dpo@clovekvtisni.cz), will be processing your above-mentioned personal data. PIN will use the data only for the purpose of providing assistance within the project you agreed to participate in. PIN needs these data because 1) it is necessary for the provision of assistance to you according to the project terms, and 2) PIN has a legitimate interest in reporting of the project results to the donor. PIN will keep the data only for the period required by the donors financing the project, or by the legislation binding for PIN; however, the maximum period of storage is 10 years. Your data may also be shared with other persons for the purpose of implementation and verification of the project, i.e. the service providers of PIN's systems and software, where your data are stored, our project partners, donors and the auditors.
-You have the following rights: 1) right to request information on which personal data of yours PIN is processing, 2) right to request explanation from PIN regarding the processing of personal data, 3) right to request access to such data from PIN, right to have the data updated, corrected or restricted, as the case may be, and right to object to processing, 4) the right to obtain personal data in a structured, commonly used and machine-readable format, 5) right to request the deletion of such personal data from PIN, 6) right to address the Controller or lodge a complaint to the Office for Personal Data Protection in case of doubt regarding the compliance with the obligations related to the processing of personal data.");
+            self::GDPR_TEXT_1.
+            "\n".
+            self::GDPR_TEXT_2
+        );
         $worksheet->mergeCells('B22:K22');
         $worksheet->getStyle('B22')->getFont()->setSize(8);
         $worksheet->getStyle('B22')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $worksheet->getStyle('B22')->getAlignment()->setWrapText(true);
 
-        $worksheet->getCell('B23')->setValue($this->translator->trans('GDPR_Distribution_protocol_text'));
+        $worksheet->getCell('B23')->setValue(
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1')).
+            "\n".
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_2'))
+        );
         $worksheet->mergeCells('B23:K23');
         $worksheet->getStyle('B23')->getFont()->setItalic(true);
         $worksheet->getStyle('B23')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
@@ -406,7 +415,7 @@ You have the following rights: 1) right to request information on which personal
         $worksheet->setCellValue('J26', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary', [], null, $languageCode));
         $worksheet->getStyle('B23:K26')->applyFromArray($rowStyle);
         $worksheet->getStyle('B26:K26')->getFont()->setItalic(true);
-        $worksheet->getRowDimension(23)->setRowHeight(42.00);
+        $worksheet->getRowDimension(26)->setRowHeight(42.00);
 
         $worksheet->getStyle('B25:K25')->getBorders()
             ->getTop()
@@ -545,6 +554,11 @@ You have the following rights: 1) right to request information on which personal
         }
 
         return implode("\n", $result);
+    }
+
+    private static function getStringWithoutNewLineCharacters(string $string): string
+    {
+        return preg_replace('/\s+/', ' ', trim($string));
     }
 
     private function getImageResource(string $filename)
