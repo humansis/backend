@@ -401,7 +401,7 @@ class AssistanceSpreadsheetExport
             $worksheet->setCellValue('K26', $this->translator->trans('Distributed', [], null, $languageCode));
             $this->smartCardDeposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiaries($assistance->getDistributionBeneficiaries()->toArray());
         } else {
-            $worksheet->getCell('K25')->setValue('Signature');
+            $worksheet->getCell('K25')->setValue('Signature / Time-stamp');
             $worksheet->setCellValue('K26', $this->translator->trans('Signature / Time-stamp', [], null, $languageCode));
         }
         $worksheet->setCellValue('B26', $this->translator->trans('No.', [], null, $languageCode));
