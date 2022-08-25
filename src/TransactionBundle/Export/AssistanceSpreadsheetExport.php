@@ -303,9 +303,6 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('J7')->setValue($assistance->getRound() === null ? $this->translator->trans('N/A', [], null, $languageCode) : $assistance->getRound());
         $worksheet->mergeCells('J7:J8');
 
-        $worksheet->getStyle('F7')->applyFromArray($userInputStyle);
-        $worksheet->mergeCells('F7:F8');
-
         $worksheet->getCell('C10')->setValue('Validated by:');
         $worksheet->getCell('C10')->getStyle()->applyFromArray($labelEnStyle);
 
