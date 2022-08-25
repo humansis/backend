@@ -465,7 +465,7 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('B'.$rowNumber, $id);
         $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
         $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
-        $worksheet->setCellValue('E'.$rowNumber, self::getNationalId($person));
+        $worksheet->setCellValueExplicit('E'.$rowNumber, self::getNationalId($person), DataType::TYPE_STRING);
         $worksheet->setCellValueExplicit('F'.$rowNumber, self::getPhone($person), DataType::TYPE_STRING);
         $worksheet->setCellValue('G'.$rowNumber, null);
         $worksheet->setCellValue('H'.$rowNumber, null);
@@ -520,18 +520,24 @@ class AssistanceSpreadsheetExport
     {
         foreach ($person->getPhones() as $p) {
             if (!$p->getProxy()) {
-                return $p->getPrefix().$p->getNumber();
+                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
         return null;
     }
 
+    private static function splitStringToGroupsOfThree(string $phoneNumber): string
+    {
+        $splitPhoneNumber = str_split(str_replace(' ', '', $phoneNumber), 3);
+        return implode(' ', $splitPhoneNumber);
+    }
+
     private static function getProxyPhone(Person $person): ?string
     {
         foreach ($person->getPhones() as $p) {
             if ($p->getProxy()) {
-                return $p->getPrefix().$p->getNumber();
+                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
