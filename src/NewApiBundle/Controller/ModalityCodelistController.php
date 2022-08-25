@@ -45,7 +45,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function allTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(ModalityType::getPublicValues(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(ModalityType::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

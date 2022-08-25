@@ -15,7 +15,6 @@ use DateTimeInterface;
 use DistributionBundle\DTO\VulnerabilityScore;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
@@ -29,6 +28,7 @@ use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
@@ -238,7 +238,7 @@ class AssistanceService
             unset($distributionArray['commodities']);
 
             // ignore user defined commodities and create some generic instead
-            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => \NewApiBundle\Enum\ModalityType::ACTIVITY_ITEM];
+            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => ModalityType::ACTIVITY_ITEM];
         }
 
         /** @var Assistance $distribution */
@@ -594,7 +594,7 @@ class AssistanceService
             $commodities = $distribution->getCommodities();
             $isQrVoucher = false;
             foreach ($commodities as $commodity) {
-                if ($commodity->getModalityType() === \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER) {
+                if ($commodity->getModalityType() === ModalityType::QR_CODE_VOUCHER) {
                     $isQrVoucher = true;
                 }
             }

@@ -25,7 +25,7 @@ class ModalityCodelistController extends AbstractController
     {
         $data = [];
 
-        $types = ModalityType::getPublicValues();
+        $types = ModalityType::values();
         foreach ($types as $type) {
             $data[] = new CodeItem($type, $type);
         }

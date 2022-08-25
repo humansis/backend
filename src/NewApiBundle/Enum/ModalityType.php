@@ -56,10 +56,6 @@ final class ModalityType
         ];
     }
 
-    public const INTERNAL_TYPES = [
-        self::ACTIVITY_ITEM
-    ];
-
     public static function getModality(string $modalityType): ?string
     {
         if (! in_array($modalityType, self::values(), true)) {
@@ -73,10 +69,5 @@ final class ModalityType
         }
 
         return null;
-    }
-
-    public static function getPublicValues(): array
-    {
-        return array_diff(self::values(), self::INTERNAL_TYPES);
     }
 }

@@ -28,7 +28,6 @@ final class Modality
         ModalityType::DIGNITY_KIT,
         ModalityType::NFI_KIT,
         ModalityType::WINTERIZATION_KIT,
-        ModalityType::ACTIVITY_ITEM,
     ];
     public const OTHER_TYPES   = [ModalityType::LOAN, ModalityType::BUSINESS_GRANT];
 
@@ -70,6 +69,6 @@ final class Modality
                 break;
         }
 
-        return $includeInternal ? $modalityTypes : array_intersect($modalityTypes, ModalityType::getPublicValues());
+        return $includeInternal ? $modalityTypes : array_intersect($modalityTypes, ModalityType::values());
     }
 }
