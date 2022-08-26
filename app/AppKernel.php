@@ -62,6 +62,10 @@ class AppKernel extends Kernel
             }
         }
 
+        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+            $bundles[] = new Sentry\SentryBundle\SentryBundle();
+        }
+
         return $bundles;
     }
 
