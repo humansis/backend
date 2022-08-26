@@ -1,0 +1,3 @@
+sentry:
+    #todo set proper project dns
+    dsn: "https://7ff5069624384df8bf3d303b551f8453@o1378753.ingest.sentry.io/6690862"

@@ -53,6 +53,7 @@
 		"prestashop/decimal": "^1.5",
 		"punic/punic": "3.8.0",
 		"sensio/framework-extra-bundle": "v6.2.9",
+        "sentry/sentry-symfony": "^4.4",
 		"symfony/contracts": "v3.1.1",
 		"symfony/doctrine-messenger": "^6.1",
 		"symfony/expression-language": "v6.1.7",
