@@ -695,11 +695,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             ];
         }
 
-        $assets = [];
-        foreach ((array) $this->getHousehold()->getAssets() as $type) {
-            $assets[] = HouseholdAssets::valueToAPI($type);
-        }
-
         $supportReceivedTypes = [];
         foreach ((array) $this->getHousehold()->getSupportReceivedTypes() as $type) {
             $supportReceivedTypes[] = HouseholdSupportReceivedType::valueToAPI($type);
@@ -731,7 +726,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "proxy phone 2" => $proxyphones[1],
             "ID Type" => $typenationalID,
             "ID Number" => $valuesnationalID,
-            "Assets" => implode(', ', $assets),
+            "Assets" => implode(', ', $this->getHousehold()->getAssets()),
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),
             "Support Received Types" => implode(', ', $supportReceivedTypes),
@@ -799,12 +794,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             $livelihood = Livelihood::translate($this->getHousehold()->getLivelihood());
         }
 
-        $assets = array_values(
-            array_map(function ($value) {
-                return HouseholdAssets::valueToAPI($value);
-            }, (array) $this->getHousehold()->getAssets())
-        );
-
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
             $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
@@ -835,7 +824,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "Enumerator name" => $this->getHousehold()->getEnumeratorName(),
             "latitude" => $this->getHousehold()->getLatitude(),
             "longitude" => $this->getHousehold()->getLongitude(),
-            "Assets" => implode(', ', $assets),
+            "Assets" => implode(', ', $this->getHousehold()->getAssets()),
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),
             "Support Received Types" => implode(', ', $supportReceivedTypes),
