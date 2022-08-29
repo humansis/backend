@@ -446,7 +446,10 @@ class AssistanceSpreadsheetExport
 
         $rowNumber = 27;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
-            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle, $this->shouldDistributionContainDate($assistance));
+            if ($distributionBeneficiary->getRemoved() === false) {
+                $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id + 1, $rowStyle,
+                    $this->shouldDistributionContainDate($assistance));
+            }
         }
     }
 
