@@ -246,7 +246,7 @@ class BMSServiceTestCase extends KernelTestCase
     }
 
 
-    public function setUpFunctionnal()
+    public function setUpFunctionnal(): void
     {
         self::bootKernel();
 

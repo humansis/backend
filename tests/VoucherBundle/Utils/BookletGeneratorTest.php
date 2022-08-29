@@ -15,7 +15,7 @@ class BookletGeneratorTest extends KernelTestCase
     /** @var \VoucherBundle\Utils\BookletGenerator */
     private $generator;
 
-    public function setUp()
+    public function setUp(): void
     {
         self::bootKernel();
 

@@ -28,7 +28,7 @@ use VoucherBundle\Utils\SmartcardService;
 class SmartcardControllerTest extends BMSServiceTestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUpFunctionnal();
 
@@ -40,7 +40,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->removeSmartcards('1234ABC');
 

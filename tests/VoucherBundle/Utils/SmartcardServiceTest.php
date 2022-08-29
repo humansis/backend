@@ -50,7 +50,7 @@ class SmartcardServiceTest extends KernelTestCase
      */
     private $user;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         self::bootKernel();
 

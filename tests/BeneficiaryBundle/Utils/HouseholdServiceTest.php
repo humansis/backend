@@ -34,7 +34,7 @@ class HouseholdServiceTest extends KernelTestCase
     /** @var ValidatorInterface */
     private $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $kernel = self::bootKernel();
         // $this->application = new Application($kernel);

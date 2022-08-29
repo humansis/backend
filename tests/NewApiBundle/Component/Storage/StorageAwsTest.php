@@ -35,7 +35,7 @@ class StorageAwsTest extends KernelTestCase
      */
     private static $filePath;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 

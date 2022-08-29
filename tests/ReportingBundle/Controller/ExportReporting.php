@@ -10,7 +10,7 @@ use ReportingBundle\Utils\Computers\Computer;
 
 class ExportReporting extends BMSServiceTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUpFunctionnal();
     }

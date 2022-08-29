@@ -12,7 +12,7 @@ class ImportParserTest extends TestCase
     /** @var File */
     private static $file;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
