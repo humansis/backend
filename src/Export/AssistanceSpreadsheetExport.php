@@ -112,7 +112,6 @@ class AssistanceSpreadsheetExport
         $worksheet->getColumnDimension('I')->setWidth(13.888);
         $worksheet->getColumnDimension('J')->setWidth(19.888);
         $worksheet->getColumnDimension('K')->setWidth(21.032);
-        $worksheet->getColumnDimension('L')->setWidth(30.032);
 
         $worksheet->getStyle('A1:K10000')->applyFromArray($style);
     }
@@ -452,13 +451,13 @@ class AssistanceSpreadsheetExport
     }
 
     private function createBeneficiaryRow(
-        Worksheet $worksheet,
+        Worksheet             $worksheet,
         AssistanceBeneficiary $distributionBeneficiary,
-        $rowNumber,
-        $id,
-        $rowStyle,
-        bool $shouldContainDate
-    ) {
+                              $rowNumber,
+                              $id,
+                              $rowStyle,
+        bool                  $shouldContainDate
+    ): int {
         $bnf = $distributionBeneficiary->getBeneficiary();
         if ($bnf instanceof Household) {
             $person = $bnf->getHouseholdHead()->getPerson();
@@ -468,12 +467,6 @@ class AssistanceSpreadsheetExport
             $person = $bnf->getContact();
         } else {
             $person = $bnf->getPerson();
-        }
-
-        if ($distributionBeneficiary->getRemoved()) {
-            $worksheet->getStyle("B$rowNumber:K$rowNumber")->getFont()->setStrikethrough(true);
-            $worksheet->getStyle("K$rowNumber")->getFill()->setFillType(Fill::FILL_SOLID)
-                ->getStartColor()->setRGB('d9d9d9');
         }
 
         $worksheet->setCellValue('B'.$rowNumber, $id);
@@ -492,20 +485,7 @@ class AssistanceSpreadsheetExport
             $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
         }
 
-        $nextRowNumber = $rowNumber + 1;
-
-        if ($distributionBeneficiary->getJustification()) {
-            $worksheet->getStyle('B'.$nextRowNumber.':K'.$nextRowNumber)
-                ->applyFromArray($rowStyle)
-                ->getFill()->setFillType(Fill::FILL_SOLID)
-                ->getStartColor()->setRGB('d9d9d9');
-            $worksheet->setCellValue('B'.$nextRowNumber, $id);
-            $worksheet->mergeCells("C{$nextRowNumber}:J{$nextRowNumber}");
-            $worksheet->setCellValue('C'.$nextRowNumber, $distributionBeneficiary->getJustification());
-            ++$nextRowNumber;
-        }
-
-        return $nextRowNumber;
+        return $rowNumber + 1;
     }
 
     private static function getProjectsAndDonors(Assistance $assistance): string
