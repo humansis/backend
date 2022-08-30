@@ -17,6 +17,7 @@ use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Enum\SynchronizationBatchState;
 use NewApiBundle\Services\CountryLocaleResolverService;
+use NewApiBundle\Utils\FileSystem\Image;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -181,7 +182,7 @@ class AssistanceSpreadsheetExport
         $worksheet->mergeCells('B2:F2');
 
         if ($organization->getLogo()) {
-            $resource = $this->getImageResource($organization->getLogo());
+            $resource = Image::getImageResource($organization->getLogo());
 
             $drawing = new MemoryDrawing();
             $drawing->setCoordinates('H2');
@@ -198,7 +199,7 @@ class AssistanceSpreadsheetExport
                 continue;
             }
 
-            $resource = $this->getImageResource($donor->getLogo());
+            $resource = Image::getImageResource($organization->getLogo());
 
             $drawing = new MemoryDrawing();
             $drawing->setCoordinates('J2');
@@ -562,21 +563,6 @@ class AssistanceSpreadsheetExport
     private static function getStringWithoutNewLineCharacters(string $string): string
     {
         return preg_replace('/\s+/', ' ', trim($string));
-    }
-
-    private function getImageResource(string $filename)
-    {
-        switch (strtolower(pathinfo($filename, PATHINFO_EXTENSION))) {
-            case 'gif':
-                return imagecreatefromgif($filename);
-            case 'jpg':
-            case 'jpeg':
-                return imagecreatefromjpeg($filename);
-            case 'png':
-                return imagecreatefrompng($filename);
-            default:
-                throw new \LogicException('Unsupported filetype '.strtolower(pathinfo($filename, PATHINFO_EXTENSION)));
-        }
     }
 
     private function shouldDistributionContainDate(Assistance $assistance): bool

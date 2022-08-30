@@ -7,6 +7,7 @@ namespace DistributionBundle\Export;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
 use NewApiBundle\Enum\Domain;
+use NewApiBundle\Utils\FileSystem\Image;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -153,7 +154,7 @@ class SmartcardInvoiceLegacyExport
 
         // logo
         if ($organization->getLogo()) {
-            $resource = imagecreatefrompng($organization->getLogo());
+            $resource = Image::getImageResource($organization->getLogo());
 
             $drawing = new MemoryDrawing();
             $drawing->setCoordinates('J2');

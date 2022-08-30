@@ -222,6 +222,7 @@ services:
     NewApiBundle\Controller\OrganizationController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
+            - '%organization.allowed_mime_types%'
 
     NewApiBundle\Controller\ProductController:
         arguments:
