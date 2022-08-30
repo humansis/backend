@@ -200,7 +200,7 @@ class AssistanceSpreadsheetExport
                 $drawing->setHeight(80);
                 $drawing->setWorksheet($worksheet);
             } catch (ImageException $exception) {
-                $this->logger->alert($exception->getMessage());
+                $this->logger->info($exception->getMessage());
             }
         }
 
@@ -220,7 +220,7 @@ class AssistanceSpreadsheetExport
                 $drawing->setHeight(80);
                 $drawing->setWorksheet($worksheet);
             } catch (ImageException $exception) {
-                $this->logger->alert($exception->getMessage());
+                $this->logger->info($exception->getMessage());
             }
         }
 
