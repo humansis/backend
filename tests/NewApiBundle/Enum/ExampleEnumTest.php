@@ -37,8 +37,11 @@ class ExampleEnumTest extends TestCase
 
     /**
      * @dataProvider directValues
-     * @param  $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $apiValue
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
     public function testDirectValueFromAPI($expectedResult, $apiValue)
     {
@@ -47,10 +50,13 @@ class ExampleEnumTest extends TestCase
 
     /**
      * @dataProvider apiValues
-     * @param string $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $apiValue
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
-    public function testValueFromAPI(string $expectedResult, $apiValue)
+    public function testValueFromAPI($expectedResult, $apiValue)
     {
         $this->assertEquals($expectedResult, ExampleEnum::valueFromAPI($apiValue));
     }
@@ -65,8 +71,11 @@ class ExampleEnumTest extends TestCase
 
     /**
      * @dataProvider directApiValues
-     * @param  $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $value
+     *
+     * @throws \NewApiBundle\Enum\EnumApiValueNoFoundException
      */
     public function testValueToAPI($value, $expectedResult)
     {
