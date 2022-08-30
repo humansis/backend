@@ -7,6 +7,7 @@ namespace DistributionBundle\Export;
 use CommonBundle\Entity\Organization;
 use CommonBundle\Mapper\LocationMapper;
 use NewApiBundle\Enum\Domain;
+use NewApiBundle\Utils\FileSystem\Exception\ImageException;
 use NewApiBundle\Utils\FileSystem\Image;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
@@ -154,15 +155,18 @@ class SmartcardInvoiceLegacyExport
 
         // logo
         if ($organization->getLogo()) {
-            $resource = Image::getImageResource($organization->getLogo());
-
-            $drawing = new MemoryDrawing();
-            $drawing->setCoordinates('J2');
-            $drawing->setImageResource($resource);
-            $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
-            $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
-            $drawing->setHeight(60);
-            $drawing->setWorksheet($worksheet);
+            try {
+                $resource = Image::getImageResource($organization->getLogo());
+                $drawing = new MemoryDrawing();
+                $drawing->setCoordinates('J2');
+                $drawing->setImageResource($resource);
+                $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
+                $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+                $drawing->setHeight(60);
+                $drawing->setWorksheet($worksheet);
+            } catch (ImageException $e) {
+                // invoice will be without logo
+            }
         }
     }
 

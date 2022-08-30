@@ -2,6 +2,9 @@
 
 namespace NewApiBundle\Utils\FileSystem;
 
+use NewApiBundle\Utils\FileSystem\Exception\CorruptedFileException;
+use NewApiBundle\Utils\FileSystem\Exception\NotSupportedExtensionException;
+
 class Image
 {
     public const JPEG = 'jpeg';
@@ -25,22 +28,32 @@ class Image
     /**
      * @param string $filePath
      *
-     * @return false|\GdImage|resource
+     * @return \GdImage|resource
+     * @throws NotSupportedExtensionException|CorruptedFileException
      */
     public static function getImageResource(string $filePath)
     {
         $type = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         switch ($type) {
             case self::GIF:
-                return imagecreatefromgif($filePath);
+                $image = imagecreatefromgif($filePath);
+                break;
             case self::JPEG:
             case self::JPG:
-                return imagecreatefromjpeg($filePath);
+                $image = imagecreatefromjpeg($filePath);
+                break;
             case self::PNG:
-                return imagecreatefrompng($filePath);
+                $image = imagecreatefrompng($filePath);
+                break;
             default:
-                throw new \LogicException(sprintf('Unsupported type %s. Supported types are (%s)', $type,
+                throw new NotSupportedExtensionException(sprintf('Unsupported type %s. Supported types are (%s)', $type,
                     implode(self::getSupportedImageExtensions())));
+        }
+
+        if ($image) {
+            return $image;
+        } else {
+            throw new CorruptedFileException("Cannot get image resource. File $filePath is probably corrupted.");
         }
     }
 }
