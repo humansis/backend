@@ -504,7 +504,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
             $this->assertIsNumeric($detail['purchase_amount']);
             $this->assertIsNumeric($detail['purchase_amount']);
-            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
+            $this->assertMatchesRegularExpression('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
             $this->assertIsString($detail['beneficiary_local_name']);
             $this->assertIsString($detail['beneficiary_en_name']);
         }
@@ -558,10 +558,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('project_id', $batch);
             $this->assertArrayHasKey('project_name', $batch);
 
-            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], 'Wrong datetime format');
+            $this->assertMatchesRegularExpression('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], 'Wrong datetime format');
             $this->assertIsNumeric($batch['count']);
             $this->assertIsNumeric($batch['value']);
-            $this->assertRegExp('/\w\w\w/', $batch['currency'], 'Wrong currency format');
+            $this->assertMatchesRegularExpression('/\w\w\w/', $batch['currency'], 'Wrong currency format');
         }
     }
 
@@ -594,7 +594,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
             $this->assertIsNumeric($detail['purchase_datetime']);
             $this->assertIsNumeric($detail['purchase_amount']);
-            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
+            $this->assertMatchesRegularExpression('/\d\d-\d\d-\d\d\d\d/', $detail['purchase_date']);
             $this->assertIsString($detail['beneficiary_local_name']);
             $this->assertIsString($detail['beneficiary_en_name']);
         }

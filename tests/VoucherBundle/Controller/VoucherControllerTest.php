@@ -260,7 +260,7 @@ class VoucherControllerTest extends BMSServiceTestCase
             $this->assertArrayHasKey('count', $batch);
             $this->assertArrayHasKey('value', $batch);
 
-            $this->assertRegExp('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
+            $this->assertMatchesRegularExpression('/\d\d-\d\d-\d\d\d\d \d\d:\d\d/', $batch['date'], "Wrong datetime format");
             $this->assertIsNumeric($batch['count']);
             $this->assertIsNumeric($batch['value']);
         }

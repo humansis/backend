@@ -37,10 +37,10 @@ class ExampleEnumTest extends TestCase
 
     /**
      * @dataProvider directValues
-     * @param string $expectedResult
+     * @param  $expectedResult
      * @param        $apiValue
      */
-    public function testDirectValueFromAPI(string $expectedResult, $apiValue)
+    public function testDirectValueFromAPI($expectedResult, $apiValue)
     {
         $this->assertEquals($expectedResult, ExampleEnum::valueFromAPI($apiValue));
     }
