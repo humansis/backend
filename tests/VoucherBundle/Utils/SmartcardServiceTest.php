@@ -267,7 +267,7 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
+            $this->assertContainsEquals([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
 
             foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
