@@ -21,6 +21,7 @@ use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\DivisionGroup;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
@@ -162,7 +163,20 @@ class Assistance
         $commodity->setDescription($commodityInputType->getDescription());
         $commodity->setValue($commodityInputType->getValue());
         $commodity->setUnit($commodityInputType->getUnit());
-        $commodity->setDivision($commodityInputType->getDivision());
+        if ($commodityInputType->getDivision()) {
+            $commodity->setDivision($commodityInputType->getDivision()->getCode());
+            if ($commodityInputType->getDivision()->getQuantities()) {
+                foreach ($commodityInputType->getDivision()->getQuantities() as $quantity) {
+                    $divisionGroup = new DivisionGroup();
+                    $divisionGroup->setRangeFrom($quantity->getRangeFrom());
+                    $divisionGroup->setRangeTo($quantity->getRangeTo());
+                    $divisionGroup->setValue((string) $quantity->getValue());
+                    $commodity->addDivisionGroup($divisionGroup);
+                }
+            }
+        } else {
+            $commodity->setDivision(null);
+        }
         $this->assistanceRoot->addCommodity($commodity);
         $this->recountReliefPackages();
 
@@ -213,6 +227,26 @@ class Assistance
                             $household = $household->getHousehold();
                         }
                         return $commodity->getValue() * count($household->getBeneficiaries());
+                    });
+                    break;
+                case CommodityDivision::PER_HOUSEHOLD_MEMBERS:
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
+
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
+                        }
+
+                        $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                        foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= $divisionGroup->getRangeTo() ?? 1000)) {
+                                return (float) $divisionGroup->getValue();
+                            }
+                        }
+
+                        throw new \LogicException("Division Group was not found.");
                     });
                     break;
                 case CommodityDivision::PER_HOUSEHOLD:

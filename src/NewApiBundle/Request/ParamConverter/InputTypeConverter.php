@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,9 +32,10 @@ class InputTypeConverter implements ParamConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function apply(Request $request, ParamConverter $configuration)
+    public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor()), new ArrayDenormalizer()]);
+        $serializer = new Serializer([new ObjectNormalizer(null, null, null,
+            new ReflectionExtractor()), $this->getArrayDenormalizer()]);
         $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
             ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
         ]);
@@ -51,13 +53,39 @@ class InputTypeConverter implements ParamConverterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(ParamConverter $configuration)
+    public function supports(ParamConverter $configuration): bool
     {
-        if (null === $configuration->getClass()) return false;
+        $class = $this->getClassFromConfiguration($configuration);
+        if(!$class) {
+            return false;
+        }
+
+        return in_array(InputTypeInterface::class, class_implements($class));
+    }
+
+    /**
+     * @return ContextAwareDenormalizerInterface
+     */
+    protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
+    {
+        return new ArrayDenormalizer();
+    }
+
+    /**
+     * @param ParamConverter $configuration
+     *
+     * @return string|null
+     */
+    protected function getClassFromConfiguration(ParamConverter $configuration): ?string
+    {
         $class = $configuration->getClass();
+        if (null === $class) {
+            return null;
+        }
         if (str_ends_with($class, '[]')) { // for support arrays of InputTypes
             $class = str_replace('[]', '', $class);
         }
-        return in_array(InputTypeInterface::class, class_implements($class));
+
+        return $class;
     }
 }

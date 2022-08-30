@@ -109,6 +109,11 @@ services:
             - DistributionBundle\Entity\ModalityType
         public: true
 
+    DistributionBundle\Repository\CommodityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - DistributionBundle\Entity\Commodity
+
 #######################################################################################
 ##                                       CSV                                         ##
 #######################################################################################

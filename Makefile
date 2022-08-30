@@ -25,7 +25,7 @@ recreate: ## Docker: Stop and remove all containers and start it again
 	#wait for initialize database
 	sleep 20;
 
-	$(MAKE) cache cleanAndTest
+	$(MAKE) cache clean
 
 migrate: ## Migrate database
 	docker-compose exec php bash -c 'bin/console doctrine:migrations:migrate --no-interaction'

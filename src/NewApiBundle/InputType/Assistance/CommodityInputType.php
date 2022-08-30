@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace NewApiBundle\InputType\Assistance;
 
-use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Request\InputTypeNullableDenormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
-use NewApiBundle\Validator\Constraints\Enum;
 
-class CommodityInputType implements InputTypeInterface
+class CommodityInputType implements InputTypeNullableDenormalizer
 {
     /**
      * @Assert\Type("string") // todo change to enum
@@ -26,10 +25,9 @@ class CommodityInputType implements InputTypeInterface
     private $unit;
 
     /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
+     * @Assert\NotBlank(allowNull=true)
      */
-    private $value;
+    private $value = null;
 
     /**
      * @Assert\Type("string")
@@ -38,10 +36,29 @@ class CommodityInputType implements InputTypeInterface
     private $description;
 
     /**
-     * @Assert\Type("string")
-     * @Enum(enumClass="NewApiBundle\Component\Assistance\Enum\CommodityDivision")
+     * @var DivisionInputType|null
+     * @Assert\Valid
+     * @Assert\NotBlank(allowNull=true)
      */
     private $division;
+
+    /**
+     * @param DivisionInputType|null $divisionInputType
+     *
+     * @return void
+     */
+    public function setDivision(?DivisionInputType $divisionInputType)
+    {
+        $this->division = $divisionInputType;
+    }
+
+    /**
+     * @return DivisionInputType|null
+     */
+    public function getDivision(): ?DivisionInputType
+    {
+        return $this->division;
+    }
 
     /**
      * @return string
@@ -107,19 +124,4 @@ class CommodityInputType implements InputTypeInterface
         $this->description = $description;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDivision()
-    {
-        return $this->division;
-    }
-
-    /**
-     * @param string|null $division
-     */
-    public function setDivision($division)
-    {
-        $this->division = $division;
-    }
 }

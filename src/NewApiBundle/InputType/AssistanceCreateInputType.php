@@ -7,7 +7,7 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
-use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Request\InputTypeNullableDenormalizer;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict", "AdditionalChecks"})
  */
-class AssistanceCreateInputType implements InputTypeInterface
+class AssistanceCreateInputType implements InputTypeNullableDenormalizer
 {
     /**
      * @Assert\NotBlank

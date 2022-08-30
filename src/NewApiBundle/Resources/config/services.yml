@@ -94,6 +94,9 @@ services:
     Symfony\Component\Serializer\SerializerInterface:
         alias: serializer
 
+    NewApiBundle\Serializer\ArrayNullableDenormalizer:
+        tags: [ 'serializer.denormalizer' ]
+
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 
@@ -272,6 +275,10 @@ services:
     NewApiBundle\Request\ParamConverter\InputTypeConverter:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
+
+    NewApiBundle\Request\ParamConverter\InputTypeNullableDenormalizerConverter:
+        tags:
+            - { name: 'request.param_converter', converter: 'input_type_nullable_denormalizer_converter' }
 
     NewApiBundle\Listener\AcceptHeaderListener:
         arguments: [ '%app.locales%' ]
