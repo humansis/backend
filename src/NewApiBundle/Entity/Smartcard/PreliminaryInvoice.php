@@ -23,7 +23,6 @@ class PreliminaryInvoice
     /**
      * @var Project|null
      *
-     * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
      *
      */
     private $project;
