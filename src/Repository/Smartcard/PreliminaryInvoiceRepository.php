@@ -2,11 +2,8 @@
 
 namespace Repository\Smartcard;
 
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use Enum\VendorInvoicingState;
 use Entity\Vendor;
@@ -22,8 +19,7 @@ class PreliminaryInvoiceRepository extends EntityRepository
     public function findByVendorAndState(Vendor $vendor, ?string $invoicingState = null): array
     {
         $qb = $this->createQueryBuilder('pi');
-        $qb->join('pi.vendor', 'v');
-        $qb->andWhere('v.id = :vendor')
+        $qb->where('pi.vendor = :vendor')
             ->setParameter('vendor', $vendor->getId());
 
         if ($invoicingState) {
