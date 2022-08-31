@@ -17,8 +17,6 @@ class PreliminaryInvoice
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
-     * @ORM\Id
      */
     private $id;
 
