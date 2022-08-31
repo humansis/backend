@@ -77,13 +77,22 @@ security:
                 check_path: /api/jwt/vendor-app/v2/login
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
+        jwt_login_support_app:
+            pattern: ^/api/jwt/support-app/v[0-9]+/login
+            stateless: true
+            anonymous: true
+            provider: jwt_provider
+            json_login:
+                check_path: /api/jwt/support-app/v2/login
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
         jwt_salt:
-            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/users/salt
+            pattern: ^/api/jwt/(web-app|vendor-app|offline-app|support-app)/v[0-9]+/users/salt
             stateless: true
             anonymous: true
 
         jwt:
-            pattern: ^/api/jwt/(web-app|vendor-app|offline-app)/v[0-9]+/
+            pattern: ^/api/jwt/(web-app|vendor-app|offline-app|support-app)/v[0-9]+/
             stateless: true
             anonymous: false
             provider: jwt_provider

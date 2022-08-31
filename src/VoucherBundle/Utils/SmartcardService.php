@@ -97,10 +97,17 @@ class SmartcardService
                 throw new SmartcardNotAllowedStateTransition($smartcard, $changeSmartcardInputType->getState(),
                     "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}.");
             }
+            if($changeSmartcardInputType->getState() === SmartcardStates::INACTIVE){
+                $smartcard->setDisabledAt($changeSmartcardInputType->getCreatedAt());
+            }
             $smartcard->setState($changeSmartcardInputType->getState());
             $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
-            $this->smartcardRepository->save($smartcard);
         }
+
+        if ($smartcard->isSuspicious() !== $changeSmartcardInputType->isSuspicious()){
+            $smartcard->setSuspicious($changeSmartcardInputType->isSuspicious(),$changeSmartcardInputType->getSuspiciousReason());
+        }
+        $this->smartcardRepository->save($smartcard);
     }
 
     /**
