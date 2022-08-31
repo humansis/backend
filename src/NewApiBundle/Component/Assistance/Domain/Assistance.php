@@ -241,7 +241,7 @@ class Assistance
 
                         $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
                         foreach ($commodity->getDivisionGroups() as $divisionGroup) {
-                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= $divisionGroup->getRangeTo() ?? 1000)) {
+                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))) {
                                 return (float) $divisionGroup->getValue();
                             }
                         }
