@@ -6,6 +6,7 @@ use Utils\ExcelColumnsGenerator;
 use Exception\ExportNoDataException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\Hyperlink;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -60,12 +61,13 @@ class ExportService
      * @param string $name
      * @param string $type
      * @param bool   $headerDown
+     * @param bool   $headerBold
      *
      * @return string $filename
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws ExportNoDataException
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export(
         $exportableTable,
