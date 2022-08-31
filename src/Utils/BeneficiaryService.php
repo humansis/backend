@@ -12,7 +12,6 @@ use Repository\BeneficiaryRepository;
 use Repository\HouseholdRepository;
 use Repository\VulnerabilityCriterionRepository;
 use Controller\ExportController;
-use Exception\ExportNoDataException;
 use Doctrine\ORM\EntityManagerInterface;
 use InputType\BenefciaryPatchInputType;
 use InputType\Beneficiary\BeneficiaryInputType;

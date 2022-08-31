@@ -29,7 +29,6 @@ class TranslationExportService
     }
 
     /**
-     * @throws ExportNoDataException
      * @throws SpreadsheetException
      * @throws Exception
      * @throws \Exception
