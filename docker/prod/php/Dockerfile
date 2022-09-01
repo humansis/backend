@@ -15,7 +15,7 @@ RUN apt-get update && \
 
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
-    docker-php-ext-install pdo_mysql zip gd opcache intl && \
+    docker-php-ext-install pdo_mysql zip gd opcache intl bcmath && \
     pecl install apcu && \
     docker-php-ext-enable apcu
 
