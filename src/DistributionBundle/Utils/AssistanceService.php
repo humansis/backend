@@ -260,7 +260,7 @@ class AssistanceService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName($this->generateName($location, $distribution->getDateDistribution()));
+        $distribution->setName(AssistanceFactory::generateName($distribution));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -387,11 +387,9 @@ class AssistanceService
 
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
     {
-        $newDistributionName = $this->generateName($assistance->getLocation(), $date);
-
         $assistance
             ->setDateDistribution($date)
-            ->setName($newDistributionName)
+            ->setName(AssistanceFactory::generateName($assistance))
             ->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
@@ -419,11 +417,14 @@ class AssistanceService
     public function updateRound(Assistance $assistance, ?int $round): void
     {
         $assistance->setRound($round);
+        $assistance->setName(AssistanceFactory::generateName($assistance));
         $assistance->setUpdatedOn(new DateTime());
 
         $this->em->persist($assistance);
         $this->em->flush();
     }
+
+
 
     /**
      * @param int $projectId
@@ -689,17 +690,6 @@ class AssistanceService
 
         $this->em->remove($assistanceEntity);
         $this->em->flush();
-    }
-
-    private function generateName(Location $location, ?DateTimeInterface $date = null): string
-    {
-        $adm = $location->getName();
-
-        if ($date) {
-            return $adm.'-'.$date->format('d-m-Y');
-        } else {
-            return $adm.'-'.date('d-m-Y');
-        }
     }
 
     /**

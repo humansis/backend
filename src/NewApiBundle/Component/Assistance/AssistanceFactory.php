@@ -11,6 +11,7 @@ use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use DateTimeInterface;
 use DistributionBundle\Entity;
+use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
@@ -20,7 +21,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use NewApiBundle\Component\Assistance\Domain;
-use NewApiBundle\Component\SelectionCriteria\FieldDbTransformer;
 use NewApiBundle\Entity\ScoringBlueprint;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\AssistanceStatisticsRepository;
@@ -163,7 +163,7 @@ class AssistanceFactory
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
-        $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution(), $inputType->getRound()));
+        $assistanceRoot->setName(self::generateName($assistanceRoot));
 
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
@@ -234,17 +234,6 @@ class AssistanceFactory
         }
     }
 
-    private static function generateName(Location $location, ?DateTimeInterface $date = null, ?int $round = null): string
-    {
-        $adm = $location->getName();
-
-        if ($round !== null) {
-            $adm .= " #$round";
-        }
-
-        return $adm . " • " . ($date === null ? date('Y-m-d') : $date->format('Y-m-d'));
-    }
-
     public function hydrate(Entity\Assistance $assistance): Domain\Assistance
     {
         return new Domain\Assistance(
@@ -256,5 +245,18 @@ class AssistanceFactory
             $this->targetRepository,
             $this->selectionCriteriaFactory
         );
+    }
+
+    public static function generateName(Assistance $assistance): string
+    {
+        $adm = $assistance->getLocation()->getName();
+
+        $round = $assistance->getRound();
+
+        if ($round !== null) {
+            $adm .= " #$round";
+        }
+
+        return $adm . " • " . $assistance->getDateDistribution()->format('Y-m-d');
     }
 }
