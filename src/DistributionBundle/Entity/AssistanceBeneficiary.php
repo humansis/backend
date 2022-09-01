@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -384,9 +385,13 @@ class AssistanceBeneficiary
     /**
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackages()
+    public function getReliefPackages(bool $includeCancelled = true)
     {
-        return $this->reliefPackages;
+        $criteria = Criteria::create();
+        if (!$includeCancelled) {
+            $criteria->where(Criteria::expr()->neq('state', ReliefPackageState::CANCELED));
+        }
+        return $this->reliefPackages->matching($criteria);
     }
 
     /**
