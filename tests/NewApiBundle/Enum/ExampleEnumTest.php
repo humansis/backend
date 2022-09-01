@@ -31,8 +31,8 @@ class ExampleEnumTest extends TestCase
         yield 'bool alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, false];
 
         yield 'alternative for true' => [ExampleEnum::YES, 'YES'];
-        yield 'alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, 'obf'];
-        yield 'alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, ' O B F '];
+        yield 'alternative for '.ExampleEnum::OBFUSCATE .' 1' => [ExampleEnum::OBFUSCATE, 'obf'];
+        yield 'alternative for '.ExampleEnum::OBFUSCATE .' 2' => [ExampleEnum::OBFUSCATE, ' O B F '];
     }
 
     /**
