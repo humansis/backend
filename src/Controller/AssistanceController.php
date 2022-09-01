@@ -328,7 +328,7 @@ class AssistanceController extends AbstractController
         try {
             $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $threshold);
         } catch (ExportNoDataException $e) {
-            throw new HttpException(204);
+            return new Response(null, Response::HTTP_NO_CONTENT);
         }
         if (!$filename) {
             throw $this->createNotFoundException();
