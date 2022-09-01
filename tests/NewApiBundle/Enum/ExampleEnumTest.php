@@ -31,26 +31,32 @@ class ExampleEnumTest extends TestCase
         yield 'bool alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, false];
 
         yield 'alternative for true' => [ExampleEnum::YES, 'YES'];
-        yield 'alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, 'obf'];
-        yield 'alternative for '.ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, ' O B F '];
+        yield 'alternative for '.ExampleEnum::OBFUSCATE .' 1' => [ExampleEnum::OBFUSCATE, 'obf'];
+        yield 'alternative for '.ExampleEnum::OBFUSCATE .' 2' => [ExampleEnum::OBFUSCATE, ' O B F '];
     }
 
     /**
      * @dataProvider directValues
-     * @param string $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $apiValue
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
-    public function testDirectValueFromAPI(string $expectedResult, $apiValue)
+    public function testDirectValueFromAPI($expectedResult, $apiValue)
     {
         $this->assertEquals($expectedResult, ExampleEnum::valueFromAPI($apiValue));
     }
 
     /**
      * @dataProvider apiValues
-     * @param string $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $apiValue
+     *
+     * @throws \NewApiBundle\Enum\EnumValueNoFoundException
      */
-    public function testValueFromAPI(string $expectedResult, $apiValue)
+    public function testValueFromAPI($expectedResult, $apiValue)
     {
         $this->assertEquals($expectedResult, ExampleEnum::valueFromAPI($apiValue));
     }
@@ -65,10 +71,13 @@ class ExampleEnumTest extends TestCase
 
     /**
      * @dataProvider directApiValues
-     * @param string $expectedResult
+     *
+     * @param        $expectedResult
      * @param        $value
+     *
+     * @throws \NewApiBundle\Enum\EnumApiValueNoFoundException
      */
-    public function testValueToAPI($value, string $expectedResult)
+    public function testValueToAPI($value, $expectedResult)
     {
         $this->assertEquals($expectedResult, ExampleEnum::valueToAPI($value));
     }

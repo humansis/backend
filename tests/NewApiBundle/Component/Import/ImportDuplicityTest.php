@@ -74,7 +74,7 @@ class ImportDuplicityTest extends KernelTestCase
      */
     private $client;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

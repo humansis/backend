@@ -28,7 +28,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @throws \Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName("serializer");
@@ -445,7 +445,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->assertEquals($voucher['value'], 200 + $id, "Wrong voucher value");
             $this->assertArrayHasKey('used_at', $voucher);
             $this->assertNotNull($voucher['used_at'], "Empty used at in used voucher");
-            $this->assertRegExp('|\d\d\d\d-\d\d-\d\d|', $voucher['used_at']);
+            $this->assertMatchesRegularExpression('|\d\d\d\d-\d\d-\d\d|', $voucher['used_at']);
             $this->assertArrayHasKey('redeemed_at', $voucher);
             $this->assertNull($voucher['redeemed_at']);
         }

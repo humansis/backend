@@ -8,7 +8,7 @@ use Tests\BMSServiceTestCase;
 
 class ExportDistributionTest extends BMSServiceTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUpFunctionnal();
     }

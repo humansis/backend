@@ -14,7 +14,7 @@ class IdentityCheckerTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 

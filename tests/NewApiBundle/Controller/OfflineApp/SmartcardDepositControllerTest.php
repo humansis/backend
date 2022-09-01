@@ -16,7 +16,7 @@ use VoucherBundle\Enum\SmartcardStates;
 
 class SmartcardDepositControllerTest extends BMSServiceTestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUpFunctionnal();
 
@@ -28,7 +28,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $this->tokenStorage->setToken($token);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->removeSmartcards('1234ABC');
 

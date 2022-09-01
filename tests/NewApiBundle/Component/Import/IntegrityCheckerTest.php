@@ -36,7 +36,7 @@ class IntegrityCheckerTest extends KernelTestCase
     /** @var string */
     private static $invalidFilesDirectory;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
@@ -226,7 +226,7 @@ class IntegrityCheckerTest extends KernelTestCase
         }
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         self::$entityManager->clear();

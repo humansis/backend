@@ -26,7 +26,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
     /** @var Deposits */
     private $sync;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         self::bootKernel();
@@ -57,7 +57,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $this->assertArrayHasKey('snd', $this->sync->getViolations());
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
     }

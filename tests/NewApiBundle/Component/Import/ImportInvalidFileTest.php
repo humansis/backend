@@ -27,7 +27,7 @@ class ImportInvalidFileTest extends KernelTestCase
     /** @var UploadImportService  */
     private static $importUploadService;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
