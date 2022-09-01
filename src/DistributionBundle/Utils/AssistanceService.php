@@ -260,7 +260,7 @@ class AssistanceService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName($this->generateName($distribution));
+        $distribution->setName(AssistanceFactory::generateName($distribution));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
