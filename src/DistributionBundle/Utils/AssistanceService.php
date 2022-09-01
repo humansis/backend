@@ -398,7 +398,7 @@ class AssistanceService
         $this->em->flush();
     }
 
-    public function updateDateExpiration(Assistance $assistance, DateTimeInterface $date): void
+    public function updateDateExpiration(Assistance $assistance, ?DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
         $assistance->setUpdatedOn(new DateTime());

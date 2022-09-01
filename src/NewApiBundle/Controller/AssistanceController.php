@@ -229,9 +229,10 @@ class AssistanceController extends AbstractController
         }
 
         if ($request->request->has('dateExpiration')) {
-            $date = Iso8601Converter::toDateTime($request->request->get('dateExpiration'));
+            $dateExpiration = $request->request->get('dateExpiration');
+            $date = ($dateExpiration === null ? null : Iso8601Converter::toDateTime($dateExpiration));
 
-            if (!$date instanceof DateTimeInterface) {
+            if (!$date instanceof DateTimeInterface && $date !== null) {
                 throw new ConstraintViolationException(new ConstraintViolation(
                     "{$request->request->get('dateExpiration')} is not valid date format",
                     null,
