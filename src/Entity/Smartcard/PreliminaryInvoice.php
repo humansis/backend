@@ -48,9 +48,9 @@ class PreliminaryInvoice
     private $currency;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="purchase_ids", type="string")
+     * @ORM\Column(name="purchase_ids", type="json")
      */
     private $purchaseIds;
 
@@ -94,11 +94,11 @@ class PreliminaryInvoice
     }
 
     /**
-     * @return string[]
+     * @return array
      */
     public function getPurchaseIds(): array
     {
-        return explode(',', $this->purchaseIds);
+        return $this->purchaseIds;
     }
 
     /**
