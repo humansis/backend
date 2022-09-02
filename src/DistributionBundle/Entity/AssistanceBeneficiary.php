@@ -385,7 +385,7 @@ class AssistanceBeneficiary
     /**
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackages(Criteria $criteria = null)
+    public function getReliefPackages(?Criteria $criteria = null)
     {
         if ($criteria === null) {
             $criteria = Criteria::create();
