@@ -390,6 +390,7 @@ class AssistanceBeneficiary
         if ($criteria === null) {
             $criteria = Criteria::create();
         }
+        
         return $this->reliefPackages->matching($criteria);
     }
 
@@ -403,6 +404,7 @@ class AssistanceBeneficiary
         if (empty($states)) {
             return [];
         }
+
         return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->in('state', $states)));
     }
 
@@ -416,6 +418,7 @@ class AssistanceBeneficiary
         if (empty($states)) {
             return $this->getReliefPackages();
         }
+
         return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->notIn('state', $states)));
     }
 
