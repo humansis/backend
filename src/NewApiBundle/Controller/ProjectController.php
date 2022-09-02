@@ -114,6 +114,7 @@ class ProjectController extends AbstractController
 
         $projects = $this->projectRepository->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
 
+        sleep(45);
         return $this->json($projects);
     }
 
