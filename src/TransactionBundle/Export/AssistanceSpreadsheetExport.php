@@ -357,9 +357,9 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('B22')->getAlignment()->setWrapText(true);
 
         $worksheet->getCell('B23')->setValue(
-            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1')).
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1', [], null, $languageCode)).
             "\n".
-            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_2'))
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_2', [], null, $languageCode))
         );
         $worksheet->mergeCells('B23:K23');
         $worksheet->getStyle('B23')->getFont()->setItalic(true);
