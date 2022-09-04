@@ -83,7 +83,7 @@ security:
             anonymous: true
             provider: jwt_provider
             json_login:
-                check_path: /api/jwt/support-app/v2/login
+                check_path: /api/jwt/support-app/v1/login
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         jwt_salt:

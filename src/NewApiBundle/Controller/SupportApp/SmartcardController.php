@@ -2,14 +2,13 @@
 
 namespace NewApiBundle\Controller\SupportApp;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
+use NewApiBundle\InputType\Smartcard\UpdateSmartcardInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -38,6 +37,10 @@ class SmartcardController extends AbstractController
     {
         $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
 
+        if (!$smartcard){
+            throw new NotFoundHttpException('Unable to find smartcard.');
+        }
+
         return $this->json($smartcard);
     }
 
@@ -50,7 +53,12 @@ class SmartcardController extends AbstractController
      */
      public function smartcardPurchases(string $smartcardCode):JsonResponse
      {
-         $purchases = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode])->getPurchases();
+         $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
+
+         if (!$smartcard){
+             throw new NotFoundHttpException('Unable to find smartcard.');
+         }
+         $purchases = $smartcard->getPurchases();
 
          return $this->json($purchases);
      }
@@ -64,7 +72,12 @@ class SmartcardController extends AbstractController
      */
     public function smartcardDeposits(string $smartcardCode):JsonResponse
     {
-        $purchases = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode])->getDeposites();
+        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
+
+        if (!$smartcard){
+            throw new NotFoundHttpException('Unable to find smartcard.');
+        }
+        $purchases = $smartcard->getDeposites();
 
         return $this->json($purchases);
     }
@@ -73,26 +86,32 @@ class SmartcardController extends AbstractController
      * @Rest\Patch("/support-app/v1/smartcards/{serialNumber}")
      *
      * @param string                   $serialNumber
-     * @param ChangeSmartcardInputType $changeSmartcardInputType
+     * @param UpdateSmartcardInputType $updateSmartcardInputType
      * @param SmartcardRepository      $smartcardRepository
      * @param SmartcardService         $smartcardService
      *
-     * @return Response
-     * @throws ORMException
-     * @throws OptimisticLockException
+     * @return JsonResponse
      */
-    public function change(
+    public function update(
         string                   $serialNumber,
-        ChangeSmartcardInputType $changeSmartcardInputType,
-        SmartcardService         $smartcardService
-    ): Response {
-        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
-        try {
-            $smartcardService->change($smartcard, $changeSmartcardInputType);
+        UpdateSmartcardInputType $updateSmartcardInputType,
+        SmartcardService         $smartcardService ): JsonResponse {
 
-            return Response::create();
-        } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+
+        if ($user->hasRole('ROLE_ADMIN')) {
+
+            $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
+
+            if (!$smartcard) {
+                throw new NotFoundHttpException('Unable to find smartcard.');
+            }
+            $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
+
+            return $this->json($smartcard);
+        }else{
+            throw new AccessDeniedException('You do not have the privilege to update the Smartcard');
         }
+
     }
 }
