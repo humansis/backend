@@ -9,6 +9,8 @@ use CommonBundle\Entity\OrganizationServices;
 use CommonBundle\Repository\OrganizationRepository;
 use CommonBundle\Repository\OrganizationServicesRepository;
 use CommonBundle\Utils\OrganizationService;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\File\UploadService;
 use NewApiBundle\InputType\OrganizationUpdateInputType;
@@ -22,9 +24,15 @@ class OrganizationController extends AbstractController
     /** @var UploadService */
     private $uploadService;
 
-    public function __construct(UploadService $uploadService)
+    /**
+     * @var string[]
+     */
+    private $allowedMimeTypes;
+
+    public function __construct(UploadService $uploadService, array $allowedMimeTypes)
     {
         $this->uploadService = $uploadService;
+        $this->allowedMimeTypes = $allowedMimeTypes;
     }
 
     /**
@@ -44,12 +52,13 @@ class OrganizationController extends AbstractController
      *
      * @param Organization                $organization
      * @param OrganizationUpdateInputType $inputType
+     * @param OrganizationService         $organizationService
      *
      * @return JsonResponse
      */
-    public function update(Organization $organization, OrganizationUpdateInputType $inputType): JsonResponse
+    public function update(Organization $organization, OrganizationUpdateInputType $inputType, OrganizationService $organizationService): JsonResponse
     {
-        $this->get('organization_service')->update($organization, $inputType);
+        $organizationService->update($organization, $inputType);
 
         return $this->json($organization);
     }
@@ -57,15 +66,13 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations")
      *
-     * @param Pagination $pagination
+     * @param Pagination             $pagination
+     * @param OrganizationRepository $organizationRepository
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination): JsonResponse
+    public function list(Pagination $pagination, OrganizationRepository $organizationRepository): JsonResponse
     {
-        /** @var OrganizationRepository $organizationRepository */
-        $organizationRepository = $this->getDoctrine()->getRepository(Organization::class);
-
         $organizations = $organizationRepository->findByParams($pagination);
 
         return $this->json($organizations);
@@ -74,17 +81,18 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations/{id}/services")
      *
-     * @param Organization $organization
-     * @param Pagination   $pagination
+     * @param Organization                   $organization
+     * @param Pagination                     $pagination
+     * @param OrganizationServicesRepository $organizationServicesRepository
      *
      * @return JsonResponse
      */
-    public function listServices(Organization $organization, Pagination $pagination): JsonResponse
-    {
-        /** @var OrganizationServicesRepository $organizationRepository */
-        $organizationRepository = $this->getDoctrine()->getRepository(OrganizationServices::class);
-
-        $organizationServices = $organizationRepository->findByOrganization($organization, $pagination);
+    public function listServices(
+        Organization                   $organization,
+        Pagination                     $pagination,
+        OrganizationServicesRepository $organizationServicesRepository
+    ): JsonResponse {
+        $organizationServices = $organizationServicesRepository->findByOrganization($organization, $pagination);
 
         return $this->json($organizationServices);
     }
@@ -94,14 +102,12 @@ class OrganizationController extends AbstractController
      *
      * @param Request              $request
      * @param OrganizationServices $organizationServices
+     * @param OrganizationService  $organizationService
      *
      * @return JsonResponse
      */
-    public function updateService(Request $request, OrganizationServices $organizationServices): JsonResponse
+    public function updateService(Request $request, OrganizationServices $organizationServices, OrganizationService $organizationService): JsonResponse
     {
-        /** @var OrganizationService $organizationService */
-        $organizationService = $this->get('organization_service');
-
         if ($request->request->has('enabled')) {
             $organizationService->setEnable($organizationServices, $request->request->getBoolean('enabled'));
         }
@@ -116,27 +122,28 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/organizations/{id}/images")
      *
-     * @param Organization $organization
-     * @param Request $request
+     * @param Organization           $organization
+     * @param Request                $request
+     * @param OrganizationRepository $organizationRepository
      *
      * @return JsonResponse
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    public function uploadImage(Organization $organization, Request $request): JsonResponse
+    public function uploadImage(Organization $organization, Request $request, OrganizationRepository $organizationRepository): JsonResponse
     {
         if (!($file = $request->files->get('file'))) {
             throw new BadRequestHttpException('File missing.');
         }
 
-        if (!in_array($file->getMimeType(), ['image/gif', 'image/jpeg', 'image/png'])) {
+        if (!in_array($file->getMimeType(), $this->allowedMimeTypes)) {
             throw new BadRequestHttpException('Invalid file type.');
         }
 
         $url = $this->uploadService->upload($file, 'organization');
 
         $organization->setLogo($url);
-
-        $this->getDoctrine()->getManager()->persist($organization);
-        $this->getDoctrine()->getManager()->flush();
+        $organizationRepository->save($organization);
 
         return $this->json(['url' => $url]);
     }

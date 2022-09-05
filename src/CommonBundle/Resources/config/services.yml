@@ -40,6 +40,12 @@ services:
         arguments:
             - CommonBundle\Entity\Organization
 
+    CommonBundle\Repository\OrganizationServicesRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.default_entity_manager', getRepository]
+        arguments:
+            - CommonBundle\Entity\OrganizationServices
+
     #######################################################################################
 ##                                       CRUD                                        ##
 #######################################################################################
@@ -53,7 +59,10 @@ services:
             - "@request_validator"
 
     organization_service:
-        class: CommonBundle\Utils\OrganizationService
+        alias: CommonBundle\Utils\OrganizationService
+        public: true
+
+    CommonBundle\Utils\OrganizationService:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
