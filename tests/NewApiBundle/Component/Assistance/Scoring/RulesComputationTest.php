@@ -88,33 +88,44 @@ class RulesComputationTest extends KernelTestCase
 
     public function testDependencyRatioUkr()
     {
-        $household = new Household();
-
         $child = new Beneficiary();
         $child->getPerson()->setDateOfBirth((new DateTime())->modify('-18 year')->modify('+1 day')); //almost 18 years
 
         $almostElder = new Beneficiary();
-        $almostElder->getPerson()->setDateOfBirth((new DateTime())->modify('-50 year')->modify('+1 day')); //almost 50 years
+        $almostElder->getPerson()->setDateOfBirth((new DateTime())->modify('-60 year')->modify('+1 day')); //almost 60 years
 
         $elder = new Beneficiary();
-        $elder->getPerson()->setDateOfBirth((new DateTime())->modify('-50 year')->modify('-1 day'));
+        $elder->getPerson()->setDateOfBirth((new DateTime())->modify('-60 year')->modify('-1 day'));
 
         $adult = new Beneficiary();
         $adult->getPerson()->setDateOfBirth((new DateTime())->modify('-30 year'));
 
-        $household->addBeneficiary($child);
-        $household->addBeneficiary($elder);
+        $householdLow = new Household();
+        $householdLow->addBeneficiary($child);
+        $householdLow->addBeneficiary($almostElder);
+        $householdLow->addBeneficiary($adult);
 
-        $household->addBeneficiary($almostElder);
-        $household->addBeneficiary($adult);
+        $householdMid = new Household();
+        $householdMid->addBeneficiary($child);
+        $householdMid->addBeneficiary($elder);
+        $householdMid->addBeneficiary($almostElder);
+        $householdMid->addBeneficiary($adult);
+
+        $householdHigh = new Household();
+        $householdHigh->addBeneficiary($child);
+        $householdHigh->addBeneficiary($elder);
 
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR, 'Test');
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID, 1));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
 
-        $result = $this->rulesCalculation->dependencyRatioUkr($household, $scoringRule);
+        $resultLow = $this->rulesCalculation->dependencyRatioUkr($householdLow, $scoringRule);
+        $resultMid = $this->rulesCalculation->dependencyRatioUkr($householdMid, $scoringRule);
+        $resultHigh = $this->rulesCalculation->dependencyRatioUkr($householdHigh, $scoringRule);
 
-        $this->assertEquals(1, $result);
+        $this->assertEquals(0, $resultLow);
+        $this->assertEquals(1, $resultMid);
+        $this->assertEquals(2, $resultHigh);
     }
 
     public function testEnumHouseholdShelterStatus()
