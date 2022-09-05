@@ -400,17 +400,19 @@ class AssistanceBeneficiary
 
     /**
      * @param                       $value
+     *
+     * @return ReliefPackage
      */
-    public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
+    public function setCommodityToDistribute(string $modalityName, string $unit, $value): ReliefPackage
     {
         foreach ($this->reliefPackages as $package) {
             if (!$package->isOnStartupState() && !$package->isSameModalityAndUnit($modalityName, $unit)) {
                 continue;
             }
-            if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
+            if ($package->isSameModalityAndUnit($modalityName, $unit)) {
                 $package->setAmountToDistribute($value);
 
-                return;
+                return $package;
             }
         }
         $reliefPackage = new ReliefPackage(
@@ -420,5 +422,7 @@ class AssistanceBeneficiary
             $unit
         );
         $this->reliefPackages->add($reliefPackage);
+
+        return $reliefPackage;
     }
 }

@@ -251,11 +251,12 @@ class Assistance
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $this->getTargets() as $target) {
-                    $target->setCommodityToDistribute(
+                    $reliefPackage = $target->setCommodityToDistribute(
                         $modalityName,
                         $unit,
                         $commodityBuilder->getValue($target, $modalityName, $unit)
                     );
+                    $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::REUSE);
                 }
             }
         }
@@ -269,11 +270,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::EXPIRE);
-                }
+                $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::EXPIRE);
             }
         }
     }
@@ -297,11 +294,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
-                }
+                $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::CANCEL);
             }
         }
     }
@@ -344,7 +337,6 @@ class Assistance
     }
 
     /**
-     *
      * @return $this
      */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
@@ -454,4 +446,24 @@ class Assistance
             yield new CriteriaGroup($groupNumber, $criteria);
         }
     }
+
+    /**
+     * @param ReliefPackage $reliefPackage
+     * @param string        $transition
+     *
+     * @return void
+     */
+    private function reliefPackageTransition(ReliefPackage $reliefPackage, string $transition): void
+    {
+        if (!in_array($transition, ReliefPackageTransitions::getAll())) {
+            throw new \LogicException(sprintf('Transition %s is not defined in Relief Package transitions list. Allowed transitions are (%s).',
+                $transition, implode(',', ReliefPackageTransitions::getAll())));
+        }
+
+        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+        if ($reliefPackageWorkflow->can($reliefPackage, $transition)) {
+            $reliefPackageWorkflow->apply($reliefPackage, $transition);
+        }
+    }
+
 }

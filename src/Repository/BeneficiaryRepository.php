@@ -88,12 +88,9 @@ class BeneficiaryRepository extends EntityRepository
      *
      * @return array|float|int|mixed|string
      */
-    public function getNotSelectedBeneficiariesOfProject(
-        Project $project,
-        string $target,
-        Assistance $excludedAssistance
-    ) {
-        $excludedAssistanceDQL = "SELECT ben.id FROM Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN Entity\Beneficiary ben WITH ben.id = ab.id WHERE db.assistance = :assistance";
+    public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance)
+    {
+        $excludedAssistanceDQL = "SELECT ben.id FROM Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN Entity\Beneficiary ben WITH ben.id = ab.id LEFT JOIN Entity\Assistance\ReliefPackage rp WITH db.id = rp.assistanceBeneficiary WHERE db.assistance = :assistance AND rp.state != :rpState";
         $projectId = $project->getId();
 
         $qb = $this->createQueryBuilder('b');
@@ -104,14 +101,16 @@ class BeneficiaryRepository extends EntityRepository
                 ->andWhere('b.archived = 0')
                 ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
                 ->setParameter('project', $projectId)
-                ->setParameter('assistance', $excludedAssistance);
+                ->setParameter('assistance', $excludedAssistance)
+                ->setParameter('rpState', ReliefPackageState::CANCELED);
         } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
             $q = $qb->leftJoin('b.household', 'hh')
                 ->andWhere(':project MEMBER OF hh.projects')
                 ->andWhere('b.archived = 0')
                 ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
                 ->setParameter('project', $projectId)
-                ->setParameter('assistance', $excludedAssistance);
+                ->setParameter('assistance', $excludedAssistance)
+                ->setParameter('rpState', ReliefPackageState::CANCELED);
         } else {
             return [];
         }
@@ -154,13 +153,8 @@ class BeneficiaryRepository extends EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByName(
-        string $givenName,
-        ?string $parentsName,
-        string $familyName,
-        ?string $gender = null,
-        Household $household = null
-    ) {
+    public function findByName(string $givenName, ?string $parentsName, string $familyName, ?string $gender = null, Household $household = null)
+    {
         $qbr = $this->createQueryBuilder('b')
             ->leftJoin('b.household', 'hh')
             ->join('b.person', 'p')
@@ -452,13 +446,8 @@ class BeneficiaryRepository extends EntityRepository
         return $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function countByAgeAndByGender(
-        Assistance $distribution,
-        int $gender,
-        int $minAge,
-        int $maxAge,
-        DateTimeInterface $distributionDate
-    ): int {
+    public function countByAgeAndByGender(Assistance $distribution, int $gender, int $minAge, int $maxAge, DateTimeInterface $distributionDate): int
+    {
         $maxDateOfBirth = clone $distributionDate;
         $minDateOfBirth = clone $distributionDate;
         $maxDateOfBirth->sub(new DateInterval('P' . $minAge . 'Y'));
@@ -467,12 +456,7 @@ class BeneficiaryRepository extends EntityRepository
         if (AssistanceTargetType::HOUSEHOLD === $distribution->getTargetType()) {
             $qb = $this->createQueryBuilder('hhm')
                 ->select('COUNT(hhm)')
-                ->join(
-                    'hhm.person',
-                    'p',
-                    'WITH',
-                    'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth'
-                )
+                ->join('hhm.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
                 ->join('hhm.household', 'h')
                 ->join('h.beneficiaries', 'hhh')
                 ->join('hhh.assistanceBeneficiary', 'db', 'WITH', 'db.removed=0')
@@ -485,12 +469,7 @@ class BeneficiaryRepository extends EntityRepository
         } else {
             $qb = $this->createQueryBuilder('b')
                 ->select('COUNT(b)')
-                ->join(
-                    'b.person',
-                    'p',
-                    'WITH',
-                    'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth'
-                )
+                ->join('b.person', 'p', 'WITH', 'p.gender = :g AND p.dateOfBirth >= :minDateOfBirth AND p.dateOfBirth < :maxDateOfBirth')
                 ->join('b.distributionBeneficiaries', 'db', 'WITH', 'db.removed=0')
                 ->andWhere('db.assistance = :assistance')
                 ->andWhere('b.archived = 0')
@@ -615,23 +594,9 @@ class BeneficiaryRepository extends EntityRepository
                     $userConditionsStatement
                 );
             } elseif ($forHousehold && $isField) {
-                $this->getHouseholdWithTableFieldCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getHouseholdWithTableFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             } elseif ($forHousehold && $isOther) {
-                $this->getHouseholdWithOtherCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getHouseholdWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             } elseif ($forIndividual && $isVulnerability) {
                 $this->addVulnerabilityCriterion(
                     $qb,
@@ -642,50 +607,15 @@ class BeneficiaryRepository extends EntityRepository
                     $index
                 );
             } elseif ($forIndividual && $isField) {
-                $this->getBeneficiaryWithTableFieldCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getBeneficiaryWithTableFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             } elseif ($forIndividual && $isOther) {
-                $this->getBeneficiaryWithOtherCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getBeneficiaryWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             } elseif ($forHead && $isVulnerability) {
-                $this->addVulnerabilityCriterion(
-                    $qb,
-                    'b',
-                    $condition,
-                    $criterion->getField(),
-                    $userConditionsStatement,
-                    $index
-                );
+                $this->addVulnerabilityCriterion($qb, 'b', $condition, $criterion->getField(), $userConditionsStatement, $index);
             } elseif ($forHead && $isField) {
-                $this->getHeadWithFieldCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getHeadWithFieldCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             } elseif ($forHead && $isOther) {
-                $this->getHeadWithOtherCriterion(
-                    $qb,
-                    $criterion->getField(),
-                    $condition,
-                    $criterion,
-                    $index,
-                    $userConditionsStatement
-                );
+                $this->getHeadWithOtherCriterion($qb, $criterion->getField(), $condition, $criterion, $index, $userConditionsStatement);
             }
             if ($criterion->hasCountrySpecificType()) {
                 $qb->setParameter('parameter' . $index, $criterion->getValueString());
@@ -757,9 +687,7 @@ class BeneficiaryRepository extends EntityRepository
         switch ($field) {
             case SelectionCriteriaField::HOUSEHOLD_SIZE:
                 $userConditionsStatement->add("SIZE(hh.beneficiaries) $condition :parameter$i");
-                $qb->addSelect(
-                    "(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS $field$i"
-                )
+                $qb->addSelect("(CASE WHEN SIZE(hh.beneficiaries) $condition :parameter$i THEN SIZE(hh.beneficiaries) ELSE :null END) AS $field$i")
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
                 break;
@@ -787,12 +715,7 @@ class BeneficiaryRepository extends EntityRepository
                     ->leftJoin("hl$i.campAddress", "ca$i")
                     ->leftJoin("ca$i.camp", "c$i")
                     ->leftJoin("hl$i.address", "ad$i")
-                    ->leftJoin(
-                        Location::class,
-                        "l$i",
-                        Join::WITH,
-                        "l$i.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))"
-                    )
+                    ->leftJoin(Location::class, "l$i", Join::WITH, "l$i.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
                     ->andWhere("l$i.id IN ({$locationsQb->getDQL()})")
                     ->setParameter('currentRgt', $location->getRgt())
                     ->setParameter('currentLft', $location->getLft())
@@ -884,9 +807,7 @@ class BeneficiaryRepository extends EntityRepository
             $userConditionsStatement->add("$on.id NOT IN ({$subQuery->getDQL()})");
 
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect(
-                "(CASE WHEN vc$i.fieldString <> :vulnerability$i THEN vc$i.fieldString WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i"
-            )
+            $qb->addSelect("(CASE WHEN vc$i.fieldString <> :vulnerability$i THEN vc$i.fieldString WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i")
                 ->setParameter('noCriteria', 'noCriteria')
                 ->setParameter('null', null);
         }
@@ -931,38 +852,26 @@ class BeneficiaryRepository extends EntityRepository
         switch ($field) {
             case SelectionCriteriaField::HEAD_OF_HOUSEHOLD_DATE_OF_BIRTH:
                 $userConditionsStatement->add("prsn$i.dateOfBirth $condition :parameter$i");
-                $qb->addSelect(
-                    "(CASE WHEN prsn$i.dateOfBirth $condition :parameter$i THEN prsn$i.dateOfBirth ELSE :null END) AS $criterionName$i"
-                )
+                $qb->addSelect("(CASE WHEN prsn$i.dateOfBirth $condition :parameter$i THEN prsn$i.dateOfBirth ELSE :null END) AS $criterionName$i")
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
                 break;
             case SelectionCriteriaField::GENDER:
                 $userConditionsStatement->add("prsn$i.gender $condition :parameter$i");
-                $qb->addSelect(
-                    "(CASE WHEN prsn$i.gender $condition :parameter$i THEN prsn$i.gender ELSE :null END) AS $criterionName$i"
-                )
+                $qb->addSelect("(CASE WHEN prsn$i.gender $condition :parameter$i THEN prsn$i.gender ELSE :null END) AS $criterionName$i")
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
                 break;
             default:
                 $userConditionsStatement->add("hhh$i.$field.$condition :parameter$i");
-                $qb->addSelect(
-                    "(CASE WHEN hhh$i.$field $condition :parameter$i THEN hhh$i.$field ELSE :null END) AS $criterionName$i"
-                )
+                $qb->addSelect("(CASE WHEN hhh$i.$field $condition :parameter$i THEN hhh$i.$field ELSE :null END) AS $criterionName$i")
                     ->setParameter('null', null)
                     ->setParameter("parameter$i", $criterion->getValueString());
         }
     }
 
-    private function getHeadWithOtherCriterion(
-        &$qb,
-        $field,
-        $condition,
-        SelectionCriteria $criterion,
-        int $i,
-        &$userConditionsStatement
-    ) {
+    private function getHeadWithOtherCriterion(&$qb, $field, $condition, SelectionCriteria $criterion, int $i, &$userConditionsStatement)
+    {
         if (!$criterion->hasTypeOther()) {
             throw new InvalidArgumentException('Selection criterium isnt for other criterium');
         }
