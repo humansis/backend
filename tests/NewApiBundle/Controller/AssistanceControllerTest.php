@@ -181,6 +181,18 @@ class AssistanceControllerTest extends BMSServiceTestCase
             ],
             'response' => true,
         ]];
+        yield 'Smartcard for household' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
+        ]];
         yield 'No quantities for members' => [[
             'commodity' => [
                 'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
@@ -572,7 +584,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -641,7 +653,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -707,7 +719,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
@@ -764,7 +776,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -851,7 +863,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
