@@ -552,12 +552,8 @@ class AssistanceSpreadsheetExport
             $result[] = 'Smartcard deposit: '.$deposit->getValue().' '.$deposit->getSmartcard()->getCurrency();
         }
 
-        foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
-            /** @var ReliefPackage $relief */
-            if ($relief->getState() === ReliefPackageState::DISTRIBUTED) {
+        foreach ($assistanceBeneficiary->getReliefPackagesNotInStates([ReliefPackageState::CANCELED]) as $relief) {
                 $result[] = $relief->getModalityType().', '.$relief->getAmountToDistribute().' '.$relief->getUnit();
-                break;
-            }
         }
 
         return implode("\n", $result);

@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
@@ -384,9 +385,41 @@ class AssistanceBeneficiary
     /**
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackages()
+    public function getReliefPackages(?Criteria $criteria = null)
     {
-        return $this->reliefPackages;
+        if ($criteria === null) {
+            $criteria = Criteria::create();
+        }
+        
+        return $this->reliefPackages->matching($criteria);
+    }
+
+    /**
+     * @param ReliefPackageState[] $states
+     *
+     * @return Collection|ReliefPackage[]
+     */
+    public function getReliefPackagesInStates(array $states)
+    {
+        if (empty($states)) {
+            return [];
+        }
+
+        return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->in('state', $states)));
+    }
+
+    /**
+     * @param ReliefPackageState[] $states
+     *
+     * @return Collection|ReliefPackage[]
+     */
+    public function getReliefPackagesNotInStates(array $states)
+    {
+        if (empty($states)) {
+            return $this->getReliefPackages();
+        }
+
+        return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->notIn('state', $states)));
     }
 
     /**
