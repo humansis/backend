@@ -59,8 +59,10 @@ class CommodityMapper implements MapperInterface
         return $this->object->getDescription();
     }
 
-    public function getDivision(): DivisionSummary
+    public function getDivision(): ?DivisionSummary
     {
-        return $this->object->getDivisionSummary();
+        $summary = $this->object->getDivisionSummary();
+        
+        return $summary->getDivision() === null ? null : $summary; 
     }
 }
