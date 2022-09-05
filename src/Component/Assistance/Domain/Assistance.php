@@ -256,7 +256,7 @@ class Assistance
                         $unit,
                         $commodityBuilder->getValue($target, $modalityName, $unit)
                     );
-                    $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::REUSE);
+                    $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::REUSE);
                 }
             }
         }
@@ -270,7 +270,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::EXPIRE);
             }
         }
     }
@@ -294,7 +294,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $this->reliefPackageTransition($reliefPackage, ReliefPackageTransitions::CANCEL);
+                $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::CANCEL);
             }
         }
     }
@@ -453,7 +453,7 @@ class Assistance
      *
      * @return void
      */
-    private function reliefPackageTransition(ReliefPackage $reliefPackage, string $transition): void
+    private function applyReliefPackageTransition(ReliefPackage $reliefPackage, string $transition): void
     {
         if (!in_array($transition, ReliefPackageTransitions::getAll())) {
             throw new \LogicException(sprintf('Transition %s is not defined in Relief Package transitions list. Allowed transitions are (%s).',
