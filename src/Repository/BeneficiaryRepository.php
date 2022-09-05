@@ -90,29 +90,34 @@ class BeneficiaryRepository extends EntityRepository
      */
     public function getNotSelectedBeneficiariesOfProject(Project $project, string $target, Assistance $excludedAssistance)
     {
-        $excludedAssistanceDQL = "SELECT ben.id FROM Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN Entity\Beneficiary ben WITH ben.id = ab.id LEFT JOIN Entity\Assistance\ReliefPackage rp WITH db.id = rp.assistanceBeneficiary WHERE db.assistance = :assistance AND rp.state != :rpState";
-        $projectId = $project->getId();
-
-        $qb = $this->createQueryBuilder('b');
-        if (AssistanceTargetType::HOUSEHOLD === $target) {
-            $q = $qb->leftJoin('b.household', 'hh')
-                ->where(':project MEMBER OF hh.projects')
-                ->andWhere('b.status = 1')
-                ->andWhere('b.archived = 0')
-                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
-                ->setParameter('project', $projectId)
-                ->setParameter('assistance', $excludedAssistance)
-                ->setParameter('rpState', ReliefPackageState::CANCELED);
-        } elseif (AssistanceTargetType::INDIVIDUAL === $target) {
-            $q = $qb->leftJoin('b.household', 'hh')
-                ->andWhere(':project MEMBER OF hh.projects')
-                ->andWhere('b.archived = 0')
-                ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
-                ->setParameter('project', $projectId)
-                ->setParameter('assistance', $excludedAssistance)
-                ->setParameter('rpState', ReliefPackageState::CANCELED);
-        } else {
+        if (!in_array($target, [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) {
             return [];
+        }
+
+        $excludedAssistanceDQL = "SELECT ben.id FROM Entity\AssistanceBeneficiary db LEFT JOIN db.beneficiary ab INNER JOIN Entity\Beneficiary ben WITH ben.id = ab.id LEFT JOIN Entity\Assistance\ReliefPackage rp WITH db.id = rp.assistanceBeneficiary WHERE db.assistance = :assistance AND rp.state != :rpState";
+        $qb = $this->createQueryBuilder('b');
+        $qb->leftJoin('b.household', 'hh')
+            ->andWhere(':project MEMBER OF hh.projects')
+            ->andWhere('b.archived = 0')
+            ->andWhere($qb->expr()->notIn('b.id', $excludedAssistanceDQL))
+            ->setParameter('project', $project->getId())
+            ->setParameter('assistance', $excludedAssistance)
+            ->setParameter('rpState', ReliefPackageState::CANCELED);
+        if($target === AssistanceTargetType::HOUSEHOLD) {
+            $qb->andWhere('b.status = 1');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findByUnarchived(array $byArray)
+    {
+        $qb = $this->createQueryBuilder('b');
+        $q = $qb->leftJoin('b.household', 'hh')
+            ->where('hh.archived = 0');
+        foreach ($byArray as $key => $value) {
+            $q = $q->andWhere('b.'.$key.' = :value'.$key)
+                ->setParameter('value'.$key, $value);
         }
 
         return $q->getQuery()->getResult();
