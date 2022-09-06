@@ -16,6 +16,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
     const SORT_BY_DATE_EXPIRATION = 'dateExpiration';
     const SORT_BY_TARGET = 'target';
     const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
+    const SORT_BY_ROUND = 'round';
     const SORT_BY_VALUE = 'value';
     const SORT_BY_UNIT = 'unit';
     const SORT_BY_TYPE = 'type';
@@ -32,6 +33,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
             self::SORT_BY_DATE_EXPIRATION,
             self::SORT_BY_TARGET,
             self::SORT_BY_NUMBER_OF_BENEFICIARIES,
+            self::SORT_BY_ROUND,
             self::SORT_BY_VALUE,
             self::SORT_BY_UNIT,
             self::SORT_BY_TYPE,

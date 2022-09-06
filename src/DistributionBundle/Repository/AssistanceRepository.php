@@ -244,6 +244,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
                         break;
+                    case AssistanceOrderInputType::SORT_BY_ROUND:
+                        $qb->orderBy('dd.round', $direction);
+                        break;
                     case AssistanceOrderInputType::SORT_BY_TYPE:
                         $qb->orderBy('dd.assistanceType', $direction);
                         break;
