@@ -449,4 +449,20 @@ class SmartcardService
             }
         }
     }
+
+    /**
+     * @param string  $smartcardCode
+     *
+     * @retrun Smartcard
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function getSmartcardByCode(string $smartcardCode)
+    {
+        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
+
+        if (!$smartcard){
+            throw new NotFoundHttpException("Card with code '{$smartcardCode}' does not exists");
+        }
+        return $smartcard;
+    }
 }

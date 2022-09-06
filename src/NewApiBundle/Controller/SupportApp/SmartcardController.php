@@ -7,10 +7,11 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Controller\AbstractController;
 use NewApiBundle\InputType\Smartcard\UpdateSmartcardInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
+
 
 class SmartcardController extends AbstractController
 {
@@ -19,11 +20,30 @@ class SmartcardController extends AbstractController
      */
     private $smartcardRepository;
 
+    /**
+     * @var SmartcardService
+     */
+    private $smartcardService;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @param SmartcardRepository   $smartcardRepository
+     * @param SmartcardService      $smartcardService
+     * @param TokenStorageInterface $tokenStorage
+     */
     public function __construct(
-        SmartcardRepository $smartcardRepository
+        SmartcardRepository $smartcardRepository,
+        SmartcardService $smartcardService,
+        TokenStorageInterface  $tokenStorage
     )
     {
         $this->smartcardRepository = $smartcardRepository;
+        $this->smartcardService = $smartcardService;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -35,12 +55,7 @@ class SmartcardController extends AbstractController
      */
     public function smartcard(string $smartcardCode):JsonResponse
     {
-        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
-
-        if (!$smartcard){
-            throw new NotFoundHttpException('Unable to find smartcard.');
-        }
-
+        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
         return $this->json($smartcard);
     }
 
@@ -53,13 +68,8 @@ class SmartcardController extends AbstractController
      */
      public function smartcardPurchases(string $smartcardCode):JsonResponse
      {
-         $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
-
-         if (!$smartcard){
-             throw new NotFoundHttpException('Unable to find smartcard.');
-         }
+         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
          $purchases = $smartcard->getPurchases();
-
          return $this->json($purchases);
      }
 
@@ -72,13 +82,8 @@ class SmartcardController extends AbstractController
      */
     public function smartcardDeposits(string $smartcardCode):JsonResponse
     {
-        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
-
-        if (!$smartcard){
-            throw new NotFoundHttpException('Unable to find smartcard.');
-        }
+        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
         $purchases = $smartcard->getDeposites();
-
         return $this->json($purchases);
     }
 
@@ -97,15 +102,11 @@ class SmartcardController extends AbstractController
         UpdateSmartcardInputType $updateSmartcardInputType,
         SmartcardService         $smartcardService ): JsonResponse {
 
-        $user = $this->get('security.token_storage')->getToken()->getUser();
+        $user = $this->tokenStorage->getToken()->getUser();
 
         if ($user->hasRole('ROLE_ADMIN')) {
 
-            $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
-
-            if (!$smartcard) {
-                throw new NotFoundHttpException('Unable to find smartcard.');
-            }
+            $smartcard = $this->smartcardService->getSmartcardByCode($serialNumber);
             $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
 
             return $this->json($smartcard);
