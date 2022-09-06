@@ -43,6 +43,14 @@ class NationalIdCardInputType implements InputTypeInterface
     /**
      * @return string
      */
+    public function getOriginalType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
     public function getType()
     {
         return NationalIdType::valueFromAPI($this->type);
