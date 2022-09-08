@@ -101,7 +101,7 @@ class Assistance implements ExportableInterface
     /**
      * @var AssistanceSelection
      *
-     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
     private $assistanceSelection;

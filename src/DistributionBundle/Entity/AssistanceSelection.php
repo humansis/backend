@@ -36,6 +36,12 @@ class AssistanceSelection
      */
     private $selectionCriteria;
 
+    /**
+     * @var Assistance
+     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\Assistance", mappedBy="assistanceSelection")
+     */
+    private $assistance;
+
     public function __construct()
     {
         $this->selectionCriteria = new ArrayCollection();
@@ -72,4 +78,22 @@ class AssistanceSelection
     {
         return $this->selectionCriteria;
     }
+
+    /**
+     * @return Assistance
+     */
+    public function getAssistance(): Assistance
+    {
+        return $this->assistance;
+    }
+
+    /**
+     * @param Assistance $assistance
+     */
+    public function setAssistance(Assistance $assistance): void
+    {
+        $this->assistance = $assistance;
+    }
+
+
 }
