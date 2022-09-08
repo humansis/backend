@@ -15,6 +15,12 @@ class ItemBatch
     private $checkType;
 
     /**
+     * @SerializedName("importId")
+     * @var integer
+     */
+    private $importId;
+
+    /**
      * @SerializedName("queueItemIds")
      * @var array
      */
@@ -24,10 +30,11 @@ class ItemBatch
      * @param string|null $checkType
      * @param int[]|null       $queueItemIds
      */
-    private function __construct(?string $checkType = null, ?array $queueItemIds=null)
+    private function __construct(int $importId, ?string $checkType = null, ?array $queueItemIds=null)
     {
         $this->queueItemIds = $queueItemIds;
         $this->checkType = $checkType;
+        $this->importId = $importId;
     }
 
     /**
@@ -37,7 +44,7 @@ class ItemBatch
      */
     public static function checkSingleItemIntegrity(ImportQueue $item): self
     {
-        return new self(ImportState::INTEGRITY_CHECKING, [$item->getId()]);
+        return new self($item->getImport()->getId(), ImportState::INTEGRITY_CHECKING, [$item->getId()]);
     }
 
     /**
@@ -47,12 +54,12 @@ class ItemBatch
      */
     public static function checkSingleItemIdentity(ImportQueue $item): self
     {
-        return new self(ImportState::IDENTITY_CHECKING, [$item->getId()]);
+        return new self($item->getImport()->getId(),ImportState::IDENTITY_CHECKING, [$item->getId()]);
     }
 
     public static function finishSingleItem(ImportQueue $item): self
     {
-        return new self(ImportState::IMPORTING, [$item->getId()]);
+        return new self($item->getImport()->getId(),ImportState::IMPORTING, [$item->getId()]);
     }
 
     /**
@@ -62,8 +69,29 @@ class ItemBatch
      */
     public static function checkSingleItemSimilarity(ImportQueue $item): self
     {
-        return new self(ImportState::SIMILARITY_CHECKING, [$item->getId()]);
+        return new self($item->getImport()->getId(),ImportState::SIMILARITY_CHECKING, [$item->getId()]);
     }
+
+    /**
+     * @return int
+     */
+    public function getImportId(): int
+    {
+        return $this->importId;
+    }
+
+    /**
+     * @param int $importId
+     *
+     * @return ItemBatch
+     */
+    public function setImportId(int $importId): ItemBatch
+    {
+        $this->importId = $importId;
+
+        return $this;
+    }
+
 
     /**
      * @return string

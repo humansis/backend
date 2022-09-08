@@ -12,6 +12,7 @@ use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Repository\ImportRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -21,6 +22,8 @@ class ItemBatchHandler implements MessageHandlerInterface
 
     /** @var ImportQueueRepository */
     private $queueRepository;
+    /** @var ImportRepository */
+    private $importRepository;
     /** @var IntegrityChecker */
     private $integrityChecker;
     /** @var IdentityChecker */
@@ -41,6 +44,7 @@ class ItemBatchHandler implements MessageHandlerInterface
     public function __construct(
         LoggerInterface       $importLogger,
         ImportQueueRepository $queueRepository,
+        ImportRepository      $importRepository,
         IntegrityChecker      $integrityChecker,
         IdentityChecker       $identityChecker,
         SimilarityChecker     $similarityChecker,
@@ -52,10 +56,12 @@ class ItemBatchHandler implements MessageHandlerInterface
         $this->identityChecker = $identityChecker;
         $this->similarityChecker = $similarityChecker;
         $this->finisher = $finisher;
+        $this->importRepository = $importRepository;
     }
 
     public function __invoke(ItemBatch $batch): void
     {
+        $import = $this->importRepository->find($batch->getImportId());
         switch ($batch->getCheckType()) {
             case ImportState::INTEGRITY_CHECKING:
                 $this->foreach($batch, ImportQueueState::NEW, function (Import $import, ImportQueue $item) {
@@ -75,7 +81,7 @@ class ItemBatchHandler implements MessageHandlerInterface
                     $queueByImport[$item->getImport()->getId()][] = $item;
                 }
                 foreach ($queueByImport as $items) {
-                    $this->identityChecker->checkBatch($items[0]->getImport(), $items);
+                    $this->identityChecker->checkBatch($import, $items);
                 }
                 foreach ($items as $item) {
                     $this->queueRepository->save($item);

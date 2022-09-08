@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
@@ -27,6 +28,11 @@ class SimilaritySubscriber implements EventSubscriberInterface
 
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
      * @var SimilarityChecker
      */
     private $similarityChecker;
@@ -41,10 +47,12 @@ class SimilaritySubscriber implements EventSubscriberInterface
 
 
     public function __construct(
+        EntityManagerInterface $entityManager,
         SimilarityChecker      $similarityChecker,
         ImportQueueRepository  $queueRepository,
         MessageBusInterface    $messageBus
     ) {
+        $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;
         $this->queueRepository = $queueRepository;
         $this->messageBus = $messageBus;
@@ -156,6 +164,10 @@ class SimilaritySubscriber implements EventSubscriberInterface
 
     private function fillQueue(Import $import)
     {
+        /**
+         * This is important because Import object is not yet flushed
+         */
+        $this->entityManager->flush();
         foreach ($this->queueRepository->findBy([
             'import' => $import,
             'state' => [ImportQueueState::NEW],
