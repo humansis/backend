@@ -42,6 +42,8 @@ sed -i -e "s|%env(RDS_HOSTNAME)%|$1|g" \
   -e "s|%env(DEFAULT_ACCOUNT_PASSWORD)%|${DEFAULT_ACCOUNT_PASSWORD}|g" \
   -e "s|%env(DEFAULT_ACCOUNT_SALT)%|${DEFAULT_ACCOUNT_SALT}|g" \
   -e "s|%env(SYMFONY_SECRET)%|${SYMFONY_SECRET}|g" \
+  -e "s|%env(CROWDIN_API_KEY)%|${CROWDIN_API_KEY}|g" \
+  -e "s|%env(CROWDIN_PROJECT_ID)%|${CROWDIN_PROJECT_ID}|g" \
   -e "s|%env(ENVIRONMENT)%|${ENVIRONMENT}|g" app/config/parameters.yml
 
 

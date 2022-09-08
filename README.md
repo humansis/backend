@@ -131,6 +131,8 @@ php:
         AWS_LOGS_ACCESS_KEY: secret_key
         AWS_LOGS_SECRET_KEY: secret_key
         SYMFONY_SECRET: 'ThisIsLocalVerySecretToken'
+        CROWDIN_API_KEY: 'ThisIsLocalVerySecretKey'
+        CROWDIN_PROJECT_ID: 'ThisIsLocalNotSoMuchSecretId'
 ```
 
 ### Test interpret and docker environment

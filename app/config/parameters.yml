@@ -22,6 +22,8 @@ parameters:
     aws_s3_bucket_name: files-testing.bmstaging.info
     humanitarian_secret: '%env(HID_SECRET)%'
     google_client: '%env(GOOGLE_CLIENT)%'
+    crowdin_api_key: '%env(CROWDIN_API_KEY)%'
+    crowdin_project_id: '%env(CROWDIN_PROJECT_ID)%'
 
     mobile_app_master_key: '%env(MOBILE_MASTER_KEY)%'
     mobile_app_version: '%env(MOBILE_APP_VERSION)%'

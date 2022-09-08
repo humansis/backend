@@ -16,6 +16,7 @@
 /vendor/
 /web/bundles/
 .DS_Store
+.env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
