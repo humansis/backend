@@ -14,6 +14,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use InvalidArgumentException;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Component\Assistance\Domain;
+use NewApiBundle\DBAL\NationalIdTypeEnum;
+use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\AddRemoveAbstractBeneficiaryToAssistanceInputType;
 use NewApiBundle\InputType\AddRemoveBeneficiaryToAssistanceInputType;
@@ -144,9 +146,19 @@ class AssistanceBeneficiaryController extends AbstractController
         }
 
         try {
-            $this->actualizeBeneficiary(
-                $factory->hydrate($assistanceRoot),
-                $inputType->getBeneficiaryIds(),
+            $assistance = $factory->hydrate($assistanceRoot);
+            if (count($inputType->getBeneficiaryIds()) > 0) {
+                $this->actualizeBeneficiary(
+                    $assistance,
+                    $inputType->getBeneficiaryIds(),
+                    $repository,
+                    $inputType
+                );
+            }
+
+            $this->actualizeBeneficiaryNationalId(
+                $assistance,
+                $inputType->getNationalIds(),
                 $repository,
                 $inputType
             );
@@ -156,6 +168,34 @@ class AssistanceBeneficiaryController extends AbstractController
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
+
+    private function actualizeBeneficiaryNationalId(
+        Domain\Assistance                                 $assistance,
+        array                                             $idList,
+        BeneficiaryRepository                                  $repository,
+        AddRemoveAbstractBeneficiaryToAssistanceInputType $inputType
+    ): void {
+        foreach ($idList as $id) {
+            if ($inputType->getAdded()) {
+                $beneficiaries = $repository->findByIdentity($id);
+            } else {
+                $beneficiaries = $repository->findByIdentityAndProject($id, NationalIdType::TAX_NUMBER, $assistance->getAssistanceRoot()->getProject());
+            }
+
+            if (count($beneficiaries) > 0) {
+                foreach ($beneficiaries as $beneficiary) {
+                    if ($inputType->getAdded()) {
+
+                        $assistance->addBeneficiary($beneficiary, $inputType->getJustification());
+                    } elseif ($inputType->getRemoved()) {
+                        $assistance->removeBeneficiary($beneficiary, $inputType->getJustification());
+                    }
+                }
+            }
+
+        }
+    }
+
 
     private function actualizeBeneficiary(
         Domain\Assistance                                 $assistance,
