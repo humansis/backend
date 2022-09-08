@@ -427,33 +427,24 @@ class AssistanceService
         return $assistance;
     }
 
-    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
+    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance
             ->setDateDistribution($date)
             ->setName(AssistanceFactory::generateName($assistance))
             ->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateDateExpiration(Assistance $assistance, ?DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateNote(Assistance $assistance, ?string $note): void
     {
         $assistance->setNote($note);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateRound(Assistance $assistance, ?int $round): void
@@ -461,9 +452,6 @@ class AssistanceService
         $assistance->setRound($round);
         $assistance->setName(AssistanceFactory::generateName($assistance));
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
 
