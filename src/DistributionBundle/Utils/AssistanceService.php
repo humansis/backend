@@ -7,7 +7,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Exception\CsvParserException;
-use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
 use DateTime;
@@ -26,11 +25,13 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Component\Assistance\Domain\Assistance as AssistanceDomain;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
+use NewApiBundle\InputType\Assistance\UpdateAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
@@ -142,6 +143,47 @@ class AssistanceService
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
         $this->twig = $twig;
         $this->translator = $translator;
+    }
+
+    /**
+     * @param Assistance                $assistanceRoot
+     * @param UpdateAssistanceInputType $updateAssistanceInputType
+     * @param User                      $user
+     *
+     * @return AssistanceDomain
+     */
+    public function update(
+        Assistance                $assistanceRoot,
+        UpdateAssistanceInputType $updateAssistanceInputType,
+        User                      $user
+    ): AssistanceDomain {
+        $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
+        if ($updateAssistanceInputType->hasValidated()) {
+            if ($updateAssistanceInputType->getValidated()) {
+                $assistance->validate($user);
+            } else {
+                $assistance->unvalidate();
+            }
+        }
+        if ($updateAssistanceInputType->isCompleted()) {
+            $assistance->complete();
+        }
+        if ($updateAssistanceInputType->hasDateDistribution()) {
+            $this->updateDateDistribution($assistanceRoot, $updateAssistanceInputType->getDateDistribution());
+        }
+        if ($updateAssistanceInputType->hasDateExpiration()) {
+            $this->updateDateExpiration($assistanceRoot, $updateAssistanceInputType->getDateExpiration());
+        }
+        if ($updateAssistanceInputType->hasRound()) {
+            $this->updateRound($assistanceRoot, $updateAssistanceInputType->getRound());
+        }
+        if ($updateAssistanceInputType->hasNote()) {
+            $this->updateNote($assistanceRoot, $updateAssistanceInputType->getNote());
+        }
+
+        $this->assistanceRepository->save($assistance);
+
+        return $assistance;
     }
 
     /**
@@ -385,33 +427,24 @@ class AssistanceService
         return $assistance;
     }
 
-    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
+    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance
             ->setDateDistribution($date)
             ->setName(AssistanceFactory::generateName($assistance))
             ->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateDateExpiration(Assistance $assistance, ?DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateNote(Assistance $assistance, ?string $note): void
     {
         $assistance->setNote($note);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateRound(Assistance $assistance, ?int $round): void
@@ -419,9 +452,6 @@ class AssistanceService
         $assistance->setRound($round);
         $assistance->setName(AssistanceFactory::generateName($assistance));
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
 
