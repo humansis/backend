@@ -1,19 +1,29 @@
 Rule type,Field Name,Title,Options,Points
 ,,,,
-calculation,singleParentHeaded,Single Parent headed HH,Solo parent,2
+calculation,singleParentHeaded,Single Parent headed HH,Solo parent,4
 ,,,,
-calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,3
+calculation,pregnantOrLactating,Pregnant or lactating,Pregnant or lactating,4
 ,,,,
-countrySpecific,Elderly ,Single Elderly/elderlies ,Elderly,3
+countrySpecific,Elderly ,Single Elderly/elderlies,Elderly,5
+,,,Prepension,4
 ,,,,
-countrySpecific,Disabled,Disability,Severe functional limitation,3
-,,,A lot of functional limitation,2
-,,,Some functional limitation,2
+countrySpecific,Disabled,Disability,Severe functional limitation,5
+,,,A lot of functional limitation,4
+,,,Some functional limitation,3
+,,,Severe functional limitation + Multiple,10
 ,,,,
-calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,2
-,,,two and more,3
+calculation,noOfChronicallyIll,Chronical ilnesses and health issues ,one,3
+,,,two and more,5
 ,,,,
-calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),1 (mid.),2
-,,,>1 (hight dep.),3
+calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),1 (mid.),3
+,,,>1 (hight dep.),5
 ,,,,
-countrySpecific,Main income,Main income,none,3
+countrySpecific,Main income,Main income,none,5
+,,,humanitarian aidm,5
+,,,"humanitarian aid, none",5
+,,,savings,4
+,,,"savings, none",4
+,,,"humanitarian aid, savings",4
+,,,"savings, humanitarian aid",4
+,,,"humanitarian aid, savings, none",4
+,,,"savings, humanitarian aid, none",4
