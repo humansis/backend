@@ -122,7 +122,7 @@ class DefaultVoter extends BMSVoter
         $userProject = $this->em->getRepository(UserProject::class)
             ->findBy(["user" => $user]);
         foreach ($userProject as $up) {
-            if ($up->getProject()->getIso3() === $countryISO3) {
+            if ($up->getProject()->getCountryIso3() === $countryISO3) {
                 return true;
             }
         }

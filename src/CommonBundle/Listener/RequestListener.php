@@ -58,14 +58,14 @@ class RequestListener
                 $hasCountry = false;
 
                 foreach ($countries as $country) {
-                    if ($country->getIso3() == $countryISO3) {
+                    if ($country->getCountryIso3() == $countryISO3) {
                         $hasCountry = true;
                         break;
                     }
                 }
 
                 foreach ($projects as $project) {
-                    if ($project->getProject()->getIso3() == $countryISO3) {
+                    if ($project->getProject()->getCountryIso3() == $countryISO3) {
                         $hasCountry = true;
                         break;
                     }
@@ -82,9 +82,9 @@ class RequestListener
                 // hack to prevent E403 on old mobile app with countries sent by mistake before user can change country
                 $fallbackCountry = $countryISO3;
                 if (!$user->getCountries()->isEmpty()) {
-                    $fallbackCountry = $user->getCountries()->first()->getIso3();
+                    $fallbackCountry = $user->getCountries()->first()->getCountryIso3();
                 } elseif (!$user->getProjects()->isEmpty()) {
-                    $fallbackCountry = $user->getProjects()->first()->getProject()->getIso3();
+                    $fallbackCountry = $user->getProjects()->first()->getProject()->getCountryIso3();
                 } elseif ($user->getRoles()[0] === "ROLE_VENDOR") {
                     $fallbackCountry = $this->em->getRepository(Vendor::class)->getVendorCountry($user);
                 }

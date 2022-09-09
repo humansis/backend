@@ -310,7 +310,7 @@ class ProjectService
     {
         $existingProjects = $this->em->getRepository(Project::class)->findBy([
             'name' => $inputType->getName(),
-            'iso3' => $inputType->getIso3(),
+            'countryIso3' => $inputType->getIso3(),
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
