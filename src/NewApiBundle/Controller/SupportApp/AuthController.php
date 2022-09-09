@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 use UserBundle\Entity\User;
 
+/**
+ * @Rest\Route("/support-app/v1/login")
+ */
 class AuthController extends AbstractController
 {
 
@@ -23,7 +26,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/support-app/v1/login")
+     * @Rest\Post
      *
      * @param Profiler|null            $profiler
      *
