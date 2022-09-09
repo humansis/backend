@@ -56,7 +56,7 @@ class ProductService
               ->setName($productData['name'])
               ->setUnit($productData['unit'] ?? null)
               ->setArchived(false)
-              ->setCountryISO3($productData['__country']);
+              ->setCountryIso3($productData['__country']);
 
             $this->em->persist($product);
             $this->em->flush();
@@ -81,7 +81,7 @@ class ProductService
             ->setName($productData->getName())
             ->setImage($productData->getImage())
             ->setUnit($productData->getUnit())
-            ->setCountryISO3($productData->getIso3())
+            ->setCountryIso3($productData->getIso3())
             ->setUnitPrice($productData->getUnitPrice())
             ->setCurrency($productData->getCurrency())
             ->setArchived(false)

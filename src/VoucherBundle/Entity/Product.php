@@ -3,6 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\ProductCategory;
@@ -20,6 +21,7 @@ class Product implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
+    use CountryDependent;
 
     /**
      * @var int
@@ -62,15 +64,7 @@ class Product implements ExportableInterface
      * @SymfonyGroups({"FullProduct"})
      */
     private $archived;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="countryISO3", type="string", length=3)
-     * @SymfonyGroups({"FullProduct"})
-     */
-    private $countryISO3;
-
+    
     /**
      * @var ProductCategory|null
      *
@@ -97,7 +91,7 @@ class Product implements ExportableInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -109,7 +103,7 @@ class Product implements ExportableInterface
      *
      * @return Product
      */
-    public function setName($name)
+    public function setName(string $name): Product
     {
         $this->name = $name;
 
@@ -123,7 +117,7 @@ class Product implements ExportableInterface
      *
      * @return Product
      */
-    public function setArchived($archived)
+    public function setArchived(bool $archived): Product
     {
         $this->archived = $archived;
 
@@ -135,7 +129,7 @@ class Product implements ExportableInterface
      *
      * @return bool
      */
-    public function getArchived()
+    public function getArchived(): bool
     {
         return $this->archived;
     }
@@ -145,7 +139,7 @@ class Product implements ExportableInterface
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -157,7 +151,7 @@ class Product implements ExportableInterface
      *
      * @return Product
      */
-    public function setUnit(?string $unit)
+    public function setUnit(?string $unit): Product
     {
         $this->unit = $unit;
 
@@ -181,7 +175,7 @@ class Product implements ExportableInterface
      *
      * @return Product
      */
-    public function setImage($image)
+    public function setImage(string $image): Product
     {
         $this->image = $image;
 
@@ -193,33 +187,9 @@ class Product implements ExportableInterface
      *
      * @return string
      */
-    public function getImage()
+    public function getImage(): string
     {
         return $this->image;
-    }
-
-    /**
-     * Set countryISO3.
-     *
-     * @param string $countryISO3
-     *
-     * @return Product
-     */
-    public function setCountryISO3($countryISO3)
-    {
-        $this->countryISO3 = $countryISO3;
-
-        return $this;
-    }
-
-    /**
-     * Get countryISO3.
-     *
-     * @return string
-     */
-    public function getCountryISO3()
-    {
-        return $this->countryISO3;
     }
 
     /**
@@ -229,12 +199,10 @@ class Product implements ExportableInterface
     public function getMappedValueForExport(): array
     {
 
-        $finalArray = [
+        return [
             'Name' => $this->getName(),
             'Unit' => $this->getUnit(),
         ];
-
-        return $finalArray;
     }
 
     /**
@@ -247,6 +215,8 @@ class Product implements ExportableInterface
 
     /**
      * @param ProductCategory|null $productCategory
+     *
+     * @return Product
      */
     public function setProductCategory(?ProductCategory $productCategory): self
     {
@@ -265,6 +235,8 @@ class Product implements ExportableInterface
 
     /**
      * @param float|null $unitPrice
+     *
+     * @return Product
      */
     public function setUnitPrice(?float $unitPrice): self
     {
@@ -283,6 +255,8 @@ class Product implements ExportableInterface
 
     /**
      * @param string|null $currency
+     *
+     * @return Product
      */
     public function setCurrency(?string $currency): self
     {

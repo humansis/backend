@@ -19,6 +19,7 @@ final class Version20220909071033 extends AbstractMigration
         $this->addSql('ALTER TABLE project MODIFY COLUMN iso3 VARCHAR(3) NOT NULL');
         $this->addSql('ALTER TABLE country_specific CHANGE COLUMN country_iso3 iso3 VARCHAR(3) NOT NULL');
         $this->addSql('ALTER TABLE booklet CHANGE COLUMN country_iso3 iso3 VARCHAR(3) NOT NULL');
+        $this->addSql('ALTER TABLE product CHANGE COLUMN countryISO3 iso3 VARCHAR(3) NOT NULL');
 
     }
 

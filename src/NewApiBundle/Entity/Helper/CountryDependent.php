@@ -11,7 +11,7 @@ trait CountryDependent
      * @var string
      *
      * @ORM\Column(name="iso3", type="string", nullable=false, length=3)
-     * @SymfonyGroups({"FullProject", "FullUser", "FullCountrySpecific", "FullHousehold", "FullBooklet"})
+     * @SymfonyGroups({"FullProject", "FullUser", "FullCountrySpecific", "FullHousehold", "FullBooklet", "FullProduct"})
      */
     private $countryIso3;
 
