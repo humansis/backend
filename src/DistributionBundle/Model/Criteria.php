@@ -3,9 +3,10 @@
 
 namespace DistributionBundle\Model;
 
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-class Criteria
+class Criteria extends AbstractEntity
 {
 
     /**

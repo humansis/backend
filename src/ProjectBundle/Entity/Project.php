@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DTO\Sector;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -27,17 +28,7 @@ class Project implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullProject", "FullDonor", "FullAssistance", "SmallAssistance", "FullHousehold", "SmallHousehold", "FullUser", "FullBooklet"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -192,27 +183,6 @@ class Project implements ExportableInterface
         $this->allowedProductCategoryTypes = [];
     }
 
-    /**
-     * Set id.
-     *
-     * @return Project
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

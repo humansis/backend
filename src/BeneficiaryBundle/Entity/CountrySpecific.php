@@ -5,6 +5,7 @@ namespace BeneficiaryBundle\Entity;
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -17,15 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class CountrySpecific extends Criteria implements ExportableInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullCountrySpecific", "FullHousehold", "Criteria"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -72,15 +65,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
         $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set type.

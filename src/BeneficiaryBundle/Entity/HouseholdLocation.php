@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -15,6 +16,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class HouseholdLocation
 {
+    use StandardizedPrimaryKey;
+
     const LOCATION_GROUP_CURRENT = 'current';
     const LOCATION_GROUP_RESIDENT = 'resident';
     
@@ -28,14 +31,6 @@ class HouseholdLocation
         self::LOCATION_TYPE_SETTLEMENT,
     ];
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -72,15 +67,6 @@ class HouseholdLocation
      */
     private $household;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set locationGroup.

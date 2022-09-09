@@ -3,6 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -17,16 +18,7 @@ use ProjectBundle\DBAL\SubSectorEnum;
  */
 class ProjectSector
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullSector", "FullProject"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -67,21 +59,6 @@ class ProjectSector
         $this->project = $project;
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
 
     /**
      * @return string

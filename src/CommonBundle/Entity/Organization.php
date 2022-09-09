@@ -3,6 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -13,16 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Organization
 {
-    /**
-    * @var int
-    *
-    * @ORM\Column(name="id", type="integer")
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="AUTO")
-    *
-    * @SymfonyGroups({"FullOrganization"})
-    */
-    private $id;
+    use StandardizedPrimaryKey;
 
 
     /**
@@ -81,30 +73,6 @@ class Organization
      */
     private $organizationServices;
 
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

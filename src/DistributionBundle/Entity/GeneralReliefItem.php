@@ -5,6 +5,7 @@ namespace DistributionBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use DistributionBundle\Entity\AssistanceBeneficiary;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -18,16 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class GeneralReliefItem
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var \DateTime|null
@@ -54,16 +46,6 @@ class GeneralReliefItem
      */
     private $assistanceBeneficiary;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set distributedAt.
@@ -113,19 +95,6 @@ class GeneralReliefItem
         return $this->notes;
     }
 
-    /**
-     * Set the value of Id
-     *
-     * @param int id
-     *
-     * @return self
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
- 
-        return $this;
-    }
  
     /**
      * Get the value of Distribution Beneficiary

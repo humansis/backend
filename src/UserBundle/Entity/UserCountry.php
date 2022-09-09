@@ -3,6 +3,8 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -10,18 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="user_country")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserCountryRepository")
+ * @ORM\HasLifecycleCallbacks
  */
-class UserCountry
+class UserCountry extends AbstractEntity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var string
      *
@@ -44,16 +38,6 @@ class UserCountry
      */
     private $user;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set rights.

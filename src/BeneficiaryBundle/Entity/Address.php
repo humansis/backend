@@ -4,6 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -11,18 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="address")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\AddressRepository")
+ * @ORM\HasLifecycleCallbacks
  */
-class Address
+class Address extends AbstractEntity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var string|null
      *
@@ -81,15 +74,6 @@ class Address
         return $address;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set number.

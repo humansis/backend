@@ -3,6 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * ReportingValue
@@ -12,14 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ReportingValue
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -57,16 +51,6 @@ class ReportingValue
      **/
     private $reportingDistribution;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set value.

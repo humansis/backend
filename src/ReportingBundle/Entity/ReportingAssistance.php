@@ -3,6 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * ReportingAssistance
@@ -12,14 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ReportingAssistance
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="reportingDistribution")
@@ -39,15 +33,6 @@ class ReportingAssistance
      **/
     private $value;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set indicator

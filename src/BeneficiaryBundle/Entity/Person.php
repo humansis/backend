@@ -10,6 +10,7 @@ use Exception;
 
 use NewApiBundle\DBAL\PersonGenderEnum;
 use NewApiBundle\Entity\Helper\EnumTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -23,16 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Person
 {
     use EnumTrait;
+    use StandardizedPrimaryKey;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     */
-    private $id;
 
     /**
      * @var string|null
@@ -147,14 +140,6 @@ class Person
         $this->setUpdatedOn(new DateTime());
 
         //TODO check if updatedOn everytime
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
 

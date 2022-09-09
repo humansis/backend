@@ -5,6 +5,7 @@ namespace VoucherBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\ProductCategory;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
@@ -20,16 +21,7 @@ class Product implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullProduct", "ValidatedAssistance", "FullVoucher"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -91,16 +83,6 @@ class Product implements ExportableInterface
      * @ORM\Column(name="currency", type="string", length=3, nullable=true)
      */
     private $currency;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

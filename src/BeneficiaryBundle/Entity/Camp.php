@@ -3,6 +3,8 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -10,18 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="camp")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CampRepository")
+ * @ORM\HasLifecycleCallbacks
  */
-class Camp
+class Camp extends AbstractEntity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "FullCamp"})
-     */
-    private $id;
 
     /**
      * @var string
@@ -37,16 +31,6 @@ class Camp
      */
     private $location;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

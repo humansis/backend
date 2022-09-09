@@ -6,6 +6,7 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
 use NewApiBundle\Enum\ProductCategoryType;
 use VoucherBundle\Entity\Product;
@@ -18,14 +19,7 @@ use VoucherBundle\Entity\Product;
  */
 class ProductCategory
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -69,13 +63,6 @@ class ProductCategory
         $this->type = $type;
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     /**
      * @return string

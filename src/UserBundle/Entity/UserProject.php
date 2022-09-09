@@ -3,6 +3,7 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -11,18 +12,10 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="user_project")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserProjectRepository")
+ * @ORM\HasLifecycleCallbacks
  */
-class UserProject
+class UserProject extends AbstractEntity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var User
      *
@@ -45,15 +38,6 @@ class UserProject
      */
     private $rights;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set rights.

@@ -3,6 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -14,15 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class VoucherPurchaseRecord
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var VoucherPurchase

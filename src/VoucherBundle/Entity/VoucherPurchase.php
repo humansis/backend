@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -18,16 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class VoucherPurchase
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Vendor
@@ -77,16 +69,6 @@ class VoucherPurchase
         $entity->createdAt = $createdAt;
 
         return $entity;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

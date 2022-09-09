@@ -3,6 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -13,14 +14,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class OrganizationServices implements \JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
+
 
     /**
      * @var bool
@@ -50,15 +45,6 @@ class OrganizationServices implements \JsonSerializable
      */
     private $service;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set enabled.

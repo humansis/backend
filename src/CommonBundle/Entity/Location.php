@@ -4,6 +4,7 @@ namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\Helper\TreeInterface;
 use NewApiBundle\Enum\EnumTrait;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -23,16 +24,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Location implements TreeInterface
 {
     use NestedTreeTrait;
+    use StandardizedPrimaryKey;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
-     */
-    private $id;
 
     /**
      * @var Location|null
@@ -92,15 +85,6 @@ class Location implements TreeInterface
         $this->code = $code;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * @return Location|null

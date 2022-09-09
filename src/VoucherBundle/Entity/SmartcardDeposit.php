@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -21,17 +22,7 @@ use UserBundle\Entity\User;
 class SmartcardDeposit
 {
     use CreatedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullSmartcard"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Smartcard

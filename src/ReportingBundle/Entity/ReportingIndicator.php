@@ -3,6 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use  ReportingBundle\Utils\Model\IndicatorInterface;
 
 /**
@@ -13,14 +14,7 @@ use  ReportingBundle\Utils\Model\IndicatorInterface;
  */
 class ReportingIndicator implements IndicatorInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -65,16 +59,6 @@ class ReportingIndicator implements IndicatorInterface
      **/
     private $reportingDistribution;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set reference.

@@ -5,6 +5,7 @@ namespace VoucherBundle\Entity;
 use CommonBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -16,15 +17,7 @@ use CommonBundle\Utils\ExportableInterface;
  */
 class Vendor implements ExportableInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVendor"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -137,16 +130,6 @@ class Vendor implements ExportableInterface
         $this->archived = false;
     }
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

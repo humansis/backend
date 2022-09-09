@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -20,17 +21,7 @@ class Donor implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullDonor", "FullProject"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string

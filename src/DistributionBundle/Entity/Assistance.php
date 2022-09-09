@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\ScoringBlueprint;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -27,18 +28,10 @@ use VoucherBundle\Entity\SmartcardPurchase;
  */
 class Assistance implements ExportableInterface
 {
+    use StandardizedPrimaryKey;
+
     const NAME_HEADER_ID = "ID SYNC";
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
-     */
-    private $id;
 
     /**
      * @var string
@@ -283,30 +276,6 @@ class Assistance implements ExportableInterface
         $this->setUpdatedOn(new \DateTime());
         $this->allowedProductCategoryTypes = [];
         $this->smartcardPurchases = new ArrayCollection();
-    }
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     *
-     * @return Assistance
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

@@ -7,20 +7,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Entity()
  */
 class AssistanceSelection
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var integer|null
@@ -47,13 +41,6 @@ class AssistanceSelection
         $this->selectionCriteria = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     /**
      * @return int|null

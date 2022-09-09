@@ -3,6 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -10,18 +11,10 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="camp_address")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CampAddressRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class CampAddress
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
     /**
      * @var string
      *
@@ -36,16 +29,6 @@ class CampAddress
      */
     private $camp;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set tentNumber.
