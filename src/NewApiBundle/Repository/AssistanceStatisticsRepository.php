@@ -30,7 +30,7 @@ class AssistanceStatisticsRepository extends EntityRepository
         if($countryIso3){
             $qb->join('stat.assistance', 'a')
                 ->join('a.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', $countryIso3);
         }
 
@@ -50,7 +50,7 @@ class AssistanceStatisticsRepository extends EntityRepository
         $qbr = $this->createQueryBuilder('stat')
             ->join('stat.assistance', 'a')
             ->join('a.project', 'p')
-            ->andWhere('p.iso3 = :iso3')
+            ->andWhere('p.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
 
         if ($filter) {

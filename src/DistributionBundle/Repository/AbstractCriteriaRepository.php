@@ -104,7 +104,7 @@ abstract class AbstractCriteriaRepository extends EntityRepository implements In
             ->leftJoin("ca$i.camp", "c$i")
             ->leftJoin("hl$i.address", "ad$i")
             ->leftJoin(Location::class, "l$i", Join::WITH, "l.id = COALESCE(IDENTITY(c$i.location, 'id'), IDENTITY(ad$i.location, 'id'))")
-            ->andWhere("l$i.countryISO3 = :iso3 AND hh$i.archived = 0")
+            ->andWhere("l$i.countryIso3 = :iso3 AND hh$i.archived = 0")
 
             ->setParameter("iso3", $countryISO3);
     }

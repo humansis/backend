@@ -32,7 +32,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             ->select('count(i.id)')
             ->from(DistributedItem::class, 'i')
             ->innerJoin('i.project', 'p')
-            ->where('p.iso3 = :country')
+            ->where('p.countryIso3 = :country')
             ->setParameter('country', 'SYR')
             ->getQuery()
             ->setMaxResults(1)

@@ -37,7 +37,7 @@ class PurchasedItemRepository extends EntityRepository
     {
         $qbr = $this->createQueryBuilder('pi')
             ->join('pi.project', 'pr')
-            ->andWhere('pr.iso3 = :iso3')
+            ->andWhere('pr.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
 
         if ($filter) {

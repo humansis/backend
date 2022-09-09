@@ -40,7 +40,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $qb
             ->select("SUM(c.value)")
             ->leftJoin("dd.project", "p")
-            ->where("p.iso3 = :country")
+            ->where("p.countryIso3 = :country")
                 ->setParameter("country", $country)
             ->leftJoin("dd.commodities", "c")
             ->leftJoin("c.modalityType", "mt")
@@ -53,7 +53,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("dd")
                     ->leftJoin("dd.project", "p")
-                    ->where("p.iso3 = :country")
+                    ->where("p.countryIso3 = :country")
                     ->setParameter("country", $country)
                     ->andWhere("dd.archived = 0");
         return $qb->getQuery()->getResult();
@@ -200,7 +200,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($iso3) {
             $qb->leftJoin('dd.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
 
@@ -277,7 +277,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.archived = 0')
             ->andWhere('dd.validatedBy IS NOT NULL')
             ->andWhere('dd.project = :project')
-            ->andWhere('p.iso3 = :iso3')
+            ->andWhere('p.countryIso3 = :iso3')
             ->andWhere('dd.targetType IN (:targetTypes)')
             ->setParameter('project', $project)
             ->setParameter('iso3', $iso3)
@@ -327,7 +327,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($iso3) {
             $qb->leftJoin('dd.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
 

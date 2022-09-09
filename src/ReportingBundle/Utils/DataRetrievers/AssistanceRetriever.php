@@ -52,7 +52,7 @@ class AssistanceRetriever extends AbstractDataRetriever
                         ->leftjoin('d.project', 'p')
                         ->where('ri.code = :code')
                         ->setParameter('code', $code)
-                        ->andWhere('p.iso3 = :country')
+                        ->andWhere('p.countryIso3 = :country')
                         ->setParameter('country', $filters['country']);
 
 

@@ -44,7 +44,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.status != :status')
-                ->andWhere('b.countryISO3 = :country')
+                ->andWhere('b.countryIso3 = :country')
                 ->setParameter('country', $countryISO3)
                 ->setParameter('status', 3);
 
@@ -93,7 +93,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin('db.beneficiary', 'bf')
                 ->leftJoin('db.assistance', 'd')
                 ->where('b.status != :status')
-                ->andWhere('b.countryISO3 = :country')
+                ->andWhere('b.countryIso3 = :country')
                 ->setParameter('country', $countryISO3)
                 ->setParameter('status', Booklet::DEACTIVATED);
           
@@ -222,7 +222,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
     public function getInsertedBooklets($countryISO3, $lastId) {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.id >= :lastId')
-                ->andWhere('b.countryISO3 = :country')
+                ->andWhere('b.countryIso3 = :country')
                 ->setParameter('lastId', $lastId)
                 ->setParameter('country', $countryISO3);
 
@@ -249,7 +249,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('db.beneficiary', 'bf')
             ->leftJoin('db.assistance', 'd')
             ->andWhere('b.status != :status')
-            ->andWhere('b.countryISO3 = :country')
+            ->andWhere('b.countryIso3 = :country')
             ->setParameter('status', Booklet::DEACTIVATED)
             ->setParameter('country', $iso3);
 

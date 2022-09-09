@@ -42,7 +42,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('type', $categoryType);
 
         if ($country) {
-            $qb->andWhere('p.countryISO3 = :country')
+            $qb->andWhere('p.countryIso3 = :country')
                 ->setParameter('country', $country);
         }
 
@@ -67,7 +67,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.productCategory', 'c')
             ->andWhere('p.archived = 0')
-            ->andWhere('p.countryISO3 = :countryIso3')
+            ->andWhere('p.countryIso3 = :countryIso3')
             ->setParameter('countryIso3', $countryIso3);
 
         if ($filter) {
@@ -91,7 +91,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('availableTypes', $sellableCategoryTypes)
                 ;
                 if ($vendor->getLocation()) {
-                    $qb->andWhere('p.countryISO3 = :vendorCountry')
+                    $qb->andWhere('p.countryIso3 = :vendorCountry')
                         ->setParameter('vendorCountry', $vendor->getLocation()->getCountryIso3())
                     ;
                 }

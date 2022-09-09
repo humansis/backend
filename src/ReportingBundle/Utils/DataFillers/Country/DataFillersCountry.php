@@ -107,7 +107,7 @@ class DataFillersCountry extends DataFillers
         try {
             $this->repository = $this->em->getRepository(Project::class);
             $qb = $this->repository->createQueryBuilder('p')
-                ->select('count(p) AS value', 'p.iso3 AS country')
+                ->select('count(p) AS value', 'p.countryIso3 AS country')
                 ->where("DATE_FORMAT(p.endDate, '%Y-%m-%d') > DATE_FORMAT(CURRENT_DATE(), '%Y-%m-%d') ")
                 ->groupBy('country');
             $results = $qb->getQuery()->getArrayResult();

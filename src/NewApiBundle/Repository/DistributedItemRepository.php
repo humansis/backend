@@ -34,7 +34,7 @@ class DistributedItemRepository extends EntityRepository
     {
         $qbr = $this->createQueryBuilder('di')
             ->join('di.project', 'pr')
-            ->andWhere('pr.iso3 = :iso3')
+            ->andWhere('pr.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
 
         if ($filter) {

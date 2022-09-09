@@ -41,7 +41,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     public function getAllOfCountry($iso3)
     {
         $qb = $this->createQueryBuilder("p");
-        $q = $qb->where("p.iso3 = :iso3")
+        $q = $qb->where("p.countryIso3 = :iso3")
             ->andWhere("p.archived = 0")
             ->setParameter("iso3", $iso3);
 
@@ -52,7 +52,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder("p");
         $qb->select('COUNT(p) as c')
-            ->where("p.iso3 = :iso3")
+            ->where("p.countryIso3 = :iso3")
             ->andWhere("p.archived = 0")
             ->andWhere(":currentTime BETWEEN p.startDate AND p.endDate")
             ->setParameter("iso3", $iso3)
@@ -63,7 +63,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
 
     public function findByCountries(array $iso3) {
         $qbr = $this->createQueryBuilder('p')
-            ->andWhere('p.iso3 IN (:iso3)')
+            ->andWhere('p.countryIso3 IN (:iso3)')
             ->andWhere('p.archived = 0')
             ->setParameter('iso3', $iso3);
 
@@ -101,7 +101,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($iso3) {
-            $qb->andWhere('p.iso3 = :iso3');
+            $qb->andWhere('p.countryIso3 = :iso3');
             $qb->setParameter('iso3', $iso3);
         }
 
@@ -112,7 +112,7 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
             }
 
             if ($filter->hasFulltext()) {
-                $qb->andWhere('(p.iso3 LIKE :fulltext OR
+                $qb->andWhere('(p.countryIso3 LIKE :fulltext OR
                                p.name LIKE :fulltext OR
                                p.internalId LIKE :fulltext OR
                                p.notes LIKE :fulltext)')
@@ -163,11 +163,11 @@ class ProjectRepository extends \Doctrine\ORM\EntityRepository
     public function getProjectCountriesByUser(User $user): array
     {
         return $this->createQueryBuilder('p')
-            ->select('p.iso3')
+            ->select('p.countryIso3')
             ->leftJoin('p.usersProject', 'up')
             ->where('up.user = :user')
             ->setParameter('user', $user)
-            ->groupBy('p.iso3')
+            ->groupBy('p.countryIso3')
             ->getQuery()
             ->getResult();
     }

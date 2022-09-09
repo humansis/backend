@@ -44,7 +44,7 @@ class ProjectDataRetriever extends AbstractDataRetriever
                         ->leftjoin('rp.project', 'p')
                         ->where('ri.code = :code')
                         ->setParameter('code', $code)
-                        ->andWhere('p.iso3 = :country')
+                        ->andWhere('p.countryIso3 = :country')
                         ->setParameter('country', $filters['country']);
 
         $qb = $this->filterByProjects($qb, $filters['projects']);

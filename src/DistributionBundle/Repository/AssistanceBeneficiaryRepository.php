@@ -58,7 +58,7 @@ class AssistanceBeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         $q = $qb->select("COUNT(DISTINCT db.beneficiary)")
             ->leftJoin("db.beneficiary", "b")
             ->leftJoin("b.projects", "p")
-            ->andWhere('p.iso3 = :country')
+            ->andWhere('p.countryIso3 = :country')
             ->andWhere('b.archived = 0');
         $q->setParameter('country', $iso3);
 

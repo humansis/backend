@@ -43,7 +43,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $level = count($adms);
 
         $lowestLevelLocation = $this->createQueryBuilder('l')
-            ->where('l.countryISO3 = :country')
+            ->where('l.countryIso3 = :country')
             ->andWhere('l.enumNormalizedName = :normalizedName')
             ->andWhere('l.lvl = :level')
             ->setParameter('country', $countryIso3)
@@ -94,7 +94,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function whereCountry(QueryBuilder &$qb, $countryISO3)
     {
-        $qb->andWhere("l.countryISO3 = :iso3")
+        $qb->andWhere("l.countryIso3 = :iso3")
             ->setParameter("iso3", $countryISO3);
     }
 
@@ -219,7 +219,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 $parentAlias . '.lft',
                 $parentAlias . '.rgt'))
             ->andWhere($parentAlias . '.lvl = :' . $parentAlias . 'Level')
-            ->andWhere($parentAlias . '.countryISO3 = :iso3')
+            ->andWhere($parentAlias . '.countryIso3 = :iso3')
             ->andWhere($parentAlias . '.name like :fulltext')
             ->setParameter($parentAlias . 'Level', $level);
     }
@@ -235,7 +235,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('l');
 
         if ($iso3) {
-            $qbr->andWhere('l.countryISO3 = :iso3')
+            $qbr->andWhere('l.countryIso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
         if ($filter->hasIds()) {
@@ -279,7 +279,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         $qb->andWhere('l.code = :code')
             ->setParameter('code', $code);
         if ($iso3) {
-            $qb->andWhere('l.countryISO3 = :iso3');
+            $qb->andWhere('l.countryIso3 = :iso3');
             $qb->setParameter('iso3', $iso3);
         }
 
@@ -312,7 +312,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 );
         }
 
-        return $qb->andWhere($childAlias . '.countryISO3 = :iso3')
+        return $qb->andWhere($childAlias . '.countryIso3 = :iso3')
             ->setParameter('parentRgt', $ancestor->getRgt())
             ->setParameter('parentLft', $ancestor->getLft())
             ->setParameter('parentLvl', $ancestor->getLvl());

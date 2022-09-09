@@ -70,7 +70,7 @@ class SmartcardRepository extends EntityRepository
             ->join('s.beneficiary', 'b')
             ->join('b.household', 'h')
             ->join('h.projects', 'p')
-            ->andWhere('p.iso3 = :countryCode')
+            ->andWhere('p.countryIso3 = :countryCode')
             ->andWhere('s.state IN (:smartcardBlockedStates)')
             ->orderBy('s.id', 'desc')
             ->setParameter('countryCode', $countryCode)

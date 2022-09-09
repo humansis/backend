@@ -262,7 +262,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         if (null !== $iso3) {
             $qb->join('hh.projects', 'project')
-                ->andWhere('project.iso3 = :country')
+                ->andWhere('project.countryIso3 = :country')
                 ->setParameter('country', $iso3);
         }
 
@@ -312,7 +312,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
 
         if (null !== $iso3) {
             $qb->join('hh.projects', 'project')
-                ->andWhere('project.iso3 = :country')
+                ->andWhere('project.countryIso3 = :country')
                 ->setParameter('country', $iso3);
         }
 
