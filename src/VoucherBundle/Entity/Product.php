@@ -64,7 +64,7 @@ class Product implements ExportableInterface
      * @SymfonyGroups({"FullProduct"})
      */
     private $archived;
-    
+
     /**
      * @var ProductCategory|null
      *
