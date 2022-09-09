@@ -92,7 +92,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 ;
                 if ($vendor->getLocation()) {
                     $qb->andWhere('p.countryISO3 = :vendorCountry')
-                        ->setParameter('vendorCountry', $vendor->getLocation()->getCountryISO3())
+                        ->setParameter('vendorCountry', $vendor->getLocation()->getCountryIso3())
                     ;
                 }
             }

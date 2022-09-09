@@ -333,7 +333,7 @@ class VendorService
             }
 
             $location = $vendor->getLocation();
-            $locationCountry = $location ? $location->getCountryISO3() : null; 
+            $locationCountry = $location ? $location->getCountryIso3() : null;
             $locationNames = [
                 'adm1' => null,
                 'adm2' => null,

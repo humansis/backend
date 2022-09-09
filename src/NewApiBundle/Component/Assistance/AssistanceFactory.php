@@ -166,7 +166,7 @@ class AssistanceFactory
         $assistanceRoot->setName(self::generateName($assistanceRoot));
 
         if (!is_null($inputType->getScoringBlueprintId())) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryIso3());
             if (!$scoringBlueprint) {
                 throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprintId().' does not exists.');
             }

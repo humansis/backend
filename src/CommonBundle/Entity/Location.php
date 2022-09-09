@@ -3,6 +3,7 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
 use NewApiBundle\Entity\Helper\TreeInterface;
 use NewApiBundle\Enum\EnumTrait;
@@ -13,16 +14,17 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="location", indexes={
  *      @ORM\Index(name="search_name", columns={"name"}),
- *      @ORM\Index(name="search_country_name", columns={"countryISO3", "name"}),
- *      @ORM\Index(name="search_subtree", columns={"countryISO3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
+ *      @ORM\Index(name="search_country_name", columns={"countryIso3", "name"}),
+ *      @ORM\Index(name="search_subtree", columns={"countryIso3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
  *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
- *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_level"}),
+ *      @ORM\Index(name="search_level", columns={"countryIso3", "nested_tree_level"}),
  *     })
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
 class Location implements TreeInterface
 {
     use NestedTreeTrait;
+    use CountryDependent;
 
     /**
      * @var int
@@ -55,14 +57,7 @@ class Location implements TreeInterface
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="countryISO3", type="string", length=3, nullable=true)
-     */
-    private $countryISO3;
-
+    
     /**
      * @var string|null
      *
@@ -78,16 +73,16 @@ class Location implements TreeInterface
     private $enumNormalizedName;
 
     /**
-     * @param string      $countryISO3
+     * @param string      $countryIso3
      * @param string|null $name
      * @param string|null $code
      */
     public function __construct(
-        string  $countryISO3,
+        string  $countryIso3,
         ?string $name = null,
         ?string $code = null
     ) {
-        $this->countryISO3 = $countryISO3;
+        $this->countryIso3 = $countryIso3;
         $this->name = $name;
         $this->code = $code;
     }
@@ -97,7 +92,7 @@ class Location implements TreeInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -151,21 +146,6 @@ class Location implements TreeInterface
         $this->enumNormalizedName = EnumTrait::normalizeValue($name);
     }
 
-    /**
-     * @return string
-     */
-    public function getCountryISO3(): string
-    {
-        return $this->countryISO3;
-    }
-
-    /**
-     * @param string $countryISO3
-     */
-    public function setCountryISO3(string $countryISO3): void
-    {
-        $this->countryISO3 = $countryISO3;
-    }
 
     public function getCode(): ?string
     {

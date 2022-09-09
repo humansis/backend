@@ -62,6 +62,6 @@ class VendorLoginMapper implements MapperInterface
 
     public function getCountryISO3(): string
     {
-        return $this->object->getLocation()->getCountryISO3();
+        return $this->object->getLocation()->getCountryIso3();
     }
 }

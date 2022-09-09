@@ -159,7 +159,7 @@ class LocationImporter
             $this->omittedLocations++;
         } elseif (isset($locations[0])) {
             $location = $locations[0];
-            $location->setCountryISO3($iso3);
+            $location->setCountryIso3($iso3);
             $location->setName($name);
             $location->setCode($code);
             $location->setParentLocation($parentLocation);
