@@ -1,46 +1,40 @@
 <?php
 
-
 namespace DataFixtures\Beneficiaries;
 
 use Utils\HouseholdService;
 use DataFixtures\ProjectFixtures;
 use DataFixtures\VulnerabilityCriterionFixtures;
-use BeneficiaryBundle\Enum\ResidencyStatus;
-use BeneficiaryBundle\Repository\CountrySpecificRepository;
-use BeneficiaryBundle\Utils\HouseholdService;
-use CommonBundle\DataFixtures\CountrySpecificFixtures;
-use CommonBundle\DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
-use CommonBundle\DataFixtures\LocationFixtures;
-use CommonBundle\DataFixtures\ProjectFixtures;
-use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
-use CommonBundle\Entity\Location;
-use CommonBundle\Repository\LocationRepository;
+use Enum\ResidencyStatus;
+use Utils\HouseholdService;
+use DataFixtures\CountrySpecificFixtures;
+use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
+use DataFixtures\LocationFixtures;
+use DataFixtures\ProjectFixtures;
+use DataFixtures\VulnerabilityCriterionFixtures;
+use Entity\Location;
+use Repository\LocationRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use NewApiBundle\Component\Country\Countries;
-use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\PersonGender;
-use NewApiBundle\Enum\PhoneTypes;
-use NewApiBundle\Enum\VulnerabilityCriteria;
-use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
-use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
-use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
-use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
-use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
-use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
-use NewApiBundle\InputType\Beneficiary\PhoneInputType;
-use NewApiBundle\InputType\HouseholdCreateInputType;
-use NewApiBundle\Utils\ValueGenerator\ValueGenerator;
+use Enum\HouseholdShelterStatus;
+use Enum\PhoneTypes;
+use InputType\Beneficiary\Address\CampAddressInputType;
+use InputType\Beneficiary\Address\CampInputType;
+use InputType\Beneficiary\Address\ResidenceAddressInputType;
+use InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
+use InputType\Beneficiary\BeneficiaryInputType;
+use InputType\Beneficiary\CountrySpecificsAnswerInputType;
+use InputType\Beneficiary\PhoneInputType;
+use InputType\HouseholdCreateInputType;
+use Utils\ValueGenerator\ValueGenerator;
 use Entity\Project;
 use Enum\Livelihood;
-use ProjectBundle\Repository\ProjectRepository;
+use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const HOUSEHOLDS_PER_COUNTRY = 5;
 
     /**
      * @var ProjectRepository
@@ -53,36 +47,22 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     private $locationRepository;
 
     /**
-     * @var Countries
-     */
-    private $countries;
-
-    /**
      * @var HouseholdService
      */
     private $householdService;
 
     private $kernel;
 
-    /**
-     * @var CountrySpecificRepository
-     */
-    private $countrySpecificRepository;
-
     public function __construct(
-        Kernel                    $kernel,
-        HouseholdService          $householdService,
-        ProjectRepository         $projectRepository,
-        LocationRepository        $locationRepository,
-        CountrySpecificRepository $countrySpecificRepository,
-        Countries                 $countries
+        Kernel             $kernel,
+        HouseholdService   $householdService,
+        ProjectRepository  $projectRepository,
+        LocationRepository $locationRepository
     ) {
         $this->householdService = $householdService;
         $this->kernel = $kernel;
         $this->projectRepository = $projectRepository;
         $this->locationRepository = $locationRepository;
-        $this->countries = $countries;
-        $this->countrySpecificRepository = $countrySpecificRepository;
     }
 
     /**
@@ -97,17 +77,10 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         if ($this->kernel->getEnvironment() === "prod") {
             return;
         }
-
-        foreach ($this->countries->getAll() as $country) {
-
-            $i = 1;
-            while ($i <= self::HOUSEHOLDS_PER_COUNTRY) {
-                $householdInputType = $this->generateHouseholdInputType($country->getIso3());
-                $this->householdService->create($householdInputType, $country->getIso3());
-                $i++;
-            }
+        foreach ($this->getHouseholdData() as $householdData) {
+            $this->householdService->create($this->generateHouseholdInputType($householdData, 'KHM'), 'KHM');
+            $manager->flush();
         }
-        $manager->flush();
     }
 
     public function getDependencies(): array
@@ -120,32 +93,352 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private function generateHouseholdInputType(string $iso3): HouseholdCreateInputType
+    private function getHouseholdData(): array
     {
-        /**
-         * @var Project[] $possibleProjects
-         */
-        $possibleProjects = $this->projectRepository->findByCountries([$iso3]);
-        $projects = [];
-        foreach ($possibleProjects as $possibleProject) {
-            $projects[] = $possibleProject->getId();
-        }
+        return [
+            [
+                "livelihood" => Livelihood::valueFromAPI(Livelihood::REGULAR_SALARY_PUBLIC),
+                "income" => 3,
+                "notes" => null,
+                "latitude" => null,
+                "longitude" => null,
+                "coping_strategies_index" => "2",
+                "food_consumption_score" => "3",
+                "household_locations" => array(
+                    [
+                        "location_group" => "current",
+                        "type" => "residence",
+                        "address" => [
+                            "street" => "azerrt",
+                            "number" => "1",
+                            "postcode" => "12345",
+                            "location" => [
+                                "adm1" => 1,
+                                "adm2" => 1,
+                                "adm3" => 1,
+                                "adm4" => null,
+                                "country_iso3" => "KHM",
+                            ],
+                        ],
+                    ],
+                ),
+                "country_specific_answers" => [
+                    [
+                        "answer" => "2",
+                        "id" => 1,
+                    ],
+                    [
+                        "answer" => "111222333",
+                        "id" => 2,
+                    ],
+                    [
+                        "answer" => 0.0000000,
+                        "id" => 3,
+                    ],
+                ],
+                "beneficiaries" => [
+                    [
+                        "en_given_name" => "Test",
+                        "en_family_name" => "Tester",
+                        "local_given_name" => "Test",
+                        "local_family_name" => "Tester",
+                        "local_parents_name" => "Tester",
+                        "gender" => 0,
+                        "status" => "1",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "10-10-1996",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_disabled')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                ],
+            ],
+            [
+                "livelihood" => Livelihood::valueFromAPI(Livelihood::IRREGULAR_EARNINGS),
+                "income" => 3,
+                "notes" => null,
+                "latitude" => null,
+                "longitude" => null,
+                "coping_strategies_index" => "2",
+                "food_consumption_score" => "3",
+                "household_locations" => array(
+                    [
+                        "location_group" => "current",
+                        "type" => "residence",
+                        "address" => [
+                            "street" => "azerrt",
+                            "number" => "1",
+                            "postcode" => "12345",
+                            "location" => [
+                                "adm1" => 1,
+                                "adm2" => 1,
+                                "adm3" => 1,
+                                "adm4" => null,
+                                "country_iso3" => "KHM",
+                            ],
+                        ],
+                    ],
+                ),
+                "country_specific_answers" => [
+                    [
+                        "answer" => "2",
+                        "id" => 1,
+                    ],
+                    [
+                        "answer" => "111222333",
+                        "id" => 2,
+                    ],
+                    [
+                        "answer" => 0.99999999,
+                        "id" => 3,
+                    ],
+                ],
+                "beneficiaries" => [
+                    [
+                        "en_given_name" => "Test",
+                        "en_family_name" => "Tester",
+                        "local_given_name" => "Test",
+                        "local_family_name" => "Tester",
+                        "local_parents_name" => "Tester",
+                        "gender" => 0,
+                        "status" => "1",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "10-10-1996",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_disabled')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test2",
+                        "en_family_name" => "Tester",
+                        "local_given_name" => "Test2",
+                        "local_family_name" => "Tester",
+                        "local_parents_name" => "Tester2",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::IDP,
+                        "date_of_birth" => "10-11-1996",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test4",
+                        "en_family_name" => "Tester",
+                        "local_given_name" => "Test4",
+                        "local_family_name" => "Tester",
+                        "local_parents_name" => "Tester4",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::REFUGEE,
+                        "date_of_birth" => "10-12-1995",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test5",
+                        "en_family_name" => "Tester",
+                        "local_given_name" => "Test5",
+                        "local_family_name" => "Tester",
+                        "local_parents_name" => "Tester5",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "14-10-2000",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
 
+                ],
+            ],
+            [
+                "livelihood" => Livelihood::valueFromAPI(Livelihood::FARMING_LIVESTOCK),
+                "income" => 4,
+                "notes" => null,
+                "latitude" => null,
+                "longitude" => null,
+                "coping_strategies_index" => "4",
+                "food_consumption_score" => "5",
+                "household_locations" => array(
+                    [
+                        "location_group" => "current",
+                        "type" => "residence",
+                        "address" => [
+                            "street" => "azerrt",
+                            "number" => "2",
+                            "postcode" => "12346",
+                            "location" => [
+                                "adm1" => 1,
+                                "adm2" => 1,
+                                "adm3" => 1,
+                                "adm4" => null,
+                                "country_iso3" => "KHM",
+                            ],
+                        ],
+                    ],
+                ),
+                "country_specific_answers" => [
+                    [
+                        "answer" => "3",
+                        "id" => 1,
+                    ],
+                    [
+                        "answer" => null,
+                        "id" => 2,
+                    ],
+                    [
+                        "answer" => 0.5,
+                        "id" => 3,
+                    ],
+                ],
+                "beneficiaries" => [
+                    [
+                        "en_given_name" => "Test6",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test6",
+                        "local_family_name" => "Bis",
+                        "local_parents_name" => "Bis6",
+                        "gender" => 1,
+                        "status" => "1",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "14-10-1995",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_lactating')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test7",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test7",
+                        "local_family_name" => "Bis",
+                        "local_parents_name" => "Bis7",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "15-10-1989",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_lactating')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test8",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test8",
+                        "local_family_name" => "Bis",
+                        "local_parents_name" => "Bis8",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "15-10-1990",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_disabled')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+                    [
+                        "en_given_name" => "Test9",
+                        "en_family_name" => "Bis",
+                        "local_given_name" => "Test9",
+                        "local_family_name" => "Bis",
+                        "local_parents_name" => "Bis9",
+                        "gender" => 1,
+                        "status" => "0",
+                        "residency_status" => ResidencyStatus::RESIDENT,
+                        "date_of_birth" => "15-08-1989",
+                        "vulnerability_criteria" => [
+                            [
+                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
+                            ],
+                        ],
+                        "phones" => [],
+                        "national_ids" => [],
+                        "profile" => [
+                            "photo" => "",
+                        ],
+                    ],
+
+                ],
+            ],
+        ];
+    }
+
+    private function generateHouseholdInputType(array $householdData, string $iso3): HouseholdCreateInputType
+    {
         $inputType = new HouseholdCreateInputType();
-        $inputType->setLivelihood(ValueGenerator::fromEnum(Livelihood::class));
+        $inputType->setLivelihood($householdData['livelihood']);
         $inputType->setShelterStatus(ValueGenerator::fromEnum(HouseholdShelterStatus::class));
-        $inputType->setProjectIds(array_unique([ValueGenerator::fromArray($projects), ValueGenerator::fromArray($projects), ValueGenerator::fromArray($projects)]));
+        $inputType->setProjectIds($this->projectRepository->findAll());
         $inputType->setNotes(ValueGenerator::fromArray([null, 'Fixture note '.ValueGenerator::int(1, 1000), 'Fixture note '.ValueGenerator::int(1,
                 1000)]));
         $inputType->setLongitude(null);
         $inputType->setLatitude(null);
-        $countOfBeneficiaries = ValueGenerator::int(1, 8);
-        for ($x = 0; $x <= $countOfBeneficiaries; $x++) {
-            $inputType->addBeneficiary($this->generateBeneficiaryInputType($x));
+
+        $i = 1;
+        foreach ($householdData['beneficiaries'] as $beneficiary) {
+            $inputType->addBeneficiary($this->buildBeneficiaryInputType($beneficiary, $i));
+            $i++;
         }
-        $inputType->setIncome(ValueGenerator::int(1, 10));
-        $inputType->setFoodConsumptionScore(ValueGenerator::int(1, 10));
-        $inputType->setCopingStrategiesIndex(ValueGenerator::int(0, 5));
+
+        $inputType->setIncome($householdData['income']);
+        $inputType->setFoodConsumptionScore($householdData['food_consumption_score']);
+        $inputType->setCopingStrategiesIndex($householdData['coping_strategies_index']);
         $inputType->setDebtLevel(ValueGenerator::int(0, 5));
         $inputType->setIncomeSpentOnFood(ValueGenerator::int(0, 5));
         $inputType->setHouseIncome(ValueGenerator::int(0, 5));
@@ -153,52 +446,54 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $addressRandom = ValueGenerator::int(0, 2);
         switch ($addressRandom) {
             case 0:
-                $inputType->setResidenceAddress($this->generateResidencyAddress($iso3));
+                $inputType->setResidenceAddress($this->buildResidencyAddressInputType($iso3));
                 break;
             case 1:
-                $inputType->setTemporarySettlementAddress($this->generateTemporarySettlement($iso3));
+                $inputType->setTemporarySettlementAddress($this->buildTemporarySettlementInputType($iso3));
                 break;
             case 2:
-                $inputType->setCampAddress($this->generateCampAddress($iso3));
+                $inputType->setCampAddress($this->buildCampAddressInputType($iso3));
                 break;
         }
 
-        $listOfCso = $this->countrySpecificRepository->findForCriteria($iso3);
-        foreach($listOfCso as $cso) {
-            $csoInputType = new CountrySpecificsAnswerInputType();
-            $csoInputType->setCountrySpecificId($cso->getId());
-            $csoInputType->setAnswer((string) ValueGenerator::int(1, 10));
-            $inputType->addCountrySpecificAnswer($csoInputType);
+        foreach ($householdData['country_specific_answers'] as $csoAnswer) {
+            $inputType->addCountrySpecificAnswer($this->buildCsoInputType($csoAnswer));
         }
 
         return $inputType;
     }
 
-    private function generateBeneficiaryInputType(int $i): BeneficiaryInputType
+    private function buildCsoInputType(array $csoAnswer): CountrySpecificsAnswerInputType
+    {
+        $csoInputType = new CountrySpecificsAnswerInputType();
+        $csoInputType->setAnswer($csoAnswer['answer']);
+        $csoInputType->setCountrySpecificId($csoAnswer['id']);
+
+        return $csoInputType;
+    }
+
+    private function buildBeneficiaryInputType(array $beneficiary, int $i): BeneficiaryInputType
     {
         $bnfInputType = new BeneficiaryInputType();
-        $bnfInputType->setDateOfBirth(ValueGenerator::date(0, 70)->format('Y-m-d'));
-        $bnfInputType->setLocalFamilyName('Local Family '.$i);
-        $bnfInputType->setLocalGivenName('Local Given '.$i);
-        $bnfInputType->setLocalFamilyName('Local Family '.$i);
-        $bnfInputType->setLocalGivenName('Local Given '.$i);
-        $bnfInputType->setLocalParentsName('Local Parents '.$i);
-        $bnfInputType->setEnFamilyName('EN Family '.$i);
-        $bnfInputType->setEnGivenName('EN Given '.$i);
-        $bnfInputType->setEnParentsName('EN Parents '.$i);
-        $bnfInputType->setGender(ValueGenerator::fromEnum(PersonGender::class));
+        $bnfInputType->setDateOfBirth($beneficiary['date_of_birth']);
+        $bnfInputType->setLocalFamilyName( $beneficiary['local_family_name']);
+        $bnfInputType->setLocalGivenName($beneficiary['local_given_name']);
+        $bnfInputType->setLocalParentsName($beneficiary['local_parents_name']);
+        $bnfInputType->setEnFamilyName($beneficiary['en_family_name']);
+        $bnfInputType->setEnGivenName($beneficiary['en_given_name']);
+        $bnfInputType->setGender($beneficiary['gender']);
         $bnfInputType->addNationalIdCard(NationalIdCardGenerator::generate());
-        $bnfInputType->addPhone($this->generatePhone());
-        $bnfInputType->setResidencyStatus(ValueGenerator::fromEnum(ResidencyStatus::class));
+        $bnfInputType->addPhone($this->buildPhoneInputType());
+        $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
         $bnfInputType->setIsHead($i === 1);
-        if (ValueGenerator::bool()) {
-            $bnfInputType->addVulnerabilityCriteria(ValueGenerator::fromEnum(VulnerabilityCriteria::class));
+        foreach ($beneficiary['vulnerability_criteria'] as $vulnerability) {
+            $bnfInputType->addVulnerabilityCriteria($vulnerability['id']);
         }
 
         return $bnfInputType;
     }
 
-    private function generatePhone(): PhoneInputType
+    private function buildPhoneInputType(): PhoneInputType
     {
         $phoneInputType = new PhoneInputType();
         $phoneInputType->setType(ValueGenerator::fromEnum(PhoneTypes::class));
@@ -208,7 +503,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         return $phoneInputType;
     }
 
-    private function generateResidencyAddress(string $iso3): ResidenceAddressInputType
+    private function buildResidencyAddressInputType(string $iso3): ResidenceAddressInputType
     {
         $residencyInputType = new ResidenceAddressInputType();
         $residencyInputType->setLocationId($this->getLocation($iso3)->getId());
@@ -219,7 +514,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         return $residencyInputType;
     }
 
-    private function generateTemporarySettlement(string $iso3): TemporarySettlementAddressInputType
+    private function buildTemporarySettlementInputType(string $iso3): TemporarySettlementAddressInputType
     {
         $settlementInputType = new TemporarySettlementAddressInputType();
         $settlementInputType->setLocationId($this->getLocation($iso3)->getId());
@@ -230,7 +525,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         return $settlementInputType;
     }
 
-    private function generateCampAddress(string $iso3): CampAddressInputType
+    private function buildCampAddressInputType(string $iso3): CampAddressInputType
     {
         $campAddress = new CampAddressInputType();
         $campAddress->setCampId(ValueGenerator::int(1, 1000));
