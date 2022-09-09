@@ -100,7 +100,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
     public function getCountry(QueryBuilder &$qb)
     {
-        $qb->select("l.countryISO3 as country");
+        $qb->select("l.countryIso3 as country");
     }
 
     public static function joinPathToRoot(QueryBuilder $qb, string $locationCurrentAlias, string $pathAlias)

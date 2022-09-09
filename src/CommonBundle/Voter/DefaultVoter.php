@@ -113,7 +113,7 @@ class DefaultVoter extends BMSVoter
         $userCountry = $this->em->getRepository(UserCountry::class)
             ->findOneBy([
                 "user" => $user,
-                "iso3" => $countryISO3
+                "countryIso3" => $countryISO3
             ]);
         if ($userCountry instanceof UserCountry) {
             return true;
