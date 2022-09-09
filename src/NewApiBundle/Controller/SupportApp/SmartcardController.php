@@ -12,13 +12,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
-
+/**
+ * @Rest\Route("/support-app/v1/smartcards")
+ */
 class SmartcardController extends AbstractController
 {
-    /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
 
     /**
      * @var SmartcardService
@@ -31,27 +29,25 @@ class SmartcardController extends AbstractController
     private $tokenStorage;
 
     /**
-     * @param SmartcardRepository   $smartcardRepository
      * @param SmartcardService      $smartcardService
      * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(
-        SmartcardRepository $smartcardRepository,
         SmartcardService $smartcardService,
         TokenStorageInterface  $tokenStorage
     )
     {
-        $this->smartcardRepository = $smartcardRepository;
         $this->smartcardService = $smartcardService;
         $this->tokenStorage = $tokenStorage;
     }
 
     /**
-     * @Rest\Get("/support-app/v1/smartcards/{smartcardCode}")
+     * @Rest\Get("/{smartcardCode}")
      *
      * @param string $smartcardCode
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
      */
     public function smartcard(string $smartcardCode):JsonResponse
     {
@@ -60,11 +56,12 @@ class SmartcardController extends AbstractController
     }
 
     /**
-     * @Rest\Get ("/support-app/v1/smartcards/{smartcardCode}/purchases")
+     * @Rest\Get ("/{smartcardCode}/purchases")
      *
      * @param string $smartcardCode
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
      */
      public function smartcardPurchases(string $smartcardCode):JsonResponse
      {
@@ -74,11 +71,12 @@ class SmartcardController extends AbstractController
      }
 
     /**
-     * @Rest\Get ("/support-app/v1/smartcards/{smartcardCode}/deposits")
+     * @Rest\Get ("/{smartcardCode}/deposits")
      *
      * @param string $smartcardCode
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
      */
     public function smartcardDeposits(string $smartcardCode):JsonResponse
     {
@@ -88,14 +86,17 @@ class SmartcardController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/support-app/v1/smartcards/{serialNumber}")
+     * @Rest\Patch("/{serialNumber}")
      *
      * @param string                   $serialNumber
      * @param UpdateSmartcardInputType $updateSmartcardInputType
-     * @param SmartcardRepository      $smartcardRepository
      * @param SmartcardService         $smartcardService
      *
      * @return JsonResponse
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException
+     * @throws \NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition
      */
     public function update(
         string                   $serialNumber,
