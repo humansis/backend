@@ -4,6 +4,11 @@ namespace DataFixtures\Beneficiaries;
 use Utils\CommunityService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
+use BeneficiaryBundle\Utils\CommunityService;
+use DataFixtures\InputTypesGenerator\AddressGenerator;
+use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
+use DataFixtures\InputTypesGenerator\PhoneGenerator;
+use DataFixtures\LocationFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -152,43 +157,13 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setProjectIds($this->getProjectsIds($iso3));
         $communityInputType->setLongitude($community['longitude']);
         $communityInputType->setLatitude('latitude');
-        $communityInputType->setAddress($this->buildAddress($community['address']));
-        $communityInputType->setNationalIdCard($this->buildNationIdCard($community['national_id']));
-        $communityInputType->setPhone($this->buildPhone($community));
+        $communityInputType->setAddress(AddressGenerator::fromArray($community['address']));
+        $communityInputType->setNationalIdCard(NationalIdCardGenerator::fromArray($community['national_id']));
+        $communityInputType->setPhone(PhoneGenerator::fromArray($community));
         $communityInputType->setContactFamilyName($community['contact_family_name']);
         $communityInputType->setContactGivenName($community['contact_name']);
 
         return $communityInputType;
-    }
-
-    private function buildPhone($community): PhoneInputType
-    {
-        $phoneInputType = new PhoneInputType();
-        $phoneInputType->setType($community['phone_type']);
-        $phoneInputType->setNumber($community['phone_number']);
-        $phoneInputType->setPrefix($community['phone_prefix']);
-
-        return $phoneInputType;
-    }
-
-    private function buildNationIdCard(array $nationalId): NationalIdCardInputType
-    {
-        $nationalInputType = new NationalIdCardInputType();
-        $nationalInputType->setNumber($nationalId['number']);
-        $nationalInputType->setType($nationalId['type']);
-
-        return $nationalInputType;
-    }
-
-    private function buildAddress(array $address): AddressInputType
-    {
-        $addressInputType = new AddressInputType();
-        $addressInputType->setLocationId($address['locationId']);
-        $addressInputType->setStreet($address['street']);
-        $addressInputType->setPostcode($address['postcode']);
-        $addressInputType->setNumber($address['number']);
-
-        return $addressInputType;
     }
 
     /**

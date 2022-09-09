@@ -16,4 +16,13 @@ class NationalIdCardGenerator
 
         return $nationalInputType;
     }
+
+    public static function fromArray(array $nationalId): NationalIdCardInputType
+    {
+        $nationalIdType = new NationalIdCardInputType();
+        $nationalIdType->setNumber($nationalId['number']);
+        $nationalIdType->setType($nationalId['type']);
+
+        return $nationalIdType;
+    }
 }

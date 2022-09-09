@@ -483,7 +483,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $bnfInputType->setEnGivenName($beneficiary['en_given_name']);
         $bnfInputType->setGender($beneficiary['gender']);
         $bnfInputType->addNationalIdCard(NationalIdCardGenerator::generate());
-        $bnfInputType->addPhone($this->buildPhoneInputType());
+        $bnfInputType->addPhone(PhoneGenerator::generate());
         $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
         $bnfInputType->setIsHead($i === 1);
         foreach ($beneficiary['vulnerability_criteria'] as $vulnerability) {
@@ -491,16 +491,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $bnfInputType;
-    }
-
-    private function buildPhoneInputType(): PhoneInputType
-    {
-        $phoneInputType = new PhoneInputType();
-        $phoneInputType->setType(ValueGenerator::fromEnum(PhoneTypes::class));
-        $phoneInputType->setNumber(ValueGenerator::int(100000000, 999999999));
-        $phoneInputType->setPrefix((string) ValueGenerator::int(400, 500));
-
-        return $phoneInputType;
     }
 
     private function buildResidencyAddressInputType(string $iso3): ResidenceAddressInputType
