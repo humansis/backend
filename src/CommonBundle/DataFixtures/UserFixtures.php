@@ -209,7 +209,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             if ($currentAccess === null) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($instance)
-                    ->setIso3($country)
+                    ->setCountryIso3($country)
                     ->setRights($instance->getRoles()[0]);
                 $instance->addCountry($userCountry);
             } else {

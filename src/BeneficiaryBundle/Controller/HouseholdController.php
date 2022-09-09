@@ -64,7 +64,7 @@ class HouseholdController extends Controller
 
         $allowedCountries = [];
         foreach ($household->getProjects() as $project) {
-            $allowedCountries[] = $project->getIso3();
+            $allowedCountries[] = $project->getCountryIso3();
         }
 
         if (!in_array($request->request->get('__country'), $allowedCountries)) {

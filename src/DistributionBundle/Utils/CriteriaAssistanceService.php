@@ -94,7 +94,7 @@ class CriteriaAssistanceService
         }
 
         $reachedBeneficiaries = [];
-        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getIso3());
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getCountryIso3());
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($criteriaGroups as $group)
         {
@@ -106,12 +106,12 @@ class CriteriaAssistanceService
                 $beneficiary = $this->em->getReference('BeneficiaryBundle\Entity\Beneficiary', $bnf['id']);
 
                 if (!isset($scoring)) {
-                    $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getIso3(), $sector);
+                    $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getCountryIso3(), $sector);
                 } else {
                     $protocol = $this->resolver->compute(
                         $beneficiary->getHousehold(),
                         $scoring,
-                        $project->getIso3()
+                        $project->getCountryIso3()
                     );
                 }
 

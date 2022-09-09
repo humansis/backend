@@ -78,7 +78,7 @@ class UserMapper implements MapperInterface
     public function getCountries(): array
     {
         return array_values(array_map(function (UserCountry $item) {
-            return $item->getIso3();
+            return $item->getCountryIso3();
         }, $this->object->getCountries()->toArray()));
     }
 

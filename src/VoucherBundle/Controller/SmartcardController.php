@@ -590,7 +590,7 @@ class SmartcardController extends Controller
      */
     public function export(Invoice $invoice): Response
     {
-        $country = $this->countries->getCountry($invoice->getProject()->getIso3());
+        $country = $this->countries->getCountry($invoice->getProject()->getCountryIso3());
 
         // todo find organisation by relation to smartcard
         $organization = $this->organizationRepository->findOneBy([]);

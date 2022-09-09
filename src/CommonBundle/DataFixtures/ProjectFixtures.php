@@ -93,7 +93,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     {
         $project = $manager->getRepository(Project::class)->findOneByName($data[0]);
         if ($project instanceof Project) {
-            echo "User {$project->getName()} in {$project->getIso3()} already exists. Omit creation.\n";
+            echo "User {$project->getName()} in {$project->getCountryIso3()} already exists. Omit creation.\n";
         } else {
             $project = new Project();
             $project->setName($data[self::PROJECT_NAME])
@@ -102,7 +102,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 ->setNumberOfHouseholds($data[self::PROJECT_NUMBER_OF_HOUSEHOLDS])
                 ->setTarget($data[self::PROJECT_TARGET])
                 ->setNotes($data[self::PROJECT_NOTES])
-                ->setIso3($data[self::PROJECT_ISO3])
+                ->setCountryIso3($data[self::PROJECT_ISO3])
                 ->setProjectInvoiceAddressEnglish($data[self::PROJECT_PROJECT_INVOICE_ADDRESS_ENGLISH])
                 ->setProjectInvoiceAddressLocal($data[self::PROJECT_PROJECT_INVOICE_ADDRESS_LOCAL])
                 ->setAllowedProductCategoryTypes($data[self::PROJECT_ALLOWED_PRODUCT_CATEGORY_TYPES])

@@ -57,7 +57,7 @@ class ProjectMapper
         $bnfCount = $this->beneficiaryRepo->countAllInProject($project);
         return [
             'id' => $project->getId(),
-            'iso3' => $project->getIso3(),
+            'iso3' => $project->getCountryIso3(),
             'name' => $project->getName(),
             'notes' => $project->getNotes(),
             'target' => $project->getTarget(),

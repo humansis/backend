@@ -100,8 +100,8 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo "Project {$project->getId()}# {$project->getName()}/{$project->getIso3()}";
-            $location = $this->randomLocation($manager, $project->getIso3());
+            echo "Project {$project->getId()}# {$project->getName()}/{$project->getCountryIso3()}";
+            $location = $this->randomLocation($manager, $project->getCountryIso3());
             $this->createHouseholds($manager, $location, $project);
             $this->createIndividuals($manager, $location, $project);
 
@@ -168,7 +168,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
                 '{project}' => $project->getName(),
                 '{gender}' => PersonGender::valueFromAPI($gender),
                 '{householdType}' => $typeName,
-                '{country}' => $project->getIso3(),
+                '{country}' => $project->getCountryIso3(),
             ]);
 
             $bnf = new Beneficiary();

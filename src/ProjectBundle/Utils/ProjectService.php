@@ -125,7 +125,7 @@ class ProjectService
         $project->setName($projectArray["name"])
                 ->setStartDate($startDate)
                 ->setEndDate($endDate)
-                ->setIso3($countryISO3)
+                ->setCountryIso3($countryISO3)
                 ->setTarget($projectArray["target"])
                 ->setNotes($projectArray["notes"]);
 
@@ -136,7 +136,7 @@ class ProjectService
         $existingProject = $this->em->getRepository(Project::class)->findBy(
             [
                 'name' => $project->getName(),
-                'iso3' => $project->getIso3(),
+                'iso3' => $project->getCountryIso3(),
             ]
         );
         if (!empty($existingProject)) {
@@ -209,7 +209,7 @@ class ProjectService
             ->setInternalId($inputType->getInternalId())
             ->setStartDate($inputType->getStartDate())
             ->setEndDate($inputType->getEndDate())
-            ->setIso3($inputType->getIso3())
+            ->setCountryIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
@@ -324,7 +324,7 @@ class ProjectService
             ->setInternalId($inputType->getInternalId())
             ->setStartDate($inputType->getStartDate())
             ->setEndDate($inputType->getEndDate())
-            ->setIso3($inputType->getIso3())
+            ->setCountryIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())

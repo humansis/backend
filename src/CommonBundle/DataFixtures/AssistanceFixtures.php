@@ -166,15 +166,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Bx".count($receivers);
         }
     }
@@ -184,15 +184,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Hx".count($receivers);
         }
     }
@@ -202,7 +202,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INSTITUTION;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
@@ -215,10 +215,10 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Ix".count($receivers);
         }
     }
@@ -228,7 +228,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::COMMUNITY;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
@@ -241,10 +241,10 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Cx".count($receivers);
         }
     }
@@ -283,7 +283,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
+        return $this->distributionService->createFromArray($project->getCountryIso3(), $data, 1)['distribution'];
     }
 
     private function getCommodities(ObjectManager $manager, Country $country): array

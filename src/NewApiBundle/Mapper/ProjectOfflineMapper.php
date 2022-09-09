@@ -56,7 +56,7 @@ class ProjectOfflineMapper implements MapperInterface
 
     public function getIso3(): string
     {
-        return $this->object->getIso3();
+        return $this->object->getCountryIso3();
     }
 
     public function getNotes(): ?string

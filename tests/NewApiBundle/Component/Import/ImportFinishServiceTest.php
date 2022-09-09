@@ -442,7 +442,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->project->setNotes(get_class($this));
         $this->project->setStartDate(new \DateTime());
         $this->project->setEndDate(new \DateTime());
-        $this->project->setIso3(self::TEST_COUNTRY);
+        $this->project->setCountryIso3(self::TEST_COUNTRY);
         $this->entityManager->persist($this->project);
         $this->entityManager->flush();
 

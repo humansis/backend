@@ -64,7 +64,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
             $vendorCode = ($bookletIndex++ % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
             /** @var Vendor $vendor */
-            $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getIso3().'_'.$vendorCode);
+            $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getCountryIso3().'_'.$vendorCode);
 
             if ($booklet->getVouchers()->count() < 3) {
                 echo "(too little vouchers, Booklet#{$booklet->getId()}) ";

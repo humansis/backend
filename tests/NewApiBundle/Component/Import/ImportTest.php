@@ -597,7 +597,7 @@ class ImportTest extends KernelTestCase
         $project->setNotes(get_class($this));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3('ARM');
+        $project->setCountryIso3('ARM');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
 
@@ -633,7 +633,7 @@ class ImportTest extends KernelTestCase
         $project->setNotes(implode("\n", $notes));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3($country);
+        $project->setCountryIso3($country);
         $this->entityManager->persist($project);
         $this->entityManager->flush();
         return $project;

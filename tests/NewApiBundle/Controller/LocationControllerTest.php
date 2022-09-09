@@ -90,7 +90,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         /** @var UserProject $userProject */
         foreach ($user->getProjects() as $userProject) {
-            $projects[] = $userProject->getProject()->getIso3();
+            $projects[] = $userProject->getProject()->getCountryIso3();
         }
 
         foreach($allCountries as $country){

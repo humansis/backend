@@ -56,7 +56,7 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                 'project' => $project,
                 'targetType' => AssistanceTargetType::INDIVIDUAL,
             ], ['id' => 'asc'], 2);
-            $bookletGenerator = $this->bookletGenerator($manager, $project->getIso3());
+            $bookletGenerator = $this->bookletGenerator($manager, $project->getCountryIso3());
 
             foreach ($voucherAssistances as $assistance) {
                 echo $project->getName()." - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";

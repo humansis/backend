@@ -198,7 +198,7 @@ class UserService
             foreach ($userData['countries'] as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
-                    ->setIso3($country)
+                    ->setCountryIso3($country)
                     ->setRights($roles[0]);
                 $this->em->persist($userCountry);
             }
@@ -411,7 +411,7 @@ class UserService
             foreach ($userData['countries'] as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
-                    ->setIso3($country)
+                    ->setCountryIso3($country)
                     ->setRights($roles[0]);
                 $this->em->persist($userCountry);
             }
@@ -790,7 +790,7 @@ class UserService
 
         foreach ($user->getProjects() as $userProject) {
             /** @var UserProject $userProject */
-            $countries[$userProject->getProject()->getIso3()] = true;
+            $countries[$userProject->getProject()->getCountryIso3()] = true;
         }
 
         return array_keys($countries);
@@ -836,7 +836,7 @@ class UserService
             foreach ($inputType->getCountries() as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($initializedUser)
-                    ->setIso3($country)
+                    ->setCountryIso3($country)
                     ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
 
                 $this->em->persist($userCountry);
@@ -912,7 +912,7 @@ class UserService
             foreach ($inputType->getCountries() as $country) {
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
-                    ->setIso3($country)
+                    ->setCountryIso3($country)
                     ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
 
                 $this->em->persist($userCountry);

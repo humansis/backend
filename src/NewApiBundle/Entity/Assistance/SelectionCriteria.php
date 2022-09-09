@@ -109,7 +109,7 @@ class SelectionCriteria
     public function postLoad(LifecycleEventArgs $lifecycleEventArgs): void
     {
         if ($this->tableString === SelectionCriteriaField::COUNTRY_SPECIFIC) {
-            $iso3 = $this->assistanceSelection->getAssistance()->getProject()->getIso3();
+            $iso3 = $this->assistanceSelection->getAssistance()->getProject()->getCountryIso3();
             $this->deprecated = $lifecycleEventArgs->getEntityManager()
                 ->getRepository(CountrySpecific::class)
                 ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
