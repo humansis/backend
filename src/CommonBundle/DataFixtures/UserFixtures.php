@@ -203,7 +203,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         foreach ($countryCodes as $country) {
             $currentAccess = $manager->getRepository(UserCountry::class)->findOneBy([
                 'user' => $instance,
-                'iso3' => $country,
+                'countryIso3' => $country,
             ], ['id' => 'asc']);
 
             if ($currentAccess === null) {
@@ -227,7 +227,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     private function makeProjectConnections(ObjectManager $manager, User $user, array $countries): void
     {
         $countryProjects = $manager->getRepository(Project::class)->findBy([
-            'iso3' => $countries,
+            'countryIso3' => $countries,
         ], ['id' => 'asc']);
         foreach ($countryProjects as $countryProject) {
             $userProject = $manager->getRepository(UserProject::class)->findOneBy([

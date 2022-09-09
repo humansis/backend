@@ -4,11 +4,13 @@ namespace ProjectBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
+use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\NonUniqueResultException;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
@@ -170,7 +172,7 @@ class Project implements ExportableInterface
     private $allowedProductCategoryTypes;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      */
     private $lastModifiedAtIncludingBeneficiaries = null;
 
@@ -193,7 +195,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setId($id)
+    public function setId($id): Project
     {
         $this->id = $id;
 
@@ -205,7 +207,7 @@ class Project implements ExportableInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -217,7 +219,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setName($name)
+    public function setName(string $name): Project
     {
         $this->name = $name;
 
@@ -229,7 +231,7 @@ class Project implements ExportableInterface
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -247,7 +249,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setInternalId(?string $internalId)
+    public function setInternalId(?string $internalId): Project
     {
         $this->internalId = $internalId;
 
@@ -261,7 +263,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setStartDate($startDate)
+    public function setStartDate(DateTime $startDate): Project
     {
         $this->startDate = $startDate;
 
@@ -273,7 +275,7 @@ class Project implements ExportableInterface
      *
      * @return DateTime
      */
-    public function getStartDate()
+    public function getStartDate(): DateTime
     {
         return $this->startDate;
     }
@@ -285,7 +287,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setEndDate(DateTime $endDate)
+    public function setEndDate(DateTime $endDate): Project
     {
         $this->endDate = $endDate;
 
@@ -297,7 +299,7 @@ class Project implements ExportableInterface
      *
      * @return DateTime
      */
-    public function getEndDate()
+    public function getEndDate(): DateTime
     {
         return $this->endDate;
     }
@@ -309,7 +311,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setNumberOfHouseholds(int $numberOfHouseholds)
+    public function setNumberOfHouseholds(int $numberOfHouseholds): Project
     {
         $this->numberOfHouseholds = $numberOfHouseholds;
 
@@ -321,7 +323,7 @@ class Project implements ExportableInterface
      *
      * @return int
      */
-    public function getNumberOfHouseholds()
+    public function getNumberOfHouseholds(): int
     {
         return $this->numberOfHouseholds;
     }
@@ -333,7 +335,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setTarget(float $target)
+    public function setTarget(float $target): Project
     {
         $this->target = $target;
 
@@ -345,7 +347,7 @@ class Project implements ExportableInterface
      *
      * @return float
      */
-    public function getTarget()
+    public function getTarget(): float
     {
         return $this->target;
     }
@@ -357,7 +359,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setNotes(?string $notes = null)
+    public function setNotes(?string $notes = null): Project
     {
         $this->notes = $notes;
 
@@ -369,7 +371,7 @@ class Project implements ExportableInterface
      *
      * @return string|null
      */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
@@ -381,7 +383,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function setArchived(bool $archived)
+    public function setArchived(bool $archived): Project
     {
         $this->archived = $archived;
 
@@ -405,7 +407,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addDonor(Donor $donor)
+    public function addDonor(Donor $donor): Project
     {
         $this->donors->add($donor);
 
@@ -417,9 +419,9 @@ class Project implements ExportableInterface
      *
      * @param Donor $donor
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDonor(Donor $donor)
+    public function removeDonor(Donor $donor): bool
     {
         return $this->donors->removeElement($donor);
     }
@@ -429,7 +431,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function removeDonors()
+    public function removeDonors(): Project
     {
         $this->donors->clear();
 
@@ -453,7 +455,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addSector(string $sectorId)
+    public function addSector(string $sectorId): Project
     {
         $this->sectors->add(new ProjectSector($sectorId, $this));
 
@@ -483,7 +485,7 @@ class Project implements ExportableInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeSector(Sector $sector)
+    public function removeSector(Sector $sector): bool
     {
         return $this->sectors->removeElement($sector);
     }
@@ -493,7 +495,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function removeSectors()
+    public function removeSectors(): Project
     {
         $this->sectors->clear();
 
@@ -503,9 +505,9 @@ class Project implements ExportableInterface
     /**
      * Get sectors.
      *
-     * @return Collection|ProjectSector[]
+     * @return Collection<ProjectSector>|ProjectSector[]
      */
-    public function getSectors()
+    public function getSectors(): Collection
     {
         return $this->sectors;
     }
@@ -517,7 +519,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addUsersProject(UserProject $usersProject)
+    public function addUsersProject(UserProject $usersProject): Project
     {
         $this->usersProject[] = $usersProject;
         return $this;
@@ -530,7 +532,7 @@ class Project implements ExportableInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeUsersProject(UserProject $usersProject)
+    public function removeUsersProject(UserProject $usersProject): bool
     {
         return $this->usersProject->removeElement($usersProject);
     }
@@ -548,9 +550,9 @@ class Project implements ExportableInterface
     /**
      * Get reportingProject
      *
-     * @return Collection
+     * @return Collection<ReportingProject>
      */
-    public function getReportingProject()
+    public function getReportingProject(): Collection
     {
         return $this->reportingProject;
     }
@@ -562,7 +564,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addReportingProject(ReportingProject $reportingProject)
+    public function addReportingProject(ReportingProject $reportingProject): Project
     {
         $this->reportingProject[] = $reportingProject;
 
@@ -576,7 +578,7 @@ class Project implements ExportableInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeReportingProject(ReportingProject $reportingProject)
+    public function removeReportingProject(ReportingProject $reportingProject): bool
     {
         return $this->reportingProject->removeElement($reportingProject);
     }
@@ -588,7 +590,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addHousehold(Household $household)
+    public function addHousehold(Household $household): Project
     {
         $this->households->add($household);
         return $this;
@@ -599,9 +601,9 @@ class Project implements ExportableInterface
      *
      * @param Household $household
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHousehold(Household $household)
+    public function removeHousehold(Household $household): bool
     {
         return $this->households->removeElement($household);
     }
@@ -623,7 +625,7 @@ class Project implements ExportableInterface
      *
      * @return Project
      */
-    public function addDistribution(Assistance $distribution)
+    public function addDistribution(Assistance $distribution): Project
     {
         $this->distributions[] = $distribution;
 
@@ -637,7 +639,7 @@ class Project implements ExportableInterface
      *
      * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeDistribution(Assistance $distribution)
+    public function removeDistribution(Assistance $distribution): bool
     {
         return $this->distributions->removeElement($distribution);
     }
@@ -705,7 +707,7 @@ class Project implements ExportableInterface
     /**
      * @ORM\PostPersist
      * @ORM\PostUpdate
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function updateLastModifiedAtIncludingBeneficiaries(LifecycleEventArgs $args)
     {
@@ -786,17 +788,17 @@ class Project implements ExportableInterface
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getLastModifiedAtIncludingBeneficiaries(): ?\DateTimeInterface
+    public function getLastModifiedAtIncludingBeneficiaries(): ?DateTimeInterface
     {
         return $this->lastModifiedAtIncludingBeneficiaries;
     }
 
     /**
-     * @param \DateTimeInterface $lastModifiedAtIncludingBeneficiaries
+     * @param DateTimeInterface $lastModifiedAtIncludingBeneficiaries
      */
-    public function setLastModifiedAtIncludingBeneficiaries(\DateTimeInterface $lastModifiedAtIncludingBeneficiaries): void
+    public function setLastModifiedAtIncludingBeneficiaries(DateTimeInterface $lastModifiedAtIncludingBeneficiaries): void
     {
         $this->lastModifiedAtIncludingBeneficiaries = $lastModifiedAtIncludingBeneficiaries;
     }

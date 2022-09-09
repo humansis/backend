@@ -2,6 +2,7 @@
 
 namespace CommonBundle\DataFixtures;
 
+use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
 use CommonBundle\Utils\LocationImporter;
 use Doctrine\Bundle\FixturesBundle\Fixture;

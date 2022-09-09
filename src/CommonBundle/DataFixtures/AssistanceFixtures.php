@@ -22,6 +22,7 @@ use NewApiBundle\Enum\ProductCategoryType;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Symfony\Component\HttpKernel\Kernel;
 use UserBundle\Entity\User;
 
@@ -63,7 +64,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'donors_name' => [],
             'id' => '?',
             'name' => 'Test assistance project',
-            'iso3' => 'KHM',
+            'countryIso3' => 'KHM',
         ],
         'selection_criteria' => [
             0 => [
@@ -106,7 +107,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
      *
      * @param ObjectManager $manager
      *
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function load(ObjectManager $manager)
     {
@@ -116,11 +117,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         srand(42);
 
+        /** @var User $user */
         $user = $this->getReference('user_admin');
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo $project->getName()." ";
+            echo $project->getName();
             $this->loadCommonIndividualAssistance($manager, $project);
             $this->loadCommonHouseholdAssistance($manager, $project);
             $this->loadCommonInstitutionAssistance($manager, $project);
@@ -129,7 +131,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             echo "\n";
         }
 
-        $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmProjects = $manager->getRepository(Project::class)->findBy(['countryIso3' => 'KHM'], ['id' => 'asc']);
         $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
         $this->distributionService->validateDistribution($khmKhrAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
@@ -137,7 +139,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $this->distributionService->validateDistribution($khmUsdAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
 
-        $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrProjects = $manager->getRepository(Project::class)->findBy(['countryIso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
         $this->distributionService->validateDistribution($syrSypAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);

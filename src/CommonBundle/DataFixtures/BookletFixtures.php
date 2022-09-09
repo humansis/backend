@@ -70,7 +70,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
 
         foreach ($this->countries->getAll() as $country) {
             $recipientCount = $this->beneficiaryRepository->countAllInCountry($country->getIso3());
-            $project = $this->projectRepository->findOneBy(['iso3' => $country->getIso3()], ['id' => 'asc']);
+            $project = $this->projectRepository->findOneBy(['countryIso3' => $country->getIso3()], ['id' => 'asc']);
 
             $count = 50;
             echo "{$country->getIso3()}: $count bnf: ";

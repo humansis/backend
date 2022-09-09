@@ -144,7 +144,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             return;
         }
         foreach ($this->countries->getAll() as $COUNTRY) {
-            $projects = $this->projectRepository->findBy(['iso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
+            $projects = $this->projectRepository->findBy(['countryIso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
             $projectIds = array_map(function (Project $project) {
                 return $project->getId();
             }, $projects);

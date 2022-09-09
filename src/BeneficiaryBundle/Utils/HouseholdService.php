@@ -17,6 +17,7 @@ use BeneficiaryBundle\Entity\Phone;
 use BeneficiaryBundle\Entity\Profile;
 use BeneficiaryBundle\Entity\VulnerabilityCriterion;
 use BeneficiaryBundle\Form\HouseholdConstraints;
+use BeneficiaryBundle\InputType\LocationType;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use CommonBundle\Entity\Location;
 use CommonBundle\Repository\LocationRepository;
@@ -326,7 +327,13 @@ class HouseholdService
                     ->setCamp($camp);
                 $newHouseholdLocation->setCampAddress($campAddress);
             } else {
-                $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
+                $locationType = new LocationType();
+                $locationType->setAdm1($householdLocation['address']['location']['adm1']);
+                $locationType->setAdm2($householdLocation['address']['location']['adm2']);
+                $locationType->setAdm3($householdLocation['address']['location']['adm3']);
+                $locationType->setAdm4($householdLocation['address']['location']['adm4']);
+                $location = $this->locationService->getLocationByInputType($locationType);
+
                 if (null === $location) {
                     throw new Exception("Location was not found.");
                 }

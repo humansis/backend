@@ -125,7 +125,7 @@ class LocationImporter
                     'old' => $adm->getName(),
                     'new' => $name,
                 ];
-            } elseif ($adm && null === $adm->getId()) {
+            } elseif ($adm && $this->em->getUnitOfWork()->isEntityScheduled($adm)) {
                 yield [
                     'imported' => $adm,
                 ];
@@ -167,7 +167,7 @@ class LocationImporter
 
             $this->em->persist($location);
             $this->importedLocations++;
-        } elseif (!isset($locations[0])) {
+        } else {
             $location = new Location($iso3);
             $location->setName($name);
             $location->setCode($code);
@@ -176,8 +176,6 @@ class LocationImporter
 
             $this->em->persist($location);
             $this->importedLocations++;
-        } else {
-            throw new \Exception("Unknown problem with searching locations");
         }
 
         return $location;

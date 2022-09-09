@@ -39,7 +39,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                             "adm2" => 1,
                             "adm3" => 1,
                             "adm4" => null,
-                            "country_iso3" => "KHM",
+                            "countryIso3" => "KHM",
                         ],
                     ]
                 ]
@@ -110,7 +110,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                             "adm2" => 1,
                             "adm3" => 1,
                             "adm4" => null,
-                            "country_iso3" => "KHM",
+                            "countryIso3" => "KHM",
                         ],
                     ]
                   ]
@@ -242,7 +242,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                               "adm2" => 1,
                               "adm3" => 1,
                               "adm4" => null,
-                              "country_iso3" => "KHM",
+                              "countryIso3" => "KHM",
                           ],
                       ]
                     ]

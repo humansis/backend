@@ -55,7 +55,7 @@ class LocationService
      */
     public function getLocationByIdAndCountryCode(int $id, string $countryCode)
     {
-        $location = $this->locationRepository->findOneBy(['id' => $id, 'countryISO3' => $countryCode]);
+        $location = $this->locationRepository->findOneBy(['id' => $id, 'countryIso3' => $countryCode]);
         if (empty($location)) {
             throw new EntityNotFoundException("Location #{$id} was not found at country {$countryCode}.");
         }

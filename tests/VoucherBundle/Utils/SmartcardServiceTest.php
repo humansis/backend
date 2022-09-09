@@ -191,7 +191,7 @@ class SmartcardServiceTest extends KernelTestCase
     {
         $admin = $this->user;
         $assistanceRepository = $this->em->getRepository(Assistance::class);
-        $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
+        $product = $this->em->getRepository(Product::class)->findOneBy(['countryIso3'=>'SYR'], ['id' => 'asc']);
 
         $date = DateTime::createFromFormat('Y-m-d', '2000-01-01');
         foreach ($actions as $actionData) {
@@ -617,7 +617,7 @@ class SmartcardServiceTest extends KernelTestCase
     private function createTempVendor(EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5)."_";
-        $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryISO3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
+        $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryIso3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
         $this->user = new User();
         $this->user->injectObjectManager($em);

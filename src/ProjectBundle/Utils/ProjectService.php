@@ -87,7 +87,7 @@ class ProjectService
      */
     public function countAll(string $iso3)
     {
-        $count = $this->em->getRepository(Project::class)->count(['iso3' => $iso3, 'archived' => 0]);
+        $count = $this->em->getRepository(Project::class)->count(['countryIso3' => $iso3, 'archived' => 0]);
         return $count;
     }
 
