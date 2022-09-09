@@ -7,7 +7,10 @@ use Utils\HouseholdService;
 use DataFixtures\ProjectFixtures;
 use DataFixtures\VulnerabilityCriterionFixtures;
 use BeneficiaryBundle\Enum\ResidencyStatus;
+use BeneficiaryBundle\Repository\CountrySpecificRepository;
 use BeneficiaryBundle\Utils\HouseholdService;
+use CommonBundle\DataFixtures\CountrySpecificFixtures;
+use CommonBundle\DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
 use CommonBundle\DataFixtures\LocationFixtures;
 use CommonBundle\DataFixtures\ProjectFixtures;
 use CommonBundle\DataFixtures\VulnerabilityCriterionFixtures;
@@ -18,7 +21,6 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use NewApiBundle\Component\Country\Countries;
 use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\Enum\PhoneTypes;
 use NewApiBundle\Enum\VulnerabilityCriteria;
@@ -27,7 +29,7 @@ use NewApiBundle\InputType\Beneficiary\Address\CampInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
-use NewApiBundle\InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use NewApiBundle\InputType\Beneficiary\PhoneInputType;
 use NewApiBundle\InputType\HouseholdCreateInputType;
 use NewApiBundle\Utils\ValueGenerator\ValueGenerator;
@@ -62,18 +64,25 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 
     private $kernel;
 
+    /**
+     * @var CountrySpecificRepository
+     */
+    private $countrySpecificRepository;
+
     public function __construct(
-        Kernel             $kernel,
-        HouseholdService   $householdService,
-        ProjectRepository  $projectRepository,
-        LocationRepository $locationRepository,
-        Countries          $countries
+        Kernel                    $kernel,
+        HouseholdService          $householdService,
+        ProjectRepository         $projectRepository,
+        LocationRepository        $locationRepository,
+        CountrySpecificRepository $countrySpecificRepository,
+        Countries                 $countries
     ) {
         $this->householdService = $householdService;
         $this->kernel = $kernel;
         $this->projectRepository = $projectRepository;
         $this->locationRepository = $locationRepository;
         $this->countries = $countries;
+        $this->countrySpecificRepository = $countrySpecificRepository;
     }
 
     /**
@@ -107,6 +116,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
             LocationFixtures::class,
             VulnerabilityCriterionFixtures::class,
             ProjectFixtures::class,
+            CountrySpecificFixtures::class,
         ];
     }
 
@@ -153,6 +163,14 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                 break;
         }
 
+        $listOfCso = $this->countrySpecificRepository->findForCriteria($iso3);
+        foreach($listOfCso as $cso) {
+            $csoInputType = new CountrySpecificsAnswerInputType();
+            $csoInputType->setCountrySpecificId($cso->getId());
+            $csoInputType->setAnswer((string) ValueGenerator::int(1, 10));
+            $inputType->addCountrySpecificAnswer($csoInputType);
+        }
+
         return $inputType;
     }
 
@@ -169,7 +187,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $bnfInputType->setEnGivenName('EN Given '.$i);
         $bnfInputType->setEnParentsName('EN Parents '.$i);
         $bnfInputType->setGender(ValueGenerator::fromEnum(PersonGender::class));
-        $bnfInputType->addNationalIdCard($this->generateNationalIdCard());
+        $bnfInputType->addNationalIdCard(NationalIdCardGenerator::generate());
         $bnfInputType->addPhone($this->generatePhone());
         $bnfInputType->setResidencyStatus(ValueGenerator::fromEnum(ResidencyStatus::class));
         $bnfInputType->setIsHead($i === 1);
@@ -178,15 +196,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $bnfInputType;
-    }
-
-    private function generateNationalIdCard(): NationalIdCardInputType
-    {
-        $nationalInputType = new NationalIdCardInputType();
-        $nationalInputType->setNumber(ValueGenerator::string(10));
-        $nationalInputType->setType(ValueGenerator::fromEnum(NationalIdType::class));
-
-        return $nationalInputType;
     }
 
     private function generatePhone(): PhoneInputType
