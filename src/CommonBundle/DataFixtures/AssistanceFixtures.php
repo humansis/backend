@@ -122,7 +122,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo $project->getName();
+            echo $project->getName()." ";
             $this->loadCommonIndividualAssistance($manager, $project);
             $this->loadCommonHouseholdAssistance($manager, $project);
             $this->loadCommonInstitutionAssistance($manager, $project);
