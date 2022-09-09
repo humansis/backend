@@ -317,17 +317,19 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
-    public function findByIdentities($idNumbers)
+    public function findByIdentities(array $idNumbers,string $idType)
     {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
             ->join('b.household', 'hh')
 
             ->leftJoin('p.nationalIds', 'id')
-            ->andWhere('id.idNumber IN :idNumbers')
+            ->andWhere('id.idNumber IN (:idNumbers)')
+            ->andWhere('id.idType = :idType')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
-            ->setParameter('idNumbers', $idNumbers);
+            ->setParameter('idNumbers', $idNumbers)
+            ->setParameter('idType', $idType);
         return $qb->getQuery()
             ->getResult();
     }
