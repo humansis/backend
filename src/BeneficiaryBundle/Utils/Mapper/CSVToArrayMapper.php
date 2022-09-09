@@ -590,7 +590,7 @@ class CSVToArrayMapper
         $query = [
             'enumNormalizedName' => EnumTrait::normalizeValue($location[$admType]),
             'level' => $level,
-            'countryISO3' => $location['country_iso3']
+            'countryIso3' => $location['country_iso3']
         ];
 
         // Store the result of the query for next times
