@@ -90,7 +90,7 @@ class Project implements ExportableInterface
     private $numberOfHouseholds;
 
     /**
-     * @var float
+     * @var float|null
      *
      * @ORM\Column(name="target", type="float", nullable=true)
      *
@@ -331,11 +331,11 @@ class Project implements ExportableInterface
     /**
      * Set target.
      *
-     * @param float $target
+     * @param float|null $target
      *
      * @return Project
      */
-    public function setTarget(float $target): Project
+    public function setTarget(?float $target): Project
     {
         $this->target = $target;
 
@@ -345,9 +345,9 @@ class Project implements ExportableInterface
     /**
      * Get target.
      *
-     * @return float
+     * @return float|null
      */
-    public function getTarget(): float
+    public function getTarget(): ?float
     {
         return $this->target;
     }
