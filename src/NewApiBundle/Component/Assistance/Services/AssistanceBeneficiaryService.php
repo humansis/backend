@@ -17,7 +17,9 @@ use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
+use NewApiBundle\Exception\BeneficiaryAlreadyRemovedException;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
+use NewApiBundle\OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Workflow\Registry;
@@ -54,8 +56,36 @@ class AssistanceBeneficiaryService
     }
 
     /**
+     * @param Beneficiary[] $beneficiaries
+     * @param array         $ids
+     * @param               $idType
+     *
+     * @return AssistanceBeneficiaryOperationOutputType
+     */
+    public function prepareOutput(array $beneficiaries,array $ids, $idType): AssistanceBeneficiaryOperationOutputType
+    {
+        $output = new AssistanceBeneficiaryOperationOutputType($ids, $idType);
+        $beneficiaryIds = [];
+        foreach ($beneficiaries as $beneficiary) {
+            foreach ($beneficiary->getNationalIds() as $document) {
+                if ($document->getIdType() === $idType) {
+                    $beneficiaryIds[$document->getIdNumber()] = $document->getIdNumber();
+                }
+            }
+        }
+        foreach ($ids as $id) {
+            if (!key_exists($id, $beneficiaryIds)) {
+                $output->addNotFound(['number' => $id]);
+            }
+        }
+        return $output;
+    }
+
+
+
+    /**
      * @param Assistance           $assistance
-     * @param array                $beneficiaries
+     * @param Beneficiary[] $beneficiaries
      * @param string|null          $justification
      * @param ScoringProtocol|null $vulnerabilityScore
      *
@@ -63,11 +93,12 @@ class AssistanceBeneficiaryService
      * @throws \JsonException
      */
     public function addBeneficiariesToAssistance(
+        AssistanceBeneficiaryOperationOutputType $output,
         Assistance $assistance,
         array $beneficiaries,
         ?string $justification = null,
         ?ScoringProtocol $vulnerabilityScore = null
-    ): void {
+    ): AssistanceBeneficiaryOperationOutputType {
 
         if ($assistance->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
@@ -75,30 +106,40 @@ class AssistanceBeneficiaryService
 
         $targets = [];
         foreach ($beneficiaries as $beneficiary) {
-            $target = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
-            if (null === $target) {
-                $target = (new AssistanceBeneficiary())
-                    ->setAssistance($assistance)
-                    ->setBeneficiary($beneficiary)
-                    ->setRemoved(false);
-                $assistance->addAssistanceBeneficiary($target);
-                if (!is_null($vulnerabilityScore)) {
-                    $target->setVulnerabilityScores($vulnerabilityScore);
-                }
-            } else {
-                $target->setRemoved(false);
+            try {
+                $targets[] = $this->addAssistanceBeneficiary($assistance, $beneficiary, $justification, $vulnerabilityScore);
+                $output->addBeneficiarySuccess($beneficiary);
+            } catch (\Throwable $ex) {
+                $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
             }
 
-            if (!empty($justification)) {
-                $target->setJustification($justification);
-            }
-            $targets[] = $target;
         }
 
         $this->recountReliefPackages($assistance, $targets);
         $assistance->setUpdatedOn(new \DateTime());
         $this->cleanCache($assistance);
+        return $output;
+    }
 
+    private function addAssistanceBeneficiary(Assistance $assistance, AbstractBeneficiary $beneficiary,?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null)
+    {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+        if (null === $assistanceBeneficiary) {
+            $assistanceBeneficiary = (new AssistanceBeneficiary())
+                ->setAssistance($assistance)
+                ->setBeneficiary($beneficiary)
+                ->setRemoved(false);
+            $assistance->addAssistanceBeneficiary($assistanceBeneficiary);
+            if (!is_null($vulnerabilityScore)) {
+                $assistanceBeneficiary->setVulnerabilityScores($vulnerabilityScore);
+            }
+        } else {
+            $assistanceBeneficiary->setRemoved(false);
+        }
+        if (!empty($justification)) {
+            $assistanceBeneficiary->setJustification($justification);
+        }
+        return $assistanceBeneficiary;
     }
 
     /**
@@ -108,6 +149,7 @@ class AssistanceBeneficiaryService
      * @param ScoringProtocol|null $vulnerabilityScore
      *
      * @return void
+     * @throws \JsonException
      */
     public function addBeneficiaryToAssistance(Assistance $assistance, AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): void
     {
@@ -115,13 +157,14 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param array      $beneficiaries
-     * @param string     $justification
+     * @param AssistanceBeneficiaryOperationOutputType $output
+     * @param Assistance                               $assistance
+     * @param Beneficiary[]                            $beneficiaries
+     * @param string                                   $justification
      *
      * @return void
      */
-    public function removeBeneficiariesFromAssistance(Assistance $assistance, array $beneficiaries, string $justification): void
+    public function removeBeneficiariesFromAssistance(AssistanceBeneficiaryOperationOutputType $output, Assistance $assistance, array $beneficiaries, string $justification): AssistanceBeneficiaryOperationOutputType
     {
         if ($assistance->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
@@ -129,24 +172,43 @@ class AssistanceBeneficiaryService
 
         $targets = [];
         foreach ($beneficiaries as $beneficiary) {
-            /** @var AssistanceBeneficiary $target */
-            $target = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
-            if ($target === null) {
-                continue;
+            try {
+                $assistanceBeneficiary = $this->removeAssistanceBeneficiary($assistance, $beneficiary, $justification);
+                if ($assistanceBeneficiary !== null) {
+                    $targets[] = $assistanceBeneficiary;
+                    $output->addBeneficiarySuccess($beneficiary);
+                } else {
+                    $output->addBeneficiaryNotFound($beneficiary);
+                }
             }
-
-            if ($target->hasDistributionStarted()) {
-                throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
+            catch (BeneficiaryAlreadyRemovedException $ex)  {
+                $output->addBeneficiaryAlreadyRemoved($beneficiary);
             }
-            $target->setRemoved(true)
-                ->setJustification($justification);
-            $targets[] = $target;
+            catch (\Throwable $ex) {
+                $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
+            }
         }
 
         $assistance->setUpdatedOn(new \DateTime());
         $this->cancelUnusedReliefPackages($assistance, $targets);
         $this->cleanCache($assistance);
+        return $output;
+    }
 
+    private function removeAssistanceBeneficiary(Assistance $assistance,Beneficiary $beneficiary,string $justification): ?AssistanceBeneficiary
+    {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+        if ($assistanceBeneficiary !== null) {
+            if ($assistanceBeneficiary->getRemoved()) {
+                throw new BeneficiaryAlreadyRemovedException();
+            }
+            if ($assistanceBeneficiary->hasDistributionStarted()) {
+                throw new RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary());
+            }
+            $assistanceBeneficiary->setRemoved(true)
+                ->setJustification($justification);
+        }
+        return $assistanceBeneficiary;
     }
 
     /**
@@ -154,7 +216,7 @@ class AssistanceBeneficiaryService
      * @param AbstractBeneficiary $beneficiary
      * @param string              $justification
      *
-     * @return AssistanceBeneficiaryService
+     *
      */
     public function removeBeneficiaryFromAssistance(Assistance $assistance, AbstractBeneficiary $beneficiary, string $justification): void
     {
@@ -218,9 +280,8 @@ class AssistanceBeneficiaryService
                 }
             }
         }
-
-
     }
+
 
     private function addCommodityCallback(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
     {

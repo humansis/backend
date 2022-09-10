@@ -14,6 +14,8 @@ use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\AssistanceBeneficiariesOperationInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * @Rest\Route("/support-app/v1/assistances/{id}/assistances-beneficiaries")
@@ -21,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AssistanceBeneficiaryController extends AbstractController
 {
 
+    const MAX_ALLOWED_OPERATIONS = 5000;
 
     /**
      * @var BeneficiaryRepository
@@ -56,17 +59,17 @@ class AssistanceBeneficiaryController extends AbstractController
         Assistance                         $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
-        if ($assistance->getTargetType() !== AssistanceTargetType::HOUSEHOLD
-            && $assistance->getTargetType() !== AssistanceTargetType::INDIVIDUAL) {
-            throw new InvalidArgumentException('This assistance is only for households or individuals');
-        }
+        $this->checkRole('ROLE_ADMIN');
+        $this->checkAssistance($assistance);
+        $this->checkAllowedOperations($inputType);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getNumbers(), $inputType->getIdType());
-            $this->assistanceBeneficiaryService->addBeneficiariesToAssistance($assistance, $beneficiaries, $inputType->getJustification());
+            $output = $this->assistanceBeneficiaryService->prepareOutput($beneficiaries,$inputType->getNumbers(), $inputType->getIdType());
+            $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance($output, $assistance, $beneficiaries, $inputType->getJustification());
         } catch (ManipulationOverValidatedAssistanceException $e) {
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        return $this->json($output, Response::HTTP_OK);
     }
 
 
@@ -82,18 +85,55 @@ class AssistanceBeneficiaryController extends AbstractController
         Assistance                         $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
-        if ($assistance->getTargetType() !== AssistanceTargetType::HOUSEHOLD
-            && $assistance->getTargetType() !== AssistanceTargetType::INDIVIDUAL) {
-            throw new InvalidArgumentException('This assistance is only for households or individuals');
-        }
+        $this->checkRole('ROLE_ADMIN');
+        $this->checkAssistance($assistance);
+        $this->checkAllowedOperations($inputType);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getNumbers(), $inputType->getIdType());
-            $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance($assistance, $beneficiaries, $inputType->getJustification());
+            $output = $this->assistanceBeneficiaryService->prepareOutput($beneficiaries,$inputType->getNumbers(), $inputType->getIdType());
+            $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance($output, $assistance, $beneficiaries, $inputType->getJustification());
         } catch (ManipulationOverValidatedAssistanceException $e) {
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        return $this->json($output, Response::HTTP_OK);
     }
 
+    /**
+     * @param Assistance $assistance
+     *
+     * @return void
+     */
+    private function checkRole($role): void
+    {
+        if(!in_array($role, $this->getUser()->getRoles())) {
+            throw new AccessDeniedHttpException("This is allowed only for role '{$role}'.");
+        }
+    }
+
+    /**
+     * @param Assistance $assistance
+     *
+     * @return void
+     */
+    private function checkAssistance(Assistance $assistance): void
+    {
+        if ($assistance->getTargetType() !== AssistanceTargetType::HOUSEHOLD
+            && $assistance->getTargetType() !== AssistanceTargetType::INDIVIDUAL) {
+            throw new BadRequestHttpException('This assistance is only for households or individuals');
+        }
+    }
+
+    /**
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     *
+     * @return void
+     */
+    private function checkAllowedOperations(AssistanceBeneficiariesOperationInputType $inputType): void
+    {
+        $operations = count($inputType->getNumbers());
+        if ($operations >= self::MAX_ALLOWED_OPERATIONS) {
+            throw new BadRequestHttpException("This endpoint allows only to execute ".self::MAX_ALLOWED_OPERATIONS." operations. You try to execute {$operations} operations.");
+        }
+    }
 
 }

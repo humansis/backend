@@ -424,7 +424,7 @@ class Person
     /**
      * Get nationalIds.
      *
-     * @return Collection
+     * @return NationalId[]
      */
     public function getNationalIds()
     {
