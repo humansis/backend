@@ -4,6 +4,6 @@ namespace NewApiBundle\Exception;
 
 use \InvalidArgumentException;
 
-class MissingHouseholdHeadException extends InvalidArgumentException
+class BeneficiaryAlreadyRemovedException extends InvalidArgumentException
 {
 }
