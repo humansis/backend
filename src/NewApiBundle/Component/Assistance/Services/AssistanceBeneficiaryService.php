@@ -143,17 +143,18 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Assistance           $assistance
-     * @param AbstractBeneficiary  $beneficiary
-     * @param string|null          $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
+     * @param AssistanceBeneficiaryOperationOutputType $output
+     * @param Assistance                               $assistance
+     * @param AbstractBeneficiary                      $beneficiary
+     * @param string|null                              $justification
+     * @param ScoringProtocol|null                     $vulnerabilityScore
      *
      * @return void
      * @throws \JsonException
      */
-    public function addBeneficiaryToAssistance(Assistance $assistance, AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): void
+    public function addBeneficiaryToAssistance(AssistanceBeneficiaryOperationOutputType $output, Assistance $assistance, AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): void
     {
-        $this->addBeneficiariesToAssistance($assistance, [$beneficiary], $justification, $vulnerabilityScore);
+        $this->addBeneficiariesToAssistance($output, $assistance, [$beneficiary], $justification, $vulnerabilityScore);
     }
 
     /**
@@ -212,15 +213,15 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Assistance          $assistance
-     * @param AbstractBeneficiary $beneficiary
-     * @param string              $justification
-     *
+     * @param AssistanceBeneficiaryOperationOutputType $output
+     * @param Assistance                               $assistance
+     * @param Beneficiary                              $beneficiary
+     * @param string                                   $justification
      *
      */
-    public function removeBeneficiaryFromAssistance(Assistance $assistance, AbstractBeneficiary $beneficiary, string $justification): void
+    public function removeBeneficiaryFromAssistance(AssistanceBeneficiaryOperationOutputType $output, Assistance $assistance, AbstractBeneficiary $beneficiary, string $justification): void
     {
-       $this->removeBeneficiariesFromAssistance($assistance, [$beneficiary], $justification);
+       $this->removeBeneficiariesFromAssistance($output, $assistance, [$beneficiary], $justification);
     }
 
     private function cancelUnusedReliefPackages(Assistance $assistance, ?array $targets = null): void

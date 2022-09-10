@@ -4,9 +4,6 @@ namespace NewApiBundle\OutputType\Assistance;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use NewApiBundle\Request\InputTypeInterface;
-use NewApiBundle\Utils\DateTime\Iso8601Converter;
-use NewApiBundle\Validator\Constraints\Iso8601;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
@@ -43,30 +40,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     {
         $this->numbers = $numbers;
         $this->idType = $idType;
-    }
-
-    /**
-     * @param mixed $ids
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
-    public function setIds($ids)
-    {
-        $this->ids = $ids;
-
-        return $this;
-    }
-
-    /**
-     * @param mixed $idType
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
-    public function setIdType($idType)
-    {
-        $this->idType = $idType;
-
-        return $this;
     }
 
 
