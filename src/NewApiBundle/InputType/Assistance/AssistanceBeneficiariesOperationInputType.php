@@ -29,13 +29,13 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    protected $numbers = [];
+    protected $documentNumbers = [];
 
     /**
      * @Assert\NotNull
      * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
      */
-    protected $idType;
+    protected $documentType;
 
     /**
      * @return mixed
@@ -60,19 +60,19 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     /**
      * @return array
      */
-    public function getNumbers(): array
+    public function getDocumentNumbers(): array
     {
-        return $this->numbers;
+        return $this->documentNumbers;
     }
 
     /**
-     * @param array $numbers
+     * @param array $documentNumbers
      *
      * @return AssistanceBeneficiariesOperationInputType
      */
-    public function setNumbers(array $numbers): AssistanceBeneficiariesOperationInputType
+    public function setDocumentNumbers(array $documentNumbers): AssistanceBeneficiariesOperationInputType
     {
-        $this->numbers = $numbers;
+        $this->documentNumbers = $documentNumbers;
 
         return $this;
     }
@@ -80,22 +80,24 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     /**
      * @return mixed
      */
-    public function getIdType()
+    public function getDocumentType()
     {
-        return $this->idType;
+        return $this->documentType;
     }
 
     /**
-     * @param mixed $idType
+     * @param mixed $documentType
      *
      * @return AssistanceBeneficiariesOperationInputType
      */
-    public function setIdType($idType): AssistanceBeneficiariesOperationInputType
+    public function setDocumentType($documentType)
     {
-        $this->idType = $idType;
+        $this->documentType = $documentType;
 
         return $this;
     }
+
+
 
 
 

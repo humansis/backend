@@ -8,9 +8,9 @@ use NewApiBundle\Request\InputTypeInterface;
 class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
 
-    private $numbers;
+    private $documentNumbers;
 
-    private $idType;
+    private $documentType;
 
     /**
      * @var array
@@ -33,13 +33,13 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     private $failed = [];
 
     /**
-     * @param array $numbers
-     * @param string $idType
+     * @param array $documentNumbers
+     * @param string $documentType
      */
-    public function __construct(array $numbers,string $idType)
+    public function __construct(array $documentNumbers,string $documentType)
     {
-        $this->numbers = $numbers;
-        $this->idType = $idType;
+        $this->documentNumbers = $documentNumbers;
+        $this->documentType = $documentType;
     }
 
 
@@ -59,11 +59,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
     public function addBeneficiaryNotFound(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
-        $number = $this->getInputIdNumber($beneficiary, $this->numbers, $this->idType);
+        $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->notFound[] = [
-            'number' => $number,
+            'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
-            'message' => "BNF with {$this->idType} '{$number}' was found but he is not in assistance."
+            'message' => "BNF with {$this->documentType} '{$number}' was found but he is not in assistance."
         ];
         return $this;
     }
@@ -108,9 +108,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
     public function addBeneficiarySuccess(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
-        $number = $this->getInputIdNumber($beneficiary, $this->numbers, $this->idType);
+        $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->success[] = [
-            'number' => $number,
+            'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
         return $this;
@@ -144,9 +144,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
     public function addBeneficiaryFailed(Beneficiary $beneficiary, $message): AssistanceBeneficiaryOperationOutputType
     {
-        $number = $this->getInputIdNumber($beneficiary, $this->numbers, $this->idType);
+        $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->failed[] = [
-            'number' => $number,
+            'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $message
         ];
@@ -174,9 +174,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
     public function addBeneficiaryAlreadyRemoved(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
-        $number = $this->getInputIdNumber($beneficiary, $this->numbers, $this->idType);
+        $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->alreadyRemoved[] = [
-            'number' => $number,
+            'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
         return $this;
