@@ -15,18 +15,14 @@ use Utils\HouseholdService;
 use Utils\CommodityService;
 use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
-
 use Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
-
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Entity\User;
-use Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase
 {
@@ -332,14 +328,6 @@ class BMSServiceTestCase extends KernelTestCase
         return self::$container;
     }
 
-    protected function getUserToken(User $user)
-    {
-        $token = new WsseUserToken($user->getRoles());
-        $token->setUser($user);
-
-        return $token;
-    }
-
     /**
      * Require Functional tests and real Entity Manager
      * @param string $username
@@ -378,12 +366,6 @@ class BMSServiceTestCase extends KernelTestCase
      */
     public function createHousehold()
     {
-        // Fake connection with a token for the user tester (ADMIN)
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
-
-
         $projects = $this->em->getRepository(Project::class)->findAll();
         if (empty($projects)) {
             print_r("There is no project inside your database");

@@ -30,10 +30,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
     }
 
     protected function tearDown(): void
@@ -57,7 +53,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->removeSmartcards('1111111');
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
             'serialNumber' => '1111111',
             'beneficiaryId' => $bnf->getId(), // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
@@ -86,7 +82,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), $createdAt);
         $smartcard = $smartcardService->register($registerInputType);
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
             'serialNumber' => $code,
             'beneficiaryId' => $bnf->getId(),
             'createdAt' => $createdAt,
@@ -103,7 +99,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
             'serialNumber' => '1234ABC',
             'beneficiaryId' => $bnf->getId(), // @todo replace for fixture
             'createdAt' => '2020-02-02T12:00:00Z',
@@ -131,7 +127,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $content = json_encode([
             'products' => [
                 [
@@ -153,7 +153,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $this->assertArrayHasKey('value', $smartcard);
-        $this->assertEquals(299.75, $smartcard['value'], 0.0001);
+        $this->assertEquals(299.75, $smartcard['value']);
     }
 
     public function testPurchaseV4()
@@ -177,7 +177,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $content = json_encode([
             'products' => [
                 [
@@ -194,7 +198,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'balanceAfter' => 20,
         ]);
 
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -224,7 +228,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $content = json_encode([
             'products' => [
                 [
@@ -240,7 +248,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'assistanceId' => $assistance->getId(),
         ]);
 
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
     }
@@ -271,7 +279,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $content = json_encode([
             'products' => [
                 [
@@ -287,7 +299,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'assistanceId' => $assistance->getId(),
         ]);
 
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
     }
@@ -303,7 +315,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $nonexistentSmarcard = '23456789012';
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $content = json_encode([
             'products' => [
                 [
@@ -321,7 +337,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'assistanceId' => $assistance->getId(),
         ]);
 
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers, $content);
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
 
@@ -338,7 +354,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
-        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
+        $this->request('PATCH', '/api/basic/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
             'state' => SmartcardStates::INACTIVE,
             'createdAt' => '2020-02-02T12:00:00Z',
             'beneficiaryId' => $bnf->getId(),
@@ -359,7 +375,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, $date);
         $smartcardService->change($smartcard, $changeInputType);
 
-        $this->request('PATCH', '/api/wsse/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
+        $this->request('PATCH', '/api/basic/offline-app/v1/smartcards/'.$smartcard->getSerialNumber(), [
             'state' => SmartcardStates::INACTIVE,
             'createdAt' => $date,
             'beneficiaryId' => $bnf->getId(),
@@ -390,7 +406,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $beneficiary = $assistance->getDistributionBeneficiaries()[0]->getBeneficiary();
         $assistance = $assistance->getDistributionBeneficiaries()[0]->getAssistance();
 
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], ['HTTP_COUNTRY' => 'KHM'],
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
+
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$nonexistentSmarcard.'/purchase', [], [], $headers,
             json_encode([
                 'products' => [
                     [
@@ -429,7 +451,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         [$smartcard, $assistance, $beneficiary] = $array;
 
-        $this->request('POST', '/api/wsse/offline-app/v1/smartcards', [
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
             'serialNumber' => $smartcard,
             'beneficiaryId' => $beneficiary->getId(),
             'createdAt' => '2020-02-02T12:00:00Z',
@@ -456,7 +478,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
-        $this->request('PATCH', '/api/wsse/offline-app/v3/smartcards/'.$nonexistentSmarcard.'/deposit', [
+        $this->request('PATCH', '/api/basic/offline-app/v3/smartcards/'.$nonexistentSmarcard.'/deposit', [
             'value' => 500,
             'createdAt' => '2020-02-02T12:00:00+0001',
             'beneficiaryId' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getId(),
@@ -495,7 +517,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($smartcard);
         $this->em->flush();
 
-        $headers = ['HTTP_COUNTRY' => 'KHM'];
+        $headers = [
+            'HTTP_COUNTRY' => 'KHM',
+            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_PW'   => 'pin1234'
+        ];
         $requestBody = [
             'products' => [
                 [
@@ -512,7 +538,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         ];
 
         //first request
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
             json_encode($requestBody));
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $content = json_decode($this->client->getResponse()->getContent(), true);
@@ -522,7 +548,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->setUp();
 
         //second request with the same bnfId+vendorId+createdAt
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
             json_encode($requestBody));
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $cnt = $this->client->getResponse()->getContent();
@@ -535,7 +561,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         //third request with same bnfId+vendorId+ createdAt+1second
         $requestBody['createdAt'] = '2020-02-02T11:00:01Z';
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
             json_encode($requestBody));
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $content = json_decode($this->client->getResponse()->getContent(), true);
@@ -547,7 +573,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         //fourth request with same bnfId+vendorId+ createdAt+2seconds
         $requestBody['createdAt'] = '2020-02-02T11:00:02Z';
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
             json_encode($requestBody));
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $content = json_decode($this->client->getResponse()->getContent(), true);
@@ -559,7 +585,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->setUp();
 
         //fifth request with same bnfId+vendorId+ createdAt+2seconds
-        $this->client->request('POST', '/api/wsse/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
+        $this->client->request('POST', '/api/basic/vendor-app/v4/smartcards/'.$smartcard->getSerialNumber().'/purchase', [], [], $headers,
             json_encode($requestBody));
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
         $content = json_decode($this->client->getResponse()->getContent(), true);

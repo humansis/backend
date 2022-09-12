@@ -2,7 +2,6 @@
 
 use DependencyInjection\Compiler\MapperCompilerPass;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
-use Security\Factory\WsseFactory;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -79,9 +78,6 @@ class AppKernel extends Kernel
         $loader->load($confDir.'/services_'.$this->environment.self::CONFIG_EXTS, 'glob');
 
         $containerBuilder->addCompilerPass(new MapperCompilerPass());
-
-        $extension = $containerBuilder->getExtension('security');
-        $extension->addSecurityListenerFactory(new WsseFactory());
 
         $mappings = [
             realpath(__DIR__.'/../src/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',

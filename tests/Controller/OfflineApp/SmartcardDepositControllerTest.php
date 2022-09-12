@@ -22,10 +22,6 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
-
-        $user = $this->getTestUser(self::USER_TESTER);
-        $token = $this->getUserToken($user);
-        $this->tokenStorage->setToken($token);
     }
 
     protected function tearDown(): void

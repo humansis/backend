@@ -782,23 +782,6 @@ services:
     Utils\UserService: '@user.user_service'
 
 
-    #######################################################################################
-    ##                                       WSSE                                        ##
-    #######################################################################################
-
-    wsse.security.authentication.provider:
-        class: Security\Authentication\Provider\WsseProvider
-        arguments: ["@fos_user.user_provider.username", "%kernel.cache_dir%/security/nonces", "@logger"]
-        public: false
-
-    wsse.security.authentication.listener:
-        class: Security\Firewall\WsseListener
-        arguments: ["@security.token_storage", "@wsse.security.authentication.provider"]
-        public: false
-        tags:
-            - { name: monolog.logger, channel: wsse }
-
-
 #From DistributionBundle:
 
     Extension\BeneficiaryGenderExtension:
