@@ -273,15 +273,15 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return \DateTimeInterface
      */
-    public function getDateDistribution()
+    public function getDateDistribution(): \DateTimeInterface
     {
         return Iso8601Converter::toDateTime($this->dateDistribution);
     }
 
     /**
-     * @param \DateTimeInterface $dateDistribution
+     * @param string $dateDistribution
      */
-    public function setDateDistribution($dateDistribution)
+    public function setDateDistribution(string $dateDistribution): void
     {
         $this->dateDistribution = $dateDistribution;
     }
@@ -289,15 +289,15 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return \DateTimeInterface|null
      */
-    public function getDateExpiration()
+    public function getDateExpiration(): ?\DateTimeInterface
     {
         return $this->dateExpiration ? Iso8601Converter::toDateTime($this->dateExpiration) : null;
     }
 
     /**
-     * @param \DateTimeInterface|null $dateExpiration
+     * @param string|null $dateExpiration
      */
-    public function setDateExpiration($dateExpiration): void
+    public function setDateExpiration(?string $dateExpiration): void
     {
         $this->dateExpiration = $dateExpiration;
     }

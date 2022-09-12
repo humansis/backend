@@ -151,7 +151,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
 
     private function addCommsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
-        $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project)->getQuery()->getResult();
+        $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project);
         echo "(".count($communities).") ";
         $count = 0;
         foreach ($communities as $community) {

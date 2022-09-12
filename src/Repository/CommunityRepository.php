@@ -40,15 +40,20 @@ class CommunityRepository extends EntityRepository
         return $qb;
     }
 
-    public function getUnarchivedByProject(Project $project)
+    /**
+     * @param Project $project
+     *
+     * @return Project[]
+     */
+    public function getUnarchivedByProject(Project $project): array
     {
         $qb = $this->createQueryBuilder("comm");
-        $q = $qb->leftJoin("comm.projects", "p")
+        $qb->leftJoin("comm.projects", "p")
             ->where("p = :project")
             ->setParameter("project", $project)
             ->andWhere("comm.archived = 0");
 
-        return $q;
+        return $qb->getQuery()->getResult();
     }
 
     public function countUnarchivedByProject(Project $project)
