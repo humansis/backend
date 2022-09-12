@@ -98,11 +98,11 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @param Assistance $assistance
+     * @param string $role
      *
      * @return void
      */
-    private function checkRole($role): void
+    private function checkRole(string $role): void
     {
         if(!in_array($role, $this->getUser()->getRoles())) {
             throw new AccessDeniedHttpException("This is allowed only for role '{$role}'.");
