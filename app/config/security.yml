@@ -20,29 +20,6 @@ security:
             pattern:    ^/(_(profiler|wdt)|css|images|js)/
             security:   false
 
-        # tester
-        tester_initialize:
-            pattern:    ^/api/wsse/initialize
-            security:   false
-        tester_salt:
-            pattern:    ^/api/wsse/salt
-            security:   false
-        tester_login_app:
-            pattern:    ^/api/wsse/login
-            security:   false
-        tester_vendor_salt:
-            pattern:    ^/api/wsse/vendor-app/v[0-9]+/salt
-            security:   false
-        tester_vendor_login_app:
-            pattern:    ^/api/wsse/vendor-app/v[0-9]+/login
-            security:   false
-        tester_offline_salt:
-            pattern:    ^/api/wsse/offline-app/v[0-9]+/salt
-            security:   false
-        tester_offline_login_app:
-            pattern:    ^/api/wsse/offline-app/v[0-9]+/login
-            security:   false
-
         basic_auth:
             pattern: ^/api/basic/
             anonymous: false
@@ -90,15 +67,6 @@ security:
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
-
-        #WSSE
-        wsse_secured:
-            pattern:    ^/api/
-            stateless:  true
-            wsse:       true
-            anonymous:  false
-            methods:    [GET, PUT, POST, PATCH, DELETE, OPTIONS]
-            provider:   our_db_provider
 
     access_control:
         # Login
