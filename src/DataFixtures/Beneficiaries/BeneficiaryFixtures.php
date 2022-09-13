@@ -432,7 +432,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 
         $i = 1;
         foreach ($householdData['beneficiaries'] as $beneficiary) {
-            $inputType->addBeneficiary($this->buildBeneficiaryInputType($beneficiary, $i));
+            $inputType->addBeneficiary($this->buildBeneficiaryInputType($beneficiary, $i === 1));
             $i++;
         }
 
@@ -457,22 +457,22 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         }
 
         foreach ($householdData['country_specific_answers'] as $csoAnswer) {
-            $inputType->addCountrySpecificAnswer($this->buildCsoInputType($csoAnswer));
+            $inputType->addCountrySpecificAnswer($this->buildCsoInputType($csoAnswer['id'], $csoAnswer['answer']));
         }
 
         return $inputType;
     }
 
-    private function buildCsoInputType(array $csoAnswer): CountrySpecificsAnswerInputType
+    private function buildCsoInputType(int $id, string $answer): CountrySpecificsAnswerInputType
     {
         $csoInputType = new CountrySpecificsAnswerInputType();
-        $csoInputType->setAnswer($csoAnswer['answer']);
-        $csoInputType->setCountrySpecificId($csoAnswer['id']);
+        $csoInputType->setAnswer($answer);
+        $csoInputType->setCountrySpecificId($id);
 
         return $csoInputType;
     }
 
-    private function buildBeneficiaryInputType(array $beneficiary, int $i): BeneficiaryInputType
+    private function buildBeneficiaryInputType(array $beneficiary, bool $head): BeneficiaryInputType
     {
         $bnfInputType = new BeneficiaryInputType();
         $bnfInputType->setDateOfBirth($beneficiary['date_of_birth']);
@@ -485,7 +485,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $bnfInputType->addNationalIdCard(NationalIdCardGenerator::generate());
         $bnfInputType->addPhone(PhoneGenerator::generate());
         $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
-        $bnfInputType->setIsHead($i === 1);
+        $bnfInputType->setIsHead($head);
         foreach ($beneficiary['vulnerability_criteria'] as $vulnerability) {
             $bnfInputType->addVulnerabilityCriteria($vulnerability['id']);
         }
