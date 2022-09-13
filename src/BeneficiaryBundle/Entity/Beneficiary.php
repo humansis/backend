@@ -471,7 +471,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      * Get nationalIds.
      * @deprecated
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullBeneficiary"})
-     * @return Collection
+     * @return NationalId[]|Collection
      */
     public function getNationalIds(): Collection
     {

@@ -564,6 +564,8 @@ services:
 
     NewApiBundle\Component\ReliefPackage\ReliefPackageService:
 
+    NewApiBundle\Component\Assistance\Services\AssistanceBeneficiaryService:
+
     NewApiBundle\Repository\ScoringBlueprintRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
