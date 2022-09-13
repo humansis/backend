@@ -4,11 +4,9 @@ namespace DataFixtures\Beneficiaries;
 use Utils\CommunityService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
-use BeneficiaryBundle\Utils\CommunityService;
 use DataFixtures\InputTypesGenerator\AddressGenerator;
 use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
 use DataFixtures\InputTypesGenerator\PhoneGenerator;
-use DataFixtures\LocationFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -157,9 +155,11 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setProjectIds($this->getProjectsIds($iso3));
         $communityInputType->setLongitude($community['longitude']);
         $communityInputType->setLatitude('latitude');
-        $communityInputType->setAddress(AddressGenerator::fromArray($community['address']));
-        $communityInputType->setNationalIdCard(NationalIdCardGenerator::fromArray($community['national_id']));
-        $communityInputType->setPhone(PhoneGenerator::fromArray($community));
+        $communityInputType->setAddress(AddressInputType::create($community['address']['locationId'], $community['address']['street'],
+            $community['address']['postcode'], $community['address']['number']));
+        $communityInputType->setNationalIdCard(NationalIdCardInputType::create($community['national_id']['type'],
+            $community['national_id']['number']));
+        $communityInputType->setPhone(PhoneInputType::create($community['phone_prefix'], $community['phone_number'], $community['phone_type']));
         $communityInputType->setContactFamilyName($community['contact_family_name']);
         $communityInputType->setContactGivenName($community['contact_name']);
 

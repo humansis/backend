@@ -19,6 +19,10 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectManager;
+use InputType\Beneficiary\AddressInputType;
+use InputType\Beneficiary\NationalIdCardInputType;
+use InputType\Beneficiary\PhoneInputType;
+use InputType\InstitutionCreateInputType;
 use Component\Country\Countries;
 use Enum\NationalIdType;
 use Entity\Project;
@@ -48,7 +52,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             'phone_number' => '123 456 789',
             'contact_name' => 'Abdul Mohammad',
             'contact_family_name' => 'Qousad',
-         ],
+        ],
         [
             'name' => 'Food stores inc.',
             'type' => Institution::TYPE_COMMERCE,
@@ -97,8 +101,10 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
 
     /** @var string */
     private $environment;
+
     /** @var InstitutionService */
     private $institutionService;
+
     /** @var Countries */
     private $countries;
 
@@ -137,6 +143,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     {
         if ($this->environment == "prod") {
             echo "Cannot run on production environment";
+
             return;
         }
         foreach ($this->countries->getAll() as $country) {
@@ -163,9 +170,12 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $institutionInputType->setProjectIds($this->getProjectsIds($iso3));
         $institutionInputType->setLongitude($institution['longitude']);
         $institutionInputType->setLatitude($institution['latitude']);
-        $institutionInputType->setAddress(AddressGenerator::fromArray($institution['address']));
-        $institutionInputType->setNationalIdCard(NationalIdCardGenerator::fromArray($institution['national_id']));
-        $institutionInputType->setPhone(PhoneGenerator::fromArray($institution));
+        $institutionInputType->setAddress(AddressInputType::create($institution['address']['locationId'], $institution['address']['street'],
+            $institution['address']['postcode'], $institution['address']['number']));
+        $institutionInputType->setNationalIdCard(NationalIdCardInputType::create($institution['national_id']['type'],
+            $institution['national_id']['number']));
+        $institutionInputType->setPhone(PhoneInputType::create($institution['phone_prefix'], $institution['phone_number'],
+            $institution['phone_type']));
         $institutionInputType->setContactGivenName($institution['contact_name']);
         $institutionInputType->setContactFamilyName($institution['contact_family_name']);
 
@@ -178,6 +188,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     private function getProjectsIds(string $iso3): array
     {
         $projects = $this->projectRepository->findBy(['iso3' => $iso3], ['id' => 'asc']);
+
         return array_map(function (Project $project) {
             return $project->getId();
         }, $projects);

@@ -18,6 +18,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Enum\HouseholdShelterStatus;
+use Enum\NationalIdType;
 use Enum\PhoneTypes;
 use InputType\Beneficiary\Address\CampAddressInputType;
 use InputType\Beneficiary\Address\CampInputType;
@@ -476,14 +477,14 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         $bnfInputType = new BeneficiaryInputType();
         $bnfInputType->setDateOfBirth($beneficiary['date_of_birth']);
-        $bnfInputType->setLocalFamilyName( $beneficiary['local_family_name']);
+        $bnfInputType->setLocalFamilyName($beneficiary['local_family_name']);
         $bnfInputType->setLocalGivenName($beneficiary['local_given_name']);
         $bnfInputType->setLocalParentsName($beneficiary['local_parents_name']);
         $bnfInputType->setEnFamilyName($beneficiary['en_family_name']);
         $bnfInputType->setEnGivenName($beneficiary['en_given_name']);
         $bnfInputType->setGender($beneficiary['gender']);
-        $bnfInputType->addNationalIdCard(NationalIdCardGenerator::generate());
-        $bnfInputType->addPhone(PhoneGenerator::generate());
+        $bnfInputType->addNationalIdCard(self::generateNationalInputType());
+        $bnfInputType->addPhone(self::generatePhoneInputType());
         $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
         $bnfInputType->setIsHead($head);
         foreach ($beneficiary['vulnerability_criteria'] as $vulnerability) {
@@ -543,4 +544,22 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 
         return $location;
     }
+
+    private static function generateNationalInputType(): NationalIdCardInputType
+    {
+        return NationalIdCardInputType::create(
+            ValueGenerator::fromEnum(NationalIdType::class),
+            ValueGenerator::string(10)
+        );
+    }
+
+    private static function generatePhoneInputType(): PhoneInputType
+    {
+        return PhoneInputType::create(
+            (string) ValueGenerator::int(400, 500),
+            (string) ValueGenerator::int(100000000, 999999999),
+            ValueGenerator::fromEnum(PhoneTypes::class)
+        );
+    }
+
 }

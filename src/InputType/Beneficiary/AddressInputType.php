@@ -31,6 +31,29 @@ class AddressInputType implements InputTypeInterface
     private $locationId;
 
     /**
+     * @param int         $locationId
+     * @param string|null $street
+     * @param string|null $postcode
+     * @param string|null $number
+     *
+     * @return AddressInputType
+     */
+    public static function create(
+        int     $locationId,
+        ?string $street,
+        ?string $postcode,
+        ?string $number
+    ): AddressInputType {
+        $addressInputType = new self();
+        $addressInputType->setLocationId($locationId);
+        $addressInputType->setStreet($street);
+        $addressInputType->setPostcode($postcode);
+        $addressInputType->setNumber($number);
+
+        return $addressInputType;
+    }
+
+    /**
      * @return string|null
      */
     public function getNumber()
