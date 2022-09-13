@@ -57,7 +57,7 @@ class CrowdinPushCommand extends Command
         parent::configure();
         $this
             ->setName('crowdin:push')
-            ->setDescription('Upload translations to Crowdin');
+            ->setDescription('Upload translation sources to Crowdin');
     }
 
     /**
