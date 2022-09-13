@@ -17,16 +17,17 @@ use UnexpectedValueException;
 /**
  * Upload source files to Crowdin.
  * @deprecated use official crowdin package after upgrading symfony to 6.x
+ * https://symfony.com/doc/current/translation.html#translation-providers
  */
-class CrowdinUpdateCommand extends Command
+class CrowdinPushCommand extends Command
 {
     /** @var HttpClient $client */
     private $client;
 
     /** @var string */
     private $crowdinApiKey;
-    
-    /** @var int  */
+
+    /** @var int */
     private $crowdinProjectId;
 
     /** @var OutputInterface */
@@ -39,8 +40,7 @@ class CrowdinUpdateCommand extends Command
         string $crowdinApiKey,
         string $crowdinProjectId,
         string $translationsDir
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->crowdinApiKey = $crowdinApiKey;
@@ -54,7 +54,7 @@ class CrowdinUpdateCommand extends Command
     {
         parent::configure();
         $this
-            ->setName('crowdin:update')
+            ->setName('crowdin:push')
             ->setDescription('Upload translations to Crowdin');
     }
 
@@ -70,7 +70,7 @@ class CrowdinUpdateCommand extends Command
         $this->output = $output;
         $finder = new Finder();
 
-        //get local translations
+        //get local files with source keys
         $finder->files()->in($this->translationsDir)->name('*.en.xlf');
         if (!$finder->hasResults()) {
             throw new UnexpectedValueException('No translations found');
@@ -82,23 +82,7 @@ class CrowdinUpdateCommand extends Command
         foreach ($finder as $file) {
             $this->output->write('<info>Processing: '.$file->getFilename().'</info>');
 
-            //get file id
-            $fileId = null;
-            foreach ($sourceFiles['data'] as $sourceFile) {
-                if ($sourceFile['data']['name'] === $file->getFilename()) {
-                    $fileId = $sourceFile['data']['id'];
-                    break;
-                }
-            }
-            if (!$fileId) {
-                //todo add new file
-                $this->output->writeln(
-                    '<error>file not found in Crowdin (project id: '.$this->crowdinProjectId.')</error>'
-                );
-            }
-            $this->output->write(' .');
-
-            //upload file to storage
+            //prepare - upload source file to storage
             $storage = $this->makeRequest('POST', '/storages', [
                 'headers' => [
                     'Content-Type' => 'application/xliff+xml',
@@ -112,14 +96,42 @@ class CrowdinUpdateCommand extends Command
             }
             $this->output->write('.');
 
-            $uploaded = $this->makeRequest('PUT', '/projects/'.$this->crowdinProjectId.'/files/'.$fileId, [
-                'body' => json_encode([
-                    'storageId' => $storage['data']['id'],
-                    'updateOption' => 'keep_translations_and_approvals',
-                ], JSON_THROW_ON_ERROR),
-            ]);
+            //get crowdin project file id
+            $fileId = null;
+            foreach ($sourceFiles['data'] as $sourceFile) {
+                if ($sourceFile['data']['name'] === $file->getFilename()) {
+                    $fileId = $sourceFile['data']['id'];
+                    break;
+                }
+            }
+            $this->output->write('.');
 
-            $status = $uploaded['headers']['crowdin-api-content-status'][0] ?? 'status undefined';
+            //file exists, update
+            if ($fileId) {
+                $uploaded = $this->makeRequest('PUT', '/projects/'.$this->crowdinProjectId.'/files/'.$fileId, [
+                    'body' => json_encode([
+                        'storageId' => $storage['data']['id'],
+                        'updateOption' => 'keep_translations_and_approvals',
+                    ], JSON_THROW_ON_ERROR),
+                ]);
+
+                $status = $uploaded['headers']['crowdin-api-content-status'][0] ?? 'status undefined';
+            }
+            //file does not exist, add new
+            else {
+                $this->makeRequest('POST', '/projects/'.$this->crowdinProjectId.'/files', [
+                    'body' => json_encode([
+                        'storageId' => $storage['data']['id'],
+                        'name' => $file->getFilename(),
+                        'type' => 'xliff',
+                        'exportOptions' => [
+                            'exportPattern' => str_replace('.en.', '.%two_letters_code%.', $file->getFilename())
+                        ],
+                    ], JSON_THROW_ON_ERROR),
+                ]);
+
+                $status = 'added';
+            }
 
             $this->output->writeln('<info> uploaded, '.$status.'</info>');
         }
@@ -136,17 +148,10 @@ class CrowdinUpdateCommand extends Command
     {
         $url = 'https://api.crowdin.com/api/v2'.$endpoint;
 
-        $options = array_merge_recursive([
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->crowdinApiKey,
-            ],
-        ], $options);
-
-        if (!isset($options['headers']['Content-Type'])) { //array_merge_recursive would add instead of replace
+        $options['headers']['Authorization'] = 'Bearer '.$this->crowdinApiKey;
+        if (!isset($options['headers']['Content-Type'])) {
             $options['headers']['Content-Type'] = 'application/json';
         }
-
-        //$this->output->writeln('<info>'.var_dump($options).'</info>');
 
         $response = $this->client->request($method, $url, $options);
         $statusCode = $response->getStatusCode();

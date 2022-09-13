@@ -36,7 +36,7 @@ diff: ## Generate diff migration
 crowdin-update: ## Update translations and upload to Crowdin
 	docker-compose exec php bash -c 'bin/console cache:clear'
 	docker-compose exec php bash -c 'bin/console translation:update --force en'
-	#docker-compose exec php bash -c 'bin/console crowdin:update'
+	docker-compose exec php bash -c 'bin/console crowdin:push'
 
 cleanAndTest: ## Recreate DB, migrate migrations, load fixtures, clean cache of import CSV, start cron service and run unit tests
 	docker-compose exec php bash cleanAndTest
