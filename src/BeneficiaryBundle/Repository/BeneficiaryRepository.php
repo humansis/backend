@@ -297,7 +297,14 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
-    public function findByIdentityAndProject($idNumber, $idType, Project $project)
+    /**
+     * @param string  $documentNumber
+     * @param string  $documentType
+     * @param Project $project
+     *
+     * @return float|int|mixed|string
+     */
+    public function findByIdentityAndProject(string $documentNumber,string $documentType, Project $project)
     {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
@@ -310,14 +317,20 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->andWhere('id.idNumber = :idNumber')
             ->andWhere('id.idType = :idType')
 
-            ->setParameter('idNumber', $idNumber)
-            ->setParameter('idType', $idType)
+            ->setParameter('idNumber', $documentNumber)
+            ->setParameter('idType', $documentType)
             ->setParameter('project', $project);
         return $qb->getQuery()
             ->getResult();
     }
 
-    public function findByIdentities(array $idNumbers,string $idType)
+    /**
+     * @param array  $documentNumbers
+     * @param string $idType
+     *
+     * @return float|int|mixed|string
+     */
+    public function findByIdentities(array $documentNumbers,string $idType)
     {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
@@ -328,7 +341,7 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->andWhere('id.idType = :idType')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
-            ->setParameter('idNumbers', $idNumbers)
+            ->setParameter('idNumbers', $documentNumbers)
             ->setParameter('idType', $idType);
         return $qb->getQuery()
             ->getResult();

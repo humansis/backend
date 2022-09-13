@@ -142,22 +142,34 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    public function addBeneficiaryFailed(Beneficiary $beneficiary, $message): AssistanceBeneficiaryOperationOutputType
+    /**
+     * @param Beneficiary $beneficiary
+     * @param string      $message
+     *
+     * @return $this
+     */
+    public function addBeneficiaryFailed(Beneficiary $beneficiary,string $message): AssistanceBeneficiaryOperationOutputType
     {
-        $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
+        $documentNumber = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->failed[] = [
-            'documentNumber' => $number,
+            'documentNumber' => $documentNumber,
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $message
         ];
         return $this;
     }
 
-
-    private function getInputIdNumber(Beneficiary $beneficiary, $numbers, $idType)
+    /**
+     * @param Beneficiary $beneficiary
+     * @param array       $documentNumbers
+     * @param string      $documentType
+     *
+     * @return string|null
+     */
+    private function getInputIdNumber(Beneficiary $beneficiary,array $documentNumbers,string $documentType)
     {
         foreach ($beneficiary->getNationalIds() as $document) {
-            if ($document->getIdType() === $idType && in_array($document->getIdNumber(), $numbers)) {
+            if ($document->getIdType() === $documentType && in_array($document->getIdNumber(), $documentNumbers)) {
                 return $document->getIdNumber();
             }
         }
