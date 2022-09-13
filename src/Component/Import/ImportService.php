@@ -261,8 +261,8 @@ class ImportService
 
         $this->em->flush();
 
-        if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
-            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
+        if ($this->importStateMachine->can($import, ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
+            $this->importStateMachine->apply($import, ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
         }
 
         $this->logImportInfo($import, "All items was decided as ".$inputType->getStatus());
