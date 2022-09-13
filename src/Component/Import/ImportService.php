@@ -16,6 +16,16 @@ use InputType\Import;
 use Repository\ImportBeneficiaryDuplicityRepository;
 use Repository\ImportQueueRepository;
 use Entity\Project;
+use NewApiBundle\Component\Import\Integrity;
+use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
+use NewApiBundle\Entity;
+use NewApiBundle\Enum\ImportQueueState;
+use NewApiBundle\Enum\ImportState;
+use NewApiBundle\InputType\Import;
+use NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository;
+use NewApiBundle\Repository\ImportQueueRepository;
+use NewApiBundle\Workflow\ImportTransitions;
+use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\TransitionBlocker;
@@ -201,7 +211,13 @@ class ImportService
         $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] decided as ".$inputType->getStatus());
         if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
             $this->duplicityResolver->resolve($importQueue, $inputType->getAcceptedDuplicityId(),$inputType->getStatus(), $user);
+
             $this->em->flush();
+
+            if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
+                $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
+            }
+
         } else {
             foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
                 $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
@@ -221,6 +237,7 @@ class ImportService
             throw new BadRequestHttpException("You can't resolve all duplicities. Import is not in valid state.");
         }
         $singleDuplicityQueues = $this->em->getRepository(Entity\ImportQueue::class)->findSingleDuplicityQueues($import);
+
         /** @var Entity\ImportQueue $importQueue */
         foreach ($singleDuplicityQueues as $importQueue) {
             $duplicities = $importQueue->getHouseholdDuplicities();
@@ -234,7 +251,6 @@ class ImportService
             $duplicity = $duplicities[0];
             if ($this->importQueueStateMachine->can($importQueue, $inputType->getStatus())) {
                 $this->duplicityResolver->resolve($importQueue, $duplicity->getTheirs()->getId(), $inputType->getStatus(), $user);
-                $this->em->flush();
             } else {
                 foreach ($this->importQueueStateMachine->buildTransitionBlockerList($importQueue, $inputType->getStatus()) as $block) {
                     $this->logImportInfo($importQueue->getImport(), "[Queue#{$importQueue->getId()}] can't go '{$inputType->getStatus()}' because ".$block->getMessage());
@@ -242,6 +258,13 @@ class ImportService
                 throw new BadRequestHttpException("You can't resolve duplicity. Import Queue is not in valid state.");
             }
         }
+
+        $this->em->flush();
+
+        if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
+            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
+        }
+
         $this->logImportInfo($import, "All items was decided as ".$inputType->getStatus());
     }
 

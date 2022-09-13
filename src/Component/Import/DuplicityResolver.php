@@ -129,16 +129,5 @@ class DuplicityResolver
         } else {
             $this->logQueueDebug($importQueue, "Nothing was resolved as mistake");
         }
-
-        $this->em->flush();
-
-        // check if it is all to decide
-        if ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES)) {
-            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES);
-        } elseif ($this->importStateMachine->can($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES)) {
-            $this->importStateMachine->apply($importQueue->getImport(), ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES);
-        }
-
-        $this->em->flush();
     }
 }
