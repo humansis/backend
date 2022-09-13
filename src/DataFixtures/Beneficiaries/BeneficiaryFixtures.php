@@ -463,7 +463,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         return $inputType;
     }
 
-    private function buildCsoInputType(int $id, string $answer): CountrySpecificsAnswerInputType
+    private function buildCsoInputType(int $id, ?string $answer): CountrySpecificsAnswerInputType
     {
         $csoInputType = new CountrySpecificsAnswerInputType();
         $csoInputType->setAnswer($answer);
