@@ -6,16 +6,13 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Table(name="privilege")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\PrivilegeRepository")
  */
-class Privilege
+class Privilege extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var string
      *

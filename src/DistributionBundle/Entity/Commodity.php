@@ -6,11 +6,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Assistance\DTO\DivisionSummary;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\DivisionGroup;
 use NewApiBundle\Enum\EnumValueNoFoundException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Commodity
@@ -18,9 +18,8 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="commodity")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\CommodityRepository")
  */
-class Commodity
+class Commodity extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
     use EnumTrait;
 
     /**

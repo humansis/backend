@@ -5,7 +5,7 @@ namespace VoucherBundle\Entity;
 use CommonBundle\Utils\ExportableInterface;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -14,10 +14,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
  */
-class Voucher implements ExportableInterface
+class Voucher extends AbstractEntity implements ExportableInterface
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var string
      *

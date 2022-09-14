@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
 use NewApiBundle\DBAL\PersonGenderEnum;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\PersonGender;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -19,12 +19,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Person
  *
  * @ORM\Table(name="person", indexes={@ORM\Index(name="idx_local_name", columns={"localGivenName", "localFamilyName"})})
- * @ORM\Entity()
+ * @ORM\Entity
  */
-class Person
+class Person extends AbstractEntity
 {
     use EnumTrait;
-    use StandardizedPrimaryKey;
 
 
     /**

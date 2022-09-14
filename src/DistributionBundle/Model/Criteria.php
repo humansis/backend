@@ -3,10 +3,9 @@
 
 namespace DistributionBundle\Model;
 
-use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-class Criteria extends AbstractEntity
+trait Criteria
 {
 
     /**
@@ -35,7 +34,7 @@ class Criteria extends AbstractEntity
      * @param string $tableString
      * @return Criteria
      */
-    public function setTableString(string $tableString)
+    public function setTableString(string $tableString): self
     {
         $this->tableString = $tableString;
 
@@ -55,7 +54,7 @@ class Criteria extends AbstractEntity
      * @param string $target
      * @return Criteria
      */
-    public function setTarget(string $target)
+    public function setTarget(string $target): self
     {
         $this->target = $target;
 

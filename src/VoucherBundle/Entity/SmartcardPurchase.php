@@ -10,7 +10,7 @@ use DistributionBundle\Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -19,10 +19,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="smartcard_purchase")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardPurchaseRepository")
  */
-class SmartcardPurchase
+class SmartcardPurchase extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var Smartcard
      *

@@ -5,9 +5,8 @@ namespace VoucherBundle\Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 use UserBundle\Entity\User;
@@ -17,13 +16,9 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="smartcard_deposit")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
- * @ORM\HasLifecycleCallbacks
  */
-class SmartcardDeposit
+class SmartcardDeposit extends AbstractEntity
 {
-    use CreatedAt;
-    use StandardizedPrimaryKey;
-
     /**
      * @var Smartcard
      *

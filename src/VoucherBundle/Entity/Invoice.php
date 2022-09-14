@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
@@ -18,9 +18,8 @@ use UserBundle\Entity\User;
  * @ORM\Table(name="smartcard_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardInvoiceRepository")
  */
-class Invoice implements JsonSerializable
+class Invoice extends AbstractEntity implements JsonSerializable
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var Vendor

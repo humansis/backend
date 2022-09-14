@@ -4,6 +4,7 @@ namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -15,13 +16,10 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
- * @ORM\HasLifecycleCallbacks()
  */
-class Donor implements ExportableInterface
+class Donor extends AbstractEntity implements ExportableInterface
 {
-    use CreatedAt;
     use LastModifiedAt;
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

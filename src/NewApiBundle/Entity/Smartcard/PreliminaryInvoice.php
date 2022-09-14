@@ -3,6 +3,7 @@
 namespace NewApiBundle\Entity\Smartcard;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use ProjectBundle\Entity\Project;
 use VoucherBundle\Entity\Vendor;
 
@@ -12,16 +13,8 @@ use VoucherBundle\Entity\Vendor;
  * @ORM\Table(name="view_smartcard_preliminary_invoice")
  * @ORM\Entity(readOnly=true, repositoryClass="NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository")
  */
-class PreliminaryInvoice
+class PreliminaryInvoice extends AbstractEntity
 {
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     */
-    private $id;
-
     /**
      * @var Project|null
      *

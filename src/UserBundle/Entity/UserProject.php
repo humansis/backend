@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="user_project")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserProjectRepository")
- * @ORM\HasLifecycleCallbacks
  */
 class UserProject extends AbstractEntity
 {

@@ -3,17 +3,15 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * @ORM\Table(name="modality_type")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityTypeRepository")
  */
-class ModalityType
+class ModalityType extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var string
      *

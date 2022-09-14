@@ -6,24 +6,19 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\CountryDependent;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportState;
 use ProjectBundle\Entity\Project;
 use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportRepository")
- * @ORM\HasLifecycleCallbacks()
  */
-class Import
+class Import extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
     use CreatedBy;
-    use CreatedAt;
     use EnumTrait;
     use CountryDependent;
 

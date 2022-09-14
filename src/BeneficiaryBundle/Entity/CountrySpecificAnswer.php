@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -17,9 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * )
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificAnswerRepository")
  */
-class CountrySpecificAnswer
+class CountrySpecificAnswer extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

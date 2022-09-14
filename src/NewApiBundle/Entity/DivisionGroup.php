@@ -4,16 +4,12 @@ namespace NewApiBundle\Entity;
 
 use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-
 /**
  * @ORM\Table(name="division_group")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\DivisionGroupRepository")
  */
-class DivisionGroup
+class DivisionGroup extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var Commodity
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Commodity")

@@ -4,7 +4,7 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -14,9 +14,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="household_location")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdLocationRepository")
  */
-class HouseholdLocation
+class HouseholdLocation extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     const LOCATION_GROUP_CURRENT = 'current';
     const LOCATION_GROUP_RESIDENT = 'resident';

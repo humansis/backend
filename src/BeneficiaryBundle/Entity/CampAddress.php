@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -11,9 +11,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="camp_address")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CampAddressRepository")
- * @ORM\HasLifecycleCallbacks
  */
-class CampAddress
+class CampAddress extends AbstractEntity
 {
     /**
      * @var string

@@ -17,9 +17,8 @@ use VoucherBundle\Entity\Product;
  * @ORM\Table(name="product_category")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ProductCategoryRepository")
  */
-class ProductCategory
+class ProductCategory extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

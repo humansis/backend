@@ -6,7 +6,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use UserBundle\Entity\User;
 
 /**
@@ -15,9 +15,8 @@ use UserBundle\Entity\User;
  * @ORM\Table(name="voucher_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\VoucherRedemptionBatchRepository")
  */
-class VoucherRedemptionBatch
+class VoucherRedemptionBatch extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var Vendor

@@ -6,8 +6,8 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 use ProjectBundle\Entity\Project;
@@ -18,14 +18,12 @@ use ProjectBundle\Entity\Project;
  * @ORM\Table(name="booklet")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\BookletRepository")
  */
-class Booklet implements ExportableInterface
+class Booklet extends AbstractEntity implements ExportableInterface
 {
     public const UNASSIGNED = 0;
     public const DISTRIBUTED = 1;
     public const USED = 2;
     public const DEACTIVATED = 3;
-
-    use StandardizedPrimaryKey;
 
     /**
      * @var ReliefPackage|null

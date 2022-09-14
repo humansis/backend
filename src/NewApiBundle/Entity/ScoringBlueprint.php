@@ -5,21 +5,15 @@ namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\Helper\CountryDependent;
-use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Utils\Objects\PropertySetter;
 
 /**
  * @ORM\Table(name="scoring_blueprint")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ScoringBlueprintRepository")
- * @ORM\HasLifecycleCallbacks()
  */
-class ScoringBlueprint
+class ScoringBlueprint extends AbstractEntity
 {
-
-    use StandardizedPrimaryKey;
-    use CreatedAt;
     use CreatedBy;
     use CountryDependent;
     use PropertySetter;

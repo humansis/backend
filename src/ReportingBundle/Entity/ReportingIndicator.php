@@ -3,8 +3,8 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-use  ReportingBundle\Utils\Model\IndicatorInterface;
+use NewApiBundle\Entity\AbstractEntity;
+use ReportingBundle\Utils\Model\IndicatorInterface;
 
 /**
  * ReportingIndicator
@@ -12,9 +12,8 @@ use  ReportingBundle\Utils\Model\IndicatorInterface;
  * @ORM\Table(name="reporting_indicator")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingIndicatorRepository")
  */
-class ReportingIndicator implements IndicatorInterface
+class ReportingIndicator extends AbstractEntity implements IndicatorInterface
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

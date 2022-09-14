@@ -4,8 +4,8 @@ namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\DBAL\NationalIdTypeEnum;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\NationalIdType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -17,9 +17,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\NationalIdRepository")
  */
-class NationalId
+class NationalId extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
     use EnumTrait;
 
     /**

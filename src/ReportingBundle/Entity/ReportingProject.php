@@ -3,7 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 
 /**
  * ReportingProject
@@ -11,11 +11,8 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="reporting_project")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingProjectRepository")
  */
-class ReportingProject
+class ReportingProject extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
-
     /**
      *@ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project", inversedBy="reportingProject")
      * @ORM\JoinColumn(nullable=true)

@@ -3,11 +3,10 @@
 namespace NewApiBundle\Entity\Assistance;
 
 use BeneficiaryBundle\Entity\CountrySpecific;
-use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceSelection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -16,12 +15,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="selection_criteria")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\SelectionCriteriaRepository")
- * @ORM\HasLifecycleCallbacks
  */
-class SelectionCriteria
+class SelectionCriteria extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var AssistanceSelection
      *

@@ -3,9 +3,8 @@
 namespace DistributionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -17,10 +16,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="general_relief_item")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\GeneralReliefItemRepository")
  */
-class GeneralReliefItem
+class GeneralReliefItem extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var \DateTime|null
      *

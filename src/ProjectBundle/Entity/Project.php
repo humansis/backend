@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -22,13 +23,10 @@ use BeneficiaryBundle\Entity\Household;
  *
  * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
- * @ORM\HasLifecycleCallbacks()
  */
-class Project implements ExportableInterface
+class Project extends AbstractEntity implements ExportableInterface
 {
-    use CreatedAt;
     use LastModifiedAt;
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

@@ -2,20 +2,13 @@
 
 namespace NewApiBundle\Entity;
 
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
  */
-class ImportInvalidFile
+class ImportInvalidFile extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-    use CreatedAt;
-
     /**
      * @var string
      *

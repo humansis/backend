@@ -3,7 +3,7 @@
 namespace BeneficiaryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use UserBundle\Entity\User;
 
 /**
@@ -12,9 +12,8 @@ use UserBundle\Entity\User;
  * @ORM\Table(name="household_activity")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdActivityRepository")
  */
-class HouseholdActivity
+class HouseholdActivity extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var Household

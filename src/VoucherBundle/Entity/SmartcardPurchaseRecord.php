@@ -3,7 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 
@@ -15,9 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="smartcard_purchase_record")
  * @ORM\Entity
  */
-class SmartcardPurchaseRecord
+class SmartcardPurchaseRecord extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var SmartcardPurchase

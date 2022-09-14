@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ReliefPackageState;
@@ -25,9 +26,8 @@ use VoucherBundle\Entity\SmartcardDeposit;
  * @ORM\Table(name="distribution_beneficiary")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceBeneficiaryRepository")
  */
-class AssistanceBeneficiary
+class AssistanceBeneficiary extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var Assistance

@@ -3,11 +3,10 @@
 namespace TransactionBundle\Entity;
 
 use DistributionBundle\Entity\AssistanceBeneficiary;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-// use Symfony\Component\Serializer\Annotation as JMS_Type;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -17,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="transaction")
  * @ORM\Entity(repositoryClass="TransactionBundle\Repository\TransactionRepository")
  */
-class Transaction
+class Transaction extends AbstractEntity
 {
     /**
      * Transaction status
@@ -37,8 +36,6 @@ class Transaction
             self::CANCELED => 'Canceled',
         ];
     }
-
-    use StandardizedPrimaryKey;
 
     /**
      * @var ReliefPackage|null

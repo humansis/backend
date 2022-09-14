@@ -4,22 +4,17 @@ namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 
 /**
  * This entity tracks source (import) of beneficiary being updated.
  *
  * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
  */
-class ImportBeneficiary
+class ImportBeneficiary extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
     use CreatedBy;
-    use CreatedAt;
 
     /**
      * @var Import

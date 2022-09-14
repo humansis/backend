@@ -10,8 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\ScoringBlueprint;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -26,9 +26,8 @@ use VoucherBundle\Entity\SmartcardPurchase;
  * @ORM\Table(name="assistance")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceRepository")
  */
-class Assistance implements ExportableInterface
+class Assistance extends AbstractEntity implements ExportableInterface
 {
-    use StandardizedPrimaryKey;
 
     const NAME_HEADER_ID = "ID SYNC";
 

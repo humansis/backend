@@ -3,6 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -13,10 +14,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="voucher_purchase_record")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherPurchaseRecordRepository")
  */
-class VoucherPurchaseRecord
+class VoucherPurchaseRecord extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var VoucherPurchase
      *

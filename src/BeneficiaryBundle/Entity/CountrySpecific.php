@@ -4,8 +4,9 @@ namespace BeneficiaryBundle\Entity;
 
 use CommonBundle\Utils\ExportableInterface;
 use DistributionBundle\Model\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -16,9 +17,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
  */
-class CountrySpecific extends Criteria implements ExportableInterface
+class CountrySpecific extends AbstractEntity implements ExportableInterface
 {
-    use StandardizedPrimaryKey;
+    use Criteria;
 
     /**
      * @var string
@@ -62,7 +63,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
         $this->setFieldString($field)
             ->setType($type)
             ->setCountryIso3($countryIso3);
-        $this->countrySpecificAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->countrySpecificAnswers = new ArrayCollection();
     }
 
 

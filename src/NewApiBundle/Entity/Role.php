@@ -6,16 +6,14 @@ namespace NewApiBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 
 /**
  * @ORM\Table(name="role")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\RoleRepository")
  */
-class Role
+class Role extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

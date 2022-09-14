@@ -4,17 +4,13 @@ namespace NewApiBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
-
 /**
  * Information about duplicity between queue record and beneficiary.
  *
  * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
  */
-class ImportBeneficiaryDuplicity
+class ImportBeneficiaryDuplicity extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var ImportQueue
      *

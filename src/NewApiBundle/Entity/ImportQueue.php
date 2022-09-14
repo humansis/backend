@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
+use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Component\Import\Finishing\UnexpectedError;
 use NewApiBundle\Component\Import\Integrity\QueueViolation;
 use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Utils\Concurrency\ConcurrencyLockableInterface;
@@ -19,9 +19,8 @@ use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
-class ImportQueue implements ConcurrencyLockableInterface
+class ImportQueue extends AbstractBeneficiary implements ConcurrencyLockableInterface
 {
-    use StandardizedPrimaryKey;
     use EnumTrait;
     use ConcurrencyLockTrait;
 

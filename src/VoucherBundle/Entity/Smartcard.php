@@ -6,6 +6,7 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use VoucherBundle\Enum\SmartcardStates;
 
@@ -15,7 +16,7 @@ use VoucherBundle\Enum\SmartcardStates;
  * @ORM\Table(name="smartcard")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardRepository")
  */
-class Smartcard
+class Smartcard extends AbstractEntity
 {
     const STATE_UNASSIGNED = 'unassigned';
     const STATE_ACTIVE = 'active';

@@ -6,16 +6,14 @@ namespace DistributionBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Assistance\SelectionCriteria;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Entity()
  */
-class AssistanceSelection
+class AssistanceSelection extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var integer|null
      *

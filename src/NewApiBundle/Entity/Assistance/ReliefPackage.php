@@ -6,9 +6,8 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
-use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\LastModifiedAt;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Enum\ReliefPackageState;
 use UserBundle\Entity\User;
@@ -17,12 +16,9 @@ use VoucherBundle\Entity\SmartcardDeposit;
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\ReliefPackageRepository")
  * @ORM\Table(name="assistance_relief_package")
- * @ORM\HasLifecycleCallbacks
  */
-class ReliefPackage
+class ReliefPackage extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-    use CreatedAt;
     use LastModifiedAt;
 
     /**

@@ -5,6 +5,7 @@ use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -20,18 +21,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *     "comm" = "Community"
  * })
 */
-abstract class AbstractBeneficiary
+abstract class AbstractBeneficiary extends AbstractEntity
 {
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
-     */
-    protected $id;
 
     /**
      * @var Project[]|Collection
@@ -70,14 +61,6 @@ abstract class AbstractBeneficiary
     {
         $this->projects = new ArrayCollection();
         $this->distributionBeneficiaries = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 
 /**
  * ReportingAssistance
@@ -11,10 +11,8 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="reporting_distribution")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingAssistanceRepository")
  */
-class ReportingAssistance
+class ReportingAssistance extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Assistance", inversedBy="reportingDistribution")
      * @ORM\JoinColumn(name="assistance_id", nullable=true)

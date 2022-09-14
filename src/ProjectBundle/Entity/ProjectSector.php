@@ -3,7 +3,7 @@
 namespace ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
@@ -16,10 +16,8 @@ use ProjectBundle\DBAL\SubSectorEnum;
  * })
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\SectorRepository")
  */
-class ProjectSector
+class ProjectSector extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var string
      * @see SectorEnum

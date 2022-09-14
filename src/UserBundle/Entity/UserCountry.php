@@ -4,7 +4,6 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use NewApiBundle\Entity\AbstractEntity;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -12,7 +11,6 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="user_country")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserCountryRepository")
- * @ORM\HasLifecycleCallbacks
  */
 class UserCountry extends AbstractEntity
 {

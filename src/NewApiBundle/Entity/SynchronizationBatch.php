@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
 use NewApiBundle\Entity\Helper\Source;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\SynchronizationBatchState;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -20,13 +18,10 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  *     "Deposits"="\NewApiBundle\Entity\SynchronizationBatch\Deposits",
  *     "Purchases"="\NewApiBundle\Entity\SynchronizationBatch\Purchases"
  * })
- * @ORM\HasLifecycleCallbacks
  */
-abstract class SynchronizationBatch
+abstract class SynchronizationBatch extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
     use Source;
-    use CreatedAt;
     use CreatedBy;
 
     /**

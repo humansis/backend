@@ -5,7 +5,6 @@ namespace NewApiBundle\Entity;
 use BeneficiaryBundle\Entity\Household;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Enum\ImportDuplicityState;
 use UserBundle\Entity\User;
 
@@ -14,10 +13,8 @@ use UserBundle\Entity\User;
  *
  * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportHouseholdDuplicityRepository")
  */
-class ImportHouseholdDuplicity
+class ImportHouseholdDuplicity extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var ImportQueue
      *

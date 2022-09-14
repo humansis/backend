@@ -3,11 +3,10 @@
 namespace CommonBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Entity\AbstractEntity;
 use NewApiBundle\Entity\Helper\NestedTreeTrait;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\Helper\TreeInterface;
 use NewApiBundle\Enum\EnumTrait;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Location
@@ -21,11 +20,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *     })
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
  */
-class Location implements TreeInterface
+class Location extends AbstractEntity implements TreeInterface
 {
     use NestedTreeTrait;
-    use StandardizedPrimaryKey;
-
 
     /**
      * @var Location|null

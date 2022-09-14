@@ -3,7 +3,7 @@
 namespace ReportingBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 
 /**
  * ReportingValue
@@ -11,10 +11,8 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="reporting_value")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingValueRepository")
  */
-class ReportingValue
+class ReportingValue extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-
     /**
      * @var string
      *

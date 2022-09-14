@@ -3,9 +3,8 @@
 namespace VoucherBundle\Entity;
 
 use CommonBundle\Entity\Location;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use NewApiBundle\Entity\AbstractEntity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use CommonBundle\Utils\ExportableInterface;
 
@@ -15,9 +14,8 @@ use CommonBundle\Utils\ExportableInterface;
  * @ORM\Table(name="vendor")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VendorRepository")
  */
-class Vendor implements ExportableInterface
+class Vendor extends AbstractEntity implements ExportableInterface
 {
-    use StandardizedPrimaryKey;
 
     /**
      * @var string

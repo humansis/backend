@@ -4,19 +4,14 @@ namespace NewApiBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\CreatedBy;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportFileRepository")
- * @ORM\HasLifecycleCallbacks()
  */
-class ImportFile
+class ImportFile extends AbstractEntity
 {
-    use StandardizedPrimaryKey;
-    use CreatedAt;
     use CreatedBy;
 
     /**
