@@ -154,7 +154,7 @@ class OrganizationServices extends AbstractEntity implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
+            'id' => $this->getId(),
             'enabled' => $this->enabled,
             'service' => $this->service,
         ];

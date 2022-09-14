@@ -157,7 +157,7 @@ class Service extends AbstractEntity implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
+            'id' => $this->getId(),
             'name' => $this->name,
             'parameters' => $this->parameters,
             'country' => $this->country,

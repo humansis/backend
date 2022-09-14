@@ -263,7 +263,7 @@ class Invoice extends AbstractEntity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
+            'id' => $this->getId(),
             'datetime' => $this->invoicedAt->format('U'),
             'date' => $this->invoicedAt->format('d-m-Y H:i'),
             'count' => $this->purchases->count(),

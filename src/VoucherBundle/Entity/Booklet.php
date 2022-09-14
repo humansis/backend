@@ -397,8 +397,8 @@ class Booklet extends AbstractEntity implements ExportableInterface
         if (in_array($this->getStatus(), [self::USED, self::DEACTIVATED])) {
             foreach ($this->getVouchers() as $voucher) {
                 $purchase = $voucher->getVoucherPurchase();
-                if (null !== $purchase && (null === $date || 0 === $purchase->getCreatedAt()->diff($date)->invert)) {
-                    $date = $purchase->getCreatedAt();
+                if (null !== $purchase && (null === $date || 0 === $purchase->getUsedAt()->diff($date)->invert)) {
+                    $date = $purchase->getUsedAt();
                 }
             }
         }

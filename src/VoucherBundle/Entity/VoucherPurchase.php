@@ -53,7 +53,7 @@ class VoucherPurchase extends AbstractEntity
      *
      * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
-    private $createdAt;
+    private $usedAt;
 
     protected function __construct()
     {
@@ -61,11 +61,11 @@ class VoucherPurchase extends AbstractEntity
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Vendor $vendor, DateTimeInterface $createdAt)
+    public static function create(Vendor $vendor, DateTimeInterface $usedAt)
     {
         $entity = new self();
         $entity->vendor = $vendor;
-        $entity->createdAt = $createdAt;
+        $entity->usedAt = $usedAt;
 
         return $entity;
     }
@@ -118,8 +118,8 @@ class VoucherPurchase extends AbstractEntity
     /**
      * @return DateTimeInterface
      */
-    public function getCreatedAt(): DateTimeInterface
+    public function getUsedAt(): DateTimeInterface
     {
-        return $this->createdAt;
+        return $this->usedAt;
     }
 }

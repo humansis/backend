@@ -120,7 +120,7 @@ class Voucher extends AbstractEntity implements ExportableInterface
         if (!$this->getVoucherPurchase()) {
             return null;
         }
-        return $this->getVoucherPurchase()->getCreatedAt();
+        return $this->getVoucherPurchase()->getUsedAt();
     }
 
     /**

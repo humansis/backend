@@ -41,14 +41,6 @@ class ScoringBlueprint extends AbstractEntity
     private $content;
 
     /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string

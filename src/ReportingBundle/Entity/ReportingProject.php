@@ -31,17 +31,6 @@ class ReportingProject extends AbstractEntity
      **/
     private $value;
 
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
     /**
      * Set indicator
      *
