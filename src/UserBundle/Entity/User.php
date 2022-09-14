@@ -10,6 +10,8 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
+use NewApiBundle\Entity\Helper\CreatedAt;
+use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportBeneficiary;
 use NewApiBundle\Entity\ImportHouseholdDuplicity;
@@ -31,18 +33,11 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  */
 class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
+    use StandardizedPrimaryKey;
+    use CreatedAt;
+
     /** @var ObjectManager|null */
     private $em;
-
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullUser"})
-     */
-    protected $id;
 
     /**
      * @var string
@@ -167,18 +162,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return $this->em;
     }
 
-    /**
-     * Set id.
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Add country.
