@@ -1200,6 +1200,101 @@
         <source>Village/Neighbourhood</source>
         <target>قرية</target>
       </trans-unit>
+      <trans-unit id="NRNrkOq" resname="Distribution No.">
+        <source>Distribution No.</source>
+        <target>رقم التوزيع</target>
+      </trans-unit>
+      <trans-unit id="LmVsQDA" resname="Project &amp; Donor">
+        <source>Project &amp; Donor</source>
+        <target>االمشروع والممول</target>
+      </trans-unit>
+      <trans-unit id="zf5SHir" resname="Distributed item(s)">
+        <source>Distributed item(s)</source>
+        <target>االعناصر- المواد الموزعة</target>
+      </trans-unit>
+      <trans-unit id="zZVYrPw" resname="Round">
+        <source>Round</source>
+        <target>االدورة</target>
+      </trans-unit>
+      <trans-unit id="mtpcIrW" resname="Distributed by">
+        <source>Distributed by</source>
+        <target>تم التوزيع من قبل</target>
+      </trans-unit>
+      <trans-unit id="IgEqmFO" resname="(name, position, signature)">
+        <source>(name, position, signature)</source>
+        <target>(الاسم، المنصب، التوقيع)</target>
+      </trans-unit>
+      <trans-unit id="joOMRgm" resname="Approved by">
+        <source>Approved by</source>
+        <target>اعتمد من قبل</target>
+      </trans-unit>
+      <trans-unit id="RMSi1bj"
+                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+        <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
+        <target>يؤكد الشخص المدرج أدناه من خلال توقيعه على قائمة التوزيع هذه أنه حصل على وقبل التبرع بالعناصر المحددة أدناه من الأشخاص المحتاجين.</target>
+      </trans-unit>
+      <trans-unit id="OBeKILR" resname="No.">
+        <source>No.</source>
+        <target>الرقم</target>
+      </trans-unit>
+      <trans-unit id="SEdlPKY" resname="Second Name">
+        <source>Second Name</source>
+        <target>الاسم الثاني</target>
+      </trans-unit>
+      <trans-unit id="QbuaQ3d" resname="ID No.">
+        <source>ID No.</source>
+        <target>رقم الهوية</target>
+      </trans-unit>
+      <trans-unit id="AXTb9dN" resname="Proxy First Name">
+        <source>Proxy First Name</source>
+        <target>الاسم الأول للوكيل</target>
+      </trans-unit>
+      <trans-unit id="PvE3ers" resname="Proxy Second Name">
+        <source>Proxy Second Name</source>
+        <target>اسم الثاني للوكيل</target>
+      </trans-unit>
+      <trans-unit id="qAuVaUM" resname="Proxy ID No.">
+        <source>Proxy ID No.</source>
+        <target>رقم هوية الوكيل</target>
+      </trans-unit>
+      <trans-unit id="UwOvjJH" resname="Distributed Item(s), Unit, Amount per beneficiary">
+        <source>Distributed Item(s), Unit, Amount per beneficiary</source>
+        <target>العناصر الموزعة، الوحدة، المبلغ لكل مستفيد</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>الاسم الأول</target>
+      </trans-unit>
+      <trans-unit id="AVbuRim" resname="Validated by">
+        <source>Validated by</source>
+        <target>االتحقق من قبل</target>
+      </trans-unit>
+      <trans-unit id="JscYZ1d" resname="GDPR_Distribution_protocol_text_1">
+        <source>GDPR_Distribution_protocol_text_1</source>
+        <target>إشعار الخصوصية: يرجى ملاحظة أن منظمة الناس في حاجة بصفتها مراقب للبيانات الشخصية (لمعرفة التفاصيل الاتصال بمسؤول حماية البيانات: dpo@clovekvtisni.cz)، سيقوم بمعالجة بياناتك الشخصية
+          المذكورة
+          أعلاه. ستستخدم منظمة الناس في حاجة البيانات فقط لغرض تقديم المساعدة في المشروع الذي وافقت على المشاركة فيه. تحتاج منظمة الناس في حاجة إلى هذه البيانات لأنه 1) ضروري لتقديم المساعدة لك وفقا
+          لشروط المشروع ، و 2) منظمة الناس في حاجة لديها مصلحة مشروعة في الإبلاغ عن نتائج المشروع إلى الجهة المانحة. ستحتفظ منظمة الناس في حاجة بالبيانات فقط للفترة التي يتطلبها المانحون الذين يمولون
+          المشروع ، أو بموجب التشريع الملزم لمنظمة الناس في حاجة ؛ ومع ذلك ، فإن الحد الأقصى لفترة التخزين هو 10 سنوات. قد تتم أيضا مشاركة بياناتك مع أشخاص آخرين لغرض تنفيذ المشروع والتحقق منه ، أي
+          مزودي الخدمة لأنظمة وبرامج منظمة الناس في حاجة، حيث يتم تخزين بياناتك وشركائنا في المشروع والمانحين ومدققي الحسابات.
+        </target>
+      </trans-unit>
+      <trans-unit id="bFAHIxP" resname="GDPR_Distribution_protocol_text_2">
+        <source>GDPR_Distribution_protocol_text_2</source>
+        <target>لديك الحقوق التالية: 1) الحق في طلب معلومات حول البيانات الشخصية التي تعالجها منظمة الناسس في حاجة ، 2) الحق في طلب تفسير من منظمة الناس في حاجة فيما يتعلق بمعالجة البيانات الشخصية ،
+          3) الحق في طلب الوصول إلى هذه البيانات من منظمة الناس في حاجة ، الحق في تحديث البيانات أو تصحيحها أو تقييدها ، حسب الحالة ، والحق في الاعتراض على المعالجة ، 4) الحق في الحصول على البيانات
+          الشخصية بتنسيق منظم وشائع الاستخدام وقابل للقراءة آليا ، 5) الحق في طلب حذف هذه البيانات الشخصية من منظمة الناس في حاجة ، 6) الحق في مخاطبة المراقب المالي أو تقديم شكوى إلى مكتب حماية
+          البيانات الشخصية في حالة الشك فيما يتعلق بالامتثال للالتزامات المتعلقة بمعالجة البيانات الشخصية.
+        </target>
+      </trans-unit>
+      <trans-unit id="z7OtGEW" resname="Signature / Time-stamp">
+        <source>Signature / Time-stamp</source>
+        <target>التوقيع بتسجيل الوقت</target>
+      </trans-unit>
+      <trans-unit id="VyGbjiT" resname="DISTRIBUTION PROTOCOL">
+        <source>DISTRIBUTION PROTOCOL</source>
+        <target>بروتوكول التوزيع</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

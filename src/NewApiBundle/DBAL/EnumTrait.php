@@ -12,7 +12,9 @@ trait EnumTrait
 
     public static function valueFromDB($dbValue): ?string
     {
-        if (null === $dbValue) return null;
+        if ($dbValue === null || $dbValue === '') {
+            return null;
+        }
         if (!array_key_exists($dbValue, self::databaseMap())) {
             throw new \Exception("Database value $dbValue cannot be mapped to application enum");
         }
@@ -21,7 +23,9 @@ trait EnumTrait
 
     public static function valueToDB($appValue)
     {
-        if (null === $appValue) return null;
+        if ($appValue === null || $appValue === '') {
+            return null;
+        }
         foreach (self::databaseMap() as $dbValue => $applicationValue) {
             if ($appValue === $applicationValue) return $dbValue;
         }

@@ -13,7 +13,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
@@ -33,7 +33,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ->select('p.id')
                 ->from(\DistributionBundle\Entity\Assistance::class, 'a')
                 ->join('a.project', 'p')
-                ->andWhere('a.validated = 1')
+                ->andWhere('a.validatedBy IS NOT NULL')
                 ->andWhere('a.archived = 0')
                 ->andWhere('p.iso3 = :iso3')
                 ->setParameter('iso3', 'KHM')

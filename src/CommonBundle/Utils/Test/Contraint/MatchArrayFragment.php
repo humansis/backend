@@ -14,8 +14,6 @@ class MatchArrayFragment extends Constraint
 
     public function __construct($expectedArray)
     {
-        parent::__construct();
-
         $this->expected = $expectedArray;
     }
 
@@ -49,8 +47,8 @@ class MatchArrayFragment extends Constraint
                     $this->additionalFailureMessage = sprintf(
                         "attribute '%s' must contain value '%s'. '%s' given.",
                         $key,
-                        $this->exporter->export($expectedValue),
-                        $this->exporter->export($actual[$key])
+                        $this->exporter()->export($expectedValue),
+                        $this->exporter()->export($actual[$key])
                     );
 
                     return false;
@@ -72,6 +70,6 @@ class MatchArrayFragment extends Constraint
 
     public function toString(): string
     {
-        return 'match '.$this->exporter->export($this->expected);
+        return 'match '.$this->exporter()->export($this->expected);
     }
 }

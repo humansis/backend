@@ -26,7 +26,7 @@ class ImportInvalidFileService
     private const
         MEMBER_ERROR = 'ERROR',
         HOUSEHOLD_ERROR = 'ERROR in Household',
-        MEMBER_IS_OK_MESSAGE = 'Member is OK, but cannot be imported due to errors in another beneficiaries in the same household';
+        MEMBER_IS_OK_MESSAGE = 'Beneficiary is OK, but cannot be imported due to errors in another beneficiaries in the same household';
 
     /**
      * @var ImportQueueRepository

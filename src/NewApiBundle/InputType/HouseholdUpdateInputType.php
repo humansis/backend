@@ -7,6 +7,7 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Enum\HouseholdAssets;
 use NewApiBundle\Enum\HouseholdShelterStatus;
 use NewApiBundle\Enum\HouseholdSupportReceivedType;
+use NewApiBundle\Exception\MissingHouseholdHeadException;
 use NewApiBundle\InputType\Beneficiary\Address\CampAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\ResidenceAddressInputType;
 use NewApiBundle\InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
@@ -809,6 +810,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
             if ($beneficiaryInputType->isHead()) return $beneficiaryInputType;
         }
-        throw new \InvalidArgumentException('There must be head');
+        throw new MissingHouseholdHeadException('There must be head');
     }
 }

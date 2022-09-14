@@ -45,7 +45,12 @@ class SmartcardServiceTest extends KernelTestCase
     /** @var DepositFactory */
     private $depositFactory;
 
-    public function setUp()
+    /**
+     * @var User
+     */
+    private $user;
+
+    protected function setUp(): void
     {
         self::bootKernel();
 
@@ -59,6 +64,7 @@ class SmartcardServiceTest extends KernelTestCase
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
+        $this->em->persist($this->user);
 
         $this->smartcardNumber = substr(md5((uniqid())), 0, 7);
         $this->em->flush();
@@ -183,7 +189,7 @@ class SmartcardServiceTest extends KernelTestCase
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
-        $admin = $this->em->getRepository(User::class)->find(1);
+        $admin = $this->user;
         $assistanceRepository = $this->em->getRepository(Assistance::class);
         $product = $this->em->getRepository(Product::class)->findOneBy(['countryISO3'=>'SYR'], ['id' => 'asc']);
 
@@ -261,7 +267,7 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $this->assertContains([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
+            $this->assertContainsEquals([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
 
             foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
@@ -460,7 +466,7 @@ class SmartcardServiceTest extends KernelTestCase
      */
     public function testSmartcardReuseFlows(array $actions, array $expectedBeneficiaryResults, array $expectedVendorResults): void
     {
-        $admin = $this->em->getRepository(User::class)->find(1);
+        $admin = $this->user;
         $projectA = 3;
         $assistanceId = 51; // USD
         $serialNumber = '111222333';
@@ -613,17 +619,17 @@ class SmartcardServiceTest extends KernelTestCase
         $id = substr(md5(uniqid()), 0, 5)."_";
         $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryISO3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
-        $user = new User();
-        $user->injectObjectManager($em);
-        $user->setEnabled(1)
+        $this->user = new User();
+        $this->user->injectObjectManager($em);
+        $this->user->setEnabled(1)
             ->setEmail($id.self::VENDOR_USERNAME)
             ->setEmailCanonical($id.self::VENDOR_USERNAME)
             ->setUsername($id.self::VENDOR_USERNAME)
             ->setUsernameCanonical($id.self::VENDOR_USERNAME)
             ->setSalt('')
             ->setRoles(['ROLE_ADMIN'])
-            ->setChangePassword(0);
-        $user->setPassword('');
+            ->setChangePassword(0)
+            ->setPassword('');
 
         $this->vendor = new Vendor();
         $this->vendor
@@ -632,7 +638,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->setAddressStreet('Main street')
             ->setAddressPostcode('12345')
             ->setArchived(false)
-            ->setUser($user)
+            ->setUser($this->user)
             ->setLocation($adm2);
         $this->vendor->setName("Test Vendor for ".__CLASS__);
     }

@@ -26,7 +26,7 @@ class SmartcardStates
     protected static $possibleFlow = [
         SmartcardStates::UNASSIGNED => [SmartcardStates::ACTIVE],
         SmartcardStates::ACTIVE => [SmartcardStates::INACTIVE, SmartcardStates::CANCELLED],
-        SmartcardStates::INACTIVE => [SmartcardStates::CANCELLED],
+        SmartcardStates::INACTIVE => [SmartcardStates::ACTIVE, SmartcardStates::CANCELLED],
         SmartcardStates::REUSED => [],
         SmartcardStates::CANCELLED => [],
     ];

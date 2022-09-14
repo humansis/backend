@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Mapper;
+namespace NewApiBundle\Mapper\Assistance;
 
 use DistributionBundle\Entity\Commodity;
+use NewApiBundle\Component\Assistance\DTO\DivisionSummary;
 use NewApiBundle\Serializer\MapperInterface;
 
 class CommodityMapper implements MapperInterface
@@ -58,8 +59,10 @@ class CommodityMapper implements MapperInterface
         return $this->object->getDescription();
     }
 
-    public function getDivision(): ?string
+    public function getDivision(): ?DivisionSummary
     {
-        return $this->object->getDivision();
+        $summary = $this->object->getDivisionSummary();
+        
+        return $summary->getDivision() === null ? null : $summary; 
     }
 }

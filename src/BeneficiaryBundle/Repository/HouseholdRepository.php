@@ -301,7 +301,7 @@ class HouseholdRepository extends AbstractCriteriaRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
-                        $qb->addGroupBy('l1.id')->addOrderBy('l1.name', $direction);
+                        $qb->addGroupBy('l.id')->addOrderBy('l.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
                         $qb->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);

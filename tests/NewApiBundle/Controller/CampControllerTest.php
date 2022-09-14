@@ -12,7 +12,7 @@ class CampControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');

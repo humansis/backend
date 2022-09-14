@@ -24,6 +24,7 @@ use NewApiBundle\Enum\ModalityType;
 use NewApiBundle\Exception\ConstraintViolationException;
 use NewApiBundle\Export\AssistanceBankReportExport;
 use NewApiBundle\Export\VulnerabilityScoreExport;
+use NewApiBundle\InputType\Assistance\UpdateAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\InputType\AssistanceFilterInputType;
 use NewApiBundle\InputType\AssistanceOrderInputType;
@@ -44,6 +45,7 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use NewApiBundle\Component\Assistance\Domain\Assistance as DomainAssistance;
+use UserBundle\Entity\User;
 
 class AssistanceController extends AbstractController
 {
@@ -185,79 +187,21 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/assistances/{id}")
      *
-     * @param Request              $request
-     * @param Assistance           $assistanceRoot
-     * @param AssistanceFactory    $factory
-     * @param AssistanceRepository $repository
+     * @param Assistance                $assistanceRoot
+     * @param UpdateAssistanceInputType $updateAssistanceInputType
      *
      * @return JsonResponse
      */
-    public function update(Request $request, Assistance $assistanceRoot, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
-    {
-        $assistance = $factory->hydrate($assistanceRoot);
-        if ($request->request->has('validated')) {
-            if ($request->request->get('validated', true)) {
-                $assistance->validate();
-            } else {
-                $assistance->unvalidate();
-            }
-        }
+    public function update(
+        Assistance                $assistanceRoot,
+        UpdateAssistanceInputType $updateAssistanceInputType
+    ): JsonResponse {
 
-        if ($request->request->get('completed', false)) {
-            $assistance->complete();
-        }
-
-        //TODO think about better input validation for PATCH method
-        if ($request->request->has('dateDistribution')) {
-            $date = Iso8601Converter::toDateTime($request->request->get('dateDistribution'));
-
-            if (!$date instanceof DateTimeInterface) {
-                throw new ConstraintViolationException(new ConstraintViolation(
-                    "{$request->request->get('dateDistribution')} is not valid date format",
-                    null,
-                    [],
-                    [],
-                    'dateDistribution',
-                    $request->request->get('dateDistribution')
-                ));
-            }
-
-            $this->assistanceService->updateDateDistribution($assistanceRoot, $date);
-        }
-
-        if ($request->request->has('dateExpiration')) {
-            $date = Iso8601Converter::toDateTime($request->request->get('dateExpiration'));
-
-            if (!$date instanceof DateTimeInterface) {
-                throw new ConstraintViolationException(new ConstraintViolation(
-                    "{$request->request->get('dateExpiration')} is not valid date format",
-                    null,
-                    [],
-                    [],
-                    'dateExpiration',
-                    $request->request->get('dateExpiration')
-                ));
-            }
-
-            $this->assistanceService->updateDateExpiration($assistanceRoot, $date);
-        }
-
-        if ($request->request->has('note')) {
-            if ($assistanceRoot->getCompleted()) {
-                throw new ConstraintViolationException(new ConstraintViolation(
-                    "note cannot be updated on completed assistance",
-                    null,
-                    [],
-                    [],
-                    'note',
-                    $request->request->get('note')
-                ));
-            }
-            $note = is_null($request->request->get('note')) ? null : strval($request->request->get('note'));
-            $this->assistanceService->updateNote($assistanceRoot, $note);
-        }
-
-        $repository->save($assistance);
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $assistance = $this->assistanceService->update($assistanceRoot, $updateAssistanceInputType, $user);
 
         return $this->json($assistance);
     }
@@ -287,7 +231,7 @@ class AssistanceController extends AbstractController
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
         $type = $request->query->get('type', 'csv');
-        if (!$assistance->getValidated()) {
+        if (!$assistance->isValidated()) {
             throw new BadRequestHttpException('Cannot download bank report for assistance which is not validated.');
         }
         if ($assistance->getAssistanceType() !== AssistanceType::DISTRIBUTION) {

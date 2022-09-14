@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Persistence\ObjectRepository;
 use NewApiBundle\Component\Import\ImportInvalidFileService;
@@ -28,6 +29,11 @@ class IntegritySubscriber implements EventSubscriberInterface
     public const GUARD_CODE_NOT_COMPLETE = '93226f1a-1b68-4ed4-bd78-1129d16d3333';
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
      * @var IntegrityChecker
      */
     private $integrityChecker;
@@ -46,11 +52,13 @@ class IntegritySubscriber implements EventSubscriberInterface
     private $messageBus;
 
     public function __construct(
+        EntityManagerInterface $entityManager,
         IntegrityChecker         $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
         MessageBusInterface      $messageBus,
         ImportQueueRepository    $queueRepository
     ) {
+        $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
         $this->queueRepository = $queueRepository;
         $this->importInvalidFileService = $importInvalidFileService;
@@ -95,6 +103,10 @@ class IntegritySubscriber implements EventSubscriberInterface
 
     private function fillQueue(Import $import)
     {
+        /**
+         * This is important because Import object is not yet flushed
+         */
+        $this->entityManager->flush();
         foreach ($this->queueRepository->findBy([
             'import' => $import,
             'state' => ImportQueueState::NEW,

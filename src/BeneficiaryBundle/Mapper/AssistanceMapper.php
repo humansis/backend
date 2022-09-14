@@ -115,7 +115,7 @@ class AssistanceMapper
             'project' => $assistance->getProject(),
             'selection_criteria' => $this->transformSelectionCriteria($assistance->getSelectionCriteria()),
             'archived' => $assistance->getArchived(),
-            'validated' => $assistance->getValidated(),
+            'validated' => $assistance->isValidated(),
             'reporting_distribution' => $assistance->getReportingAssistance(),
             'type' => self::TARGET_TYPE_TO_TYPE_MAPPING[$assistance->getTargetType()] ?? null,
             'assistance_type' => $assistance->getAssistanceType(),
@@ -129,6 +129,7 @@ class AssistanceMapper
             'households_targeted' => $assistance->getHouseholdsTargeted(),
             'individuals_targeted' => $assistance->getIndividualsTargeted(),
             'note' => $assistance->getNote(),
+            'round' => $assistance->getRound()
         ];
 
         return $assistanceArray;
@@ -173,7 +174,7 @@ class AssistanceMapper
             'project' => $assistance->getProject(),
             'selection_criteria' => $assistance->getSelectionCriteria(),
             'archived' => $assistance->getArchived(),
-            'validated' => $assistance->getValidated(),
+            'validated' => $assistance->isValidated(),
             'reporting_distribution' => $assistance->getReportingAssistance(),
             'type' => AssistanceTargetType::INDIVIDUAL === $assistance->getTargetType() ? 1 : 0,
             'assistance_type' => $assistance->getAssistanceType(),

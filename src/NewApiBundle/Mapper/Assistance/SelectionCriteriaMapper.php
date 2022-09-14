@@ -89,4 +89,9 @@ class SelectionCriteriaMapper implements MapperInterface
     {
         return $this->object->getWeight();
     }
+
+    public function getDeprecated(): bool
+    {
+        return $this->object->isDeprecated();
+    }
 }

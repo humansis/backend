@@ -54,7 +54,7 @@ class DuplicityService
             throw new \RuntimeException("File $fileName missing");
         }
         $identities = json_decode($identityData, true);
-        $identity = self::serializeIDCard($idCard->getType(), $idCard->getNumber());
+        $identity = self::serializeIDCard($idCard->getOriginalType(), $idCard->getNumber());
 
         if (isset($identities[$identity])) {
             // TODO: count subduplicity

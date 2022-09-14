@@ -16,6 +16,7 @@ use ProjectBundle\DBAL\SectorEnum;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
@@ -100,7 +101,7 @@ class Assistance implements ExportableInterface
     /**
      * @var AssistanceSelection
      *
-     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
     private $assistanceSelection;
@@ -115,13 +116,13 @@ class Assistance implements ExportableInterface
     private $archived = 0;
 
     /**
-     * @var boolean
+     * @var User|null
      *
-     * @ORM\Column(name="validated", type="boolean", options={"default" : 0})
-     *
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $validated = 0;
+    private $validatedBy = null;
 
     /**
      * @ORM\OneToMany(targetEntity="ReportingBundle\Entity\ReportingAssistance", mappedBy="distribution", cascade={"persist", "remove"})
@@ -242,6 +243,13 @@ class Assistance implements ExportableInterface
     private $cashbackLimit;
 
     /**
+     * @var int|null
+     *
+     * @ORM\Column(name="round", type="smallint", nullable=true)
+     */
+    private $round;
+
+    /**
      * @var string[]
      *
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
@@ -268,9 +276,9 @@ class Assistance implements ExportableInterface
      */
     public function __construct()
     {
-        $this->reportingDistribution = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reportingDistribution = new ArrayCollection();
+        $this->distributionBeneficiaries = new ArrayCollection();
+        $this->commodities = new ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
         $this->setUpdatedOn(new \DateTime());
         $this->allowedProductCategoryTypes = [];
@@ -314,7 +322,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setAssistanceType(string $assistanceType): self
+    public function setAssistanceType(string $assistanceType): Assistance
     {
         $this->assistanceType = $assistanceType;
 
@@ -382,7 +390,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setArchived($archived)
+    public function setArchived(bool $archived): Assistance
     {
         $this->archived = $archived;
 
@@ -402,13 +410,13 @@ class Assistance implements ExportableInterface
     /**
      * Set validated.
      *
-     * @param bool $validated
+     * @param User|null $validatedBy
      *
      * @return Assistance
      */
-    public function setValidated($validated)
+    public function setValidatedBy(?User $validatedBy): Assistance
     {
-        $this->validated = $validated;
+        $this->validatedBy = $validatedBy;
 
         return $this;
     }
@@ -416,11 +424,11 @@ class Assistance implements ExportableInterface
     /**
      * Get validated.
      *
-     * @return bool
+     * @return User|null
      */
-    public function getValidated()
+    public function getValidatedBy(): ?User
     {
-        return $this->validated;
+        return $this->validatedBy;
     }
 
     /**
@@ -430,7 +438,7 @@ class Assistance implements ExportableInterface
      *
      * @return Assistance
      */
-    public function setCompleted(bool $completed = true): self
+    public function setCompleted(bool $completed = true): Assistance
     {
         $this->completed = $completed;
 
@@ -454,7 +462,7 @@ class Assistance implements ExportableInterface
      *
      * @return self
      */
-    public function setTargetType(string $targetType): self
+    public function setTargetType(string $targetType): Assistance
     {
         if (!in_array($targetType, AssistanceTargetType::values())) {
             throw new \InvalidArgumentException("Wrong assistance target type: $targetType, allowed are: "
@@ -650,7 +658,7 @@ class Assistance implements ExportableInterface
     public function addAssistanceBeneficiary(\DistributionBundle\Entity\AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
-            $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->distributionBeneficiaries = new ArrayCollection();
         }
         $this->distributionBeneficiaries[] = $assistanceBeneficiary;
 
@@ -793,7 +801,7 @@ class Assistance implements ExportableInterface
      *
      * @return $this
      */
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description): Assistance
     {
         $this->description = $description;
 
@@ -868,6 +876,11 @@ class Assistance implements ExportableInterface
         $this->subSector = $subSector;
     }
 
+    public function isValidated(): bool
+    {
+        return $this->validatedBy !== null;
+    }
+
     public function getMappedValueForExport(): array
     {
         // récuperer les criteria de selection  depuis l'objet selectioncriteria
@@ -921,7 +934,7 @@ class Assistance implements ExportableInterface
         $percentage = '';
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
-            if ($this->getValidated()) {
+            if ($this->isValidated()) {
                 $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType()->getName();
             } else {
                 $percentage .= '0% '.$commodity->getModalityType()->getName();
@@ -1094,6 +1107,22 @@ class Assistance implements ExportableInterface
     public function setSmartcardPurchases(Collection $smartcardPurchases): void
     {
         $this->smartcardPurchases = $smartcardPurchases;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRound(): ?int
+    {
+        return $this->round;
+    }
+
+    /**
+     * @param int|null $round
+     */
+    public function setRound(?int $round): void
+    {
+        $this->round = $round;
     }
 
     /**

@@ -17,7 +17,7 @@ class LocationControllerTest extends BMSServiceTestCase
     /** @var LocationRepository */
     private $locationRepository;
 
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');

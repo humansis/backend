@@ -25,7 +25,7 @@ class AuthControllerTest extends BMSServiceTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         parent::setUpFunctionnal();
@@ -63,7 +63,7 @@ class AuthControllerTest extends BMSServiceTestCase
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->em->remove($this->user);
         $this->em->flush();

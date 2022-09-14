@@ -27,7 +27,7 @@ final class RulesCalculation
     public function dependencyRatioUkr(Household $household, ScoringRule $rule): int
     {
         $childAgeLimit = 17;
-        $workingAgeLimit = 50;
+        $workingAgeLimit = 60;
 
         $children = 0;
         $elders = 0;
@@ -55,7 +55,9 @@ final class RulesCalculation
 
         if (Floats::compare($dependencyRatio, 1.0)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
-        } else if ($dependencyRatio > 1.0) {
+        }
+
+        if ($dependencyRatio > 1.0) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH)->getScore();
         }
 

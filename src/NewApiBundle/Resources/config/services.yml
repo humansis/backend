@@ -94,6 +94,9 @@ services:
     Symfony\Component\Serializer\SerializerInterface:
         alias: serializer
 
+    NewApiBundle\Serializer\ArrayNullableDenormalizer:
+        tags: [ 'serializer.denormalizer' ]
+
     NewApiBundle\Serializer\MapperNormalizer:
         tags: [ 'serializer.normalizer' ]
 
@@ -219,6 +222,7 @@ services:
     NewApiBundle\Controller\OrganizationController:
         arguments:
             - '@NewApiBundle\Component\File\UploadService'
+            - '%organization.allowed_mime_types%'
 
     NewApiBundle\Controller\ProductController:
         arguments:
@@ -272,6 +276,10 @@ services:
     NewApiBundle\Request\ParamConverter\InputTypeConverter:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
+
+    NewApiBundle\Request\ParamConverter\InputTypeNullableDenormalizerConverter:
+        tags:
+            - { name: 'request.param_converter', converter: 'input_type_nullable_denormalizer_converter' }
 
     NewApiBundle\Listener\AcceptHeaderListener:
         arguments: [ '%app.locales%' ]
@@ -538,6 +546,10 @@ services:
         arguments:
           - '@translator'
 
+    NewApiBundle\Services\CountryLocaleResolverService:
+        arguments:
+            - '%app.countries%'
+
     NewApiBundle\Services\ScoringBlueprintService:
 
     NewApiBundle\Services\TranslationExportService:
@@ -551,6 +563,8 @@ services:
             - '%distribution.criteria%'
 
     NewApiBundle\Component\ReliefPackage\ReliefPackageService:
+
+    NewApiBundle\Component\Assistance\Services\AssistanceBeneficiaryService:
 
     NewApiBundle\Repository\ScoringBlueprintRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]

@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace TransactionBundle\Export;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Household;
 use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Entity\NationalId;
 use BeneficiaryBundle\Entity\Person;
 use CommonBundle\Entity\Organization;
 use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Entity\GeneralReliefItem;
 use InvalidArgumentException;
+use NewApiBundle\Component\Smartcard\SmartcardDepositService;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Enum\NationalIdType;
 use NewApiBundle\Enum\ReliefPackageState;
+use NewApiBundle\Services\CountryLocaleResolverService;
+use NewApiBundle\Utils\FileSystem\Exception\ImageException;
+use NewApiBundle\Utils\FileSystem\Image;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -27,16 +28,42 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use ProjectBundle\Entity\Donor;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use VoucherBundle\Entity\SmartcardDeposit;
 
 class AssistanceSpreadsheetExport
 {
     /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
-    {
+    /** @var CountryLocaleResolverService */
+    private $countryLocaleResolverService;
+
+    /** @var SmartcardDepositService */
+    private $smartcardDepositService;
+
+    /** @var SmartcardDeposit[] */
+    private $smartCardDeposits = [];
+
+    private const GDPR_TEXT_1 = "Privacy notice: Please note that PIN as the Personal Data Controller (contact details of the Data Protection Officer: dpo@clovekvtisni.cz), will be processing your above-mentioned personal data. PIN will use the data only for the purpose of providing assistance within the project you agreed to participate in. PIN needs these data because 1) it is necessary for the provision of assistance to you according to the project terms, and 2) PIN has a legitimate interest in reporting of the project results to the donor. PIN will keep the data only for the period required by the donors financing the project, or by the legislation binding for PIN; however, the maximum period of storage is 10 years. Your data may also be shared with other persons for the purpose of implementation and verification of the project, i.e. the service providers of PIN's systems and software, where your data are stored, our project partners, donors and the auditors.";
+    private const GDPR_TEXT_2 = "You have the following rights: 1) right to request information on which personal data of yours PIN is processing, 2) right to request explanation from PIN regarding the processing of personal data, 3) right to request access to such data from PIN, right to have the data updated, corrected or restricted, as the case may be, and right to object to processing, 4) the right to obtain personal data in a structured, commonly used and machine-readable format, 5) right to request the deletion of such personal data from PIN, 6) right to address the Controller or lodge a complaint to the Office for Personal Data Protection in case of doubt regarding the compliance with the obligations related to the processing of personal data.";
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        TranslatorInterface $translator,
+        SmartcardDepositService $smartcardDepositService,
+        CountryLocaleResolverService $countryLocaleResolverService,
+        LoggerInterface $logger
+    ) {
         $this->translator = $translator;
+        $this->countryLocaleResolverService = $countryLocaleResolverService;
+        $this->smartcardDepositService = $smartcardDepositService;
+        $this->logger = $logger;
     }
 
     public function export(Assistance $assistance, Organization $organization, string $filetype)
@@ -51,8 +78,9 @@ class AssistanceSpreadsheetExport
         $worksheet = $spreadsheet->getActiveSheet();
 
         $this->formatCells($worksheet);
-        $this->buildHeader($worksheet, $assistance, $organization);
-        $this->buildBody($worksheet, $assistance);
+        $languageCode = $this->countryLocaleResolverService->resolve($assistance->getProject()->getIso3());
+        $this->buildHeader($worksheet, $assistance, $organization, $languageCode);
+        $this->buildBody($worksheet, $assistance, $languageCode);
 
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
@@ -80,9 +108,9 @@ class AssistanceSpreadsheetExport
         $worksheet->getColumnDimension('D')->setWidth(15.888);
         $worksheet->getColumnDimension('E')->setWidth(15.888);
         $worksheet->getColumnDimension('F')->setWidth(15.888);
-        $worksheet->getColumnDimension('G')->setWidth(15.888);
+        $worksheet->getColumnDimension('G')->setWidth(17.888);
         $worksheet->getColumnDimension('H')->setWidth(15.888);
-        $worksheet->getColumnDimension('I')->setWidth(15.888);
+        $worksheet->getColumnDimension('I')->setWidth(13.888);
         $worksheet->getColumnDimension('J')->setWidth(19.888);
         $worksheet->getColumnDimension('K')->setWidth(21.032);
         $worksheet->getColumnDimension('L')->setWidth(30.032);
@@ -90,8 +118,12 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('A1:K10000')->applyFromArray($style);
     }
 
-    private function buildHeader(Worksheet $worksheet, Assistance $assistance, Organization $organization)
-    {
+    private function buildHeader(
+        Worksheet $worksheet,
+        Assistance $assistance,
+        Organization $organization,
+        string $languageCode
+    ) {
         $userInputStyle = [
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -109,6 +141,7 @@ class AssistanceSpreadsheetExport
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
+                'wrapText' => true,
             ],
             'font' => [
                 'size' => 16,
@@ -132,30 +165,43 @@ class AssistanceSpreadsheetExport
         $worksheet->getRowDimension(7)->setRowHeight(15.12);
         $worksheet->getRowDimension(8)->setRowHeight(15.12);
         $worksheet->getRowDimension(9)->setRowHeight(09.36);
-        $worksheet->getRowDimension(10)->setRowHeight(13.00);
-        $worksheet->getRowDimension(11)->setRowHeight(13.00);
-        $worksheet->getRowDimension(12)->setRowHeight(13.00);
+        $worksheet->getRowDimension(10)->setRowHeight(15.12);
+        $worksheet->getRowDimension(11)->setRowHeight(15.12);
+        $worksheet->getRowDimension(12)->setRowHeight(09.36);
         $worksheet->getRowDimension(13)->setRowHeight(13.00);
-        $worksheet->getRowDimension(14)->setRowHeight(09.36);
-        $worksheet->getRowDimension(15)->setRowHeight(12.24);
-        $worksheet->getRowDimension(16)->setRowHeight(18.00);
-        $worksheet->getRowDimension(17)->setRowHeight(18.00);
+        $worksheet->getRowDimension(14)->setRowHeight(13.00);
+        $worksheet->getRowDimension(15)->setRowHeight(13.00);
+        $worksheet->getRowDimension(16)->setRowHeight(13.00);
+        $worksheet->getRowDimension(17)->setRowHeight(09.36);
         $worksheet->getRowDimension(18)->setRowHeight(12.24);
+        $worksheet->getRowDimension(19)->setRowHeight(18.00);
+        $worksheet->getRowDimension(20)->setRowHeight(18.00);
+        $worksheet->getRowDimension(21)->setRowHeight(8.24);
+        $worksheet->getRowDimension(22)->setRowHeight(85.00);
+        $worksheet->getRowDimension(23)->setRowHeight(85.00);
+        $worksheet->getRowDimension(24)->setRowHeight(12.24);
 
-        $worksheet->getCell('B2')->setValue('DISTRIBUTION LIST');
+        $worksheet->getCell('B2')->setValue(
+            'DISTRIBUTION PROTOCOL' . "\n" .
+            $assistance->getName() . "\n" .
+            $this->translator->trans('DISTRIBUTION PROTOCOL', [], null, $languageCode)
+        );
         $worksheet->getCell('B2')->getStyle()->applyFromArray($titleStyle);
-        $worksheet->mergeCells('B2:E2');
+        $worksheet->mergeCells('B2:F2');
 
         if ($organization->getLogo()) {
-            $resource = $this->getImageResource($organization->getLogo());
-
-            $drawing = new MemoryDrawing();
-            $drawing->setCoordinates('I2');
-            $drawing->setImageResource($resource);
-            $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
-            $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
-            $drawing->setHeight(80);
-            $drawing->setWorksheet($worksheet);
+            try {
+                $resource = Image::getImageResource($organization->getLogo());
+                $drawing = new MemoryDrawing();
+                $drawing->setCoordinates('H2');
+                $drawing->setImageResource($resource);
+                $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
+                $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+                $drawing->setHeight(80);
+                $drawing->setWorksheet($worksheet);
+            } catch (ImageException $exception) {
+                $this->logger->info($exception->getMessage());
+            }
         }
 
         /** @var Donor $donor */
@@ -164,28 +210,31 @@ class AssistanceSpreadsheetExport
                 continue;
             }
 
-            $resource = $this->getImageResource($donor->getLogo());
-
-            $drawing = new MemoryDrawing();
-            $drawing->setCoordinates('J2');
-            $drawing->setImageResource($resource);
-            $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
-            $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
-            $drawing->setHeight(80);
-            $drawing->setWorksheet($worksheet);
+            try {
+                $resource = Image::getImageResource($organization->getLogo());
+                $drawing = new MemoryDrawing();
+                $drawing->setCoordinates('J2');
+                $drawing->setImageResource($resource);
+                $drawing->setRenderingFunction(MemoryDrawing::RENDERING_DEFAULT);
+                $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
+                $drawing->setHeight(80);
+                $drawing->setWorksheet($worksheet);
+            } catch (ImageException $exception) {
+                $this->logger->info($exception->getMessage());
+            }
         }
 
-        $worksheet->getStyle('B3:K14')->getBorders()
+        $worksheet->getStyle('B3:K17')->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B3:K14')->getAlignment()
+        $worksheet->getStyle('B3:K17')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_RIGHT)
             ->setVertical(Alignment::VERTICAL_CENTER);
 
         $worksheet->getCell('C4')->setValue('Distribution No.');
         $worksheet->getCell('C4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('C5')->setValue($this->translator->trans('Distribution No.'));
+        $worksheet->getCell('C5')->setValue($this->translator->trans('Distribution No.', [], null, $languageCode));
         $worksheet->getCell('C5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('D4')->setValue('#'.$assistance->getId());
@@ -195,7 +244,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('E4')->setValue('Location:');
         $worksheet->getCell('E4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('E5')->setValue($this->translator->trans('Location').':');
+        $worksheet->getCell('E5')->setValue($this->translator->trans('Location', [], null, $languageCode).':');
         $worksheet->getCell('E5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('F4')->setValue($assistance->getLocation()->getName());
@@ -205,7 +254,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('G4')->setValue('Project & Donor:');
         $worksheet->getCell('G4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor').':');
+        $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor', [], null, $languageCode).':');
         $worksheet->getCell('G5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('H4')->setValue(self::getProjectsAndDonors($assistance));
@@ -215,7 +264,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I4')->setValue('Date:');
         $worksheet->getCell('I4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('I5')->setValue($this->translator->trans('Date').':');
+        $worksheet->getCell('I5')->setValue($this->translator->trans('Date', [], null, $languageCode).':');
         $worksheet->getCell('I5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('J4')->setValue($assistance->getDateDistribution()->format('Y-m-d'));
@@ -225,7 +274,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C7')->setValue('Distributed item(s):');
         $worksheet->getCell('C7')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('C8')->setValue($this->translator->trans('Distributed item(s)').':');
+        $worksheet->getCell('C8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
         $worksheet->getCell('C8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('D7')->setValue($assistance->getCommodities()->get(0)->getModalityType()->getName());
@@ -236,19 +285,19 @@ class AssistanceSpreadsheetExport
             $worksheet->getCell('E7')->setValue('Distributed item(s):');
             $worksheet->getCell('E7')->getStyle()->applyFromArray($labelEnStyle);
 
-            $worksheet->getCell('E8')->setValue($this->translator->trans('Distributed item(s)').':');
+            $worksheet->getCell('E8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
             $worksheet->getCell('E8')->getStyle()->applyFromArray($labelStyle);
 
             $worksheet->getCell('F7')->setValue($assistance->getCommodities()->get(1)->getModalityType()->getName());
             $worksheet->getCell('F7')->getStyle()->applyFromArray($userInputStyle);
-            $worksheet->getStyle('F7:F8')->applyFromArray($userInputStyle);
+            $worksheet->mergeCells('F7:F8');
         }
 
         if ($assistance->getCommodities()->get(2)) {
             $worksheet->getCell('G7')->setValue('Distributed item(s):');
             $worksheet->getCell('G7')->getStyle()->applyFromArray($labelEnStyle);
 
-            $worksheet->getCell('G8')->setValue($this->translator->trans('Distributed item(s)').':');
+            $worksheet->getCell('G8')->setValue($this->translator->trans('Distributed item(s)', [], null, $languageCode).':');
             $worksheet->getCell('G8')->getStyle()->applyFromArray($labelStyle);
 
             $worksheet->getCell('H7')->setValue($assistance->getCommodities()->get(2)->getModalityType()->getName());
@@ -259,55 +308,90 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I7')->setValue('Round:');
         $worksheet->getCell('I7')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('I8')->setValue($this->translator->trans('Round').':');
+        $worksheet->getCell('I8')->setValue($this->translator->trans('Round', [], null, $languageCode).':');
         $worksheet->getCell('I8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
+        $worksheet->getCell('J7')->setValue($assistance->getRound() === null ? $this->translator->trans('N/A', [], null, $languageCode) : $assistance->getRound());
         $worksheet->mergeCells('J7:J8');
 
-        $worksheet->getCell('C10')->setValue("Distributed by:");
-        $worksheet->getCell('C11')->setValue("(name, position, signature)");
-        $worksheet->getCell('C12')->setValue($this->translator->trans('Distributed by'));
-        $worksheet->getCell('C13')->setValue($this->translator->trans('(name, position, signature)'));
+        $worksheet->getCell('C10')->setValue('Validated by:');
         $worksheet->getCell('C10')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('C11')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('C11')->getStyle()->getFont()->setSize(8);
-        $worksheet->getCell('C12')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('C13')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('C13')->getStyle()->getFont()->setSize(8);
 
-        $worksheet->mergeCells('D10:F13');
-        $worksheet->getStyle('D10')->applyFromArray($userInputStyle);
+        $worksheet->getCell('C11')->setValue($this->translator->trans('Validated by', [], null, $languageCode).':');
+        $worksheet->getCell('C11')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('G10')->setValue("Approved by:");
-        $worksheet->getCell('G11')->setValue("(name, position, signature)");
-        $worksheet->getCell('G12')->setValue($this->translator->trans('Approved by'));
-        $worksheet->getCell('G13')->setValue($this->translator->trans('(name, position, signature)'));
-        $worksheet->getCell('G10')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('G11')->getStyle()->applyFromArray($labelEnStyle);
-        $worksheet->getCell('G11')->getStyle()->getFont()->setSize(8);
-        $worksheet->getCell('G12')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('G13')->getStyle()->applyFromArray($labelStyle);
-        $worksheet->getCell('G13')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
+        $worksheet->getCell('D10')->setValue($assistance->isValidated() ? $assistance->getValidatedBy()->getUsernameCanonical() : "");
+        $worksheet->mergeCells('D10:F11');
 
-        $worksheet->getStyle('H10')->applyFromArray($userInputStyle);
-        $worksheet->mergeCells('H10:J13');
+        $worksheet->getCell('C13')->setValue("Distributed by:");
+        $worksheet->getCell('C14')->setValue("(name, position, signature)");
+        $worksheet->getCell('C15')->setValue($this->translator->trans('Distributed by', [], null, $languageCode));
+        $worksheet->getCell('C16')->setValue($this->translator->trans('(name, position, signature)', [], null, $languageCode));
+        $worksheet->getCell('C13')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('C14')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('C14')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('C15')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('C16')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('C16')->getStyle()->getFont()->setSize(8);
 
-        $worksheet->getCell('B16')->setValue('The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.');
-        $worksheet->mergeCells('B16:K16');
+        $worksheet->mergeCells('D13:F16');
+        $worksheet->getStyle('D13')->applyFromArray($userInputStyle);
 
-        $worksheet->getCell('B17')->setValue($this->translator->trans('The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.'));
-        $worksheet->getStyle('B17')->getFont()->setItalic(true);
-        $worksheet->getStyle('B16:K17')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-        $worksheet->mergeCells('B17:K17');
+        $worksheet->getCell('G13')->setValue("Approved by:");
+        $worksheet->getCell('G14')->setValue("(name, position, signature)");
+        $worksheet->getCell('G15')->setValue($this->translator->trans('Approved by', [], null, $languageCode));
+        $worksheet->getCell('G16')->setValue($this->translator->trans('(name, position, signature)', [], null, $languageCode));
+        $worksheet->getCell('G13')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('G14')->getStyle()->applyFromArray($labelEnStyle);
+        $worksheet->getCell('G14')->getStyle()->getFont()->setSize(8);
+        $worksheet->getCell('G15')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('G16')->getStyle()->applyFromArray($labelStyle);
+        $worksheet->getCell('G16')->getStyle()->getFont()->setSize(8);
+
+        $worksheet->getStyle('H13')->applyFromArray($userInputStyle);
+        $worksheet->mergeCells('H13:J16');
+
+        $worksheet->getCell('B19')->setValue('The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.');
+        $worksheet->mergeCells('B19:K19');
+
+        $worksheet->getCell('B20')->setValue($this->translator->trans('The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.', [], null, $languageCode));
+        $worksheet->getStyle('B20')->getFont()->setItalic(true);
+        $worksheet->getStyle('B19:K20')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $worksheet->mergeCells('B20:K20');
+
+        $worksheet->getCell('B22')->setValue(
+            self::GDPR_TEXT_1.
+            "\n".
+            self::GDPR_TEXT_2
+        );
+        $worksheet->mergeCells('B22:K22');
+        $worksheet->getStyle('B22')->getFont()->setSize(8);
+        $worksheet->getStyle('B22')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $worksheet->getStyle('B22')->getAlignment()->setWrapText(true);
+
+        $worksheet->getCell('B23')->setValue(
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1', [], null, $languageCode)).
+            "\n".
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_2', [], null, $languageCode))
+        );
+        $worksheet->mergeCells('B23:K23');
+        $worksheet->getStyle('B23')->getFont()->setItalic(true);
+        $worksheet->getStyle('B23')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $worksheet->getStyle('B23')->getAlignment()->setWrapText(true);
+        $worksheet->getStyle('B23')->getFont()->setSize(8);
     }
 
-    private function buildBody(Worksheet $worksheet, Assistance $assistance)
+    /**
+     * @throws Exception
+     */
+    private function buildBody(Worksheet $worksheet, Assistance $assistance, string $languageCode)
     {
         $rowStyle = [
             'borders' => [
                 'allBorders' => [
-                    'borderStyle' => Border::BORDER_HAIR,
+                    'borderStyle' => Border::BORDER_THIN,
                 ],
             ],
             'alignment' => [
@@ -315,54 +399,67 @@ class AssistanceSpreadsheetExport
             ],
         ];
 
-        $worksheet->getCell('B19')->setValue('No.');
-        $worksheet->getCell('C19')->setValue('First Name');
-        $worksheet->getCell('D19')->setValue('Second Name');
-        $worksheet->getCell('E19')->setValue('ID No.');
-        $worksheet->getCell('F19')->setValue('Phone No.');
-        $worksheet->getCell('G19')->setValue('Proxy First Name');
-        $worksheet->getCell('H19')->setValue('Proxy Second Name');
-        $worksheet->getCell('I19')->setValue('Proxy ID No.');
-        $worksheet->getCell('J19')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
-        $worksheet->getCell('K19')->setValue('Signature');
-        $worksheet->getStyle('B19:K19')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B19:K19')->getFont()->setBold(true);
-        $worksheet->getRowDimension(19)->setRowHeight(42.00);
+        $worksheet->getCell('B25')->setValue('No.');
+        $worksheet->getCell('C25')->setValue('First Name');
+        $worksheet->getCell('D25')->setValue('Second Name');
+        $worksheet->getCell('E25')->setValue('ID No.');
+        $worksheet->getCell('F25')->setValue('Phone No.');
+        $worksheet->getCell('G25')->setValue('Proxy First Name');
+        $worksheet->getCell('H25')->setValue('Proxy Second Name');
+        $worksheet->getCell('I25')->setValue('Proxy ID No.');
+        $worksheet->getCell('J25')->setValue('Distributed Item(s), Unit, Amount per beneficiary');
+        $worksheet->getStyle('B25:K25')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B25:K25')->getFont()->setBold(true);
+        $worksheet->getRowDimension(25)->setRowHeight(42.00);
 
-        $worksheet->setCellValue('B20', $this->translator->trans('No.'));
-        $worksheet->setCellValue('C20', $this->translator->trans('First Name'));
-        $worksheet->setCellValue('D20', $this->translator->trans('Second Name'));
-        $worksheet->setCellValue('E20', $this->translator->trans('ID No.'));
-        $worksheet->setCellValue('F20', $this->translator->trans('Phone No.'));
-        $worksheet->setCellValue('G20', $this->translator->trans('Proxy First Name'));
-        $worksheet->setCellValue('H20', $this->translator->trans('Proxy Second Name'));
-        $worksheet->setCellValue('I20', $this->translator->trans('Proxy ID No.'));
-        $worksheet->setCellValue('J20', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary'));
-        $worksheet->setCellValue('K20', $this->translator->trans('Signature'));
-        $worksheet->getStyle('B20:K20')->applyFromArray($rowStyle);
-        $worksheet->getStyle('B20:K20')->getFont()->setItalic(true);
-        $worksheet->getRowDimension(20)->setRowHeight(42.00);
+        if ($this->shouldDistributionContainDate($assistance)) {
+            $worksheet->getCell('K25')->setValue('Distributed');
+            $worksheet->setCellValue('K26', $this->translator->trans('Distributed', [], null, $languageCode));
+            $this->smartCardDeposits = $this->smartcardDepositService->getDepositsForDistributionBeneficiaries($assistance->getDistributionBeneficiaries()->toArray());
+        } else {
+            $worksheet->getCell('K25')->setValue('Signature / Time-stamp');
+            $worksheet->setCellValue('K26', $this->translator->trans('Signature / Time-stamp', [], null, $languageCode));
+        }
+        $worksheet->setCellValue('B26', $this->translator->trans('No.', [], null, $languageCode));
+        $worksheet->setCellValue('C26', $this->translator->trans('First Name', [], null, $languageCode));
+        $worksheet->setCellValue('D26', $this->translator->trans('Second Name', [], null, $languageCode));
+        $worksheet->setCellValue('E26', $this->translator->trans('ID No.', [], null, $languageCode));
+        $worksheet->setCellValue('F26', $this->translator->trans('Phone No.', [], null, $languageCode));
+        $worksheet->setCellValue('H26', $this->translator->trans('Proxy Second Name', [], null, $languageCode));
+        $worksheet->setCellValue('G26', $this->translator->trans('Proxy First Name', [], null, $languageCode));
+        $worksheet->setCellValue('I26', $this->translator->trans('Proxy ID No.', [], null, $languageCode));
+        $worksheet->setCellValue('J26', $this->translator->trans('Distributed Item(s), Unit, Amount per beneficiary', [], null, $languageCode));
+        $worksheet->getStyle('B23:K26')->applyFromArray($rowStyle);
+        $worksheet->getStyle('B26:K26')->getFont()->setItalic(true);
+        $worksheet->getRowDimension(26)->setRowHeight(42.00);
 
-        $worksheet->getStyle('B19:K19')->getBorders()
+        $worksheet->getStyle('B25:K25')->getBorders()
             ->getTop()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B20:K20')->getBorders()
+        $worksheet->getStyle('B26:K26')->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B25:K26')->getBorders()
             ->getLeft()
             ->setBorderStyle(Border::BORDER_THICK);
-        $worksheet->getStyle('B19:K20')->getBorders()
+        $worksheet->getStyle('B25:K26')->getBorders()
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
-        $rowNumber = 21;
+        $rowNumber = 27;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
-            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle);
+            $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id+1, $rowStyle, $this->shouldDistributionContainDate($assistance));
         }
     }
 
-    private function createBeneficiaryRow(Worksheet $worksheet, AssistanceBeneficiary $distributionBeneficiary, $rowNumber, $id, $rowStyle) {
+    private function createBeneficiaryRow(
+        Worksheet $worksheet,
+        AssistanceBeneficiary $distributionBeneficiary,
+        $rowNumber,
+        $id,
+        $rowStyle,
+        bool $shouldContainDate
+    ) {
         $bnf = $distributionBeneficiary->getBeneficiary();
         if ($bnf instanceof Household) {
             $person = $bnf->getHouseholdHead()->getPerson();
@@ -383,14 +480,18 @@ class AssistanceSpreadsheetExport
         $worksheet->setCellValue('B'.$rowNumber, $id);
         $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
         $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
-        $worksheet->setCellValue('E'.$rowNumber, self::getNationalId($person));
-        $worksheet->setCellValue('F'.$rowNumber, self::getPhone($person));
+        $worksheet->setCellValueExplicit('E'.$rowNumber, self::getNationalId($person), DataType::TYPE_STRING);
+        $worksheet->setCellValueExplicit('F'.$rowNumber, self::getPhone($person), DataType::TYPE_STRING);
         $worksheet->setCellValue('G'.$rowNumber, null);
         $worksheet->setCellValue('H'.$rowNumber, null);
         $worksheet->setCellValue('I'.$rowNumber, self::getProxyPhone($person));
         $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
         $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+
+        if ($shouldContainDate) {
+            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
+        }
 
         $nextRowNumber = $rowNumber + 1;
 
@@ -404,6 +505,7 @@ class AssistanceSpreadsheetExport
             $worksheet->setCellValue('C'.$nextRowNumber, $distributionBeneficiary->getJustification());
             ++$nextRowNumber;
         }
+
         return $nextRowNumber;
     }
 
@@ -422,8 +524,10 @@ class AssistanceSpreadsheetExport
         $ids = $person->getNationalIds();
         if (count($ids) > 0) {
             $id = $ids[0];
+
             return $id->getIdNumber().PHP_EOL."({$id->getIdType()})";
         }
+
         return null;
     }
 
@@ -431,18 +535,24 @@ class AssistanceSpreadsheetExport
     {
         foreach ($person->getPhones() as $p) {
             if (!$p->getProxy()) {
-                return $p->getPrefix().$p->getNumber();
+                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
         return null;
     }
 
+    private static function splitStringToGroupsOfThree(string $phoneNumber): string
+    {
+        $splitPhoneNumber = str_split(str_replace(' ', '', $phoneNumber), 3);
+        return implode(' ', $splitPhoneNumber);
+    }
+
     private static function getProxyPhone(Person $person): ?string
     {
         foreach ($person->getPhones() as $p) {
             if ($p->getProxy()) {
-                return $p->getPrefix().$p->getNumber();
+                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
@@ -457,29 +567,35 @@ class AssistanceSpreadsheetExport
             $result[] = 'Smartcard deposit: '.$deposit->getValue().' '.$deposit->getSmartcard()->getCurrency();
         }
 
-        foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
-            /** @var ReliefPackage $relief */
-            if ($relief->getState() === ReliefPackageState::DISTRIBUTED) {
+        foreach ($assistanceBeneficiary->getReliefPackagesNotInStates([ReliefPackageState::CANCELED]) as $relief) {
                 $result[] = $relief->getModalityType().', '.$relief->getAmountToDistribute().' '.$relief->getUnit();
-                break;
-            }
         }
 
         return implode("\n", $result);
     }
 
-    private function getImageResource(string $filename)
+    private static function getStringWithoutNewLineCharacters(string $string): string
     {
-        switch (strtolower(pathinfo($filename, PATHINFO_EXTENSION))) {
-            case 'gif':
-                return imagecreatefromgif($filename);
-            case 'jpg':
-            case 'jpeg':
-                return imagecreatefromjpeg($filename);
-            case 'png':
-                return imagecreatefrompng($filename);
-            default:
-                throw new \LogicException('Unsupported filetype '.strtolower(pathinfo($filename, PATHINFO_EXTENSION)));
+        return preg_replace('/\s+/', ' ', trim($string));
+    }
+
+    private function shouldDistributionContainDate(Assistance $assistance): bool
+    {
+        return $assistance->isRemoteDistributionAllowed() === true;
+    }
+
+    private function getDistributionDateTime(AssistanceBeneficiary $distributionBeneficiary): string
+    {
+        $deposits = array_filter($this->smartCardDeposits, function($smartcardDeposit) use($distributionBeneficiary) {
+           return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
+        });
+
+        if (empty($deposits)) {
+            return "";
         }
+
+        return implode("\n", array_map(function($deposit) {
+            return $deposit->getDistributedAt()->format('d. m. Y H:i');
+        }, $deposits));
     }
 }

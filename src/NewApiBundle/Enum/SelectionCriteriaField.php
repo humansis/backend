@@ -4,6 +4,8 @@ namespace NewApiBundle\Enum;
 
 final class SelectionCriteriaField
 {
+    use EnumTrait;
+
     public const
         GENDER = 'gender',
         DATE_OF_BIRTH = 'dateOfBirth',
@@ -23,4 +25,28 @@ final class SelectionCriteriaField
         CAMP_NAME = 'campName',
         VULNERABILITY_CRITERIA = 'vulnerabilityCriteria',
         COUNTRY_SPECIFIC = 'countrySpecific';
+
+    public static function values(): array
+    {
+        return [
+            self::GENDER,
+            self::DATE_OF_BIRTH,
+            self::RESIDENCY_STATUS,
+            self::HAS_NOT_BEEN_IN_DISTRIBUTIONS_SINCE,
+            self::DISABLED_HEAD_OF_HOUSEHOLD,
+            self::HAS_VALID_SMARTCARD,
+            self::HEAD_OF_HOUSEHOLD_DATE_OF_BIRTH,
+            self::HEAD_OF_HOUSEHOLD_GENDER,
+            self::LIVELIHOD,
+            self::FOOD_CONSUMPTION_SCORE,
+            self::COPING_STRATEGIES_INDEX,
+            self::INCOME_LEVEL,
+            self::HOUSEHOLD_SIZE,
+            self::CURRENT_LOCATION,
+            self::LOCATION_TYPE,
+            self::CAMP_NAME,
+            self::VULNERABILITY_CRITERIA,
+            self::COUNTRY_SPECIFIC,
+        ];
+    }
 }

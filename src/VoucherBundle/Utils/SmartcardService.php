@@ -13,6 +13,7 @@ use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitio
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Entity\Smartcard\PreliminaryInvoice;
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
+use NewApiBundle\InputType\Smartcard\UpdateSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use NewApiBundle\InputType\SmartcardPurchaseInputType;
 use ProjectBundle\Entity\Project;
@@ -101,6 +102,36 @@ class SmartcardService
             $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
             $this->smartcardRepository->save($smartcard);
         }
+    }
+
+    /**
+     * @param Smartcard                $smartcard
+     * @param UpdateSmartcardInputType $updateSmartcardInputType
+     *
+     * @return Smartcard
+     * @throws SmartcardActivationDeactivatedException
+     * @throws SmartcardNotAllowedStateTransition
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function update(Smartcard $smartcard, UpdateSmartcardInputType $updateSmartcardInputType): Smartcard
+    {
+        if ($smartcard->getState() !== $updateSmartcardInputType->getState()) {
+            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $updateSmartcardInputType->getState())) {
+                throw new SmartcardNotAllowedStateTransition($smartcard, $updateSmartcardInputType->getState(),
+                    "Not allowed transition from state {$smartcard->getState()} to {$updateSmartcardInputType->getState()}.");
+            }
+            if($updateSmartcardInputType->getState() === SmartcardStates::INACTIVE){
+                $smartcard->setDisabledAt($updateSmartcardInputType->getCreatedAt());
+            }
+            if ($smartcard->isSuspicious() !== $updateSmartcardInputType->isSuspicious()){
+                $smartcard->setSuspicious($updateSmartcardInputType->isSuspicious(),$updateSmartcardInputType->getSuspiciousReason());
+            }
+            $smartcard->setState($updateSmartcardInputType->getState());
+            $smartcard->setChangedAt($updateSmartcardInputType->getCreatedAt());
+            $this->smartcardRepository->save($smartcard);
+        }
+        return $smartcard;
     }
 
     /**
@@ -417,5 +448,21 @@ class SmartcardService
                 }
             }
         }
+    }
+
+    /**
+     * @param string  $smartcardCode
+     *
+     * @retrun Smartcard
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function getSmartcardByCode(string $smartcardCode)
+    {
+        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
+
+        if (!$smartcard){
+            throw new NotFoundHttpException("Card with code '{$smartcardCode}' does not exists");
+        }
+        return $smartcard;
     }
 }

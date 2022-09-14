@@ -9,7 +9,8 @@ interface MapperInterface
         NEW_API = 'new_api',
         OFFLINE_APP = 'offline-app',
         VENDOR_APP = 'vendor-app',
-        WEB_API = 'web-app'
+        WEB_API = 'web-app',
+        SUPPORT_APP = 'support-app'
     ;
 
     /**

@@ -3,6 +3,7 @@
 namespace NewApiBundle\Controller;
 
 use BeneficiaryBundle\Entity\Household;
+use BeneficiaryBundle\Repository\HouseholdRepository;
 use BeneficiaryBundle\Utils\HouseholdService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\InputType\AddHouseholdsToProjectInputType;
@@ -26,12 +27,17 @@ class HouseholdController extends AbstractController
     /** @var HouseholdService */
     private $householdService;
 
+    /** @var HouseholdRepository */
+    private $householdRepository;
+
     /**
-     * @param HouseholdService $householdService
+     * @param HouseholdService    $householdService
+     * @param HouseholdRepository $householdRepository
      */
-    public function __construct(HouseholdService $householdService)
+    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository)
     {
         $this->householdService = $householdService;
+        $this->householdRepository = $householdRepository;
     }
 
     /**
@@ -114,8 +120,7 @@ class HouseholdController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->getDoctrine()->getRepository(Household::class)
-            ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
+        $data = $this->householdRepository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
     }

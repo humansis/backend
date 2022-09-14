@@ -2,10 +2,14 @@
 
 namespace NewApiBundle\Controller;
 
+use BeneficiaryBundle\Exception\CsvParserException;
 use CommonBundle\Pagination\Paginator;
 use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Repository\AssistanceRepository;
+use DistributionBundle\Repository\CommodityRepository;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\InputType\AssistanceCreateInputType;
@@ -18,12 +22,13 @@ class AssistanceCommodityController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/commodities")
      *
      * @param CommodityFilterInputType $filter
+     * @param CommodityRepository      $commodityRepository
      *
      * @return JsonResponse
      */
-    public function commodities(CommodityFilterInputType $filter): JsonResponse
+    public function commodities(CommodityFilterInputType $filter, CommodityRepository $commodityRepository): JsonResponse
     {
-        $projects = $this->getDoctrine()->getRepository(Commodity::class)->findByParams($filter);
+        $projects = $commodityRepository->findByParams($filter);
 
         return $this->json($projects);
     }
@@ -51,7 +56,11 @@ class AssistanceCommodityController extends AbstractController
      * @param AssistanceFactory         $factory
      *
      * @return JsonResponse
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws CsvParserException
+     * @throws EntityNotFoundException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws ORMException
      */
     public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {

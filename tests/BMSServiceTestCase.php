@@ -246,7 +246,7 @@ class BMSServiceTestCase extends KernelTestCase
     }
 
 
-    public function setUpFunctionnal()
+    public function setUpFunctionnal(): void
     {
         self::bootKernel();
 
@@ -284,7 +284,7 @@ class BMSServiceTestCase extends KernelTestCase
     /**
      * {@inheritDoc}
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         //parent::tearDown();
         if (!empty($this->em)) {

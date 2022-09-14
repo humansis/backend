@@ -15,6 +15,7 @@ use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Entity\ImportQueue;
 use NewApiBundle\Enum\ImportQueueState;
 use NewApiBundle\Enum\ImportState;
+use NewApiBundle\Exception\MissingHouseholdHeadException;
 use NewApiBundle\InputType\Beneficiary\BeneficiaryInputType;
 use NewApiBundle\Repository\ImportQueueRepository;
 use NewApiBundle\Workflow\ImportQueueTransitions;
@@ -166,11 +167,23 @@ class IntegrityChecker
         }
 
         if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
-            $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
-            $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
-            foreach ($violations as $violation) {
-                $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
+            try {
+                $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
+                $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
+                foreach ($violations as $violation) {
+                    $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
+                }
             }
+            catch (MissingHouseholdHeadException $e) {
+                $item->addViolation(
+                    Integrity\QueueViolation::create(
+                        0,
+                        HouseholdExportCSVService::HEAD,
+                        'Household without head',
+                        false
+                    )
+                );
+            }            
         }
     }
 

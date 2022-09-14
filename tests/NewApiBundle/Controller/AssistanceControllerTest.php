@@ -11,6 +11,7 @@ use DistributionBundle\Entity\ModalityType;
 use DistributionBundle\Enum\AssistanceType;
 use DistributionBundle\Repository\AssistanceRepository;
 use DistributionBundle\Repository\ModalityTypeRepository;
+use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Enum\ProductCategoryType;
@@ -23,7 +24,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
@@ -63,14 +64,14 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": '.($assistance->getIndividualsTargeted() ?: 'null').',
             "description": "*",
             "commodityIds": ['.implode(',', $commodityIds).'],
-            "validated": '.($assistance->getValidated() ? 'true' : 'false').',
+            "validated": '.($assistance->isValidated() ? 'true' : 'false').',
             "completed": '.($assistance->getCompleted() ? 'true' : 'false').',
             "foodLimit": "*",
             "nonFoodLimit": "*",
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
             "threshold": '.($assistance->getAssistanceSelection()->getThreshold() ?: 'null').',
-            "deletable": '.($assistance->getValidated() ? 'false' : 'true').'
+            "deletable": '.($assistance->isValidated() ? 'false' : 'true').'
         }', $this->client->getResponse()->getContent());
     }
 
@@ -117,38 +118,234 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function commodityGenerator(): iterable
     {
         yield \NewApiBundle\Enum\ModalityType::SMART_CARD => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
-            'unit' => 'CZK',
-            'value' => 1000,
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
         ]];
         yield \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
-            'unit' => 'CZK',
-            'value' => '1000',
-            'description' => 'something important',
-            "remoteDistributionAllowed" => false,
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
+                'unit' => 'CZK',
+                'value' => '1000',
+                'description' => 'something important',
+                "remoteDistributionAllowed" => false,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true
         ]];
         yield \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER,
-            'unit' => 'CZK',
-            'value' => "1000.00",
-            'description' => '',
-            "remoteDistributionAllowed" => false,
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::QR_CODE_VOUCHER,
+                'unit' => 'CZK',
+                'value' => "1000.00",
+                'description' => '',
+                "remoteDistributionAllowed" => false,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
         ]];
         yield \NewApiBundle\Enum\ModalityType::MOBILE_MONEY => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::MOBILE_MONEY,
-            'unit' => 'CZK',
-            'value' => '0.00',
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::MOBILE_MONEY,
+                'unit' => 'CZK',
+                'value' => '0.00',
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
         ]];
         yield \NewApiBundle\Enum\ModalityType::BREAD => [[
-            'modalityType' => \NewApiBundle\Enum\ModalityType::BREAD,
-            'unit' => 'ks',
-            'value' => 1,
-            'division' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::BREAD,
+                'unit' => 'ks',
+                'value' => 1,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
+        ]];
+        yield 'Smartcard for household' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD,
+                    'quantities' => null
+                ],
+            ],
+            'response' => true,
+        ]];
+        yield 'No quantities for members' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => null
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Empty quantities for members' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => []
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Quantities for member' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBER,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => null,
+                            'value' => 1000
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Correct quantities for members' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
+                        ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
+                ],
+            ],
+            'response' => true,
+        ]];
+        yield 'Not correct quantities for members - missing range from 1' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 2,
+                            'rangeTo' => 5,
+                            'value' => 100
+                        ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Not correct quantities for members - missing range to null' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
+                        ],
+                        [
+                            'rangeFrom' => 6,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => 10,
+                            'value' => 150
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
+        ]];
+        yield 'Not correct quantities for members - not following up ranges' => [[
+            'commodity' => [
+                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'unit' => 'CZK',
+                'value' => 1000,
+                'division' => [
+                    'code' => CommodityDivision::PER_HOUSEHOLD_MEMBERS,
+                    'quantities' => [
+                        [
+                            'rangeFrom' => 1,
+                            'rangeTo' => 5,
+                            'value' => 100
+                        ],
+                        [
+                            'rangeFrom' => 7,
+                            'rangeTo' => 8,
+                            'value' => 120
+                        ],
+                        [
+                            'rangeFrom' => 9,
+                            'rangeTo' => null,
+                            'value' => 150
+                        ]
+                    ]
+                ],
+            ],
+            'response' => false,
         ]];
     }
 
@@ -178,7 +375,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::DISTRIBUTION,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
-            'commodities' => [$commodity],
+            'commodities' => [$commodity['commodity']],
             'selectionCriteria' => [
                 [
                     'group' => 1,
@@ -192,15 +389,16 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'foodLimit' => 10.99,
             'nonFoodLimit' => null,
             'cashbackLimit' => 1024,
-            'remoteDistributionAllowed' => $commodity['modalityType']==\NewApiBundle\Enum\ModalityType::SMART_CARD ? false : null,
+            'remoteDistributionAllowed' => $commodity['commodity']['modalityType'] === \NewApiBundle\Enum\ModalityType::SMART_CARD ? false : null,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
-        );
-        $this->assertJsonFragment('{
+        if($commodity['response']) {
+            $this->assertTrue(
+                $this->client->getResponse()->isSuccessful(),
+                'Request failed: '.$this->client->getResponse()->getContent()
+            );
+            $this->assertJsonFragment('{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -223,9 +421,18 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "remoteDistributionAllowed": "*"
         }', $this->client->getResponse()->getContent());
 
-        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+            $contentArray = json_decode($this->client->getResponse()->getContent(), true);
 
-        return $contentArray['id'];
+            return $contentArray['id'];
+        } else {
+            $this->assertTrue(
+                $this->client->getResponse()->isClientError(),
+                'Request should return client error. '.$this->client->getResponse()->getContent().' given'
+            );
+
+            return null;
+        }
+
     }
 
     public function testCommodityCountOfCreatedAssistance()
@@ -311,7 +518,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateDistributionDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime();
@@ -335,7 +542,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testUpdateExpirationDate()
     {
         $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
-            'validated' => false,
+            'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
         $date = new DateTime('+1 year');
@@ -377,7 +584,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -446,7 +653,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -512,7 +719,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'type' => AssistanceType::ACTIVITY,
             'target' => \DistributionBundle\Enum\AssistanceTargetType::COMMUNITY,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
@@ -569,7 +776,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -656,7 +863,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => \DistributionBundle\Enum\AssistanceTargetType::INDIVIDUAL,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => $modalityType->getName(), 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
             'selectionCriteria' => [
                 [
@@ -708,7 +915,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $cashModality = $modalityTypeRepository->findOneBy(['name' => \NewApiBundle\Enum\ModalityType::CASH]);
         $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ['id' => $cashModality->getId()], 'description' => 'Note'];
-        $assistance = $assistanceRepository->findOneBy(['validated' => true]);
+        $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
@@ -728,7 +935,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
 
-        $assistance = $assistanceRepository->findOneBy(['validated' => false]);
+        $assistance = $assistanceRepository->findOneBy(['validatedBy' => null]);
         $id = $assistance->getId();
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [

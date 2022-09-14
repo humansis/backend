@@ -11,7 +11,7 @@ services:
             - /opt/humansis/var:/var/www/html/var
             - /var/cache/humansis:/var/www/html/var/cache
             - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
-        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100 -vv"
+        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100 -vvv"
         networks:
             - backend
         restart: always

@@ -133,6 +133,7 @@ php:
         MOBILE_APP_ID: xxx
         AWS_LOGS_ACCESS_KEY: secret_key
         AWS_LOGS_SECRET_KEY: secret_key
+        SYMFONY_SECRET: 'ThisIsLocalVerySecretToken'
 ```
 
 ### Test interpret and docker environment

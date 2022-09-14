@@ -21,6 +21,7 @@ use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
 use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Entity\DivisionGroup;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
@@ -31,6 +32,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use UserBundle\Entity\User;
 
 class Assistance
 {
@@ -100,10 +102,10 @@ class Assistance
         });
     }
 
-    public function validate(): self
+    public function validate(User $user): self
     {
         $this->cleanCache();
-        $this->assistanceRoot->setValidated(true);
+        $this->assistanceRoot->setValidatedBy($user);
         $this->assistanceRoot->setUpdatedOn(new \DateTimeImmutable());
         $this->recountReliefPackages();
 
@@ -112,7 +114,7 @@ class Assistance
 
     public function unvalidate(): self
     {
-        if (!$this->assistanceRoot->getValidated()) {
+        if (!$this->assistanceRoot->isValidated()) {
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance wasn\'t validated.');
         }
         $this->cleanCache();
@@ -122,7 +124,7 @@ class Assistance
         if ($statistics['amountDistributed'] > 0) {
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
-        $this->assistanceRoot->setValidated(false);
+        $this->assistanceRoot->setValidatedBy(null);
         $this->assistanceRoot->setUpdatedOn(new \DateTimeImmutable());
 
         return $this;
@@ -149,7 +151,7 @@ class Assistance
 
     public function addCommodity(CommodityInputType $commodityInputType): self
     {
-        if ($this->assistanceRoot->getValidated()) {
+        if ($this->assistanceRoot->isValidated()) {
             throw new \LogicException('Validated assistance shouldn\'t be edited');
         }
         $modalityType = $this->modalityTypeRepository->findOneBy(['name' => $commodityInputType->getModalityType()]);
@@ -161,7 +163,20 @@ class Assistance
         $commodity->setDescription($commodityInputType->getDescription());
         $commodity->setValue($commodityInputType->getValue());
         $commodity->setUnit($commodityInputType->getUnit());
-        $commodity->setDivision($commodityInputType->getDivision());
+        if ($commodityInputType->getDivision()) {
+            $commodity->setDivision($commodityInputType->getDivision()->getCode());
+            if ($commodityInputType->getDivision()->getQuantities()) {
+                foreach ($commodityInputType->getDivision()->getQuantities() as $quantity) {
+                    $divisionGroup = new DivisionGroup();
+                    $divisionGroup->setRangeFrom($quantity->getRangeFrom());
+                    $divisionGroup->setRangeTo($quantity->getRangeTo());
+                    $divisionGroup->setValue((string) $quantity->getValue());
+                    $commodity->addDivisionGroup($divisionGroup);
+                }
+            }
+        } else {
+            $commodity->setDivision(null);
+        }
         $this->assistanceRoot->addCommodity($commodity);
         $this->recountReliefPackages();
 
@@ -212,6 +227,26 @@ class Assistance
                             $household = $household->getHousehold();
                         }
                         return $commodity->getValue() * count($household->getBeneficiaries());
+                    });
+                    break;
+                case CommodityDivision::PER_HOUSEHOLD_MEMBERS:
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
+
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
+                        }
+
+                        $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                        foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))) {
+                                return (float) $divisionGroup->getValue();
+                            }
+                        }
+
+                        throw new \LogicException("Division Group was not found.");
                     });
                     break;
                 case CommodityDivision::PER_HOUSEHOLD:
@@ -294,7 +329,7 @@ class Assistance
      */
     public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
     {
-        if ($this->assistanceRoot->getValidated() == 1) {
+        if ($this->assistanceRoot->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
         }
 
@@ -330,7 +365,7 @@ class Assistance
      */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
-        if ($this->assistanceRoot->getValidated() == 1) {
+        if ($this->assistanceRoot->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
         }
 

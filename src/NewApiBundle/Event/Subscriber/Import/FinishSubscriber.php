@@ -2,6 +2,7 @@
 
 namespace NewApiBundle\Event\Subscriber\Import;
 
+use Doctrine\ORM\EntityManagerInterface;
 use NewApiBundle\Component\Import\ImportReset;
 use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
 use NewApiBundle\Component\Import\Messaging\Message\ItemBatch;
@@ -38,17 +39,24 @@ class FinishSubscriber implements EventSubscriberInterface
     private $importReset;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
     public function __construct(
+        EntityManagerInterface $entityManager,
         ImportReset           $importReset,
         ImportQueueRepository $queueRepository,
         MessageBusInterface   $messageBus,
         ImportRepository      $importRepository,
         TranslatorInterface   $translator
     ) {
+        $this->entityManager = $entityManager;
         $this->importReset = $importReset;
         $this->queueRepository = $queueRepository;
         $this->messageBus = $messageBus;
@@ -71,6 +79,10 @@ class FinishSubscriber implements EventSubscriberInterface
 
     public function fillQueue(EnteredEvent $event): void
     {
+        /**
+         * This is important because Import object is not yet flushed
+         */
+        $this->entityManager->flush();
         /** @var Import $import */
         $import = $event->getSubject();
 

@@ -244,6 +244,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
                         break;
+                    case AssistanceOrderInputType::SORT_BY_ROUND:
+                        $qb->orderBy('dd.round', $direction);
+                        break;
                     case AssistanceOrderInputType::SORT_BY_TYPE:
                         $qb->orderBy('dd.assistanceType', $direction);
                         break;
@@ -272,7 +275,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('dd')
             ->leftJoin('dd.project', 'p')
             ->andWhere('dd.archived = 0')
-            ->andWhere('dd.validated = 1')
+            ->andWhere('dd.validatedBy IS NOT NULL')
             ->andWhere('dd.project = :project')
             ->andWhere('p.iso3 = :iso3')
             ->andWhere('dd.targetType IN (:targetTypes)')

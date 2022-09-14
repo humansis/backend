@@ -297,6 +297,56 @@ class BeneficiaryRepository extends AbstractCriteriaRepository
             ->getResult();
     }
 
+    /**
+     * @param string  $documentNumber
+     * @param string  $documentType
+     * @param Project $project
+     *
+     * @return float|int|mixed|string
+     */
+    public function findByIdentityAndProject(string $documentNumber,string $documentType, Project $project)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+
+            ->leftJoin('p.nationalIds', 'id')
+            ->where(':project MEMBER OF hh.projects')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->andWhere('id.idNumber = :idNumber')
+            ->andWhere('id.idType = :idType')
+
+            ->setParameter('idNumber', $documentNumber)
+            ->setParameter('idType', $documentType)
+            ->setParameter('project', $project);
+        return $qb->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param array  $documentNumbers
+     * @param string $idType
+     *
+     * @return float|int|mixed|string
+     */
+    public function findByIdentities(array $documentNumbers,string $idType)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+
+            ->leftJoin('p.nationalIds', 'id')
+            ->andWhere('id.idNumber IN (:idNumbers)')
+            ->andWhere('id.idType = :idType')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->setParameter('idNumbers', $documentNumbers)
+            ->setParameter('idType', $idType);
+        return $qb->getQuery()
+            ->getResult();
+    }
+
     public function findIdentitiesByNationalIds(string $iso3, NationalIdHashSet $ids)
     {
         $qb = $this->createQueryBuilder('b')

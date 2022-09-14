@@ -7,7 +7,7 @@ namespace NewApiBundle\InputType;
 use NewApiBundle\Enum\SelectionCriteriaField;
 use NewApiBundle\InputType\Assistance\CommodityInputType;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
-use NewApiBundle\Request\InputTypeInterface;
+use NewApiBundle\Request\InputTypeNullableDenormalizer;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use NewApiBundle\Validator\Constraints\Country;
 use NewApiBundle\Validator\Constraints\Iso8601;
@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict", "AdditionalChecks"})
  */
-class AssistanceCreateInputType implements InputTypeInterface
+class AssistanceCreateInputType implements InputTypeNullableDenormalizer
 {
     /**
      * @Assert\NotBlank
@@ -177,6 +177,14 @@ class AssistanceCreateInputType implements InputTypeInterface
      * @Assert\Type("string")
      */
     private $note;
+
+    /**
+     * @var int|null
+     * @Assert\Type("integer")
+     * @Assert\GreaterThan("0")
+     * @Assert\LessThan("100")
+     */
+    private $round;
 
     /**
      * @Assert\Type("array")
@@ -672,5 +680,23 @@ class AssistanceCreateInputType implements InputTypeInterface
     {
         $this->note = $note;
     }
+
+    /**
+     * @return int|null
+     */
+    public function getRound()
+    {
+        return $this->round;
+    }
+
+    /**
+     * @param int|null $round
+     */
+    public function setRound(?int $round): void
+    {
+        $this->round = $round;
+    }
+
+
 
 }

@@ -6,12 +6,14 @@ use DistributionBundle\Entity\Assistance;
 use DistributionBundle\Enum\AssistanceTargetType;
 use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
 use DistributionBundle\Repository\AssistanceRepository;
+use Doctrine\Common\Collections\Criteria;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use Tests\BMSServiceTestCase;
+use UserBundle\Entity\User;
 
 class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {
@@ -38,7 +40,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function setUp()
+    public function setUp(): void
     {
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
@@ -95,12 +97,15 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 
     public function testStatisticsCheckNumbers(): void
     {
-        $assistanceRoot = $this->assistanceRepository->findOneBy([
-            'validated' => true,
-            'completed' => false,
-            'archived' => false,
-            'targetType' => AssistanceTargetType::INDIVIDUAL,
-        ], ['id' => 'asc']);
+        $assistanceRoot = $this->assistanceRepository->matching(
+            Criteria::create()
+                ->where(Criteria::expr()->neq('validatedBy', null))
+                ->andWhere(Criteria::expr()->eq('completed', false))
+                ->andWhere(Criteria::expr()->eq('archived', false))
+                ->andWhere(Criteria::expr()->eq('targetType', AssistanceTargetType::INDIVIDUAL))
+                ->orderBy(['id' => 'asc'])
+        )->first();
+
         if (!$assistanceRoot) {
             $this->markTestSkipped('There is no suitable assistance for testing in the database.');
         }
@@ -161,8 +166,10 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: '.$this->client->getResponse()->getContent()
         );
 
+        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+
         // validate assistance
-        $assistance->validate();
+        $assistance->validate($user);
 
         // check statistics
         $this->request('GET',

@@ -7,7 +7,6 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\Community;
 use BeneficiaryBundle\Entity\Institution;
 use BeneficiaryBundle\Exception\CsvParserException;
-use CommonBundle\Entity\Location;
 use CommonBundle\Pagination\Paginator;
 use CommonBundle\Utils\LocationService;
 use DateTime;
@@ -26,11 +25,13 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use NewApiBundle\Component\Assistance\AssistanceFactory;
+use NewApiBundle\Component\Assistance\Domain\Assistance as AssistanceDomain;
 use NewApiBundle\Component\Assistance\SelectionCriteriaFactory;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
 use NewApiBundle\Enum\CacheTarget;
 use NewApiBundle\Enum\PersonGender;
 use NewApiBundle\InputType\Assistance\SelectionCriterionInputType;
+use NewApiBundle\InputType\Assistance\UpdateAssistanceInputType;
 use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
@@ -45,6 +46,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use UserBundle\Entity\User;
 use VoucherBundle\Entity\Voucher;
 
 /**
@@ -144,14 +146,56 @@ class AssistanceService
     }
 
     /**
+     * @param Assistance                $assistanceRoot
+     * @param UpdateAssistanceInputType $updateAssistanceInputType
+     * @param User                      $user
+     *
+     * @return AssistanceDomain
+     */
+    public function update(
+        Assistance                $assistanceRoot,
+        UpdateAssistanceInputType $updateAssistanceInputType,
+        User                      $user
+    ): AssistanceDomain {
+        $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
+        if ($updateAssistanceInputType->hasValidated()) {
+            if ($updateAssistanceInputType->getValidated()) {
+                $assistance->validate($user);
+            } else {
+                $assistance->unvalidate();
+            }
+        }
+        if ($updateAssistanceInputType->isCompleted()) {
+            $assistance->complete();
+        }
+        if ($updateAssistanceInputType->hasDateDistribution()) {
+            $this->updateDateDistribution($assistanceRoot, $updateAssistanceInputType->getDateDistribution());
+        }
+        if ($updateAssistanceInputType->hasDateExpiration()) {
+            $this->updateDateExpiration($assistanceRoot, $updateAssistanceInputType->getDateExpiration());
+        }
+        if ($updateAssistanceInputType->hasRound()) {
+            $this->updateRound($assistanceRoot, $updateAssistanceInputType->getRound());
+        }
+        if ($updateAssistanceInputType->hasNote()) {
+            $this->updateNote($assistanceRoot, $updateAssistanceInputType->getNote());
+        }
+
+        $this->assistanceRepository->save($assistance);
+
+        return $assistance;
+    }
+
+    /**
      * @param Assistance $assistanceRoot
+     * @param User       $user
      *
      * @deprecated use Assistance::validate instead
      */
-    public function validateDistribution(Assistance $assistanceRoot)
+    public function validateDistribution(Assistance $assistanceRoot, User $user)
     {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
-        $assistance->validate();
+        $assistance->validate($user);
         $this->assistanceRepository->save($assistance);
     }
 
@@ -258,7 +302,7 @@ class AssistanceService
 
         $location = $this->locationService->getLocation($countryISO3, $location);
         $distribution->setLocation($location);
-        $distribution->setName($this->generateName($location, $distribution->getDateDistribution()));
+        $distribution->setName(AssistanceFactory::generateName($distribution));
 
         $project = $distribution->getProject();
         $projectTmp = $this->em->getRepository(Project::class)->find($project);
@@ -383,36 +427,34 @@ class AssistanceService
         return $assistance;
     }
 
-    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date)
+    public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date): void
     {
-        $newDistributionName = $this->generateName($assistance->getLocation(), $date);
-
         $assistance
             ->setDateDistribution($date)
-            ->setName($newDistributionName)
+            ->setName(AssistanceFactory::generateName($assistance))
             ->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
-    public function updateDateExpiration(Assistance $assistance, DateTimeInterface $date): void
+    public function updateDateExpiration(Assistance $assistance, ?DateTimeInterface $date): void
     {
         $assistance->setDateExpiration($date);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
 
     public function updateNote(Assistance $assistance, ?string $note): void
     {
         $assistance->setNote($note);
         $assistance->setUpdatedOn(new DateTime());
-
-        $this->em->persist($assistance);
-        $this->em->flush();
     }
+
+    public function updateRound(Assistance $assistance, ?int $round): void
+    {
+        $assistance->setRound($round);
+        $assistance->setName(AssistanceFactory::generateName($assistance));
+        $assistance->setUpdatedOn(new DateTime());
+    }
+
+
 
     /**
      * @param int $projectId
@@ -502,7 +544,7 @@ class AssistanceService
                 $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
                 $this->translator->trans("DISTR. NO.") => $assistance->getId(),
                 $this->translator->trans("Distributed by") => " ",
-                $this->translator->trans("Round") => " ",
+                $this->translator->trans("Round") => ($assistance->getRound() === null ? $this->translator->trans("N/A") : $assistance->getRound()),
                 $this->translator->trans("Donor") => $donors,
                 $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
                 $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
@@ -629,7 +671,7 @@ class AssistanceService
     public function delete(Assistance $assistanceEntity)
     {
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
-        if ($assistanceEntity->getValidated()) { //TODO also completed? to discuss
+        if ($assistanceEntity->isValidated()) { //TODO also completed? to discuss
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
             $assistance->archive();
             $this->assistanceRepository->save($assistance);
@@ -678,100 +720,6 @@ class AssistanceService
 
         $this->em->remove($assistanceEntity);
         $this->em->flush();
-    }
-
-    private function generateName(Location $location, ?DateTimeInterface $date = null): string
-    {
-        $adm = $location->getName();
-
-        if ($date) {
-            return $adm.'-'.$date->format('d-m-Y');
-        } else {
-            return $adm.'-'.date('d-m-Y');
-        }
-    }
-
-    private function mapping(AssistanceCreateInputType $inputType): array
-    {
-        /** @var Location $location */
-        $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
-
-        $locationArray = [];
-        if ($location->getAdm4()) {
-            $locationArray = [
-                'adm1' => $location->getAdm4()->getAdm3()->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm4()->getAdm3()->getAdm2()->getId(),
-                'adm3' => $location->getAdm4()->getAdm3()->getId(),
-                'adm4' => $location->getAdm4()->getId(),
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm3()){
-            $locationArray = [
-                'adm1' => $location->getAdm3()->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm3()->getAdm2()->getId(),
-                'adm3' => $location->getAdm3()->getId(),
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm2()){
-            $locationArray = [
-                'adm1' => $location->getAdm2()->getAdm1()->getId(),
-                'adm2' => $location->getAdm2()->getId(),
-                'adm3' => null,
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        } elseif ($location->getAdm1()){
-            $locationArray = [
-                'adm1' => $location->getAdm1()->getId(),
-                'adm2' => null,
-                'adm3' => null,
-                'adm4' => null,
-                'country_iso3' => $inputType->getIso3(),
-            ];
-        }
-
-        $distributionArray = [
-            'countryIso3' => $inputType->getIso3(),
-            'assistance_type' => $inputType->getType(),
-            'target_type' => $inputType->getTarget(),
-            'date_distribution' => $inputType->getDateDistribution(),
-            'date_expiration' => $inputType->getDateExpiration(),
-            'project' => ['id' => $inputType->getProjectId()],
-            'location' => $locationArray,
-            'sector' => $inputType->getSector(),
-            'subsector' => $inputType->getSubsector(),
-            'threshold' => $inputType->getThreshold(),
-            'institutions' => $inputType->getInstitutions(),
-            'communities' => $inputType->getCommunities(),
-            'households_targeted' => $inputType->getHouseholdsTargeted(),
-            'individuals_targeted' => $inputType->getIndividualsTargeted(),
-            'description' => $inputType->getDescription(),
-            'foodLimit' => $inputType->getFoodLimit(),
-            'nonfoodLimit' => $inputType->getNonFoodLimit(),
-            'cashbackLimit' => $inputType->getCashbackLimit(),
-            'remoteDistributionAllowed' => $inputType->getRemoteDistributionAllowed(),
-            'allowedProductCategoryTypes' => $inputType->getAllowedProductCategoryTypes(),
-        ];
-
-        foreach ($inputType->getCommodities() as $commodity) {
-            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => $commodity->getModalityType()]);
-            if (!$modalityType) {
-                throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodity->getModalityType()));
-            }
-            $distributionArray['commodities'][] = [
-                'value' => $commodity->getValue(),
-                'unit' => $commodity->getUnit(),
-                'description' => $commodity->getDescription(),
-                'modality_type' => ['id' => $modalityType->getId()],
-            ];
-        }
-
-        foreach ($inputType->getSelectionCriteria() as $criterion) {
-            $distributionArray['selection_criteria'][$criterion->getGroup()][] = $this->selectionCriteriaFactory->create($criterion);
-        }
-
-        return $distributionArray;
     }
 
     /**

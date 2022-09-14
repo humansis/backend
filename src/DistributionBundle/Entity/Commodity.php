@@ -2,10 +2,12 @@
 
 namespace DistributionBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use NewApiBundle\Component\Assistance\DTO\DivisionSummary;
 use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\DBAL\AssistanceCommodityDivisionEnum;
-use NewApiBundle\Enum\PersonGender;
+use NewApiBundle\Entity\DivisionGroup;
+use NewApiBundle\Enum\EnumValueNoFoundException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use NewApiBundle\Entity\Helper\EnumTrait;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
@@ -62,6 +64,12 @@ class Commodity
      * @ORM\Column(name="division", type="enum_assitance_commodity_division", nullable=true)
      */
     private $division;
+
+    /**
+     * @var DivisionGroup[]|Collection
+     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
+     */
+    private $divisionGroups;
 
     /**
      * Set unit.
@@ -193,11 +201,40 @@ class Commodity
 
     /**
      * @param string|null $division
-     */
+     *
+     * @throws EnumValueNoFoundException
+    */
     public function setDivision(?string $division): void
     {
         self::validateValue('division', CommodityDivision::class, $division, true);
 
         $this->division = $division ? CommodityDivision::valueFromAPI($division) : null;
+    }
+
+    /**
+     * @return DivisionGroup[]|Collection
+     */
+    public function getDivisionGroups()
+    {
+        return $this->divisionGroups;
+    }
+
+    /**
+     * @param DivisionGroup $divisionGroup
+     *
+     * @return void
+     */
+    public function addDivisionGroup(DivisionGroup $divisionGroup): void
+    {
+        $divisionGroup->setCommodity($this);
+        $this->divisionGroups[] = $divisionGroup;
+    }
+
+    /**
+     * @return DivisionSummary
+     */
+    public function getDivisionSummary(): DivisionSummary
+    {
+        return new DivisionSummary($this->division, $this->divisionGroups);
     }
 }

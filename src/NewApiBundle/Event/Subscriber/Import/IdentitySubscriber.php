@@ -78,6 +78,10 @@ class IdentitySubscriber implements EventSubscriberInterface
 
     public function fillQueue(EnteredEvent $event): void
     {
+        /**
+         * This is important because Import object is not yet flushed
+         */
+        $this->entityManager->flush();
         /** @var Import $import */
         $import = $event->getSubject();
 
