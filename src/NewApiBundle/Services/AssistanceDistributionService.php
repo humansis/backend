@@ -6,11 +6,15 @@ use BeneficiaryBundle\Entity\Beneficiary;
 use BeneficiaryBundle\Entity\CountrySpecific;
 use BeneficiaryBundle\Repository\BeneficiaryRepository;
 use BeneficiaryBundle\Repository\CountrySpecificRepository;
+use CommonBundle\Exception\BadRequestDataException;
 use DistributionBundle\Entity\Assistance;
 use Doctrine\ORM\NonUniqueResultException;
+use Exception;
 use NewApiBundle\Entity\Assistance\ReliefPackage;
+use NewApiBundle\Enum\ReliefPackageState;
 use NewApiBundle\InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use NewApiBundle\InputType\Assistance\DistributeReliefPackagesInputType;
+use NewApiBundle\InputType\Assistance\UpdateReliefPackagesInputType;
 use NewApiBundle\OutputType\Assistance\DistributeReliefPackagesOutputType;
 use NewApiBundle\Repository\Assistance\ReliefPackageRepository;
 use NewApiBundle\Workflow\ReliefPackageTransitions;
@@ -229,4 +233,32 @@ class AssistanceDistributionService
 
     }
 
+    /**
+     * @param ReliefPackage                 $reliefpackage
+     * @param UpdateReliefPackagesInputType $inputpackages
+     *
+     * @return ReliefPackage
+     * @throws Exception
+     */
+    public function update(ReliefPackage $reliefpackage,UpdateReliefPackagesInputType $inputpackages) : ReliefPackage
+    {
+        if(ReliefPackageState::isTransitionAllowed($reliefpackage->getState(),$inputpackages->getState())) {
+            $reliefpackage->setState($inputpackages->getState());
+            if ($reliefpackage->getAmountDistributed() !== $inputpackages->getAmountDistributed()) {
+                $reliefpackage->setAmountDistributed($inputpackages->getAmountDistributed());
+            }
+            if ($inputpackages->getNotes()) {
+                $notes = $inputpackages->getNotes();
+                if ($reliefpackage->getNotes()) {
+                    $notes = trim($reliefpackage->getNotes().', '.$inputpackages->getNotes());
+                }
+                $reliefpackage->setNotes($notes);
+            }
+            $reliefpackage->setLastModifiedNow();
+            $this->reliefPackageRepository->save($reliefpackage);
+        }else{
+            throw new BadRequestDataException("Not allowed transition from state {$reliefpackage->getState()} to {$inputpackages->getState()}.");
+        }
+        return $reliefpackage;
+    }
 }
