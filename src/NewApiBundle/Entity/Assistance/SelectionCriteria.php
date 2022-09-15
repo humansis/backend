@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="selection_criteria")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\SelectionCriteriaRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class SelectionCriteria extends AbstractEntity
 {

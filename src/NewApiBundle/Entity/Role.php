@@ -11,6 +11,7 @@ use UserBundle\Entity\User;
 /**
  * @ORM\Table(name="role")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\RoleRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Role extends AbstractEntity
 {

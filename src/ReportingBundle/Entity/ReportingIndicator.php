@@ -11,6 +11,7 @@ use ReportingBundle\Utils\Model\IndicatorInterface;
  *
  * @ORM\Table(name="reporting_indicator")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingIndicatorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ReportingIndicator extends AbstractEntity implements IndicatorInterface
 {

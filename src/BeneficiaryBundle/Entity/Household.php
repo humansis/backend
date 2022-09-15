@@ -23,6 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Household extends AbstractBeneficiary
 {

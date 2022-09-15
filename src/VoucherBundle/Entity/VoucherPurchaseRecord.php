@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="voucher_purchase_record")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherPurchaseRecordRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class VoucherPurchaseRecord extends AbstractEntity
 {

@@ -14,6 +14,7 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\ProductRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Product extends AbstractEntity implements ExportableInterface
 {

@@ -12,6 +12,7 @@ use VoucherBundle\Entity\Vendor;
  *
  * @ORM\Table(name="view_smartcard_preliminary_invoice")
  * @ORM\Entity(readOnly=true, repositoryClass="NewApiBundle\Repository\Smartcard\PreliminaryInvoiceRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class PreliminaryInvoice extends AbstractEntity
 {

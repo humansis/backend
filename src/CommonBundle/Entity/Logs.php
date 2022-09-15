@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="logs")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LogsRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Logs extends AbstractEntity
 {

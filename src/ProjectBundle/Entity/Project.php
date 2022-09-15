@@ -23,6 +23,7 @@ use BeneficiaryBundle\Entity\Household;
  *
  * @ORM\Table(name="project")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\ProjectRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Project extends AbstractEntity implements ExportableInterface
 {

@@ -17,6 +17,7 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="smartcard_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\SmartcardInvoiceRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Invoice extends AbstractEntity implements JsonSerializable
 {

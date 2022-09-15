@@ -15,6 +15,7 @@ use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Import extends AbstractEntity
 {

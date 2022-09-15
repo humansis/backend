@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *    }
  * )
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificAnswerRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class CountrySpecificAnswer extends AbstractEntity
 {

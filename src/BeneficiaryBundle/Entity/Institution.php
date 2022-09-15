@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="institution")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\InstitutionRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Institution extends AbstractBeneficiary
 {

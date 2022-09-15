@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="modality")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Modality extends AbstractEntity
 {

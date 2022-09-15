@@ -12,6 +12,7 @@ use UserBundle\Entity\User;
  * Information about duplicity between queue record and household.
  *
  * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportHouseholdDuplicityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportHouseholdDuplicity extends AbstractEntity
 {

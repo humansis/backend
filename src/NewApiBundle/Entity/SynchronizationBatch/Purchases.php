@@ -10,7 +10,8 @@ use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use VoucherBundle\Entity\SmartcardPurchase;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class Purchases extends SynchronizationBatch
 {

@@ -17,6 +17,7 @@ use NewApiBundle\Entity\Helper\EnumTrait;
  *
  * @ORM\Table(name="commodity")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\CommodityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Commodity extends AbstractEntity
 {

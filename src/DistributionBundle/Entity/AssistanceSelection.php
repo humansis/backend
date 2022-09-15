@@ -11,6 +11,7 @@ use NewApiBundle\Entity\Assistance\SelectionCriteria;
 
 /**
  * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class AssistanceSelection extends AbstractEntity
 {

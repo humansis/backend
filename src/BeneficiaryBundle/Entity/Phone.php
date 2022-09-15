@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="phone")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\PhoneRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Phone extends AbstractEntity
 {

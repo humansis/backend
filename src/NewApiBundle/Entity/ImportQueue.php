@@ -17,6 +17,7 @@ use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportQueue extends AbstractEntity implements ConcurrencyLockableInterface
 {

@@ -25,6 +25,7 @@ use VoucherBundle\Entity\SmartcardPurchase;
  *
  * @ORM\Table(name="assistance")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\AssistanceRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Assistance extends AbstractEntity implements ExportableInterface
 {

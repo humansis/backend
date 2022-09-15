@@ -23,6 +23,7 @@ use VoucherBundle\Entity\Smartcard;
  *
  * @ORM\Table(name="beneficiary")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\BeneficiaryRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 {

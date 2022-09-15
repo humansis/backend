@@ -17,6 +17,7 @@ use ProjectBundle\Entity\Project;
  *
  * @ORM\Table(name="booklet")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\BookletRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Booklet extends AbstractEntity implements ExportableInterface
 {

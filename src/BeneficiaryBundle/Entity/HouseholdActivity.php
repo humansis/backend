@@ -11,6 +11,7 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="household_activity")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdActivityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class HouseholdActivity extends AbstractEntity
 {

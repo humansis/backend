@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="community")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CommunityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Community extends AbstractBeneficiary
 {

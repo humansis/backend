@@ -16,6 +16,7 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="donor")
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\DonorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Donor extends AbstractEntity implements ExportableInterface
 {

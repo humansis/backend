@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *     @ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})
  * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\NationalIdRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class NationalId extends AbstractEntity
 {

@@ -11,6 +11,7 @@ use NewApiBundle\Utils\Objects\PropertySetter;
 /**
  * @ORM\Table(name="scoring_blueprint")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ScoringBlueprintRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ScoringBlueprint extends AbstractEntity
 {

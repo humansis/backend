@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Information about duplicity between queue record and beneficiary.
  *
  * @ORM\Entity(repositoryClass="\NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportBeneficiaryDuplicity extends AbstractEntity
 {

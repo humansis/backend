@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * @ORM\Table(name="modality_type")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\ModalityTypeRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ModalityType extends AbstractEntity
 {

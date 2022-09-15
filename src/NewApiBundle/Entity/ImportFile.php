@@ -9,6 +9,7 @@ use UserBundle\Entity\User;
 
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportFileRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportFile extends AbstractEntity
 {

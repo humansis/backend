@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="address")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\AddressRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Address extends AbstractEntity
 {

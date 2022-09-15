@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="user_country")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserCountryRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class UserCountry extends AbstractEntity
 {

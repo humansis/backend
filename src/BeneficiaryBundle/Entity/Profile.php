@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="profile")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\ProfileRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Profile extends AbstractEntity
 {

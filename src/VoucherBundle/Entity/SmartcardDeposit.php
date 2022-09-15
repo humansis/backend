@@ -16,6 +16,7 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="smartcard_deposit")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardDepositRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class SmartcardDeposit extends AbstractEntity
 {

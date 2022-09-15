@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="organization")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Organization extends AbstractEntity
 {

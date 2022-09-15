@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="referral")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\ReferralRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Referral extends AbstractEntity
 {

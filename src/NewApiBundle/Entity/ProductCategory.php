@@ -16,6 +16,7 @@ use VoucherBundle\Entity\Product;
  *
  * @ORM\Table(name="product_category")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ProductCategoryRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ProductCategory extends AbstractEntity
 {

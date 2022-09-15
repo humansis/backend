@@ -15,6 +15,7 @@ use ProjectBundle\DBAL\SubSectorEnum;
  *      @ORM\UniqueConstraint(name="uniq_sector_project", columns={"sector", "subsector", "project_id"})})
  * })
  * @ORM\Entity(repositoryClass="ProjectBundle\Repository\SectorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ProjectSector extends AbstractEntity
 {

@@ -11,7 +11,8 @@ use NewApiBundle\Enum\SynchronizationBatchValidationType;
 use VoucherBundle\Entity\SmartcardDeposit;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class Deposits extends SynchronizationBatch
 {

@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="household_location")
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\HouseholdLocationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class HouseholdLocation extends AbstractEntity
 {

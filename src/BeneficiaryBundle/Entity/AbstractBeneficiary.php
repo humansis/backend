@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *     "inst" = "Institution",
  *     "comm" = "Community"
  * })
+ * @ORM\HasLifecycleCallbacks()
 */
 abstract class AbstractBeneficiary extends AbstractEntity
 {

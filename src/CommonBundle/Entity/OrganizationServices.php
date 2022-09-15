@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\OrganizationServicesRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class OrganizationServices extends AbstractEntity implements \JsonSerializable
 {

@@ -16,6 +16,7 @@ use VoucherBundle\Entity\SmartcardDeposit;
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\ReliefPackageRepository")
  * @ORM\Table(name="assistance_relief_package")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ReliefPackage extends AbstractEntity
 {

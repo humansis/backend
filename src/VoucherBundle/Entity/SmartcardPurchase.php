@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="smartcard_purchase")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardPurchaseRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class SmartcardPurchase extends AbstractEntity
 {

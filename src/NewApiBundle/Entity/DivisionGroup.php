@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="division_group")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\DivisionGroupRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class DivisionGroup extends AbstractEntity
 {

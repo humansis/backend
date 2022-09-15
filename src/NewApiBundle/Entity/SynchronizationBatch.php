@@ -18,6 +18,7 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  *     "Deposits"="\NewApiBundle\Entity\SynchronizationBatch\Deposits",
  *     "Purchases"="\NewApiBundle\Entity\SynchronizationBatch\Purchases"
  * })
+ * @ORM\HasLifecycleCallbacks()
  */
 abstract class SynchronizationBatch extends AbstractEntity
 {

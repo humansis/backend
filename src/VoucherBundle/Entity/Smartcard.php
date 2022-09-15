@@ -16,6 +16,7 @@ use VoucherBundle\Enum\SmartcardStates;
  *
  * @ORM\Table(name="smartcard")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\SmartcardRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Smartcard extends AbstractEntity
 {

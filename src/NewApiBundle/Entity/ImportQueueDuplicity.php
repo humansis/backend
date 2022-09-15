@@ -14,6 +14,7 @@ use UserBundle\Entity\User;
  * Imformation about duplicity between two queue records.
  *
  * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportQueueDuplicity extends AbstractEntity
 {

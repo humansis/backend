@@ -19,7 +19,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Person
  *
  * @ORM\Table(name="person", indexes={@ORM\Index(name="idx_local_name", columns={"localGivenName", "localFamilyName"})})
- * @ORM\Entity
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class Person extends AbstractEntity
 {

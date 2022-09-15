@@ -11,6 +11,7 @@ use UserBundle\Entity\User;
  * This entity tracks source (import) of beneficiary being updated.
  *
  * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class ImportBeneficiary extends AbstractEntity
 {

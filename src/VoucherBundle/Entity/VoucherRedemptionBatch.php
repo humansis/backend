@@ -14,6 +14,7 @@ use UserBundle\Entity\User;
  *
  * @ORM\Table(name="voucher_redemption_batch")
  * @ORM\Entity(repositoryClass="\VoucherBundle\Repository\VoucherRedemptionBatchRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class VoucherRedemptionBatch extends AbstractEntity
 {

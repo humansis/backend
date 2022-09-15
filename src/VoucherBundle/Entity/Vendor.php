@@ -13,6 +13,7 @@ use CommonBundle\Utils\ExportableInterface;
  *
  * @ORM\Table(name="vendor")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VendorRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Vendor extends AbstractEntity implements ExportableInterface
 {

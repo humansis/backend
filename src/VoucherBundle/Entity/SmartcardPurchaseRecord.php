@@ -13,7 +13,8 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Information about products purchased by smartcard.
  *
  * @ORM\Table(name="smartcard_purchase_record")
- * @ORM\Entity
+ * @ORM\Entity()
+ * @ORM\HasLifecycleCallbacks()
  */
 class SmartcardPurchaseRecord extends AbstractEntity
 {

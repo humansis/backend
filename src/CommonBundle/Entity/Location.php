@@ -19,6 +19,7 @@ use NewApiBundle\Enum\EnumTrait;
  *      @ORM\Index(name="search_level", columns={"countryISO3", "nested_tree_level"}),
  *     })
  * @ORM\Entity(repositoryClass="CommonBundle\Repository\LocationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Location extends AbstractEntity implements TreeInterface
 {

@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="transaction")
  * @ORM\Entity(repositoryClass="TransactionBundle\Repository\TransactionRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Transaction extends AbstractEntity
 {

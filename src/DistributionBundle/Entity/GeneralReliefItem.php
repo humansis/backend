@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="general_relief_item")
  * @ORM\Entity(repositoryClass="DistributionBundle\Repository\GeneralReliefItemRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class GeneralReliefItem extends AbstractEntity
 {

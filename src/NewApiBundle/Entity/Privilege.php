@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(name="privilege")
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\PrivilegeRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Privilege extends AbstractEntity
 {

@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="VoucherBundle\Repository\VoucherRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Voucher extends AbstractEntity implements ExportableInterface
 {

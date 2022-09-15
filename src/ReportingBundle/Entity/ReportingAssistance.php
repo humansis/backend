@@ -10,6 +10,7 @@ use NewApiBundle\Entity\AbstractEntity;
  *
  * @ORM\Table(name="reporting_distribution")
  * @ORM\Entity(repositoryClass="ReportingBundle\Repository\ReportingAssistanceRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class ReportingAssistance extends AbstractEntity
 {
