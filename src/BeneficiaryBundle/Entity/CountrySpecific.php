@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *     @ORM\UniqueConstraint(name="duplicity_check_idx", columns={"field_string", "country_iso3"})
  * })
  * @ORM\Entity(repositoryClass="BeneficiaryBundle\Repository\CountrySpecificRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class CountrySpecific extends AbstractEntity implements ExportableInterface
 {
