@@ -56,6 +56,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new NewApiBundle\NewApiBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
+            new DH\AuditorBundle\DHAuditorBundle(),
         ];
 
 

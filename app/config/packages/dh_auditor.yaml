@@ -1,0 +1,10 @@
+dh_auditor:
+    enabled: true
+    timezone: 'UTC'
+
+    providers:
+        doctrine:
+            table_suffix: '_audit'
+            viewer: false
+            ignored_columns:
+                - 'createdAt'

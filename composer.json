@@ -32,6 +32,7 @@
 		"ext-xmlreader": "*",
 		"aws/aws-sdk-php": "3.176.5",
 		"beberlei/doctrineextensions": "v1.3.0",
+		"damienharper/auditor-bundle": "^4.2",
 		"doctrine/doctrine-bundle": "1.12.13",
 		"doctrine/doctrine-fixtures-bundle": "3.4.0",
 		"doctrine/doctrine-migrations-bundle": "v1.3.2",
