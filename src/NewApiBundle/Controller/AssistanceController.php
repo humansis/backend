@@ -34,6 +34,7 @@ use NewApiBundle\Request\Pagination;
 use NewApiBundle\Utils\DateTime\Iso8601Converter;
 use ProjectBundle\DBAL\SubSectorEnum;
 use ProjectBundle\Entity\Project;
+use Psr\Cache\InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -212,10 +213,11 @@ class AssistanceController extends AbstractController
      * @param Assistance $assistance
      *
      * @return JsonResponse
+     * @throws InvalidArgumentException
      */
     public function delete(Assistance $assistance): JsonResponse
     {
-        $this->get('distribution.assistance_service')->delete($assistance);
+        $this->assistanceService->delete($assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

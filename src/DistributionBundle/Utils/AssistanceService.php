@@ -36,6 +36,7 @@ use NewApiBundle\InputType\AssistanceCreateInputType;
 use NewApiBundle\Repository\ScoringBlueprintRepository;
 use NewApiBundle\Request\Pagination;
 use ProjectBundle\Entity\Project;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
@@ -667,11 +668,13 @@ class AssistanceService
 
     /**
      * @param Assistance $assistanceEntity
+     *
+     * @throws InvalidArgumentException
      */
     public function delete(Assistance $assistanceEntity)
     {
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
-        if ($assistanceEntity->isValidated()) { //TODO also completed? to discuss
+        if ($assistanceEntity->isValidated()) {
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
             $assistance->archive();
             $this->assistanceRepository->save($assistance);
@@ -705,13 +708,15 @@ class AssistanceService
             }
             foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
                 foreach ($booklet->getVouchers() as $voucher) {
-                    foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
-                        foreach ($voucherPurchase->getRecords() as $record) {
-                            $this->em->remove($record);
+                    if($voucher->getVoucherPurchase()) {
+                        foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
+                            foreach ($voucherPurchase->getRecords() as $record) {
+                                $this->em->remove($record);
+                            }
+                            $this->em->remove($voucherPurchase);
                         }
-                        $this->em->remove($voucherPurchase);
+                        $this->em->remove($voucher);
                     }
-                    $this->em->remove($voucher);
                 }
                 $this->em->remove($booklet);
             }
