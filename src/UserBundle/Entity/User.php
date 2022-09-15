@@ -30,6 +30,7 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  *
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="UserBundle\Repository\UserRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
