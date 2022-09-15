@@ -407,6 +407,23 @@ class Person
     }
 
     /**
+     * @return NationalId|null
+     */
+    public function getPrimaryIdType(): ?NationalId
+    {
+        $min = null;
+        $primaryNationalId = null;
+        foreach ($this->getNationalIds() as $nationalId) {
+            if (is_null($min) || $nationalId->getPriority() < $min) {
+                $min = $nationalId->getPriority();
+                $primaryNationalId = $nationalId;
+            }
+        }
+
+        return $primaryNationalId;
+    }
+
+    /**
      * Get nationalIds.
      *
      * @return NationalId[]
