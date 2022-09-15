@@ -124,7 +124,6 @@ final class Version20220915080125 extends AbstractMigration
         $this->addSql('ALTER TABLE selection_criteria DROP created_at');
         $this->addSql('ALTER TABLE service DROP created_at');
         $this->addSql('ALTER TABLE smartcard DROP created_at, CHANGE card_created_at created_at DATETIME NOT NULL');
-        $this->addSql('ALTER TABLE smartcard_deposit RENAME INDEX idx_fd578545370c2938 TO IDX_FD5785451E8DF071');
         $this->addSql('ALTER TABLE smartcard_purchase DROP created_at');
         $this->addSql('ALTER TABLE smartcard_purchase_record DROP created_at');
         $this->addSql('ALTER TABLE smartcard_redemption_batch DROP created_at');
