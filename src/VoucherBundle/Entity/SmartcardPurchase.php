@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace VoucherBundle\Entity;
 
-use BeneficiaryBundle\Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
 use DistributionBundle\Entity\Assistance;
@@ -57,7 +56,7 @@ class SmartcardPurchase extends AbstractEntity
      *
      * @SymfonyGroups({"FullSmartcard"})
      */
-    private $createdAt;
+    private $usedAt;
 
     /**
      * @var Invoice
@@ -91,7 +90,7 @@ class SmartcardPurchase extends AbstractEntity
     {
         $entity = new self();
         $entity->vendor = $vendor;
-        $entity->createdAt = $createdAt;
+        $entity->usedAt = $createdAt;
         $entity->smartcard = $smartcard;
         $smartcard->addPurchase($entity);
         $entity->assistance = $assistance;
@@ -146,9 +145,9 @@ class SmartcardPurchase extends AbstractEntity
     /**
      * @return DateTimeInterface
      */
-    public function getCreatedAt(): DateTimeInterface
+    public function getUsedAt(): DateTimeInterface
     {
-        return $this->createdAt;
+        return $this->usedAt;
     }
 
     /**

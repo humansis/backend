@@ -258,11 +258,11 @@ class SmartcardInvoiceExport
         $firstPurchaseDate = null;
         $lastPurchaseDate = null;
         foreach ($invoice->getPurchases() as $purchase) {
-            if (null === $firstPurchaseDate || $firstPurchaseDate > $purchase->getCreatedAt()->getTimestamp()) {
-                $firstPurchaseDate = $purchase->getCreatedAt()->getTimestamp();
+            if (null === $firstPurchaseDate || $firstPurchaseDate > $purchase->getUsedAt()->getTimestamp()) {
+                $firstPurchaseDate = $purchase->getUsedAt()->getTimestamp();
             }
-            if (null === $lastPurchaseDate || $lastPurchaseDate < $purchase->getCreatedAt()->getTimestamp()) {
-                $lastPurchaseDate = $purchase->getCreatedAt()->getTimestamp();
+            if (null === $lastPurchaseDate || $lastPurchaseDate < $purchase->getUsedAt()->getTimestamp()) {
+                $lastPurchaseDate = $purchase->getUsedAt()->getTimestamp();
             }
         }
         $worksheet->setCellValue("D$row3", date( self::DATE_FORMAT, $firstPurchaseDate));

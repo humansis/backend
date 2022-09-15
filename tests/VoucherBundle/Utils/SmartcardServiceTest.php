@@ -284,7 +284,7 @@ class SmartcardServiceTest extends KernelTestCase
             $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
 
             foreach ($batch->getPurchases() as $purchase) {
-                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+                $this->assertEquals(2000, $purchase->getUsedAt()->format('Y'), "Wrong purchase year");
             }
             $this->assertEquals($preliminaryInvoice->getValue(), $batch->getValue(), "Redemption value of batch is different");
             $this->assertEquals($preliminaryInvoice->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");

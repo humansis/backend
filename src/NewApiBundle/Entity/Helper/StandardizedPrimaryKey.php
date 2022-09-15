@@ -16,7 +16,7 @@ trait StandardizedPrimaryKey
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $id;
+    protected $id;
 
     /**
      * @return int|null

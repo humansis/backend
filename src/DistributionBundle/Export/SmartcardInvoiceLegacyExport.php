@@ -358,8 +358,8 @@ class SmartcardInvoiceLegacyExport
                 $worksheet->setCellValue('B'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getId());
                 $worksheet->setCellValue('C'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalGivenName());
                 $worksheet->setCellValue('D'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalFamilyName());
-                $worksheet->setCellValue('E'.$lineStart, $purchase->getCreatedAt()->format('Y-m-d'));
-                $worksheet->setCellValue('F'.$lineStart, $purchase->getCreatedAt()->format('H:i'));
+                $worksheet->setCellValue('E'.$lineStart, $purchase->getUsedAt()->format('Y-m-d'));
+                $worksheet->setCellValue('F'.$lineStart, $purchase->getUsedAt()->format('H:i'));
                 $worksheet->setCellValue('G'.$lineStart, $record->getProduct()->getName());
                 $worksheet->setCellValue('H'.$lineStart, $record->getProduct()->getUnit());
                 $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $record->getValue()));

@@ -130,7 +130,7 @@ class EventService
      */
     protected function collectPurchaseEvents(EventCollector $collector, SmartcardPurchase $purchase, bool $extractInvoices): void
     {
-        $collector->add(new Event('purchase', 'made', $purchase->getCreatedAt(), [
+        $collector->add(new Event('purchase', 'made', $purchase->getUsedAt(), [
             $purchase->getAssistance(),
             $purchase,
             $purchase->getSmartcard(),
