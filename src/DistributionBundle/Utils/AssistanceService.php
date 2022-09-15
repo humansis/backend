@@ -304,10 +304,9 @@ class AssistanceService
         $distribution->setLocation($location);
         $distribution->setName(AssistanceFactory::generateName($distribution));
 
-        $project = $distribution->getProject();
-        $projectTmp = $this->em->getRepository(Project::class)->find($project);
-        if ($projectTmp instanceof Project) {
-            $distribution->setProject($projectTmp);
+        $project = $this->em->getRepository(Project::class)->findOneBy(['id' => $distributionArray['project']['id']]);
+        if ($project instanceof Project) {
+            $distribution->setProject($project);
         }
 
         $distribution->setSector($sector);
