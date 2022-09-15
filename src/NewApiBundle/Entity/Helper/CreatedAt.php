@@ -16,7 +16,7 @@ trait CreatedAt
 {
     /**
      * @var DateTimeInterface
-     * @ORM\Column(name="created_at", type="datetime_immutable", nullable=false)
+     * @ORM\Column(name="created_at", type="datetime_immutable", nullable=false, options={"default": "CURRENT_TIMESTAMP"})
      */
     protected $createdAt;
 
