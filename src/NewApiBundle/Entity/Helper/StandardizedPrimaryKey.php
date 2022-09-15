@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace NewApiBundle\Entity\Helper;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 trait StandardizedPrimaryKey
 {

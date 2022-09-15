@@ -34,11 +34,21 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  */
 class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 {
-    use StandardizedPrimaryKey;
-    use CreatedAt;
 
     /** @var ObjectManager|null */
     private $em;
+
+    /**
+     * @var int
+     *
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @SymfonyGroups({"FullUser"})
+     */
+    protected $id;
+
+
 
     /**
      * @var string
@@ -162,6 +172,15 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
         return $this->em;
     }
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
 
 
     /**

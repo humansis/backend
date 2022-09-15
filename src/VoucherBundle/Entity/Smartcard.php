@@ -3,6 +3,7 @@
 namespace VoucherBundle\Entity;
 
 use BeneficiaryBundle\Entity\Beneficiary;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,15 +24,6 @@ class Smartcard extends AbstractEntity
     const STATE_INACTIVE = 'inactive';
     const STATE_CANCELLED = 'cancelled';
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"SmartcardOverview", "ValidatedAssistance"})
-     */
-    private $id = 0;
 
     /**
      * @var string serial number / UID
@@ -83,15 +75,15 @@ class Smartcard extends AbstractEntity
     private $currency;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @ORM\Column(name="card_created_at", type="datetime", nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $createdAt;
+    private $cardCreatedAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
@@ -100,14 +92,14 @@ class Smartcard extends AbstractEntity
 
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="registered_at", type="datetime", nullable=true)
      */
     private $registeredAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="changed_at", type="datetime", nullable=true)
      */
@@ -127,14 +119,14 @@ class Smartcard extends AbstractEntity
      */
     private $suspiciousReason;
 
-    public function __construct(string $serialNumber, \DateTimeInterface $createdAt)
+    public function __construct(string $serialNumber, DateTimeInterface $createdAt)
     {
         if (!self::check($serialNumber)) {
             throw new \InvalidArgumentException('Smartcard serial number '.$serialNumber.'is not valid');
         }
 
         $this->serialNumber = strtoupper($serialNumber);
-        $this->createdAt = $createdAt;
+        $this->cardCreatedAt = $createdAt;
         $this->deposites = new ArrayCollection();
         $this->purchases = new ArrayCollection();
 
@@ -154,14 +146,6 @@ class Smartcard extends AbstractEntity
     public static function check(string $serialNumber): bool
     {
         return preg_match('~^[A-F0-9]+$~i', $serialNumber);
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**
@@ -296,23 +280,23 @@ class Smartcard extends AbstractEntity
         return $sum;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCardCreatedAt(): DateTimeInterface
     {
-        return $this->createdAt;
+        return $this->cardCreatedAt;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDisabledAt(): ?\DateTimeInterface
+    public function getDisabledAt(): ?DateTimeInterface
     {
         return $this->disabledAt;
     }
 
     /**
-     * @param \DateTimeInterface $disabledAt
+     * @param DateTimeInterface $disabledAt
      */
-    public function setDisabledAt(\DateTimeInterface $disabledAt): void
+    public function setDisabledAt(DateTimeInterface $disabledAt): void
     {
         $this->disabledAt = $disabledAt;
     }
@@ -352,33 +336,33 @@ class Smartcard extends AbstractEntity
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getRegisteredAt(): ?\DateTimeInterface
+    public function getRegisteredAt(): ?DateTimeInterface
     {
         return $this->registeredAt;
     }
 
     /**
-     * @param \DateTimeInterface $registeredAt
+     * @param DateTimeInterface $registeredAt
      */
-    public function setRegisteredAt(\DateTimeInterface $registeredAt): void
+    public function setRegisteredAt(DateTimeInterface $registeredAt): void
     {
         $this->registeredAt = $registeredAt;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getChangedAt(): ?\DateTimeInterface
+    public function getChangedAt(): ?DateTimeInterface
     {
         return $this->changedAt;
     }
 
     /**
-     * @param \DateTimeInterface $changedAt
+     * @param DateTimeInterface $changedAt
      */
-    public function setChangedAt(\DateTimeInterface $changedAt): void
+    public function setChangedAt(DateTimeInterface $changedAt): void
     {
         $this->changedAt = $changedAt;
     }

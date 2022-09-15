@@ -60,7 +60,7 @@ class SmartcardMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCardCreatedAt()->format(\DateTimeInterface::ISO8601);
     }
 
 }

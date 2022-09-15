@@ -119,16 +119,6 @@ class SmartcardDeposit extends AbstractEntity
     }
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * @return Smartcard
      */
     public function getSmartcard(): Smartcard

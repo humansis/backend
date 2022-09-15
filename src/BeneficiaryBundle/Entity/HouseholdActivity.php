@@ -36,19 +36,11 @@ class HouseholdActivity extends AbstractEntity
      */
     private $content;
 
-    /**
-     * @var \DateTimeInterface
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
-    private $createdAt;
-
     public function __construct(Household $household, ?User $author, string $content)
     {
         $this->household = $household;
         $this->author = $author;
         $this->content = $content;
-        $this->createdAt = new \DateTime('now');
     }
 
 
@@ -74,13 +66,5 @@ class HouseholdActivity extends AbstractEntity
     public function getContent(): string
     {
         return $this->content;
-    }
-
-    /**
-     * @return \DateTimeInterface
-     */
-    public function getCreatedAt(): \DateTimeInterface
-    {
-        return $this->createdAt;
     }
 }

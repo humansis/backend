@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace NewApiBundle\Entity;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
 use BeneficiaryBundle\Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +18,7 @@ use NewApiBundle\Utils\Concurrency\ConcurrencyLockTrait;
 /**
  * @ORM\Entity(repositoryClass="NewApiBundle\Repository\ImportQueueRepository")
  */
-class ImportQueue extends AbstractBeneficiary implements ConcurrencyLockableInterface
+class ImportQueue extends AbstractEntity implements ConcurrencyLockableInterface
 {
     use EnumTrait;
     use ConcurrencyLockTrait;
