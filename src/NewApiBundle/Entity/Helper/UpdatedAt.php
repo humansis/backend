@@ -10,6 +10,7 @@ use Exception;
 
 /**
  * Describes time when the information was made and stored In contrast with ExecutedAt which describes when event really happened in real world.
+ * @ORM\HasLifecycleCallbacks()
  */
 trait UpdatedAt
 {
