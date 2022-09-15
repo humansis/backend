@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
     <header>
@@ -392,6 +392,18 @@
       <trans-unit id="6akW5mb" resname="This value should be a valid expression.">
         <source>This value should be a valid expression.</source>
         <target>Это значение должно быть допустимым выражением.</target>
+      </trans-unit>
+      <trans-unit id="CQ0wfFa" resname="This value is not a valid CSS color.">
+        <source>This value is not a valid CSS color.</source>
+        <target>Значение не является корректным CSS цветом.</target>
+      </trans-unit>
+      <trans-unit id="GAaG0KN" resname="This value is not a valid CIDR notation.">
+        <source>This value is not a valid CIDR notation.</source>
+        <target>Значение не соответствует нотации CIDR.</target>
+      </trans-unit>
+      <trans-unit id="ddJy.XP" resname="The value of the netmask should be between {{ min }} and {{ max }}.">
+        <source>The value of the netmask should be between {{ min }} and {{ max }}.</source>
+        <target>Значение маски подсети должно быть от {{ min }} до {{ max }}.</target>
       </trans-unit>
       <trans-unit id=".SEaaBa" resname="This form should not contain extra fields.">
         <source>This form should not contain extra fields.</source>

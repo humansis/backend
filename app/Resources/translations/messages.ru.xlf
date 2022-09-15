@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
   <file source-language="en" target-language="ru" datatype="plaintext" original="file.ext">
     <header>
@@ -593,11 +593,8 @@
         <source>Import from File</source>
         <target>Импорт из файла</target>
       </trans-unit>
-      <trans-unit id="BdazhEU"
-                  resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
-        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after
-          importing.
-        </source>
+      <trans-unit id="BdazhEU" resname="Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.">
+        <source>Import the file that contains the modified distribution. The database will be updated with the new list of beneficiaries for this distribution when you will click on update after importing.</source>
         <target>Импортируйте файл, содержащий измененные данные по выдаче. База данных будет содержать новый список бенефициаров для этой выдачи, когда после импорта вы нажмете кнопку «обновить».
         </target>
       </trans-unit>
@@ -2777,8 +2774,7 @@
         <source>Approved by</source>
         <target>Одобрено</target>
       </trans-unit>
-      <trans-unit id="RMSi1bj"
-                  resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
+      <trans-unit id="RMSi1bj" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.">
         <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.</source>
         <target>"Указанное ниже лицо подтверждает своей подписью на этом Списке дистрибуции, что оно получило и приняло пожертвование указанных ниже предметов от ""Человек в беде""."</target>
       </trans-unit>
@@ -3812,25 +3808,22 @@
       </trans-unit>
       <trans-unit id="I2phZLM" resname="FEMALE&#10;Head of Family gender">
         <source>FEMALE
-          Head of Family gender
-        </source>
+Head of Family gender</source>
         <target>Женщина
           Глава семьи пол
         </target>
       </trans-unit>
       <trans-unit id="0ZQdz2Y" resname="MALE&#10;Head of Family gender">
         <source>MALE
-          Head of Family gender
-        </source>
+Head of Family gender</source>
         <target>Мужчина
           Глава семьи пол
         </target>
       </trans-unit>
       <trans-unit id="x8lsEdk" resname="Children&#10;0-23 months&#10;Male">
         <source>Children
-          0-23 months
-          Male
-        </source>
+0-23 months
+Male</source>
         <target>Ребенок
           0-23 месяцев
           Мужчина
@@ -3838,9 +3831,8 @@
       </trans-unit>
       <trans-unit id="08NcV1g" resname="Children&#10;0-23 months&#10;Female">
         <source>Children
-          0-23 months
-          Female
-        </source>
+0-23 months
+Female</source>
         <target>Ребенок
           0-23 месяцев
           Женщина
@@ -3848,9 +3840,8 @@
       </trans-unit>
       <trans-unit id="w4CzqbR" resname="Children&#10;2-5&#10;Male">
         <source>Children
-          2-5
-          Male
-        </source>
+2-5
+Male</source>
         <target>Ребенок
           2-5
           Мужчина
@@ -3858,9 +3849,8 @@
       </trans-unit>
       <trans-unit id=".pPwDj0" resname="Children&#10;2-5&#10;Female">
         <source>Children
-          2-5
-          Female
-        </source>
+2-5
+Female</source>
         <target>Ребенок
           2-5
           Женщина
@@ -3868,78 +3858,68 @@
       </trans-unit>
       <trans-unit id="hwVztzw" resname="Males&#10;6-17">
         <source>Males
-          6-17
-        </source>
+6-17</source>
         <target>Мужчины
           6-17
         </target>
       </trans-unit>
       <trans-unit id="nWwdF_h" resname="Females&#10;6-17">
         <source>Females
-          6-17
-        </source>
+6-17</source>
         <target>Женщины
           6-17
         </target>
       </trans-unit>
       <trans-unit id="47LfDJD" resname="Males&#10;18-59">
         <source>Males
-          18-59
-        </source>
+18-59</source>
         <target>Мужчины
           18-59
         </target>
       </trans-unit>
       <trans-unit id="prA38io" resname="Females&#10;18-59">
         <source>Females
-          18-59
-        </source>
+18-59</source>
         <target>Женщины
           18-59
         </target>
       </trans-unit>
       <trans-unit id="8jrgDm." resname="Males&#10;60+">
         <source>Males
-          60+
-        </source>
+60+</source>
         <target>Мужчины
           60+
         </target>
       </trans-unit>
       <trans-unit id="YuI1MEa" resname="Females&#10;60+">
         <source>Females
-          60+
-        </source>
+60+</source>
         <target>Женщины
           60+
         </target>
       </trans-unit>
       <trans-unit id="wmaf7RR" resname="Total&#10;Males">
         <source>Total
-          Males
-        </source>
+Males</source>
         <target>Всего
           Мужчины
         </target>
       </trans-unit>
       <trans-unit id="DPt6PBc" resname="Total&#10;Females">
         <source>Total
-          Females
-        </source>
+Females</source>
         <target>Всего
           Женщины
         </target>
       </trans-unit>
       <trans-unit id="Rg7M6UB" resname="Individ. Benef.&#10;Served">
         <source>Individ. Benef.
-          Served
-        </source>
+Served</source>
         <target>Обслужено бенефициаров</target>
       </trans-unit>
       <trans-unit id="jVaZB9b" resname="Family&#10;Size">
         <source>Family
-          Size
-        </source>
+Size</source>
         <target>Семья
           Размер
         </target>
@@ -4228,8 +4208,7 @@
         <source>Temporary Settlement</source>
         <target>Временное поселение</target>
       </trans-unit>
-      <trans-unit id="lcuNWo8"
-                  resname="This page is a form to add a new assistance to a project . You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific&#10;          amount of commodities to be distributed.&#10;        ">
+      <trans-unit id="lcuNWo8" resname="This page is a form to add a new assistance to a project . You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific&#10;          amount of commodities to be distributed.&#10;        ">
         <source>This page is a form to add a new assistance to a project . You will use selection criteria to determine the households or beneficiaries who will take part in it and add a specific
           amount of commodities to be distributed.
         </source>
@@ -4265,61 +4244,9 @@
         <source>Water</source>
         <target>Вода</target>
       </trans-unit>
-      <trans-unit id="7eW_LtJ" resname="National ID">
-        <source>National ID</source>
-        <target>Национальное удостоверение личности</target>
-      </trans-unit>
-      <trans-unit id="_X6doOO" resname="Other">
-        <source>Other</source>
-        <target>Другое</target>
-      </trans-unit>
-      <trans-unit id="3JN7WYk" resname="None">
-        <source>None</source>
-        <target>Нет</target>
-      </trans-unit>
-      <trans-unit id="GP3VSbL" resname="New">
-        <source>New</source>
-        <target>Создать</target>
-      </trans-unit>
-      <trans-unit id="BOHvfR6" resname="Distributed">
-        <source>Distributed</source>
-        <target>Выдан</target>
-      </trans-unit>
       <trans-unit id="RdsYeVs" resname="Hygiene kit">
         <source>Hygiene kit</source>
         <target>Гигиенический набор</target>
-      </trans-unit>
-      <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
-        <source>Farming - Agriculture</source>
-        <target>Сельское хозяйство - обработка земли</target>
-      </trans-unit>
-      <trans-unit id="1GI0pr2" resname="Farming - Livestock">
-        <source>Farming - Livestock</source>
-        <target>Сельское хозяйство - скотоводство</target>
-      </trans-unit>
-      <trans-unit id="HvL_92f" resname="Home Duties">
-        <source>Home Duties</source>
-        <target>Домашние обязанности</target>
-      </trans-unit>
-      <trans-unit id="OkyagQ9" resname="Beneficiary">
-        <source>Beneficiary</source>
-        <target>Бенефициар</target>
-      </trans-unit>
-      <trans-unit id="ocbJf0F" resname="Household">
-        <source>Household</source>
-        <target>Домохозяйство</target>
-      </trans-unit>
-      <trans-unit id="u81ijAe" resname="household">
-        <source>household</source>
-        <target>Домохозяйство</target>
-      </trans-unit>
-      <trans-unit id="4ZIYuvi" resname="Family name">
-        <source>Family name</source>
-        <target>Фамилия</target>
-      </trans-unit>
-      <trans-unit id="cC75Ie0" resname="First name">
-        <source>First name</source>
-        <target>Имя</target>
       </trans-unit>
       <trans-unit id="GdgnfPj" resname="Tax Number">
         <source>Tax Number</source>
@@ -4388,10 +4315,6 @@
       <trans-unit id="0lL._sv" resname="Importing">
         <source>Importing</source>
         <target>Импорт</target>
-      </trans-unit>
-      <trans-unit id="tMxLB8M" resname="In Progress">
-        <source>In Progress</source>
-        <target>В процессе</target>
       </trans-unit>
       <trans-unit id="eAT3p5q" resname="Finished">
         <source>Finished</source>
@@ -4685,22 +4608,6 @@
         <source>Amount []</source>
         <target>Сумма []</target>
       </trans-unit>
-      <trans-unit id="sGExlXh" resname="Cumulative amount []">
-        <source>Cumulative amount []</source>
-        <target>Общая сумма []</target>
-      </trans-unit>
-      <trans-unit id="5OsYBp1" resname="Food">
-        <source>Food</source>
-        <target>Продовольствие</target>
-      </trans-unit>
-      <trans-unit id="zuYsxxL" resname="Non-Food">
-        <source>Non-Food</source>
-        <target>Непродовольственные товары</target>
-      </trans-unit>
-      <trans-unit id="M0qRf3z" resname="Cashback">
-        <source>Cashback</source>
-        <target>Возврат средств</target>
-      </trans-unit>
       <trans-unit id="00vJDlK" resname="IDP">
         <source>IDP</source>
         <target>ВПЛ</target>
@@ -4733,10 +4640,6 @@
         <source>invoice</source>
         <target>Счёт</target>
       </trans-unit>
-      <trans-unit id="tsRYY4d" resname="customer">
-        <source>customer</source>
-        <target>Покупатель</target>
-      </trans-unit>
       <trans-unit id="F7xeAn4" resname="invoice_date">
         <source>invoice_date</source>
         <target>Дата счёта</target>
@@ -4748,10 +4651,6 @@
       <trans-unit id="ZS77xm0" resname="supplier_no">
         <source>supplier_no</source>
         <target>Внутренний номер поставщика</target>
-      </trans-unit>
-      <trans-unit id="uEaRUvy" resname="contract_no">
-        <source>contract_no</source>
-        <target>Договор №</target>
       </trans-unit>
       <trans-unit id="qSWo.e4" resname="period_start">
         <source>period_start</source>
@@ -4765,29 +4664,13 @@
         <source>payment_method</source>
         <target>Метод оплаты</target>
       </trans-unit>
-      <trans-unit id="qw.OwI4" resname="cash">
-        <source>cash</source>
-        <target>Наличные</target>
-      </trans-unit>
       <trans-unit id="x1KubdR" resname="cheque">
         <source>cheque</source>
         <target>Банковский чек</target>
       </trans-unit>
-      <trans-unit id="Q4HcKrF" resname="bank">
-        <source>bank</source>
-        <target>Банк</target>
-      </trans-unit>
       <trans-unit id="yQRveje" resname="description">
         <source>description</source>
         <target>Описание</target>
-      </trans-unit>
-      <trans-unit id="zzjZXJx" resname="amount">
-        <source>amount</source>
-        <target>Количество</target>
-      </trans-unit>
-      <trans-unit id="Rm5bnNV" resname="currency">
-        <source>currency</source>
-        <target>Валюта</target>
       </trans-unit>
       <trans-unit id="Mug2mpx" resname="qty">
         <source>qty</source>
@@ -4820,14 +4703,6 @@
       <trans-unit id="xJLhEEa" resname="total_to_pay">
         <source>total_to_pay</source>
         <target>Общая сумма к оплате</target>
-      </trans-unit>
-      <trans-unit id="sRm9pCB" resname="annex">
-        <source>annex</source>
-        <target>Приложение 1</target>
-      </trans-unit>
-      <trans-unit id="vvkc5PR" resname="annex_description">
-        <source>annex_description</source>
-        <target>Подробная разбивка</target>
       </trans-unit>
       <trans-unit id="bdRwzsY" resname="purchase_customer_id">
         <source>purchase_customer_id</source>
@@ -4900,258 +4775,6 @@
       <trans-unit id="pr5lTwN" resname="Invoice template version">
         <source>Invoice template version</source>
         <target>Версия шаблона счёта</target>
-      </trans-unit>
-      <trans-unit id="z80fPWr" resname="Shelter">
-        <source>Shelter</source>
-        <target>Жильё</target>
-      </trans-unit>
-      <trans-unit id="DpetAhZ" resname="Protection">
-        <source>Protection</source>
-        <target>Защита</target>
-      </trans-unit>
-      <trans-unit id="VYmESet" resname="Health">
-        <source>Health</source>
-        <target>Здоровье</target>
-      </trans-unit>
-      <trans-unit id="ereLcFj" resname="Nutrition">
-        <source>Nutrition</source>
-        <target>Питание</target>
-      </trans-unit>
-      <trans-unit id="mkhpM89" resname="Cash for Work">
-        <source>Cash for Work</source>
-        <target>Оплата за труд</target>
-      </trans-unit>
-      <trans-unit id="_DDY9n7" resname="Food Security">
-        <source>Food Security</source>
-        <target>Продовольственная безопасность</target>
-      </trans-unit>
-      <trans-unit id="LUhuQml" resname="Livelihoods">
-        <source>Livelihoods</source>
-        <target>Средства к существованию</target>
-      </trans-unit>
-      <trans-unit id="VTU1ia9" resname="Multi Purpose Cash Assistance">
-        <source>Multi Purpose Cash Assistance</source>
-        <target>Многоцелевая денежная помощь</target>
-      </trans-unit>
-      <trans-unit id="5AdZwSg" resname="WASH">
-        <source>WASH</source>
-        <target>Водоснабжение, санитария и гигиена (WASH)</target>
-      </trans-unit>
-      <trans-unit id="nPkvSPw" resname="Education &amp; TVET">
-        <source>Education &amp; TVET</source>
-        <target>Образование и Профессионально-техническое образование</target>
-      </trans-unit>
-      <trans-unit id="R7K7qLi" resname="Emergency Telecomms">
-        <source>Emergency Telecomms</source>
-        <target>Экстренные телекоммуникации</target>
-      </trans-unit>
-      <trans-unit id="rm6YkJy" resname="Logistics">
-        <source>Logistics</source>
-        <target>Логистика</target>
-      </trans-unit>
-      <trans-unit id="5Ih29l3" resname="Mine Action">
-        <source>Mine Action</source>
-        <target>Противоминная деятельность</target>
-      </trans-unit>
-      <trans-unit id="EiPAGAC" resname="DRR &amp; Resilience">
-        <source>DRR &amp; Resilience</source>
-        <target>Cнижение риска бедствий и способность к восстановлению</target>
-      </trans-unit>
-      <trans-unit id="E85QtF1" resname="Non-Sector Specific">
-        <source>Non-Sector Specific</source>
-        <target>Сектор не выбран</target>
-      </trans-unit>
-      <trans-unit id="igKE1rB" resname="Camp Coordination and Management">
-        <source>Camp Coordination and Management</source>
-        <target>Координация и управление лагерем</target>
-      </trans-unit>
-      <trans-unit id="7fhRD0B" resname="Early Recovery">
-        <source>Early Recovery</source>
-        <target>Скорейшее восстановление</target>
-      </trans-unit>
-      <trans-unit id="mt6pOzy" resname="In-kind Food">
-        <source>In-kind Food</source>
-        <target>Готовая еда</target>
-      </trans-unit>
-      <trans-unit id="Jgqi9Iu" resname="Food Vouchers">
-        <source>Food Vouchers</source>
-        <target>Продовольственные ваучеры</target>
-      </trans-unit>
-      <trans-unit id="ehz3sp5" resname="Cash Transfers">
-        <source>Cash Transfers</source>
-        <target>Денежные переводы</target>
-      </trans-unit>
-      <trans-unit id="00DzM0z" resname="Skills Training">
-        <source>Skills Training</source>
-        <target>Профессиональная подготовка</target>
-      </trans-unit>
-      <trans-unit id="sjoUJef" resname="Technical Support">
-        <source>Technical Support</source>
-        <target>Техническая поддержка</target>
-      </trans-unit>
-      <trans-unit id="93.J5Ng" resname="Provision of Inputs">
-        <source>Provision of Inputs</source>
-        <target>Предоставление материалов</target>
-      </trans-unit>
-      <trans-unit id="PH1mDBz" resname="Business Grants">
-        <source>Business Grants</source>
-        <target>Бизнес гранты</target>
-      </trans-unit>
-      <trans-unit id="acIGuR8" resname="Agricultural Vouchers">
-        <source>Agricultural Vouchers</source>
-        <target>Сельскохозяйственные ваучеры</target>
-      </trans-unit>
-      <trans-unit id="FKp_5UJ" resname="Rehabilitation (Light, Medium, Heavy)">
-        <source>Rehabilitation (Light, Medium, Heavy)</source>
-        <target>Восстановление (частичное, умеренное, значительное)</target>
-      </trans-unit>
-      <trans-unit id="Jygu13." resname="Construction (Light, Medium, Heavy)">
-        <source>Construction (Light, Medium, Heavy)</source>
-        <target>Строительство (легкое, среднее, тяжелое)</target>
-      </trans-unit>
-      <trans-unit id="cdyEyMk" resname="Settlement Upgrades">
-        <source>Settlement Upgrades</source>
-        <target>Улучшения поселения</target>
-      </trans-unit>
-      <trans-unit id="ZteP1lk" resname="Winterization Kits or Materials">
-        <source>Winterization Kits or Materials</source>
-        <target>Набор/материалы для подготовки к зиме</target>
-      </trans-unit>
-      <trans-unit id="zWRji_l" resname="Winterization Upgrades">
-        <source>Winterization Upgrades</source>
-        <target>Улучшения подготовки к зиме</target>
-      </trans-unit>
-      <trans-unit id="fzfmAJp" resname="Shelter Kits">
-        <source>Shelter Kits</source>
-        <target>Комплекты для строительства/ремонта жилья</target>
-      </trans-unit>
-      <trans-unit id="ElFbeFr" resname="NFI Kits">
-        <source>NFI Kits</source>
-        <target>Наборы непродовольственных товаров</target>
-      </trans-unit>
-      <trans-unit id=".Ffkk99" resname="Cash for Shelter">
-        <source>Cash for Shelter</source>
-        <target>Оплата за жилье</target>
-      </trans-unit>
-      <trans-unit id="nTEg7Sb" resname="Water Point Rehabilitation">
-        <source>Water Point Rehabilitation</source>
-        <target>Восстановление пункта водоснабжения</target>
-      </trans-unit>
-      <trans-unit id="sEZACRT" resname="Water Point Construction">
-        <source>Water Point Construction</source>
-        <target>Строительство пункта водоснабжения</target>
-      </trans-unit>
-      <trans-unit id="iMWfAm3" resname="Water Trucking">
-        <source>Water Trucking</source>
-        <target>Подвоз воды</target>
-      </trans-unit>
-      <trans-unit id="B60MEef" resname="Water Treatment">
-        <source>Water Treatment</source>
-        <target>Обработка воды</target>
-      </trans-unit>
-      <trans-unit id="KWPzIUv" resname="Vector Control">
-        <source>Vector Control</source>
-        <target>Векторное управление</target>
-      </trans-unit>
-      <trans-unit id="LFoAoWP" resname="Solid Waste Management">
-        <source>Solid Waste Management</source>
-        <target>Утилизация твёрдых отходов</target>
-      </trans-unit>
-      <trans-unit id="Xdr3aUH" resname="Sanitation">
-        <source>Sanitation</source>
-        <target>Санитария</target>
-      </trans-unit>
-      <trans-unit id="s7GbT16" resname="Hygiene Promotion">
-        <source>Hygiene Promotion</source>
-        <target>Санитарно-гигиеническое просвещение</target>
-      </trans-unit>
-      <trans-unit id="DFWy1b_" resname="Hygiene Kits">
-        <source>Hygiene Kits</source>
-        <target>Гигиенические наборы</target>
-      </trans-unit>
-      <trans-unit id="vDm5vOx" resname="Operational Supplies">
-        <source>Operational Supplies</source>
-        <target>Эксплуатационные предметы снабжения</target>
-      </trans-unit>
-      <trans-unit id="EvXzKjh" resname="Psychosocial Support">
-        <source>Psychosocial Support</source>
-        <target>Психосоциальная поддержка</target>
-      </trans-unit>
-      <trans-unit id="3RdriBz" resname="Individual Protection Assistance">
-        <source>Individual Protection Assistance</source>
-        <target>Помощь в индивидуальной защите</target>
-      </trans-unit>
-      <trans-unit id="NXuxGoY" resname="Community Based Interventions">
-        <source>Community Based Interventions</source>
-        <target>Вмешательства на уровне сообщества</target>
-      </trans-unit>
-      <trans-unit id="T0Fne2D" resname="Protection Advocacy">
-        <source>Protection Advocacy</source>
-        <target>Пропаганда по вопросам защиты</target>
-      </trans-unit>
-      <trans-unit id="r7Pj7zt" resname="Child Protection">
-        <source>Child Protection</source>
-        <target>Защита прав детей</target>
-      </trans-unit>
-      <trans-unit id="f6wEMDQ" resname="Gender Based Violence Activities">
-        <source>Gender Based Violence Activities</source>
-        <target>Деятельность по борьбе с гендерным насилием</target>
-      </trans-unit>
-      <trans-unit id="VHOAbeV" resname="Teacher Incentive Payments">
-        <source>Teacher Incentive Payments</source>
-        <target>Поощрительные выплаты учителям</target>
-      </trans-unit>
-      <trans-unit id="HoCSEcK" resname="Teacher Training">
-        <source>Teacher Training</source>
-        <target>Педагогическая подготовка</target>
-      </trans-unit>
-      <trans-unit id="m48WJBe" resname="Learning Materials">
-        <source>Learning Materials</source>
-        <target>Учебные материалы</target>
-      </trans-unit>
-      <trans-unit id="L4aOiBW" resname="Learning Support">
-        <source>Learning Support</source>
-        <target>Помощь в обучении</target>
-      </trans-unit>
-      <trans-unit id="EhaHhVB" resname="Sessions for Parents and Caregivers">
-        <source>Sessions for Parents and Caregivers</source>
-        <target>Сеансы для родителей и опекунов</target>
-      </trans-unit>
-      <trans-unit id="v1rocZV" resname="Default Emergency Telecomms">
-        <source>Default Emergency Telecomms</source>
-        <target>Аварийная связь по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="w2XPXZ1" resname="Default Health">
-        <source>Default Health</source>
-        <target>Здоровье по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="Ac0voFO" resname="Default Logistics">
-        <source>Default Logistics</source>
-        <target>Логистика по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="0gK197M" resname="Default Nutrition">
-        <source>Default Nutrition</source>
-        <target>Питание по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="G7AwLp_" resname="Default Mine Action">
-        <source>Default Mine Action</source>
-        <target>Противоминная деятельность по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="VKC2.3y" resname="Default DRR &amp; Resilience">
-        <source>Default DRR &amp; Resilience</source>
-        <target>Cнижение риска бедствий и способность к восстановлению по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="3Q3hlhQ" resname="Default Non-Sector Specific">
-        <source>Default Non-Sector Specific</source>
-        <target>По умолчанию независимо от сектора</target>
-      </trans-unit>
-      <trans-unit id="NS4UQGh" resname="Default Camp Coordination and Management">
-        <source>Default Camp Coordination and Management</source>
-        <target>Координация и управление лагерем по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="Kx5IaBb" resname="Default Early Recovery">
-        <source>Default Early Recovery</source>
-        <target>Скорейшее восстановление по умолчанию</target>
       </trans-unit>
       <trans-unit id="Yjt.QoU" resname="label_sector_Food Security">
         <source>label_sector_Food Security</source>
@@ -5424,6 +5047,72 @@
       <trans-unit id="KVEwB5T" resname="label_sector_default_early_recovery">
         <source>label_sector_default_early_recovery</source>
         <target>Скорейшее восстановление по умолчанию</target>
+      </trans-unit>
+      <trans-unit id="VyGbjiT" resname="DISTRIBUTION PROTOCOL">
+        <source>DISTRIBUTION PROTOCOL</source>
+        <target>__DISTRIBUTION PROTOCOL</target>
+      </trans-unit>
+      <trans-unit id="AVbuRim" resname="Validated by">
+        <source>Validated by</source>
+        <target>__Validated by</target>
+      </trans-unit>
+      <trans-unit id="JscYZ1d" resname="GDPR_Distribution_protocol_text_1">
+        <source>GDPR_Distribution_protocol_text_1</source>
+        <target>__GDPR_Distribution_protocol_text_1</target>
+      </trans-unit>
+      <trans-unit id="bFAHIxP" resname="GDPR_Distribution_protocol_text_2">
+        <source>GDPR_Distribution_protocol_text_2</source>
+        <target>__GDPR_Distribution_protocol_text_2</target>
+      </trans-unit>
+      <trans-unit id="z7OtGEW" resname="Signature / Time-stamp">
+        <source>Signature / Time-stamp</source>
+        <target>__Signature / Time-stamp</target>
+      </trans-unit>
+      <trans-unit id="f9jwf6w" resname="Household size">
+        <source>Household size</source>
+        <target>__Household size</target>
+      </trans-unit>
+      <trans-unit id="Li1phVJ" resname="Total vulnerability score [%scoringName%]">
+        <source>Total vulnerability score [%scoringName%]</source>
+        <target>__Total vulnerability score [%scoringName%]</target>
+      </trans-unit>
+      <trans-unit id="E.tnzx9" resname="Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.">
+        <source>Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</source>
+        <target>__Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</target>
+      </trans-unit>
+      <trans-unit id="MNyA3C1" resname="UNIT">
+        <source>UNIT</source>
+        <target>__UNIT</target>
+      </trans-unit>
+      <trans-unit id="51av0xa" resname="Water&#10;Nº of 1.5 bottles ">
+        <source>Water
+Nº of 1.5 bottles </source>
+        <target>__Water
+Nº of 1.5 bottles </target>
+      </trans-unit>
+      <trans-unit id="G.TdrrG" resname="Distributed At">
+        <source>Distributed At</source>
+        <target>__Distributed At</target>
+      </trans-unit>
+      <trans-unit id="wTv1zQh" resname="Notes Distribution">
+        <source>Notes Distribution</source>
+        <target>__Notes Distribution</target>
+      </trans-unit>
+      <trans-unit id="QRj7T_0" resname="Removed">
+        <source>Removed</source>
+        <target>__Removed</target>
+      </trans-unit>
+      <trans-unit id="0WODjuq" resname="Justification for adding/removing">
+        <source>Justification for adding/removing</source>
+        <target>__Justification for adding/removing</target>
+      </trans-unit>
+      <trans-unit id="irxlqZm" resname="Used At">
+        <source>Used At</source>
+        <target>__Used At</target>
+      </trans-unit>
+      <trans-unit id="POqLw2c" resname="Purchased items">
+        <source>Purchased items</source>
+        <target>__Purchased items</target>
       </trans-unit>
     </body>
   </file>
