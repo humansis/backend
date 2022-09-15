@@ -8,6 +8,7 @@ use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\HasLifecycleCallbacks()
+ * @ORM\MappedSuperclass()
  */
 abstract class AbstractEntity
 {
