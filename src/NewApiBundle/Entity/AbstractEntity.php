@@ -7,7 +7,7 @@ use NewApiBundle\Entity\Helper\CreatedAt;
 use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
 
 /**
- * @ORM\HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks()
  */
 abstract class AbstractEntity
 {

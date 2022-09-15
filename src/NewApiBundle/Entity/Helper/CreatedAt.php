@@ -34,7 +34,7 @@ trait CreatedAt
 
     /**
      * @throws Exception
-     * @ORM\PrePersist
+     * @ORM\PrePersist()
      */
     public function setCreatedAt()
     {
