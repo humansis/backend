@@ -32,6 +32,7 @@ class NationalIdTypeEnum extends \DBAL\AbstractEnum
             NationalIdType::SOCIAL_SERVICE_ID => NationalIdType::SOCIAL_SERVICE_ID,
             NationalIdType::OTHER => NationalIdType::OTHER,
             NationalIdType::NONE => NationalIdType::NONE,
+            NationalIdType::CIVIL_REGISTRATION_RECORD => NationalIdType::CIVIL_REGISTRATION_RECORD,
         ];
     }
 }

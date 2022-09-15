@@ -17,6 +17,7 @@ final class NationalIdType
     const SOCIAL_SERVICE_ID = 'Social Service Card';
     const OTHER = 'Other';
     const NONE = 'None';
+    const CIVIL_REGISTRATION_RECORD = 'Civil registration record';
 
     public static function values(): array
     {
@@ -31,6 +32,7 @@ final class NationalIdType
             self::SOCIAL_SERVICE_ID,
             self::OTHER,
             self::NONE,
+            self::CIVIL_REGISTRATION_RECORD,
         ];
     }
 
