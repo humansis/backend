@@ -9,6 +9,10 @@
         <source>National ID</source>
         <target>الهوية الوطنية</target>
       </trans-unit>
+      <trans-unit id="ke6xBGv" resname="Civil registration record">
+        <source>Civil registration record</source>
+        <target>إخراج قيد</target>
+      </trans-unit>
       <trans-unit id="_X6doOO" resname="Other">
         <source>Other</source>
         <target>آخرى</target>
