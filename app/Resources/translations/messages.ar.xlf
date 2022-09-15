@@ -1295,6 +1295,98 @@
         <source>DISTRIBUTION PROTOCOL</source>
         <target>بروتوكول التوزيع</target>
       </trans-unit>
-    </body>
-  </file>
+    <trans-unit id="7eW_LtJ" resname="National ID">
+      <source>National ID</source>
+      <target>الهوية الوطنية</target>
+    </trans-unit>
+    <trans-unit id="_X6doOO" resname="Other">
+      <source>Other</source>
+      <target>آخرى</target>
+    </trans-unit>
+    <trans-unit id="3JN7WYk" resname="None">
+      <source>None</source>
+      <target>لا يوجد</target>
+    </trans-unit>
+    <trans-unit id="GP3VSbL" resname="New">
+      <source>New</source>
+      <target>جديد</target>
+    </trans-unit>
+    <trans-unit id="BOHvfR6" resname="Distributed">
+      <source>Distributed</source>
+      <target>وزعت</target>
+    </trans-unit>
+    <trans-unit id="RdsYeVs" resname="Hygiene kit">
+      <source>Hygiene kit</source>
+      <target>سلة النظافة</target>
+    </trans-unit>
+    <trans-unit id="cYXxBj0" resname="Farming - Agriculture">
+      <source>Farming - Agriculture</source>
+      <target>رقم معرف جهة الاتصال</target>
+    </trans-unit>
+    <trans-unit id="1GI0pr2" resname="Farming - Livestock">
+      <source>Farming - Livestock</source>
+      <target>نوع معرف جهة الاتصال</target>
+    </trans-unit>
+    <trans-unit id="HvL_92f" resname="Home Duties">
+      <source>Home Duties</source>
+      <target>العمل اليومي</target>
+    </trans-unit>
+    <trans-unit id="OkyagQ9" resname="Beneficiary">
+      <source>Beneficiary</source>
+      <target>المستفيد</target>
+    </trans-unit>
+    <trans-unit id="ocbJf0F" resname="Household">
+      <source>Household</source>
+      <target>الأسرة</target>
+    </trans-unit>
+    <trans-unit id="u81ijAe" resname="household">
+      <source>household</source>
+      <target>الأسرة</target>
+    </trans-unit>
+    <trans-unit id="4ZIYuvi" resname="Family name">
+      <source>Family name</source>
+      <target>اسم العائلة</target>
+    </trans-unit>
+    <trans-unit id="cC75Ie0" resname="First name">
+      <source>First name</source>
+      <target>الاسم</target>
+    </trans-unit>
+    <trans-unit id="yQRveje" resname="description">
+      <source>description</source>
+      <target>وصف</target>
+    </trans-unit>
+    <trans-unit id="zzjZXJx" resname="amount">
+      <source>amount</source>
+      <target>لا توجد مجموعات معايير. الرجاء إضافة مجموعة معايير واحدة على الأقل.</target>
+    </trans-unit>
+    <trans-unit id="Rm5bnNV" resname="currency">
+      <source>currency</source>
+      <target>العملة</target>
+    </trans-unit>
+    <trans-unit id="OFz9vAD" resname="unit">
+      <source>unit</source>
+      <target>وحدة</target>
+    </trans-unit>
+      <trans-unit id="z80fPWr" resname="Shelter">
+        <source>Shelter</source>
+        <target>مأوى</target>
+      </trans-unit>
+      <trans-unit id="DpetAhZ" resname="Protection">
+        <source>Protection</source>
+        <target>حماية</target>
+      </trans-unit>
+      <trans-unit id="VYmESet" resname="Health">
+        <source>Health</source>
+        <target>الصحة</target>
+      </trans-unit>
+      <trans-unit id="ereLcFj" resname="Nutrition">
+        <source>Nutrition</source>
+        <target>تغذية</target>
+      </trans-unit>
+      <trans-unit id="mkhpM89" resname="Cash for Work">
+        <source>Cash for Work</source>
+        <target>النقد مقابل العمل</target>
+      </trans-unit>
+  </body>
+</file>
 </xliff>

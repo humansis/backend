@@ -950,6 +950,82 @@
         <source>Woreda</source>
         <target>Woreda</target>
       </trans-unit>
+      <trans-unit id="7eW_LtJ" resname="National ID">
+        <source>National ID</source>
+        <target>Document d'identité</target>
+      </trans-unit>
+      <trans-unit id="_X6doOO" resname="Other">
+        <source>Other</source>
+        <target>Autre</target>
+      </trans-unit>
+      <trans-unit id="3JN7WYk" resname="None">
+        <source>None</source>
+        <target>Aucun</target>
+      </trans-unit>
+      <trans-unit id="GP3VSbL" resname="New">
+        <source>New</source>
+        <target>Nouveau</target>
+      </trans-unit>
+      <trans-unit id="BOHvfR6" resname="Distributed">
+        <source>Distributed</source>
+        <target>Distribué</target>
+      </trans-unit>
+      <trans-unit id="RdsYeVs" resname="Hygiene kit">
+        <source>Hygiene kit</source>
+        <target>Hygiene kit</target>
+      </trans-unit>
+      <trans-unit id="OkyagQ9" resname="Beneficiary">
+        <source>Beneficiary</source>
+        <target>Bénéficiaire</target>
+      </trans-unit>
+      <trans-unit id="ocbJf0F" resname="Household">
+        <source>Household</source>
+        <target>Ménage</target>
+      </trans-unit>
+      <trans-unit id="u81ijAe" resname="household">
+        <source>household</source>
+        <target>Ménage</target>
+      </trans-unit>
+      <trans-unit id="4ZIYuvi" resname="Family name">
+        <source>Family name</source>
+        <target>Nom</target>
+      </trans-unit>
+      <trans-unit id="cC75Ie0" resname="First name">
+        <source>First name</source>
+        <target>Prénom</target>
+      </trans-unit>
+      <trans-unit id="yQRveje" resname="description">
+        <source>description</source>
+        <target>Description</target>
+      </trans-unit>
+      <trans-unit id="Rm5bnNV" resname="currency">
+        <source>currency</source>
+        <target>Devise</target>
+      </trans-unit>
+      <trans-unit id="OFz9vAD" resname="unit">
+        <source>unit</source>
+        <target>Unité</target>
+      </trans-unit>
+      <trans-unit id="z80fPWr" resname="Shelter">
+        <source>Shelter</source>
+        <target>Hébergement</target>
+      </trans-unit>
+      <trans-unit id="DpetAhZ" resname="Protection">
+        <source>Protection</source>
+        <target>Protection</target>
+      </trans-unit>
+      <trans-unit id="VYmESet" resname="Health">
+        <source>Health</source>
+        <target>Santé</target>
+      </trans-unit>
+      <trans-unit id="ereLcFj" resname="Nutrition">
+        <source>Nutrition</source>
+        <target>Nutrition</target>
+      </trans-unit>
+      <trans-unit id="mkhpM89" resname="Cash for Work">
+        <source>Cash for Work</source>
+        <target>Cash for work</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
