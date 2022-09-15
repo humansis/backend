@@ -7,7 +7,6 @@ namespace Controller;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Enum\Domain;
 use InputType\TransactionFilterInputType;
 use Services\CodeListService;
 use Psr\Log\LoggerInterface;
@@ -113,7 +112,7 @@ class TransactionController extends AbstractController
      */
     public function statuses(): JsonResponse
     {
-        $data = $this->codeListService->mapArray(Transaction::statuses(), Domain::ENUMS);
+        $data = $this->codeListService->mapArray(Transaction::statuses());
 
         return $this->json(new Paginator($data));
     }

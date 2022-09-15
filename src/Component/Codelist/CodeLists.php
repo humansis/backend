@@ -7,7 +7,6 @@ namespace Component\Codelist;
 use Entity\VulnerabilityCriterion;
 use DBAL\SubSectorEnum;
 use DTO\Sector;
-use Enum\Domain;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /** @deprecated use CodeListService instead */
@@ -15,14 +14,13 @@ class CodeLists
 {
     public static function mapEnum(
         iterable $list,
-        ?TranslatorInterface $translator = null,
-        ?string $domain = Domain::MESSAGES
+        ?TranslatorInterface $translator = null
     )
     {
         $data = [];
         foreach ($list as $value) {
             $translation = $translator !== null
-                ? $translator->trans($value, [], $domain)
+                ? $translator->trans($value)
                 : $value;
 
             $data[] = new CodeItem($value, $translation);
@@ -33,14 +31,13 @@ class CodeLists
 
     public static function mapArray(
         iterable $list,
-        ?TranslatorInterface $translator = null,
-        ?string $domain = Domain::MESSAGES
+        ?TranslatorInterface $translator = null
     )
     {
         $data = [];
         foreach ($list as $key => $value) {
             $translation = $translator !== null
-                ? $translator->trans($value, [], $domain)
+                ? $translator->trans($value)
                 : $value;
 
             $data[] = new CodeItem($key, $translation);

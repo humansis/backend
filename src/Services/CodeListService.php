@@ -5,7 +5,6 @@ namespace Services;
 use Component\Codelist\CodeItem;
 use DTO\Sector;
 use Entity\VulnerabilityCriterion;
-use Enum\Domain;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CodeListService
@@ -13,29 +12,26 @@ class CodeListService
     /** @var TranslatorInterface */
     private $translator;
 
-    /** @var string */
-    private $defaultDomain = Domain::MESSAGES;
-
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
-    public function mapEnum(iterable $list, ?string $domain = null): array
+    public function mapEnum(iterable $list): array
     {
         $data = [];
         foreach ($list as $value) {
-            $data[] = new CodeItem($value, $this->translator->trans($value, [], $domain ?? $this->defaultDomain));
+            $data[] = new CodeItem($value, $this->translator->trans($value));
         }
 
         return $data;
     }
 
-    public function mapArray(iterable $list, ?string $domain = null): array
+    public function mapArray(iterable $list): array
     {
         $data = [];
         foreach ($list as $key => $value) {
-            $data[] = new CodeItem($key, $this->translator->trans($value, [], $domain ?? $this->defaultDomain));
+            $data[] = new CodeItem($key, $this->translator->trans($value));
         }
 
         return $data;
@@ -49,7 +45,7 @@ class CodeListService
         foreach ($subSectors as $subSector) {
             $data[] = new CodeItem(
                 $subSector->getSubSectorName(),
-                $this->translator->trans('label_sector_' . $subSector->getSubSectorName(), [], $domain ?? $this->defaultDomain)
+                $this->translator->trans('label_sector_' . $subSector->getSubSectorName())
                 //SubSectorEnum::translate($subSector->getSubSectorName())
             );
         }

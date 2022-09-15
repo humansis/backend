@@ -8,7 +8,6 @@ use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use DBAL\SectorEnum;
 use Entity\Project;
-use Enum\Domain;
 use Services\CodeListService;
 use Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -41,7 +40,7 @@ class SectorsCodelistController extends AbstractController
      */
     public function getSectors(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(SectorEnum::all(), Domain::SECTORS);
+        $data = $this->codeListService->mapEnum(SectorEnum::all());
 
         return $this->json(new Paginator($data));
     }
@@ -73,7 +72,7 @@ class SectorsCodelistController extends AbstractController
             throw $this->createNotFoundException('Sector not found');
         }
 
-        $subSectors = $this->codeListService->mapSubSectors($this->sectorService->findSubsSectorsBySector($code), Domain::SECTORS);
+        $subSectors = $this->codeListService->mapSubSectors($this->sectorService->findSubsSectorsBySector($code));
 
         return $this->json(new Paginator($subSectors));
     }
