@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Component\Import;
 
 use Entity\CountrySpecific;
+use Exception\MissingHouseholdHeadException;
 use Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Finishing;
