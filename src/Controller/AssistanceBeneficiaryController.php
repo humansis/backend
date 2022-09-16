@@ -192,7 +192,7 @@ class AssistanceBeneficiaryController extends AbstractController
      */
     public function addAssistanceBeneficiaries(
         Entity\Assistance                         $assistanceRoot,
-        AssistanceBeneficiariesOperationInputType $inputType,
+        AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse
     {
         $this->checkAssistance($assistanceRoot);
