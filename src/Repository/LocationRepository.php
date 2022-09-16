@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Entity\Location;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
@@ -305,5 +306,22 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('parentRgt', $ancestor->getRgt())
             ->setParameter('parentLft', $ancestor->getLft())
             ->setParameter('parentLvl', $ancestor->getLvl());
+    }
+
+    /**
+     * @param int    $id
+     * @param string $countryCode
+     *
+     * @return Location
+     * @throws EntityNotFoundException
+     */
+    public function getLocationByIdAndCountryCode(int $id, string $countryCode): Location
+    {
+        $location = $this->findOneBy(['id' => $id, 'countryISO3' => $countryCode]);
+        if (empty($location)) {
+            throw new EntityNotFoundException("Location #{$id} was not found at country {$countryCode}.");
+        }
+
+        return $location;
     }
 }

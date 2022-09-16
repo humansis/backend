@@ -563,22 +563,18 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@beneficiary.beneficiary_service"
-            - "@request_validator"
-            - "@location_service"
         public: true
 
     beneficiary.institution_service:
         class: Utils\InstitutionService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@location_service"
         public: true
 
     beneficiary.community_service:
         class: Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@location_service"
             - '@MapperDeprecated\LocationMapper'
         public: true
 
@@ -653,15 +649,10 @@ services:
         class: Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@request_validator"
-            - "@validator"
             - '@Utils\ExportService'
             - '@Repository\BeneficiaryRepository'
             - '@Repository\HouseholdRepository'
             - '@Repository\VulnerabilityCriterionRepository'
-            - '@Repository\PhoneRepository'
-            - '@Repository\NationalIdRepository'
-            - '@Repository\ProfileRepository'
         public: true
 
     Utils\BeneficiaryService:
@@ -799,12 +790,7 @@ services:
     Utils\AssistanceService:
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@serializer'
-            - '@validator'
-            - '@location_service'
-            - '@distribution.commodity_service'
             - '@distribution.criteria_assistance_service'
-            - '@service_container'
             - '@Twig\Environment'
 
     distribution.assistance_beneficiary_service:
@@ -934,14 +920,6 @@ services:
     #######################################################################################
     ##                                       CRUD                                        ##
     #######################################################################################
-
-    location_service:
-        class: Utils\LocationService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@Repository\LocationRepository'
-            - "@request_validator"
 
     organization_service:
         alias: Utils\OrganizationService
