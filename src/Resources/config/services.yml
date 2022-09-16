@@ -928,11 +928,14 @@ services:
         alias: Utils\ExportService
         public: true
 
-    pdf_service:
-        class: Utils\PdfService
+    Utils\PdfService:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
+
+    pdf_service:
+        alias: Utils\PdfService
+        public: true
 
     MapperDeprecated\LocationMapper:
         public: true
