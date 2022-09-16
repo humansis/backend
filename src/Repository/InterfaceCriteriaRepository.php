@@ -1,10 +1,10 @@
 <?php
 
 
-namespace DistributionBundle\Repository;
+namespace Repository;
 
 use Doctrine\ORM\QueryBuilder;
-use ProjectBundle\Entity\Project;
+use Entity\Project;
 
 interface InterfaceCriteriaRepository
 {
