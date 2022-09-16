@@ -16,6 +16,14 @@ use VoucherBundle\Entity\Vendor;
 class PreliminaryInvoice
 {
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string")
+     * @ORM\Id
+     */
+    private $id;
+
+    /**
      * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="ProjectBundle\Entity\Project")
