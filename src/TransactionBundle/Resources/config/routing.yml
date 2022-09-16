@@ -1,4 +1,0 @@
-transaction:
-    type:     annotation
-    defaults: { _format: 'json' }
-    resource: '@TransactionBundle/Controller'

@@ -3,21 +3,20 @@
 
 namespace Tests;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\CountrySpecific;
-use BeneficiaryBundle\Entity\CountrySpecificAnswer;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Entity\NationalId;
-use BeneficiaryBundle\Entity\Phone;
-use BeneficiaryBundle\Entity\Profile;
-use BeneficiaryBundle\Entity\VulnerabilityCriterion;
-use BeneficiaryBundle\Utils\HouseholdService;
-use DistributionBundle\Utils\CommodityService;
-use DistributionBundle\Utils\ConfigurationLoader;
-use DistributionBundle\Utils\CriteriaAssistanceService;
+use Entity\Beneficiary;
+use Entity\CountrySpecific;
+use Entity\CountrySpecificAnswer;
+use Entity\Household;
+use Entity\NationalId;
+use Entity\Phone;
+use Entity\Profile;
+use Entity\VulnerabilityCriterion;
+use Utils\HouseholdService;
+use Utils\CommodityService;
+use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityManager;
 
-use ProjectBundle\Entity\Project;
+use Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 
@@ -26,8 +25,8 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use UserBundle\Entity\User;
-use UserBundle\Security\Authentication\Token\WsseUserToken;
+use Entity\User;
+use Security\Authentication\Token\WsseUserToken;
 
 class BMSServiceTestCase extends KernelTestCase
 {
@@ -57,9 +56,6 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var CommodityService $commodityService */
     protected $commodityService;
 
-    /** @var ConfigurationLoader $configurationLoader */
-    protected $configurationLoader;
-
     /** @var CriteriaAssistanceService $criteriaAssistanceService */
     protected $criteriaAssistanceService;
 
@@ -71,7 +67,7 @@ class BMSServiceTestCase extends KernelTestCase
     protected $namefullnameHousehold = "NOTES_TEST";
 
     protected $bodyHousehold = [
-        "livelihood" => \ProjectBundle\Enum\Livelihood::FARMING_LIVESTOCK,
+        "livelihood" => \Enum\Livelihood::FARMING_LIVESTOCK,
         "notes" => "NOTES_TEST",
         "latitude" => "1.1544",
         "longitude" => "120.12",
@@ -488,7 +484,7 @@ class BMSServiceTestCase extends KernelTestCase
      */
     public static function assertArrayFragment($expected, $actual, $message = '')
     {
-        $constraint = new \CommonBundle\Utils\Test\Contraint\MatchArrayFragment($expected);
+        $constraint = new \Utils\Test\Contraint\MatchArrayFragment($expected);
 
         static::assertThat($actual, $constraint, $message);
     }

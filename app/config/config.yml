@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: ../../src/NewApiBundle/Resources/config/workflow.yml }
+    - { resource: ../../src/Resources/config/workflow.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -131,9 +131,9 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
         routing:
-            'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': import
-            'NewApiBundle\Component\Import\Messaging\Message\ItemBatch': import
-            'NewApiBundle\Component\Import\Messaging\Message\UploadFile': incoming_big_data
+            'Component\Import\Messaging\Message\ImportCheck': import
+            'Component\Import\Messaging\Message\ItemBatch': import
+            'Component\Import\Messaging\Message\UploadFile': incoming_big_data
 
 sensio_framework_extra:
     router:
@@ -160,30 +160,35 @@ doctrine:
         schema_filter: '~^(?!view_)~' # support views with prefix "view_"
 #            - '~^(?!messenger_messages)~'
         types:
-            enum_source_type: NewApiBundle\DBAL\SourceEnum
-            enum_assistance_type: DistributionBundle\DBAL\AssistanceTypeEnum
-            enum_assistance_target_type: DistributionBundle\DBAL\AssistanceTargetTypeEnum
-            enum_livelihood: ProjectBundle\DBAL\LivelihoodEnum
-            enum_sector: ProjectBundle\DBAL\SectorEnum
-            enum_sub_sector: ProjectBundle\DBAL\SubSectorEnum
-            enum_import_state: NewApiBundle\DBAL\ImportStateEnum
-            enum_import_queue_state: NewApiBundle\DBAL\ImportStateQueueEnum
-            enum_import_duplicity_state: NewApiBundle\DBAL\ImportDuplicityStateEnum
-            enum_product_category_type: NewApiBundle\DBAL\ProductCategoryTypeEnum
-            enum_synchronization_batch_validation_type: NewApiBundle\DBAL\SynchronizationBatchValidationTypeEnum
-            enum_relief_package_state: NewApiBundle\DBAL\ReliefPackageStateEnum
-            enum_modality_type: NewApiBundle\DBAL\ModalityTypeEnum
-            enum_synchronization_batch_state: NewApiBundle\DBAL\SynchronizationBatchEnum
-            enum_household_shelter_status: NewApiBundle\DBAL\HouseholdShelterStatusEnum
-            enum_household_support_received_type: NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum
-            enum_household_assets: NewApiBundle\DBAL\HouseholdAssetsEnum
-            enum_person_gender: NewApiBundle\DBAL\PersonGenderEnum
-            enum_national_id_type: NewApiBundle\DBAL\NationalIdTypeEnum
-            enum_assitance_commodity_division: NewApiBundle\DBAL\AssistanceCommodityDivisionEnum
+            enum_source_type: DBAL\SourceEnum
+            enum_assistance_type: DBAL\AssistanceTypeEnum
+            enum_assistance_target_type: DBAL\AssistanceTargetTypeEnum
+            enum_livelihood: DBAL\LivelihoodEnum
+            enum_sector: DBAL\SectorEnum
+            enum_sub_sector: DBAL\SubSectorEnum
+            enum_import_state: DBAL\ImportStateEnum
+            enum_import_queue_state: DBAL\ImportStateQueueEnum
+            enum_import_duplicity_state: DBAL\ImportDuplicityStateEnum
+            enum_product_category_type: DBAL\ProductCategoryTypeEnum
+            enum_synchronization_batch_validation_type: DBAL\SynchronizationBatchValidationTypeEnum
+            enum_relief_package_state: DBAL\ReliefPackageStateEnum
+            enum_modality_type: DBAL\ModalityTypeEnum
+            enum_synchronization_batch_state: DBAL\SynchronizationBatchEnum
+            enum_household_shelter_status: DBAL\HouseholdShelterStatusEnum
+            enum_household_support_received_type: DBAL\HouseholdSupportReceivedTypeEnum
+            enum_household_assets: DBAL\HouseholdAssetsEnum
+            enum_person_gender: DBAL\PersonGenderEnum
+            enum_national_id_type: DBAL\NationalIdTypeEnum
+            enum_assitance_commodity_division: DBAL\AssistanceCommodityDivisionEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
+        mappings:
+            FOSUserBundle: ~
+            App:
+                type: annotation
+                dir: "%kernel.root_dir%/../src/Entity"
+                prefix: "Entity"
         dql:
             string_functions:
                  soundex:       DoctrineExtensions\Query\Mysql\Soundex
@@ -204,7 +209,7 @@ doctrine:
         query_cache_driver:
             type: array
         hydrators:
-            plain_values_hydrator: CommonBundle\Hydration\PlainValuesHydrator
+            plain_values_hydrator: Hydration\PlainValuesHydrator
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -228,7 +233,7 @@ doctrine_migrations:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: UserBundle\Entity\User
+    user_class: Entity\User
     from_email:
         address: "%email%"
         sender_name: "BMS Support"
@@ -268,88 +273,6 @@ nelmio_cors:
         expose_headers: []
         hosts: []
         origin_regex: false
-
-distribution:
-    retriever: BeneficiaryBundle\Utils\Distribution\DefaultRetriever
-    # The type 'table_field' means the criteria is a real field in the target table (for eg, residencyStatus in the Beneficiary table)
-    criteria: {
-            gender: {
-                type: table_field,
-                target: Beneficiary
-            },
-            dateOfBirth: {
-                type: table_field,
-                target: Beneficiary
-            },
-            residencyStatus: {
-                type: table_field,
-                target: Beneficiary
-            },
-            hasNotBeenInDistributionsSince: {
-                type: other,
-                target: Beneficiary
-            },
-            disabledHeadOfHousehold: {
-                type: other,
-                target: Head,
-                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
-            },
-            hasValidSmartcard: {
-                type: other,
-                target: Head,
-                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
-            },
-            headOfHouseholdDateOfBirth: {
-                type: table_field,
-                target: Head
-            },
-            headOfHouseholdGender: {
-                type: table_field,
-                target: Head
-            },
-            livelihood: {
-                type: table_field,
-                target: Household
-            },
-            foodConsumptionScore: {
-                type: table_field,
-                target: Household
-            },
-            copingStrategiesIndex: {
-                type: table_field,
-                target: Household
-            },
-            income: {
-                type: table_field,
-                target: Household
-            },
-            householdSize: {
-                type: other,
-                target: Household
-            },
-            location: {
-                type: other,
-                target: Household,
-                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
-            },
-            locationType: {
-                type: other,
-                target: Household
-            },
-            campName: {
-                type: other,
-                target: Household
-            },
-            vulnerabilityCriteria: {
-                type: BeneficiaryBundle\Entity\VulnerabilityCriterion,
-                target: Beneficiary,
-                valueTransformer: !php/const NewApiBundle\Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_BOOL
-            },
-            countrySpecific: {
-                type: BeneficiaryBundle\Entity\CountrySpecific,
-                target: Household
-            }
-        }
 
 services:
     acme.aws_s3.client:
