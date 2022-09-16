@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Controller;
 
 use Entity\User;
+use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
 use InvalidArgumentException;
 use Pagination\Paginator;
 use Entity\Assistance;
 use Enum\AssistanceType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;

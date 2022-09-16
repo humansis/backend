@@ -8,6 +8,7 @@ use Entity\Phone;
 use Entity\Profile;
 use Entity\Referral;
 use Entity\VulnerabilityCriterion;
+use Exception\ExportNoDataException;
 use Repository\BeneficiaryRepository;
 use Repository\HouseholdRepository;
 use Repository\VulnerabilityCriterionRepository;
