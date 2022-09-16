@@ -5,7 +5,6 @@ namespace Repository;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Entity\Household;
-use Repository\LocationRepository;
 use Entity\Assistance;
 use Entity\Location;
 use Enum\AssistanceTargetType;
@@ -498,31 +497,6 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $qb->getQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * @param bool         $onlyCount
-     * @param string       $countryISO3
-     * @param Project|null $project
-     *
-     * @return QueryBuilder
-     */
-    public function configurationQueryBuilder(bool $onlyCount, string $countryISO3, Project $project = null): QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('b');
-
-        if ($onlyCount) {
-            $qb->select('count(b)');
-        }
-        if (null !== $project) {
-            $qb->where(':idProject MEMBER OF hh.projects')
-                ->setParameter('idProject', $project->getId());
-        }
-        $qb->leftJoin('b.household', 'hh');
-        $qb->andWhere('hh.countryIso3 = :iso3')
-            ->setParameter('iso3', $countryISO3);
-
-        return $qb;
     }
 
     protected function whereInDistribution(QueryBuilder $qb, Assistance $assistance)

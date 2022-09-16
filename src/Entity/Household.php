@@ -3,28 +3,19 @@
 namespace Entity;
 
 use DateTimeInterface;
+use DBAL\HouseholdAssetsEnum;
+use DBAL\HouseholdSupportReceivedTypeEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
-use DBAL\HouseholdAssetsEnum;
 use DBAL\HouseholdShelterStatusEnum;
-use DBAL\HouseholdSupportReceivedTypeEnum;
+use Entity\Helper\CountryDependent;
 use Entity\Helper\EnumTrait;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
-use Enum\HouseholdSupportReceivedType;
 use DBAL\LivelihoodEnum;
-use NewApiBundle\DBAL\HouseholdAssetsEnum;
-use NewApiBundle\DBAL\HouseholdShelterStatusEnum;
-use NewApiBundle\DBAL\HouseholdSupportReceivedTypeEnum;
-use NewApiBundle\Entity\Helper\CountryDependent;
-use NewApiBundle\Entity\Helper\EnumTrait;
-use NewApiBundle\Entity\ImportHouseholdDuplicity;
-use NewApiBundle\Enum\HouseholdAssets;
-use NewApiBundle\Enum\HouseholdShelterStatus;
-use NewApiBundle\Enum\HouseholdSupportReceivedType;
-use ProjectBundle\DBAL\LivelihoodEnum;
+use Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
