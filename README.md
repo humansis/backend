@@ -22,7 +22,30 @@ before that the controller process.
 
 #### Translations
 
-See [translations step by step](translations.md).
+##### Add new key
+1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
+   `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
+2. clear cache and run keys extraction by running
+```bash
+make translation
+```
+3. in `/app/Resources/translations/messages.en.xlf` locate `<target>` elements with values starting with `__` and provide english translation
+4. (commit & push)
+
+during every merge to `develop`, keys are uploaded to crowdin.
+
+##### Update translations from crowdin
+
+(first time)
+1. generate access token in your crowdin account - Crowdin Account Settings > API & SSO > New Token and set it to `CROWDIN_API_KEY` in `docker-compose.yml`
+2. set `CROWDIN_PROJECT_ID: '452984'` in `docker-compose.yml`
+3. rebuild project
+
+(then)
+
+```bash
+make crowdin-pull
+```` 
 
 #### Specific Documentation
 - [Distribution Bundle](src/DistributionBundle/README.md)

@@ -547,12 +547,6 @@ services:
 
     Services\ScoringBlueprintService:
 
-    Services\TranslationExportService:
-        arguments:
-            - '@Utils\ExportService'
-            - '%app.translations_dir%'
-            - '%app.locales%'
-
     Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
             - '%distribution.criteria%'

@@ -9,12 +9,9 @@ use Pagination\Paginator;
 use Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Country\Countries;
-use Services\TranslationExportService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -167,24 +164,6 @@ class CommonController extends AbstractController
         }
 
         return $this->json($data);
-    }
-
-    /**
-     * @Rest\Get("/web-app/v1/translations-download")
-     *
-     * @return BinaryFileResponse
-     * @throws \Exception
-     */
-    public function translationsDownload(TranslationExportService $translationExportService): BinaryFileResponse
-    {
-        $filename = $translationExportService->prepareExport();
-        $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $response->deleteFileAfterSend(true);
-
-        return $response;
     }
 
     /**
