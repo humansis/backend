@@ -270,10 +270,9 @@ class SmartcardServiceTest extends KernelTestCase
             $this->assertContainsEquals([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
 
             foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
-                /** @var SmartcardPurchase $purchase */
                 $purchase = $this->em->getRepository(\VoucherBundle\Entity\SmartcardPurchase::class)->find($purchaseId);
                 $this->assertNotNull($purchase, "Purchase must exists");
-                $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
+                $this->assertEquals(2000, $purchase->getUsedAt()->format('Y'), "Wrong purchase year");
             }
         }
         // redeem test
