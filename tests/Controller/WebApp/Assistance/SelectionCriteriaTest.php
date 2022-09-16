@@ -2,15 +2,16 @@
 
 namespace Tests\Controller\WebApp\Assistance;
 
+use DBAL\SectorEnum;
 use Entity\Community;
 use Entity\Location;
 use DateTime;
 use DateTimeInterface;
 use Entity\Assistance;
-use Entity\ModalityType;
+use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
+use Enum\ModalityType;
 use Repository\AssistanceRepository;
-use Repository\ModalityTypeRepository;
 use Exception;
 use Component\Assistance\Enum\CommodityDivision;
 use DBAL\ModalityTypeEnum;
@@ -46,19 +47,19 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'projectId' => 8,
             'locationId' => 30,
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
-            'sector' => \DBAL\SectorEnum::FOOD_SECURITY,
-            'subsector' => \DBAL\SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
-            'target' => \Enum\AssistanceTargetType::HOUSEHOLD,
+            'target' => AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => \Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => \Enum\ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 2000],
-                ['modalityType' => \Enum\ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
-                ['modalityType' => \Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
-                ['modalityType' => \Enum\ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
-                ['modalityType' => \Enum\ModalityType::CASH, 'unit' => 'USD', 'value' => 400],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 2000],
+                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
+                ['modalityType' => ModalityType::CASH, 'unit' => 'USD', 'value' => 400],
             ],
             'selectionCriteria' => $criteria,
             'foodLimit' => 10.99,
@@ -200,7 +201,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($contentArray['data'] as $summary) {
-            $this->assertTrue(in_array($summary['modalityType'], [\Enum\ModalityType::SMART_CARD, \Enum\ModalityType::CASH]));
+            $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
             $this->assertGreaterThan(0, $summary['value']);
         }

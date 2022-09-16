@@ -6,6 +6,7 @@ use DateTime;
 use Entity\AssistanceBeneficiary;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Enum\ModalityType;
 use Exception;
 use Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
@@ -84,7 +85,7 @@ class TransactionService
     {
         $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
 
-        if ($assistance->getCommodities()[0]->getModalityType()->getName() === "Mobile Money") {
+        if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::MOBILE_MONEY) {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
             $currencyToSend = $assistance->getCommodities()[0]->getUnit();
         } else {

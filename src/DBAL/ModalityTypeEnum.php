@@ -5,8 +5,10 @@ namespace DBAL;
 
 use Enum\ModalityType;
 
-class ModalityTypeEnum extends \DBAL\AbstractEnum
+class ModalityTypeEnum extends AbstractEnum
 {
+    use EnumTrait;
+
     public function getName(): string
     {
         return 'enum_modality_type';
@@ -15,5 +17,10 @@ class ModalityTypeEnum extends \DBAL\AbstractEnum
     public static function all(): array
     {
         return ModalityType::values();
+    }
+
+    public static function databaseMap(): array
+    {
+        return array_combine(ModalityType::values(), ModalityType::values());
     }
 }

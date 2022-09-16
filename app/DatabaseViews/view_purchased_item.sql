@@ -19,7 +19,7 @@ SELECT
         WHEN ab.bnf_type = "comm" THEN "Community"
         END AS bnf_type,
     c.id as commodity_id,
-    mt.name as modality_type,
+    c.modality_type as modality_type,
     CASE
         WHEN sd.id  IS NOT NULL THEN DATE_FORMAT(sd.distributed_at, "%Y-%m-%dT%TZ")
         WHEN b.id   IS NOT NULL THEN null
@@ -53,7 +53,6 @@ FROM distribution_beneficiary db
          JOIN assistance a ON a.id=db.assistance_id AND a.assistance_type="distribution"
          JOIN abstract_beneficiary ab ON ab.id=db.beneficiary_id
          JOIN commodity c ON c.assistance_id=db.assistance_id
-         JOIN modality_type mt ON mt.id=c.modality_type_id
 
     -- smartcards
          LEFT JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id

@@ -5,6 +5,7 @@ namespace Repository;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Entity\Household;
+use Enum\ModalityType;
 use Entity\Assistance;
 use Entity\Location;
 use Enum\AssistanceTargetType;
@@ -485,10 +486,10 @@ class BeneficiaryRepository extends \Doctrine\ORM\EntityRepository
         $qb->select('COUNT(DISTINCT b)');
         $this->whereInDistribution($qb, $distribution);
 
-        if ('Mobile Money' === $modalityType) {
+        if ($modalityType === ModalityType::MOBILE_MONEY) {
             $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
         } else {
-            if ($modalityType === 'QR Code Voucher') {
+            if ($modalityType === ModalityType::QR_CODE_VOUCHER) {
                 $qb->innerJoin('db.booklets', 'bo', Join::WITH, 'bo.status = 1 OR bo.status = 2');
             } else {
                 $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :distributed')

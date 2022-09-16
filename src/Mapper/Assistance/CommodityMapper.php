@@ -41,7 +41,7 @@ class CommodityMapper implements MapperInterface
 
     public function getModalityType(): string
     {
-        return $this->object->getModalityType()->getName();
+        return $this->object->getModalityType();
     }
 
     public function getUnit(): string

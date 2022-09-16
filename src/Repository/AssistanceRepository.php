@@ -10,6 +10,7 @@ use \DateTime;
 use Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use DBAL\PersonGenderEnum;
+use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use InputType\AssistanceByProjectOfflineAppFilterInputType;
 use InputType\AssistanceFilterInputType;
@@ -47,9 +48,9 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin('dd.distributionBeneficiaries', 'db', Join::WITH, 'db.removed = 0')
                 ->select('COUNT(DISTINCT db)');
 
-                if ($modalityType === 'Mobile Money') {
+                if ($modalityType === ModalityType::MOBILE_MONEY) {
                     $qb->innerJoin('db.transactions', 't', Join::WITH, 't.transactionStatus = 1');
-                } else if ($modalityType === 'QR Code Voucher') {
+                } else if ($modalityType === ModalityType::QR_CODE_VOUCHER) {
                     $qb->innerJoin('db.booklets', 'b', Join::WITH, 'b.status = 1 OR b.status = 2');
                 } else {
                     $qb->innerJoin('db.reliefPackages', 'rp', Join::WITH, 'rp.state = :undistributedState')
@@ -178,13 +179,13 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($filter->hasModalityTypes()) {
             $qbr->join('dd.commodities', 'c')
-                ->join('c.modalityType', 'm', 'WITH', 'm.name IN (:modalityTypes)')
+                ->andWhere('c.modalityType IN (:modalityTypes)')
                 ->setParameter('modalityTypes', $filter->getModalityTypes());
         }
 
         if ($filter->hasNotModalityTypes()) {
             $qbr->join('dd.commodities', 'c')
-                ->join('c.modalityType', 'm', 'WITH', 'm.name NOT IN (:modalityTypes)')
+                ->andWhere('c.modalityType NOT IN (:modalityTypes)')
                 ->setParameter('modalityTypes', $filter->getNotModalityTypes());
         }
 
@@ -220,10 +221,6 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     $orderBy->has(AssistanceOrderInputType::SORT_BY_UNIT) ||
                     $orderBy->has(AssistanceOrderInputType::SORT_BY_VALUE)))) {
             $qb->leftJoin('dd.commodities', 'c');
-
-            if ($filter->hasModalityTypes() || $orderBy->has(AssistanceOrderInputType::SORT_BY_MODALITY_TYPE)) {
-                $qb->leftJoin('c.modalityType', 'mt');
-            }
         }
 
         if ($filter) {
@@ -249,7 +246,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
                     ->setParameter('locations', $filter->getLocations());
             }
             if ($filter->hasModalityTypes()) {
-                $qb->andWhere('mt.name IN (:modalityTypes)')
+                $qb->andWhere('c.modalityType IN (:modalityTypes)')
                     ->setParameter('modalityTypes', $filter->getModalityTypes());
             }
         }

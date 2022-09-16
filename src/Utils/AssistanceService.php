@@ -4,6 +4,7 @@ namespace Utils;
 
 use Entity\AbstractBeneficiary;
 use Entity\User;
+use Enum\ModalityType;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -251,7 +252,7 @@ class AssistanceService
 
         return new Paginator($list, $count);
     }
-    
+
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance
@@ -338,12 +339,12 @@ class AssistanceService
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
-            $modalityType = $assistance->getCommodities()[0]->getModalityType()->getName();
+            $modalityType = $assistance->getCommodities()[0]->getModalityType();
             $beneficiaryServed =  $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
             $commodityNames = implode(', ',
                     array_map(
-                        function($commodity) { return  $commodity->getModalityType()->getName(); }, 
+                        function($commodity) { return  $commodity->getModalityType(); },
                         $assistance->getCommodities()->toArray()
                     )
                 );

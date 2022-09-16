@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Entity\Assistance\ReliefPackage;
 use Entity\Helper\StandardizedPrimaryKey;
+use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
@@ -115,7 +116,7 @@ class AssistanceBeneficiary
     {
         foreach ($this->getAssistance()->getCommodities() as $commodity) {
             /** @var Commodity $commodity */
-            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+            if (ModalityType::SMART_CARD === $commodity->getModalityType()) {
                 return count($this->getSmartcardDeposits()) > 0;
             }
         }

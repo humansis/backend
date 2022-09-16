@@ -140,10 +140,6 @@ class AssistanceMapper implements MapperInterface
     {
         $result = [];
         foreach ($this->object->getCommodities() as $commodity) {
-            if ('Activity item' === $commodity->getModalityType()->getName()) {
-                continue;
-            }
-
             $result[] = $commodity->getId();
         }
 
