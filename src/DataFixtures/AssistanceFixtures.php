@@ -6,30 +6,19 @@ use Entity\Community;
 use Entity\Institution;
 use DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use Entity\Location;
-use MapperDeprecated\LocationMapper;
 use Entity\Modality;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
 use Entity\ModalityType;
-use Utils\AssistanceService;
-use Entity\Community;
-use Entity\Institution;
 use Exception\CsvParserException;
+use NewApiBundle\Utils\ValueGenerator\ValueGenerator;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
-use DataFixtures\Beneficiaries\BeneficiaryFixtures;
-use Entity\Location;
 use Repository\LocationRepository;
-use DateTime;
 use DateTimeImmutable;
-use Entity\Modality;
-use Enum\AssistanceTargetType;
-use Enum\AssistanceType;
-use Entity\ModalityType;
 use Repository\AssistanceRepository;
 use Repository\ModalityRepository;
 use Repository\ModalityTypeRepository;
-use Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -46,7 +35,6 @@ use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\DivisionInputType;
 use InputType\Assistance\SelectionCriterionInputType;
 use InputType\AssistanceCreateInputType;
-use Utils\ValueGenerator\ValueGenerator;
 use Repository\ProjectRepository;
 use Component\Country\Countries;
 use Component\Country\Country;
@@ -253,7 +241,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $assistanceInput->setTarget(AssistanceTargetType::HOUSEHOLD);
 
             $commodity = $this->buildCommoditiesType($country, $modality);
-            if ($modality === \NewApiBundle\Enum\ModalityType::CASH) {
+            if ($modality === \Enum\ModalityType::CASH) {
                 $commodity->setDivision($this->buildDivisionInputType());
             }
             $assistanceInput->addCommodity($commodity);

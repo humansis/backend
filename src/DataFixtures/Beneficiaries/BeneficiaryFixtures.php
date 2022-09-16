@@ -2,16 +2,15 @@
 
 namespace DataFixtures\Beneficiaries;
 
+use Enum\EnumValueNoFoundException;
+use InputType\Beneficiary\NationalIdCardInputType;
+use NewApiBundle\Utils\ValueGenerator\ValueGenerator;
 use Utils\HouseholdService;
 use DataFixtures\ProjectFixtures;
 use DataFixtures\VulnerabilityCriterionFixtures;
 use Enum\ResidencyStatus;
-use Utils\HouseholdService;
 use DataFixtures\CountrySpecificFixtures;
-use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
 use DataFixtures\LocationFixtures;
-use DataFixtures\ProjectFixtures;
-use DataFixtures\VulnerabilityCriterionFixtures;
 use Entity\Location;
 use Repository\LocationRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -28,8 +27,6 @@ use InputType\Beneficiary\BeneficiaryInputType;
 use InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use InputType\Beneficiary\PhoneInputType;
 use InputType\HouseholdCreateInputType;
-use Utils\ValueGenerator\ValueGenerator;
-use Entity\Project;
 use Enum\Livelihood;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
@@ -94,6 +91,9 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
+    /**
+     * @throws EnumValueNoFoundException
+     */
     private function getHouseholdData(): array
     {
         return [

@@ -1,12 +1,10 @@
 <?php
 namespace DataFixtures\Beneficiaries;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Utils\CommunityService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
-use DataFixtures\InputTypesGenerator\AddressGenerator;
-use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
-use DataFixtures\InputTypesGenerator\PhoneGenerator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -127,6 +125,9 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $this->projectRepository = $projectRepository;
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function load(ObjectManager $manager)
     {
         if ($this->environment == "prod") {

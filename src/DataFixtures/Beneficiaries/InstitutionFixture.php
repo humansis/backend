@@ -1,20 +1,10 @@
 <?php
 namespace DataFixtures\Beneficiaries;
 
-use Entity\Institution;
-use InputType\Deprecated\NewInstitutionType;
 use Utils\InstitutionService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
-use InputType\Country;
-use InputType\RequestConverter;
-use BeneficiaryBundle\Entity\Institution;
-use BeneficiaryBundle\Utils\InstitutionService;
-use DataFixtures\InputTypesGenerator\AddressGenerator;
-use DataFixtures\InputTypesGenerator\NationalIdCardGenerator;
-use DataFixtures\InputTypesGenerator\PhoneGenerator;
-use DataFixtures\LocationFixtures;
-use CommonBundle\DataFixtures\ProjectFixtures;
+use Entity\Institution;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\ORM\EntityNotFoundException;

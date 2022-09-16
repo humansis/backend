@@ -6,8 +6,6 @@ namespace DataFixtures;
 use Repository\CountrySpecificRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-
-use Entity\CountrySpecific;
 use Entity\CountrySpecific;
 use Component\Country\Countries;
 

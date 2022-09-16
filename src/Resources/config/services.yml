@@ -857,6 +857,12 @@ services:
             - Entity\ModalityType
         public: true
 
+    Repository\ModalityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Modality
+        public: true
+
     #######################################################################################
     ##                                       CSV                                         ##
     #######################################################################################
@@ -1077,8 +1083,6 @@ services:
         public: true
         arguments:
             - "@kernel"
-            - '@Component\Country\Countries'
-            - "@distribution.assistance_service"
         tags:
             - { name: doctrine.fixture.orm }
 

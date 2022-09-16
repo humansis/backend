@@ -23,9 +23,9 @@ recreate: ## Docker: Stop and remove all containers and start it again
 	docker-compose up -d --force-recreate --build
 
 	#wait for initialize database
-	sleep 20;
+	sleep 30;
 
-	$(MAKE) cache clean
+	$(MAKE) cache fixtures
 
 migrate: ## Migrate database
 	docker-compose exec php bash -c 'bin/console doctrine:migrations:migrate --no-interaction'
@@ -48,3 +48,6 @@ test: ## Run phpunit tests
 
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'
+
+fixtures: ## Run fixtures
+	docker-compose exec php bash -c 'bin/console doctrine:fixtures:load  --no-interaction'
