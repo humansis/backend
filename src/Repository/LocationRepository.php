@@ -5,7 +5,6 @@ namespace Repository;
 use Doctrine\ORM\EntityNotFoundException;
 use Entity\Location;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InputType\LocationFilterInputType;
 
@@ -288,10 +287,10 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     )
     {
         $query = $this->_em->createQuery(<<<DQL
-            UPDATE CommonBundle\Entity\Location l
+            UPDATE Entity\Location l
             SET l.duplicityCount = :duplicityCount
             WHERE l.lvl = :lvl
-            AND l.countryISO3 = :countryISO3
+            AND l.countryIso3 = :countryISO3
             AND l.enumNormalizedName = :enumNormalizedName 
         DQL)->setParameters([
             'lvl' => $lvl,

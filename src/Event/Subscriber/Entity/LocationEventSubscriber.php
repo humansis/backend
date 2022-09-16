@@ -1,12 +1,12 @@
 <?php
 
-namespace NewApiBundle\Event\Subscriber\Entity;
+namespace Event\Subscriber\Entity;
 
-use CommonBundle\Entity\Location;
+use Entity\Location;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use NewApiBundle\InputType\LocationFilterInputType;
-use Doctrine\Common\EventSubscriber;
+use InputType\LocationFilterInputType;
 
 class LocationEventSubscriber implements EventSubscriber
 {
