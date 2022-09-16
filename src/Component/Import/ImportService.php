@@ -2,6 +2,7 @@
 
 namespace Component\Import;
 
+use Entity\Project;
 use Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
@@ -15,22 +16,12 @@ use Enum\ImportState;
 use InputType\Import;
 use Repository\ImportBeneficiaryDuplicityRepository;
 use Repository\ImportQueueRepository;
-use Entity\Project;
-use NewApiBundle\Component\Import\Integrity;
-use NewApiBundle\Component\Import\ValueObject\ImportStatisticsValueObject;
-use NewApiBundle\Entity;
-use NewApiBundle\Enum\ImportQueueState;
-use NewApiBundle\Enum\ImportState;
-use NewApiBundle\InputType\Import;
-use NewApiBundle\Repository\ImportBeneficiaryDuplicityRepository;
-use NewApiBundle\Repository\ImportQueueRepository;
-use NewApiBundle\Workflow\ImportTransitions;
-use ProjectBundle\Entity\Project;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\TransitionBlocker;
 use Symfony\Component\Workflow\WorkflowInterface;
 use Entity\User;
+use Workflow\ImportTransitions;
 
 class ImportService
 {
