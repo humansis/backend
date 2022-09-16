@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Entity\Beneficiary;
 use Repository\BeneficiaryRepository;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
@@ -28,6 +29,7 @@ use InputType\CommunityFilterType;
 use InputType\CommunityOrderInputType;
 use InputType\InstitutionFilterInputType;
 use InputType\InstitutionOrderInputType;
+use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -162,16 +164,9 @@ class AssistanceBeneficiaryController extends AbstractController
         $this->checkAllowedOperations($inputType);
 
         try {
-            if ($inputType->hasDocumentNumbers()) {
-                $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
-                $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers($beneficiaries, $inputType->getDocumentNumbers(),
-                    $inputType->getDocumentType());
+            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType);
+            $output = $this->prepareBeneficiariesForChange($assistanceRoot, $beneficiaries, $inputType);
 
-            } else {
-                $beneficiaries = $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
-                $output = $this->assistanceBeneficiaryService->prepareOutputForBeneficiaryIds($beneficiaries, $inputType->getBeneficiaryIds());
-
-            }
             $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance($output, $assistanceRoot, $beneficiaries,
                 $inputType->getJustification());
 
@@ -181,7 +176,6 @@ class AssistanceBeneficiaryController extends AbstractController
             return $this->json($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
-
 
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
@@ -199,16 +193,9 @@ class AssistanceBeneficiaryController extends AbstractController
         $this->checkAllowedOperations($inputType);
 
         try {
-            if ($inputType->hasDocumentNumbers()) {
-                $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
-                $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers($beneficiaries, $inputType->getDocumentNumbers(),
-                    $inputType->getDocumentType());
+            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType);
+            $output = $this->prepareBeneficiariesForChange($assistanceRoot, $beneficiaries, $inputType);
 
-            } else {
-                $beneficiaries = $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
-                $output = $this->assistanceBeneficiaryService->prepareOutputForBeneficiaryIds($beneficiaries, $inputType->getBeneficiaryIds());
-
-            }
             $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance($output, $assistanceRoot, $beneficiaries,
                 $inputType->getJustification());
 
@@ -293,6 +280,38 @@ class AssistanceBeneficiaryController extends AbstractController
         );
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     *
+     * @return Beneficiary[]
+     */
+    private function getBeneficiariesForAssistanceBeneficiaryChange(AssistanceBeneficiariesOperationInputType $inputType): array
+    {
+        if ($inputType->hasDocumentNumbers()) {
+            return $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
+        }
+
+        return $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
+    }
+
+    /**
+     * @param Assistance                                $assistance
+     * @param Beneficiary[]                             $beneficiaries
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     *
+     * @return AssistanceBeneficiaryOperationOutputType
+     */
+    private function prepareBeneficiariesForChange(Assistance $assistance, array $beneficiaries, AssistanceBeneficiariesOperationInputType $inputType): AssistanceBeneficiaryOperationOutputType
+    {
+        if ($inputType->hasDocumentNumbers()) {
+            return $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers($beneficiaries, $inputType->getDocumentNumbers(),
+                $inputType->getDocumentType());
+
+        }
+
+        return $this->assistanceBeneficiaryService->prepareOutputForBeneficiaryIds($beneficiaries, $inputType->getBeneficiaryIds());
     }
 
     /**
