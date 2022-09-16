@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Controller;
@@ -8,6 +7,7 @@ use Repository\BeneficiaryRepository;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
 use Entity;
+use DistributionBundle\Entity\Assistance;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
 use Doctrine\ORM\EntityRepository;
@@ -15,11 +15,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use InvalidArgumentException;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain;
+use NewApiBundle\Component\Assistance\Services\AssistanceBeneficiaryService;
 use Exception\ManipulationOverValidatedAssistanceException;
 use InputType\AddRemoveAbstractBeneficiaryToAssistanceInputType;
 use InputType\AddRemoveBeneficiaryToAssistanceInputType;
 use InputType\AddRemoveCommunityToAssistanceInputType;
 use InputType\AddRemoveInstitutionToAssistanceInputType;
+use NewApiBundle\InputType\Assistance\AssistanceBeneficiariesOperationInputType;
 use InputType\BeneficiaryFilterInputType;
 use InputType\BeneficiaryOrderInputType;
 use InputType\CommunityFilterType;
@@ -29,9 +31,22 @@ use InputType\InstitutionOrderInputType;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceBeneficiaryController extends AbstractController
 {
+    const MAX_ALLOWED_OPERATIONS = 5000;
+
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    /**
+     * @var AssistanceBeneficiaryService
+     */
+    private $assistanceBeneficiaryService;
+
     /**
      * @var AssistanceBeneficiaryRepository
      */
@@ -39,38 +54,42 @@ class AssistanceBeneficiaryController extends AbstractController
 
     /**
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
+     * @param BeneficiaryRepository           $beneficiaryRepository
+     * @param AssistanceBeneficiaryService    $assistanceBeneficiaryService
      */
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
+    public function __construct(
+        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        BeneficiaryRepository $beneficiaryRepository,
+        AssistanceBeneficiaryService $assistanceBeneficiaryService
+    )
     {
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
-     * @param Entity\Assistance $assistance
+     * @param Entity\Assistance          $assistance
      * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType $orderBy
-     * @param Pagination $pagination
+     * @param BeneficiaryOrderInputType  $orderBy
+     * @param Pagination                 $pagination
      *
      * @return JsonResponse
      */
     public function assistanceBeneficiariesByAssistance(
-        Entity\Assistance $assistance,
+        Entity\Assistance          $assistance,
         BeneficiaryFilterInputType $filter,
-        BeneficiaryOrderInputType $orderBy,
-        Pagination $pagination
+        BeneficiaryOrderInputType  $orderBy,
+        Pagination                 $pagination
     ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository->findBeneficiariesByAssistance(
-            $assistance,
-            $filter,
-            $orderBy,
-            $pagination
-        );
+        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository->findBeneficiariesByAssistance($assistance,
+            $filter, $orderBy, $pagination);
 
         return $this->json($assistanceBeneficiaries);
     }
@@ -78,29 +97,25 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-institutions")
      *
-     * @param Entity\Assistance $assistance
+     * @param Entity\Assistance          $assistance
      * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType $orderBy
-     * @param Pagination $pagination
+     * @param InstitutionOrderInputType  $orderBy
+     * @param Pagination                 $pagination
      *
      * @return JsonResponse
      */
     public function assistanceInstitutionsByAssistance(
-        Entity\Assistance $assistance,
+        Entity\Assistance          $assistance,
         InstitutionFilterInputType $filter,
-        InstitutionOrderInputType $orderBy,
-        Pagination $pagination
+        InstitutionOrderInputType  $orderBy,
+        Pagination                 $pagination
     ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
 
-        $assistanceInstitutions = $this->assistanceBeneficiaryRepository->findInstitutionsByAssistance(
-            $assistance,
-            $filter,
-            $orderBy,
-            $pagination
-        );
+        $assistanceInstitutions = $this->assistanceBeneficiaryRepository->findInstitutionsByAssistance($assistance,
+            $filter, $orderBy, $pagination);
 
         return $this->json($assistanceInstitutions);
     }
@@ -108,74 +123,106 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-communities")
      *
-     * @param Entity\Assistance $assistance
-     * @param CommunityFilterType $filter
+     * @param Entity\Assistance       $assistance
+     * @param CommunityFilterType     $filter
      * @param CommunityOrderInputType $orderBy
-     * @param Pagination $pagination
+     * @param Pagination              $pagination
      *
      * @return JsonResponse
      */
     public function assistanceCommunitiesByAssistance(
-        Entity\Assistance $assistance,
-        CommunityFilterType $filter,
+        Entity\Assistance       $assistance,
+        CommunityFilterType     $filter,
         CommunityOrderInputType $orderBy,
-        Pagination $pagination
+        Pagination              $pagination
     ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
 
-        $assistanceCommunities = $this->assistanceBeneficiaryRepository->findCommunitiesByAssistance(
-            $assistance,
-            $filter,
-            $orderBy,
-            $pagination
-        );
+        $assistanceCommunities = $this->assistanceBeneficiaryRepository->findCommunitiesByAssistance($assistance,
+            $filter, $orderBy, $pagination);
 
         return $this->json($assistanceCommunities);
     }
 
     /**
-     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
-     *
-     * @param Entity\Assistance $assistanceRoot
-     * @param AddRemoveBeneficiaryToAssistanceInputType $inputType
-     * @param BeneficiaryRepository $repository
-     * @param AssistanceFactory $factory
+     * @Rest\Delete("/web-app/v1/assistances/{id}/assistances-beneficiaries")
+     * @param Assistance                                $assistanceRoot
+     * @param AssistanceBeneficiariesOperationInputType $inputType
      *
      * @return JsonResponse
      */
-    public function addOrRemoveAssistanceBeneficiaries(
-        Entity\Assistance $assistanceRoot,
-        AddRemoveBeneficiaryToAssistanceInputType $inputType,
-        BeneficiaryRepository $repository,
-        AssistanceFactory $factory
-    ): JsonResponse {
-        if (
-            $assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD
-            && $assistanceRoot->getTargetType() !== AssistanceTargetType::INDIVIDUAL
-        ) {
-            throw new InvalidArgumentException('This assistance is only for households or individuals');
-        }
+    public function removeAssistanceBeneficiaries(
+        Entity\Assistance                         $assistanceRoot,
+        AssistanceBeneficiariesOperationInputType $inputType
+    ): JsonResponse
+    {
+        $this->checkAssistance($assistanceRoot);
+        $this->checkAllowedOperations($inputType);
 
         try {
-            $this->actualizeBeneficiary(
-                $factory->hydrate($assistanceRoot),
-                $inputType->getBeneficiaryIds(),
-                $repository,
-                $inputType
-            );
-        } catch (ManipulationOverValidatedAssistanceException $e) {
-            return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+            if ($inputType->hasDocumentNumbers()) {
+                $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
+                $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers($beneficiaries, $inputType->getDocumentNumbers(),
+                    $inputType->getDocumentType());
 
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+            } else {
+                $beneficiaries = $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
+                $output = $this->assistanceBeneficiaryService->prepareOutputForBeneficiaryIds($beneficiaries, $inputType->getBeneficiaryIds());
+
+            }
+            $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance($output, $assistanceRoot, $beneficiaries,
+                $inputType->getJustification());
+
+            return $this->json($output, Response::HTTP_OK);
+        } catch (ManipulationOverValidatedAssistanceException $exception)
+        {
+            return $this->json($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+
+    /**
+     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
+     * @param Assistance                                $assistanceRoot
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     *
+     * @return JsonResponse
+     */
+    public function addAssistanceBeneficiaries(
+        Entity\Assistance                         $assistanceRoot,
+        AssistanceBeneficiariesOperationInputType $inputType,
+    ): JsonResponse
+    {
+        $this->checkAssistance($assistanceRoot);
+        $this->checkAllowedOperations($inputType);
+
+        try {
+            if ($inputType->hasDocumentNumbers()) {
+                $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
+                $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers($beneficiaries, $inputType->getDocumentNumbers(),
+                    $inputType->getDocumentType());
+
+            } else {
+                $beneficiaries = $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
+                $output = $this->assistanceBeneficiaryService->prepareOutputForBeneficiaryIds($beneficiaries, $inputType->getBeneficiaryIds());
+
+            }
+            $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance($output, $assistanceRoot, $beneficiaries,
+                $inputType->getJustification());
+
+            return $this->json($output, Response::HTTP_OK);
+        } catch (ManipulationOverValidatedAssistanceException $exception)
+        {
+            return $this->json($exception->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
     }
 
     private function actualizeBeneficiary(
-        Domain\Assistance $assistance,
-        array $idList,
-        EntityRepository $repository,
+        Domain\Assistance                                 $assistance,
+        array                                             $idList,
+        EntityRepository                                  $repository,
         AddRemoveAbstractBeneficiaryToAssistanceInputType $inputType
     ): void {
         foreach ($idList as $id) {
@@ -191,18 +238,18 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-institutions")
      *
-     * @param Entity\Assistance $assistanceRoot
+     * @param Entity\Assistance                         $assistanceRoot
      * @param AddRemoveInstitutionToAssistanceInputType $inputType
-     * @param AssistanceFactory $factory
-     * @param InstitutionRepository $repository
+     * @param AssistanceFactory                         $factory
+     * @param InstitutionRepository                     $repository
      *
      * @return JsonResponse
      */
     public function addOrRemoveAssistanceInstitutions(
-        Entity\Assistance $assistanceRoot,
+        Entity\Assistance                         $assistanceRoot,
         AddRemoveInstitutionToAssistanceInputType $inputType,
-        AssistanceFactory $factory,
-        InstitutionRepository $repository
+        AssistanceFactory                         $factory,
+        InstitutionRepository                     $repository
     ): JsonResponse {
         if ($assistanceRoot->getTargetType() !== AssistanceTargetType::INSTITUTION) {
             throw new InvalidArgumentException('This assistance is only for institutions');
@@ -221,18 +268,18 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-communities")
      *
-     * @param Entity\Assistance $assistanceRoot
+     * @param Entity\Assistance                       $assistanceRoot
      * @param AddRemoveCommunityToAssistanceInputType $inputType
-     * @param AssistanceFactory $factory
-     * @param CommunityRepository $repository
+     * @param AssistanceFactory                       $factory
+     * @param CommunityRepository                     $repository
      *
      * @return JsonResponse
      */
     public function addOrRemoveAssistanceCommunities(
-        Entity\Assistance $assistanceRoot,
+        Entity\Assistance                       $assistanceRoot,
         AddRemoveCommunityToAssistanceInputType $inputType,
-        AssistanceFactory $factory,
-        CommunityRepository $repository
+        AssistanceFactory                       $factory,
+        CommunityRepository                     $repository
     ): JsonResponse {
         if ($assistanceRoot->getTargetType() !== AssistanceTargetType::COMMUNITY) {
             throw new InvalidArgumentException('This assistance is only for communities');
@@ -246,5 +293,37 @@ class AssistanceBeneficiaryController extends AbstractController
         );
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param Assistance $assistance
+     *
+     * @return void
+     */
+    private function checkAssistance(Assistance $assistance): void
+    {
+        if ($assistance->getTargetType() !== AssistanceTargetType::HOUSEHOLD
+            && $assistance->getTargetType() !== AssistanceTargetType::INDIVIDUAL) {
+            throw new BadRequestHttpException('This assistance is only for households or individuals');
+        }
+    }
+
+    /**
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     *
+     * @return void
+     */
+    private function checkAllowedOperations(AssistanceBeneficiariesOperationInputType $inputType): void
+    {
+        $operations = 0;
+        if ($inputType->getBeneficiaryIds() !== null) {
+            $operations = count($inputType->getBeneficiaryIds());
+        } else if ($inputType->getDocumentNumbers() !== null) {
+            $operations = count($inputType->getDocumentNumbers());
+        }
+
+        if ($operations >= self::MAX_ALLOWED_OPERATIONS) {
+            throw new BadRequestHttpException("This endpoint allows only to execute ".self::MAX_ALLOWED_OPERATIONS." operations. You try to execute {$operations} operations.");
+        }
     }
 }
