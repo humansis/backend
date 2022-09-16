@@ -16,6 +16,7 @@ trait StandardizedPrimaryKey
      * @ORM\GeneratedValue(strategy="AUTO")
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "ValidatedAssistance", "FullProject", "FullBeneficiary", "SmartcardOverview", "FullSmartcard"})
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
+     * @SymfonyGroups({"FullModality", "FullProduct"})
      */
     protected $id;
 

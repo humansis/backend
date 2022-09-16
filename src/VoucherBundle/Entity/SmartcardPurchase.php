@@ -87,11 +87,11 @@ class SmartcardPurchase extends AbstractEntity
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt, ?Assistance $assistance = null): SmartcardPurchase
+    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $usedAt, ?Assistance $assistance = null): SmartcardPurchase
     {
         $entity = new self();
         $entity->vendor = $vendor;
-        $entity->usedAt = $createdAt;
+        $entity->usedAt = $usedAt;
         $entity->smartcard = $smartcard;
         $smartcard->addPurchase($entity);
         $entity->assistance = $assistance;
