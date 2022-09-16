@@ -523,7 +523,7 @@ class Project implements ExportableInterface
      */
     public function addHousehold(\Entity\Household $household): Project
     {
-        if($household->getCountryIso3() !== $this->getIso3()) {
+        if($household->getCountryIso3() !== $this->getCountryIso3()) {
             throw new CountryMismatchException();
         }
         $this->households->add($household);
