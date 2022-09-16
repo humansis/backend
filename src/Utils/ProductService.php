@@ -46,7 +46,7 @@ class ProductService
             ->setName($productData->getName())
             ->setImage($productData->getImage())
             ->setUnit($productData->getUnit())
-            ->setCountryISO3($productData->getIso3())
+            ->setCountryIso3($productData->getIso3())
             ->setUnitPrice($productData->getUnitPrice())
             ->setCurrency($productData->getCurrency())
             ->setArchived(false)
@@ -136,7 +136,7 @@ class ProductService
      */
     public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryISO3' => $countryIso3]);
+        $exportableTable = $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryIso3' => $countryIso3]);
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
     }

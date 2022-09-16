@@ -35,7 +35,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ->join('a.project', 'p')
                 ->andWhere('a.validatedBy IS NOT NULL')
                 ->andWhere('a.archived = 0')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', 'KHM')
                 ->getQuery()
                 ->setMaxResults(1)

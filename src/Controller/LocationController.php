@@ -85,14 +85,14 @@ class LocationController extends AbstractController
 
             /** @var UserCountry $userCountry */
             foreach ($user->getCountries() as $userCountry) {
-                $country = $this->countries->getCountry($userCountry->getIso3());
+                $country = $this->countries->getCountry($userCountry->getCountryIso3());
                 if ($country) {
                     $data[] = $country;
                 }
             }
         } else {
             foreach($this->projectRepository->getProjectCountriesByUser($user) as $countryIso3){
-                $country = $this->countries->getCountry($countryIso3['iso3']);
+                $country = $this->countries->getCountry($countryIso3['countryIso3']);
                 if ($country) {
                     $data[] = $country;
                 }

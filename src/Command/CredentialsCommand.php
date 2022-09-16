@@ -145,7 +145,7 @@ class CredentialsCommand extends Command
     {
         foreach ($this->countries->getAll() as $country) {
             $userCountry = new UserCountry();
-            $userCountry->setIso3($country->getIso3());
+            $userCountry->setCountryIso3($country->getIso3());
             $userCountry->setUser($user);
             $userCountry->setRights(RoleType::ADMIN);
             $this->userCountryRepository->save($userCountry);

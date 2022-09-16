@@ -16,6 +16,7 @@ use Entity\Person;
 use Entity\Phone;
 use Entity\Profile;
 use Form\HouseholdConstraints;
+use InputType\Deprecated\LocationType;
 use Repository\BeneficiaryRepository;
 use Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -306,7 +307,13 @@ class HouseholdService
                 $camp = $this->em->getRepository(Camp::class)->findOneBy(['name' => $householdLocation['camp_address']['camp']['name']]);
                 // Or create a camp with the name in the request
                 if (!$camp instanceof Camp) {
-                    $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['camp_address']['camp']['location']);
+                    $locationType = new LocationType();
+                    $locationType->setAdm1($householdLocation['address']['location']['adm1']);
+                    $locationType->setAdm2($householdLocation['address']['location']['adm2']);
+                    $locationType->setAdm3($householdLocation['address']['location']['adm3']);
+                    $locationType->setAdm4($householdLocation['address']['location']['adm4']);
+                    $location = $this->locationService->getLocationByInputType($locationType);
+                    
                     if (null === $location) {
                         throw new Exception("Location was not found.");
                     }
@@ -319,7 +326,13 @@ class HouseholdService
                     ->setCamp($camp);
                 $newHouseholdLocation->setCampAddress($campAddress);
             } else {
-                $location = $this->locationService->getLocation($householdArray['__country'], $householdLocation['address']["location"]);
+                $locationType = new LocationType();
+                $locationType->setAdm1($householdLocation['address']['location']['adm1']);
+                $locationType->setAdm2($householdLocation['address']['location']['adm2']);
+                $locationType->setAdm3($householdLocation['address']['location']['adm3']);
+                $locationType->setAdm4($householdLocation['address']['location']['adm4']);
+                $location = $this->locationService->getLocationByInputType($locationType);
+
                 if (null === $location) {
                     throw new Exception("Location was not found.");
                 }

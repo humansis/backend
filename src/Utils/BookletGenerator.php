@@ -96,7 +96,7 @@ class BookletGenerator
     {
         $this->em->getConnection()
             ->executeQuery('
-                INSERT INTO booklet (`code`, `number_vouchers`, `currency`, `password`, `country_iso3`, `project_id`, `status`) 
+                INSERT INTO booklet (`code`, `number_vouchers`, `currency`, `password`, `iso3`, `project_id`, `status`) 
                 WITH RECURSIVE sequence AS (
                     SELECT 1 AS level
                     UNION ALL

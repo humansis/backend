@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\CountryDependent;
 
 /**
  * UserCountry
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserCountry
 {
+    use CountryDependent;
+
     /**
      * @var int
      *
@@ -29,13 +32,6 @@ class UserCountry
     private $rights;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="iso3", type="string", length=3)
-     */
-    private $iso3;
-
-    /**
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="countries", cascade={"persist"})
@@ -48,7 +44,7 @@ class UserCountry
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -60,7 +56,7 @@ class UserCountry
      *
      * @return UserCountry
      */
-    public function setRights($rights)
+    public function setRights(string $rights): UserCountry
     {
         $this->rights = $rights;
 
@@ -72,43 +68,19 @@ class UserCountry
      *
      * @return string
      */
-    public function getRights()
+    public function getRights(): string
     {
         return $this->rights;
     }
 
     /**
-     * Set iso3.
-     *
-     * @param string $iso3
-     *
-     * @return UserCountry
-     */
-    public function setIso3($iso3)
-    {
-        $this->iso3 = $iso3;
-
-        return $this;
-    }
-
-    /**
-     * Get iso3.
-     *
-     * @return string
-     */
-    public function getIso3()
-    {
-        return $this->iso3;
-    }
-
-    /**
      * Set user.
      *
-     * @param \Entity\User|null $user
+     * @param User|null $user
      *
      * @return UserCountry
      */
-    public function setUser(\Entity\User $user = null)
+    public function setUser(User $user = null): UserCountry
     {
         $this->user = $user;
 
@@ -118,9 +90,9 @@ class UserCountry
     /**
      * Get user.
      *
-     * @return \Entity\User|null
+     * @return User|null
      */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }

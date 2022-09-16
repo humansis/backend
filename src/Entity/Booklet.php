@@ -2,11 +2,13 @@
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Assistance\ReliefPackage;
+use Entity\Helper\CountryDependent;
 use Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Utils\ExportableInterface;
@@ -26,6 +28,7 @@ class Booklet implements ExportableInterface
     public const DEACTIVATED = 3;
 
     use StandardizedPrimaryKey;
+    use CountryDependent;
 
     /**
      * @var ReliefPackage|null
@@ -94,14 +97,6 @@ class Booklet implements ExportableInterface
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $distribution_beneficiary;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="country_iso3", type="string", length=45)
-     * @SymfonyGroups({"FullBooklet"})
-     */
-    private $countryISO3;
 
     public static function statuses(): array
     {
@@ -175,7 +170,7 @@ class Booklet implements ExportableInterface
      *
      * @return Booklet
      */
-    public function setCode($code)
+    public function setCode(string $code): Booklet
     {
         $this->code = $code;
 
@@ -187,7 +182,7 @@ class Booklet implements ExportableInterface
      *
      * @return string
      */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -199,7 +194,7 @@ class Booklet implements ExportableInterface
      *
      * @return Booklet
      */
-    public function setNumberVouchers($numberVouchers)
+    public function setNumberVouchers(int $numberVouchers): Booklet
     {
         $this->numberVouchers = $numberVouchers;
 
@@ -211,7 +206,7 @@ class Booklet implements ExportableInterface
      *
      * @return int
      */
-    public function getNumberVouchers()
+    public function getNumberVouchers(): int
     {
         return $this->numberVouchers;
     }
@@ -223,7 +218,7 @@ class Booklet implements ExportableInterface
      *
      * @return Booklet
      */
-    public function setCurrency($currency)
+    public function setCurrency(string $currency): Booklet
     {
         $this->currency = $currency;
 
@@ -235,7 +230,7 @@ class Booklet implements ExportableInterface
      *
      * @return string
      */
-    public function getCurrency()
+    public function getCurrency(): string
     {
         return $this->currency;
     }
@@ -247,7 +242,7 @@ class Booklet implements ExportableInterface
      *
      * @return Booklet
      */
-    public function setStatus($status = null)
+    public function setStatus(?int $status = null): Booklet
     {
         $this->status = $status;
 
@@ -259,7 +254,7 @@ class Booklet implements ExportableInterface
      *
      * @return int|null
      */
-    public function getStatus()
+    public function getStatus(): ?int
     {
         return $this->status;
     }
@@ -271,7 +266,7 @@ class Booklet implements ExportableInterface
      *
      * @return Booklet
      */
-    public function setPassword($password = null)
+    public function setPassword(?string $password = null): Booklet
     {
         $this->password = $password;
 
@@ -283,7 +278,7 @@ class Booklet implements ExportableInterface
      *
      * @return string|null
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -380,7 +375,7 @@ class Booklet implements ExportableInterface
         return $finalArray;
     }
 
-    public function getTotalValue()
+    public function getTotalValue(): int
     {
         $vouchers = $this->getVouchers();
         $value = 0;
@@ -391,9 +386,9 @@ class Booklet implements ExportableInterface
     }
 
     /**
-     * @return \DateTimeInterface|null Datetime last purchased voucher
+     * @return DateTimeInterface|null Datetime last purchased voucher
      */
-    public function getUsedAt()
+    public function getUsedAt(): ?DateTimeInterface
     {
         $date = null;
         if (in_array($this->getStatus(), [self::USED, self::DEACTIVATED])) {
@@ -406,29 +401,5 @@ class Booklet implements ExportableInterface
         }
 
         return $date;
-    }
-
-    /**
-     * Set countryISO3.
-     *
-     * @param string $countryISO3
-     *
-     * @return Booklet
-     */
-    public function setCountryISO3($countryISO3)
-    {
-        $this->countryISO3 = $countryISO3;
-
-        return $this;
-    }
-
-    /**
-     * Get countryISO3.
-     *
-     * @return string
-     */
-    public function getCountryISO3()
-    {
-        return $this->countryISO3;
     }
 }

@@ -136,7 +136,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(2, $household->getAssets());
         $this->assertCount(1, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
-        $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
+        $this->assertEquals('KHM', $household->getProjects()[0]->getCountryIso3());
         $this->assertContains(HouseholdAssets::CAR, $household->getAssets());
         $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
         $this->assertEquals(3, $household->getIncome());
@@ -294,7 +294,7 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertCount(3, $household->getAssets());
         $this->assertCount(2, $household->getProjects());
         $this->assertEquals(1, $household->getProjects()[0]->getId());
-        $this->assertEquals('KHM', $household->getProjects()[0]->getIso3());
+        $this->assertEquals('KHM', $household->getProjects()[0]->getCountryIso3());
         $this->assertContains(HouseholdAssets::AGRICULTURAL_LAND, $household->getAssets());
         $this->assertContains(HouseholdAssets::FLATSCREEN_TV, $household->getAssets());
         $this->assertContains(HouseholdAssets::MOTORBIKE, $household->getAssets());

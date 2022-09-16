@@ -26,13 +26,13 @@ use Entity\Project;
  */
 class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function countCompleted(string $countryISO3): int
+    public function countCompleted(string $countryIso3): int
     {
         $qb = $this->createQueryBuilder('dd');
         $qb->select('COUNT(dd)')
             ->leftJoin("dd.location", "l");
         $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $countryISO3);
+        $locationRepository->whereCountry($qb, $countryIso3);
         $qb->andWhere("dd.completed = 1");
 
         return intval($qb->getQuery()->getSingleScalarResult());
@@ -83,7 +83,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($iso3) {
             $qb->leftJoin('dd.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
 
@@ -160,7 +160,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('dd.archived = 0')
             ->andWhere('dd.validatedBy IS NOT NULL')
             ->andWhere('dd.project = :project')
-            ->andWhere('p.iso3 = :iso3')
+            ->andWhere('p.countryIso3 = :iso3')
             ->andWhere('dd.targetType IN (:targetTypes)')
             ->setParameter('project', $project)
             ->setParameter('iso3', $iso3)
@@ -210,7 +210,7 @@ class AssistanceRepository extends \Doctrine\ORM\EntityRepository
 
         if ($iso3) {
             $qb->leftJoin('dd.project', 'p')
-                ->andWhere('p.iso3 = :iso3')
+                ->andWhere('p.countryIso3 = :iso3')
                 ->setParameter('iso3', $iso3);
         }
 

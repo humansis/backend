@@ -45,12 +45,13 @@ class ProjectService
     }
 
     /**
-     * @param string $iso3
+     * @param string $countryIso3
+     *
      * @return int
      */
-    public function countActive(string $iso3): int
+    public function countActive(string $countryIso3): int
     {
-        $count = $this->em->getRepository(Project::class)->countActiveInCountry($iso3);
+        $count = $this->em->getRepository(Project::class)->countActiveInCountry($countryIso3);
         return $count;
     }
 
@@ -65,7 +66,7 @@ class ProjectService
     {
         $existingProjects = $this->em->getRepository(Project::class)->findBy([
             'name' => $inputType->getName(),
-            'iso3' => $inputType->getIso3(),
+            'countryIso3' => $inputType->getIso3(),
         ]);
 
         if (!empty($existingProjects)) {
@@ -80,7 +81,7 @@ class ProjectService
             ->setInternalId($inputType->getInternalId())
             ->setStartDate($inputType->getStartDate())
             ->setEndDate($inputType->getEndDate())
-            ->setIso3($inputType->getIso3())
+            ->setCountryIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())
@@ -116,7 +117,7 @@ class ProjectService
     {
         $existingProjects = $this->em->getRepository(Project::class)->findBy([
             'name' => $inputType->getName(),
-            'iso3' => $inputType->getIso3(),
+            'countryIso3' => $inputType->getIso3(),
         ]);
 
         if (!empty($existingProjects) && $existingProjects[0]->getId() !== $project->getId()) {
@@ -130,7 +131,7 @@ class ProjectService
             ->setInternalId($inputType->getInternalId())
             ->setStartDate($inputType->getStartDate())
             ->setEndDate($inputType->getEndDate())
-            ->setIso3($inputType->getIso3())
+            ->setCountryIso3($inputType->getIso3())
             ->setTarget($inputType->getTarget())
             ->setNotes($inputType->getNotes())
             ->setSectors($inputType->getSectors())

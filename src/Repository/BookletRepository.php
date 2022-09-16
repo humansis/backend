@@ -17,12 +17,12 @@ use Entity\Booklet;
  */
 class BookletRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getActiveBooklets($countryISO3)
+    public function getActiveBooklets($countryIso3)
     {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.status != :status')
-                ->andWhere('b.countryISO3 = :country')
-                ->setParameter('country', $countryISO3)
+                ->andWhere('b.countryIso3 = :country')
+                ->setParameter('country', $countryIso3)
                 ->setParameter('status', 3);
 
         return $q->getQuery()->getResult();
@@ -40,14 +40,14 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * Get all Household by country
-     * @param $countryISO3
+     * @param $countryIso3
      * @param $begin
      * @param $pageSize
      * @param $sort
      * @param array $filters
      * @return mixed
      */
-    public function getAllBy($countryISO3, $begin, $pageSize, $sort, $filters = [])
+    public function getAllBy($countryIso3, $begin, $pageSize, $sort, $filters = [])
     {
         // Recover global information for the page
         $qb = $this->createQueryBuilder('b');
@@ -58,8 +58,8 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
                 ->leftJoin('db.beneficiary', 'bf')
                 ->leftJoin('db.assistance', 'd')
                 ->where('b.status != :status')
-                ->andWhere('b.countryISO3 = :country')
-                ->setParameter('country', $countryISO3)
+                ->andWhere('b.countryIso3 = :country')
+                ->setParameter('country', $countryIso3)
                 ->setParameter('status', Booklet::DEACTIVATED);
           
         // If there is a sort, we recover the direction of the sort and the field that we want to sort
@@ -184,12 +184,12 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
         return [count($paginator), $q->getQuery()->getResult()];
     }
 
-    public function getInsertedBooklets($countryISO3, $lastId) {
+    public function getInsertedBooklets($countryIso3, $lastId) {
         $qb = $this->createQueryBuilder('b');
         $q = $qb->where('b.id >= :lastId')
-                ->andWhere('b.countryISO3 = :country')
+                ->andWhere('b.countryIso3 = :country')
                 ->setParameter('lastId', $lastId)
-                ->setParameter('country', $countryISO3);
+                ->setParameter('country', $countryIso3);
 
         return $q->getQuery()->getResult();
     }
@@ -214,7 +214,7 @@ class BookletRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('db.beneficiary', 'bf')
             ->leftJoin('db.assistance', 'd')
             ->andWhere('b.status != :status')
-            ->andWhere('b.countryISO3 = :country')
+            ->andWhere('b.countryIso3 = :country')
             ->setParameter('status', Booklet::DEACTIVATED)
             ->setParameter('country', $iso3);
 

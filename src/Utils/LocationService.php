@@ -54,7 +54,7 @@ class LocationService
      */
     public function getLocationByIdAndCountryCode(int $id, string $countryCode)
     {
-        $location = $this->locationRepository->findOneBy(['id' => $id, 'countryISO3' => $countryCode]);
+        $location = $this->locationRepository->findOneBy(['id' => $id, 'countryIso3' => $countryCode]);
         if (empty($location)) {
             throw new EntityNotFoundException("Location #{$id} was not found at country {$countryCode}.");
         }
@@ -62,13 +62,14 @@ class LocationService
     }
 
     /**
-     * @param $countryISO3
-     * @param array $locationArray
+     * @param string $countryIso3
+     * @param array  $locationArray
+     *
      * @return Location|null|object
      * @throws ValidationException
      * @deprecated use getLocationByInputType
      */
-    public function getLocation($countryISO3, array $locationArray)
+    public function getLocation(string $countryIso3, array $locationArray)
     {
         $this->requestValidator->validate(
             "location",

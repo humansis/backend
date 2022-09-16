@@ -6,6 +6,7 @@ use Entity\Community;
 use Entity\Institution;
 use DataFixtures\Beneficiaries\BeneficiaryFixtures;
 use Entity\Location;
+use Entity\User;
 use MapperDeprecated\LocationMapper;
 use Entity\Modality;
 use Enum\AssistanceTargetType;
@@ -62,7 +63,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             'donors_name' => [],
             'id' => '?',
             'name' => 'Test assistance project',
-            'iso3' => 'KHM',
+            'countryIso3' => 'KHM',
         ],
         'selection_criteria' => [
             0 => [
@@ -115,6 +116,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         srand(42);
 
+        /** @var User $user */
         $user = $this->getReference('user_admin');
 
         $projects = $manager->getRepository(Project::class)->findAll();
@@ -128,7 +130,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             echo "\n";
         }
 
-        $khmProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmProjects = $manager->getRepository(Project::class)->findBy(['countryIso3' => 'KHM'], ['id' => 'asc']);
         $khmKhrAssistance = $this->loadSmartcardAssistance($manager, $khmProjects[0], 'KHR');
         $this->distributionService->validateDistribution($khmKhrAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance);
@@ -136,7 +138,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $this->distributionService->validateDistribution($khmUsdAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance);
 
-        $syrProjects = $manager->getRepository(Project::class)->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrProjects = $manager->getRepository(Project::class)->findBy(['countryIso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($manager, $syrProjects[0], 'SYP');
         $this->distributionService->validateDistribution($syrSypAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance);
@@ -165,15 +167,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INDIVIDUAL;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Bx".count($receivers);
         }
     }
@@ -183,15 +185,15 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::HOUSEHOLD;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['selection_criteria'] = [];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Hx".count($receivers);
         }
     }
@@ -201,7 +203,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::INSTITUTION;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
@@ -214,10 +216,10 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['institutions'] = array_map(function (Institution $institution) { return $institution->getId(); }, $institutions);
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Ix".count($receivers);
         }
     }
@@ -227,7 +229,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $data = $this->assistanceArray;
         $data['project']['id'] = $project->getId();
         $data['target_type'] = AssistanceTargetType::COMMUNITY;
-        $data['location'] = $this->randomLocation($manager, $project->getIso3());
+        $data['location'] = $this->randomLocation($manager, $project->getCountryIso3());
         $data['date_distribution'] = $this->randomDate();
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
         unset($data['selection_criteria']);
@@ -240,10 +242,10 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         }
         $data['communities'] = array_map(function (Community $community) { return $community->getId(); }, $communities);
 
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         foreach ($this->getCommodities($manager, $country) as $commodityArray) {
             $data['commodities'] = [0 => $commodityArray];
-            $receivers = $this->distributionService->createFromArray($project->getIso3(), $data)['data'];
+            $receivers = $this->distributionService->createFromArray($project->getCountryIso3(), $data)['data'];
             echo "Cx".count($receivers);
         }
     }
@@ -282,7 +284,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         ];
         $data['date_expiration'] = $project->getEndDate()->format('d-m-Y');
 
-        return $this->distributionService->createFromArray($project->getIso3(), $data, 1)['distribution'];
+        return $this->distributionService->createFromArray($project->getCountryIso3(), $data, 1)['distribution'];
     }
 
     private function getCommodities(ObjectManager $manager, Country $country): array
