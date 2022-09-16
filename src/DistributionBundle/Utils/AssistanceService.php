@@ -681,20 +681,14 @@ class AssistanceService
             return;
         }
 
-        /** @var AssistanceBeneficiary $assistanceBeneficiary */
-        foreach ($assistanceEntity->getDistributionBeneficiaries() as $assistanceBeneficiary) {
-            /** @var ReliefPackage $reliefPackage */
-            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $this->em->remove($reliefPackage);
-            }
-        }
-
         foreach ($assistanceEntity->getCommodities() as $commodity) {
             $this->em->remove($commodity);
         }
-        foreach ($assistanceEntity->getSelectionCriteria() as $criterion) {
+        foreach($assistanceEntity->getAssistanceSelection()->getSelectionCriteria() as $criterion) {
             $this->em->remove($criterion);
         }
+        $this->em->remove($assistanceEntity->getAssistanceSelection());
+
         foreach ($assistanceEntity->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var AssistanceBeneficiary $assistanceBeneficiary */
             foreach ($assistanceBeneficiary->getReliefPackages() as $relief) {
