@@ -73,7 +73,19 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
-        
+    
+    Command\Crowdin\CrowdinPullCommand:
+      arguments:
+        - '%crowdin_api_key%'
+        - '%crowdin_project_id%'
+        - '%app.translations_dir%'
+
+    Command\Crowdin\CrowdinPushCommand:
+      arguments:
+        - '%crowdin_api_key%'
+        - '%crowdin_project_id%'
+        - '%app.translations_dir%'
+
     Command\TranslationsUpdateGenerateCommand:
         arguments:
           - '%app.translations_dir%'

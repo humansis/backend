@@ -1,6 +1,6 @@
 <?php
 
-namespace NewApiBundle\Command\Crowdin;
+namespace Command\Crowdin;
 
 use JsonException;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;

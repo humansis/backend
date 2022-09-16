@@ -1,6 +1,6 @@
 <?php
 
-namespace NewApiBundle\Command\Crowdin;
+namespace Exception;
 
 class CrowdinBuildTimeoutException extends \RuntimeException
 {
