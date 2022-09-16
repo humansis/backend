@@ -268,14 +268,14 @@ class AssistanceBeneficiaryService
         $modalityUnits = [];
         $commodityBuilder = new CommodityAssignBuilder();
         foreach ($assistance->getCommodities() as $commodity) {
-            $modality = $commodity->getModalityType()->getName();
+            $modality = $commodity->getModalityType();
             $unit = $commodity->getUnit();
 
             if (!isset($modalityUnits[$modality])) {
                 $modalityUnits[$modality] = [];
             }
-            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()->getName()])) {
-                $modalityUnits[$commodity->getModalityType()->getName()][] = $commodity->getUnit();
+            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()])) {
+                $modalityUnits[$commodity->getModalityType()][] = $commodity->getUnit();
             }
             if ($commodity->getDivision() !== null) {
                 if ($assistance->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
@@ -321,7 +321,7 @@ class AssistanceBeneficiaryService
                 break;
             case CommodityDivision::PER_HOUSEHOLD:
             default:
-                $commodityBuilder->addCommodityValue($commodity->getModalityType()->getName(), $commodity->getUnit(), $commodity->getValue());
+                $commodityBuilder->addCommodityValue($commodity->getModalityType(), $commodity->getUnit(), $commodity->getValue());
                 break;
         }
         return $commodityBuilder;
@@ -335,7 +335,7 @@ class AssistanceBeneficiaryService
      */
     private function addCommodityCallbackPerHouseholdMember(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
     {
-        $commodityBuilder->addCommodityCallback($commodity->getModalityType()->getName(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
+        $commodityBuilder->addCommodityCallback($commodity->getModalityType(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
             /** @var Household $household */
             $household = $target->getBeneficiary();
 
@@ -356,7 +356,7 @@ class AssistanceBeneficiaryService
      */
     private function addCommodityCallbackPerHouseholdMembers(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
     {
-        $commodityBuilder->addCommodityCallback($commodity->getModalityType()->getName(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
+        $commodityBuilder->addCommodityCallback($commodity->getModalityType(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
             /** @var Household $household */
             $household = $target->getBeneficiary();
 

@@ -54,7 +54,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
 
             foreach ($assistances as $assistance) {
                 echo "P#{$project->getId()} - ".$assistance->getName().": ";
-                if ($assistance->getCommodities()[0]->getModalityType()->getName() === ModalityType::SMART_CARD) {
+                if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::SMART_CARD) {
                     continue;
                 }
                 switch ($assistance->getTargetType()) {
