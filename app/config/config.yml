@@ -85,12 +85,13 @@ parameters:
           adms: [ Region, District, Ward, Constituency ]
           archived: false
 
-    app.translations_dir: '%kernel.project_dir%/translations'
+    app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
 
 framework:
     #esi: ~
     translator:
         fallbacks: ['%locale%']
+        default_path: '%app.translations_dir%'
     secret: '%secret%'
     form: ~
     csrf_protection: ~
