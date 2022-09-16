@@ -3,6 +3,7 @@
 namespace Entity\Helper;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 trait CountryDependent
 {
