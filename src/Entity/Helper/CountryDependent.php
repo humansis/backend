@@ -34,7 +34,4 @@ trait CountryDependent
 
         return $this;
     }
-
-
-
 }
