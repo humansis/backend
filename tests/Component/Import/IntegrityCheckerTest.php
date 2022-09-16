@@ -51,7 +51,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testParseEmpty()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -71,7 +71,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testParseCorrect()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -95,7 +95,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testCheck()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -122,7 +122,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testValidationMessages()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -170,7 +170,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testAllDuplicitiesIdentified()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -199,7 +199,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testNoDuplicitiesIdentified()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'iso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);

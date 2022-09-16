@@ -70,7 +70,7 @@ trait DefaultDataTrait
         $createImportInput->setTitle($name);
         $createImportInput->setDescription(__METHOD__);
         $createImportInput->setProjects([$project->getId()]);
-        $import = $this->importService->create($project->getIso3(), $createImportInput, $this->getUser());
+        $import = $this->importService->create($project->getCountryIso3(), $createImportInput, $this->getUser());
 
         $this->assertNotNull($import->getId(), "Import wasn't saved to DB");
         $this->assertEquals(ImportState::NEW, $import->getState());
@@ -89,7 +89,7 @@ trait DefaultDataTrait
         $project->setNotes(implode("\n", $notes));
         $project->setStartDate(new \DateTime());
         $project->setEndDate(new \DateTime());
-        $project->setIso3($country);
+        $project->setCountryIso3($country);
         $this->entityManager->persist($project);
         $this->entityManager->flush();
         return $project;

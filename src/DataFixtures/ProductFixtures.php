@@ -61,12 +61,12 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
             }
 
             if (isset($datum[5]) & !empty($datum[5])) {
-                $product->setCountryISO3($datum[5]);
+                $product->setCountryIso3($datum[5]);
                 $manager->persist($product);
             } else {
                 foreach ($this->countries->getAll() as $country) {
                     $p = clone $product;
-                    $p->setCountryISO3($country->getIso3());
+                    $p->setCountryIso3($country->getIso3());
                     $manager->persist($p);
                 }
             }

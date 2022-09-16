@@ -40,7 +40,7 @@ class CommodityRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('c')
             ->join('c.assistance', 'a')
             ->join('a.project', 'p')
-            ->andWhere('p.iso3 = :country')
+            ->andWhere('p.countryIso3 = :country')
             ->setParameter('country', $country);
 
         if ($filter->hasNotModalityTypes()) {
@@ -62,7 +62,7 @@ class CommodityRepository extends \Doctrine\ORM\EntityRepository
         $qbr = $this->createQueryBuilder('c')
             ->join('c.assistance', 'a')
             ->join('a.project', 'p')
-            ->andWhere('p.iso3 = :country')
+            ->andWhere('p.countryIso3 = :country')
             ->setParameter('country', $country);
 
         return $qbr->getQuery()->getResult();

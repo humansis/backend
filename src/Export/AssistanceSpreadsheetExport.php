@@ -77,7 +77,7 @@ class AssistanceSpreadsheetExport
         $worksheet = $spreadsheet->getActiveSheet();
 
         $this->formatCells($worksheet);
-        $languageCode = $this->countryLocaleResolverService->resolve($assistance->getProject()->getIso3());
+        $languageCode = $this->countryLocaleResolverService->resolve($assistance->getProject()->getCountryIso3());
         $this->buildHeader($worksheet, $assistance, $organization, $languageCode);
         $this->buildBody($worksheet, $assistance, $languageCode);
 

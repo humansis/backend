@@ -92,7 +92,7 @@ class VendorRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->createQueryBuilder('v')
             ->andWhere('v.archived = 0')
             ->leftJoin('v.location', 'l')
-            ->andWhere('l.countryISO3 = :iso3')
+            ->andWhere('l.countryIso3 = :iso3')
             ->setParameter("iso3", $iso3)
         ;
 

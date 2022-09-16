@@ -118,7 +118,7 @@ class AssistanceDistributionService
         $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
                 'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
-                'countryIso3' => $assistance->getProject()->getIso3()]
+                'countryIso3' => $assistance->getProject()->getCountryIso3()]
         );
         foreach ($inputPackages as $packageData) {
             $distributeReliefPackageOutputType = $this->processPackageData($packageData, $distributeReliefPackageOutputType, $assistance,

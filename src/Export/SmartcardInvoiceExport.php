@@ -638,6 +638,6 @@ class SmartcardInvoiceExport
            return 'ALL';
         }
 
-        return $vendor->getLocation()->getCountryISO3();
+        return $vendor->getLocation()->getCountryIso3();
     }
 }

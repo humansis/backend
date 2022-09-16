@@ -94,8 +94,8 @@ class ImportService
             if (!$project instanceof Project) {
                 throw new BadRequestHttpException('Project with ID '.$inputType->getProjectId().' not found');
             }
-            if ($project->getIso3() !== $countryIso3) {
-                throw new BadRequestHttpException("Project is in {$project->getIso3()} but you works in $countryIso3");
+            if ($project->getCountryIso3() !== $countryIso3) {
+                throw new BadRequestHttpException("Project is in {$project->getCountryIso3()} but you works in $countryIso3");
             }
 
             $projects = [$project];

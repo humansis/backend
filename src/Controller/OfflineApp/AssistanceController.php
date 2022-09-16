@@ -111,7 +111,7 @@ class AssistanceController extends AbstractController
             'notModalityTypes' => [ModalityType::MOBILE_MONEY],
         ]);
 
-        $assistances = $this->assistanceRepository->findByProjectInOfflineApp($project, $project->getIso3(), $filter);
+        $assistances = $this->assistanceRepository->findByProjectInOfflineApp($project, $project->getCountryIso3(), $filter);
         $json = $this->serializer->serialize(
             $this->assistanceMapper->toOldMobileArrays($assistances),
             'json',

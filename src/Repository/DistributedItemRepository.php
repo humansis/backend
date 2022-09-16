@@ -33,7 +33,7 @@ class DistributedItemRepository extends EntityRepository
     {
         $qbr = $this->createQueryBuilder('di')
             ->join('di.project', 'pr')
-            ->andWhere('pr.iso3 = :iso3')
+            ->andWhere('pr.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
 
         if ($filter) {
@@ -74,7 +74,7 @@ class DistributedItemRepository extends EntityRepository
                 $locationRepository = $this->_em->getRepository(Location::class);
                 $location = $locationRepository->find($filter->getLocations()[0]);
 
-                if ($location === null || $location->getCountryISO3() !== $countryIso3) {
+                if ($location === null || $location->getCountryIso3() !== $countryIso3) {
                     throw new \InvalidArgumentException("Location not found or in different country");
                 }
 

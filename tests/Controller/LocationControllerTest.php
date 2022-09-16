@@ -90,7 +90,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         /** @var UserProject $userProject */
         foreach ($user->getProjects() as $userProject) {
-            $projects[] = $userProject->getProject()->getIso3();
+            $projects[] = $userProject->getProject()->getcountryIso3();
         }
 
         foreach($allCountries as $country){
@@ -160,7 +160,7 @@ class LocationControllerTest extends BMSServiceTestCase
     public function testGetListOfAdm1Filtered()
     {
         /** @var Location $location */
-        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 1]);
+        $location = $this->locationRepository->findOneBy(['countryIso3' => $this->iso3, 'lvl' => 1]);
         if (!$location) {
             $this->markTestSkipped('There is no such location to test');
         }
@@ -233,7 +233,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm2Filtered()
     {
-        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 2]);
+        $location = $this->locationRepository->findOneBy(['countryIso3' => $this->iso3, 'lvl' => 2]);
         if (!$location) {
             $this->markTestSkipped('There is no such location to test');
         }
@@ -306,7 +306,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm3Filtered()
     {
-        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 3]);
+        $location = $this->locationRepository->findOneBy(['countryIso3' => $this->iso3, 'lvl' => 3]);
         if (!$location) {
             $this->markTestSkipped('There is no such location to test');
         }
@@ -379,7 +379,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetListOfAdm4Filtered()
     {
-        $location = $this->locationRepository->findOneBy(['countryISO3' => $this->iso3, 'lvl' => 4]);
+        $location = $this->locationRepository->findOneBy(['countryIso3' => $this->iso3, 'lvl' => 4]);
         if (!$location) {
             $this->markTestSkipped('There is no such location to test');
         }
@@ -429,7 +429,7 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetLocations()
     {
-        $location = $this->locationRepository->findBy(['countryISO3' => 'KHM'], ['id' => 'asc'])[0];
+        $location = $this->locationRepository->findBy(['countryIso3' => 'KHM'], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]='.$location->getId());
 
