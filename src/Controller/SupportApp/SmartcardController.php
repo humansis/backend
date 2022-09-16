@@ -1,16 +1,15 @@
 <?php
 
-namespace NewApiBundle\Controller\SupportApp;
+namespace Controller\SupportApp;
 
 
+use Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\InputType\Smartcard\UpdateSmartcardInputType;
+use InputType\Smartcard\UpdateSmartcardInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use VoucherBundle\Repository\SmartcardRepository;
-use VoucherBundle\Utils\SmartcardService;
+use Utils\SmartcardService;
 
 /**
  * @Rest\Route("/support-app/v1/smartcards")
@@ -95,8 +94,8 @@ class SmartcardController extends AbstractController
      * @return JsonResponse
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \NewApiBundle\Component\Smartcard\Exception\SmartcardActivationDeactivatedException
-     * @throws \NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransition
+     * @throws \Component\Smartcard\Exception\SmartcardActivationDeactivatedException
+     * @throws \Component\Smartcard\Exception\SmartcardNotAllowedStateTransition
      */
     public function update(
         string                   $serialNumber,

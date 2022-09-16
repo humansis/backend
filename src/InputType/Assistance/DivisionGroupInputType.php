@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Assistance;
+namespace InputType\Assistance;
 
-use NewApiBundle\Request\InputTypeInterface;
+use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class DivisionGroupInputType implements InputTypeInterface

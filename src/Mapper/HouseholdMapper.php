@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Mapper;
 
 use Entity\Beneficiary;
-use Entity\CountrySpecificAnswer;
 use Entity\Household;
 use Entity\HouseholdLocation;
+use Entity\VulnerabilityCriterion;
 use Serializer\MapperInterface;
 
 class HouseholdMapper implements MapperInterface

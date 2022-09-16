@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Assistance;
+namespace InputType\Assistance;
 
-use NewApiBundle\Request\InputTypeInterface;
+use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use NewApiBundle\Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"AssistanceBeneficiariesOperationInputType", "Strict"})
@@ -33,7 +32,7 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
 
     /**
      * @Assert\NotNull
-     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType")
+     * @Enum(enumClass="Enum\NationalIdType")
      */
     protected $documentType;
 

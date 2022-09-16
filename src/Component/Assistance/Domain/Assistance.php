@@ -7,7 +7,9 @@ use Entity\Beneficiary;
 use Entity\Household;
 use Entity;
 use Entity\AssistanceBeneficiary;
+use Entity\User;
 use Enum\AssistanceTargetType;
+use Entity\DivisionGroup;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\ModalityTypeRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
@@ -31,7 +33,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-use UserBundle\Entity\User;
 
 class Assistance
 {

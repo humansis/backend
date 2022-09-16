@@ -2,6 +2,7 @@
 
 namespace DataFixtures;
 
+use Entity\User;
 use Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -10,7 +11,6 @@ use Doctrine\Persistence\ObjectManager;
 use Component\Country\Countries;
 use Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
-use UserBundle\Entity\User;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {

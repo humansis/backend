@@ -3,17 +3,16 @@
 namespace Tests\Controller;
 
 use Entity\Assistance;
+use Entity\User;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
 use Doctrine\Common\Collections\Criteria;
 use Exception;
 use Component\Assistance\AssistanceFactory;
-use Entity\Assistance\ReliefPackage;
 use Enum\ReliefPackageState;
 use Repository\Assistance\ReliefPackageRepository;
 use Tests\BMSServiceTestCase;
-use UserBundle\Entity\User;
 
 class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {

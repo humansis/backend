@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Assistance;
+namespace InputType\Assistance;
 
-use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Request\InputTypeNullableDenormalizer;
-use NewApiBundle\Validator\Constraints\Enum;
+use Component\Assistance\Enum\CommodityDivision;
+use Request\InputTypeNullableDenormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"DivisionInputType", "Primary", "Secondary", "Tertiary"})
@@ -16,7 +16,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
     /**
      * @var string
      * @Assert\Type("string")
-     * @Enum(enumClass="NewApiBundle\Component\Assistance\Enum\CommodityDivision")
+     * @Enum(enumClass="Component\Assistance\Enum\CommodityDivision")
      */
     private $code;
 

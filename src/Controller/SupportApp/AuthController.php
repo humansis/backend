@@ -1,13 +1,13 @@
 <?php
 
-namespace NewApiBundle\Controller\SupportApp;
+namespace Controller\SupportApp;
 
+use Controller\AbstractController;
+use Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use NewApiBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
-use UserBundle\Entity\User;
 
 /**
  * @Rest\Route("/support-app/v1/login")

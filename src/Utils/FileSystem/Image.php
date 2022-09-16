@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Utils\FileSystem;
+namespace Utils\FileSystem;
 
-use NewApiBundle\Utils\FileSystem\Exception\CorruptedFileException;
-use NewApiBundle\Utils\FileSystem\Exception\NotSupportedExtensionException;
+use Utils\FileSystem\Exception\CorruptedFileException;
+use Utils\FileSystem\Exception\NotSupportedExtensionException;
 
 class Image
 {

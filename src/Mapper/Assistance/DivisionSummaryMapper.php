@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper\Assistance;
+namespace Mapper\Assistance;
 
 use Doctrine\Common\Collections\Collection;
-use NewApiBundle\Component\Assistance\DTO\DivisionSummary;
-use NewApiBundle\Serializer\MapperInterface;
+use Component\Assistance\DTO\DivisionSummary;
+use Serializer\MapperInterface;
 
 class DivisionSummaryMapper implements MapperInterface
 {

@@ -6,10 +6,11 @@ use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
+use Entity\User;
 use Exception\CsvParserException;
 use Entity\Location;
+use InputType\Assistance\UpdateAssistanceInputType;
 use Pagination\Paginator;
-use Utils\LocationService;
 use DateTime;
 use DateTimeInterface;
 use DTO\VulnerabilityScore;
@@ -18,6 +19,7 @@ use Entity\AssistanceBeneficiary;
 use Entity\ModalityType;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Repository\AssistanceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -45,8 +47,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
-use UserBundle\Entity\User;
 use Entity\Voucher;
+use Component\Assistance\Domain\Assistance as AssistanceDomain;
 
 /**
  * Class AssistanceService

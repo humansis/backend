@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace Component\Smartcard;
 
+use Entity\AssistanceBeneficiary;
+use Entity\SmartcardDeposit;
+use Entity\User;
+use Enum\ReliefPackageState;
 use InputType\RequestConverter;
-use DistributionBundle\Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -23,12 +26,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
-use Entity\User;
 use Repository\SmartcardDepositRepository;
-use VoucherBundle\Utils\SmartcardService;
-use UserBundle\Entity\User;
-use VoucherBundle\Entity\SmartcardDeposit;
-use VoucherBundle\Repository\SmartcardDepositRepository;
 
 class SmartcardDepositService
 {

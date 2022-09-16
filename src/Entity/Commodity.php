@@ -5,8 +5,8 @@ namespace Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Component\Assistance\Enum\CommodityDivision;
-use DBAL\AssistanceCommodityDivisionEnum;
-use Enum\PersonGender;
+use Enum\EnumValueNoFoundException;
+use Component\Assistance\DTO\DivisionSummary;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Entity\Helper\EnumTrait;
 use Entity\Helper\StandardizedPrimaryKey;
@@ -66,7 +66,7 @@ class Commodity
 
     /**
      * @var DivisionGroup[]|Collection
-     * @ORM\OneToMany(targetEntity="NewApiBundle\Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
      */
     private $divisionGroups;
 

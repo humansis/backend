@@ -1,8 +1,9 @@
 <?php
 
-namespace NewApiBundle\InputType\Smartcard;
+namespace InputType\Smartcard;
 
-use NewApiBundle\Request\InputTypeInterface;
+
+use Request\InputTypeInterface;
 
 class UpdateSmartcardInputType extends ChangeSmartcardInputType implements InputTypeInterface
 {

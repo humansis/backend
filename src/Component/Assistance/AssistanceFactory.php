@@ -3,13 +3,12 @@
 namespace Component\Assistance;
 
 use Entity\AbstractBeneficiary;
+use Entity\Assistance;
 use Exception\CsvParserException;
 use Repository\BeneficiaryRepository;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
-use Entity\Location;
 use Repository\LocationRepository;
-use DateTimeInterface;
 use Entity;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
@@ -161,7 +160,7 @@ class AssistanceFactory
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
-        $assistanceRoot->setName(self::generateName($location, $inputType->getDateDistribution()));
+        $assistanceRoot->setName(self::generateName($assistanceRoot));
 
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryISO3());

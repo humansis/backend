@@ -1,29 +1,29 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Component\Assistance\Services;
+namespace Component\Assistance\Services;
 
-use BeneficiaryBundle\Entity\AbstractBeneficiary;
-use BeneficiaryBundle\Entity\Beneficiary;
-use BeneficiaryBundle\Entity\Household;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Entity\AssistanceBeneficiary;
-use DistributionBundle\Entity\Commodity;
-use DistributionBundle\Enum\AssistanceTargetType;
-use DistributionBundle\Repository\AssistanceBeneficiaryRepository;
-use DistributionBundle\Utils\Exception\RemoveBeneficiaryWithReliefException;
-use NewApiBundle\Component\Assistance\CommodityAssignBuilder;
-use NewApiBundle\Component\Assistance\Enum\CommodityDivision;
-use NewApiBundle\Component\Assistance\Scoring\Model\ScoringProtocol;
-use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Enum\CacheTarget;
-use NewApiBundle\Exception\BeneficiaryAlreadyRemovedException;
-use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
-use NewApiBundle\OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
-use NewApiBundle\Workflow\ReliefPackageTransitions;
+use Component\Assistance\CommodityAssignBuilder;
+use Component\Assistance\Enum\CommodityDivision;
+use Component\Assistance\Scoring\Model\ScoringProtocol;
+use Entity\AbstractBeneficiary;
+use Entity\Assistance;
+use Entity\Assistance\ReliefPackage;
+use Entity\AssistanceBeneficiary;
+use Entity\Beneficiary;
+use Entity\Commodity;
+use Entity\Household;
+use Enum\AssistanceTargetType;
+use Enum\CacheTarget;
+use Exception\ManipulationOverValidatedAssistanceException;
+use Exception\BeneficiaryAlreadyRemovedException;
+use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\AssistanceBeneficiaryRepository;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use Utils\Exception\RemoveBeneficiaryWithReliefException;
+use Workflow\ReliefPackageTransitions;
 
 class AssistanceBeneficiaryService
 {

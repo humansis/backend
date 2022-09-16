@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Request\ParamConverter;
+namespace Request\ParamConverter;
 
-use NewApiBundle\Request\InputTypeNullableDenormalizer;
-use NewApiBundle\Serializer\ArrayNullableDenormalizer;
+use Request\InputTypeNullableDenormalizer;
+use Serializer\ArrayNullableDenormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 

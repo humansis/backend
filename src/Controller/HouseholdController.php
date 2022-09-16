@@ -3,15 +3,13 @@
 namespace Controller;
 
 use Entity\Household;
-use BeneficiaryBundle\Entity\Household;
-use BeneficiaryBundle\Repository\HouseholdRepository;
-use BeneficiaryBundle\Utils\HouseholdService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\AddHouseholdsToProjectInputType;
 use InputType\HouseholdCreateInputType;
 use InputType\HouseholdFilterInputType;
 use InputType\HouseholdOrderInputType;
 use InputType\HouseholdUpdateInputType;
+use Repository\HouseholdRepository;
 use Request\Pagination;
 use Entity\Project;
 use Utils\HouseholdService;

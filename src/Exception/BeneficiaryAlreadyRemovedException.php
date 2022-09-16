@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Exception;
+namespace Exception;
 
 use \InvalidArgumentException;
 

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\InputType\Assistance;
+namespace InputType\Assistance;
 
 use DateTimeInterface;
-use NewApiBundle\Request\InputTypeInterface;
-use NewApiBundle\Utils\DateTime\Iso8601Converter;
+use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Utils\DateTime\Iso8601Converter;
 
 /**
  * @Assert\GroupSequence({"UpdateAssistanceInputType", "Strict"})

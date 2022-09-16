@@ -15,6 +15,7 @@ use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardPurchaseInputType;
 use Entity\Project;
+use InputType\Smartcard\UpdateSmartcardInputType;
 use Repository\BeneficiaryRepository;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;

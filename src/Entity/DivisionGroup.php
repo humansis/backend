@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Entity;
+namespace Entity;
 
-use DistributionBundle\Entity\Commodity;
 use Doctrine\ORM\Mapping as ORM;
-use NewApiBundle\Entity\Helper\StandardizedPrimaryKey;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Table(name="division_group")
- * @ORM\Entity(repositoryClass="NewApiBundle\Repository\Assistance\DivisionGroupRepository")
+ * @ORM\Entity(repositoryClass="Repository\Assistance\DivisionGroupRepository")
  */
 class DivisionGroup
 {
@@ -16,7 +15,7 @@ class DivisionGroup
 
     /**
      * @var Commodity
-     * @ORM\ManyToOne(targetEntity="DistributionBundle\Entity\Commodity")
+     * @ORM\ManyToOne(targetEntity="Entity\Commodity")
      * @ORM\JoinColumn(name="commodity_id", nullable=false)
      */
     private $commodity;

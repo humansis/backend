@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Component\Assistance\DTO;
+namespace Component\Assistance\DTO;
 
 use Doctrine\Common\Collections\Collection;
-use NewApiBundle\Entity\DivisionGroup;
+use Entity\DivisionGroup;
 
 class DivisionSummary
 {

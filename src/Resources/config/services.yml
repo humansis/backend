@@ -219,6 +219,7 @@ services:
     Controller\OrganizationController:
         arguments:
             - '@Component\File\UploadService'
+            - '%organization.allowed_mime_types%'
 
     Controller\ProductController:
         arguments:
@@ -954,12 +955,7 @@ services:
             - "@request_validator"
 
     organization_service:
-        class: Utils\OrganizationService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - "@service_container"
-            - '@Twig\Environment'
+        alias: Utils\OrganizationService
 
     export_csv_service:
         alias: Utils\ExportService
@@ -1360,3 +1356,34 @@ services:
         class: Export\AssistancePdfExport
         arguments: [ '@translator', '@pdf_service', '@Twig\Environment' ]
         public: true
+
+    Repository\CommodityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Commodity
+
+    Repository\OrganizationServicesRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\OrganizationServices
+
+    Serializer\ArrayNullableDenormalizer:
+        tags: [ 'serializer.denormalizer' ]
+
+    Request\ParamConverter\InputTypeNullableDenormalizerConverter:
+        tags:
+            - { name: 'request.param_converter', converter: 'input_type_nullable_denormalizer_converter' }
+
+    Services\CountryLocaleResolverService:
+        arguments:
+            - '%app.countries%'
+
+    Component\Assistance\Services\AssistanceBeneficiaryService:
+
+    Utils\OrganizationService:
+        public: true
+        arguments:
+             - '@doctrine.orm.entity_manager'
+             - "@service_container"
+             - '@Twig\Environment'

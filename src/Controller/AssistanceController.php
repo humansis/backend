@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
+use Entity\User;
+use InputType\Assistance\UpdateAssistanceInputType;
+use InvalidArgumentException;
 use Pagination\Paginator;
-use DateTimeInterface;
 use Entity\Assistance;
 use Enum\AssistanceType;
 use Repository\AssistanceRepository;
@@ -20,7 +21,6 @@ use Component\Assistance\AssistanceFactory;
 use Component\Assistance\AssistanceQuery;
 use Entity\AssistanceStatistics;
 use Enum\ModalityType;
-use Exception\ConstraintViolationException;
 use Exception\CsvParserException;
 use Export\AssistanceBankReportExport;
 use Export\VulnerabilityScoreExport;
@@ -30,7 +30,6 @@ use InputType\AssistanceOrderInputType;
 use InputType\AssistanceStatisticsFilterInputType;
 use InputType\ProjectsAssistanceFilterInputType;
 use Request\Pagination;
-use Utils\DateTime\Iso8601Converter;
 use DBAL\SubSectorEnum;
 use Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -42,9 +41,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
-use UserBundle\Entity\User;
 
 class AssistanceController extends AbstractController
 {

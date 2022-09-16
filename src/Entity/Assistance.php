@@ -2,7 +2,6 @@
 
 namespace Entity;
 
-use Entity\Location;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
@@ -11,13 +10,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use InvalidArgumentException;
 use Entity\Assistance\SelectionCriteria;
-use Entity\ScoringBlueprint;
 use DBAL\SectorEnum;
 use DBAL\SubSectorEnum;
-use Entity\Project;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use UserBundle\Entity\User;
-use Entity\SmartcardPurchase;
 
 /**
  * Assistance
@@ -118,7 +113,7 @@ class Assistance implements ExportableInterface
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Utils\FileSystem\Exception;
+namespace Utils\FileSystem\Exception;
 
 use Exception;
 

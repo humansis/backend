@@ -2,11 +2,11 @@
 
 namespace Repository;
 
-use CommonBundle\Entity\Organization;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Entity\Organization;
 use Request\Pagination;
 
 /**

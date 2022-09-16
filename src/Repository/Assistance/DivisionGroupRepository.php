@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Repository\Assistance;
+namespace Repository\Assistance;
 
 use Doctrine\ORM\EntityRepository;
 

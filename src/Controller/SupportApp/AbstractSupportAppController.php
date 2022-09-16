@@ -1,9 +1,9 @@
 <?php
 
-namespace NewApiBundle\Controller\SupportApp;
+namespace Controller\SupportApp;
 
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\Serializer\MapperInterface;
+use Controller\AbstractController;
+use Serializer\MapperInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -12,7 +12,7 @@ use Entity\ImportQueue;
 use Enum\ImportQueueState;
 use Enum\ImportState;
 use Repository\ImportQueueRepository;
-use NewApiBundle\Repository\ImportRepository;
+use Repository\ImportRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 

@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Export;
 
-use Entity\Beneficiary;
+use Component\Smartcard\SmartcardDepositService;
 use Entity\Community;
 use Entity\Household;
 use Entity\Institution;
-use Entity\NationalId;
 use Entity\Person;
 use Entity\Organization;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
-use Entity\Commodity;
-use Entity\GeneralReliefItem;
+use Entity\SmartcardDeposit;
+use Exception;
 use InvalidArgumentException;
-use Entity\Assistance\ReliefPackage;
-use Enum\NationalIdType;
 use Enum\ReliefPackageState;
+use Services\CountryLocaleResolverService;
+use Utils\FileSystem\Exception\ImageException;
+use Utils\FileSystem\Image;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -27,10 +28,8 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Entity\Donor;
-use ProjectBundle\Entity\Donor;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use VoucherBundle\Entity\SmartcardDeposit;
 
 class AssistanceSpreadsheetExport
 {

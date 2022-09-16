@@ -1,18 +1,9 @@
 <?php
 
-namespace NewApiBundle\Services;
-
-use CommonBundle\Utils\Exception\ExportNoDataException;
-use CommonBundle\Utils\ExportService;
-use PhpOffice\PhpSpreadsheet\Exception as SpreadsheetException;
-use PhpOffice\PhpSpreadsheet\Writer\Exception;
-use SimpleXMLElement;
-use Symfony\Component\Finder\Finder;
-use UnexpectedValueException;
+namespace Services;
 
 class CountryLocaleResolverService
 {
-
     /**
      * @var array
      */

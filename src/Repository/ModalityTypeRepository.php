@@ -2,7 +2,6 @@
 
 namespace Repository;
 
-use DistributionBundle\Entity\Modality;
 
 /**
  * ModalityTypeRepository

@@ -2,13 +2,12 @@
 
 namespace Entity\Assistance;
 
-use BeneficiaryBundle\Entity\CountrySpecific;
-use DistributionBundle\Entity\Assistance;
 use Entity\AssistanceSelection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\CountrySpecific;
 use Entity\Helper\StandardizedPrimaryKey;
-use NewApiBundle\Enum\SelectionCriteriaField;
+use Enum\SelectionCriteriaField;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**

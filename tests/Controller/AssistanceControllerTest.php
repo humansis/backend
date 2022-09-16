@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Doctrine\Common\Collections\Criteria;
 use Entity\Community;
 use Entity\Location;
 use DateTime;
@@ -130,7 +131,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield \Enum\ModalityType::PAPER_VOUCHER => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::PAPER_VOUCHER,
+                'modalityType' => \Enum\ModalityType::PAPER_VOUCHER,
                 'unit' => 'CZK',
                 'value' => '1000',
                 'description' => 'something important',
@@ -182,7 +183,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Smartcard for household' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -194,7 +195,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'No quantities for members' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -206,7 +207,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Empty quantities for members' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -218,7 +219,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Quantities for member' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -236,7 +237,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Correct quantities for members' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -264,7 +265,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Not correct quantities for members - missing range from 1' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -292,7 +293,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Not correct quantities for members - missing range to null' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -320,7 +321,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         ]];
         yield 'Not correct quantities for members - not following up ranges' => [[
             'commodity' => [
-                'modalityType' => \NewApiBundle\Enum\ModalityType::SMART_CARD,
+                'modalityType' => \Enum\ModalityType::SMART_CARD,
                 'unit' => 'CZK',
                 'value' => 1000,
                 'division' => [
@@ -388,7 +389,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'foodLimit' => 10.99,
             'nonFoodLimit' => null,
             'cashbackLimit' => 1024,
-            'remoteDistributionAllowed' => $commodity['commodity']['modalityType']== = \Enum\ModalityType::SMART_CARD ? false : null,
+            'remoteDistributionAllowed' => $commodity['commodity']['modalityType'] === \Enum\ModalityType::SMART_CARD ? false : null,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 

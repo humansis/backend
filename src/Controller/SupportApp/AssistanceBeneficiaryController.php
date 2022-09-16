@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace NewApiBundle\Controller\SupportApp;
+namespace Controller\SupportApp;
 
-use BeneficiaryBundle\Repository\BeneficiaryRepository;
-use DistributionBundle\Entity\Assistance;
-use DistributionBundle\Enum\AssistanceTargetType;
+use Controller\AbstractController;
+use Entity\Assistance;
+use Enum\AssistanceTargetType;
+use Exception\ManipulationOverValidatedAssistanceException;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Assistance\Services\AssistanceBeneficiaryService;
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\Exception\ManipulationOverValidatedAssistanceException;
-use NewApiBundle\InputType\Assistance\AssistanceBeneficiariesOperationInputType;
+use Component\Assistance\Services\AssistanceBeneficiaryService;
+use InputType\Assistance\AssistanceBeneficiariesOperationInputType;
+use Repository\BeneficiaryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

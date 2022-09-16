@@ -23,7 +23,6 @@ use DBAL\SectorEnum;
 use DBAL\SubSectorEnum;
 use Entity\Project;
 use Symfony\Component\HttpKernel\Kernel;
-use UserBundle\Entity\User;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {

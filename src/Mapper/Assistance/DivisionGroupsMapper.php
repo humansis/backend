@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Mapper\Assistance;
+namespace Mapper\Assistance;
 
-use NewApiBundle\Entity\DivisionGroup;
-use NewApiBundle\Serializer\MapperInterface;
+
+use Entity\DivisionGroup;
+use Serializer\MapperInterface;
 
 class DivisionGroupsMapper implements MapperInterface
 {

@@ -9,7 +9,6 @@ use Entity\Helper\CreatedBy;
 use Entity\Helper\Source;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\SynchronizationBatchState;
-use Enum\SynchronizationBatchValidationType;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 

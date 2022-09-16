@@ -38,7 +38,7 @@ class AssistanceSelection
 
     /**
      * @var Assistance
-     * @ORM\OneToOne(targetEntity="DistributionBundle\Entity\Assistance", mappedBy="assistanceSelection", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="Entity\Assistance", mappedBy="assistanceSelection", cascade={"persist", "remove"})
      */
     private $assistance;
 

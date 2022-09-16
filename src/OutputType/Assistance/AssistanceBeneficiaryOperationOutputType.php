@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\OutputType\Assistance;
+namespace OutputType\Assistance;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use NewApiBundle\Request\InputTypeInterface;
+use Entity\Beneficiary;
+use Request\InputTypeInterface;
 
 class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
