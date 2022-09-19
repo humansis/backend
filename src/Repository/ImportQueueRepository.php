@@ -293,6 +293,6 @@ class ImportQueueRepository extends EntityRepository
     public function save(ImportQueue $importQueue)
     {
         $this->_em->persist($importQueue);
-        $this->_em->flush($importQueue);
+        $this->_em->flush();
     }
 }
