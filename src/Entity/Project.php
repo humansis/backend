@@ -13,7 +13,7 @@ use DTO\Sector;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Enum\ProductCategoryType;
-use NewApiBundle\Exception\CountryMismatchException;
+use Exception\CountryMismatchException;
 use Utils\ExportableInterface;
 use Entity\Helper\CountryDependent;
 
