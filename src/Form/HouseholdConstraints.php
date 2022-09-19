@@ -48,6 +48,7 @@ class HouseholdConstraints extends RequestValidatorConstraints
             "household_income" => $optionalNumeric,
             "enumerator_name" => $optionalString,
             "proxy" => $optionalArray,
+            "iso3" => $string,
         ];
         $householdLocation = [
             "location_group" => $string,

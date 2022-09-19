@@ -57,7 +57,7 @@ class CommonController extends AbstractController
                     $result[] = ['code' => $code, 'value' => $this->get('project.project_service')->countActive($countryIso3)];
                     break;
                 case 'enrolled_beneficiaries':
-                    $result[] = ['code' => $code, 'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountryProjects($countryIso3)];
+                    $result[] = ['code' => $code, 'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountry($countryIso3)];
                     break;
                 case 'served_beneficiaries':
                     $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3)];

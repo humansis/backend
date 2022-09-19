@@ -3,18 +3,19 @@
 namespace Entity;
 
 use DateTimeInterface;
+use DBAL\HouseholdAssetsEnum;
+use DBAL\HouseholdSupportReceivedTypeEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
-use DBAL\HouseholdAssetsEnum;
 use DBAL\HouseholdShelterStatusEnum;
-use DBAL\HouseholdSupportReceivedTypeEnum;
+use Entity\Helper\CountryDependent;
 use Entity\Helper\EnumTrait;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
-use Enum\HouseholdSupportReceivedType;
 use DBAL\LivelihoodEnum;
+use Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -22,10 +23,12 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *
  * @ORM\Table(name="household")
  * @ORM\Entity(repositoryClass="Repository\HouseholdRepository")
+ * @method Household setCountryIso3(string $countryIso3)
  */
 class Household extends AbstractBeneficiary
 {
     use EnumTrait;
+    use CountryDependent;
 
     /**
      * @var string|null

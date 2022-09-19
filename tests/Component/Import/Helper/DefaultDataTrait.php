@@ -29,6 +29,7 @@ trait DefaultDataTrait
         $hh->setFoodConsumptionScore(0);
         $hh->setIncome(0);
         $hh->setNotes('default HH in '.__CLASS__);
+        $hh->setCountryIso3($project->getCountryIso3());
 
         $hhh = new Beneficiary();
         $hhh->setHousehold($hh);

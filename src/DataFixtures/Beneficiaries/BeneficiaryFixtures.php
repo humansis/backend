@@ -86,6 +86,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            "iso3" => 'KHM',
             "proxy" => null,
             "__country" => "KHM"
         ],
@@ -218,6 +219,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                   ],
 
               ],
+              "iso3" => 'KHM',
               "proxy" => null,
               "__country" => "KHM"
             ],
@@ -350,6 +352,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                     ],
 
                 ],
+                "iso3" => 'KHM',
                 "proxy" => null,
                 "__country" => "KHM"
             ],

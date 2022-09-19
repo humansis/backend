@@ -6,16 +6,16 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Entity\Helper\CountryDependent;
+use DTO\Sector;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Enum\ProductCategoryType;
-use DTO\Sector;
+use Exception\CountryMismatchException;
 use Utils\ExportableInterface;
+use Entity\Helper\CountryDependent;
 
 /**
  * Project
@@ -523,6 +523,9 @@ class Project implements ExportableInterface
      */
     public function addHousehold(\Entity\Household $household): Project
     {
+        if($household->getCountryIso3() !== $this->getCountryIso3()) {
+            throw new CountryMismatchException();
+        }
         $this->households->add($household);
         return $this;
     }

@@ -260,6 +260,7 @@ class BMSServiceTestCase extends KernelTestCase
         $this->tokenStorage = self::$container->get('security.token_storage');
         $this->householdService = self::$container->get('beneficiary.household_service');
         $this->commodityService = self::$container->get('distribution.commodity_service');
+        $this->bodyHousehold['iso3'] = $this->iso3;
     }
 
 
@@ -393,6 +394,7 @@ class BMSServiceTestCase extends KernelTestCase
         }
 
         $this->bodyHousehold["__country"] = $this->iso3;
+        $this->bodyHousehold["iso3"] = $this->iso3;
         $household = $this->householdService->createOrEdit(
             $this->bodyHousehold,
             [current($projects)]

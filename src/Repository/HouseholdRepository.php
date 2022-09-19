@@ -40,9 +40,10 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findAllByCountry(string $iso3)
     {
-        $qb = $this->createQueryBuilder("hh");
-        $this->whereHouseholdInCountry($qb, $iso3);
-        $qb->andWhere('hh.archived = 0');
+        $qb = $this->createQueryBuilder("hh")
+                ->where('hh.countryIso3 = :countryIso3')
+                ->andWhere('hh.archived = 0')
+                ->setParameter('countryIso3', $iso3);
 
         return $qb;
     }
@@ -58,13 +59,12 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         return $q;
     }
 
-    public function countUnarchivedByCountryProjects(string $iso3): int
+    public function countUnarchivedByCountry(string $iso3): int
     {
         $qb = $this->createQueryBuilder("hh");
         $qb
             ->select("COUNT(DISTINCT hh)")
-            ->leftJoin("hh.projects", "p")
-            ->where("p.countryIso3 = :country")
+            ->where("hh.countryIso3 = :country")
             ->setParameter("country", $iso3)
             ->andWhere("hh.archived = 0")
         ;
@@ -186,7 +186,6 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('hh');
-        $this->getHouseholdLocation($qb);
         
         $qb->leftJoin('hh.beneficiaries', 'b')
             ->leftJoin('hh.projects', 'p')
@@ -197,7 +196,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
             ->andWhere('hh.archived = 0')
-            ->andWhere('l.countryIso3 = :iso3')
+            ->andWhere('hh.countryIso3 = :iso3')
             ->setParameter('iso3', $iso3);
 
         if ($pagination) {
@@ -211,6 +210,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter->hasFulltext()) {
+            $this->getHouseholdLocation($qb);
 
             $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(1, 'l', 'l1');
             $qbl2 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(2, 'l', 'l2');
@@ -243,11 +243,6 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             foreach ($qbl3->getParameters() as $parameter) {
                 $qb->setParameter($parameter->getName(), $parameter->getValue());
             }
-        }
-
-        if ($filter->hasGender()) {
-            $qb->andWhere('per.gender = :gender')
-                ->setParameter('gender', 'M' === $filter->getGender() ? 1 : 0);
         }
 
         if ($filter->hasGender()) {
@@ -291,6 +286,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
         }
 
         if ($filter->hasLocations()) {
+            $this->getHouseholdLocation($qb);
             $qb->andWhere('l.id  IN (:locations)')
                 ->setParameter('locations', $filter->getLocations());
         }
@@ -299,6 +295,7 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
+                        $this->getHouseholdLocation($qb);
                         $qb->addGroupBy('l.id')->addOrderBy('l.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
@@ -417,36 +414,13 @@ class HouseholdRepository extends \Doctrine\ORM\EntityRepository
      */
     protected function getHouseholdLocation(QueryBuilder &$qb)
     {
-        $qb->leftJoin("hh.householdLocations", "hl")
-            ->leftJoin("hl.campAddress", "ca")
-            ->leftJoin("ca.camp", "c")
-            ->leftJoin("hl.address", "ad")
-            ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
-    }
-
-    /**
-     * Create sub request to get households in country.
-     * The household address location must be in the country ($countryISO3).
-     *
-     * @param QueryBuilder $qb
-     * @param $countryISO3
-     */
-    public function whereHouseholdInCountry(QueryBuilder &$qb, $countryISO3)
-    {
-        $this->getHouseholdLocation($qb);
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->whereCountry($qb, $countryISO3);
-    }
-
-    /**
-     * Create sub request to get the country of the household
-     *
-     * @param QueryBuilder $qb
-     */
-    public function getHouseholdCountry(QueryBuilder &$qb)
-    {
-        $this->getHouseholdLocation($qb);
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->getCountry($qb);
+        // Condition to make sure that tables are joined at most once
+        if (!in_array('l', $qb->getAllAliases())) {
+            $qb->leftJoin("hh.householdLocations", "hl")
+                ->leftJoin("hl.campAddress", "ca")
+                ->leftJoin("ca.camp", "c")
+                ->leftJoin("hl.address", "ad")
+                ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+        }
     }
 }
