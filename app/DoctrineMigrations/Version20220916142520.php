@@ -4,12 +4,12 @@ namespace Application\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
-use NewApiBundle\Enum\ModalityType;
+use Enum\ModalityType;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220815141022 extends AbstractMigration
+final class Version20220916142520 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
@@ -166,7 +166,6 @@ final class Version20220815141022 extends AbstractMigration
                          JOIN assistance a ON a.id=db.assistance_id AND a.assistance_type="distribution"
                          JOIN abstract_beneficiary ab ON ab.id=db.beneficiary_id
                          JOIN commodity c ON c.assistance_id=db.assistance_id
-                         JOIN modality_type mt ON mt.id=c.modality_type_id
 
                     -- smartcards
                          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
