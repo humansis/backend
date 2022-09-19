@@ -42,7 +42,6 @@ class NationalId
      * @var int
      *
      * @ORM\Column(name="priority", type="integer")
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers", "FullInstitution"})
      */
     private $priority;
 
