@@ -177,7 +177,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
      */
     private function getProjectsIds(string $iso3): array
     {
-        $projects = $this->projectRepository->findBy(['iso3' => $iso3], ['id' => 'asc']);
+        $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
         return array_map(function (Project $project) {
             return $project->getId();

@@ -148,7 +148,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $projects = $this->projectRepository->findAll();
         foreach ($projects as $project) {
             echo $project->getName()." ";
-            $country = $this->countries->getCountry($project->getIso3());
+            $country = $this->countries->getCountry($project->getCountryIso3());
             $this->loadCommonIndividualAssistance($country, $project);
             $this->loadCommonHouseholdAssistance($country, $project);
             $this->loadCommonInstitutionAssistance($country, $project);
@@ -157,7 +157,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             echo "\n";
         }
 
-        $khmProjects = $this->projectRepository->findBy(['iso3' => 'KHM'], ['id' => 'asc']);
+        $khmProjects = $this->projectRepository->findBy(['countryIso3' => 'KHM'], ['id' => 'asc']);
         $khmKhrAssistance = $this->loadSmartcardAssistance($khmProjects[0], 'KHR');
         $this->validateAssistance($khmKhrAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance->getAssistanceRoot());
@@ -166,7 +166,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $this->validateAssistance($khmUsdAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance->getAssistanceRoot());
 
-        $syrProjects = $this->projectRepository->findBy(['iso3' => 'SYR'], ['id' => 'asc']);
+        $syrProjects = $this->projectRepository->findBy(['countryIso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($syrProjects[0], 'SYP');
         $this->validateAssistance($syrSypAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance->getAssistanceRoot());
@@ -334,7 +334,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
      */
     private function loadSmartcardAssistance(Project $project, ?string $currency = null): Assistance
     {
-        $country = $this->countries->getCountry($project->getIso3());
+        $country = $this->countries->getCountry($project->getCountryIso3());
         $modality = $this->modalityTypeRepository->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
         $assistanceInputType = $this->buildAssistanceInputType($country, $project);
         $assistanceInputType->setTarget(AssistanceTargetType::INDIVIDUAL);

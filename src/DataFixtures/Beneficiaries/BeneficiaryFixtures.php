@@ -105,24 +105,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                 "longitude" => null,
                 "coping_strategies_index" => "2",
                 "food_consumption_score" => "3",
-                "household_locations" => array(
-                    [
-                        "location_group" => "current",
-                        "type" => "residence",
-                        "address" => [
-                            "street" => "azerrt",
-                            "number" => "1",
-                            "postcode" => "12345",
-                            "location" => [
-                                "adm1" => 1,
-                                "adm2" => 1,
-                                "adm3" => 1,
-                                "adm4" => null,
-                                "country_iso3" => "KHM",
-                            ],
-                        ],
-                    ],
-                ),
                 "country_specific_answers" => [
                     [
                         "answer" => "2",
@@ -169,24 +151,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                 "longitude" => null,
                 "coping_strategies_index" => "2",
                 "food_consumption_score" => "3",
-                "household_locations" => array(
-                    [
-                        "location_group" => "current",
-                        "type" => "residence",
-                        "address" => [
-                            "street" => "azerrt",
-                            "number" => "1",
-                            "postcode" => "12345",
-                            "location" => [
-                                "adm1" => 1,
-                                "adm2" => 1,
-                                "adm3" => 1,
-                                "adm4" => null,
-                                "country_iso3" => "KHM",
-                            ],
-                        ],
-                    ],
-                ),
                 "country_specific_answers" => [
                     [
                         "answer" => "2",
@@ -297,24 +261,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                 "longitude" => null,
                 "coping_strategies_index" => "4",
                 "food_consumption_score" => "5",
-                "household_locations" => array(
-                    [
-                        "location_group" => "current",
-                        "type" => "residence",
-                        "address" => [
-                            "street" => "azerrt",
-                            "number" => "2",
-                            "postcode" => "12346",
-                            "location" => [
-                                "adm1" => 1,
-                                "adm2" => 1,
-                                "adm3" => 1,
-                                "adm4" => null,
-                                "country_iso3" => "KHM",
-                            ],
-                        ],
-                    ],
-                ),
                 "country_specific_answers" => [
                     [
                         "answer" => "3",
@@ -537,7 +483,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
      */
     private function getLocation(string $iso3, int $level = 1): Location
     {
-        $location = $this->locationRepository->findOneBy(['countryISO3' => $iso3, 'lvl' => $level]);
+        $location = $this->locationRepository->findOneBy(['countryIso3' => $iso3, 'lvl' => $level]);
         if (!$location) {
             throw new \LogicException("There is no location in country $iso3 and in level $level");
         }

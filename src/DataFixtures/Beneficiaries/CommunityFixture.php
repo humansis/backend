@@ -2,6 +2,7 @@
 namespace DataFixtures\Beneficiaries;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Enum\EnumValueNoFoundException;
 use Utils\CommunityService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
@@ -126,7 +127,10 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     }
 
     /**
+     * @param ObjectManager $manager
+     *
      * @throws EntityNotFoundException
+     * @throws EnumValueNoFoundException
      */
     public function load(ObjectManager $manager)
     {
@@ -174,7 +178,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
      */
     private function getProjectsIds(string $iso3): array
     {
-        $projects = $this->projectRepository->findBy(['iso3' => $iso3], ['id' => 'asc']);
+        $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
         return array_map(function (Project $project) {
             return $project->getId();

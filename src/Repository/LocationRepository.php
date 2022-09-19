@@ -317,7 +317,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      */
     public function getLocationByIdAndCountryCode(int $id, string $countryCode): Location
     {
-        $location = $this->findOneBy(['id' => $id, 'countryISO3' => $countryCode]);
+        $location = $this->findOneBy(['id' => $id, 'countryIso3' => $countryCode]);
         if (empty($location)) {
             throw new EntityNotFoundException("Location #{$id} was not found at country {$countryCode}.");
         }
