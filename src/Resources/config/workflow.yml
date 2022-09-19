@@ -31,8 +31,8 @@ framework:
           from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
           to: !php/const Enum\ReliefPackageState::CANCELED
         !php/const Workflow\ReliefPackageTransitions::REUSE:
-          from: !php/const NewApiBundle\Enum\ReliefPackageState::CANCELED
-          to: !php/const NewApiBundle\Enum\ReliefPackageState::TO_DISTRIBUTE
+          from: !php/const Enum\ReliefPackageState::CANCELED
+          to: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
 
     synchronizationBatch:
       type: 'state_machine'
