@@ -33,7 +33,6 @@ use Utils\VoucherService;
 
 /**
  * Class ExportController
- *
  * @package Controller
  *
  * @SWG\Parameter(
@@ -46,8 +45,8 @@ use Utils\VoucherService;
 class ExportController extends Controller
 {
     /** @var int maximum count of exported entities */
-    public const EXPORT_LIMIT = 10000;
-    public const EXPORT_LIMIT_CSV = 20000;
+    const EXPORT_LIMIT = 10000;
+    const EXPORT_LIMIT_CSV = 20000;
 
     /**
      * @var AssistanceRepository
@@ -221,12 +220,7 @@ class ExportController extends Controller
                 }
                 $filename = $this->assistanceSpreadsheetExport->export($distribution, $organization, $type);
                 // raw export for legacy purpose
-                if (
-                    $type === 'xlsx' && in_array(
-                        $distribution->getTargetType(),
-                        [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL]
-                    )
-                ) { // hack to enable raw export, will be forgotten with FE switch
+                if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
                         $filename = $this->transactionService->exportToCsv($distribution, 'xlsx');
                     }
@@ -237,16 +231,10 @@ class ExportController extends Controller
                         $filename = $this->assistanceService->exportVouchersDistributionToCsv($distribution, $type);
                     }
                     if ($request->query->has('generalreliefDistribution')) {
-                        $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv(
-                            $distribution,
-                            'xlsx'
-                        );
+                        $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('beneficiariesInDistribution')) {
-                        $filename = $this->assistanceService->exportToCsvBeneficiariesInDistribution(
-                            $distribution,
-                            $type
-                        );
+                        $filename = $this->assistanceService->exportToCsvBeneficiariesInDistribution($distribution, $type);
                     }
                 }
             } elseif ($request->query->get('bookletCodes')) {
@@ -287,11 +275,8 @@ class ExportController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (Exception $exception) {
-            return new JsonResponse(
-                $exception->getMessage(),
-                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
-            );
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
 

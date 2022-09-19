@@ -89,10 +89,7 @@ class CommunityService
         }
 
         if (!is_null($inputType->getNationalIdCard())) {
-            $nationalIdCard = new NationalId();
-
-            $nationalIdCard->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $nationalIdCard->setIdType($inputType->getNationalIdCard()->getType());
+            $nationalIdCard =  NationalId::fromNationalIdInputType($inputType->getNationalIdCard());
 
             $community->setNationalId($nationalIdCard);
         }
@@ -170,6 +167,7 @@ class CommunityService
 
             $communityNationalIdCard->setIdNumber($nationalIdCardType->getNumber());
             $communityNationalIdCard->setIdType($nationalIdCardType->getType());
+            $communityNationalIdCard->setPriority($nationalIdCardType->getPriority());
         }
 
         $phoneType = $inputType->getPhone();

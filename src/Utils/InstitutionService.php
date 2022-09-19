@@ -87,9 +87,8 @@ class InstitutionService
         }
 
         if ($inputType->getNationalIdCard()) {
-            $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($inputType->getNationalIdCard()->getNumber());
-            $institution->getNationalId()->setIdType($inputType->getNationalIdCard()->getType());
+            $nationalId = NationalId::fromNationalIdInputType($inputType->getNationalIdCard());
+            $institution->setNationalId($nationalId);
         }
 
         $this->em->persist($institution);
@@ -157,6 +156,7 @@ class InstitutionService
 
             $institutionNationalIdCard->setIdNumber($nationalIdCardType->getNumber());
             $institutionNationalIdCard->setIdType($nationalIdCardType->getType());
+            $institutionNationalIdCard->setPriority($nationalIdCardType->getPriority());
         }
 
         $phoneType = $inputType->getPhone();
