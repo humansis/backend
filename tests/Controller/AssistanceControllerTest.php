@@ -902,13 +902,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
-        /** @var ModalityTypeRepository $modalityTypeRepository */
-        $modalityTypeRepository = self::$container->get('doctrine')->getRepository(ModalityType::class);
+        
+        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ModalityType::CASH, 'description' => 'Note'];
         /** @var Assistance $assistance */
-
-
-        $cashModality = $modalityTypeRepository->findOneBy(['name' => ModalityType::CASH]);
-        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ['id' => $cashModality->getId()], 'description' => 'Note'];
         $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
