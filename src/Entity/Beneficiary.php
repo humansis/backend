@@ -623,15 +623,23 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
         $valuescriteria = join(',', $valuescriteria);
 
-        // Recover nationalID from nationalID object
-        $typenationalID = [];
-        $valuesnationalID = [];
+        /** @var NationalId $primaryDocument */
+        $primaryDocument = null;
+        /** @var NationalId $secondaryDocument */
+        $secondaryDocument = null;
+        /** @var NationalId $ternaryDocument */
+        $ternaryDocument = null;
         foreach ($this->getNationalIds()->getValues() as $value) {
-            array_push($typenationalID, $value->getIdType());
-            array_push($valuesnationalID, $value->getIdNumber());
+            if ($value->getPriority() === 1) {
+                $primaryDocument = $value;
+            }
+            if ($value->getPriority() === 2) {
+                $secondaryDocument = $value;
+            }
+            if ($value->getPriority() === 3) {
+                $ternaryDocument = $value;
+            }
         }
-        $typenationalID = join(',', $typenationalID);
-        $valuesnationalID = join(',', $valuesnationalID);
 
         //Recover country specifics for the household
         $valueCountrySpecific = [];
@@ -724,8 +732,12 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "prefix phone 2" => $prefixphones[1],
             "phone 2" => $valuesphones[1],
             "proxy phone 2" => $proxyphones[1],
-            "ID Type" => $typenationalID,
-            "ID Number" => $valuesnationalID,
+            "primary ID type" => $primaryDocument ? $primaryDocument->getIdType() : '',
+            "primary ID number" => $primaryDocument ? $primaryDocument->getIdNumber() : '',
+            "secondary ID type" => $secondaryDocument ? $secondaryDocument->getIdType() : '',
+            "secondary ID number" => $secondaryDocument ? $secondaryDocument->getIdNumber() : '',
+            "ternary ID type" => $ternaryDocument ? $ternaryDocument->getIdType() : '',
+            "ternary ID number" => $ternaryDocument ? $ternaryDocument->getIdNumber() : '',
             "Assets" => implode(', ', $this->getHousehold()->getAssets()),
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),

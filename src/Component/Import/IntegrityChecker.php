@@ -1,13 +1,10 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Component\Import;
 
-use BadMethodCallException;
 use Entity\CountrySpecific;
 use Exception\MissingHouseholdHeadException;
-use InvalidArgumentException;
 use Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Finishing;
@@ -57,15 +54,15 @@ class IntegrityChecker
     private $duplicityService;
 
     public function __construct(
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        Integrity\ImportLineFactory $importLineFactory,
-        Integrity\DuplicityService $duplicityService,
-        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        ValidatorInterface                    $validator,
+        EntityManagerInterface                $entityManager,
+        WorkflowInterface                     $importStateMachine,
+        WorkflowInterface                     $importQueueStateMachine,
+        Integrity\ImportLineFactory           $importLineFactory,
+        Integrity\DuplicityService            $duplicityService,
+        Finishing\HouseholdDecoratorBuilder   $householdDecoratorBuilder,
         Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
-        ImportQueueRepository $queueRepository
+        ImportQueueRepository                 $queueRepository
     ) {
         $this->validator = $validator;
         $this->entityManager = $entityManager;
@@ -79,25 +76,24 @@ class IntegrityChecker
     }
 
     /**
-     * @param Import $import
-     * @param int|null $batchSize if null => all
      * @deprecated This was reworked to queues if you want to use this beaware of flush at checkOne method
+     * @param Import   $import
+     * @param int|null $batchSize if null => all
      */
     public function check(Import $import, ?int $batchSize = null): void
     {
         if (ImportState::INTEGRITY_CHECKING !== $import->getState()) {
-            throw new BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
+            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to integrity check.');
         }
 
         if ($this->hasImportValidFile($import) === false) {
             $this->importStateMachine->apply($import, ImportTransitions::FAIL_INTEGRITY);
-
             return;
         }
 
         foreach ($this->queueRepository->getItemsToIntegrityCheck($import, $batchSize) as $i => $item) {
             $this->checkOne($item);
-            if (($i + 1) % 500 === 0) {
+            if (($i+1) % 500 === 0) {
                 $this->entityManager->flush();
             }
         }
@@ -113,7 +109,7 @@ class IntegrityChecker
             return; // there is nothing to check
         }
         if ($item->getState() !== ImportQueueState::NEW) {
-            throw new InvalidArgumentException("Wrong ImportQueue state for Integrity check: " . $item->getState());
+            throw new \InvalidArgumentException("Wrong ImportQueue state for Integrity check: ".$item->getState());
         }
         $this->validateItem($item);
         if ($item->hasViolations()) {
@@ -153,15 +149,8 @@ class IntegrityChecker
         foreach ($this->importLineFactory->createAll($item) as $hhm) {
             $index++;
             if ($item->hasViolations($index)) {
-                if (
-                    !$item->hasColumnViolation(
-                        $index,
-                        HouseholdExportCSVService::ID_NUMBER
-                    ) && !$item->hasColumnViolation(
-                        $index,
-                        HouseholdExportCSVService::ID_TYPE
-                    )
-                ) {
+                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER) && !$item->hasColumnViolation($index,
+                        HouseholdExportCSVService::PRIMARY_ID_TYPE)) {
                     $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryIdentityInputType($hhm);
                     $this->checkFileDuplicity($item, $index, $beneficiary);
                 }
@@ -180,15 +169,12 @@ class IntegrityChecker
         if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
             try {
                 $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
-                $violations = $this->validator->validate(
-                    $household,
-                    null,
-                    ["Default", "HouseholdCreateInputType", "Strict"]
-                );
+                $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
                 foreach ($violations as $violation) {
                     $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
                 }
-            } catch (MissingHouseholdHeadException $e) {
+            }
+            catch (MissingHouseholdHeadException $e) {
                 $item->addViolation(
                     Integrity\QueueViolation::create(
                         0,
@@ -214,48 +200,33 @@ class IntegrityChecker
         $queueSize = $this->entityManager->getRepository(ImportQueue::class)
             ->count([
                 'import' => $import,
-                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID],
+                'state' => [ImportQueueState::NEW, ImportQueueState::INVALID, ImportQueueState::VALID]
             ]);
 
         return $queueSize == 0;
     }
 
-    private function buildErrorMessage(
-        ConstraintViolationInterface $violation,
-        int $lineIndex
-    ): Integrity\QueueViolation {
+    private function buildErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
+    {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
         static $mapping;
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
             foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
-                $mapping['countrySpecifics[' . $countrySpecific->getId() . ']'] = $countrySpecific->getFieldString();
-                $mapping['countrySpecifics.' . $countrySpecific->getId()] = $countrySpecific->getFieldString();
+                $mapping['countrySpecifics['.$countrySpecific->getId().']'] = $countrySpecific->getFieldString();
+                $mapping['countrySpecifics.'.$countrySpecific->getId()] = $countrySpecific->getFieldString();
             }
         }
         $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
-
-        return Integrity\QueueViolation::create(
-            $lineIndex,
-            $column,
-            $violation->getMessage(),
-            $violation->getInvalidValue()
-        );
+        return Integrity\QueueViolation::create($lineIndex, $column, $violation->getMessage(), $violation->getInvalidValue());
     }
 
-    private function buildNormalizedErrorMessage(
-        ConstraintViolationInterface $violation,
-        int $lineIndex
-    ): Integrity\QueueViolation {
+    private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
+    {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
-        return Integrity\QueueViolation::create(
-            $lineIndex,
-            $property,
-            $violation->getMessage(),
-            $violation->getInvalidValue()
-        );
+        return Integrity\QueueViolation::create($lineIndex, $property, $violation->getMessage(), $violation->getInvalidValue());
     }
 
     /**
@@ -272,38 +243,24 @@ class IntegrityChecker
     }
 
     /**
-     * @param ImportQueue $importQueue
-     * @param int $index
+     * @param ImportQueue          $importQueue
+     * @param int                  $index
      * @param BeneficiaryInputType $beneficiaryInputType
      *
      * @return void
      */
-    private function checkFileDuplicity(
-        ImportQueue $importQueue,
-        int $index,
-        BeneficiaryInputType $beneficiaryInputType
-    ): void {
+    private function checkFileDuplicity(ImportQueue $importQueue, int $index, BeneficiaryInputType $beneficiaryInputType): void
+    {
         $cards = $beneficiaryInputType->getNationalIdCards();
-        if (count($cards) > 0) {
-            $idCard = $cards[0];
+        foreach ($cards as $idCard){
             $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
             if ($nationalIdCount > 1) {
-                $importQueue->addViolation(
-                    Integrity\QueueViolation::create(
-                        $index,
-                        HouseholdExportCSVService::ID_TYPE,
-                        'This line has ID duplicity!',
-                        sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())
-                    )
-                );
-                $importQueue->addViolation(
-                    Integrity\QueueViolation::create(
-                        $index,
-                        HouseholdExportCSVService::ID_NUMBER,
-                        'This line has ID duplicity!',
-                        sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())
-                    )
-                );
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_TYPE,
+                    'This line has ID duplicity!',
+                    sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER,
+                    'This line has ID duplicity!',
+                    sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
             }
         }
     }
