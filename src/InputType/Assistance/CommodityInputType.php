@@ -6,6 +6,7 @@ namespace InputType\Assistance;
 
 use Request\InputTypeNullableDenormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Enum;
 
 class CommodityInputType implements InputTypeNullableDenormalizer
 {
