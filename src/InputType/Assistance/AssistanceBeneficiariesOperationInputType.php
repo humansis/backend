@@ -5,6 +5,7 @@ namespace InputType\Assistance;
 
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"AssistanceBeneficiariesOperationInputType", "Strict"})

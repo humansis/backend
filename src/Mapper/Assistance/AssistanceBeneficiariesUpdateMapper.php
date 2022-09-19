@@ -1,9 +1,9 @@
 <?php
 
-namespace NewApiBundle\Mapper\Assistance;
+namespace Mapper\Assistance;
 
-use NewApiBundle\OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
-use NewApiBundle\Serializer\MapperInterface;
+use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
+use Serializer\MapperInterface;
 
 class AssistanceBeneficiariesUpdateMapper implements MapperInterface
 {

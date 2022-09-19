@@ -56,46 +56,35 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
-            ->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/statistics');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
-            "id": ' . $assistance->getId() . ',
+        $this->assertJsonFragment('{
+            "id": '.$assistance->getId().',
             "numberOfBeneficiaries": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
             "amountUsed": "*",
             "amountSent": "*",
             "amountPickedUp": "*"
-        }',
-            $this->client->getResponse()->getContent()
-        );
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testList()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(
-            ['archived' => false],
-            ['id' => 'asc']
-        )[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false], ['id' => 'asc'])[0];
 
-        $this->request(
-            'GET',
-            '/api/basic/web-app/v1/assistances/statistics?filter[id][]=' . $assistance->getId(),
-            ['country' => 'KHM']
-        );
+        $this->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]='.$assistance->getId(), ['country' => 'KHM']);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -124,20 +113,17 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             ReliefPackageState::TO_DISTRIBUTE,
             ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
             ReliefPackageState::DISTRIBUTED,
-            ReliefPackageState::EXPIRED,
+            ReliefPackageState::EXPIRED
         ]);
-        $expectedDistributed = $this->reliefPackageRepository->sumDistributedReliefPackagesAmountByAssistance(
-            $assistanceRoot,
-            [
-                ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
-                ReliefPackageState::DISTRIBUTED,
-            ]
-        );
+        $expectedDistributed = $this->reliefPackageRepository->sumDistributedReliefPackagesAmountByAssistance($assistanceRoot, [
+            ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
+            ReliefPackageState::DISTRIBUTED
+        ]);
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistanceRoot->getId() . '/statistics');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceRoot->getId().'/statistics');
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -158,31 +144,25 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         }
 
         $assistance = $this->assistanceFactory->hydrate($reliefPackage->getAssistanceBeneficiary()->getAssistance());
-        $expectedTotalSumBefore = $this->reliefPackageRepository->sumReliefPackagesAmountByAssistance(
-            $reliefPackage->getAssistanceBeneficiary()->getAssistance(),
+        $expectedTotalSumBefore = $this->reliefPackageRepository->sumReliefPackagesAmountByAssistance($reliefPackage->getAssistanceBeneficiary()->getAssistance(),
             [
                 ReliefPackageState::TO_DISTRIBUTE,
                 ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
                 ReliefPackageState::DISTRIBUTED,
                 ReliefPackageState::EXPIRED,
-            ]
-        );
+            ]);
         $expectedTotalSumAfter = (float) $expectedTotalSumBefore - (float) $reliefPackage->getAmountToDistribute();
 
         // remove BNF from assistance
-        $this->request(
-            'PUT',
-            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(
-            ) . '/assistances-beneficiaries',
-            [
+        $this->request('DELETE',
+            '/api/basic/web-app/v1/assistances/'.$reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId().'/assistances-beneficiaries', [
                 'beneficiaryIds' => [$reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getId()],
                 'justification' => 'test remove',
                 'removed' => true,
-            ]
-        );
+            ]);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy([]);
@@ -191,14 +171,11 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $assistance->validate($user);
 
         // check statistics
-        $this->request(
-            'GET',
-            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(
-            ) . '/statistics'
-        );
+        $this->request('GET',
+            '/api/basic/web-app/v1/assistances/'.$reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId().'/statistics');
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
