@@ -505,9 +505,7 @@ class HouseholdService
 
             $proxy->getNationalIds()->clear();
 
-            $nationalId = new NationalId();
-            $nationalId->setIdType($nationalIdInputType->getType());
-            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId = NationalId::fromNationalIdInputType($nationalIdInputType);
             $nationalId->setPerson($proxy);
             $proxy->addNationalId($nationalId);
 
@@ -749,9 +747,7 @@ class HouseholdService
             $nationalIdInputType = $inputType->getProxyNationalIdCard();
             $proxy->getNationalIds()->clear();
 
-            $nationalId = new NationalId();
-            $nationalId->setIdType($nationalIdInputType->getType());
-            $nationalId->setIdNumber($nationalIdInputType->getNumber());
+            $nationalId = NationalId::fromNationalIdInputType($nationalIdInputType);
             $nationalId->setPerson($proxy);
             $proxy->addNationalId($nationalId);
 

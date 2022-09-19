@@ -109,11 +109,13 @@ class HouseholdServiceTest extends KernelTestCase
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType(NationalIdType::NATIONAL_ID);
         $nationalId->setNumber('111-222-333');
+        $nationalId->setPriority(1);
         $createBeneficiary->addNationalIdCard($nationalId);
 
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType(NationalIdType::FAMILY);
         $nationalId->setNumber('7897 4657 1234 7896');
+        $nationalId->setPriority(2);
         $createBeneficiary->addNationalIdCard($nationalId);
 
         $violations = $this->validator->validate($createData);

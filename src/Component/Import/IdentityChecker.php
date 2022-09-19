@@ -148,10 +148,11 @@ class IdentityChecker
     {
         $index = 0;
         foreach ($this->importLineFactory->createAll($item) as $line) {
-            if (empty($line->idType) || empty($line->idNumber)) continue;
-            $idType = NationalIdType::valueFromAPI($line->idType);
-            $hashSet->add($item, $index, (string) $idType, (string) $line->idNumber);
-            $index++;
+            foreach ($line->getFilledIds() as $id) {
+                $idType = NationalIdType::valueFromAPI($id['type']);
+                $hashSet->add($item, $index, (string) $idType, (string) $id['number']);
+                $index++;
+            }
         }
     }
 
@@ -166,31 +167,9 @@ class IdentityChecker
         $bnfDuplicities = [];
         foreach ($this->importLineFactory->createAll($item) as $line) {
             $index++;
-            $IDType = $line->idType;
-            $IDNumber = $line->idNumber;
-            if (empty($IDType) || empty($IDNumber)) {
-                $this->logImportDebug($item->getImport(),
-                    "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
-                continue;
-            }
-
-            $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
-                (string) $IDType,
-                (string) $IDNumber,
-                $item->getImport()->getCountryIso3()
-            );
-
-            if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $IDType $IDNumber");
-            } else {
-                $this->logImportDebug($item->getImport(), "Found no duplicities");
-            }
-
-            foreach ($bnfDuplicities as $bnf) {
-                $item->addDuplicity($index, $bnf, [['ID Type'=>$IDType, 'ID Number'=>$IDNumber]]);
-
-                $this->logImportInfo($item->getImport(),
-                    "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+            $ids = $line->getIds();
+            foreach ($ids as $idItem) {
+                $this->validateItemIdDuplicity($item, $index, $idItem['type'], $idItem['number']);
             }
         }
 
@@ -198,6 +177,33 @@ class IdentityChecker
         $this->entityManager->persist($item);
 
         return $bnfDuplicities;
+    }
+
+    private function validateItemIdDuplicity(ImportQueue $item, $index, $idType, $idNumber) {
+        if (empty($idType) || empty($idNumber)) {
+            $this->logImportDebug($item->getImport(),
+                "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
+            return;
+        }
+
+        $bnfDuplicities = $this->entityManager->getRepository(Beneficiary::class)->findIdentity(
+            (string) $idType,
+            (string) $idNumber,
+            $item->getImport()->getCountryIso3()
+        );
+
+        if (count($bnfDuplicities) > 0) {
+            $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $idType $idNumber");
+        } else {
+            $this->logImportDebug($item->getImport(), "Found no duplicities");
+        }
+
+        foreach ($bnfDuplicities as $bnf) {
+            $item->addDuplicity($index, $bnf, [['ID Type'=>$idType, 'ID Number'=>$idNumber]]);
+
+            $this->logImportInfo($item->getImport(),
+                "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+        }
     }
 
     /**

@@ -15,7 +15,7 @@ class BeneficiaryDecoratorBuilder
 
     public function buildBeneficiaryInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
-        $beneficiary = new BeneficiaryInputType();
+        $beneficiary = $this->buildBeneficiaryIdentityInputType($beneficiaryLine);
         $beneficiary->setDateOfBirth(ImportDateConverter::toIso($beneficiaryLine->getDateOfBirth()));
         $beneficiary->setLocalFamilyName($beneficiaryLine->localFamilyName);
         $beneficiary->setLocalGivenName($beneficiaryLine->localGivenName);
@@ -34,9 +34,7 @@ class BeneficiaryDecoratorBuilder
             $beneficiary->setVulnerabilityCriteria($importedVulnerabilities);
         }
 
-        if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
-        }
+
 
         if (!is_null($beneficiaryLine->numberPhone1)) { //TODO check, that phone is filled completely in import
             $phone1 = new PhoneInputType();
@@ -67,8 +65,8 @@ class BeneficiaryDecoratorBuilder
     public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
-        if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
+        foreach ($beneficiaryLine->getFilledIds() as $index => $id) {
+            $beneficiary->addNationalIdCard($this->buildIdentityType((string) $id['type'], (string) $id['number'], $index + 1));
         }
 
         return $beneficiary;
@@ -80,11 +78,12 @@ class BeneficiaryDecoratorBuilder
      *
      * @return NationalIdCardInputType
      */
-    private function buildIdentityType(string $idType, string $idNumber): NationalIdCardInputType
+    private function buildIdentityType(string $idType, string $idNumber, int $priority): NationalIdCardInputType
     {
         $nationalId = new NationalIdCardInputType();
         $nationalId->setType($idType);
         $nationalId->setNumber($idNumber);
+        $nationalId->setPriority($priority);
 
         return $nationalId;
     }

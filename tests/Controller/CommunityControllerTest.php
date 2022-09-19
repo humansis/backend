@@ -60,6 +60,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             'nationalIdCard' => [
                 'number' => '022-33-1547',
                 'type' => 'Passport',
+                'priority' => 1,
             ],
             'phone' => [
                 'prefix' => '420',
@@ -164,6 +165,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             'nationalIdCard' => [
                 'number' => '022-33-1547',
                 'type' => 'Passport',
+                'priority' => 1,
             ],
             'phone' => [
                 'prefix' => '420',

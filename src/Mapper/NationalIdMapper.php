@@ -47,4 +47,9 @@ class NationalIdMapper implements MapperInterface
     {
         return $this->object->getIdType();
     }
+
+    public function getPriority(): int
+    {
+        return $this->object->getPriority();
+    }
 }

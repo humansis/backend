@@ -520,14 +520,11 @@ class AssistanceSpreadsheetExport
 
     private static function getNationalId(Person $person): ?string
     {
-        $ids = $person->getNationalIds();
-        if (count($ids) > 0) {
-            $id = $ids[0];
-
-            return $id->getIdNumber().PHP_EOL."({$id->getIdType()})";
+        $ids = [];
+        foreach ($person->getNationalIds() as $nationalId) {
+            $ids[] = $nationalId->getIdNumber();
         }
-
-        return null;
+        return join(PHP_EOL, $ids);
     }
 
     private static function getPhone(Person $person): ?string

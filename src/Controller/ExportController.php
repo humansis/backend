@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Utils\HouseholdExportCSVService;
 
 /**
  * Class ExportController
@@ -44,10 +45,17 @@ class ExportController extends Controller
      */
     private $assistanceService;
 
-    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService)
+    /**
+     * @var HouseholdExportCSVService
+     */
+    private $householdExportCSVService;
+
+
+    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService, HouseholdExportCSVService $householdExportCSVService)
     {
         $this->assistanceRepository = $assistanceRepository;
         $this->assistanceService = $assistanceService;
+        $this->householdExportCSVService = $householdExportCSVService;
     }
 
     /**
@@ -110,7 +118,7 @@ class ExportController extends Controller
                 $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('transactionDistribution') ||
                       $request->query->get('smartcardDistribution') ||
                       $request->query->get('voucherDistribution') ||

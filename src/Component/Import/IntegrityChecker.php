@@ -149,8 +149,8 @@ class IntegrityChecker
         foreach ($this->importLineFactory->createAll($item) as $hhm) {
             $index++;
             if ($item->hasViolations($index)) {
-                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::ID_NUMBER) && !$item->hasColumnViolation($index,
-                        HouseholdExportCSVService::ID_TYPE)) {
+                if (!$item->hasColumnViolation($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER) && !$item->hasColumnViolation($index,
+                        HouseholdExportCSVService::PRIMARY_ID_TYPE)) {
                     $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryIdentityInputType($hhm);
                     $this->checkFileDuplicity($item, $index, $beneficiary);
                 }
@@ -252,14 +252,13 @@ class IntegrityChecker
     private function checkFileDuplicity(ImportQueue $importQueue, int $index, BeneficiaryInputType $beneficiaryInputType): void
     {
         $cards = $beneficiaryInputType->getNationalIdCards();
-        if (count($cards) > 0) {
-            $idCard = $cards[0];
+        foreach ($cards as $idCard){
             $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
             if ($nationalIdCount > 1) {
-                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_TYPE,
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_TYPE,
                     'This line has ID duplicity!',
                     sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
-                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::ID_NUMBER,
+                $importQueue->addViolation(Integrity\QueueViolation::create($index, HouseholdExportCSVService::PRIMARY_ID_NUMBER,
                     'This line has ID duplicity!',
                     sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())));
             }

@@ -12,6 +12,7 @@ use InputType\HouseholdUpdateInputType;
 use Repository\HouseholdRepository;
 use Request\Pagination;
 use Entity\Project;
+use Utils\BeneficiaryService;
 use Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,14 +31,18 @@ class HouseholdController extends AbstractController
     /** @var HouseholdRepository */
     private $householdRepository;
 
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
     /**
      * @param HouseholdService    $householdService
      * @param HouseholdRepository $householdRepository
      */
-    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository)
+    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository, BeneficiaryService $beneficiaryService)
     {
         $this->householdService = $householdService;
         $this->householdRepository = $householdRepository;
+        $this->beneficiaryService = $beneficiaryService;
     }
 
     /**
@@ -60,7 +65,7 @@ class HouseholdController extends AbstractController
         }
 
         try {
-            $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+            $filename = $this->beneficiaryService->exportToCsv(
                 $request->query->get('type'),
                 $request->headers->get('country'),
                 $filter, $pagination, $order

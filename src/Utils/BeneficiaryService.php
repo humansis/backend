@@ -126,10 +126,7 @@ class BeneficiaryService
 
     public function createNationalId(NationalIdCardInputType $inputType): NationalId
     {
-        $nationalId = new NationalId();
-
-        $nationalId->setIdType($inputType->getType());
-        $nationalId->setIdNumber($inputType->getNumber());
+        $nationalId = NationalId::fromNationalIdInputType($inputType);
 
         $this->em->persist($nationalId);
 
