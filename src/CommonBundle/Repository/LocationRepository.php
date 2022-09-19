@@ -74,7 +74,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     {
         $parentLevel = count($adms) - 2;
         $currentLevelLocation = $location;
-        while (($parent = $currentLevelLocation->getParentLocation()) && $parentLevel > 0) {
+        while (($parent = $currentLevelLocation->getParentLocation()) && $parentLevel >= 0) {
             if ($parent->getEnumNormalizedName() !== $adms[$parentLevel]) {
                 return false;
             }
