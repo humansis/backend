@@ -335,8 +335,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      */
     public function addVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion)
     {
-        $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
-
+        if (!$this->vulnerabilityCriteria->contains($vulnerabilityCriterion)) {
+            $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
+        }
         return $this;
     }
 
