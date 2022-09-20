@@ -646,7 +646,10 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $householdLocations = $this->getHousehold()->getHouseholdLocations();
+
         $currentHouseholdLocation = null;
+
+        /** @var HouseholdLocation $householdLocation */
         foreach ($householdLocations as $householdLocation) {
             if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
                 $currentHouseholdLocation = $householdLocation;

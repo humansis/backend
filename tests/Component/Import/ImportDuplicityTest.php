@@ -1,25 +1,12 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\Component\Import;
 
-use Entity\NationalId;
-use Repository\BeneficiaryRepository;
-use Component\Import\ImportFileValidator;
-use Component\Import\Integrity\DuplicityService;
 use Entity\ImportHouseholdDuplicity;
 use Entity\ImportQueue;
-use Enum\HouseholdAssets;
-use Enum\HouseholdShelterStatus;
-use Enum\HouseholdSupportReceivedType;
 use Enum\ImportQueueState;
-use Enum\NationalIdType;
-use Enum\PersonGender;
 use InputType\Import\Duplicity\ResolveAllDuplicitiesInputType;
 use InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
-use Enum\Livelihood;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Entity\Beneficiary;
@@ -32,8 +19,6 @@ use Entity\ImportFile;
 use Enum\ImportState;
 use Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\Component\Import\Helper\ChecksTrait;
 use Tests\Component\Import\Helper\CliTrait;
 use Tests\Component\Import\Helper\DefaultDataTrait;
@@ -44,7 +29,7 @@ class ImportDuplicityTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -69,12 +54,11 @@ class ImportDuplicityTest extends KernelTestCase
 
     /** @var ImportFile */
     private $importFile;
-
     /** @var ProjectService */
     private $projectService;
 
     /**
-     * @var object|KernelBrowser|null
+     * @var object|\Symfony\Bundle\FrameworkBundle\KernelBrowser|null
      */
     private $client;
 
@@ -198,11 +182,11 @@ class ImportDuplicityTest extends KernelTestCase
 
     private function checkDuplicityEndpoint(Import $import)
     {
-        $this->request('GET', '/api/basic/web-app/v1/imports/' . $import->getId() . '/duplicities');
+        $this->request('GET', '/api/basic/web-app/v1/imports/'.$import->getId().'/duplicities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: '.$this->client->getResponse()->getContent()
         );
     }
 
@@ -211,8 +195,9 @@ class ImportDuplicityTest extends KernelTestCase
         $headers = array_merge([
             'HTTP_COUNTRY' => 'SYR',
             'PHP_AUTH_USER' => 'admin@example.org',
-            'PHP_AUTH_PW' => 'pin1234',
+            'PHP_AUTH_PW'   => 'pin1234'
         ], (array) $headers);
         $this->client->request($method, $uri, $body, $files, $headers);
     }
+
 }
