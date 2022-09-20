@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
-use Pagination\Paginator;
-use Entity\ModalityType;
+use Enum\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Codelist\CodeItem;
 use Controller\AbstractController;
@@ -26,10 +25,9 @@ class ModalityCodelistController extends AbstractController
     {
         $data = [];
 
-        /** @var ModalityType[] $types */
-        $types = $this->getDoctrine()->getRepository(ModalityType::class)->findBy(['internal' => false]);
+        $types = ModalityType::values();
         foreach ($types as $type) {
-            $data[] = new CodeItem($type->getName(), $type->getName());
+            $data[] = new CodeItem($type, $type);
         }
 
         return $this->json($data);

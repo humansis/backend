@@ -10,7 +10,9 @@ use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Entity\Assistance\ReliefPackage;
+use Entity\Commodity;
 use Entity\Smartcard\PreliminaryInvoice;
+use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardPurchaseInputType;
@@ -352,8 +354,8 @@ class SmartcardService
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
     {
         foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {
-            /** @var \Entity\Commodity $commodity */
-            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+            /** @var Commodity $commodity */
+            if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
                 return $commodity->getUnit();
             }
         }

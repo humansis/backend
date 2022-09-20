@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Component\Smartcard;
 
 use Entity\Assistance;
+use Enum\ModalityType;
 
 /**
  * Create empty (virtual) deposit.
@@ -17,7 +18,7 @@ class EmptySmartcardDeposit
     public function __construct(Assistance $assistance)
     {
         foreach ($assistance->getCommodities() as $commodity) {
-            if ('Smartcard' === $commodity->getModalityType()->getName()) {
+            if (ModalityType::SMART_CARD === $commodity->getModalityType()) {
                 $this->value = $commodity->getValue();
                 break;
             }

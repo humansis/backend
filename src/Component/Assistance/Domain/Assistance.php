@@ -11,7 +11,6 @@ use Entity\User;
 use Enum\AssistanceTargetType;
 use Entity\DivisionGroup;
 use Repository\AssistanceBeneficiaryRepository;
-use Repository\ModalityTypeRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
@@ -40,8 +39,6 @@ class Assistance
     private $assistanceRoot;
     /** @var CacheInterface */
     private $cache;
-    /** @var ModalityTypeRepository */
-    private $modalityTypeRepository;
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
     /** @var AssistanceBeneficiaryRepository */
@@ -54,7 +51,6 @@ class Assistance
     /**
      * @param Entity\Assistance               $assistanceEntity
      * @param CacheInterface                  $cache
-     * @param ModalityTypeRepository          $modalityTypeRepository
      * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
      * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
@@ -63,7 +59,6 @@ class Assistance
     public function __construct(
         Entity\Assistance               $assistanceEntity,
         CacheInterface                  $cache,
-        ModalityTypeRepository          $modalityTypeRepository,
         AssistanceStatisticsRepository  $assistanceStatisticRepository,
         Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
@@ -71,7 +66,6 @@ class Assistance
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
-        $this->modalityTypeRepository = $modalityTypeRepository;
         $this->assistanceStatisticRepository = $assistanceStatisticRepository;
         $this->workflowRegistry = $workflowRegistry;
         $this->targetRepository = $targetRepository;
@@ -154,12 +148,9 @@ class Assistance
         if ($this->assistanceRoot->isValidated()) {
             throw new \LogicException('Validated assistance shouldn\'t be edited');
         }
-        $modalityType = $this->modalityTypeRepository->findOneBy(['name' => $commodityInputType->getModalityType()]);
-        if (!$modalityType) {
-            throw new EntityNotFoundException(sprintf('ModalityType %s does not exists', $commodityInputType->getModalityType()));
-        }
+
         $commodity = new Entity\Commodity();
-        $commodity->setModalityType($modalityType);
+        $commodity->setModalityType($commodityInputType->getModalityType());
         $commodity->setDescription($commodityInputType->getDescription());
         $commodity->setValue($commodityInputType->getValue());
         $commodity->setUnit($commodityInputType->getUnit());
@@ -198,14 +189,14 @@ class Assistance
         $modalityUnits = [];
         $commodityBuilder = new CommodityAssignBuilder();
         foreach ($this->assistanceRoot->getCommodities() as $commodity) {
-            $modality = $commodity->getModalityType()->getName();
+            $modality = $commodity->getModalityType();
             $unit = $commodity->getUnit();
 
             if (!isset($modalityUnits[$modality])) {
                 $modalityUnits[$modality] = [];
             }
-            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()->getName()])) {
-                $modalityUnits[$commodity->getModalityType()->getName()][] = $commodity->getUnit();
+            if (!in_array($unit, $modalityUnits[$commodity->getModalityType()])) {
+                $modalityUnits[$commodity->getModalityType()][] = $commodity->getUnit();
             }
             if ($commodity->getDivision() !== null) {
                 if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {

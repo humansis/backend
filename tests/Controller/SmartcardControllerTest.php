@@ -11,6 +11,7 @@ use Entity\Assistance\ReliefPackage;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use PhpParser\Node\Expr\AssignOp\Mod;
 use Tests\BMSServiceTestCase;
 use Entity\User;
 use Entity\Smartcard;
@@ -398,8 +399,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         }
         $this->em->flush();
 
-        /** @var \Entity\ModalityType $modalityType */
-        $modalityType = $this->em->getRepository(\Entity\ModalityType::class)->findOneBy(['name' => 'Smartcard'], ['id' => 'asc']);
+        $modalityType = ModalityType::SMART_CARD;
         /** @var \Entity\Commodity $commodity */
         $commodity = $this->em->getRepository(\Entity\Commodity::class)->findBy(['modalityType' => $modalityType], ['id' => 'asc'])[0];
         $assistance = $commodity->getAssistance();
@@ -599,7 +599,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     {
         foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
-                if ('Smartcard' === $commodity->getModalityType()->getName()) {
+                if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
                     return $assistance;
                 }
             }
@@ -613,7 +613,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         /** @var Assistance $assistance */
         foreach ($this->em->getRepository(Assistance::class)->findAll() as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
-                if (ModalityType::SMART_CARD !== $commodity->getModalityType()->getName()) {
+                if (ModalityType::SMART_CARD !== $commodity->getModalityType()) {
                     continue 2;
                 }
             }

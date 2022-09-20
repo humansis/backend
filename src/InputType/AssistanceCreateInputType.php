@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use Enum\ModalityType;
 use Enum\SelectionCriteriaField;
 use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
@@ -246,7 +247,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     {
         /** @var CommodityInputType $commodity */
         foreach ($this->commodities as $commodity) {
-            if ($commodity->getModalityType() === 'Smartcard') { //TODO modality type enum
+            if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
                 return $this->remoteDistributionAllowed !== null;
             }
         }

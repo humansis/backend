@@ -6,13 +6,15 @@ namespace InputType\Assistance;
 
 use Request\InputTypeNullableDenormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Enum;
 
 class CommodityInputType implements InputTypeNullableDenormalizer
 {
     /**
-     * @Assert\Type("string") // todo change to enum
+     * @Assert\Type("string")
      * @Assert\NotBlank
      * @Assert\NotNull
+     * @Enum(enumClass="Enum\ModalityType")
      */
     private $modalityType;
 

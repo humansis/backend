@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Enum;
 
+use function in_array;
 
 final class ModalityType
 {
@@ -27,6 +28,9 @@ final class ModalityType
     public const LOAN = 'Loan';
     public const BUSINESS_GRANT = 'Business Grant';
 
+    /**
+     * @return string[]
+     */
     public static function values(): array
     {
         return [
@@ -49,5 +53,20 @@ final class ModalityType
             self::LOAN,
             self::BUSINESS_GRANT,
         ];
+    }
+
+    public static function getModality(string $modalityType): ?string
+    {
+        if (!in_array($modalityType, self::values(), true)) {
+            return null;
+        }
+
+        foreach (Modality::values() as $modalityValue) {
+            if (in_array($modalityType, Modality::getModalityTypes($modalityValue))) {
+                return $modalityValue;
+            }
+        }
+
+        return null;
     }
 }

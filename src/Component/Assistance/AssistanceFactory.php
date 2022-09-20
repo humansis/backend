@@ -12,7 +12,6 @@ use Repository\LocationRepository;
 use Entity;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
-use Repository\ModalityTypeRepository;
 use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -40,8 +39,6 @@ class AssistanceFactory
     /** @var SerializerInterface */
     private $serializer;
 
-    /** @var ModalityTypeRepository */
-    private $modalityTypeRepository;
 
     /** @var LocationRepository */
     private $locationRepository;
@@ -77,7 +74,6 @@ class AssistanceFactory
      * @param CacheInterface                  $cache
      * @param CriteriaAssistanceService       $criteriaAssistanceService
      * @param SerializerInterface             $serializer
-     * @param ModalityTypeRepository          $modalityTypeRepository
      * @param LocationRepository              $locationRepository
      * @param ProjectRepository               $projectRepository
      * @param CommunityRepository             $communityRepository
@@ -93,7 +89,6 @@ class AssistanceFactory
         CacheInterface                  $cache,
         CriteriaAssistanceService       $criteriaAssistanceService,
         SerializerInterface             $serializer,
-        ModalityTypeRepository          $modalityTypeRepository,
         LocationRepository              $locationRepository,
         ProjectRepository               $projectRepository,
         CommunityRepository             $communityRepository,
@@ -108,7 +103,6 @@ class AssistanceFactory
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
         $this->serializer = $serializer;
-        $this->modalityTypeRepository = $modalityTypeRepository;
         $this->locationRepository = $locationRepository;
         $this->projectRepository = $projectRepository;
         $this->communityRepository = $communityRepository;
@@ -236,7 +230,6 @@ class AssistanceFactory
         return new Domain\Assistance(
             $assistance,
             $this->cache,
-            $this->modalityTypeRepository,
             $this->assistanceStatisticRepository,
             $this->workflowRegistry,
             $this->targetRepository,

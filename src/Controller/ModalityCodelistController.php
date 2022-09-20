@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Enum\Modality;
+use Enum\ModalityType;
 use Pagination\Paginator;
-use Entity\Modality;
-use Entity\ModalityType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Enum\Domain;
 use Services\CodeListService;
@@ -33,11 +33,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function modalities(): JsonResponse
     {
-        $modalities = $this->getDoctrine()
-            ->getRepository(Modality::class)
-            ->getNames();
-
-        $data = $this->codeListService->mapEnum($modalities, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(Modality::values(), Domain::ENUMS);
         
         return $this->json(new Paginator($data));
     }
@@ -49,11 +45,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function allTypes(): JsonResponse
     {
-        $types = $this->getDoctrine()
-            ->getRepository(ModalityType::class)
-            ->getPublicNames();
-
-        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(ModalityType::values(), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }
@@ -67,11 +59,7 @@ class ModalityCodelistController extends AbstractController
      */
     public function types(string $code): JsonResponse
     {
-        $types = $this->getDoctrine()
-            ->getRepository(ModalityType::class)
-            ->getPublicNames($code);
-
-        $data = $this->codeListService->mapEnum($types, Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(Modality::getModalityTypes($code), Domain::ENUMS);
 
         return $this->json(new Paginator($data));
     }

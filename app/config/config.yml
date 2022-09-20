@@ -173,6 +173,7 @@ doctrine:
             enum_synchronization_batch_validation_type: DBAL\SynchronizationBatchValidationTypeEnum
             enum_relief_package_state: DBAL\ReliefPackageStateEnum
             enum_modality_type: DBAL\ModalityTypeEnum
+            enum_modality: DBAL\ModalityEnum
             enum_synchronization_batch_state: DBAL\SynchronizationBatchEnum
             enum_household_shelter_status: DBAL\HouseholdShelterStatusEnum
             enum_household_support_received_type: DBAL\HouseholdSupportReceivedTypeEnum

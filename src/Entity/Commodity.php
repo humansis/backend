@@ -23,9 +23,9 @@ class Commodity
     use EnumTrait;
 
     /**
-     * @var ModalityType
+     * @var string|null
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
-     * @ORM\ManyToOne(targetEntity="Entity\ModalityType")
+     * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=true)
      */
     private $modalityType;
 
@@ -145,11 +145,11 @@ class Commodity
     /**
      * Set modalityType.
      *
-     * @param \Entity\ModalityType|null $modalityType
+     * @param string|null $modalityType
      *
      * @return Commodity
      */
-    public function setModalityType(\Entity\ModalityType $modalityType = null)
+    public function setModalityType(?string $modalityType = null)
     {
         $this->modalityType = $modalityType;
 
@@ -159,9 +159,9 @@ class Commodity
     /**
      * Get modalityType.
      *
-     * @return \Entity\ModalityType|null
+     * @return string|null
      */
-    public function getModalityType()
+    public function getModalityType(): ?string
     {
         return $this->modalityType;
     }

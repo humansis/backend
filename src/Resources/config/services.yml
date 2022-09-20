@@ -806,12 +806,6 @@ services:
 
     Utils\CriteriaAssistanceService:
 
-    distribution.modality_service:
-        class: Utils\ModalityService
-        public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-
     distribution.commodity_service:
         class: Utils\CommodityService
         public: true
@@ -985,10 +979,6 @@ services:
         arguments:
             - "@kernel"
             - "@beneficiary.household_service"
-        tags:
-            - { name: doctrine.fixture.orm }
-
-    DataFixtures\ModalityFixtures:
         tags:
             - { name: doctrine.fixture.orm }
 
