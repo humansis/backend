@@ -6,6 +6,8 @@ use DataFixtures\CountrySpecificFixtures;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
 use DataFixtures\VulnerabilityCriterionFixtures;
+use DBAL\HouseholdAssetsEnum;
+use DBAL\HouseholdSupportReceivedTypeEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -373,6 +375,8 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $inputType = new HouseholdCreateInputType();
         $inputType->setLivelihood($householdData['livelihood']);
         $inputType->setShelterStatus(ValueGenerator::fromEnum(HouseholdShelterStatus::class));
+        $inputType->setAssets([ValueGenerator::fromArray(HouseholdAssetsEnum::all())]);
+        $inputType->setSupportReceivedTypes([ValueGenerator::fromArray(array_keys(HouseholdSupportReceivedTypeEnum::databaseMap()))]);
         $inputType->setProjectIds($this->projectRepository->findAll());
         $inputType->setNotes(
             ValueGenerator::fromArray([
