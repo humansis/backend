@@ -2,34 +2,34 @@
 
 namespace DataFixtures\Beneficiaries;
 
-use Enum\EnumValueNoFoundException;
-use InputType\Beneficiary\NationalIdCardInputType;
-use NewApiBundle\Utils\ValueGenerator\ValueGenerator;
-use Utils\HouseholdService;
-use DataFixtures\ProjectFixtures;
-use DataFixtures\VulnerabilityCriterionFixtures;
-use Enum\ResidencyStatus;
 use DataFixtures\CountrySpecificFixtures;
 use DataFixtures\LocationFixtures;
-use Entity\Location;
-use Repository\LocationRepository;
+use DataFixtures\ProjectFixtures;
+use DataFixtures\VulnerabilityCriterionFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Entity\Location;
+use Enum\EnumValueNoFoundException;
 use Enum\HouseholdShelterStatus;
+use Enum\Livelihood;
 use Enum\NationalIdType;
 use Enum\PhoneTypes;
+use Enum\ResidencyStatus;
 use InputType\Beneficiary\Address\CampAddressInputType;
 use InputType\Beneficiary\Address\CampInputType;
 use InputType\Beneficiary\Address\ResidenceAddressInputType;
 use InputType\Beneficiary\Address\TemporarySettlementAddressInputType;
 use InputType\Beneficiary\BeneficiaryInputType;
 use InputType\Beneficiary\CountrySpecificsAnswerInputType;
+use InputType\Beneficiary\NationalIdCardInputType;
 use InputType\Beneficiary\PhoneInputType;
 use InputType\HouseholdCreateInputType;
-use Enum\Livelihood;
+use Repository\LocationRepository;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
+use Utils\HouseholdService;
+use Utils\ValueGenerator\ValueGenerator;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -75,6 +75,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         if ($this->kernel->getEnvironment() === "prod") {
             return;
         }
+        srand(50);
         foreach ($this->getHouseholdData() as $householdData) {
             $this->householdService->create($this->generateHouseholdInputType($householdData, 'KHM'), 'KHM');
             $manager->flush();

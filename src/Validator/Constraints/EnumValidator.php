@@ -9,6 +9,7 @@ use ReflectionException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
+use Utils\Objects\Reflection;
 
 class EnumValidator extends ConstraintValidator
 {
@@ -30,15 +31,7 @@ class EnumValidator extends ConstraintValidator
             throw new InvalidArgumentException('Provided value for parameter "includeAPIAlternatives" has to be type bool. Got ' . gettype($constraint->includeAPIAlternatives) . ' instead.');
         }
 
-        $reflection = new ReflectionClass($constraint->enumClass);
-
-        $hasEnumTrait = false;
-        foreach ($reflection->getTraitNames() as $traitName) {
-            if ($traitName === EnumTrait::class) {
-                $hasEnumTrait = true;
-                break;
-            }
-        }
+        $hasEnumTrait = Reflection::hasTrait($constraint->enumClass, EnumTrait::class);
 
         if (!$hasEnumTrait) {
             throw new InvalidArgumentException("Provided enum class '{$constraint->enumClass}' has to use '" . EnumTrait::class . "' trait.");
