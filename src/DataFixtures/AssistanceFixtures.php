@@ -39,8 +39,6 @@ use Repository\AssistanceRepository;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
 use Repository\LocationRepository;
-use Repository\ModalityRepository;
-use Repository\ModalityTypeRepository;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
 use Utils\ValueGenerator\ValueGenerator;
@@ -63,11 +61,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private $locationRepository;
 
     /**
-     * @var ModalityRepository
-     */
-    private $modalityRepository;
-
-    /**
      * @var InstitutionRepository
      */
     private $institutionRepository;
@@ -81,11 +74,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
      * @var CommunityRepository
      */
     private $communityRepository;
-
-    /**
-     * @var ModalityTypeRepository
-     */
-    private $modalityTypeRepository;
 
     /**
      * @var ProjectRepository
@@ -102,10 +90,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         Countries              $countries,
         AssistanceFactory      $assistanceFactory,
         LocationRepository     $locationRepository,
-        ModalityRepository     $modalityRepository,
         InstitutionRepository  $institutionRepository,
         CommunityRepository    $communityRepository,
-        ModalityTypeRepository $modalityTypeRepository,
         ProjectRepository      $projectRepository,
         AssistanceRepository   $assistanceRepository
     ) {
@@ -113,10 +99,8 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $this->countries = $countries;
         $this->assistanceFactory = $assistanceFactory;
         $this->locationRepository = $locationRepository;
-        $this->modalityRepository = $modalityRepository;
         $this->institutionRepository = $institutionRepository;
         $this->communityRepository = $communityRepository;
-        $this->modalityTypeRepository = $modalityTypeRepository;
         $this->projectRepository = $projectRepository;
         $this->assistanceRepository = $assistanceRepository;
     }
@@ -209,7 +193,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
             $assistanceInput->setTarget(AssistanceTargetType::INDIVIDUAL);
-            $commodity = $this->buildCommoditiesType($country, $modality);
+            $commodity = $this->buildCommoditiesType($country, Modality::getModalityTypes($modality)[0]);
             $commodity->setDivision(null);
             $assistanceInput->addCommodity($commodity);
             $assistanceInput->addSelectionCriterion($this->buildSelectionCriteriaInputType());
@@ -232,14 +216,11 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
      */
     private function loadCommonHouseholdAssistance(Country $country, Project $project)
     {
-        /**
-         * @var Modality $modality
-         */
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
             $assistanceInput->setTarget(AssistanceTargetType::HOUSEHOLD);
 
-            $commodity = $this->buildCommoditiesType($country, $modality);
+            $commodity = $this->buildCommoditiesType($country, Modality::getModalityTypes($modality)[0]);
             if ($modality === ModalityType::CASH) {
                 $commodity->setDivision($this->buildDivisionInputType());
             }
@@ -270,14 +251,11 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return $institution->getId();
         }, $unarchivedInstitutions);
 
-        /**
-         * @var Modality $modality
-         */
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
             $assistanceInput->setTarget(AssistanceTargetType::INSTITUTION);
             $assistanceInput->setInstitutions($institutions);
-            $commodity = $this->buildCommoditiesType($country, $modality);
+            $commodity = $this->buildCommoditiesType($country, Modality::getModalityTypes($modality)[0]);
             $commodity->setDivision(null);
             $assistanceInput->addCommodity($commodity);
             $assistance = $this->assistanceFactory->create($assistanceInput);
@@ -304,14 +282,11 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return $community->getId();
         }, $unarchivedCommunities);
 
-        /**
-         * @var Modality $modality
-         */
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
             $assistanceInput->setTarget(AssistanceTargetType::COMMUNITY);
             $assistanceInput->setCommunities($communities);
-            $commodity = $this->buildCommoditiesType($country, $modality);
+            $commodity = $this->buildCommoditiesType($country, Modality::getModalityTypes($modality)[0]);
             $commodity->setDivision(null);
             $assistanceInput->addCommodity($commodity);
             $assistance = $this->assistanceFactory->create($assistanceInput);
@@ -388,16 +363,16 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Country               $country
-     * @param Modality|ModalityType $modality
+     * @param Country $country
+     * @param string $modalityType
      *
      * @return CommodityInputType
      */
-    private function buildCommoditiesType(Country $country, $modality): CommodityInputType
+    private function buildCommoditiesType(Country $country, string $modalityType): CommodityInputType
     {
         $commodityType = new CommodityInputType();
         $commodityType->setDescription('autogenerated by fixtures');
-        $commodityType->setModalityType($modality);
+        $commodityType->setModalityType($modalityType);
         $commodityType->setUnit($country->getCurrency());
         $commodityType->setValue(42);
 
