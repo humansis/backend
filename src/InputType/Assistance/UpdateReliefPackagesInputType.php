@@ -1,16 +1,16 @@
 <?php
 
-namespace NewApiBundle\InputType\Assistance;
+namespace InputType\Assistance;
 
-use NewApiBundle\Request\InputTypeInterface;
-use NewApiBundle\Validator\Constraints\Enum;
+use Request\InputTypeInterface;
+use Validator\Constraints\Enum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateReliefPackagesInputType implements InputTypeInterface
 {
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\ReliefPackageState")
+     * @Enum(enumClass="Enum\ReliefPackageState")
      * @var string
      */
     private $state;

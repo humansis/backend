@@ -4,11 +4,11 @@ namespace NewApiBundle\Controller\SupportApp;
 
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Controller\AbstractController;
-use NewApiBundle\Entity\Assistance\ReliefPackage;
-use NewApiBundle\Services\AssistanceDistributionService;
+use Controller\AbstractController;
+use Entity\Assistance\ReliefPackage;
+use Services\AssistanceDistributionService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use NewApiBundle\InputType\Assistance\UpdateReliefPackagesInputType;
+use InputType\Assistance\UpdateReliefPackagesInputType;
 
 
 class ReliefPackageController extends AbstractController
