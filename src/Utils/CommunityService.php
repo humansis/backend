@@ -6,14 +6,11 @@ use Entity\Address;
 use Entity\Community;
 use Entity\NationalId;
 use Entity\Phone;
-use InputType\Deprecated;
 use Entity\Location;
-use InputType as GeneralInputType;
+use Enum\EnumValueNoFoundException;
 use MapperDeprecated\LocationMapper;
-use Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use InvalidArgumentException;
 use InputType\CommunityCreateInputType;
 use InputType\CommunityUpdateInputType;
 use Entity\Project;
@@ -27,9 +24,6 @@ class CommunityService
     /** @var EntityManagerInterface */
     private $em;
 
-    /** @var LocationService */
-    private $locationService;
-
     /** @var LocationMapper */
     private $locationMapper;
 
@@ -37,76 +31,14 @@ class CommunityService
      * CommunityService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param LocationService        $locationService
      * @param LocationMapper         $locationMapper
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        LocationService $locationService,
         LocationMapper $locationMapper
     ) {
         $this->em = $entityManager;
-        $this->locationService = $locationService;
         $this->locationMapper = $locationMapper;
-    }
-
-    /**
-     * @param GeneralInputType\Country   $country
-     * @param Deprecated\NewCommunityType $communityType
-     *
-     * @return Community
-     *
-     * @throws InvalidArgumentException
-     *@deprecated Since added method createCommunity TODO Remove after migrate new application
-     *
-     */
-    public function createDeprecated(GeneralInputType\Country $country, Deprecated\NewCommunityType $communityType): Community
-    {
-        $community = new Community();
-        $community->setLongitude($communityType->getLongitude() ?? '');
-        $community->setLatitude($communityType->getLatitude() ?? '');
-        $community->setContactName($communityType->getContactName() ?? '');
-        $community->setContactFamilyName($communityType->getContactFamilyName() ?? '');
-        if ($communityType->getPhoneNumber()) {
-            $community->setPhone(new Phone());
-            $community->getPhone()->setType($communityType->getPhoneType());
-            $community->getPhone()->setPrefix($communityType->getPhonePrefix() ?? '');
-            $community->getPhone()->setNumber($communityType->getPhoneNumber());
-        }
-
-        if (null !== $communityType->getNationalId() && !$communityType->getNationalId()->isEmpty()) {
-            $community->setNationalId(new NationalId());
-            $community->getNationalId()->setIdNumber($communityType->getNationalId()->getNumber());
-            $community->getNationalId()->setIdType($communityType->getNationalId()->getType());
-        }
-
-        if (null !== $communityType->getAddress()) {
-            $addressType = $communityType->getAddress();
-            $location = $this->locationService->getLocationByInputType($addressType->getLocation());
-
-            $community->setAddress(Address::create(
-                $addressType->getStreet(),
-                $addressType->getNumber(),
-                $addressType->getPostcode(),
-                $location
-            ));
-        }
-
-        if ($community->getAddress() && $community->getAddress()->getLocation()) {
-            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
-        } else {
-            $community->setName('global community');
-        }
-
-        foreach ($communityType->getProjects() as $projectId) {
-            $project = $this->em->getRepository(Project::class)->find((int) $projectId);
-            if (null === $project) {
-                throw new InvalidArgumentException("Project $projectId doesn't exist");
-            }
-            $community->addProject($project);
-        }
-
-        return $community;
     }
 
     public function remove(Community $community)
@@ -114,14 +46,14 @@ class CommunityService
         $community->setArchived(true);
         $this->em->persist($community);
         $this->em->flush();
-
-        return $community;
     }
 
     /**
      * @param CommunityCreateInputType $inputType
      *
      * @return Community
+     * @throws EntityNotFoundException
+     * @throws EnumValueNoFoundException
      */
     public function create(CommunityCreateInputType $inputType): Community
     {

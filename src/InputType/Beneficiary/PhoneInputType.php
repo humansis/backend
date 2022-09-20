@@ -39,6 +39,27 @@ class PhoneInputType implements InputTypeInterface
     private $proxy;
 
     /**
+     * @param string      $prefix
+     * @param string      $number
+     * @param string|null $type
+     * @param bool|null   $proxy
+     *
+     * @return PhoneInputType
+     */
+    public static function create(string $prefix, string $number, ?string $type, ?bool $proxy = null): PhoneInputType
+    {
+        $self = new self();
+        $self->setPrefix($prefix);
+        $self->setNumber($number);
+        $self->setType($type);
+        if (is_bool($proxy)) {
+            $self->setProxy($proxy);
+        }
+
+        return $self;
+    }
+
+    /**
      * @return string
      */
     public function getPrefix()

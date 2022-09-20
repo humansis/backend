@@ -25,6 +25,21 @@ class NationalIdCardInputType implements InputTypeInterface
     private $type;
 
     /**
+     * @param string $type
+     * @param string $number
+     *
+     * @return NationalIdCardInputType
+     */
+    public static function create(string $type, string $number): NationalIdCardInputType
+    {
+        $self = new self();
+        $self->setType($type);
+        $self->setNumber($number);
+
+        return $self;
+    }
+
+    /**
      * @return string
      */
     public function getNumber()

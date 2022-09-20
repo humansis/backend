@@ -37,3 +37,6 @@ phpcs.xml
 .vscode*
 
 /var/imports/*
+
+# PHP Unit local resutls
+.phpunit.result.cache

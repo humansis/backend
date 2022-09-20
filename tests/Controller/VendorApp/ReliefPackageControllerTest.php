@@ -41,6 +41,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
             ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive')
             ->andWhere('l.countryIso3 = :iso3')
+            ->andWhere('a.validatedBy IS NOT NULL')
             ->andWhere('rp.state != :state')
             ->setParameters([
                 'iso3' => $location,

@@ -3,12 +3,9 @@
 namespace Utils;
 
 use Entity\AbstractBeneficiary;
-use Entity\Beneficiary;
-use Entity\Community;
-use Entity\Institution;
 use Entity\User;
 use Exception\CsvParserException;
-use Entity\Location;
+use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
 use Pagination\Paginator;
 use DateTime;
@@ -16,10 +13,8 @@ use DateTimeInterface;
 use DTO\VulnerabilityScore;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
-use Entity\ModalityType;
 use Enum\AssistanceTargetType;
-use Enum\AssistanceType;
-use RA\RequestValidatorBundle\RequestValidator\ValidationException;
+use Repository\Assistance\ReliefPackageRepository;
 use Repository\AssistanceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -32,18 +27,12 @@ use Component\Assistance\SelectionCriteriaFactory;
 use Entity\Assistance\ReliefPackage;
 use Enum\CacheTarget;
 use Enum\PersonGender;
-use InputType\Assistance\SelectionCriterionInputType;
 use InputType\AssistanceCreateInputType;
-use Repository\ScoringBlueprintRepository;
+use Repository\BeneficiaryRepository;
+use Repository\ProjectRepository;
 use Request\Pagination;
-use Entity\Project;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\SerializerInterface as Serializer;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -60,23 +49,8 @@ class AssistanceService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var Serializer $serializer */
-    private $serializer;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
-    /** @var LocationService $locationService */
-    private $locationService;
-
-    /** @var CommodityService $commodityService */
-    private $commodityService;
-
     /** @var CriteriaAssistanceService $criteriaAssistanceService */
     private $criteriaAssistanceService;
-
-    /** @var ContainerInterface $container */
-    private $container;
 
     /** @var CacheInterface */
     private $cache;
@@ -90,9 +64,6 @@ class AssistanceService
     /** @var SelectionCriteriaFactory */
     private $selectionCriteriaFactory;
 
-    /** @var ScoringBlueprintRepository */
-    private $scoringBlueprintRepository;
-
     /** @var TranslatorInterface */
     private $translator;
 
@@ -102,48 +73,75 @@ class AssistanceService
     private $twig;
 
     /**
+     * @var ProjectRepository
+     */
+    private $projectRepository;
+
+    /**
+     * @var BeneficiaryRepository
+     */
+    private $beneficiaryRepository;
+
+    /**
+     * @var ReliefPackageRepository
+     */
+    private $reliefPackageRepository;
+
+    /**
+     * @var ExportService
+     */
+    private $exportService;
+
+    /**
+     * @var PdfService
+     */
+    private $pdfService;
+
+    /**
      * AssistanceService constructor.
      *
      * @param EntityManagerInterface    $entityManager
-     * @param Serializer                $serializer
-     * @param ValidatorInterface        $validator
-     * @param LocationService           $locationService
-     * @param CommodityService          $commodityService
      * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param ContainerInterface        $container
+     * @param Environment               $twig
      * @param FilesystemAdapter         $cache
      * @param AssistanceFactory         $assistanceFactory
      * @param AssistanceRepository      $assistanceRepository
      * @param SelectionCriteriaFactory  $selectionCriteriaFactory
+     * @param TranslatorInterface       $translator
+     * @param ProjectRepository         $projectRepository
+     * @param BeneficiaryRepository     $beneficiaryRepository
+     * @param ReliefPackageRepository   $reliefPackageRepository
+     * @param ExportService             $exportService
+     * @param PdfService                $pdfService
      */
     public function __construct(
         EntityManagerInterface    $entityManager,
-        Serializer                $serializer,
-        ValidatorInterface        $validator,
-        LocationService           $locationService,
-        CommodityService          $commodityService,
         CriteriaAssistanceService $criteriaAssistanceService,
-        ContainerInterface        $container,
         Environment               $twig,
         CacheInterface            $cache,
         AssistanceFactory         $assistanceFactory,
         AssistanceRepository      $assistanceRepository,
         SelectionCriteriaFactory  $selectionCriteriaFactory,
-        TranslatorInterface $translator
+        TranslatorInterface       $translator,
+        ProjectRepository         $projectRepository,
+        BeneficiaryRepository     $beneficiaryRepository,
+        ReliefPackageRepository   $reliefPackageRepository,
+        ExportService             $exportService,
+        PdfService                $pdfService
     ) {
         $this->em = $entityManager;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->locationService = $locationService;
-        $this->commodityService = $commodityService;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->container = $container;
         $this->cache = $cache;
         $this->assistanceFactory = $assistanceFactory;
         $this->assistanceRepository = $assistanceRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
         $this->twig = $twig;
         $this->translator = $translator;
+        $this->projectRepository = $projectRepository;
+        $this->beneficiaryRepository = $beneficiaryRepository;
+        $this->reliefPackageRepository = $reliefPackageRepository;
+        $this->exportService = $exportService;
+        $this->pdfService = $pdfService;
     }
 
     /**
@@ -201,9 +199,9 @@ class AssistanceService
     }
 
     // TODO: presunout do ABNF
-    public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination)
+    public function findByCriteria(AssistanceCreateInputType $inputType, Pagination $pagination): Paginator
     {
-        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
@@ -233,7 +231,7 @@ class AssistanceService
      */
     public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination)
     {
-        $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
+        $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
             throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
@@ -253,180 +251,7 @@ class AssistanceService
 
         return new Paginator($list, $count);
     }
-
-    /**
-     * @deprecated use AssistanceFactory::create instead
-     * Create a distribution
-     *
-     * @param $countryISO3
-     * @param array $distributionArray
-     * @return array
-     * @throws ValidationException
-     */
-    public function createFromArray($countryISO3, array $distributionArray)
-    {
-        $location = $distributionArray['location'];
-        unset($distributionArray['location']);
-
-        $selectionCriteriaGroup = $distributionArray['selection_criteria'] ?? null;
-        unset($distributionArray['selection_criteria']);
-
-        $sector = $distributionArray['sector'];
-        unset($distributionArray['sector']);
-
-        $subsector = $distributionArray['subsector'] ?? null;
-        unset($distributionArray['subsector']);
-
-        if (isset($distributionArray['assistance_type']) && AssistanceType::ACTIVITY === $distributionArray['assistance_type']) {
-            unset($distributionArray['commodities']);
-
-            // ignore user defined commodities and create some generic instead
-            $modalityType = $this->em->getRepository(ModalityType::class)->findOneBy(['name' => 'Activity item']);
-            $distributionArray['commodities'][] = ['value' => 1, 'unit' => 'activity', 'description' => null, 'modality_type' => ['id' => $modalityType->getId()]];
-        }
-
-        /** @var Assistance $distribution */
-        $distribution = $this->serializer->deserialize(json_encode($distributionArray), Assistance::class, 'json', [
-            PropertyNormalizer::DISABLE_TYPE_ENFORCEMENT => true
-        ]);
-        $distribution->setUpdatedOn(new DateTime());
-        $errors = $this->validator->validate($distribution);
-        if (count($errors) > 0) {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-            throw new Exception(json_encode($errorsArray), Response::HTTP_BAD_REQUEST);
-        }
-
-        $distribution->setTargetType($distributionArray['target_type']);
-
-        $location = $this->locationService->getLocation($countryISO3, $location);
-        $distribution->setLocation($location);
-        $distribution->setName(AssistanceFactory::generateName($distribution));
-
-        $project = $this->em->getRepository(Project::class)->findOneBy(['id' => $distributionArray['project']['id']]);
-        if ($project instanceof Project) {
-            $distribution->setProject($project);
-        }
-
-        $distribution->setSector($sector);
-        $distribution->setSubSector($subsector);
-
-        foreach ($distribution->getCommodities() as $item) {
-            $distribution->removeCommodity($item);
-        }
-        foreach ($distributionArray['commodities'] as $item) {
-            $distribution->addCommodity($this->commodityService->create($distribution, $item, false));
-        }
-
-        $listReceivers = [];
-        if (AssistanceTargetType::COMMUNITY === $distribution->getTargetType()) {
-            foreach ($distributionArray['communities'] as $id) {
-                $community = $this->container->get('doctrine')->getRepository(Community::class)->find($id);
-                $assistanceBeneficiary = (new AssistanceBeneficiary())
-                    ->setAssistance($distribution)
-                    ->setBeneficiary($community)
-                    ->setRemoved(0);
-
-                $this->em->persist($assistanceBeneficiary);
-                $listReceivers[] = $community->getId();
-            }
-        } elseif (AssistanceTargetType::INSTITUTION === $distribution->getTargetType()) {
-            foreach ($distributionArray['institutions'] as $id) {
-                $institution = $this->container->get('doctrine')->getRepository(Institution::class)->find($id);
-                $assistanceBeneficiary = (new AssistanceBeneficiary())
-                    ->setAssistance($distribution)
-                    ->setBeneficiary($institution)
-                    ->setRemoved(0);
-                $this->em->persist($assistanceBeneficiary);
-
-                $listReceivers[] = $institution->getId();
-            }
-        } else {
-            $criteria = [];
-            foreach ($selectionCriteriaGroup as $i => $criteriaData) {
-                foreach ($criteriaData as $j => $criterionArray) {
-                    $criterium = new SelectionCriterionInputType();
-                    $criterium->setWeight($criterionArray['weight']);
-                    $criterium->setGroup($j);
-                    $criterium->setTarget($criterionArray['target']);
-                    $criterium->setCondition($criterionArray['condition_string']);
-                    $criterium->setField($criterionArray['field_string']);
-                    $criterium->setValue($criterionArray['value'] ?? $criterionArray['value_string'] );
-                    $criteria[] = $criterium;
-                }
-            }
-            $selectionGroups = $this->selectionCriteriaFactory->createGroups($criteria);
-            $listReceivers = $this->container->get('distribution.criteria_assistance_service')
-                ->load(
-                    $selectionGroups,
-                    $project,
-                    $distribution->getTargetType(),
-                    $sector,
-                    $subsector,
-                    $distributionArray['threshold'],
-                    false
-                );
-            $this->saveReceivers($distribution, $listReceivers);
-        }
-
-        if (isset($distributionArray['allowedProductCategoryTypes'])) {
-            $distribution->setAllowedProductCategoryTypes($distributionArray['allowedProductCategoryTypes']);
-        }
-
-        if (isset($distributionArray['foodLimit'])) {
-            $distribution->setFoodLimit($distributionArray['foodLimit']);
-        }
-
-        $this->em->persist($distribution);
-        $this->em->flush();
-
-        return ["distribution" => $distribution, "data" => $listReceivers];
-    }
-
-    /**
-     * @param Assistance $assistance
-     * @param array      $listReceivers
-     *
-     * @throws Exception
-     */
-    private function saveReceivers(Assistance $assistance, array $listReceivers)
-    {
-        foreach ($listReceivers['finalArray'] as $receiver => $scoreProtocol) {
-            /** @var Beneficiary $beneficiary */
-            $beneficiary = $this->em->getReference(Beneficiary::class, $receiver);
-
-            $assistanceBeneficiary = (new AssistanceBeneficiary())
-                ->setAssistance($assistance)
-                ->setBeneficiary($beneficiary)
-                ->setRemoved(0)
-                ->setVulnerabilityScores($scoreProtocol);
-
-            $this->em->persist($assistanceBeneficiary);
-        }
-    }
-
-    /**
-     * Edit a distribution
-     *
-     * @param Assistance $assistance
-     * @param array $distributionArray
-     * @return Assistance
-     * @throws Exception
-     */
-    public function edit(Assistance $assistance, array $distributionArray)
-    {
-        $assistance->setDateDistribution(DateTime::createFromFormat('d-m-Y', $distributionArray['date_distribution']))
-            ->setUpdatedOn(new DateTime());
-        $distributionNameWithoutDate = explode('-', $assistance->getName())[0];
-        $newDistributionName = $distributionNameWithoutDate . '-' . $distributionArray['date_distribution'];
-        $assistance->setName($newDistributionName);
-
-        $this->em->flush();
-        return $assistance;
-    }
-
+    
     public function updateDateDistribution(Assistance $assistance, DateTimeInterface $date): void
     {
         $assistance
@@ -454,27 +279,33 @@ class AssistanceService
         $assistance->setUpdatedOn(new DateTime());
     }
 
-
-
     /**
-     * @param int $projectId
+     * @param int    $projectId
      * @param string $type
-     * @return mixed
+     *
+     * @return string
+     * @throws ExportNoDataException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function exportToCsv(int $projectId, string $type)
+    public function exportToCsv(int $projectId, string $type): string
     {
         $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId]);
-        return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
+        return $this->exportService->export($exportableTable, 'distributions', $type);
     }
 
     /**
-     * @param int $projectId
+     * @param int    $projectId
      * @param string $type
-     * @return mixed
+     *
+     * @return string
+     * @throws ExportNoDataException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function exportToOfficialCsv(int $projectId, string $type)
+    public function exportToOfficialCsv(int $projectId, string $type): string
     {
-        $project = $this->em->getRepository(Project::class)->find($projectId);
+        $project = $this->projectRepository->find($projectId);
 
         if (!$project) {
             throw new NotFoundHttpException("Project #$projectId missing");
@@ -487,24 +318,22 @@ class AssistanceService
             array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
         );
 
-        $bnfRepo = $this->em->getRepository(Beneficiary::class);
-
         foreach ($assistances as $assistance)
         {
-            $idps = $bnfRepo->countByResidencyStatus($assistance, "IDP");
-            $residents = $bnfRepo->countByResidencyStatus($assistance, "resident");
-            $maleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
-            $femaleHHH = $bnfRepo->countHouseholdHeadsByGender($assistance, PersonGender::FEMALE);
-            $maleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
-            $femaleChildrenUnder23month = $bnfRepo->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
-            $maleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());
-            $femaleChildrenUnder5years = $bnfRepo->countByAgeAndByGender($assistance, 0, 2, 6, $assistance->getDateDistribution());
-            $maleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 1, 6, 18, $assistance->getDateDistribution());
-            $femaleUnder17years = $bnfRepo->countByAgeAndByGender($assistance, 0, 6, 18, $assistance->getDateDistribution());
-            $maleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 1, 18, 60, $assistance->getDateDistribution());
-            $femaleUnder59years = $bnfRepo->countByAgeAndByGender($assistance, 0, 18, 60, $assistance->getDateDistribution());
-            $maleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 1, 60, 200, $assistance->getDateDistribution());
-            $femaleOver60years = $bnfRepo->countByAgeAndByGender($assistance, 0, 60, 200, $assistance->getDateDistribution());
+            $idps = $this->beneficiaryRepository->countByResidencyStatus($assistance, "IDP");
+            $residents = $this->beneficiaryRepository->countByResidencyStatus($assistance, "resident");
+            $maleHHH = $this->beneficiaryRepository->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
+            $femaleHHH = $this->beneficiaryRepository->countHouseholdHeadsByGender($assistance, PersonGender::FEMALE);
+            $maleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
+            $femaleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
+            $maleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());
+            $femaleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 2, 6, $assistance->getDateDistribution());
+            $maleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 6, 18, $assistance->getDateDistribution());
+            $femaleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 6, 18, $assistance->getDateDistribution());
+            $maleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 18, 60, $assistance->getDateDistribution());
+            $femaleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 18, 60, $assistance->getDateDistribution());
+            $maleOver60years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 60, 200, $assistance->getDateDistribution());
+            $femaleOver60years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 60, 200, $assistance->getDateDistribution());
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
@@ -592,18 +421,21 @@ class AssistanceService
             ];
             $exportableTable[] = $row;
         }
-        return $this->container->get('export_csv_service')->export($exportableTable, 'distributions', $type);
+        return $this->exportService->export($exportableTable, 'distributions', $type);
     }
 
     /**
      * Export all distributions in a pdf
+     *
      * @param int $projectId
+     *
      * @return mixed
+     * @throws Exception
      */
     public function exportToPdf(int $projectId)
     {
         $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => false]);
-        $project = $this->em->getRepository(Project::class)->find($projectId);
+        $project = $this->projectRepository->find($projectId);
 
         try {
             $html =  $this->twig->render(
@@ -611,13 +443,12 @@ class AssistanceService
                 array_merge(
                     ['project' => $project,
                     'distributions' => $exportableTable],
-                    $this->container->get('pdf_service')->getInformationStyle()
+                    $this->pdfService->getInformationStyle()
                 )
 
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'landscape', 'bookletCodes');
-            return $response;
+            return $this->pdfService->printPdf($html, 'landscape', 'bookletCodes');
         } catch (Exception $e) {
             throw new Exception($e);
         }
@@ -626,7 +457,7 @@ class AssistanceService
     /**
      * @param Assistance $assistanceEntity
      *
-     * @throws InvalidArgumentException
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function delete(Assistance $assistanceEntity)
     {
@@ -678,24 +509,17 @@ class AssistanceService
         $this->em->flush();
     }
 
-    private function generateName(Location $location, ?DateTimeInterface $date = null): string
-    {
-        $adm = $location->getName();
-
-        if ($date) {
-            return $adm.'-'.$date->format('d-m-Y');
-        } else {
-            return $adm.'-'.date('d-m-Y');
-        }
-    }
-
     /**
-     * @deprecated old form of exports, will be removed after export system refactoring
      * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
+     * @param string     $type
+     *
+     * @return string
+     * @throws ExportNoDataException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @deprecated old form of exports, will be removed after export system refactoring
      */
-    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type)
+    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type): string
     {
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
@@ -703,7 +527,7 @@ class AssistanceService
         $packages = array();
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $db) {
-            $relief = $this->em->getRepository(ReliefPackage::class)->findOneByAssistanceBeneficiary($db);
+            $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($db);
 
             if ($relief) {
                 array_push($packages, $relief);
@@ -728,16 +552,20 @@ class AssistanceService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'relief', $type);
+        return $this->exportService->export($exportableTable, 'relief', $type);
     }
 
     /**
-     * @deprecated old form of exports, will be removed after export system refactoring
      * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
+     * @param string     $type
+     *
+     * @return string
+     * @throws ExportNoDataException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @deprecated old form of exports, will be removed after export system refactoring
      */
-    public function exportVouchersDistributionToCsv(Assistance $assistance, string $type)
+    public function exportVouchersDistributionToCsv(Assistance $assistance, string $type): string
     {
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findByAssistance($assistance);
@@ -786,18 +614,22 @@ class AssistanceService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'qrVouchers', $type);
+        return $this->exportService->export($exportableTable, 'qrVouchers', $type);
     }
 
     /**
-     * @deprecated old form of exports, will be removed after export system refactoring
      * @param Assistance $assistance
-     * @param string $type
-     * @return mixed
+     * @param string     $type
+     *
+     * @return string
+     * @throws ExportNoDataException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @deprecated old form of exports, will be removed after export system refactoring
      */
-    public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type)
+    public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type): string
     {
-        $beneficiaries = $this->em->getRepository(Beneficiary::class)->getNotRemovedofDistribution($assistance);
-        return $this->container->get('export_csv_service')->export($beneficiaries, 'beneficiaryInDistribution', $type);
+        $beneficiaries = $this->beneficiaryRepository->getNotRemovedofDistribution($assistance);
+        return $this->exportService->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 }

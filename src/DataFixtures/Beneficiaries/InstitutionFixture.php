@@ -1,16 +1,18 @@
 <?php
 namespace DataFixtures\Beneficiaries;
 
-use Entity\Institution;
-use InputType\Deprecated\NewInstitutionType;
 use Utils\InstitutionService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
-use InputType\Country;
-use InputType\RequestConverter;
+use Entity\Institution;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectManager;
+use InputType\Beneficiary\AddressInputType;
+use InputType\Beneficiary\NationalIdCardInputType;
+use InputType\Beneficiary\PhoneInputType;
+use InputType\InstitutionCreateInputType;
 use Component\Country\Countries;
 use Enum\NationalIdType;
 use Entity\Project;
@@ -29,13 +31,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 'street' => 'Street name',
                 'number' => '1234',
                 'postcode' => '147 58',
-                'location' => [
-                    'adm1' => 1,
-                    'adm2' => 1,
-                    'adm3' => 1,
-                    'adm4' => 1,
-                    'country_iso3' => 'KHM',
-                ],
+                'locationId' => 1,
             ],
             'national_id' => [
                 'type' => NationalIdType::NATIONAL_ID,
@@ -46,7 +42,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             'phone_number' => '123 456 789',
             'contact_name' => 'Abdul Mohammad',
             'contact_family_name' => 'Qousad',
-         ],
+        ],
         [
             'name' => 'Food stores inc.',
             'type' => Institution::TYPE_COMMERCE,
@@ -57,13 +53,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 'street' => 'Street name',
                 'number' => '1234',
                 'postcode' => '147 58',
-                'location' => [
-                    'adm1' => 1,
-                    'adm2' => 1,
-                    'adm3' => 1,
-                    'adm4' => 1,
-                    'country_iso3' => 'KHM',
-                ],
+                'locationId' => 1,
             ],
             'national_id' => [
                 'type' => NationalIdType::FAMILY,
@@ -85,13 +75,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
                 'street' => 'Street name',
                 'number' => '1234',
                 'postcode' => '147 58',
-                'location' => [
-                    'adm1' => 1,
-                    'adm2' => 1,
-                    'adm3' => 1,
-                    'adm4' => 1,
-                    'country_iso3' => 'SYR',
-                ],
+                'locationId' => 1,
             ],
             'national_id' => [
                 'type' => NationalIdType::CAMP_ID,
@@ -107,8 +91,10 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
 
     /** @var string */
     private $environment;
+
     /** @var InstitutionService */
     private $institutionService;
+
     /** @var Countries */
     private $countries;
 
@@ -137,33 +123,64 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $this->projectRepository = $projectRepository;
     }
 
+    /**
+     * @param ObjectManager $manager
+     *
+     * @return void
+     * @throws EntityNotFoundException
+     */
     public function load(ObjectManager $manager)
     {
         if ($this->environment == "prod") {
             echo "Cannot run on production environment";
+
             return;
         }
-        foreach ($this->countries->getAll() as $COUNTRY) {
-            $projects = $this->projectRepository->findBy(['countryIso3' => $COUNTRY->getIso3()], ['id' => 'asc']);
-            $projectIds = array_map(function (Project $project) {
-                return $project->getId();
-            }, $projects);
+        foreach ($this->countries->getAll() as $country) {
             foreach (self::INSTITUTIONS as $institutionTypeData) {
-                $institutionTypeData['projects'] = $projectIds;
-                $institutionType = RequestConverter::normalizeInputType($institutionTypeData, NewInstitutionType::class);
-
-                $institution = $this->institutionService->createDeprecated(new Country($COUNTRY->getIso3()), $institutionType);
-                $manager->persist($institution);
+                $inputType = $this->buildInstitutionInputType($institutionTypeData, $country->getIso3());
+                $this->institutionService->create($inputType);
             }
         }
-        $manager->flush();
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             LocationFixtures::class,
             ProjectFixtures::class,
         ];
+    }
+
+    private function buildInstitutionInputType(array $institution, string $iso3): InstitutionCreateInputType
+    {
+        $institutionInputType = new InstitutionCreateInputType();
+        $institutionInputType->setName($institution['name']);
+        $institutionInputType->setType($institution['type']);
+        $institutionInputType->setProjectIds($this->getProjectsIds($iso3));
+        $institutionInputType->setLongitude($institution['longitude']);
+        $institutionInputType->setLatitude($institution['latitude']);
+        $institutionInputType->setAddress(AddressInputType::create($institution['address']['locationId'], $institution['address']['street'],
+            $institution['address']['postcode'], $institution['address']['number']));
+        $institutionInputType->setNationalIdCard(NationalIdCardInputType::create($institution['national_id']['type'],
+            $institution['national_id']['number']));
+        $institutionInputType->setPhone(PhoneInputType::create($institution['phone_prefix'], $institution['phone_number'],
+            $institution['phone_type']));
+        $institutionInputType->setContactGivenName($institution['contact_name']);
+        $institutionInputType->setContactFamilyName($institution['contact_family_name']);
+
+        return $institutionInputType;
+    }
+
+    /**
+     * @return int[]
+     */
+    private function getProjectsIds(string $iso3): array
+    {
+        $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
+
+        return array_map(function (Project $project) {
+            return $project->getId();
+        }, $projects);
     }
 }

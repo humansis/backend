@@ -3,14 +3,6 @@
 
 namespace Tests;
 
-use Entity\Beneficiary;
-use Entity\CountrySpecific;
-use Entity\CountrySpecificAnswer;
-use Entity\Household;
-use Entity\NationalId;
-use Entity\Phone;
-use Entity\Profile;
-use Entity\VulnerabilityCriterion;
 use Utils\HouseholdService;
 use Utils\CommodityService;
 use Utils\CriteriaAssistanceService;
@@ -356,107 +348,6 @@ class BMSServiceTestCase extends KernelTestCase
         $this->em->flush();
 
         return $user;
-    }
-
-    /**
-     * @return bool|mixed
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Exception
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
-     */
-    public function createHousehold()
-    {
-        $projects = $this->em->getRepository(Project::class)->findAll();
-        if (empty($projects)) {
-            print_r("There is no project inside your database");
-            return false;
-        }
-
-        $vulnerabilityCriterion = $this->em->getRepository(VulnerabilityCriterion::class)->findOneBy([
-            "fieldString" => "disabled"
-        ], ['id' => 'asc']);
-        $beneficiaries = $this->bodyHousehold["beneficiaries"];
-        $vulnerabilityId = $vulnerabilityCriterion->getId();
-        foreach ($beneficiaries as $index => $b) {
-            $this->bodyHousehold["beneficiaries"][$index]["vulnerability_criteria"] = [["id" => $vulnerabilityId]];
-        }
-
-        $countrySpecific = $this->em->getRepository(CountrySpecific::class)->findOneBy([
-            "fieldString" => 'IDPoor',
-            "type" => 'number',
-            "countryIso3" => $this->iso3
-        ], ['id' => 'asc']);
-        $country_specific_answers = $this->bodyHousehold["country_specific_answers"];
-        $countrySpecificId = $countrySpecific->getId();
-        foreach ($country_specific_answers as $index => $c) {
-            $this->bodyHousehold["country_specific_answers"][$index]["country_specific"] = ["id" => $countrySpecificId];
-        }
-
-        $this->bodyHousehold["__country"] = $this->iso3;
-        $this->bodyHousehold["iso3"] = $this->iso3;
-        $household = $this->householdService->createOrEdit(
-            $this->bodyHousehold,
-            [current($projects)]
-        );
-
-        $json = $this->serializer
-            ->serialize(
-                $household,
-                'json',
-                ['groups' => ["FullHousehold"], 'datetime_format' => 'd-m-Y']
-            );
-
-        return json_decode($json, true);
-    }
-
-    /**
-     * @depends testGetHouseholds
-     *
-     * @param $notes
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function removeHousehold($notes)
-    {
-        $this->em->clear();
-        /** @var Household $household */
-        $household = $this->em->getRepository(Household::class)->findOneByNotes($notes);
-        if ($household instanceof Household) {
-            $beneficiaries = $this->em->getRepository(Beneficiary::class)->findByHousehold($household);
-            if (!empty($beneficiaries)) {
-                /** @var Beneficiary $beneficiary */
-                foreach ($beneficiaries as $beneficiary) {
-                    $phones = $this->em->getRepository(Phone::class)->findByPerson($beneficiary->getPerson());
-                    $nationalIds = $this->em->getRepository(NationalId::class)->findByPerson($beneficiary->getPerson());
-                    $profile = $this->em->getRepository(Profile::class)->find($beneficiary->getProfile());
-                    if ($profile instanceof Profile) {
-                        $this->em->remove($profile);
-                    }
-                    $this->em->remove($beneficiary->getPerson());
-                    foreach ($phones as $phone) {
-                        $this->em->remove($phone);
-                    }
-                    foreach ($nationalIds as $nationalId) {
-                        $this->em->remove($nationalId);
-                    }
-                    $this->em->remove($beneficiary->getProfile());
-                    $this->em->remove($beneficiary);
-                }
-            }
-
-            $countrySpecificAnswers = $this->em->getRepository(CountrySpecificAnswer::class)
-                ->findByHousehold($household);
-            foreach ($countrySpecificAnswers as $countrySpecificAnswer) {
-                $this->em->remove($countrySpecificAnswer);
-            }
-
-            $this->em->remove($household);
-            $this->em->flush();
-        }
-
-        return true;
     }
 
     /**

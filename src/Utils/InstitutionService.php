@@ -8,14 +8,12 @@ use Entity\Institution;
 use Entity\NationalId;
 use Entity\Phone;
 use Entity\Location;
-use Utils\LocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Enum\EnumValueNoFoundException;
 use InputType\InstitutionCreateInputType;
 use InputType\InstitutionUpdateInputType;
 use Entity\Project;
-use InputType as GlobalInputType;
-use InputType\Deprecated;
 
 /**
  * Class InstitutionService
@@ -26,22 +24,23 @@ class InstitutionService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var LocationService $locationService */
-    private $locationService;
-
     /**
      * InstitutionService constructor.
      * @param EntityManagerInterface $entityManager
-     * @param LocationService $locationService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LocationService $locationService
+        EntityManagerInterface $entityManager
     ) {
         $this->em = $entityManager;
-        $this->locationService = $locationService;
     }
 
+    /**
+     * @param InstitutionCreateInputType $inputType
+     *
+     * @return Institution
+     * @throws EntityNotFoundException
+     * @throws EnumValueNoFoundException
+     */
     public function create(InstitutionCreateInputType $inputType): Institution
     {
         $institution = new Institution();
@@ -96,72 +95,14 @@ class InstitutionService
         return $institution;
     }
 
-    /**
-     * @param GlobalInputType\Country      $country
-     * @param Deprecated\NewInstitutionType $institutionType
-     *
-     * @return Institution
-     * @throws \InvalidArgumentException
-     *
-     * @deprecated
-     */
-    public function createDeprecated(GlobalInputType\Country $country, Deprecated\NewInstitutionType $institutionType): Institution
-    {
-        $institution = new Institution();
-        $institution->setName($institutionType->getName());
-        $institution->setType($institutionType->getType());
-        $institution->setLongitude($institutionType->getLongitude());
-        $institution->setLatitude($institutionType->getLatitude());
-        $institution->setContactName($institutionType->getContactName());
-        $institution->setContactFamilyName($institutionType->getContactFamilyName());
-        if ($institutionType->getPhoneNumber()) {
-            $institution->setPhone(new Phone());
-            $institution->getPhone()->setType($institutionType->getPhoneType());
-            $institution->getPhone()->setPrefix($institutionType->getPhonePrefix());
-            $institution->getPhone()->setNumber($institutionType->getPhoneNumber());
-        }
-
-
-        if ($institutionType->getNationalId() !== null && !$institutionType->getNationalId()->isEmpty()) {
-            $institution->setNationalId(new NationalId());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
-            $institution->getNationalId()->setIdNumber($institutionType->getNationalId()->getNumber());
-            $institution->getNationalId()->setIdType($institutionType->getNationalId()->getType());
-        }
-
-        if ($institutionType->getAddress() !== null) {
-            $addressType = $institutionType->getAddress();
-            $location = $this->locationService->getLocationByInputType($addressType->getLocation());
-
-            $institution->setAddress(Address::create(
-                $addressType->getStreet(),
-                $addressType->getNumber(),
-                $addressType->getPostcode(),
-                $location
-                ));
-        }
-
-        foreach ($institutionType->getProjects() as $projectId) {
-            $project = $this->em->getRepository(Project::class)->find($projectId);
-            if (null === $project) {
-                throw new \InvalidArgumentException("Project $projectId doesn't exist");
-            }
-            $institution->addProject($project);
-        }
-
-        return $institution;
-    }
-
     public function remove(Institution $institution)
     {
         $institution->setArchived(true);
         $this->em->persist($institution);
         $this->em->flush();
-
-        return $institution;
     }
 
-    public function update(Institution $institution, InstitutionUpdateInputType $inputType)
+    public function update(Institution $institution, InstitutionUpdateInputType $inputType): Institution
     {
         $institution->setName($inputType->getName());
         $institution->setType($inputType->getType());

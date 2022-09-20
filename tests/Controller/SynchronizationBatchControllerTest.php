@@ -5,10 +5,13 @@ namespace Tests\Controller;
 
 use Entity\SynchronizationBatch;
 use Entity\SynchronizationBatch\Deposits;
+use Enum\ReliefPackageState;
 use Enum\SourceType;
-use Enum\SynchronizationBatchValidationType;
+use InputType\AssistanceFilterInputType;
+use Repository\Assistance\ReliefPackageRepository;
 use Workflow\SynchronizationBatchTransitions;
-use Symfony\Component\Workflow\StateMachine;
+use Repository\AssistanceRepository;
+use Entity\Assistance\ReliefPackage;
 use Tests\BMSServiceTestCase;
 
 class SynchronizationBatchControllerTest extends BMSServiceTestCase
@@ -25,13 +28,35 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
+        $assistanceRepository = self::$container->get(AssistanceRepository::class);
+        $filter = new AssistanceFilterInputType();
+        $filter->setFilter(['modalityTypes' => ['Smartcard']]);
+        $possible = $assistanceRepository->findByParams('SYR', $filter);
+        if ($possible->count() === 0) {
+            $this->markTestSkipped('Suitable Smartcard assistance was not found');
+        }
+        $assistance = $possible
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $reliefPackageRepository = self::$container->get(ReliefPackageRepository::class);
+        /** @var ReliefPackage $reliefPackage */
+        $reliefPackage = $reliefPackageRepository->findByAssistance($assistance)
+            ->getQuery()
+            ->setMaxResults(1)
+            ->getSingleResult();
+
+        $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
+        $reliefPackageRepository->save($reliefPackage);
+
         $this->request('POST', '/api/basic/vendor-app/v1/syncs/deposit', [
             [],
             ["sdfdsfsdf"],
             [
-                'reliefPackageId' => 1024,
+                'reliefPackageId' => $reliefPackage->getId(),
                 'createdAt' => '2010-10-10T00:00:00+0000',
-                'smartcardSerialNumber' => 'ASDF123',
+                'smartcardSerialNumber' => 'AFDF123',
                 'balanceBefore' => 0,
                 'balanceAfter' => 1000,
             ],

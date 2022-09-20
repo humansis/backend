@@ -107,7 +107,7 @@ class Modality
     /**
      * Get modalityTypes.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|ModalityType[]
      */
     public function getModalityTypes()
     {
