@@ -1,6 +1,6 @@
 <?php
 
-namespace NewApiBundle\Controller\SupportApp;
+namespace Controller\SupportApp;
 
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
