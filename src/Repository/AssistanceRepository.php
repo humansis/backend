@@ -300,6 +300,9 @@ class AssistanceRepository extends EntityRepository
                     case AssistanceOrderInputType::SORT_BY_TYPE:
                         $qb->orderBy('dd.assistanceType', $direction);
                         break;
+                    case AssistanceOrderInputType::SORT_BY_ROUND:
+                        $qb->orderBy('dd.round', $direction);
+                        break;
                     default:
                         throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
