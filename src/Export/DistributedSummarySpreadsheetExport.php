@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Export;
 
-use Entity\Beneficiary;
-use Entity\Phone;
-use Entity\Assistance;
 use Component\Country\Countries;
 use Component\Country\Country;
 use InputType\DistributedItemFilterInputType;
@@ -35,7 +32,7 @@ class DistributedSummarySpreadsheetExport
         $this->repository = $repository;
     }
 
-    public function export(string $countryIso3, string $filetype, DistributedItemFilterInputType $filter)
+    public function export(string $countryIso3, string $filetype, DistributedItemFilterInputType $filter): string
     {
         $country = $this->countries->getCountry($countryIso3);
         if (!$country) {
@@ -125,8 +122,9 @@ class DistributedSummarySpreadsheetExport
             $commodity = $distributedItem->getCommodity();
             $datetime = $distributedItem->getDateDistribution();
             $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail() : null;
-            $fullLocation = self::adms($assistance);
+            $fullLocation = ExportHelper::getLocationTreeNames($assistance);
             $primaryNationalId = $beneficiary->getPerson()->getPrimaryIdType();
+            $phone = $beneficiary->getPerson()->getFirstNoProxyPhone();
 
             $i++;
             $worksheet->setCellValue('A'.$i, $beneficiary->getId());
@@ -134,49 +132,26 @@ class DistributedSummarySpreadsheetExport
             $worksheet->setCellValue('C'.$i, $beneficiary->getPerson()->getLocalGivenName());
             $worksheet->setCellValue('D'.$i, $beneficiary->getPerson()->getLocalFamilyName());
             $worksheet->setCellValue('E'.$i,
-                $primaryNationalId ? $this->translator->trans($primaryNationalId->getIdType()) : $this->translator->trans('N/A'));
-            $worksheet->setCellValue('F'.$i, $primaryNationalId ? $primaryNationalId->getIdNumber() : $this->translator->trans('N/A'));
-            $worksheet->setCellValue('G'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
+                $primaryNationalId ? $this->translator->trans($primaryNationalId->getIdType()) : $this->translator->trans(ExportHelper::EMPTY_VALUE));
+            $worksheet->setCellValue('F'.$i,
+                $primaryNationalId ? $primaryNationalId->getIdNumber() : $this->translator->trans(ExportHelper::EMPTY_VALUE));
+            $worksheet->setCellValue('G'.$i,
+                $phone ? $phone->getPrefix().' '.$phone->getNumber() : $this->translator->trans(ExportHelper::EMPTY_VALUE));
             $worksheet->setCellValue('H'.$i, $assistance->getName());
-            $worksheet->setCellValue('I'.$i, $assistance->getRound() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('I'.$i, $assistance->getRound() ?? $this->translator->trans(ExportHelper::EMPTY_VALUE));
             $worksheet->setCellValue('J'.$i, $fullLocation[0]);
             $worksheet->setCellValue('K'.$i, $fullLocation[1]);
             $worksheet->setCellValue('L'.$i, $fullLocation[2]);
             $worksheet->setCellValue('M'.$i, $fullLocation[3]);
-            $worksheet->setCellValue('N'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue('N'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans(ExportHelper::EMPTY_VALUE));
             $worksheet->setCellValue('O'.$i, $distributedItem->getModalityType());
-            $worksheet->setCellValue('P'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('P'.$i, $distributedItem->getCarrierNumber() ?? $this->translator->trans(ExportHelper::EMPTY_VALUE));
             $worksheet->setCellValue('Q'.$i, $commodity->getValue());
             $worksheet->setCellValue('R'.$i, $distributedItem->getAmount());
             $worksheet->setCellValue('S'.$i, $commodity->getUnit());
-            $worksheet->setCellValue('T'.$i, $fieldOfficerEmail ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('T'.$i, $fieldOfficerEmail ?? $this->translator->trans(ExportHelper::EMPTY_VALUE));
         }
     }
 
-    private static function phone(Beneficiary $beneficiary): ?string
-    {
-        /** @var Phone $phone */
-        foreach ($beneficiary->getPerson()->getPhones() as $phone) {
-            if (!$phone->getProxy()) {
-                return $phone->getPrefix().' '.$phone->getNumber();
-            }
-        }
-
-        return null;
-    }
-
-    //TODO: fullLocationNames - move to a helper class?
-    private static function adms(Assistance $assistance): array
-    {
-        $location = $assistance->getLocation();
-        $names = array_fill(0, 4 , null);
-
-        while ($location) {
-            $names[$location->getLvl() - 1] = $location->getName();
-            $location = $location->getParent();
-        }
-
-        return $names;
-    }
 }
 
