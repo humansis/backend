@@ -13,12 +13,7 @@ final class ReliefPackageState
     public const DISTRIBUTED = 'Distributed';
     public const EXPIRED = 'Expired';
     public const CANCELED = 'Canceled';
-
-    public static function isTransitionAllowed(string $stateFrom, string $stateTo): bool
-    {
-        return in_array($stateTo, self::$possibleFlow[$stateFrom]);
-    }
-
+    
 
     public static function values(): array
     {
