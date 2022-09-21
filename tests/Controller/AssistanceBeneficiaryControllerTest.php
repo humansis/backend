@@ -3,14 +3,17 @@ declare(strict_types=1);
 
 namespace Tests\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
+use Entity\NationalId;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
+use Enum\NationalIdType;
 use Exception;
 use Tests\BMSServiceTestCase;
 
@@ -212,6 +215,93 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         foreach ($result['data'] as $data) {
             if ($data['beneficiaryId'] == $beneficiaryId) {
                 $this->assertTrue($data['removed'], "Target $beneficiaryId wasn't removed");
+            }
+        }
+    }
+
+    public function testAddIndividualWithDocumentToAssistance(): array
+    {
+        $idNumber = 'tax123';
+        $idType = NationalIdType::TAX_NUMBER;
+        /** @var EntityManagerInterface $em */
+        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        
+        //get assistance & bnf
+        $assistance = $em->getRepository(Assistance::class)->findOneBy([
+            'validatedBy' => null,
+            'completed' => false,
+            'archived' => false,
+            'targetType' => AssistanceTargetType::INDIVIDUAL,
+        ], ['id' => 'asc']);
+        /** @var Beneficiary $beneficiary */
+        $beneficiary = $em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'desc']);
+        
+        //add tax id to bnf
+        $beneficiary->getPerson()->setNationalIds(new ArrayCollection([
+            (new NationalId())
+                ->setIdNumber($idNumber)
+                ->setIdType($idType)
+                ->setPerson($beneficiary->getPerson())
+        ]));
+        $em->persist($beneficiary->getPerson());
+        $em->flush();
+        
+        //remove bnf if in assistance already
+        $target = $em->getRepository(AssistanceBeneficiary::class)->findOneBy([
+            'beneficiary' => $beneficiary,
+            'assistance' => $assistance,
+        ], ['id'=>'asc']);
+        if ($target) {
+            $em->remove($target);
+            $em->flush();
+        }
+
+        //add bnf to assistance
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/assistances-beneficiaries', [
+            'documentNumbers' => [$idNumber],
+            'documentType' => $idType,
+            'justification' => 'test',
+            'added' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        return [$assistance->getId(), $beneficiary->getId(), $idNumber, $idType];
+    }
+
+    /**
+     * @depends testAddIndividualWithDocumentToAssistance
+     */
+    public function testRemoveIndividualWithDocumentFromAssistance($data): void
+    {
+        [$assistanceId, $beneficiaryId, $idNumber, $idType] = $data;
+
+        $this->request('DELETE', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries', [
+            'documentNumbers' => [$idNumber],
+            'documentType' => $idType,
+            'justification' => 'test',
+            'removed' => true,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistanceId.'/assistances-beneficiaries?sort[]=id.desc');
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: '.$this->client->getResponse()->getContent()
+        );
+
+        $result = json_decode($this->client->getResponse()->getContent(), true);
+        foreach ($result['data'] as $resultData) {
+            if ($resultData['beneficiaryId'] === $beneficiaryId) {
+                $this->assertTrue($resultData['removed'], "Target $beneficiaryId wasn't removed ($idType: $idNumber)");
             }
         }
     }

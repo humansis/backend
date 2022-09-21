@@ -53,8 +53,8 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
      */
     public function isOneOfArraysNotEmpty(): bool
     {
-        return empty($this->beneficiaryIds) && !empty($this->documentNumbers)
-            || !empty($this->beneficiaryIds) && empty($this->documentNumbers);
+        return (empty($this->beneficiaryIds) && !empty($this->documentNumbers))
+            || (!empty($this->beneficiaryIds) && empty($this->documentNumbers));
     }
 
     /**
