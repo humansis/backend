@@ -7,7 +7,7 @@ use Entity\CountrySpecific;
 use Enum\ReliefPackageState;
 use Exception;
 use Exception\BadRequestDataException;
-use InputType\Assistance\UpdateReliefPackagesInputType;
+use InputType\Assistance\UpdateReliefPackageInputType;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
@@ -17,6 +17,7 @@ use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
@@ -55,23 +56,31 @@ class AssistanceDistributionService
     private $registry;
 
     /**
+     * @var WorkflowInterface
+     */
+    private $reliefPackageStateMachine;
+
+    /**
      * @param ReliefPackageRepository   $reliefPackageRepository
      * @param BeneficiaryRepository     $beneficiaryRepository
      * @param CountrySpecificRepository $countrySpecificRepository
      * @param Registry                  $registry
+     * @param WorkflowInterface         $reliefPackageStateMachine
      */
     public function __construct(
         ReliefPackageRepository   $reliefPackageRepository,
         BeneficiaryRepository     $beneficiaryRepository,
         CountrySpecificRepository $countrySpecificRepository,
         LoggerInterface           $logger,
-        Registry                  $registry
+        Registry                  $registry,
+        WorkflowInterface         $reliefPackageStateMachine
     ) {
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->countrySpecificRepository = $countrySpecificRepository;
         $this->registry = $registry;
         $this->logger = $logger;
+        $this->reliefPackageStateMachine = $reliefPackageStateMachine;
     }
 
     /**
@@ -234,31 +243,42 @@ class AssistanceDistributionService
     }
 
     /**
-     * @param ReliefPackage                 $reliefpackage
-     * @param UpdateReliefPackagesInputType $inputpackages
+     * @param ReliefPackage                $reliefpackage
+     * @param UpdateReliefPackageInputType $inputpackages
      *
      * @return ReliefPackage
      * @throws Exception
      */
-    public function update(ReliefPackage $reliefpackage,UpdateReliefPackagesInputType $inputpackages) : ReliefPackage
+    public function update(ReliefPackage $reliefpackage, UpdateReliefPackageInputType $inputpackages) : ReliefPackage
     {
-        if(ReliefPackageState::isTransitionAllowed($reliefpackage->getState(),$inputpackages->getState())) {
-            $reliefpackage->setState($inputpackages->getState());
-            if ($reliefpackage->getAmountDistributed() !== $inputpackages->getAmountDistributed()) {
-                $reliefpackage->setAmountDistributed($inputpackages->getAmountDistributed());
+            if($inputpackages->getState() == ReliefPackageState::TO_DISTRIBUTE) {
+                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::RESET);
             }
-            if ($inputpackages->getNotes()) {
+            if ($inputpackages->getState() == ReliefPackageState::EXPIRED){
+                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::EXPIRE);
+            }
+            if ($inputpackages->getState() == ReliefPackageState::CANCELED){
+                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::CANCEL);
+            }
+            if ($inputpackages->getState() == ReliefPackageState::DISTRIBUTED){
+                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::DISTRIBUTE);
+            }
+
+           if ($inputpackages->getNotes()) {
                 $notes = $inputpackages->getNotes();
                 if ($reliefpackage->getNotes()) {
                     $notes = trim($reliefpackage->getNotes().', '.$inputpackages->getNotes());
                 }
                 $reliefpackage->setNotes($notes);
             }
+
+           if($inputpackages->getAmountDistributed()) {
+               if ($reliefpackage->getAmountDistributed() !== $inputpackages->getAmountDistributed()) {
+                   $reliefpackage->setAmountDistributed($inputpackages->getAmountDistributed());
+               }
+           }
             $reliefpackage->setLastModifiedNow();
             $this->reliefPackageRepository->save($reliefpackage);
-        }else{
-            throw new BadRequestDataException("Not allowed transition from state {$reliefpackage->getState()} to {$inputpackages->getState()}.");
-        }
         return $reliefpackage;
     }
 

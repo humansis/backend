@@ -6,7 +6,7 @@ use Request\InputTypeInterface;
 use Validator\Constraints\Enum;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class UpdateReliefPackagesInputType implements InputTypeInterface
+class UpdateReliefPackageInputType implements InputTypeInterface
 {
 
     /**

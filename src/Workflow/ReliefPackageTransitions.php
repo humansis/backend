@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Workflow;
 
+use Enum\ReliefPackageState;
+
 final class ReliefPackageTransitions
 {
     public const START_PARTIAL_DISTRIBUTION = 'Start partial distribution';
@@ -11,4 +13,5 @@ final class ReliefPackageTransitions
     public const DISTRIBUTE = 'Distribute everything';
     public const EXPIRE = 'Expire';
     public const CANCEL = 'Cancel';
+    public const RESET = 'Reset';
 }

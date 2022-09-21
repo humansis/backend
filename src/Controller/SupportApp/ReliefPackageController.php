@@ -8,7 +8,7 @@ use Controller\AbstractController;
 use Entity\Assistance\ReliefPackage;
 use Services\AssistanceDistributionService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use InputType\Assistance\UpdateReliefPackagesInputType;
+use InputType\Assistance\UpdateReliefPackageInputType;
 
 
 class ReliefPackageController extends AbstractController
@@ -29,13 +29,13 @@ class ReliefPackageController extends AbstractController
     /**
      * @Rest\Patch("/support-app/v1/relief-packages/{id}")
      *
-     * @param ReliefPackage                 $reliefpackage
-     * @param UpdateReliefPackagesInputType $inputpackages
+     * @param ReliefPackage                $reliefpackage
+     * @param UpdateReliefPackageInputType $inputpackages
      *
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(ReliefPackage $reliefpackage,UpdateReliefPackagesInputType $inputpackages) :JsonResponse
+    public function update(ReliefPackage $reliefpackage, UpdateReliefPackageInputType $inputpackages) :JsonResponse
     {
         $reliefpackage = $this->assistanceDistributionService->update($reliefpackage,$inputpackages);
         return $this->json($reliefpackage);
