@@ -1312,8 +1312,7 @@ services:
         autoconfigure: false
         public: true
 
-    export.distributed_summary.spreadsheet:
-        class: Export\DistributedSummarySpreadsheetExport
+    Export\DistributedSummarySpreadsheetExport:
         arguments:
             - '@translator'
             - '@Component\Country\Countries'

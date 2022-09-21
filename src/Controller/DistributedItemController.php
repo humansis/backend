@@ -6,6 +6,7 @@ namespace Controller;
 
 use Entity\Beneficiary;
 use Entity\Household;
+use Export\DistributedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\DistributedItem;
 use InputType\DistributedItemFilterInputType;
@@ -85,18 +86,19 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/distributed-items/exports")
      *
-     * @param Request                        $request
-     * @param DistributedItemFilterInputType $inputType
+     * @param Request                             $request
+     * @param DistributedItemFilterInputType      $inputType
+     * @param DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport
      *
      * @return Response
      */
-    public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): Response
+    public function summaryExports(Request $request, DistributedItemFilterInputType $inputType, DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport): Response
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.distributed_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'), $inputType);
+        $filename = $distributedSummarySpreadsheetExport->export($request->headers->get('country'), $request->get('type'), $inputType);
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
