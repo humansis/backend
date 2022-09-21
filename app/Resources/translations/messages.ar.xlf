@@ -1289,7 +1289,7 @@
       </trans-unit>
       <trans-unit id="z7OtGEW" resname="Signature / Time-stamp">
         <source>Signature / Time-stamp</source>
-        <target>التوقيع بتسجيل الوقت</target>
+        <target>التوقيع / التوقيع بتسجيل الوقت</target>
       </trans-unit>
       <trans-unit id="VyGbjiT" resname="DISTRIBUTION PROTOCOL">
         <source>DISTRIBUTION PROTOCOL</source>
