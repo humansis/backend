@@ -2,17 +2,17 @@
 
 namespace Controller\SupportApp\Smartcard;
 
-use BeneficiaryBundle\Entity\Beneficiary;
-use CommonBundle\Pagination\Paginator;
+use Entity\Beneficiary;
+use Pagination\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Analytics\EventService;
 use Controller\SupportApp\AbstractSupportAppController;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use VoucherBundle\Entity\Smartcard;
-use VoucherBundle\Entity\Vendor;
-use VoucherBundle\Repository\SmartcardRepository;
+use Entity\Smartcard;
+use Entity\Vendor;
+use Repository\SmartcardRepository;
 
 class AnalyticsController extends AbstractSupportAppController
 {
