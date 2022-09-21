@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace NewApiBundle\Controller\SupportApp\Smartcard;
+namespace Controller\SupportApp\Smartcard;
 
 use BeneficiaryBundle\Entity\Beneficiary;
 use CommonBundle\Pagination\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use NewApiBundle\Component\Smartcard\Analytics\EventService;
-use NewApiBundle\Controller\SupportApp\AbstractSupportAppController;
+use Component\Smartcard\Analytics\EventService;
+use Controller\SupportApp\AbstractSupportAppController;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use VoucherBundle\Entity\Smartcard;
