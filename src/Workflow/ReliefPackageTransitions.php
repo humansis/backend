@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Workflow;
 
-use Enum\ReliefPackageState;
 
 final class ReliefPackageTransitions
 {

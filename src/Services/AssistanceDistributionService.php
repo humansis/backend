@@ -6,7 +6,6 @@ use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Enum\ReliefPackageState;
 use Exception;
-use Exception\BadRequestDataException;
 use InputType\Assistance\UpdateReliefPackageInputType;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
@@ -251,25 +250,12 @@ class AssistanceDistributionService
      */
     public function update(ReliefPackage $reliefpackage, UpdateReliefPackageInputType $inputpackages) : ReliefPackage
     {
-            if($inputpackages->getState() == ReliefPackageState::TO_DISTRIBUTE) {
-                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::RESET);
-            }
-            if ($inputpackages->getState() == ReliefPackageState::EXPIRED){
-                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::EXPIRE);
-            }
-            if ($inputpackages->getState() == ReliefPackageState::CANCELED){
-                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::CANCEL);
-            }
-            if ($inputpackages->getState() == ReliefPackageState::DISTRIBUTED){
-                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageTransitions::DISTRIBUTE);
+            if(array_key_exists($inputpackages->getState(),ReliefPackageState::transitionsMapper())) {
+                $this->reliefPackageStateMachine->apply($reliefpackage, ReliefPackageState::transitionsMapper()[$inputpackages->getState()]);
             }
 
            if ($inputpackages->getNotes()) {
-                $notes = $inputpackages->getNotes();
-                if ($reliefpackage->getNotes()) {
-                    $notes = trim($reliefpackage->getNotes().', '.$inputpackages->getNotes());
-                }
-                $reliefpackage->setNotes($notes);
+                $reliefpackage->setNotes($inputpackages->getNotes());
             }
 
            if($inputpackages->getAmountDistributed()) {
