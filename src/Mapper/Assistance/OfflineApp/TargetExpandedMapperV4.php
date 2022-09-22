@@ -70,7 +70,7 @@ class TargetExpandedMapperV4 implements MapperInterface
 
     public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ATOM) : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
