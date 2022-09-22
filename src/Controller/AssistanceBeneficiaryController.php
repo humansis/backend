@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Controller;
 
 use Entity\Beneficiary;
+use Exception\AssistanceTargetMismatchException;
 use Repository\BeneficiaryRepository;
 use Repository\CommunityRepository;
 use Repository\InstitutionRepository;
@@ -199,7 +200,7 @@ class AssistanceBeneficiaryController extends AbstractController
                 $inputType->getJustification());
 
             return $this->json($output, Response::HTTP_OK);
-        } catch (ManipulationOverValidatedAssistanceException $exception)
+        } catch (ManipulationOverValidatedAssistanceException | AssistanceTargetMismatchException $exception)
         {
             return $this->json($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

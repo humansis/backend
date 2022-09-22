@@ -15,6 +15,7 @@ use Entity\Commodity;
 use Entity\Household;
 use Enum\AssistanceTargetType;
 use Enum\CacheTarget;
+use Exception\AssistanceTargetMismatchException;
 use Exception\ManipulationOverValidatedAssistanceException;
 use Exception\BeneficiaryAlreadyRemovedException;
 use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
@@ -145,6 +146,13 @@ class AssistanceBeneficiaryService
      */
     private function addAssistanceBeneficiary(Assistance $assistance, AbstractBeneficiary $beneficiary,?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null)
     {
+        if (
+            $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD
+            && !$beneficiary->isHead()
+        ) {
+            throw new AssistanceTargetMismatchException('Beneficiary id ' . $beneficiary->getId() . ' is not head of household');
+        }
+        
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
         if (null === $assistanceBeneficiary) {
             $assistanceBeneficiary = (new AssistanceBeneficiary())
