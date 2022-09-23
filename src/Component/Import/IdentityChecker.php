@@ -151,8 +151,8 @@ class IdentityChecker
             foreach ($line->getFilledIds() as $id) {
                 $idType = NationalIdType::valueFromAPI($id['type']);
                 $hashSet->add($item, $index, (string) $idType, (string) $id['number']);
-                $index++;
             }
+            $index++;
         }
     }
 
