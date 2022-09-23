@@ -235,7 +235,7 @@ class ImportLine
     public $primaryIdNumber;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
+     * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
      */
     public $secondaryIdType;
 
@@ -245,7 +245,7 @@ class ImportLine
     public $secondaryIdNumber;
 
     /**
-     * @Enum(enumClass="NewApiBundle\Enum\NationalIdType", groups={"household", "member"})
+     * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
      */
     public $ternaryIdType;
 
