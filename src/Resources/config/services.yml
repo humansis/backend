@@ -211,6 +211,7 @@ services:
     Controller\CommonController:
         arguments:
             - '@Component\Country\Countries'
+            - '%app.translations_dir%'
 
     Controller\DonorController:
         arguments:

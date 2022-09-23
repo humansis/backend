@@ -10,23 +10,34 @@ use Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Country\Countries;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Intl\Currencies;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CommonController extends AbstractController
 {
     /** @var Countries */
     private $countries;
 
+    /** @var string */
+    private $translationsDir;
+
     /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(Countries $countries, TranslatorInterface $translator)
+    public function __construct(
+        Countries $countries,
+        string $translationsDir,
+        TranslatorInterface $translator
+    )
     {
         $this->countries = $countries;
+        $this->translationsDir = $translationsDir;
         $this->translator = $translator;
     }
 
@@ -164,6 +175,41 @@ class CommonController extends AbstractController
         }
 
         return $this->json($data);
+    }
+
+    /**
+     * @Rest\Get("/web-app/v1/translations-xml")
+     * @Cache(expires="+5 days", public=true)
+     *
+     */
+    public function getTranslationsXml(): BinaryFileResponse
+    {
+        $finder = new Finder();
+
+        $finder->files()
+            ->in($this->translationsDir)
+            ->name('*.xlf') //only files with translations
+            ->notName('*.en.xlf'); //exclude source keys
+        if (!$finder->hasResults()) {
+            throw new \UnexpectedValueException('No translations found');
+        }
+
+        $filename = 'translations' . time() . '.zip';
+        $zip = new \ZipArchive();
+        $zip->open($filename,  \ZipArchive::CREATE);
+        foreach ($finder as $file) {
+            $zip->addFile($file->getRealPath(), $file->getFilename()); //add file but flatten path
+        }
+        $zip->close();
+        
+        $response = new BinaryFileResponse($filename);
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
+        $response->headers->set('Content-Type', 'application/zip');
+        $response->headers->set('Content-Length', filesize($filename));
+        $response->deleteFileAfterSend();
+
+        return $response;
     }
 
     /**
