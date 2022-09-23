@@ -247,12 +247,12 @@ class ImportLine
     /**
      * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
      */
-    public $ternaryIdType;
+    public $tertiaryIdType;
 
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */
-    public $ternaryIdNumber;
+    public $tertiaryIdNumber;
 
     /**
      * @Enum(enumClass="Enum\HouseholdShelterStatus", groups={"household", "member"})
@@ -599,7 +599,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="primaryIdType"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="primaryIdType"}, groups={"household", "member"})
      */
     public function isPrimaryIdTypeCorrectlyFilled(): bool
     {
@@ -611,7 +611,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
      */
     public function isIdNumberCorrectlyFilled(): bool
     {
@@ -623,7 +623,7 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
      */
     public function isSecondaryIdTypeCorrectlyFilled(): bool
     {
@@ -635,7 +635,18 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="Has to be different then Primary ID type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdTypeDuplicity(): bool
+    {
+        if (null === $this->secondaryIdType) {
+            return true;
+        }
+        return $this->primaryIdType !== $this->secondaryIdType;
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
      */
     public function isSecondaryIdNumberCorrectlyFilled(): bool
     {
@@ -647,27 +658,38 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="ternaryIdType"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="tertiaryIdType"}, groups={"household", "member"})
      */
     public function isTernaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->ternaryIdNumber) {
+        if (null === $this->tertiaryIdNumber) {
             return true;
         }
 
-        return (null !== $this->ternaryIdType);
+        return (null !== $this->tertiaryIdType);
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="ternaryIdNumber"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="Has to be different then Primary ID type or Secondary type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isTertiaryIdTypeDuplicity(): bool
+    {
+        if (null === $this->tertiaryIdType) {
+            return true;
+        }
+        return $this->primaryIdType !== $this->tertiaryIdType && $this->secondaryIdType !== $this->tertiaryIdType;
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="tertiaryIdNumber"}, groups={"household", "member"})
      */
     public function isTernaryIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->ternaryIdType) {
+        if (null === $this->tertiaryIdType) {
             return true;
         }
 
-        return (null !== $this->ternaryIdNumber);
+        return (null !== $this->tertiaryIdNumber);
     }
 
     /**
@@ -776,8 +798,8 @@ class ImportLine
                 'number' => $this->secondaryIdNumber,
             ],
             [
-                'type' => $this->ternaryIdType,
-                'number' => $this->ternaryIdNumber,
+                'type' => $this->tertiaryIdType,
+                'number' => $this->tertiaryIdNumber,
             ]
         ];
     }

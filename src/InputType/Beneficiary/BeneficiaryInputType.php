@@ -79,7 +79,7 @@ class BeneficiaryInputType implements InputTypeInterface
     private $gender;
 
     /**
-     * @var NationalIdCardInputType
+     * @var NationalIdCardInputType[]
      * @Assert\Type("array")
      * @Assert\Valid
      */
@@ -413,5 +413,28 @@ class BeneficiaryInputType implements InputTypeInterface
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @Assert\IsTrue(message="Secondary ID Type has to be different then Primary ID Type.")
+     */
+    public function isSecondaryIdTypeDuplicity(): bool
+    {
+        if (count($this->nationalIdCards) < 2) {
+            return true;
+        }
+        return $this->nationalIdCards[0]->getType() !== $this->nationalIdCards[1]->getType();
+    }
+
+    /**
+     * @Assert\IsTrue(message="Tertiary ID Type has to be different then Primary ID Type and Secondary ID Type.")
+     */
+    public function isTertiaryIdTypeDuplicity(): bool
+    {
+        if (count($this->nationalIdCards) < 3) {
+            return true;
+        }
+        return $this->nationalIdCards[0]->getType() !== $this->nationalIdCards[2]->getType() &&
+            $this->nationalIdCards[1]->getType() !== $this->nationalIdCards[2]->getType();
     }
 }

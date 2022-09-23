@@ -627,8 +627,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $primaryDocument = null;
         /** @var NationalId $secondaryDocument */
         $secondaryDocument = null;
-        /** @var NationalId $ternaryDocument */
-        $ternaryDocument = null;
+        /** @var NationalId $tertiaryDocument */
+        $tertiaryDocument = null;
         foreach ($this->getNationalIds()->getValues() as $value) {
             if ($value->getPriority() === 1) {
                 $primaryDocument = $value;
@@ -637,7 +637,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
                 $secondaryDocument = $value;
             }
             if ($value->getPriority() === 3) {
-                $ternaryDocument = $value;
+                $tertiaryDocument = $value;
             }
         }
 
@@ -734,8 +734,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "primary ID number" => $primaryDocument ? $primaryDocument->getIdNumber() : '',
             "secondary ID type" => $secondaryDocument ? $secondaryDocument->getIdType() : '',
             "secondary ID number" => $secondaryDocument ? $secondaryDocument->getIdNumber() : '',
-            "ternary ID type" => $ternaryDocument ? $ternaryDocument->getIdType() : '',
-            "ternary ID number" => $ternaryDocument ? $ternaryDocument->getIdNumber() : '',
+            "tertiary ID type" => $tertiaryDocument ? $tertiaryDocument->getIdType() : '',
+            "tertiary ID number" => $tertiaryDocument ? $tertiaryDocument->getIdNumber() : '',
             "Assets" => implode(', ', $this->getHousehold()->getAssets()),
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),
