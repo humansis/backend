@@ -86,7 +86,7 @@ services:
         - '%crowdin_project_id%'
         - '%app.translations_dir%'
 
-    Command\TranslationsUpdateGenerateCommand:
+    Command\TranslationsDownloadCommand:
         arguments:
           - '%app.translations_dir%'
 

@@ -22,30 +22,25 @@ before that the controller process.
 
 #### Translations
 
+When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin (with `make translation-keys` and `make crowdin-push`) automatically.  
+Deploying translations on any environment could be done any time, without any server downtime (see Deploy translations below). 
+
 ##### Add new key
 1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
    `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
-2. clear cache and run keys extraction by running
+2. the key will be uploaded to crowdin automatically when your code is merged into `develop`
+
+#### Deploy translations
+1. in [Gitlab pipelines](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/pipelines) display detail of a pipeline with passed deploy job to environment where you need to deploy translations (e.g. `deploy_test:passed`)
+2. locate translations job at the very right and run `download_translations` job for the environment you need (e.g. `download_translations_test`)
+
+#### Get translations to localhost
+1. (if you need fresh translations, first deploy translations to test environment)
+2. run
 ```bash
-make translation
+make translations-get
 ```
-3. in `/app/Resources/translations/messages.en.xlf` locate `<target>` elements with values starting with `__` and provide english translation
-4. (commit & push)
-
-during every merge to `develop`, keys are uploaded to crowdin.
-
-##### Update translations from crowdin
-
-(first time)
-1. generate access token in your crowdin account - Crowdin Account Settings > API & SSO > New Token and set it to `CROWDIN_API_KEY` in `docker-compose.yml`
-2. set `CROWDIN_PROJECT_ID: '452984'` in `docker-compose.yml`
-3. rebuild project
-
-(then)
-
-```bash
-make crowdin-pull
-```` 
+the translations are downloaded from `test` environment, to get them from another environment, update `TranslationsDownloadCommand:$envConfig` array and $this->env in `TranslationsDownloadCommand:__construct` method.
 
 #### Specific Documentation
 - [Distribution Bundle](src/DistributionBundle/README.md)
