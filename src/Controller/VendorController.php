@@ -39,10 +39,10 @@ class VendorController extends AbstractController
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['vendors' => true]);
-        $request->request->add(['__country' => $request->headers->get('country')]);
+        $filename = $this->get('voucher.vendor_service')->exportToCsv(
+            $request->query->get('type'), $request->headers->get('country'));
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->exportResponse($filename);
     }
 
     /**

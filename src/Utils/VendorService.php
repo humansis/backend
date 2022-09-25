@@ -236,6 +236,6 @@ class VendorService
     {
         $exportableTable = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
+        return $this->container->get('openspout_export_service')->export($exportableTable, 'vendors', $type);
     }
 }
