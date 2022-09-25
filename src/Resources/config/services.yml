@@ -649,7 +649,7 @@ services:
         class: Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@Utils\ExportService'
+            - '@Utils\OpenSpoutExportService'
             - '@Repository\BeneficiaryRepository'
             - '@Repository\HouseholdRepository'
             - '@Repository\VulnerabilityCriterionRepository'
@@ -922,6 +922,10 @@ services:
         alias: Utils\ExportService
         public: true
 
+    openspout_export_service:
+        alias: Utils\OpenSpoutExportService
+        public: true
+
     Utils\PdfService:
         public: true
         arguments:
@@ -1173,6 +1177,14 @@ services:
 
     Utils\ExportService:
         class: Utils\ExportService
+        public: true
+
+    Utils\OpenSpoutExportService:
+        class: Utils\OpenSpoutExportService
+        public: true
+
+    Utils\BasicExportService:
+        class: Utils\BasicExportService
         public: true
 
 #From VoucherBundle:

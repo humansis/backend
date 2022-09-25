@@ -74,18 +74,7 @@ class HouseholdController extends AbstractController
             ],Response::HTTP_BAD_REQUEST);
         }
 
-        $response = new BinaryFileResponse(getcwd().'/'.$filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, '$filename');
-        $response->deleteFileAfterSend(true);
-
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($filename));
-        } else {
-            $response->headers->set('Content-Type', 'text/plain');
-        }
-
-        return $response;
+        return $this->exportResponse($filename);
     }
 
     /**

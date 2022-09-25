@@ -30,9 +30,9 @@ class BeneficiaryService
     private $em;
 
     /**
-     * @var ExportService
+     * @var OpenSpoutExportService
      */
-    private $exportService;
+    private $openSpoutExportService;
 
     /**
      * @var BeneficiaryRepository
@@ -52,13 +52,13 @@ class BeneficiaryService
 
     public function __construct(
         EntityManagerInterface           $entityManager,
-        ExportService                    $exportService,
+        OpenSpoutExportService           $openSpoutExportService,
         BeneficiaryRepository            $beneficiaryRepository,
         HouseholdRepository              $householdRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
     ) {
         $this->em = $entityManager;
-        $this->exportService = $exportService;
+        $this->openSpoutExportService = $openSpoutExportService;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->householdRepository = $householdRepository;
         $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
@@ -331,7 +331,7 @@ class BeneficiaryService
         }
 
         try {
-            return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
+            return $this->openSpoutExportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
         } catch (\InvalidArgumentException $e) {
             throw new BadRequestHttpException("No data to export.");
         }
@@ -387,7 +387,7 @@ class BeneficiaryService
         }
 
         try {
-            return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
+            return $this->openSpoutExportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
         } catch (ExportNoDataException $e) {
             throw new BadRequestHttpException("No data to export.");
         }
