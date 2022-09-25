@@ -38,6 +38,8 @@ class AssistanceMapper implements MapperInterface
         if ($object instanceof Assistance) {
             $this->object = $object;
 
+            //Workaround because of /offline-app/v1/projects/{id}/distribution API. Getters do not support snake case style. It is done properly in v2 of the endpoint.
+            //This file (alongside with all code necessary for v1) should be removed in 3.9
             $this->date_distribution = $object->getDateDistribution()->format(\DateTimeInterface::ATOM);
             $this->date_expiration = $object->getDateExpiration() ? $object->getDateExpiration()->format(\DateTimeInterface::ATOM) : null;
             $this->beneficiaries_count = $object->getDistributionBeneficiaries()->count();
