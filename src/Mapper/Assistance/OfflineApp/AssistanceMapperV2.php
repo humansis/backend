@@ -4,22 +4,12 @@ declare(strict_types=1);
 namespace Mapper\Assistance\OfflineApp;
 
 use Entity\Assistance;
-use Enum\AssistanceTargetType;
 use Serializer\MapperInterface;
 
-class AssistanceMapper implements MapperInterface
+class AssistanceMapperV2 implements MapperInterface
 {
     /** @var Assistance */
     private $object;
-
-    /** @var string */
-    public $date_distribution;
-
-    /** @var string|null */
-    public $date_expiration;
-
-    /** @var int */
-    public $beneficiaries_count;
 
     /**
      * {@inheritdoc}
@@ -27,7 +17,7 @@ class AssistanceMapper implements MapperInterface
     public function supports(object $object, $format = null, array $context = null): bool
     {
         return $object instanceof Assistance && isset($context[MapperInterface::OFFLINE_APP]) && true === $context[MapperInterface::OFFLINE_APP]
-            && isset($context['version']) && $context['version'] === 'v1';
+            && isset($context['version']) && $context['version'] === 'v2';
     }
 
     /**
@@ -37,10 +27,6 @@ class AssistanceMapper implements MapperInterface
     {
         if ($object instanceof Assistance) {
             $this->object = $object;
-
-            $this->date_distribution = $object->getDateDistribution()->format(\DateTimeInterface::ATOM);
-            $this->date_expiration = $object->getDateExpiration() ? $object->getDateExpiration()->format(\DateTimeInterface::ATOM) : null;
-            $this->beneficiaries_count = $object->getDistributionBeneficiaries()->count();
 
             return;
         }
@@ -58,21 +44,29 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getName();
     }
 
-    public function getType(): int
+    public function getDateDistribution(): string
     {
-        switch ($this->object->getTargetType()) {
-            case AssistanceTargetType::INDIVIDUAL:
-                return 1;
-            case AssistanceTargetType::HOUSEHOLD:
-                return 0;
-        }
+        return $this->object->getDateDistribution()->format(\DateTimeInterface::ATOM);
+    }
 
-        return -1;
+    public function getDateExpiration(): ?string
+    {
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ATOM) : null;
+    }
+
+    public function getTargetType(): string
+    {
+        return $this->object->getTargetType();
     }
 
     public function getCommodities(): array
     {
         return $this->object->getCommodities()->toArray();
+    }
+
+    public function getBeneficiariesCount(): int
+    {
+        return $this->object->getDistributionBeneficiaries()->count();
     }
 
     public function getFoodLimit(): ?string

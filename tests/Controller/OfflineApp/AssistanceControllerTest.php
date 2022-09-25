@@ -45,7 +45,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $this->request('GET', '/api/basic/offline-app/v2/projects/'.$projectId.'/assistances');
+        $this->request('GET', '/api/basic/offline-app/v2/projects/'.$projectId.'/distributions');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -55,20 +55,17 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
-            "expirationDate": "*",
-            "type": "*",
-            "target": "*",
-            "projectId": "*",
-            "locationId": "*",
-            "commodityIds": ["*"],
-            "description": "*",
-            "validated": "*",
-            "remote": "*",
+            "dateExpiration": "*",
+            "targetType": "*",
+            "commodities": ["*"],
+            "beneficiariesCount": "*",
             "foodLimit": "*",
             "nonfoodLimit": "*",
             "cashbackLimit": "*",
+            "remoteDistributionAllowed": "*",
             "completed": "*",
-            "numberOfBeneficiaries": "*"
+            "validated": "*",
+            "archived": "*"
          }]', $this->client->getResponse()->getContent());
     }
 }

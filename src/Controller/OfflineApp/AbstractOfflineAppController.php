@@ -7,7 +7,7 @@ use Serializer\MapperInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AbstractOfflineAppController extends AbstractController
+abstract class AbstractOfflineAppController extends AbstractController
 {
     /**
      * @param       $data
