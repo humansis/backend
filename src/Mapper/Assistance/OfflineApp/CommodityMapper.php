@@ -32,6 +32,9 @@ class CommodityMapper implements MapperInterface
         if ($object instanceof Commodity) {
             $this->object = $object;
 
+            //Workaround because of /offline-app/v1/projects/{id}/distribution API. And because of removed modality types from database.
+            //Getters do not support snake case style. It is done properly in v2 of the endpoint.
+            //This file (alongside with all code necessary for v1) should be removed in 3.9
             $this->modality_type = [
                 'id' => 1,
                 'name' => (string) $object->getModalityType(),
