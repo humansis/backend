@@ -95,7 +95,7 @@ class AssistanceController extends AbstractController
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
-            $assistanceInCountry = $assistanceRepository->findByIso3($countryIso3);
+            $assistanceInCountry = $assistanceRepository->findByCountryIso3($countryIso3);
             foreach($assistanceInCountry as $assistance) {
                 $assistanceDomain = $assistanceFactory->hydrate($assistance);
                 $statistics[] = $assistanceDomain->getStatistics($countryIso3);
