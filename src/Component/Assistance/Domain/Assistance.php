@@ -1,11 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Component\Assistance\Domain;
 
-use DateTime;
-use DateTimeImmutable;
+use Component\Assistance\DTO\Statistics;
 use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Entity\Household;
@@ -14,7 +11,6 @@ use Entity\AssistanceBeneficiary;
 use Entity\User;
 use Enum\AssistanceTargetType;
 use Entity\DivisionGroup;
-use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -42,37 +38,32 @@ class Assistance
 {
     /** @var Entity\Assistance */
     private $assistanceRoot;
-
     /** @var CacheInterface */
     private $cache;
-
     /** @var AssistanceStatisticsRepository */
     private $assistanceStatisticRepository;
-
     /** @var AssistanceBeneficiaryRepository */
     private $targetRepository;
-
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
-
     /** @var SelectionCriteriaFactory */
     private $selectionCriteriaFactory;
 
     /**
-     * @param Entity\Assistance $assistanceEntity
-     * @param CacheInterface $cache
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param Registry $workflowRegistry
+     * @param Entity\Assistance               $assistanceEntity
+     * @param CacheInterface                  $cache
+     * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
+     * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
      */
     public function __construct(
-        Entity\Assistance $assistanceEntity,
-        CacheInterface $cache,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        Registry $workflowRegistry,
+        Entity\Assistance               $assistanceEntity,
+        CacheInterface                  $cache,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory
+        SelectionCriteriaFactory        $selectionCriteriaFactory
     ) {
         $this->assistanceRoot = $assistanceEntity;
         $this->cache = $cache;
@@ -82,32 +73,32 @@ class Assistance
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
-    public function getStatistics(?string $countryIso3 = null): array
+    /**
+     * @param string|null $countryIso3
+     *
+     * @return Statistics
+     * @throws InvalidArgumentException
+     */
+    public function getStatistics(?string $countryIso3 = null): Statistics
     {
         $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new');
 
         return $this->cache->get($key, function (ItemInterface $item) use ($countryIso3) {
             try {
-                $statistics = $this->assistanceStatisticRepository->findByAssistance(
-                    $this->assistanceRoot,
-                    $countryIso3
-                );
+                $statistics = $this->assistanceStatisticRepository->findByAssistance($this->assistanceRoot, $countryIso3);
             } catch (NoResultException $noResultException) {
-                throw new NotFoundHttpException(
-                    "Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3"
-                );
+                throw new NotFoundHttpException("Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3");
             }
 
-            // TODO probably better way could be normalize (or store whole) dto
-            return [
-                'id' => $statistics->getId(),
-                'numberOfBeneficiaries' => $statistics->getNumberOfBeneficiaries(),
-                'amountTotal' => $statistics->getAmountTotal(),
-                'amountDistributed' => $statistics->getAmountDistributed(),
-                'amountUsed' => $statistics->getAmountUsed(),
-                'amountSent' => $statistics->getAmountSent(),
-                'amountPickedUp' => $statistics->getAmountPickedUp(),
-            ];
+            return Statistics::create(
+                $statistics->getId(),
+                $statistics->getAmountDistributed(),
+                $statistics->getAmountPickedUp(),
+                $statistics->getAmountSent(),
+                $statistics->getAmountTotal(),
+                $statistics->getNumberOfBeneficiaries(),
+                $statistics->getAmountDeleted()
+            );
         });
     }
 
@@ -115,7 +106,7 @@ class Assistance
     {
         $this->cleanCache();
         $this->assistanceRoot->setValidatedBy($user);
-        $this->assistanceRoot->setUpdatedOn(new DateTimeImmutable());
+        $this->assistanceRoot->setUpdatedOn(new \DateTimeImmutable());
         $this->recountReliefPackages();
 
         return $this;
@@ -134,7 +125,7 @@ class Assistance
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
         $this->assistanceRoot->setValidatedBy(null);
-        $this->assistanceRoot->setUpdatedOn(new DateTimeImmutable());
+        $this->assistanceRoot->setUpdatedOn(new \DateTimeImmutable());
 
         return $this;
     }
@@ -161,7 +152,7 @@ class Assistance
     public function addCommodity(CommodityInputType $commodityInputType): self
     {
         if ($this->assistanceRoot->isValidated()) {
-            throw new LogicException('Validated assistance shouldn\'t be edited');
+            throw new \LogicException('Validated assistance shouldn\'t be edited');
         }
 
         $commodity = new Entity\Commodity();
@@ -215,60 +206,45 @@ class Assistance
             }
             if ($commodity->getDivision() !== null) {
                 if ($this->assistanceRoot->getTargetType() !== AssistanceTargetType::HOUSEHOLD) {
-                    throw new LogicException(
-                        sprintf(
-                            "'%s' division is meaningful only for %s assistance, not for %s.",
-                            CommodityDivision::PER_HOUSEHOLD,
-                            AssistanceTargetType::HOUSEHOLD,
-                            $this->assistanceRoot->getTargetType()
-                        )
-                    );
+                    throw new \LogicException(sprintf("'%s' division is meaningful only for %s assistance, not for %s.",
+                        CommodityDivision::PER_HOUSEHOLD,
+                        AssistanceTargetType::HOUSEHOLD,
+                        $this->assistanceRoot->getTargetType()
+                    ));
                 }
             }
             switch ($commodity->getDivision()) {
                 case CommodityDivision::PER_HOUSEHOLD_MEMBER:
-                    $commodityBuilder->addCommodityCallback(
-                        $modality,
-                        $unit,
-                        function (AssistanceBeneficiary $target) use ($commodity) {
-                            /** @var Household $household */
-                            $household = $target->getBeneficiary();
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
 
-                            // fallback for HH assistances directed to HHHs
-                            if ($household instanceof Beneficiary) {
-                                $household = $household->getHousehold();
-                            }
-
-                            return $commodity->getValue() * count($household->getBeneficiaries());
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
                         }
-                    );
+                        return $commodity->getValue() * count($household->getBeneficiaries());
+                    });
                     break;
                 case CommodityDivision::PER_HOUSEHOLD_MEMBERS:
-                    $commodityBuilder->addCommodityCallback(
-                        $modality,
-                        $unit,
-                        function (AssistanceBeneficiary $target) use ($commodity) {
-                            /** @var Household $household */
-                            $household = $target->getBeneficiary();
+                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
 
-                            // fallback for HH assistances directed to HHHs
-                            if ($household instanceof Beneficiary) {
-                                $household = $household->getHousehold();
-                            }
-
-                            $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
-                            foreach ($commodity->getDivisionGroups() as $divisionGroup) {
-                                if (
-                                    ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
-                                    && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
-                                ) {
-                                    return (float) $divisionGroup->getValue();
-                                }
-                            }
-
-                            throw new LogicException("Division Group was not found.");
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
                         }
-                    );
+
+                        $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                        foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))) {
+                                return (float) $divisionGroup->getValue();
+                            }
+                        }
+
+                        throw new \LogicException("Division Group was not found.");
+                    });
                     break;
                 case CommodityDivision::PER_HOUSEHOLD:
                 default:
@@ -276,6 +252,7 @@ class Assistance
                     break;
             }
         }
+
 
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
@@ -301,6 +278,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
                 if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::EXPIRE)) {
@@ -329,6 +307,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
+
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
                 if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
@@ -340,25 +319,18 @@ class Assistance
 
     /**
      * @param AbstractBeneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
+     * @param string|null         $justification
+     * @param ScoringProtocol|null          $vulnerabilityScore
      *
      * @return Assistance
      */
-    public function addBeneficiary(
-        AbstractBeneficiary $beneficiary,
-        ?string $justification = null,
-        ?ScoringProtocol $vulnerabilityScore = null
-    ): self {
+    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
+    {
         if ($this->assistanceRoot->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException(
-                "It is not possible to add a beneficiary to validated and locked assistance"
-            );
+            throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
         }
 
-        $target = $this->targetRepository->findOneBy(
-            ['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]
-        );
+        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
         if (null === $target) {
             $target = (new AssistanceBeneficiary())
                 ->setAssistance($this->assistanceRoot)
@@ -376,7 +348,7 @@ class Assistance
             $target->setJustification($justification);
         }
         $this->recountReliefPackages([$target]);
-        $this->assistanceRoot->setUpdatedOn(new DateTime());
+        $this->assistanceRoot->setUpdatedOn(new \DateTime());
         $this->cleanCache();
 
         return $this;
@@ -384,32 +356,26 @@ class Assistance
 
     /**
      * @param AbstractBeneficiary $beneficiary
-     * @param string $justification
+     * @param string         $justification
      *
      * @return $this
      */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
         if ($this->assistanceRoot->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException(
-                'It is not possible to remove a beneficiary from validated and locked assistance'
-            );
+            throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
         }
 
         /** @var AssistanceBeneficiary $target */
-        $target = $this->targetRepository->findOneBy(
-            ['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]
-        );
-        if ($target === null) {
-            return $this;
-        }
+        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
+        if ($target === null) return $this;
 
         if ($target->hasDistributionStarted()) {
             throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
         }
         $target->setRemoved(true)
             ->setJustification($justification);
-        $this->assistanceRoot->setUpdatedOn(new DateTime());
+        $this->assistanceRoot->setUpdatedOn(new \DateTime());
 
         $this->cancelUnusedReliefPackages([$target]);
 
@@ -420,9 +386,7 @@ class Assistance
 
     private function cleanCache(): void
     {
-        if (!$this->assistanceRoot->getId()) {
-            return;
-        } // not persisted yet
+        if (!$this->assistanceRoot->getId()) return; // not persisted yet
         try {
             $this->cache->delete(CacheTarget::assistanceId($this->assistanceRoot->getId()));
         } catch (InvalidArgumentException $e) {
@@ -444,9 +408,7 @@ class Assistance
                 if (!isset($commodities[$package->getModalityType()][$package->getUnit()])) {
                     $commodities[$package->getModalityType()][$package->getUnit()] = 0;
                 }
-                $commodities[$package->getModalityType()][$package->getUnit()] += floatval(
-                    $package->getAmountToDistribute()
-                );
+                $commodities[$package->getModalityType()][$package->getUnit()] += floatval($package->getAmountToDistribute());
             }
         }
         $summaries = [];
@@ -455,7 +417,6 @@ class Assistance
                 $summaries[] = new CommoditySummary($modalityType, $unit, $amount);
             }
         }
-
         return $summaries;
     }
 
@@ -479,10 +440,12 @@ class Assistance
         $this->assistanceRoot
             ->getAssistanceSelection()
             ->getSelectionCriteria()
-            ->add($selectionCriteria->getCriteriaRoot());
+            ->add($selectionCriteria->getCriteriaRoot())
+        ;
         $selectionCriteria
             ->getCriteriaRoot()
-            ->setAssistanceSelection($this->assistanceRoot->getAssistanceSelection());
+            ->setAssistanceSelection($this->assistanceRoot->getAssistanceSelection())
+        ;
     }
 
     /**
@@ -499,4 +462,5 @@ class Assistance
             yield new CriteriaGroup($groupNumber, $criteria);
         }
     }
+
 }

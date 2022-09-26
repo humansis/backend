@@ -29,6 +29,21 @@ use Entity\Project;
  */
 class AssistanceRepository extends EntityRepository
 {
+    /**
+     * @param string $iso3
+     *
+     * @return Assistance[]
+     */
+    public function findByIso3(string $iso3): array
+    {
+        $qb = $this->createQueryBuilder('a');
+        $qb->leftJoin('a.location', 'l')
+            ->andWhere('l.countryIso3 = :iso3')
+            ->setParameter('iso3', $iso3);
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function countCompleted(string $countryIso3): int
     {
         $qb = $this->createQueryBuilder('dd');
