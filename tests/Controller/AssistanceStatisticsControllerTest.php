@@ -56,7 +56,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
+            ->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
 
@@ -64,18 +65,16 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment(
-            '{
-            "id": ' . $assistance->getId() . ',
-            "numberOfBeneficiaries": "*",
+        $this->assertJsonFragment('{
+            "id": '.$assistance->getId().',
+            "beneficiariesTotal": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
             "amountUsed": "*",
             "amountSent": "*",
-            "amountPickedUp": "*"
-        }',
-            $this->client->getResponse()->getContent()
-        );
+            "amountPickedUp": "*",
+            "beneficiariesDeleted": "*"
+        }', $this->client->getResponse()->getContent());
     }
 
     public function testList()
@@ -144,7 +143,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertArrayHasKey('amountDistributed', $result);
         $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('numberOfBeneficiaries', $result);
+        $this->assertArrayHasKey('beneficiariesTotal', $result);
+        $this->assertArrayHasKey('beneficiariesDeleted', $result);
         $this->assertEquals((float) $expectedTotalSum, (float) $result['amountTotal']);
         $this->assertEquals((float) $expectedDistributed, (float) $result['amountDistributed']);
     }
