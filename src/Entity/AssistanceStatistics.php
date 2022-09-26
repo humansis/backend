@@ -56,6 +56,11 @@ class AssistanceStatistics
      */
     private ?float $amountPickedUp = null;
 
+    /**
+     * @ORM\Column(name="amount_deleted", type="integer")
+     */
+    private $amountDeleted;
+
     public function getId(): int
     {
         return $this->id;
@@ -89,5 +94,10 @@ class AssistanceStatistics
     public function getAmountPickedUp(): ?float
     {
         return null === $this->amountPickedUp ? null : (float) $this->amountPickedUp;
+    }
+
+    public function getAmountDeleted(): int
+    {
+        return $this->amountDeleted;
     }
 }
