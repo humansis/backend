@@ -96,6 +96,7 @@ class Assistance
                 $statistics->getAmountPickedUp(),
                 $statistics->getAmountSent(),
                 $statistics->getAmountTotal(),
+                $statistics->getAmountUsed(),
                 $statistics->getNumberOfBeneficiaries(),
                 $statistics->getAmountDeleted()
             );
