@@ -21,7 +21,6 @@ use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\AssistanceQuery;
-use Entity\AssistanceStatistics;
 use Enum\ModalityType;
 use Exception\CsvParserException;
 use Export\AssistanceBankReportExport;
@@ -43,7 +42,6 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
-use Symfony\Component\Serializer\SerializerInterface;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
 
 class AssistanceController extends AbstractController
@@ -72,14 +70,19 @@ class AssistanceController extends AbstractController
      *
      * @param Request $request
      * @param AssistanceStatisticsFilterInputType $filter
-     * @param AssistanceQuery $assistanceQuery
+     * @param AssistanceQuery                     $assistanceQuery
+     * @param AssistanceRepository                $assistanceRepository
+     * @param AssistanceFactory                   $assistanceFactory
      *
      * @return JsonResponse
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function statistics(
-        Request $request,
+        Request                             $request,
         AssistanceStatisticsFilterInputType $filter,
-        AssistanceQuery $assistanceQuery
+        AssistanceQuery                     $assistanceQuery,
+        AssistanceRepository                $assistanceRepository,
+        AssistanceFactory                   $assistanceFactory
     ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
@@ -92,12 +95,11 @@ class AssistanceController extends AbstractController
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
-            // TODO if we search only assistance IDs we can check if statistic is in cache
-
-            $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams(
-                $countryIso3,
-                $filter
-            );
+            $assistanceInCountry = $assistanceRepository->findByIso3($countryIso3);
+            foreach($assistanceInCountry as $assistance) {
+                $assistanceDomain = $assistanceFactory->hydrate($assistance);
+                $statistics[] = $assistanceDomain->getStatistics($countryIso3);
+            }
         }
 
         return $this->json(new Paginator($statistics));
@@ -111,6 +113,7 @@ class AssistanceController extends AbstractController
      * @param AssistanceFactory $factory
      *
      * @return JsonResponse
+     * @throws \Psr\Cache\InvalidArgumentException
      */
     public function assistanceStatistics(Assistance $assistance, AssistanceFactory $factory): JsonResponse
     {
