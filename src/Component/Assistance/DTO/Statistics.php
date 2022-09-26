@@ -32,11 +32,6 @@ class Statistics
     private $amountTotal;
 
     /**
-     * @var float|null
-     */
-    private $amountUsed;
-
-    /**
      * @var int
      */
     private $beneficiariesTotal;
@@ -47,33 +42,35 @@ class Statistics
     private $beneficiariesDeleted;
 
     /**
-     * @param int $id
-     * @param int $beneficiariesTotal
-     * @param int $beneficiariesDeleted
+     * @param int        $id
      * @param float|null $amountDistributed
      * @param float|null $amountPickedUp
      * @param float|null $amountSent
      * @param float|null $amountTotal
-     * @param float|null $amountUsed
+     * @param int        $beneficiariesTotal
+     * @param int        $beneficiariesDeleted
+     *
+     * @return Statistics
      */
-    public function __construct(
-        int $id,
-        int $beneficiariesTotal,
-        int $beneficiariesDeleted,
-        ?float $amountDistributed = null,
-        ?float $amountPickedUp = null,
-        ?float $amountSent = null,
-        ?float $amountTotal = null,
-        ?float $amountUsed = null
-    ) {
-        $this->id = $id;
-        $this->beneficiariesTotal = $beneficiariesTotal;
-        $this->beneficiariesDeleted = $beneficiariesDeleted;
-        $this->amountDistributed = $amountDistributed;
-        $this->amountPickedUp = $amountPickedUp;
-        $this->amountSent = $amountSent;
-        $this->amountTotal = $amountTotal;
-        $this->amountUsed = $amountUsed;
+    public static function create(
+        int    $id,
+        ?float $amountDistributed,
+        ?float $amountPickedUp,
+        ?float $amountSent,
+        ?float $amountTotal,
+        int    $beneficiariesTotal,
+        int    $beneficiariesDeleted
+    ): Statistics {
+        $self = new self();
+        $self->setId($id);
+        $self->setAmountDistributed($amountDistributed);
+        $self->setAmountPickedUp($amountPickedUp);
+        $self->setAmountSent($amountSent);
+        $self->setAmountTotal($amountTotal);
+        $self->setBeneficiariesTotal($beneficiariesTotal);
+        $self->setBeneficiariesDeleted($beneficiariesDeleted);
+
+        return $self;
     }
 
     /**
@@ -188,19 +185,4 @@ class Statistics
         $this->beneficiariesDeleted = $beneficiariesDeleted;
     }
 
-    /**
-     * @return float|null
-     */
-    public function getAmountUsed(): ?float
-    {
-        return $this->amountUsed;
-    }
-
-    /**
-     * @param float|null $amountUsed
-     */
-    public function setAmountUsed(?float $amountUsed): void
-    {
-        $this->amountUsed = $amountUsed;
-    }
 }

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Component\Assistance\Domain;
 
@@ -84,15 +82,14 @@ class Assistance
                 );
             }
 
-            return new Statistics(
+            return Statistics::create(
                 $statistics->getId(),
-                $statistics->getNumberOfBeneficiaries(),
-                $statistics->getAmountDeleted(),
                 $statistics->getAmountDistributed(),
                 $statistics->getAmountPickedUp(),
                 $statistics->getAmountSent(),
                 $statistics->getAmountTotal(),
-                $statistics->getAmountUsed()
+                $statistics->getNumberOfBeneficiaries(),
+                $statistics->getAmountDeleted()
             );
         });
     }

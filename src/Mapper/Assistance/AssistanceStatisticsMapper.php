@@ -56,11 +56,6 @@ class AssistanceStatisticsMapper implements MapperInterface
         return (float) $this->object->getAmountTotal();
     }
 
-    public function getAmountUsed(): float
-    {
-        return (float) $this->object->getAmountUsed();
-    }
-
     public function getBeneficiariesTotal(): int
     {
         return $this->object->getBeneficiariesTotal();
