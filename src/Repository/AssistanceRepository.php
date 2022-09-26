@@ -34,7 +34,7 @@ class AssistanceRepository extends EntityRepository
      *
      * @return Assistance[]
      */
-    public function findByIso3(string $iso3): array
+    public function findByCountryIso3(string $iso3): array
     {
         $qb = $this->createQueryBuilder('a');
         $qb->leftJoin('a.location', 'l')
