@@ -30,6 +30,11 @@ class Statistics
     private $amountTotal;
 
     /**
+     * @var float|null
+     */
+    private $amountUsed;
+
+    /**
      * @var int
      */
     private $beneficiariesTotal;
@@ -45,6 +50,7 @@ class Statistics
      * @param float|null $amountPickedUp
      * @param float|null $amountSent
      * @param float|null $amountTotal
+     * @param float|null $amountUsed
      * @param int        $beneficiariesTotal
      * @param int        $beneficiariesDeleted
      *
@@ -56,6 +62,7 @@ class Statistics
         ?float $amountPickedUp,
         ?float $amountSent,
         ?float $amountTotal,
+        ?float $amountUsed,
         int    $beneficiariesTotal,
         int    $beneficiariesDeleted
     ): Statistics {
@@ -65,6 +72,7 @@ class Statistics
         $self->setAmountPickedUp($amountPickedUp);
         $self->setAmountSent($amountSent);
         $self->setAmountTotal($amountTotal);
+        $self->setAmountUsed($amountUsed);
         $self->setBeneficiariesTotal($beneficiariesTotal);
         $self->setBeneficiariesDeleted($beneficiariesDeleted);
 
@@ -181,6 +189,22 @@ class Statistics
     public function setBeneficiariesDeleted(int $beneficiariesDeleted): void
     {
         $this->beneficiariesDeleted = $beneficiariesDeleted;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAmountUsed(): ?float
+    {
+        return $this->amountUsed;
+    }
+
+    /**
+     * @param float|null $amountUsed
+     */
+    public function setAmountUsed(?float $amountUsed): void
+    {
+        $this->amountUsed = $amountUsed;
     }
 
 }
