@@ -120,9 +120,7 @@ class Assistance
         }
         $this->cleanCache();
 
-        $statistics = $this->getStatistics();
-
-        if ($statistics['amountDistributed'] > 0) {
+        if ($this->hasDistributionStarted()) {
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
         $this->assistanceRoot->setValidatedBy(null);
@@ -183,9 +181,7 @@ class Assistance
 
     public function hasDistributionStarted(): bool
     {
-        $statistics = $this->getStatistics();
-
-        return $statistics['amountDistributed'] > 0;
+        return $this->getStatistics()->getAmountDistributed() > 0;
     }
 
     /**
