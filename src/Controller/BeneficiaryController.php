@@ -5,12 +5,12 @@ namespace Controller;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
-use Exception;
 use Exception\CsvParserException;
 use Repository\BeneficiaryRepository;
+use Repository\NationalIdRepository;
+use Repository\OrganizationRepository;
+use Repository\PhoneRepository;
 use Utils\BeneficiaryService;
-use Controller\ExportController;
-use Entity\Organization;
 use Pagination\Paginator;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
@@ -66,15 +66,15 @@ class BeneficiaryController extends AbstractController
 
     /**
      * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
-     * @param AssistanceService $assistanceService
-     * @param BeneficiaryService $beneficiaryService
-     * @param ScoringService $scoringService
+     * @param AssistanceService           $assistanceService
+     * @param BeneficiaryService          $beneficiaryService
+     * @param ScoringService              $scoringService
      */
     public function __construct(
         AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
-        AssistanceService $assistanceService,
-        BeneficiaryService $beneficiaryService,
-        ScoringService $scoringService
+        AssistanceService           $assistanceService,
+        BeneficiaryService          $beneficiaryService,
+        ScoringService              $scoringService
     ) {
         $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
         $this->scoringService = $scoringService;
@@ -86,15 +86,13 @@ class BeneficiaryController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
+     * @param Pagination                $pagination
      *
      * @return JsonResponse
      * @throws EntityNotFoundException
      */
-    public function precalculateBeneficiaries(
-        AssistanceCreateInputType $inputType,
-        Pagination $pagination
-    ): JsonResponse {
+    public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
+    {
         $beneficiaries = $this->assistanceService->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
@@ -104,7 +102,7 @@ class BeneficiaryController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
+     * @param Pagination                $pagination
      *
      * @return JsonResponse
      * @throws EntityNotFoundException
@@ -127,18 +125,13 @@ class BeneficiaryController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function vulnerabilityScores(
-        VulnerabilityScoreInputType $vulnerabilityScoreInputType,
-        Request $request
-    ): JsonResponse {
+    public function vulnerabilityScores(VulnerabilityScoreInputType $vulnerabilityScoreInputType, Request $request): JsonResponse
+    {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $scoring = $this->scoringService->computeTotalScore(
-            $vulnerabilityScoreInputType,
-            $request->headers->get('country')
-        );
+        $scoring = $this->scoringService->computeTotalScore($vulnerabilityScoreInputType, $request->headers->get('country'));
 
         return $this->json(new Paginator($scoring));
     }
@@ -146,32 +139,33 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/exports")
      *
-     * @param Request $request
+     * @param Request                          $request
      * @param BeneficiaryExportFilterInputType $inputType
+     * @param BeneficiaryRepository            $beneficiaryRepository
      *
      * @return Response
      * @throws EntityNotFoundException
      * @throws EnumApiValueNoFoundException
      */
-    public function exports(Request $request, BeneficiaryExportFilterInputType $inputType): Response
+    public function exports(Request $request, BeneficiaryExportFilterInputType $inputType, BeneficiaryRepository $beneficiaryRepository): Response
     {
         $sample = [];
         if ($inputType->hasIds()) {
             foreach ($inputType->getIds() as $id) {
-                $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
+                $bnf = $beneficiaryRepository->find($id);
                 if (!$bnf) {
-                    throw new EntityNotFoundException('Beneficiary with ID #' . $id . ' does not exists.');
+                    throw new EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
                 }
 
                 $sample[] = [
-                    'gender' => PersonGender::valueToAPI($bnf->getGender()),
-                    'en_given_name' => $bnf->getEnGivenName(),
-                    'en_family_name' => $bnf->getEnFamilyName(),
-                    'local_given_name' => $bnf->getLocalGivenName(),
-                    'local_family_name' => $bnf->getLocalFamilyName(),
-                    'status' => (string) $bnf->getStatus(),
+                    'gender' => PersonGender::valueToAPI($bnf->getPerson()->getGender()),
+                    'en_given_name' => $bnf->getPerson()->getEnGivenName(),
+                    'en_family_name' => $bnf->getPerson()->getEnFamilyName(),
+                    'local_given_name' => $bnf->getPerson()->getLocalGivenName(),
+                    'local_family_name' => $bnf->getPerson()->getLocalFamilyName(),
+                    'status' => (string) $bnf->isHead(),
                     'residency_status' => $bnf->getResidencyStatus(),
-                    'date_of_birth' => $bnf->getDateOfBirth(),
+                    'date_of_birth' => $bnf->getPerson()->getDateOfBirth(),
                 ];
             }
         }
@@ -179,43 +173,41 @@ class BeneficiaryController extends AbstractController
         $request->query->add(['distributionSample' => true]);
         $request->request->add(['sample' => $sample]);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
     }
 
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports")
      *
-     * @param Assistance $assistance
-     * @param Request $request
+     * @param Assistance             $assistance
+     * @param Request                $request
+     * @param OrganizationRepository $organizationRepository
      *
      * @return Response
      */
-    public function exportsByAssistance(Assistance $assistance, Request $request): Response
+    public function exportsByAssistance(Assistance $assistance, Request $request, OrganizationRepository $organizationRepository): Response
     {
-        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+        $organization = $organizationRepository->findOneBy([]);
         $type = $request->query->get('type');
 
         $filename = $this->assistanceSpreadsheetExport->export($assistance, $organization, $type);
 
         try {
             // Create binary file to send
-            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
+            $response = new BinaryFileResponse(getcwd().'/'.$filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (Exception $exception) {
-            return new JsonResponse(
-                $exception->getMessage(),
-                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
-            );
+        } catch (\Exception $exception) {
+            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -223,23 +215,20 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports-raw")
      *
      * @param Assistance $assistance
-     * @param Request $request
+     * @param Request    $request
      *
      * @return Response
      */
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
-        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv(
-            $assistance,
-            $request->query->get('type')
-        );
+        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
 
-        $response = new BinaryFileResponse(getcwd() . '/' . $file);
+        $response = new BinaryFileResponse(getcwd().'/'.$file);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
         if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd().'/'.$file));
         } else {
             $response->headers->set('Content-Type', 'text/plain');
         }
@@ -252,12 +241,13 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids")
      *
      * @param NationalIdFilterInputType $filter
+     * @param NationalIdRepository      $nationalIdRepository
      *
      * @return JsonResponse
      */
-    public function nationalIds(NationalIdFilterInputType $filter): JsonResponse
+    public function nationalIds(NationalIdFilterInputType $filter, NationalIdRepository $nationalIdRepository): JsonResponse
     {
-        $nationalIds = $this->getDoctrine()->getRepository(NationalId::class)->findByParams($filter);
+        $nationalIds = $nationalIdRepository->findByParams($filter);
 
         return $this->json($nationalIds);
     }
@@ -278,12 +268,13 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries/phones")
      *
      * @param PhoneFilterInputType $filter
+     * @param PhoneRepository      $phoneRepository
      *
      * @return JsonResponse
      */
-    public function phones(PhoneFilterInputType $filter): JsonResponse
+    public function phones(PhoneFilterInputType $filter, PhoneRepository $phoneRepository): JsonResponse
     {
-        $params = $this->getDoctrine()->getRepository(Phone::class)->findByParams($filter);
+        $params = $phoneRepository->findByParams($filter);
 
         return $this->json($params);
     }
@@ -319,7 +310,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/beneficiaries/{id}")
      *
-     * @param Beneficiary $beneficiary
+     * @param Beneficiary              $beneficiary
      * @param BenefciaryPatchInputType $inputType
      *
      * @return JsonResponse
@@ -339,12 +330,13 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries")
      *
      * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryRepository      $beneficiaryRepository
      *
      * @return JsonResponse
      */
-    public function beneficiaryies(BeneficiaryFilterInputType $filter): JsonResponse
+    public function beneficiaries(BeneficiaryFilterInputType $filter, BeneficiaryRepository $beneficiaryRepository): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+        $beneficiaries = $beneficiaryRepository->findByParams($filter);
 
         return $this->json($beneficiaries);
     }
@@ -352,36 +344,30 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
-     * @param Project $project
-     * @param string $target
+     * @param Project                            $project
+     * @param string                             $target
      * @param BeneficiarySelectedFilterInputType $filter
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceRepository $assistanceRepository
+     * @param BeneficiaryRepository              $beneficiaryRepository
+     * @param AssistanceRepository               $assistanceRepository
      *
      * @return JsonResponse
      */
     public function getBeneficiaries(
-        Project $project,
-        string $target,
+        Project                            $project,
+        string                             $target,
         BeneficiarySelectedFilterInputType $filter,
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceRepository $assistanceRepository
+        BeneficiaryRepository              $beneficiaryRepository,
+        AssistanceRepository               $assistanceRepository
     ): JsonResponse {
         if (!in_array($target, AssistanceTargetType::values())) {
-            throw $this->createNotFoundException(
-                'Invalid target. Allowed are ' . implode(', ', AssistanceTargetType::values())
-            );
+            throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
         }
 
         if ($filter->hasExcludeAssistance()) {
             $assistanceId = $filter->getExcludeAssistance();
             /** @var Assistance $excludedAssistance */
             $excludedAssistance = $assistanceRepository->find($assistanceId);
-            $beneficiaries = $beneficiaryRepository->getNotSelectedBeneficiariesOfProject(
-                $project,
-                $target,
-                $excludedAssistance
-            );
+            $beneficiaries = $beneficiaryRepository->getNotSelectedBeneficiariesOfProject($project, $target, $excludedAssistance);
         } else {
             $beneficiaries = $beneficiaryRepository->getAllOfProject($project, $target);
         }
