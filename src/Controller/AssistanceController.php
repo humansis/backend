@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Controller;
 
 use Entity\User;
+use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
 use InvalidArgumentException;
 use Pagination\Paginator;
 use Entity\Assistance;
 use Enum\AssistanceType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
@@ -39,6 +41,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\Serializer\SerializerInterface;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
@@ -315,15 +318,20 @@ class AssistanceController extends AbstractController
     /**
      * @param DomainAssistance $assistance
      * @param string           $type
+     * @param int|null         $threshold
      *
      * @return Response
      * @throws NoResultException
      * @throws NonUniqueResultException
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
     private function scoresFromAssistance(DomainAssistance $assistance, string $type, int $threshold = null): Response
     {
-        $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $threshold);
+        try {
+            $filename = $this->vulnerabilityScoreExport->export($assistance, $type, $threshold);
+        } catch (ExportNoDataException $e) {
+            return new Response(null, Response::HTTP_NO_CONTENT);
+        }
         if (!$filename) {
             throw $this->createNotFoundException();
         }

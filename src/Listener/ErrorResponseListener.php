@@ -6,10 +6,11 @@ namespace Listener;
 
 use GuzzleHttp\Psr7\Response;
 use Exception\ConstraintViolationException;
+use Exception\HandledException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -27,9 +28,9 @@ class ErrorResponseListener
         $this->debug = $debug;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if ($exception instanceof ConstraintViolationException) {
             $errors = [];
