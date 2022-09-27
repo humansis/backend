@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Utils\FileSystem;
 
 use ZipArchive;
 
 trait ZipError
 {
-    private function getZipError($res): string
+    private function getZipError(int $res): string
     {
         switch ($res) {
             case ZipArchive::ER_EXISTS:
