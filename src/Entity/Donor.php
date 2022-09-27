@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Utils\ExportableInterface;
@@ -43,7 +44,7 @@ class Donor implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
+     * @ORM\Column(name="shortname", type="string", length=255)
      *
      */
     private $shortname;
@@ -77,25 +78,27 @@ class Donor implements ExportableInterface
      */
     private $logo;
 
+
     /**
      * Set id.
      *
      * @param $id
      * @return $this
      */
-    public function setId($id)
+    public function setId($id): Donor
     {
         $this->id = $id;
 
         return $this;
     }
 
+
     /**
      * Get id.
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -107,7 +110,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setFullname($fullname)
+    public function setFullname(string $fullname): Donor
     {
         $this->fullname = $fullname;
 
@@ -119,7 +122,7 @@ class Donor implements ExportableInterface
      *
      * @return string
      */
-    public function getFullname()
+    public function getFullname(): string
     {
         return $this->fullname;
     }
@@ -131,7 +134,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setShortname($shortname)
+    public function setShortname(string $shortname): Donor
     {
         $this->shortname = $shortname;
 
@@ -143,7 +146,7 @@ class Donor implements ExportableInterface
      *
      * @return string
      */
-    public function getShortname()
+    public function getShortname(): string
     {
         return $this->shortname;
     }
@@ -155,7 +158,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setDateAdded($dateAdded)
+    public function setDateAdded(DateTime $dateAdded): Donor
     {
         $this->dateAdded = $dateAdded;
 
@@ -167,7 +170,7 @@ class Donor implements ExportableInterface
      *
      * @return DateTime
      */
-    public function getDateAdded()
+    public function getDateAdded(): DateTime
     {
         return $this->dateAdded;
     }
@@ -179,7 +182,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setNotes($notes)
+    public function setNotes(string $notes): Donor
     {
         $this->notes = $notes;
 
@@ -191,11 +194,10 @@ class Donor implements ExportableInterface
      *
      * @return string
      */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
-
     /**
      * Constructor
      */
@@ -211,7 +213,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function addProject(Project $project)
+    public function addProject(Project $project): Donor
     {
         $this->projects[] = $project;
 
@@ -223,9 +225,9 @@ class Donor implements ExportableInterface
      *
      * @param Project $project
      *
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeProject(Project $project)
+    public function removeProject(Project $project): bool
     {
         return $this->projects->removeElement($project);
     }
@@ -242,7 +244,6 @@ class Donor implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -256,14 +257,14 @@ class Donor implements ExportableInterface
 
         return [
             "Full name" => $this->getFullName(),
-            "Short name" => $this->getShortname(),
+            "Short name"=> $this->getShortname(),
             "Date added" => $this->getDateAdded()->format('d-m-Y H:i:s'),
             "Notes" => $this->getNotes(),
             "Project" => $project,
         ];
     }
 
-    /**
+     /**
      * Set logo.
      *
      * @param string|null $logo
