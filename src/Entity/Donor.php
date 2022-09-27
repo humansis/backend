@@ -78,6 +78,13 @@ class Donor implements ExportableInterface
      */
     private $logo;
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+    }
 
     /**
      * Set id.
@@ -178,11 +185,11 @@ class Donor implements ExportableInterface
     /**
      * Set notes.
      *
-     * @param string $notes
+     * @param string|null $notes
      *
      * @return Donor
      */
-    public function setNotes(string $notes): Donor
+    public function setNotes(?string $notes): Donor
     {
         $this->notes = $notes;
 
@@ -192,18 +199,11 @@ class Donor implements ExportableInterface
     /**
      * Get notes.
      *
-     * @return string
+     * @return string|null
      */
     public function getNotes(): ?string
     {
         return $this->notes;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
     }
 
     /**
