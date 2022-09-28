@@ -4,9 +4,6 @@ namespace Utils;
 
 use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\Style;
-use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
-use OpenSpout\Writer\Exception\WriterAlreadyOpenedException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BasicExportService
 {
@@ -83,30 +80,5 @@ class BasicExportService
         return $style;
     }
 
-    /**
-     * Generate file.
-     *
-     * @param string $name
-     * @param string $type
-     *
-     * @return string $filename
-     * @throws WriterAlreadyOpenedException
-     */
-    public function generateFile(string $name, string $type): string
-    {
-        if (self::FORMAT_CSV == $type) {
-            $this->writer = WriterEntityFactory::createCSVWriter();
-            $filename = $name.'.csv';
-        } elseif (self::FORMAT_XLSX == $type) {
-            $this->writer = WriterEntityFactory::createXLSXWriter();
-            $this->writer->setShouldUseInlineStrings(true);
-            $filename = $name.'.xlsx';
-        } elseif (self::FORMAT_ODS == $type) {
-            $this->writer = WriterEntityFactory::createODSWriter();
-            $filename = $name.'.ods';
-        } else {
-            throw new BadRequestHttpException('An error occurred with the type file: '.$type);
-        }
-        return $filename;
-    }
+
 }
