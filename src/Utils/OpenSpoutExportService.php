@@ -56,11 +56,11 @@ class OpenSpoutExportService extends BasicExportService
         $allrowsData = $this->normalize($tableData);
         $filename = $this->generateFile($name,$format);
         $tableHeaders = $this->getHeader($allrowsData);
-        $style_header = $this->getTheStyle($headerBold,$headerFontItalic);
-        $style_row = $this->getTheStyle();
-        $row_head = WriterEntityFactory::createRowFromArray($tableHeaders,$style_header);
+        $styleHeader = $this->getTheStyle($headerBold,$headerFontItalic);
+        $styleRow = $this->getTheStyle();
+        $rowHead = WriterEntityFactory::createRowFromArray($tableHeaders,$styleHeader);
 
-        $streamedResponse = new StreamedResponse(function() use ($filename,$headerDown,$row_head,$allrowsData,$style_row) {
+        $streamedResponse = new StreamedResponse(function() use ($filename,$headerDown,$rowHead,$allrowsData,$styleRow) {
             try {
                 $this->writer->openToFile("php://output");
             } catch (IOException $e) {
@@ -68,14 +68,14 @@ class OpenSpoutExportService extends BasicExportService
             }
             if ($headerDown === false) {
                 try {
-                    $this->writer->addRow($row_head);
+                    $this->writer->addRow($rowHead);
                 } catch (IOException|WriterNotOpenedException $e) {
                     return ($e->getMessage());
                 }
             }
             $i = 0;
             foreach ($allrowsData as $rowData) {
-                $row = WriterEntityFactory::createRowFromArray($rowData, $style_row);
+                $row = WriterEntityFactory::createRowFromArray($rowData, $styleRow);
                 try {
                     $this->writer->addRow($row);
                 } catch (IOException|WriterNotOpenedException $e) {
@@ -89,7 +89,7 @@ class OpenSpoutExportService extends BasicExportService
             }
             if ($headerDown === true) {
                 try {
-                    $this->writer->addRow($row_head);
+                    $this->writer->addRow($rowHead);
                 } catch (IOException|WriterNotOpenedException $e) {
                     return ($e->getMessage());
                 }
