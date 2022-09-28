@@ -13,6 +13,7 @@ use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
@@ -37,12 +38,11 @@ class VendorController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function exports(Request $request): Response
+    public function exports(Request $request): StreamedResponse
     {
-        $filename = $this->get('voucher.vendor_service')->exportToCsv(
+        return  $this->get('voucher.vendor_service')->exportToCsv(
             $request->query->get('type'), $request->headers->get('country'));
 
-        return $this->exportResponse($filename);
     }
 
     /**
