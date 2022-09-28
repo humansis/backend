@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use NewApiBundle\Component\Import\DBAL\InsertQueryCollection;
 use NewApiBundle\Component\Import\Integrity;
 use NewApiBundle\Component\Import\Messaging\Message\ImportCheck;
-use NewApiBundle\Component\Import\Messaging\Message\UploadFile;
+use NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished;
 use NewApiBundle\Entity\Import;
 use NewApiBundle\Entity\ImportFile;
 use NewApiBundle\Repository\ImportFileRepository;
@@ -137,9 +137,7 @@ class UploadImportService
         $this->em->persist($importFile);
         $this->em->flush();
 
-        if (!$importFile->getStructureViolations()) {
-            $this->messageBus->dispatch(new UploadFile($importFile->getId()));
-        }
+        $this->messageBus->dispatch(new UploadFileFinished($importFile->getId()));
 
         return $importFile;
     }
