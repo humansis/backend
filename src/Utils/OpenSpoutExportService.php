@@ -60,7 +60,7 @@ class OpenSpoutExportService extends BasicExportService
         $styleRow = $this->getTheStyle();
         $rowHead = WriterEntityFactory::createRowFromArray($tableHeaders,$styleHeader);
 
-        $streamedResponse = new StreamedResponse(function() use ($filename,$headerDown,$rowHead,$allrowsData,$styleRow) {
+        $streamedResponse = new StreamedResponse(function() use ($headerDown,$rowHead,$allrowsData,$styleRow) {
             try {
                 $this->writer->openToFile("php://output");
             } catch (IOException $e) {
