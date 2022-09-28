@@ -12,6 +12,7 @@ use InputType\HouseholdUpdateInputType;
 use Repository\HouseholdRepository;
 use Request\Pagination;
 use Entity\Project;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,7 +49,7 @@ class HouseholdController extends AbstractController
      * @param Pagination               $pagination
      * @param HouseholdOrderInputType  $order
      *
-     * @return Response
+     * @return StreamedResponse
      */
     public function exports(Request $request, HouseholdFilterInputType $filter, Pagination $pagination, HouseholdOrderInputType $order): Response
     {
@@ -60,7 +61,7 @@ class HouseholdController extends AbstractController
         }
 
         try {
-            $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+            return $this->get('beneficiary.beneficiary_service')->exportToCsv(
                 $request->query->get('type'),
                 $request->headers->get('country'),
                 $filter, $pagination, $order
@@ -74,7 +75,6 @@ class HouseholdController extends AbstractController
             ],Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->exportResponse($filename);
     }
 
     /**

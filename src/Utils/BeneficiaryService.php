@@ -22,6 +22,7 @@ use InputType\HouseholdFilterInputType;
 use InputType\HouseholdOrderInputType;
 use Request\Pagination;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BeneficiaryService
@@ -344,7 +345,7 @@ class BeneficiaryService
      * @param Pagination               $pagination
      * @param HouseholdOrderInputType  $order
      *
-     * @return string
+     * @return StreamedResponse
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
@@ -354,7 +355,7 @@ class BeneficiaryService
         HouseholdFilterInputType $filter,
         Pagination $pagination,
         HouseholdOrderInputType $order
-    ): string {
+    ): StreamedResponse {
         $households = $this->householdRepository->findByParams($countryIso3, $filter, $order, $pagination);
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
