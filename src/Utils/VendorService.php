@@ -11,6 +11,7 @@ use InputType\VendorCreateInputType;
 use InputType\VendorUpdateInputType;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
 use Entity\User;
@@ -230,7 +231,7 @@ class VendorService
      * Export all vendors in a CSV file
      * @param string $type
      * @param string $countryISO3
-     * @return mixed
+     * @return StreamedResponse
      */
     public function exportToCsv(string $type, string $countryISO3)
     {
