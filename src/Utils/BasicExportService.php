@@ -6,7 +6,6 @@ use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\Style;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
 use OpenSpout\Writer\Exception\WriterAlreadyOpenedException;
-use OpenSpout\Writer\WriterAbstract as Writer;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BasicExportService
@@ -16,10 +15,7 @@ class BasicExportService
     const FORMAT_ODS = 'ods';
 
 
-    /**
-     * @var Writer
-     */
-    protected $writer;
+
 
     /**
      * @param $exportableTable
