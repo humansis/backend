@@ -5,6 +5,7 @@ namespace Utils;
 use Exception\ExportNoDataException;
 use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
+use OpenSpout\Writer\Exception\WriterAlreadyOpenedException;
 use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\WriterAbstract as Writer;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -47,8 +48,7 @@ class OpenSpoutExportService extends BasicExportService
         if (0 === count($exportableTable)) {
             throw new ExportNoDataException('No data to export');
         }
-        $streamedResponse = $this->generateSpreadsheet($exportableTable, $name, $format,$headerDown, $headerBold, $headerFontItalic);
-        return $streamedResponse;
+        return $this->generateSpreadsheet($exportableTable, $name, $format,$headerDown, $headerBold, $headerFontItalic);
     }
 
     public function generateSpreadsheet($tableData, $name, $format, $headerDown, $headerBold, $headerFontItalic): StreamedResponse
@@ -105,6 +105,31 @@ class OpenSpoutExportService extends BasicExportService
         return $streamedResponse;
     }
 
-
+    /**
+     * Generate file.
+     *
+     * @param string $name
+     * @param string $type
+     *
+     * @return string $filename
+     * @throws WriterAlreadyOpenedException
+     */
+    public function generateFile(string $name, string $type): string
+    {
+        if (self::FORMAT_CSV == $type) {
+            $this->writer = WriterEntityFactory::createCSVWriter();
+            $filename = $name.'.csv';
+        } elseif (self::FORMAT_XLSX == $type) {
+            $this->writer = WriterEntityFactory::createXLSXWriter();
+            $this->writer->setShouldUseInlineStrings(true);
+            $filename = $name.'.xlsx';
+        } elseif (self::FORMAT_ODS == $type) {
+            $this->writer = WriterEntityFactory::createODSWriter();
+            $filename = $name.'.ods';
+        } else {
+            throw new BadRequestHttpException('An error occurred with the type file: '.$type);
+        }
+        return $filename;
+    }
 
 }
