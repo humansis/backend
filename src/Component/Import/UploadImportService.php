@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use Component\Import\DBAL\InsertQueryCollection;
 use Component\Import\Integrity;
-use Component\Import\Messaging\Message\UploadFile;
+use Component\Import\Messaging\Message\UploadFileFinished;
 use Entity\Import;
 use Entity\ImportFile;
 use Symfony\Component\Filesystem\Filesystem;
@@ -135,9 +135,7 @@ class UploadImportService
         $this->em->persist($importFile);
         $this->em->flush();
 
-        if (!$importFile->getStructureViolations()) {
-            $this->messageBus->dispatch(new UploadFile($importFile->getId()));
-        }
+        $this->messageBus->dispatch(new UploadFileFinished($importFile->getId()));
 
         return $importFile;
     }
