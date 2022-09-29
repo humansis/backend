@@ -12,12 +12,12 @@ final class Version20220927054751 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE donor CHANGE shortname shortname VARCHAR(255) NOT NULL');
         $this->addSql('UPDATE donor d
             SET d.shortname = d.fullname
             WHERE d.shortname IS NULL
             OR LENGTH(d.shortname) = 0;
         ');
+        $this->addSql('ALTER TABLE donor CHANGE shortname shortname VARCHAR(255) NOT NULL');
     }
 
     public function down(Schema $schema): void
