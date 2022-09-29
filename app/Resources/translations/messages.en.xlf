@@ -5201,6 +5201,8 @@ Size</source>
         <source>Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</source>
         <target>Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</target>
       </trans-unit>
+      <trans-unit id="Bulk remove"><source>Bulk remove</source></trans-unit>
+      <trans-unit id="Removed in the past"><source>Removed in the past</source></trans-unit>
     </body>
   </file>
 </xliff>
