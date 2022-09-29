@@ -1377,7 +1377,6 @@ services:
         arguments:
             - '@translator'
             - '@Component\Country\Countries'
-            - '@Utils\OpenSpoutExportService'
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\DistributedItem")'
         public: true
 
