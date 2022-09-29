@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 
-class OpenSpoutExportService extends BasicExportService
+class OpenSpoutExportService extends BasicExportService implements ExportTableServiceInterface
 {
     const FLUSH_THRESHOLD = 100;
 
