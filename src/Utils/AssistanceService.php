@@ -525,13 +525,13 @@ class AssistanceService
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
         /** @var ReliefPackage[] $packages */
-        $packages = array();
+        $packages = [];
         $exportableTable = array();
         foreach ($distributionBeneficiaries as $db) {
             $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($db);
 
             if ($relief) {
-                array_push($packages, $relief);
+                $packages[] = $relief;
             }
         }
 
@@ -539,7 +539,7 @@ class AssistanceService
             $beneficiary = $relief->getAssistanceBeneficiary()->getBeneficiary();
             $commodityNames = $relief->getModalityType();
             $commodityValues = $relief->getAmountToDistribute() . ' ' . $relief->getUnit();
-            $spent = $relief->getSpent() . ' ' . $relief->getUnit();
+            $spent = $relief->getAmountSpent() . ' ' . $relief->getUnit();
 
             $commonFields = $beneficiary->getCommonExportFields();
 
