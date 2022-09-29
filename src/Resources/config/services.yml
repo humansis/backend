@@ -678,7 +678,7 @@ services:
         class: Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@Utils\OpenSpoutExportService'
+            - '@Utils\ExportTableServiceInterface'
             - '@Repository\BeneficiaryRepository'
             - '@Repository\HouseholdRepository'
             - '@Repository\VulnerabilityCriterionRepository'
@@ -1211,6 +1211,9 @@ services:
     Utils\OpenSpoutExportService:
         class: Utils\OpenSpoutExportService
         public: true
+
+    Utils\ExportTableServiceInterface:
+        alias: 'Utils\OpenSpoutExportService'
 
     Utils\BasicExportService:
         class: Utils\BasicExportService
