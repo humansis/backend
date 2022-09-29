@@ -14,13 +14,11 @@ use Request\Pagination;
 use Entity\Project;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Utils\HouseholdService;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Utils\BeneficiaryService;
+use Utils\ExportTableServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
 {
@@ -28,17 +26,27 @@ class HouseholdController extends AbstractController
     /** @var HouseholdService */
     private $householdService;
 
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
     /** @var HouseholdRepository */
     private $householdRepository;
 
+    /** @var ExportTableServiceInterface */
+    private $exportTableServiceInterface;
+
     /**
-     * @param HouseholdService    $householdService
-     * @param HouseholdRepository $householdRepository
+     * @param HouseholdService            $householdService
+     * @param HouseholdRepository         $householdRepository
+     * @param BeneficiaryService          $beneficiaryService
+     * @param ExportTableServiceInterface $exportTableServiceInterface
      */
-    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository)
+    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository, BeneficiaryService $beneficiaryService, ExportTableServiceInterface $exportTableServiceInterface)
     {
         $this->householdService = $householdService;
         $this->householdRepository = $householdRepository;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->exportTableServiceInterface = $exportTableServiceInterface;
     }
 
     /**
@@ -59,22 +67,10 @@ class HouseholdController extends AbstractController
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
-
-        try {
-            return $this->get('beneficiary.beneficiary_service')->exportToCsv(
-                $request->query->get('type'),
-                $request->headers->get('country'),
-                $filter, $pagination, $order
-            );
-        } catch (BadRequestHttpException $e) {
-            return new JsonResponse([
-                'code' => 400,
-                'errors' => [[
-                    'message' => $e->getMessage(),
-                ]],
-            ],Response::HTTP_BAD_REQUEST);
-        }
-
+        $beneficiaries = $this->beneficiaryService->findBeneficiarys($request->query->get('type'),
+            $request->headers->get('country'),
+            $filter, $pagination, $order);
+        return $this->exportTableServiceInterface->export($beneficiaries,'beneficiaryhousehoulds',$request->query->get('type'));
     }
 
     /**
