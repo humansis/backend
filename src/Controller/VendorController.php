@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Repository\VendorRepository;
+use Utils\ExportTableServiceInterface;
 
 class VendorController extends AbstractController
 {
@@ -26,9 +27,15 @@ class VendorController extends AbstractController
      */
     private $vendorRepository;
 
-    public function __construct(VendorRepository $vendorRepository)
+    /**
+     * @var ExportTableServiceInterface
+     */
+    private $exportTableServiceInterface;
+
+    public function __construct(VendorRepository $vendorRepository, ExportTableServiceInterface $exportTableServiceInterface)
     {
         $this->vendorRepository = $vendorRepository;
+        $this->exportTableServiceInterface = $exportTableServiceInterface;
     }
 
     /**
@@ -36,13 +43,12 @@ class VendorController extends AbstractController
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return StreamedResponse
      */
     public function exports(Request $request): StreamedResponse
     {
-        return  $this->get('voucher.vendor_service')->exportToCsv(
-            $request->query->get('type'), $request->headers->get('country'));
-
+        $exportableTable = $this->vendorRepository->findByCountry($request->headers->get('country'));
+        return  $this->exportTableServiceInterface->export($exportableTable, 'vendors', $request->query->get('type'));
     }
 
     /**
