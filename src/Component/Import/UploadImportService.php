@@ -4,12 +4,12 @@ namespace Component\Import;
 
 use Component\Import\DBAL\InsertQueryCollection;
 use Component\Import\Integrity;
+use Component\Import\Messaging\Message\UploadFileFinished;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Import;
 use Entity\ImportFile;
 use Entity\User;
 use InvalidArgumentException;
-use NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

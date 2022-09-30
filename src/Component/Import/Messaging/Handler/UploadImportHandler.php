@@ -4,10 +4,10 @@ namespace Component\Import\Messaging\Handler;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\ImportQueueLoggerTrait;
 use Component\Import\Messaging\Message\ImportCheck;
+use Component\Import\Messaging\Message\UploadFileFinished;
 use Component\Import\UploadImportService;
-use NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished;
-use Repository\ImportFileRepository;
 use Psr\Log\LoggerInterface;
+use Repository\ImportFileRepository;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
