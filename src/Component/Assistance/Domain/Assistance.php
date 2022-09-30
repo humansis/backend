@@ -90,15 +90,15 @@ class Assistance
                 throw new NotFoundHttpException("Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3");
             }
 
-            return Statistics::create(
+            return new Statistics(
                 $statistics->getId(),
+                $statistics->getNumberOfBeneficiaries(),
+                $statistics->getAmountDeleted(),
                 $statistics->getAmountDistributed(),
                 $statistics->getAmountPickedUp(),
                 $statistics->getAmountSent(),
                 $statistics->getAmountTotal(),
-                $statistics->getAmountUsed(),
-                $statistics->getNumberOfBeneficiaries(),
-                $statistics->getAmountDeleted()
+                $statistics->getAmountUsed()
             );
         });
     }
