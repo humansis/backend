@@ -2,17 +2,17 @@
 
 namespace Component\Import;
 
-use Doctrine\ORM\EntityManagerInterface;
-use InvalidArgumentException;
 use Component\Import\DBAL\InsertQueryCollection;
 use Component\Import\Integrity;
-use Component\Import\Messaging\Message\UploadFile;
+use Doctrine\ORM\EntityManagerInterface;
 use Entity\Import;
 use Entity\ImportFile;
+use Entity\User;
+use InvalidArgumentException;
+use NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Entity\User;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadImportService
@@ -135,9 +135,7 @@ class UploadImportService
         $this->em->persist($importFile);
         $this->em->flush();
 
-        if (!$importFile->getStructureViolations()) {
-            $this->messageBus->dispatch(new UploadFile($importFile->getId()));
-        }
+        $this->messageBus->dispatch(new UploadFileFinished($importFile->getId()));
 
         return $importFile;
     }

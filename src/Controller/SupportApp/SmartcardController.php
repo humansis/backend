@@ -4,8 +4,10 @@ namespace Controller\SupportApp;
 
 
 use Controller\AbstractController;
+use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
+use Repository\SmartcardRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -23,6 +25,11 @@ class SmartcardController extends AbstractController
     private $smartcardService;
 
     /**
+     * @var SmartcardRepository
+     */
+    private $smartcardRepository;
+
+    /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
@@ -33,10 +40,12 @@ class SmartcardController extends AbstractController
      */
     public function __construct(
         SmartcardService $smartcardService,
+        SmartcardRepository $smartcardRepository,
         TokenStorageInterface  $tokenStorage
     )
     {
         $this->smartcardService = $smartcardService;
+        $this->smartcardRepository = $smartcardRepository;
         $this->tokenStorage = $tokenStorage;
     }
 
@@ -46,12 +55,12 @@ class SmartcardController extends AbstractController
      * @param string $smartcardCode
      *
      * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function smartcard(string $smartcardCode):JsonResponse
     {
-        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
-        return $this->json($smartcard);
+        $smartcards = $this->smartcardRepository->findBy(['serialNumber' => $smartcardCode]);
+        return $this->json(['data' => $smartcards]);
     }
 
     /**
@@ -60,22 +69,22 @@ class SmartcardController extends AbstractController
      * @param string $smartcardCode
      *
      * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
-     public function smartcardPurchases(string $smartcardCode):JsonResponse
-     {
-         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
-         $purchases = $smartcard->getPurchases();
-         return $this->json($purchases);
-     }
+    public function smartcardPurchases(string $smartcardCode):JsonResponse
+    {
+        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
+        $purchases = $smartcard->getPurchases();
+        return $this->json($purchases);
+    }
 
     /**
      * @Rest\Get ("/{smartcardCode}/deposits")
      *
      * @param string $smartcardCode
      *
-     * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
+     * @return JsonnResponse
+     * @throws ORMException
      */
     public function smartcardDeposits(string $smartcardCode):JsonResponse
     {
@@ -92,10 +101,10 @@ class SmartcardController extends AbstractController
      * @param SmartcardService         $smartcardService
      *
      * @return JsonResponse
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Component\Smartcard\Exception\SmartcardActivationDeactivatedException
      * @throws \Component\Smartcard\Exception\SmartcardNotAllowedStateTransition
+     * @throws ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function update(
         string                   $serialNumber,
