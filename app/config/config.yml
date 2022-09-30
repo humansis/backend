@@ -133,7 +133,7 @@ framework:
         routing:
             'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': import
             'NewApiBundle\Component\Import\Messaging\Message\ItemBatch': import
-            'NewApiBundle\Component\Import\Messaging\Message\UploadFile': incoming_big_data
+            'NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished': incoming_big_data
 
 sensio_framework_extra:
     router:

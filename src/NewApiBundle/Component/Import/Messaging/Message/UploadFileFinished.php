@@ -4,7 +4,7 @@ namespace NewApiBundle\Component\Import\Messaging\Message;
 
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
-class UploadFile
+class UploadFileFinished
 {
     /**
      *

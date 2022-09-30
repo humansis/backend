@@ -24,6 +24,11 @@ class SmartcardController extends AbstractController
     private $smartcardService;
 
     /**
+     * @var SmartcardRepository
+     */
+    private $smartcardRepository;
+
+    /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
@@ -34,10 +39,12 @@ class SmartcardController extends AbstractController
      */
     public function __construct(
         SmartcardService $smartcardService,
+        SmartcardRepository $smartcardRepository,
         TokenStorageInterface  $tokenStorage
     )
     {
         $this->smartcardService = $smartcardService;
+        $this->smartcardRepository = $smartcardRepository;
         $this->tokenStorage = $tokenStorage;
     }
 
@@ -51,8 +58,8 @@ class SmartcardController extends AbstractController
      */
     public function smartcard(string $smartcardCode):JsonResponse
     {
-        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
-        return $this->json($smartcard);
+        $smartcards = $this->smartcardRepository->findBy(['serialNumber' => $smartcardCode]);
+        return $this->json(['data' => $smartcards]);
     }
 
     /**
