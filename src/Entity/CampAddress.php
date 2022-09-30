@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * CampAddress
@@ -12,14 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class CampAddress
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -28,20 +22,10 @@ class CampAddress
      */
     private $tentNumber;
 
-    /**
+     /**
      * @ORM\ManyToOne(targetEntity="Entity\Camp", cascade={"persist"})
      */
     private $camp;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set tentNumber.
@@ -70,11 +54,11 @@ class CampAddress
     /**
      * Set camp.
      *
-     * @param Camp|null $camp
+     * @param \Entity\Camp|null $camp
      *
      * @return CampAddress
      */
-    public function setCamp(Camp $camp = null)
+    public function setCamp(\Entity\Camp $camp = null)
     {
         $this->camp = $camp;
 
@@ -84,7 +68,7 @@ class CampAddress
     /**
      * Get camp.
      *
-     * @return Camp|null
+     * @return \Entity\Camp|null
      */
     public function getCamp()
     {

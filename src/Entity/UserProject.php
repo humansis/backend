@@ -3,7 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Entity\Project;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * UserProject
@@ -13,14 +13,7 @@ use Entity\Project;
  */
 class UserProject
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var User
@@ -44,23 +37,13 @@ class UserProject
     private $rights;
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set rights.
      *
      * @param string $rights
      *
      * @return UserProject
      */
-    public function setRights($rights)
+    public function setRights(string $rights): UserProject
     {
         $this->rights = $rights;
 
@@ -72,7 +55,7 @@ class UserProject
      *
      * @return string
      */
-    public function getRights()
+    public function getRights(): string
     {
         return $this->rights;
     }
@@ -84,7 +67,7 @@ class UserProject
      *
      * @return UserProject
      */
-    public function setUser(User $user = null)
+    public function setUser(User $user = null): UserProject
     {
         $this->user = $user;
 
@@ -96,7 +79,7 @@ class UserProject
      *
      * @return User|null
      */
-    public function getUser()
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -104,11 +87,11 @@ class UserProject
     /**
      * Set project.
      *
-     * @param \Entity\Project|null $project
+     * @param Project|null $project
      *
      * @return UserProject
      */
-    public function setProject(\Entity\Project $project = null)
+    public function setProject(Project $project = null): UserProject
     {
         $this->project = $project;
 
@@ -118,9 +101,9 @@ class UserProject
     /**
      * Get project.
      *
-     * @return \Entity\Project|null
+     * @return Project|null
      */
-    public function getProject()
+    public function getProject(): ?Project
     {
         return $this->project;
     }

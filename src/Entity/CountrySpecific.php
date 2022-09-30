@@ -5,6 +5,7 @@ namespace Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Entity\Helper\CountryDependent;
+use Entity\Helper\StandardizedPrimaryKey;
 use Utils\ExportableInterface;
 use Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,15 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
 class CountrySpecific extends Criteria implements ExportableInterface
 {
     use CountryDependent;
+    use StandardizedPrimaryKey;
 
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -64,16 +58,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
             ->setType($type)
             ->setCountryIso3($countryIso3);
         $this->countrySpecificAnswers = new ArrayCollection();
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

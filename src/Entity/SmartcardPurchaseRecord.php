@@ -3,8 +3,9 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use LogicException;
+use Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 
 /**
  * Smartcard purchase record.
@@ -16,14 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class SmartcardPurchaseRecord
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var SmartcardPurchase
@@ -67,7 +61,7 @@ class SmartcardPurchaseRecord
      */
     private $quantity;
 
-    public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value, ?string $currency)
+    public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value, ?string $currency): SmartcardPurchaseRecord
     {
         $entity = new self();
         $entity->smartcardPurchase = $purchase;
@@ -77,14 +71,6 @@ class SmartcardPurchaseRecord
         $entity->currency = $currency;
 
         return $entity;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**
@@ -117,7 +103,7 @@ class SmartcardPurchaseRecord
     public function setCurrency(string $currency): void
     {
         if (null !== $this->currency) {
-            throw new LogicException('Unable to change currency in purchase record #' . $this->id);
+            throw new \LogicException('Unable to change currency in purchase record #'.$this->id);
         }
 
         $this->currency = $currency;

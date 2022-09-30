@@ -2,11 +2,8 @@
 
 namespace Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Service
@@ -14,16 +11,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="service")
  * @ORM\Entity(repositoryClass="Repository\ServiceRepository")
  */
-class Service implements JsonSerializable
+class Service implements \JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -52,16 +42,6 @@ class Service implements JsonSerializable
      * @ORM\OneToMany(targetEntity="Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      */
     private $organizationServices;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.
@@ -138,14 +118,14 @@ class Service implements JsonSerializable
     /**
      * Add OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
+     * @param \Entity\OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
-    public function addOrganizationServices(OrganizationServices $organizationServices)
+    public function addOrganizationServices(\Entity\OrganizationServices $organizationServices)
     {
         if (null === $this->organizationServices) {
-            $this->organizationServices = new ArrayCollection();
+            $this->organizationServices = new \Doctrine\Common\Collections\ArrayCollection();
         }
         $this->organizationServices[] = $organizationServices;
 
@@ -155,11 +135,11 @@ class Service implements JsonSerializable
     /**
      * Remove OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
+     * @param \Entity\OrganizationServices $organizationServices
      *
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeOrganizationServices(OrganizationServices $organizationServices)
+    public function removeOrganizationServices(\Entity\OrganizationServices $organizationServices)
     {
         return $this->organizationServices->removeElement($organizationServices);
     }
@@ -167,7 +147,7 @@ class Service implements JsonSerializable
     /**
      * Get OrganizationServices.
      *
-     * @return Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOrganizationServices()
     {

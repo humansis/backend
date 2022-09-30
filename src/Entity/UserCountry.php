@@ -4,6 +4,7 @@ namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CountryDependent;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * UserCountry
@@ -14,15 +15,7 @@ use Entity\Helper\CountryDependent;
 class UserCountry
 {
     use CountryDependent;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -37,16 +30,6 @@ class UserCountry
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="countries", cascade={"persist"})
      */
     private $user;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     /**
      * Set rights.

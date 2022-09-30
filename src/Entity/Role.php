@@ -7,7 +7,7 @@ namespace Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Entity\User;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Table(name="role")
@@ -15,14 +15,7 @@ use Entity\User;
  */
 class Role
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -63,22 +56,6 @@ class Role
     {
         $this->privileges = new ArrayCollection();
         $this->users = new ArrayCollection();
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     /**

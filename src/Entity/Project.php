@@ -12,6 +12,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use DTO\Sector;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
+use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ProductCategoryType;
 use Exception\CountryMismatchException;
 use InvalidArgumentException;
@@ -30,16 +31,7 @@ class Project implements ExportableInterface
     use CreatedAt;
     use LastModifiedAt;
     use CountryDependent;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -167,16 +159,6 @@ class Project implements ExportableInterface
         $this->distributions = new ArrayCollection();
 
         $this->allowedProductCategoryTypes = [];
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

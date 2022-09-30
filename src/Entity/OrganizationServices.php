@@ -3,8 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JsonSerializable;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * OrganizationServices
@@ -12,16 +11,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="Repository\OrganizationServicesRepository")
  */
-class OrganizationServices implements JsonSerializable
+class OrganizationServices implements \JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var bool
@@ -51,15 +43,6 @@ class OrganizationServices implements JsonSerializable
      */
     private $service;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set enabled.
@@ -68,7 +51,7 @@ class OrganizationServices implements JsonSerializable
      *
      * @return OrganizationServices
      */
-    public function setEnabled($enabled)
+    public function setEnabled(bool $enabled): OrganizationServices
     {
         $this->enabled = $enabled;
 
@@ -80,7 +63,7 @@ class OrganizationServices implements JsonSerializable
      *
      * @return bool
      */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
         return $this->enabled;
     }
@@ -88,11 +71,11 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set parametersValue.
      *
-     * @param json $parametersValue
+     * @param array $parametersValue
      *
      * @return OrganizationServices
      */
-    public function setParametersValue($parametersValue)
+    public function setParametersValue(array $parametersValue): OrganizationServices
     {
         $this->parametersValue = $parametersValue;
 
@@ -102,9 +85,9 @@ class OrganizationServices implements JsonSerializable
     /**
      * Get parametersValue.
      *
-     * @return json
+     * @return array
      */
-    public function getParametersValue()
+    public function getParametersValue(): array
     {
         return $this->parametersValue;
     }
@@ -116,7 +99,7 @@ class OrganizationServices implements JsonSerializable
      *
      * @return string
      */
-    public function getParameterValue(string $parameterName)
+    public function getParameterValue(string $parameterName): string
     {
         return $this->parametersValue[$parameterName];
     }
@@ -128,7 +111,7 @@ class OrganizationServices implements JsonSerializable
      *
      * @return OrganizationServices
      */
-    public function setOrganization(Organization $organization)
+    public function setOrganization(Organization $organization): OrganizationServices
     {
         $this->organization = $organization;
 
@@ -140,7 +123,7 @@ class OrganizationServices implements JsonSerializable
      *
      * @return Organization
      */
-    public function getOrganization()
+    public function getOrganization(): Organization
     {
         return $this->organization;
     }
@@ -148,11 +131,11 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set Service.
      *
-     * @param Service $service
+     * @param Service|null $service
      *
      * @return OrganizationServices
      */
-    public function setService(Service $service = null)
+    public function setService(Service $service = null): OrganizationServices
     {
         $this->service = $service;
 
@@ -164,12 +147,12 @@ class OrganizationServices implements JsonSerializable
      *
      * @return Service
      */
-    public function getService()
+    public function getService(): Service
     {
         return $this->service;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

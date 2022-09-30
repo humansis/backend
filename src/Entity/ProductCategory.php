@@ -7,6 +7,7 @@ namespace Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportState;
 use Enum\ProductCategoryType;
 use Entity\Product;
@@ -20,14 +21,7 @@ use InvalidArgumentException;
  */
 class ProductCategory
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -69,14 +63,6 @@ class ProductCategory
         $this->name = $name;
         $this->products = new ArrayCollection();
         $this->type = $type;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

@@ -2,8 +2,9 @@
 
 namespace Entity;
 
-use Entity\Location;
+use Entity\Helper\StandardizedPrimaryKey;
 use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * HouseholdLocation
@@ -13,25 +14,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HouseholdLocation
 {
-    public const LOCATION_GROUP_CURRENT = 'current';
-    public const LOCATION_GROUP_RESIDENT = 'resident';
-    public const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
-    public const LOCATION_TYPE_RESIDENCE = 'residence';
-    public const LOCATION_TYPE_CAMP = 'camp';
-    public const LOCATION_TYPES = [
+    use StandardizedPrimaryKey;
+
+    const LOCATION_GROUP_CURRENT = 'current';
+    const LOCATION_GROUP_RESIDENT = 'resident';
+    
+    const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
+    const LOCATION_TYPE_RESIDENCE = 'residence';
+    const LOCATION_TYPE_CAMP = 'camp';
+
+    const LOCATION_TYPES = [
         self::LOCATION_TYPE_CAMP,
         self::LOCATION_TYPE_RESIDENCE,
         self::LOCATION_TYPE_SETTLEMENT,
     ];
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -52,27 +48,17 @@ class HouseholdLocation
      */
     private $address;
 
-    /**
+     /**
      * @ORM\OneToOne(targetEntity="Entity\CampAddress", cascade={"persist", "remove"})
      */
     private $campAddress;
 
-    /**
+     /**
      * @var Household
      *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="householdLocations")
      */
     private $household;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set locationGroup.
@@ -125,11 +111,11 @@ class HouseholdLocation
     /**
      * Set address.
      *
-     * @param Address|null $address
+     * @param \Entity\Address|null $address
      *
      * @return HouseholdLocation
      */
-    public function setAddress(Address $address = null)
+    public function setAddress(\Entity\Address $address = null)
     {
         $this->address = $address;
 
@@ -139,7 +125,7 @@ class HouseholdLocation
     /**
      * Get address.
      *
-     * @return Address|null
+     * @return \Entity\Address|null
      */
     public function getAddress()
     {
@@ -149,11 +135,11 @@ class HouseholdLocation
     /**
      * Set campAddress.
      *
-     * @param CampAddress|null $campAddress
+     * @param \Entity\CampAddress|null $campAddress
      *
      * @return HouseholdLocation
      */
-    public function setCampAddress(CampAddress $campAddress = null)
+    public function setCampAddress(\Entity\CampAddress $campAddress = null)
     {
         $this->campAddress = $campAddress;
 
@@ -163,7 +149,7 @@ class HouseholdLocation
     /**
      * Get campAddress.
      *
-     * @return CampAddress|null
+     * @return \Entity\CampAddress|null
      */
     public function getCampAddress()
     {
@@ -173,11 +159,11 @@ class HouseholdLocation
     /**
      * Set household.
      *
-     * @param Household|null $household
+     * @param \Entity\Household|null $household
      *
      * @return HouseholdLocation
      */
-    public function setHousehold(Household $household = null)
+    public function setHousehold(\Entity\Household $household = null)
     {
         $this->household = $household;
 
@@ -187,14 +173,14 @@ class HouseholdLocation
     /**
      * Get household.
      *
-     * @return Household|null
+     * @return \Entity\Household|null
      */
     public function getHousehold()
     {
         return $this->household;
     }
 
-    /**
+     /**
      * Get the nested location of the household.
      *
      * @return Location|null
@@ -207,4 +193,5 @@ class HouseholdLocation
             return $this->getAddress()->getLocation();
         }
     }
+
 }
