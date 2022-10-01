@@ -9,7 +9,7 @@ use Component\Assistance\Scoring\Model\ScoringRule;
 use Entity\Household;
 use InvalidArgumentException;
 
-class RulesEnum
+final class RulesEnum
 {
     public function getScore(Household $household, ScoringRule $rule): int
     {

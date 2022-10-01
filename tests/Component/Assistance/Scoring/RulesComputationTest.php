@@ -15,6 +15,7 @@ use Component\Assistance\Scoring\RulesCalculation;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\RulesEnum;
 use Enum\HouseholdShelterStatus;
+use Enum\PersonGender;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -35,7 +36,6 @@ class RulesComputationTest extends KernelTestCase
         $container = self::$kernel->getContainer()->get('test.service_container');
 
         $this->rulesCalculation = $container->get(RulesCalculation::class);
-
         $this->rulesEnum = $container->get(RulesEnum::class);
     }
 
@@ -164,5 +164,38 @@ class RulesComputationTest extends KernelTestCase
         $household->setShelterStatus(HouseholdShelterStatus::HOUSE_APARTMENT_NOT_DAMAGED);
         $result = $this->rulesEnum->getScore($household, $scoringRule);
         $this->assertEquals(0, $result);
+    }
+
+    public function testDependencyRatioSyr()
+    {
+        $scoringRUle = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR, 'Dep. ratio syr');
+        //todo
+    }
+
+    public function testVulnerabilityOfHeadOfHousehold()
+    {
+        //todo
+    }
+
+    public function testGenderOfHouseholdHead()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::GENDER_OF_HEAD_OF_HOUSEHOLD, 'Gender of head of household');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::GENDER_MALE, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE, 4));
+
+        $head = new Beneficiary();
+        $head->setHead();
+        $head->getPerson()->setGender(PersonGender::FEMALE);
+
+        $household = new Household();
+        $household->addBeneficiary($head);
+
+        $score = $this->rulesCalculation->genderOfHeadOfHousehold($household, $scoringRule);
+        $this->assertEquals(4, $score);
+
+        $head->getPerson()->setGender(PersonGender::MALE);
+
+        $score = $this->rulesCalculation->genderOfHeadOfHousehold($household, $scoringRule);
+        $this->assertEquals(1, $score);
     }
 }

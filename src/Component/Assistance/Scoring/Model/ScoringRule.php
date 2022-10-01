@@ -18,6 +18,7 @@ final class ScoringRule
     /**
      * $type = countrySpecific: name of country specific option (Entity\CountrySpecific::$fieldString)
      * $type = calculation: name of method which performs the calculation (in RulesCalculation)
+     * $type = enum: name of enum class
      *
      * @var string
      */

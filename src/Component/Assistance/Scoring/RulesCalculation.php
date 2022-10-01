@@ -9,22 +9,18 @@ use Entity\Household;
 use Entity\VulnerabilityCriterion;
 use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use Component\Assistance\Scoring\Model\ScoringRule;
+use Enum\PersonGender;
 use Utils\Floats;
 
 /**
- * All methods needs to be public function(Household $household, ScoringRule $rule): int
+ * All methods need to be public function(Household $household, ScoringRule $rule): int
  *
- * Every public method in this class needs to be included in ScoringRuleOptionsEnum. Also every value in
+ * Every public method in this class needs to be included in ScoringRuleOptionsEnum. Also, every value in
  * ScoringRuleOptionsEnum has to have implementation in this class.
  */
 final class RulesCalculation
 {
-    /**
-     * @param Household $household
-     * @param ScoringRule $rule
-     *
-     * @return int
-     */
+
     public function dependencyRatioUkr(Household $household, ScoringRule $rule): int
     {
         $childAgeLimit = 17;
@@ -65,12 +61,6 @@ final class RulesCalculation
         return 0;
     }
 
-    /**
-     * @param Household $household
-     * @param ScoringRule $rule
-     *
-     * @return int
-     */
     public function singleParentHeaded(Household $household, ScoringRule $rule): int
     {
         /** @var VulnerabilityCriterion $headVulnerability */
@@ -84,12 +74,6 @@ final class RulesCalculation
         return 0;
     }
 
-    /**
-     * @param Household $household
-     * @param ScoringRule $rule
-     *
-     * @return int
-     */
     public function pregnantOrLactating(Household $household, ScoringRule $rule): int
     {
         $totalScore = 0;
@@ -113,21 +97,129 @@ final class RulesCalculation
         return $totalScore;
     }
 
-    /**
-     * @param Household $household
-     * @param ScoringRule $rule
-     *
-     * @return int
-     */
     public function noOfChronicallyIll(Household $household, ScoringRule $rule): int
     {
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
         foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
             if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'No of chronically ill') {
-                if ((int) $countrySpecificAnswer->getAnswer() === 1) {
+                if ((int)$countrySpecificAnswer->getAnswer() === 1) {
                     return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_ONE)->getScore();
                 } else {
-                    if ((int) $countrySpecificAnswer->getAnswer() > 1) {
+                    if ((int)$countrySpecificAnswer->getAnswer() > 1) {
+                        return $rule->getOptionByValue(
+                            ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE
+                        )->getScore();
+                    }
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    //could be easily done with enums calculation, once all enums are refactored
+    public function genderOfHeadOfHousehold(Household $household, ScoringRule $rule): int
+    {
+        $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
+
+        switch ($hhhGender) {
+            case PersonGender::FEMALE:
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore();
+
+            case PersonGender::MALE:
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore();
+
+            default:
+                return 0;
+        }
+    }
+
+    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): int
+    {
+        $head = $household->getHouseholdHead();
+
+        if ($head->getVulnerabilityCriteria()->isEmpty()) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NO_VULNERABILITY)->getScore();
+        }
+
+        $result = 0;
+
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+            $result += $rule->getOptionByValue(
+                ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
+            )->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() < 18) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() > 59) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
+        }
+
+        return $result;
+    }
+
+    public function dependencyRatioSyr(Household $household, ScoringRule $rule): int
+    {
+        $childAgeLimit = 17;
+        $workingAgeLimit = 60;
+
+        $children = 0;
+        $elders = 0;
+        $adultsInWorkingAge = 0;
+
+        $adultsWithDisabilities = 0;
+        $adultsChronicallyIll = 0;
+
+        foreach ($household->getBeneficiaries() as $member) {
+            if (is_null($member->getAge())) {
+                continue;
+            }
+
+            if ($member->getAge() <= $childAgeLimit) {
+                $children++;
+            } elseif ($member->getAge() >= $workingAgeLimit) {
+                $elders++;
+            } else { //the member is adult (in working age)
+                $adultsInWorkingAge++;
+
+                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
+                    $adultsWithDisabilities++;
+                }
+
+                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+                    $adultsChronicallyIll++;
+                }
+            }
+        }
+
+        $denominator = $adultsInWorkingAge - $adultsWithDisabilities - $adultsChronicallyIll;
+
+        if ($denominator === 0) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+        }
+
+        $depRatio = ( $children + $elders + $adultsWithDisabilities + $adultsChronicallyIll ) / $denominator;
+
+        if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW)->getScore();
+        }
+
+        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH)->getScore();
+    }
+
+    public function numberOfOrphans(Household $household, ScoringRule $rule): int
+    {
+        /** @var CountrySpecificAnswer $countrySpecificAnswer */
+        foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
+            if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'Number of orphans') {
+                if ((int)$countrySpecificAnswer->getAnswer() === 0) {
+                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NUMBER_OF_ORPHANS_ZERO)->getScore();
+                } else {
+                    if ((int)$countrySpecificAnswer->getAnswer() > 0) {
                         return $rule->getOptionByValue(
                             ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE
                         )->getScore();
