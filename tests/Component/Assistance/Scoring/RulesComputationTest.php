@@ -54,7 +54,7 @@ class RulesComputationTest extends KernelTestCase
             $this->assertEquals(ScoringRule::class, $method->getParameters()[1]->getClass()->getName());
 
             $this->assertTrue($method->hasReturnType());
-            $this->assertEquals('int', $method->getReturnType()->getName());
+            $this->assertEquals('float', $method->getReturnType()->getName());
         }
     }
 

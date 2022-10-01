@@ -13,7 +13,7 @@ use Enum\PersonGender;
 use Utils\Floats;
 
 /**
- * All methods need to be public function(Household $household, ScoringRule $rule): int
+ * All methods need to be public function(Household $household, ScoringRule $rule): float
  *
  * Every public method in this class needs to be included in ScoringRuleOptionsEnum. Also, every value in
  * ScoringRuleOptionsEnum has to have implementation in this class.
@@ -21,7 +21,7 @@ use Utils\Floats;
 final class RulesCalculation
 {
 
-    public function dependencyRatioUkr(Household $household, ScoringRule $rule): int
+    public function dependencyRatioUkr(Household $household, ScoringRule $rule): float
     {
         $childAgeLimit = 17;
         $workingAgeLimit = 60;
@@ -61,7 +61,7 @@ final class RulesCalculation
         return 0;
     }
 
-    public function singleParentHeaded(Household $household, ScoringRule $rule): int
+    public function singleParentHeaded(Household $household, ScoringRule $rule): float
     {
         /** @var VulnerabilityCriterion $headVulnerability */
         foreach ($household->getHouseholdHead()->getVulnerabilityCriteria() as $headVulnerability) {
@@ -74,7 +74,7 @@ final class RulesCalculation
         return 0;
     }
 
-    public function pregnantOrLactating(Household $household, ScoringRule $rule): int
+    public function pregnantOrLactating(Household $household, ScoringRule $rule): float
     {
         $totalScore = 0;
 
@@ -97,7 +97,7 @@ final class RulesCalculation
         return $totalScore;
     }
 
-    public function noOfChronicallyIll(Household $household, ScoringRule $rule): int
+    public function noOfChronicallyIll(Household $household, ScoringRule $rule): float
     {
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
         foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
@@ -118,7 +118,7 @@ final class RulesCalculation
     }
 
     //could be easily done with enums calculation, once all enums are refactored
-    public function genderOfHeadOfHousehold(Household $household, ScoringRule $rule): int
+    public function genderOfHeadOfHousehold(Household $household, ScoringRule $rule): float
     {
         $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
 
@@ -134,7 +134,7 @@ final class RulesCalculation
         }
     }
 
-    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): int
+    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): float
     {
         $head = $household->getHouseholdHead();
 
@@ -162,7 +162,7 @@ final class RulesCalculation
         return $result;
     }
 
-    public function dependencyRatioSyr(Household $household, ScoringRule $rule): int
+    public function dependencyRatioSyr(Household $household, ScoringRule $rule): float
     {
         $childAgeLimit = 17;
         $workingAgeLimit = 60;
@@ -211,7 +211,7 @@ final class RulesCalculation
         return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH)->getScore();
     }
 
-    public function numberOfOrphans(Household $household, ScoringRule $rule): int
+    public function numberOfOrphans(Household $household, ScoringRule $rule): float
     {
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
         foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {

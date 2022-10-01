@@ -78,7 +78,7 @@ final class ScoringResolver
         return $protocol;
     }
 
-    private function computeEnum(Household $household, ScoringRule $rule): int
+    private function computeEnum(Household $household, ScoringRule $rule): float
     {
         //todo temporary solution until enums are refactored to be used same style as customComputation
         return $this->enumResolver->getScore($household, $rule);
@@ -88,9 +88,9 @@ final class ScoringResolver
      * @param Household $household
      * @param ScoringRule $rule
      *
-     * @return int
+     * @return float
      */
-    private function customComputation(Household $household, ScoringRule $rule): int
+    private function customComputation(Household $household, ScoringRule $rule): float
     {
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
@@ -108,14 +108,14 @@ final class ScoringResolver
      * @param ScoringRuleOption[] $scoringOptions
      * @param string $countryCode
      *
-     * @return int
+     * @return float
      */
     private function countrySpecifics(
         Household $household,
         string $countrySpecificName,
         array $scoringOptions,
         string $countryCode
-    ): int {
+    ): float {
         /** @var CountrySpecific $countrySpecific */
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
             'fieldString' => $countrySpecificName,

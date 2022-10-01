@@ -11,7 +11,7 @@ use InvalidArgumentException;
 
 final class RulesEnum
 {
-    public function getScore(Household $household, ScoringRule $rule): int
+    public function getScore(Household $household, ScoringRule $rule): float
     {
         if (!in_array($rule->getFieldName(), ScoringSupportedEnumsEnum::values())) {
             throw new InvalidArgumentException(
