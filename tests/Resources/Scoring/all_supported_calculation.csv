@@ -8,17 +8,14 @@ calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),
 ,,,>1 (hight dep.),1
 ,,,,
 calculation,noOfChronicallyIll,Chronical ilnesses and health issues,one,1
-,,,two and more,"1
-
-"
+,,,two and more,1
 calculation,genderOfHeadOfHousehold,Gender of Household head,Female,1
-,,,Male,"1
-"
-"calculation
-",vulnerabilityHeadOfHousehold,Vulnerability of head of household,Chronically ill or Person with disability,1
+,,,Male,1
+"calculation",vulnerabilityHeadOfHousehold,Vulnerability of head of household,Chronically ill or Person with disability,1
 ,,,Infant,2
 ,,,Elderly,3
-calculation,dependencyRatioSyr,Dependency ratio,division by zero,"1
-"
+calculation,dependencyRatioSyr,Dependency ratio,division by zero,"1"
 ,,,<=1.5,2
 ,,,>1.5,3
+calculation,numberOfOrphans,"Number of orphans",zero,1
+,,,one and more,2
