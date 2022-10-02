@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Enum;
 
-class ScoringSupportedEnumsEnum
+final class ScoringSupportedEnumsEnum
 {
     public const HOUSEHOLD_SHELTER_STATUS = 'HouseholdShelterStatus';
 

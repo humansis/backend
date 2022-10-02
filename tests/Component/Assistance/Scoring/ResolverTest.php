@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
 
+use Component\Assistance\Scoring\Enum\ScoringSupportedHouseholdCoreFieldsEnum;
+use Component\Assistance\Scoring\Exception\ScoreValidationException;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
@@ -91,6 +93,40 @@ class ResolverTest extends KernelTestCase
 
         $protocol = $this->resolver->compute($household, $scoring, 'SYR');
         $this->assertEquals(3, $protocol->getTotalScore());
+    public function testCoreHouseholdFail()
+    {
+        $this->expectException(ScoreValidationException::class);
+
+        //non-existing field name
+        $rule = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, 'blablablablabla', 'blabla');
+        $rule->addOption(new ScoringRuleOption('test', 0));
+
+        $this->scoringFactory->createScoring('test',[$rule]);
+    }
+
+    public function testCorrectCoreHousehold()
+    {
+        $ruleDebtLevel = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL, 'Debt level');
+        $ruleDebtLevel->addOption(new ScoringRuleOption('0', 1));
+
+        $ruleNotes = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::NOTES, 'Notes');
+        $ruleNotes->addOption(new ScoringRuleOption('test', 2));
+
+        $scoring = $this->scoringFactory->createScoring('test',[$ruleDebtLevel, $ruleNotes]);
+
+        $household = new Household();
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(0, $score->getTotalScore());
+
+        $household->setDebtLevel(0);
+        $household->setNotes('test');
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(3, $score->getTotalScore());
+    }
+
+}
 
         $this->objectManager->remove($countrySpecificAnswer);
         $this->objectManager->remove($CSO);
