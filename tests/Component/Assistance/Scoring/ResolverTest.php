@@ -15,6 +15,7 @@ use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Component\Assistance\Scoring\ScoringResolver;
+use Enum\HouseholdAssets;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ResolverTest extends KernelTestCase
@@ -124,6 +125,21 @@ class ResolverTest extends KernelTestCase
 
         $score = $this->resolver->compute($household, $scoring, 'SYR');
         $this->assertEquals(3, $score->getTotalScore());
+    }
+
+    public function testHouseholdCoreArray()
+    {
+        $rule = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::ASSETS, 'Assets');
+        $rule->addOption(new ScoringRuleOption(HouseholdAssets::CAR, -1.5));
+        $rule->addOption(new ScoringRuleOption(HouseholdAssets::AC, -1));
+
+        $household = new Household();
+        $household->setAssets([HouseholdAssets::AC, HouseholdAssets::CAR]);
+
+        $scoring = $this->scoringFactory->createScoring('test',[$rule]);
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(-2.5, $score->getTotalScore());
     }
 
 }

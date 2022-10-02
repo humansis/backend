@@ -14,6 +14,9 @@ final class ScoringSupportedHouseholdCoreFieldsEnum
     public const INCOME_SPENT_ON_FOOD = 'incomeSpentOnFood';
     public const HOUSEHOLD_INCOME = 'householdIncome';
 
+    public const ASSETS = 'assets';
+    public const SUPPORT_RECEIVED_TYPES = 'supportReceivedTypes';
+
     public static function values(): array
     {
         return [
@@ -24,6 +27,8 @@ final class ScoringSupportedHouseholdCoreFieldsEnum
             self::DEBT_LEVEL,
             self::INCOME_SPENT_ON_FOOD,
             self::HOUSEHOLD_INCOME,
+            self::ASSETS,
+            self::SUPPORT_RECEIVED_TYPES,
         ];
     }
 }

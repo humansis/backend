@@ -127,9 +127,8 @@ final class ScoringResolver
             'countryIso3' => $countryCode,
         ]);
 
+        // Country specific option does not exist
         if (!$countrySpecific instanceof CountrySpecific) {
-            //TODO zalogovat? dát někam vědět?
-
             return 0;
         }
 
@@ -196,12 +195,33 @@ final class ScoringResolver
             case ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME:
                 $value = $household->getHouseholdIncome();
                 break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::ASSETS:
+                $value = $household->getAssets();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES:
+                $value = $household->getSupportReceivedTypes();
+                break;
             default:
                 return 0;
         }
 
         if (is_null($value)) {
             return 0;
+        }
+
+        //if value from Household is an array
+        if (is_array($value)) {
+            $score = 0;
+
+            foreach ($value as $valueItem) {
+                foreach ($rule->getOptions() as $option) {
+                    if ($option->getValue() === $valueItem) {
+                        $score += $option->getScore();
+                    }
+                }
+            }
+
+            return $score;
         }
 
         $value = (string) $value;
