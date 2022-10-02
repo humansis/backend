@@ -649,7 +649,6 @@ services:
         class: Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@Utils\ExportTableServiceInterface'
             - '@Repository\BeneficiaryRepository'
             - '@Repository\HouseholdRepository'
             - '@Repository\VulnerabilityCriterionRepository'
@@ -1188,6 +1187,10 @@ services:
 
     Utils\BasicExportService:
         class: Utils\BasicExportService
+        public: true
+
+    Utils\TransformDataService:
+        class:  Utils\TransformDataService
         public: true
 
 #From VoucherBundle:

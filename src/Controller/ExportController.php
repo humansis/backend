@@ -90,11 +90,6 @@ class ExportController extends Controller
                     return $this->assistanceService->exportToPdf($idProject);
                 }
                 $filename = $this->assistanceService->exportToOfficialCsv($idProject, $type);
-            } elseif ($request->query->get('beneficiaries')) {
-                $countryIso3 = $request->request->get("__country");
-                $filters = $request->request->get('filters');
-                $ids = $request->request->get('ids');
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvDeprecated($type, $countryIso3, $filters, $ids);
             } elseif ($request->query->get('users')) {
                 $filename = $this->get('user.user_service')->exportToCsv($type);
             } elseif ($request->query->get('countries')) {

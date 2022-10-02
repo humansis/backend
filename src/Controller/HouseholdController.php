@@ -19,6 +19,7 @@ use Utils\ExportTableServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Utils\TransformDataService;
 
 class HouseholdController extends AbstractController
 {
@@ -33,20 +34,24 @@ class HouseholdController extends AbstractController
     private $householdRepository;
 
     /** @var ExportTableServiceInterface */
-    private $exportTableServiceInterface;
+    private $exportTableService;
+
+    /** @var TransformDataService */
+    private $transformDataService;
 
     /**
      * @param HouseholdService            $householdService
      * @param HouseholdRepository         $householdRepository
      * @param BeneficiaryService          $beneficiaryService
-     * @param ExportTableServiceInterface $exportTableServiceInterface
+     * @param ExportTableServiceInterface $exportTableService
      */
-    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository, BeneficiaryService $beneficiaryService, ExportTableServiceInterface $exportTableServiceInterface)
+    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository, BeneficiaryService $beneficiaryService, ExportTableServiceInterface $exportTableService, TransformDataService $transformDataService)
     {
         $this->householdService = $householdService;
         $this->householdRepository = $householdRepository;
         $this->beneficiaryService = $beneficiaryService;
-        $this->exportTableServiceInterface = $exportTableServiceInterface;
+        $this->exportTableService = $exportTableService;
+        $this->transformDataService = $transformDataService;
     }
 
     /**
@@ -67,10 +72,11 @@ class HouseholdController extends AbstractController
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
-        $beneficiaries = $this->beneficiaryService->findBeneficiarys($request->query->get('type'),
+        $beneficiaries = $this->beneficiaryService->findBeneficiarys(
             $request->headers->get('country'),
             $filter, $pagination, $order);
-        return $this->exportTableServiceInterface->export($beneficiaries,'beneficiaryhousehoulds',$request->query->get('type'));
+        $exportableTable = $this->transformDataService->transform($beneficiaries);
+        return $this->exportTableService->export($exportableTable,'beneficiaryhousehoulds',$request->query->get('type'));
     }
 
     /**
