@@ -14,8 +14,16 @@ calculation,genderOfHeadOfHousehold,Gender of Household head,Female,1
 "calculation",vulnerabilityHeadOfHousehold,Vulnerability of head of household,Chronically ill or Person with disability,1
 ,,,Infant,2
 ,,,Elderly,3
-calculation,dependencyRatioSyr,Dependency ratio,division by zero,"1"
+calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1
 ,,,<=1.5,2
 ,,,>1.5,3
 calculation,numberOfOrphans,"Number of orphans",zero,1
 ,,,one and more,2
+calculation,dependencyRatioSyrNES,Dependency ratio SYR NES,0,1
+,,,division by zero,2
+,,,0< DR <= 1,3
+,,,1< DR <= 2,4
+,,,2< DR <= 3,5
+,,,3< DR <= 4,6
+,,,4< DR <= 5,7
+,,,5 < DR,8

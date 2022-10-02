@@ -161,7 +161,47 @@ final class RulesCalculation
         return $result;
     }
 
-    public function dependencyRatioSyr(Household $household, ScoringRule $rule): float
+    public function dependencyRatioSyrNWS(Household $household, ScoringRule $rule): float
+    {
+        $depRatio = $this->dependencyRatioSyr($household);
+
+        if (is_null($depRatio)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+        }
+
+        if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_LOW)->getScore();
+        }
+
+        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_HIGH)->getScore();
+    }
+
+    public function dependencyRatioSyrNES(Household $household, ScoringRule $rule): float
+    {
+        $depRatio = $this->dependencyRatioSyr($household);
+
+        if (is_null($depRatio)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+        }
+
+        if (Floats::compare($depRatio, 0)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_0)->getScore();
+        } elseif (Floats::compare($depRatio, 1) || $depRatio < 1) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_1)->getScore();
+        } elseif (Floats::compare($depRatio, 2) || $depRatio < 2) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_2)->getScore();
+        } elseif (Floats::compare($depRatio, 3) || $depRatio < 3) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_3)->getScore();
+        } elseif (Floats::compare($depRatio, 4) || $depRatio < 4) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_4)->getScore();
+        } elseif (Floats::compare($depRatio, 5) || $depRatio < 5) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_5)->getScore();
+        } else {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_INF)->getScore();
+        }
+    }
+
+    private function dependencyRatioSyr(Household $household): ?float
     {
         $childAgeLimit = 17;
         $workingAgeLimit = 60;
@@ -198,16 +238,10 @@ final class RulesCalculation
         $denominator = $adultsInWorkingAge - $adultsWithDisabilities - $adultsChronicallyIll;
 
         if ($denominator === 0) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+            return null;
         }
 
-        $depRatio = ( $children + $elders + $adultsWithDisabilities + $adultsChronicallyIll ) / $denominator;
-
-        if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW)->getScore();
-        }
-
-        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH)->getScore();
+        return ( $children + $elders + $adultsWithDisabilities + $adultsChronicallyIll ) / $denominator;
     }
 
     public function numberOfOrphans(Household $household, ScoringRule $rule): float

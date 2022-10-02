@@ -15,7 +15,8 @@ final class ScoringRulesCalculationsEnum
     public const NO_OF_CHRONICALLY_ILL = 'noOfChronicallyIll';
     public const GENDER_OF_HEAD_OF_HOUSEHOLD = 'genderOfHeadOfHousehold';
     public const VULNERABILITY_HEAD_OF_HOUSEHOLD = 'vulnerabilityHeadOfHousehold';
-    public const DEPENDENCY_RATIO_SYR = 'dependencyRatioSyr';
+    public const DEPENDENCY_RATIO_SYR_NWS = 'dependencyRatioSyrNWS';
+    public const DEPENDENCY_RATIO_SYR_NES = 'dependencyRatioSyrNES';
 
     public static function values(): array
     {
@@ -26,7 +27,8 @@ final class ScoringRulesCalculationsEnum
             self::NO_OF_CHRONICALLY_ILL,
             self::GENDER_OF_HEAD_OF_HOUSEHOLD,
             self::VULNERABILITY_HEAD_OF_HOUSEHOLD,
-            self::DEPENDENCY_RATIO_SYR,
+            self::DEPENDENCY_RATIO_SYR_NWS,
+            self::DEPENDENCY_RATIO_SYR_NES,
         ];
     }
 }

@@ -27,8 +27,16 @@ final class ScoringRuleCalculationOptionsEnum
     public const ELDERLY = 'Elderly';
 
     public const DEPENDENCY_RATIO_SYR_ZERO_DIVISION = 'division by zero';
-    public const DEPENDENCY_RATIO_SYR_LOW = '<=1.5';
-    public const DEPENDENCY_RATIO_SYR_HIGH = '>1.5';
+    public const DEPENDENCY_RATIO_SYR_NWS_LOW = '<=1.5';
+    public const DEPENDENCY_RATIO_SYR_NWS_HIGH = '>1.5';
+
+    public const DEPENDENCY_RATIO_SYR_NES_0 = '0';
+    public const DEPENDENCY_RATIO_SYR_NES_1 = '0< DR <= 1';
+    public const DEPENDENCY_RATIO_SYR_NES_2 = '1< DR <= 2';
+    public const DEPENDENCY_RATIO_SYR_NES_3 = '2< DR <= 3';
+    public const DEPENDENCY_RATIO_SYR_NES_4 = '3< DR <= 4';
+    public const DEPENDENCY_RATIO_SYR_NES_5 = '4< DR <= 5';
+    public const DEPENDENCY_RATIO_SYR_NES_INF = '5 < DR';
 
     public const SUPPORTED = [
         ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
@@ -60,10 +68,21 @@ final class ScoringRuleCalculationOptionsEnum
             self::ELDERLY,
         ],
 
-        ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR => [
+        ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR_NWS => [
             self::DEPENDENCY_RATIO_SYR_ZERO_DIVISION,
-            self::DEPENDENCY_RATIO_SYR_LOW,
-            self::DEPENDENCY_RATIO_SYR_HIGH,
+            self::DEPENDENCY_RATIO_SYR_NWS_LOW,
+            self::DEPENDENCY_RATIO_SYR_NWS_HIGH,
+        ],
+
+        ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR_NES => [
+            self::DEPENDENCY_RATIO_SYR_ZERO_DIVISION,
+            self::DEPENDENCY_RATIO_SYR_NES_0,
+            self::DEPENDENCY_RATIO_SYR_NES_1,
+            self::DEPENDENCY_RATIO_SYR_NES_2,
+            self::DEPENDENCY_RATIO_SYR_NES_3,
+            self::DEPENDENCY_RATIO_SYR_NES_4,
+            self::DEPENDENCY_RATIO_SYR_NES_5,
+            self::DEPENDENCY_RATIO_SYR_NES_INF,
         ],
     ];
 }
