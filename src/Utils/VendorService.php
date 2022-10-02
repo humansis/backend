@@ -11,7 +11,6 @@ use InputType\VendorCreateInputType;
 use InputType\VendorUpdateInputType;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
 use Entity\User;
@@ -227,16 +226,5 @@ class VendorService
         return new Response('');
     }
 
-    /**
-     * Export all vendors in a CSV file
-     * @param string $type
-     * @param string $countryISO3
-     * @return StreamedResponse
-     */
-    public function exportToCsv(string $type, string $countryISO3)
-    {
-        $exportableTable = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
 
-        return $this->container->get('openspout_export_service')->export($exportableTable, 'vendors', $type);
-    }
 }

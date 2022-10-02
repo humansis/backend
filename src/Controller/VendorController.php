@@ -2,7 +2,6 @@
 
 namespace Controller;
 
-use Controller\ExportController;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\VendorCreateInputType;
@@ -19,6 +18,7 @@ use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Repository\VendorRepository;
 use Utils\ExportTableServiceInterface;
+use Utils\TransformDataService;
 
 class VendorController extends AbstractController
 {
@@ -30,12 +30,16 @@ class VendorController extends AbstractController
     /**
      * @var ExportTableServiceInterface
      */
-    private $exportTableServiceInterface;
+    private $exportTableService;
 
-    public function __construct(VendorRepository $vendorRepository, ExportTableServiceInterface $exportTableServiceInterface)
+    /** @var TransformDataService */
+    private $transformDataService;
+
+    public function __construct(VendorRepository $vendorRepository, ExportTableServiceInterface $exportTableService, TransformDataService $transformDataService)
     {
         $this->vendorRepository = $vendorRepository;
-        $this->exportTableServiceInterface = $exportTableServiceInterface;
+        $this->exportTableService = $exportTableService;
+        $this->transformDataService = $transformDataService;
     }
 
     /**
@@ -47,8 +51,9 @@ class VendorController extends AbstractController
      */
     public function exports(Request $request): StreamedResponse
     {
-        $exportableTable = $this->vendorRepository->findByCountry($request->headers->get('country'));
-        return  $this->exportTableServiceInterface->export($exportableTable, 'vendors', $request->query->get('type'));
+        $vendors = $this->vendorRepository->findByCountry($request->headers->get('country'));
+        $exportableTable = $this->transformDataService->transform($vendors);
+        return  $this->exportTableService->export($exportableTable, 'vendors', $request->query->get('type'));
     }
 
     /**

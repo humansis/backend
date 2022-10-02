@@ -157,9 +157,6 @@ class ExportController extends Controller
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('vendors')) {
-                $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
             } else {
                 return new JsonResponse('No export selected', Response::HTTP_BAD_REQUEST);
             }
