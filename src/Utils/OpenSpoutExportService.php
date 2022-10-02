@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Utils;
 
+use Exception;
+use Exception\ExportErrorException;
 use Exception\ExportNoDataException;
-use OpenSpout\Common\Exception\IOException;
 use OpenSpout\Writer\Common\Creator\WriterEntityFactory;
-use OpenSpout\Writer\Exception\WriterAlreadyOpenedException;
-use OpenSpout\Writer\Exception\WriterNotOpenedException;
 use OpenSpout\Writer\WriterAbstract as Writer;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -16,12 +15,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OpenSpoutExportService extends BasicExportService implements ExportTableServiceInterface
 {
-    const FLUSH_THRESHOLD = 100;
-
     /**
-     * @var Writer
+     * @var int
      */
-    protected $writer;
+    const FLUSH_THRESHOLD = 100;
+    const EXPORT_LIMIT = 10000;
+    const EXPORT_LIMIT_CSV = 20000;
 
     /**
      * Export spreadsheet to a file in . format (csv, xlsx, ods).
@@ -34,7 +33,7 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
      *
      * @return StreamedResponse $streamedResponse
      *
-     * @throws ExportNoDataException
+     * @throws ExportNoDataException|ExportErrorException
      */
     public function export(
         $exportableTable,
@@ -45,86 +44,97 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
         bool $headerFontItalic = false
     ): StreamedResponse
     {
-        if (0 === count($exportableTable)) {
+        if ($format !== 'csv' && count($exportableTable) > self::EXPORT_LIMIT) {
+            $count = count($exportableTable);
+            throw new BadRequestHttpException("Too much records ($count) to export. Limit is ".self::EXPORT_LIMIT);
+        } elseif ($format == 'csv' && count($exportableTable) > self::EXPORT_LIMIT_CSV) {
+            $count = count($exportableTable);
+            throw new BadRequestHttpException("Too much records ($count) to export. Limit is for CSV is".self::EXPORT_LIMIT_CSV);
+        } elseif (0 === count($exportableTable)) {
             throw new ExportNoDataException('No data to export');
         }
         return $this->generateSpreadsheet($exportableTable, $name, $format,$headerDown, $headerBold, $headerFontItalic);
     }
 
+    /**
+     * @throws ExportErrorException
+     */
     public function generateSpreadsheet($tableData, $name, $format, $headerDown, $headerBold, $headerFontItalic): StreamedResponse
     {
-        $allrowsData = $this->normalize($tableData);
-        $filename = $this->generateFile($name,$format);
-        $tableHeaders = $this->getHeader($allrowsData);
-        $styleHeader = $this->getTheStyle($headerBold,$headerFontItalic);
-        $styleRow = $this->getTheStyle();
-        $rowHead = WriterEntityFactory::createRowFromArray($tableHeaders,$styleHeader);
+        try {
+            $writer = $this->createWriter($format);
+            $filename = $this->generateFileName($name, $format);
+            $tableHeaders = $this->getHeader($tableData);
+            $styleHeader = $this->getTheStyle($headerBold, $headerFontItalic);
+            $styleRow = $this->getTheStyle();
+            $rowHead = WriterEntityFactory::createRowFromArray($tableHeaders, $styleHeader);
 
-        $streamedResponse = new StreamedResponse(function() use ($headerDown,$rowHead,$allrowsData,$styleRow) {
-            try {
-                $this->writer->openToFile("php://output");
-            } catch (IOException $e) {
-                throw new BadRequestHttpException("An error occurred while creating the file.");
-            }
-            if ($headerDown === false) {
-                try {
-                    $this->writer->addRow($rowHead);
-                } catch (IOException|WriterNotOpenedException $e) {
-                    return ($e->getMessage());
-                }
-            }
-            $i = 0;
-            foreach ($allrowsData as $rowData) {
-                $row = WriterEntityFactory::createRowFromArray($rowData, $styleRow);
-                try {
-                    $this->writer->addRow($row);
-                } catch (IOException|WriterNotOpenedException $e) {
-                    return ($e->getMessage());
-                }
-                $i++;
-                // Flushing the buffer every N rows to stream echo'ed content.
-                if ($i % self::FLUSH_THRESHOLD === 0) {
-                    flush();
-                }
-            }
-            if ($headerDown === true) {
-                try {
-                    $this->writer->addRow($rowHead);
-                } catch (IOException|WriterNotOpenedException $e) {
-                    return ($e->getMessage());
-                }
-            }
-            $this->writer->close();
-        });
+            $streamedResponse = new StreamedResponse(function () use ($writer, $headerDown, $rowHead, $tableData, $styleRow) {
+                $writer->openToFile("php://output");
 
-        $disposition = HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            $filename
-        );
-        $streamedResponse->headers->set('Content-Disposition', $disposition);
-        return $streamedResponse;
+                if ($headerDown === false) {
+                    $writer->addRow($rowHead);
+                }
+                $i = 0;
+                foreach ($tableData as $rowData) {
+                    $row = WriterEntityFactory::createRowFromArray($rowData, $styleRow);
+                        $writer->addRow($row);
+                    $i++;
+                    // Flushing the buffer every N rows to stream echo'ed content.
+                    if ($i % self::FLUSH_THRESHOLD === 0) {
+                        flush();
+                    }
+                }
+                if ($headerDown === true) {
+                        $writer->addRow($rowHead);
+                }
+                $writer->close();
+            });
+
+            $disposition = HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $filename
+            );
+            $streamedResponse->headers->set('Content-Disposition', $disposition);
+
+            return $streamedResponse;
+        } catch (Exception $ex) {
+            throw new ExportErrorException('An error occurred while exporting the file. {'.$ex->getMessage().'}');
+        }
     }
 
     /**
-     * Generate file.
+     * @param string $type
      *
+     * @return Writer
+     */
+    public function createWriter(string $type): Writer
+    {
+        if (self::FORMAT_CSV == $type) {
+            $writer = WriterEntityFactory::createCSVWriter();
+        } elseif (self::FORMAT_XLSX == $type) {
+            $writer = WriterEntityFactory::createXLSXWriter();
+        } elseif (self::FORMAT_ODS == $type) {
+            $writer = WriterEntityFactory::createODSWriter();
+        } else {
+            throw new BadRequestHttpException('An error occurred with the type file: '.$type);
+        }
+        return $writer;
+    }
+
+    /**
      * @param string $name
      * @param string $type
      *
-     * @return string $filename
-     * @throws WriterAlreadyOpenedException
+     * @return string
      */
-    public function generateFile(string $name, string $type): string
+    public function generateFileName(string $name, string $type): string
     {
         if (self::FORMAT_CSV == $type) {
-            $this->writer = WriterEntityFactory::createCSVWriter();
             $filename = $name.'.csv';
         } elseif (self::FORMAT_XLSX == $type) {
-            $this->writer = WriterEntityFactory::createXLSXWriter();
-            $this->writer->setShouldUseInlineStrings(true);
             $filename = $name.'.xlsx';
         } elseif (self::FORMAT_ODS == $type) {
-            $this->writer = WriterEntityFactory::createODSWriter();
             $filename = $name.'.ods';
         } else {
             throw new BadRequestHttpException('An error occurred with the type file: '.$type);

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Utils;
 
@@ -12,29 +12,6 @@ class BasicExportService
     const FORMAT_ODS = 'ods';
 
 
-
-
-    /**
-     * @param $exportableTable
-     *
-     * @return array
-     */
-    public function normalize($exportableTable)
-    {
-        $normalizedTable = [];
-
-        foreach ($exportableTable as $value) {
-            if ($value instanceof ExportableInterface) {
-                $normalizedTable[] = $value->getMappedValueForExport();
-            } elseif (is_array($value)) {
-                $normalizedTable[] = $value;
-            } else {
-                throw new \InvalidArgumentException("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class);
-            }
-        }
-
-        return $normalizedTable;
-    }
 
     /**
      * Return list of header names.
