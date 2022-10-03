@@ -28,7 +28,8 @@ Deploying translations on any environment could be done any time, without any se
 ##### Add new key
 1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
    `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
-2. the key will be uploaded to crowdin automatically when your code is merged into `develop`
+2. run `make translation-keys` to keep generated keys in repository 
+3. the key will be uploaded to crowdin automatically when your code is merged into `develop`
 
 #### Deploy translations
 1. in [Gitlab pipelines](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/pipelines) display detail of a pipeline with passed deploy job to environment where you need to deploy translations (e.g. `deploy_test:passed`)
