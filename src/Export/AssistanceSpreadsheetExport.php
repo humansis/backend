@@ -445,9 +445,10 @@ class AssistanceSpreadsheetExport
             ->setBorderStyle(Border::BORDER_THICK);
 
         $rowNumber = 27;
+        $rowIndex = 1;
         foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
             if (!$distributionBeneficiary->getRemoved()) {
-                $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $id + 1, $rowStyle,
+                $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $rowIndex++, $rowStyle,
                     $this->shouldDistributionContainDate($assistance));
             }
         }
