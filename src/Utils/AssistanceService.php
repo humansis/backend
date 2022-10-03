@@ -538,15 +538,14 @@ class AssistanceService
         foreach ($packages as $relief) {
             $beneficiary = $relief->getAssistanceBeneficiary()->getBeneficiary();
             $commodityNames = $relief->getModalityType();
-            $commodityValues = $relief->getAmountToDistribute() . ' ' . $relief->getUnit();
-            $spent = $relief->getAmountSpent() . ' ' . $relief->getUnit();
 
             $commonFields = $beneficiary->getCommonExportFields();
 
             $exportableTable[] = array_merge($commonFields, array(
                     $this->translator->trans("Commodity") => $commodityNames,
-                    $this->translator->trans("Value") => $commodityValues,
-                    $this->translator->trans("Spent") => $spent,
+                    $this->translator->trans("Value") => $relief->getAmountToDistribute(),
+                    $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
+                    $this->translator->trans("Unit") => $relief->getUnit(),
                     $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
                     $this->translator->trans("Notes Distribution") => $relief->getNotes(),
                     $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
