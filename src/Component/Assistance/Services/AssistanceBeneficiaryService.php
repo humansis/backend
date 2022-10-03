@@ -66,16 +66,18 @@ class AssistanceBeneficiaryService
     public function prepareOutputForDocumentNumbers(array $beneficiaries, array $documentNumbers, string $documentType): AssistanceBeneficiaryOperationOutputType
     {
         $output = new AssistanceBeneficiaryOperationOutputType($documentNumbers, $documentType);
-        $beneficiaryIds = [];
+        $beneficiaryDocuments = [];
         foreach ($beneficiaries as $beneficiary) {
             foreach ($beneficiary->getNationalIds() as $document) {
                 if ($document->getIdType() === $documentType) {
-                    $beneficiaryIds[$document->getIdNumber()] = $document->getIdNumber();
+                    $key = strtolower($document->getIdNumber());
+                    $beneficiaryDocuments[$key] = $document->getIdNumber();
                 }
             }
         }
         foreach ($documentNumbers as $id) {
-            if (!key_exists($id, $beneficiaryIds)) {
+            $key = strtolower($id);
+            if (!key_exists($key, $beneficiaryDocuments)) {
                 $output->addNotFound(['documentNumber' => $id]);
             }
         }

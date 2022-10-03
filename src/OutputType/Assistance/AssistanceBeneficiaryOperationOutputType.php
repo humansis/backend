@@ -38,7 +38,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
      */
     public function __construct(array $documentNumbers = null, string $documentType = null)
     {
-        $this->documentNumbers = $documentNumbers;
+        $this->documentNumbers = array_map(function ($number) { return strtolower($number); }, $documentNumbers );
         $this->documentType = $documentType;
     }
 
@@ -172,7 +172,8 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             return null;
         }
         foreach ($beneficiary->getNationalIds() as $document) {
-            if ($document->getIdType() === $documentType && in_array($document->getIdNumber(), $documentNumbers)) {
+            $normalizedDocumentNumber = strtolower($document->getIdNumber());
+            if ($document->getIdType() === $documentType && in_array($normalizedDocumentNumber, $documentNumbers)) {
                 return $document->getIdNumber();
             }
         }
