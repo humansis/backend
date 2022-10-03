@@ -210,6 +210,8 @@ class UpdateAssistanceInputType implements InputTypeInterface
      */
     public function setNote(?string $note): void
     {
+        $note = ($note === "") ? null : $note;
+
         $this->note = $note;
         $this->noteToSave = $note;
     }
