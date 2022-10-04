@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\SelectionCriteria\Loader;
 
 use Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CriteriaConfigurationLoader
 {
@@ -30,12 +31,17 @@ class CriteriaConfigurationLoader
      */
     public function getCriterionConfiguration(string $key): CriterionConfiguration
     {
-        return new CriterionConfiguration(
-            $key,
-            $this->configuration[$key][self::TYPE_KEY],
-            $this->configuration[$key][self::TARGET_KEY],
-            $this->configuration[$key][self::VALUE_TRANSFORMER_KEY] ?? CriteriaValueTransformerEnum::CONVERT_TO_STRING,
-        );
+        if (key_exists($key, $this->configuration)) {
+            return new CriterionConfiguration(
+                $key,
+                $this->configuration[$key][self::TYPE_KEY],
+                $this->configuration[$key][self::TARGET_KEY],
+                $this->configuration[$key][self::VALUE_TRANSFORMER_KEY] ?? CriteriaValueTransformerEnum::CONVERT_TO_STRING,
+            );
+        } else {
+            throw new BadRequestHttpException("Cannot recreate selection criteria because '${key}' criteria key was not found and it is probably deprecated.");
+        }
+
     }
 
     public function guessReturnType(string $value): string
