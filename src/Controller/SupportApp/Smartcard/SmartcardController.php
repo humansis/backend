@@ -1,12 +1,11 @@
 <?php
 
-namespace Controller\SupportApp;
+namespace Controller\SupportApp\Smartcard;
 
-use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
-use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
+
 use Controller\AbstractController;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Entity\Smartcard;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
 use Repository\SmartcardRepository;
@@ -20,6 +19,7 @@ use Utils\SmartcardService;
  */
 class SmartcardController extends AbstractController
 {
+
     /**
      * @var SmartcardService
      */
@@ -36,14 +36,15 @@ class SmartcardController extends AbstractController
     private $tokenStorage;
 
     /**
-     * @param SmartcardService $smartcardService
+     * @param SmartcardService      $smartcardService
      * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(
         SmartcardService $smartcardService,
         SmartcardRepository $smartcardRepository,
-        TokenStorageInterface $tokenStorage
-    ) {
+        TokenStorageInterface  $tokenStorage
+    )
+    {
         $this->smartcardService = $smartcardService;
         $this->smartcardRepository = $smartcardRepository;
         $this->tokenStorage = $tokenStorage;
@@ -57,10 +58,9 @@ class SmartcardController extends AbstractController
      * @return JsonResponse
      * @throws ORMException
      */
-    public function smartcard(string $smartcardCode): JsonResponse
+    public function smartcard(string $smartcardCode):JsonResponse
     {
         $smartcards = $this->smartcardRepository->findBy(['serialNumber' => $smartcardCode]);
-
         return $this->json(['data' => $smartcards]);
     }
 
@@ -72,11 +72,10 @@ class SmartcardController extends AbstractController
      * @return JsonResponse
      * @throws ORMException
      */
-    public function smartcardPurchases(string $smartcardCode): JsonResponse
+    public function smartcardPurchases(string $smartcardCode):JsonResponse
     {
         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
         $purchases = $smartcard->getPurchases();
-
         return $this->json($purchases);
     }
 
@@ -88,41 +87,42 @@ class SmartcardController extends AbstractController
      * @return JsonnResponse
      * @throws ORMException
      */
-    public function smartcardDeposits(string $smartcardCode): JsonResponse
+    public function smartcardDeposits(string $smartcardCode):JsonResponse
     {
         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
         $purchases = $smartcard->getDeposites();
-
         return $this->json($purchases);
     }
 
     /**
-     * @Rest\Patch("/{serialNumber}")
+     * @Rest\Patch("/{id}")
      *
-     * @param string $serialNumber
+     * @param Smartcard                   $smartcard
      * @param UpdateSmartcardInputType $updateSmartcardInputType
-     * @param SmartcardService $smartcardService
+     * @param SmartcardService         $smartcardService
      *
      * @return JsonResponse
-     * @throws SmartcardActivationDeactivatedException
-     * @throws SmartcardNotAllowedStateTransition
+     * @throws \Component\Smartcard\Exception\SmartcardActivationDeactivatedException
+     * @throws \Component\Smartcard\Exception\SmartcardNotAllowedStateTransition
      * @throws ORMException
-     * @throws OptimisticLockException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function update(
-        string $serialNumber,
+        Smartcard                   $smartcard,
         UpdateSmartcardInputType $updateSmartcardInputType,
-        SmartcardService $smartcardService
-    ): JsonResponse {
+        SmartcardService         $smartcardService ): JsonResponse {
+
         $user = $this->tokenStorage->getToken()->getUser();
 
         if ($user->hasRole('ROLE_ADMIN')) {
-            $smartcard = $this->smartcardService->getSmartcardByCode($serialNumber);
+
+            $smartcard = $this->smartcardRepository->find($smartcard);
             $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
 
             return $this->json($smartcard);
-        } else {
+        }else{
             throw new AccessDeniedException('You do not have the privilege to update the Smartcard');
         }
+
     }
 }
