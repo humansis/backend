@@ -23,6 +23,8 @@ sed -i -e "s|%env(RDS_PORT)%|${DB_PORT}|g" \
   -e "s|%env(GELF_HOST)%|${GELF_HOST}|g" \
   -e "s|%env(AWS_LOGS_ACCESS_KEY)%|${AWS_LOGS_ACCESS_KEY}|g" \
   -e "s|%env(AWS_LOGS_SECRET_KEY)%|${AWS_LOGS_SECRET_KEY}|g" \
+  -e "s|%env(CROWDIN_API_KEY)%|${CROWDIN_API_KEY}|g" \
+  -e "s|%env(CROWDIN_PROJECT_ID)%|${CROWDIN_PROJECT_ID}|g" \
   -e "s|%env(GELF_PORT)%|${GELF_PORT}|g" app/config/parameters.yml
 
 # per environment
