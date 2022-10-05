@@ -1,5 +1,5 @@
 parameters:
-    environment: unit-test
+    environment: unittest
 
     database_driver: pdo_mysql
     database_host: 'db'
