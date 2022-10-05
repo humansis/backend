@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Event\Subscriber\Entity;
 
 use Entity\Location;
@@ -53,7 +55,7 @@ class LocationEventSubscriber implements EventSubscriber
         $locations = $repository->findByParams($filter, $location->getCountryISO3());
         $duplicityCount = $locations->count() - 1;
 
-        $r = $repository->updateDuplicityCount(
+        $repository->updateDuplicityCount(
             $location->getLvl(),
             $location->getCountryISO3(),
             $location->getEnumNormalizedName(),

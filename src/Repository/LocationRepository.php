@@ -286,20 +286,20 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         int $duplicityCount
     )
     {
-        $query = $this->_em->createQuery(<<<DQL
-            UPDATE Entity\Location l
-            SET l.duplicityCount = :duplicityCount
-            WHERE l.lvl = :lvl
-            AND l.countryIso3 = :countryISO3
-            AND l.enumNormalizedName = :enumNormalizedName 
-        DQL)->setParameters([
-            'lvl' => $lvl,
-            'countryISO3' => $countryISO3,
-            'enumNormalizedName' => $enumNormalizedName,
-            'duplicityCount' => $duplicityCount,
-        ]);
+        $qb = $this->createQueryBuilder('l');
         
-        return $query->execute();
+        return $qb->set('l.duplicityCount', ':duplicityCount')
+            ->where('l.lvl = :lvl')
+            ->andWhere('l.countryIso3 = :countryISO3')
+            ->andWhere('l.enumNormalizedName = :enumNormalizedName')
+            ->setParameters([
+                'lvl' => $lvl,
+                'countryISO3' => $countryISO3,
+                'enumNormalizedName' => $enumNormalizedName,
+                'duplicityCount' => $duplicityCount,
+            ])
+            ->getQuery()
+            ->execute();
     }
     
     private function inChildrenLocationsQueryBuilder(
