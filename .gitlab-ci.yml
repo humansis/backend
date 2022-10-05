@@ -242,7 +242,7 @@ deploy demo  - keep db:
     - /^v.*$/
   when: manual
 
-deploy test - anonymized db:
+deploy demo - anonymized db:
   stage: deploy_demo
   image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
