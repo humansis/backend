@@ -33,7 +33,7 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
      *
      * @return StreamedResponse $streamedResponse
      *
-     * @throws ExportNoDataException|ExportErrorException
+     * @throws ExportNoDataException
      */
     public function export(
         $exportableTable,
@@ -56,12 +56,10 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
         return $this->generateSpreadsheet($exportableTable, $name, $format,$headerDown, $headerBold, $headerFontItalic);
     }
 
-    /**
-     * @throws ExportErrorException
-     */
+
     public function generateSpreadsheet($tableData, $name, $format, $headerDown, $headerBold, $headerFontItalic): StreamedResponse
     {
-        try {
+
             $writer = $this->createWriter($format);
             $filename = $this->generateFileName($name, $format);
             $tableHeaders = $this->getHeader($tableData);
@@ -70,6 +68,7 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
             $rowHead = WriterEntityFactory::createRowFromArray($tableHeaders, $styleHeader);
 
             $streamedResponse = new StreamedResponse(function () use ($writer, $headerDown, $rowHead, $tableData, $styleRow) {
+            try {
                 $writer->openToFile("php://output");
 
                 if ($headerDown === false) {
@@ -89,6 +88,9 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
                         $writer->addRow($rowHead);
                 }
                 $writer->close();
+            } catch (Exception $ex) {
+                throw new ExportErrorException('An error occurred while exporting the file. {'.$ex->getMessage().'}');
+            }
             });
 
             $disposition = HeaderUtils::makeDisposition(
@@ -98,9 +100,7 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
             $streamedResponse->headers->set('Content-Disposition', $disposition);
 
             return $streamedResponse;
-        } catch (Exception $ex) {
-            throw new ExportErrorException('An error occurred while exporting the file. {'.$ex->getMessage().'}');
-        }
+
     }
 
     /**
