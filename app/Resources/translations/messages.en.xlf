@@ -365,6 +365,10 @@
         <source>distribution</source>
         <target>distribution</target>
       </trans-unit>
+      <trans-unit id="cqI_VJ0" resname="Distribution">
+        <source>Distribution</source>
+        <target>distribution</target>
+      </trans-unit>
       <trans-unit id="UPGHjST" resname="District">
         <source>District</source>
         <target>District</target>
@@ -5271,6 +5275,14 @@ Size</source>
       <trans-unit id="p9ZGh_o" resname="Removed in the past">
         <source>Removed in the past</source>
         <target>Removed in the past</target>
+      </trans-unit>
+      <trans-unit id="rRLFJ2t" resname="Add Assistance">
+        <source>Add Assistance</source>
+        <target>Add Assistance</target>
+      </trans-unit>
+      <trans-unit id="ke6xBGv" resname="Civil registration record">
+        <source>Civil registration record</source>
+        <target>Civil registration record</target>
       </trans-unit>
       <trans-unit id="QmZtWLX" resname="This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.">
         <source>This page is where you have a global view on some figures about the country and its projects. There is a map to show you the country's assistances and a summary of the last ones.</source>
