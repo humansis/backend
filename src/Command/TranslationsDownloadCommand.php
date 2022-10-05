@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -37,6 +38,26 @@ class TranslationsDownloadCommand extends Command
             'password' => 'pin1234',
             'username' => 'admin@example.org',
         ],
+        'dev1' => [
+            'url' => 'https://apidev.humansis.org/api/jwt',
+            'password' => 'pin1234',
+            'username' => 'admin@example.org',
+        ],
+        'dev2' => [
+            'url' => 'https://apidev2.humansis.org/api/jwt',
+            'password' => 'pin1234',
+            'username' => 'admin@example.org',
+        ],
+        'dev3' => [
+            'url' => 'https://apidev3.humansis.org/api/jwt',
+            'password' => 'pin1234',
+            'username' => 'admin@example.org',
+        ],
+        'stage' => [
+            'url' => 'https://apistage.humansis.org/api/jwt',
+            'password' => 'pin1234',
+            'username' => 'admin@example.org',
+        ],
     ];
     
     private $env = 'test';
@@ -48,9 +69,6 @@ class TranslationsDownloadCommand extends Command
 
         $this->translationsDir = $translationsDir;
         $this->client = HttpClient::create();
-        
-        //uncomment & update $envConfig to get translations from another server
-        //$this->env = 'local';
     }
 
     protected function configure(): void
@@ -58,12 +76,15 @@ class TranslationsDownloadCommand extends Command
         parent::configure();
         $this
             ->setName('translations:download')
-            ->setDescription('Download translations from remote environment');
+            ->setDescription('Download translations from remote environment')
+            ->addArgument('env', InputArgument::OPTIONAL, 'which environment (default is test)?');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
+
+        $this->env = $input->getArgument('env') ?? 'test';
         
         $jwt = $this->login();
 

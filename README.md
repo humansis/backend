@@ -22,26 +22,33 @@ before that the controller process.
 
 #### Translations
 
-When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin (with `make translation-keys` and `make crowdin-push`) automatically.  
-Deploying translations on any environment could be done any time, without any server downtime (see Deploy translations below). 
+When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin.  
+When any environment is deployed, translations are downloaded from crowdin.
+
+##### Update translations on production
+It is possible to update translations on production without deploying the whole application, just ask admin.
 
 ##### Add new key
 1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
    `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
-2. run `make translation-keys` to keep generated keys in repository 
+2. run `make translation-keys` to keep generated ids of keys in repository 
 3. the key will be uploaded to crowdin automatically when your code is merged into `develop`
 
 #### Deploy translations
-1. in [Gitlab pipelines](https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/pipelines) display detail of a pipeline with passed deploy job to environment where you need to deploy translations (e.g. `deploy_test:passed`)
-2. locate translations job at the very right and run `download_translations` job for the environment you need (e.g. `download_translations_test`)
+If you need fresh translations on eny environment, redeploy the application. On production, ask admin.
 
 #### Get translations to localhost
-1. (if you need fresh translations, first deploy translations to test environment)
+1. (if you need fresh translations, first redeploy any environment)
 2. run
 ```bash
 make translations-get
 ```
-the translations are downloaded from `test` environment, to get them from another environment, update `TranslationsDownloadCommand:$envConfig` array and $this->env in `TranslationsDownloadCommand:__construct` method.
+to download translations from test environment, or run
+
+```bash
+make translations-get c={ENVIRONMENT}
+```
+where `{ENVIRONMENT}` is one of `dev1-3`, `test`, `stage`
 
 #### Specific Documentation
 - [Distribution Bundle](src/DistributionBundle/README.md)

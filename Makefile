@@ -38,7 +38,7 @@ translation-keys: ## generate new translation keys
 	docker-compose exec php bash -c 'bin/console translation:update --force en'
 
 translation-get: ## get translations from remote env
-	docker-compose exec php bash -c 'bin/console translations:download'
+	docker-compose exec php bash -c 'bin/console translations:download $(c)'
 
 crowdin-push: ## push translations to crowdin
 	docker-compose exec php bash -c 'bin/console crowdin:push'
