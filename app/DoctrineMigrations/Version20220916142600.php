@@ -22,21 +22,25 @@ final class Version20220916142600 extends AbstractMigration
         $this->addSql('ALTER TABLE location ADD duplicity_count INT DEFAULT 0 NOT NULL');
 
         $this->addSql(<<<SQL
-            UPDATE location l
-            JOIN (
-                SELECT
-                    iso3,
-                    nested_tree_level,
-                    enum_normalized_name,
-                    count(enum_normalized_name) as duplicity
-                FROM location
-                GROUP BY enum_normalized_name, iso3, nested_tree_level
-            ) d ON l.enum_normalized_name = d.enum_normalized_name
-                AND l.iso3 = d.iso3
-                AND l.nested_tree_level = d.nested_tree_level
-            SET l.duplicity_count = (d.duplicity - 1);
+            CREATE PROCEDURE updateLocationDuplicity()
+            BEGIN
+                UPDATE location l
+                JOIN (
+                    SELECT
+                        iso3,
+                        nested_tree_level,
+                        enum_normalized_name,
+                        count(enum_normalized_name) as duplicity
+                    FROM location
+                    GROUP BY enum_normalized_name, iso3, nested_tree_level
+                ) d ON l.enum_normalized_name = d.enum_normalized_name
+                    AND l.iso3 = d.iso3
+                    AND l.nested_tree_level = d.nested_tree_level
+                SET l.duplicity_count = (d.duplicity - 1);
+            END;
         SQL);
 
+        $this->addSql('CALL updateLocationDuplicity');
     }
 
     public function down(Schema $schema) : void

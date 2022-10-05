@@ -152,6 +152,7 @@ class LocationImporter
         $this->file = null;
 
         $this->em->getConnection()->executeQuery("CALL recalculateLocationNestedSet;");
+        $this->em->getConnection()->executeQuery("CALL updateLocationDuplicity;");
     }
 
     private function buildLocation(

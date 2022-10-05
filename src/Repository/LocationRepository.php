@@ -278,29 +278,6 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
-
-    public function updateDuplicityCount(
-        int $lvl,
-        string $countryISO3,
-        string $enumNormalizedName,
-        int $duplicityCount
-    )
-    {
-        $qb = $this->createQueryBuilder('l');
-        
-        return $qb->set('l.duplicityCount', ':duplicityCount')
-            ->where('l.lvl = :lvl')
-            ->andWhere('l.countryIso3 = :countryISO3')
-            ->andWhere('l.enumNormalizedName = :enumNormalizedName')
-            ->setParameters([
-                'lvl' => $lvl,
-                'countryISO3' => $countryISO3,
-                'enumNormalizedName' => $enumNormalizedName,
-                'duplicityCount' => $duplicityCount,
-            ])
-            ->getQuery()
-            ->execute();
-    }
     
     private function inChildrenLocationsQueryBuilder(
         QueryBuilder $qb,
