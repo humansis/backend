@@ -5,9 +5,7 @@ namespace Utils;
 use Entity\HouseholdLocation;
 use Enum\EnumApiValueNoFoundException;
 use Enum\HouseholdAssets;
-use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
-use Enum\Livelihood;
 use Enum\PersonGender;
 
 class BeneficiaryTransformData
