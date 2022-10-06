@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Serializer;
 
@@ -14,5 +16,4 @@ class ArrayNullableDenormalizer extends ArrayDenormalizer
 
         return parent::denormalize($data, $type, $format, $context);
     }
-
 }

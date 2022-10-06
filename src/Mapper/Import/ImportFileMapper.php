@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Import;
 
+use DateTimeInterface;
 use Entity\ImportFile;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class ImportFileMapper implements MapperInterface
@@ -24,7 +27,7 @@ class ImportFileMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportFile::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportFile::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -44,7 +47,7 @@ class ImportFileMapper implements MapperInterface
 
     public function getUploadedDate(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
 
     public function getIsLoaded(): bool

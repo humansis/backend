@@ -20,8 +20,8 @@ class UserControllerTest extends BMSServiceTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->username = 'test-username'.time();
-        $this->email = time().'test@example.org';
+        $this->username = 'test-username' . time();
+        $this->email = time() . 'test@example.org';
     }
 
     /**
@@ -52,7 +52,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -80,7 +80,7 @@ class UserControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/users/'.$userId, [
+        $this->request('POST', '/api/basic/web-app/v1/users/' . $userId, [
             'email' => $this->email,
             'password' => 'password',
             'phonePrefix' => '+420',
@@ -104,7 +104,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -130,13 +130,13 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetSalt(array $result)
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/salt/'.$result['username']);
+        $this->request('GET', '/api/basic/web-app/v1/users/salt/' . $result['username']);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('userId', $result);
@@ -181,13 +181,13 @@ class UserControllerTest extends BMSServiceTestCase
             'changePassword' => false,
         ];
 
-        $this->request('PUT', '/api/basic/web-app/v1/users/'.$result['id'], $data);
+        $this->request('PUT', '/api/basic/web-app/v1/users/' . $result['id'], $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -217,13 +217,13 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -250,13 +250,13 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testList(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]='.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]=' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -276,7 +276,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/users/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/users/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -293,7 +293,7 @@ class UserControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/users/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

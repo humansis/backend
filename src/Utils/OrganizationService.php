@@ -6,11 +6,13 @@ use Entity\Organization;
 use Entity\OrganizationServices;
 use Doctrine\ORM\EntityManagerInterface;
 use InputType\OrganizationUpdateInputType;
+use RuntimeException;
 
 class OrganizationService
 {
     /** @var EntityManagerInterface $em */
     private $em;
+
     /**
      * OrganizationService constructor.
      *
@@ -48,7 +50,7 @@ class OrganizationService
     public function setParameters(OrganizationServices $organizationServices, $json)
     {
         if (false === $json || [] !== array_diff(array_keys($organizationServices->getParametersValue()), array_keys($json))) {
-            throw new \RuntimeException('Unable to save organization service parameters. Invalid JSON given.');
+            throw new RuntimeException('Unable to save organization service parameters. Invalid JSON given.');
         }
 
         $organizationServices->setParametersValue($json);

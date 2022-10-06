@@ -53,22 +53,21 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private $smartcardRepository;
 
     /**
-     * @param string                  $environment
-     * @param SmartcardService        $smartcardService
-     * @param PurchaseService         $purchaseService
-     * @param DepositFactory          $depositFactory
+     * @param string $environment
+     * @param SmartcardService $smartcardService
+     * @param PurchaseService $purchaseService
+     * @param DepositFactory $depositFactory
      * @param ReliefPackageRepository $reliefPackageRepository
-     * @param SmartcardRepository     $smartcardRepository
+     * @param SmartcardRepository $smartcardRepository
      */
     public function __construct(
-        string                  $environment,
-        SmartcardService        $smartcardService,
-        PurchaseService         $purchaseService,
-        DepositFactory          $depositFactory,
+        string $environment,
+        SmartcardService $smartcardService,
+        PurchaseService $purchaseService,
+        DepositFactory $depositFactory,
         ReliefPackageRepository $reliefPackageRepository,
-        SmartcardRepository     $smartcardRepository
-    )
-    {
+        SmartcardRepository $smartcardRepository
+    ) {
         $this->environment = $environment;
         $this->smartcardService = $smartcardService;
         $this->purchaseService = $purchaseService;

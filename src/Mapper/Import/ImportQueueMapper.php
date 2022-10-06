@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Import;
 
 use Entity\ImportQueue;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class ImportQueueMapper implements MapperInterface
@@ -24,7 +26,7 @@ class ImportQueueMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportQueue::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportQueue::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -40,6 +42,7 @@ class ImportQueueMapper implements MapperInterface
         $extractValueFromAllBeneficiaries = function ($values) use ($extractValue) {
             return array_map($extractValue, $values);
         };
+
         return array_values(array_map($extractValueFromAllBeneficiaries, $this->object->getContent()));
     }
 

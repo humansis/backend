@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\Assistance;
 use Entity\Beneficiary;
@@ -22,10 +23,10 @@ class BookletController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/booklets")
      *
-     * @param Request                $request
+     * @param Request $request
      * @param BookletFilterInputType $filter
-     * @param Pagination             $pagination
-     * @param BookletOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param BookletOrderInputType $orderBy
      *
      * @return JsonResponse
      */
@@ -56,9 +57,9 @@ class BookletController extends AbstractOfflineAppController
      * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
-     * @param Request          $request
+     * @param Request $request
      * @param Assistance $assistance
-     * @param Beneficiary      $beneficiary
+     * @param Beneficiary $beneficiary
      * @return Response
      */
     public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
@@ -67,12 +68,12 @@ class BookletController extends AbstractOfflineAppController
         $booklet = $this->get('voucher.booklet_service')->getOne($code);
         try {
             $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         return new Response(json_encode($return));
     }
-
 }

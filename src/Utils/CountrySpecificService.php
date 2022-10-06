@@ -1,10 +1,10 @@
 <?php
 
-
 namespace Utils;
 
 use Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CountrySpecificService
@@ -30,7 +30,7 @@ class CountrySpecificService
         try {
             $this->em->remove($countrySpecific);
             $this->em->flush();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -39,13 +39,15 @@ class CountrySpecificService
 
     /**
      * Export all the countries specifics in a CSV file
+     *
      * @param string $type
      * @param string $countryIso3
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
+
         return $this->container->get('export_csv_service')->export($exportableTable, 'country', $type);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,10 +8,10 @@ final class SynchronizationBatchState
 {
     use EnumTrait;
 
-    const UPLOADED = 'Uploaded';
-    const CORRECT = 'Correct';
-    const INCORRECT = 'Errors';
-    const ARCHIVED = 'Archived';
+    public const UPLOADED = 'Uploaded';
+    public const CORRECT = 'Correct';
+    public const INCORRECT = 'Errors';
+    public const ARCHIVED = 'Archived';
 
     public static function values(): array
     {

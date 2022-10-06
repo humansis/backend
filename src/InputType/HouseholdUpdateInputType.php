@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use DateTimeInterface;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
@@ -285,6 +286,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
+
         return $enumBuilder->buildInputValues($this->assets);
     }
 
@@ -474,13 +476,15 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $this->debtLevel = $debtLevel;
     }
 
-
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getSupportDateReceived(): ?\DateTimeInterface
+    public function getSupportDateReceived(): ?DateTimeInterface
     {
-        if (!$this->supportDateReceived) return null;
+        if (!$this->supportDateReceived) {
+            return null;
+        }
+
         return Iso8601Converter::toDateTime($this->supportDateReceived) ?: null;
     }
 
@@ -506,6 +510,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     {
         $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
+
         return $enumBuilder->buildInputValues($this->supportReceivedTypes);
     }
 
@@ -793,21 +798,22 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
                 $headCount++;
             }
         }
+
         return $headCount;
     }
-
 
     public function hasProxy(): bool
     {
         return null !== $this->getProxyLocalGivenName()
-            && null !== $this->getProxyLocalFamilyName()
-            ;
+            && null !== $this->getProxyLocalFamilyName();
     }
 
     public function getHouseholdHead(): BeneficiaryInputType
     {
         foreach ($this->getBeneficiaries() as $beneficiaryInputType) {
-            if ($beneficiaryInputType->isHead()) return $beneficiaryInputType;
+            if ($beneficiaryInputType->isHead()) {
+                return $beneficiaryInputType;
+            }
         }
         throw new MissingHouseholdHeadException('There must be head');
     }

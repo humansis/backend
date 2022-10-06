@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
@@ -139,8 +140,8 @@ class Import
     }
 
     /**
-     * @see ImportState::values()
      * @param string $state one of ImportState::* values
+     * @see ImportState::values()
      */
     public function setState(string $state)
     {

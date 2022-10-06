@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use DateTime;
 use Entity\AssistanceBeneficiary;
 use Entity\Assistance\ReliefPackage;
 use Entity\Helper\StandardizedPrimaryKey;
@@ -12,6 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Transaction
+ *
  * @deprecated Mobile money transaction needs to be completely rewrite
  *
  * @ORM\Table(name="transaction")
@@ -19,14 +21,17 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Transaction
 {
+    use StandardizedPrimaryKey;
+
     /**
      * Transaction status
-     * @var boolean
+     *
+     * @var bool
      */
-    const FAILURE = 0;
-    const SUCCESS = 1;
-    const NO_PHONE = 2;
-    const CANCELED = 3;
+    public const FAILURE = 0;
+    public const SUCCESS = 1;
+    public const NO_PHONE = 2;
+    public const CANCELED = 3;
 
     public static function statuses()
     {
@@ -38,8 +43,6 @@ class Transaction
         ];
     }
 
-    use StandardizedPrimaryKey;
-
     /**
      * @var ReliefPackage|null
      *
@@ -47,7 +50,7 @@ class Transaction
      * @ORM\JoinColumn(name="relief_package_id")
      */
     private $reliefPackage;
-    
+
     /**
      * @var string
      *
@@ -67,7 +70,7 @@ class Transaction
     private $amountSent;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
@@ -103,7 +106,7 @@ class Transaction
     private $moneyReceived;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
@@ -120,14 +123,14 @@ class Transaction
     private $assistanceBeneficiary;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      *
      * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $updatedOn;
-    
+
     /**
      * @var User
      *
@@ -140,7 +143,7 @@ class Transaction
      */
     public function __construct()
     {
-        $this->setUpdatedOn(new \DateTime());
+        $this->setUpdatedOn(new DateTime());
     }
 
     /**
@@ -172,7 +175,7 @@ class Transaction
     {
         return $this->transactionId;
     }
- 
+
     /**
      * Set the value of Transaction Id
      *
@@ -183,10 +186,10 @@ class Transaction
     public function setTransactionId($transactionId)
     {
         $this->transactionId = $transactionId;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Amount Sent
      *
@@ -196,7 +199,7 @@ class Transaction
     {
         return $this->amountSent;
     }
- 
+
     /**
      * Set the value of Amount Sent
      *
@@ -207,34 +210,34 @@ class Transaction
     public function setAmountSent($amountSent)
     {
         $this->amountSent = $amountSent;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Date Sent
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateSent()
     {
         return $this->dateSent;
     }
- 
+
     /**
      * Set the value of Date Sent
      *
-     * @param \DateTime dateSent
+     * @param DateTime dateSent
      *
      * @return self
      */
-    public function setDateSent(\DateTime $dateSent)
+    public function setDateSent(DateTime $dateSent)
     {
         $this->dateSent = $dateSent;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Transaction Status
      *
@@ -244,7 +247,7 @@ class Transaction
     {
         return $this->transactionStatus;
     }
- 
+
     /**
      * Set the value of Transaction Status
      *
@@ -255,10 +258,10 @@ class Transaction
     public function setTransactionStatus($transactionStatus)
     {
         $this->transactionStatus = $transactionStatus;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Message
      *
@@ -268,7 +271,7 @@ class Transaction
     {
         return $this->message;
     }
- 
+
     /**
      * Set the value of Message
      *
@@ -279,10 +282,10 @@ class Transaction
     public function setMessage($message)
     {
         $this->message = $message;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Money Received
      *
@@ -292,7 +295,7 @@ class Transaction
     {
         return $this->moneyReceived;
     }
- 
+
     /**
      * Set the value of Money Received
      *
@@ -303,34 +306,33 @@ class Transaction
     public function setMoneyReceived($moneyReceived)
     {
         $this->moneyReceived = $moneyReceived;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Pickup Date
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getPickupDate()
     {
         return $this->pickupDate;
     }
- 
+
     /**
      * Set the value of Pickup Date
      *
-     * @param \DateTime pickupDate
+     * @param DateTime pickupDate
      *
      * @return self
      */
-    public function setPickupDate(\DateTime $pickupDate)
+    public function setPickupDate(DateTime $pickupDate)
     {
         $this->pickupDate = $pickupDate;
- 
+
         return $this;
     }
- 
 
     /**
      * Get the value of Distribution Beneficiary
@@ -341,7 +343,7 @@ class Transaction
     {
         return $this->assistanceBeneficiary;
     }
- 
+
     /**
      * Set the value of Distribution Beneficiary
      *
@@ -352,55 +354,55 @@ class Transaction
     public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
         $this->assistanceBeneficiary = $assistanceBeneficiary;
- 
+
         return $this;
     }
- 
+
     /**
-    * Get the value of Sent By
-    *
-    * @return User
-    */
+     * Get the value of Sent By
+     *
+     * @return User
+     */
     public function getSentBy()
     {
         return $this->sentBy;
     }
-    
+
     /**
-    * Set the value of Sent By
-    *
-    * @param User sentBy
-    *
-    * @return self
-    */
+     * Set the value of Sent By
+     *
+     * @param User sentBy
+     *
+     * @return self
+     */
     public function setSentBy(User $sentBy)
     {
         $this->sentBy = $sentBy;
-        
+
         return $this;
     }
-    
+
     /**
      * Get the value of Updated On
      *
-     * @return \DateTime|null
+     * @return DateTime|null
      */
     public function getUpdatedOn()
     {
         return $this->updatedOn;
     }
- 
+
     /**
      * Set the value of Updated On
      *
-     * @param \DateTime|null updatedOn
+     * @param DateTime|null updatedOn
      *
      * @return self
      */
     public function setUpdatedOn($updatedOn)
     {
-        $this->updatedOn = new \DateTime();
- 
+        $this->updatedOn = new DateTime();
+
         return $this;
     }
 

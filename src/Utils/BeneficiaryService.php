@@ -2,6 +2,7 @@
 
 namespace Utils;
 
+use DateTime;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
@@ -9,6 +10,7 @@ use Entity\Profile;
 use Entity\Referral;
 use Entity\VulnerabilityCriterion;
 use Exception\ExportNoDataException;
+use InvalidArgumentException;
 use Repository\BeneficiaryRepository;
 use Repository\HouseholdRepository;
 use Repository\VulnerabilityCriterionRepository;
@@ -49,12 +51,11 @@ class BeneficiaryService
      */
     private $vulnerabilityCriterionRepository;
 
-
     public function __construct(
-        EntityManagerInterface           $entityManager,
-        ExportService                    $exportService,
-        BeneficiaryRepository            $beneficiaryRepository,
-        HouseholdRepository              $householdRepository,
+        EntityManagerInterface $entityManager,
+        ExportService $exportService,
+        BeneficiaryRepository $beneficiaryRepository,
+        HouseholdRepository $householdRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
     ) {
         $this->em = $entityManager;
@@ -96,7 +97,7 @@ class BeneficiaryService
     }
 
     /**
-     * @param Beneficiary          $beneficiary
+     * @param Beneficiary $beneficiary
      * @param BeneficiaryInputType $inputType
      *
      * @return Beneficiary
@@ -116,7 +117,7 @@ class BeneficiaryService
 
         $beneficiary->setHead($inputType->isHead())
             ->setResidencyStatus($inputType->getResidencyStatus())
-            ->setUpdatedOn(new \DateTime()); //TODO use doctrine lifecycle callback
+            ->setUpdatedOn(new DateTime()); //TODO use doctrine lifecycle callback
 
         //phones
         foreach ($beneficiaryPerson->getPhones() as $oldPhone) {
@@ -178,7 +179,7 @@ class BeneficiaryService
         $beneficiary
             ->setHead($inputType->isHead())
             ->setResidencyStatus($inputType->getResidencyStatus())
-            ->setUpdatedOn(new \DateTime());
+            ->setUpdatedOn(new DateTime());
 
         foreach ($inputType->getVulnerabilityCriteria() as $id => $vulnerability_criterion) {
             $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion));
@@ -193,9 +194,8 @@ class BeneficiaryService
             ->setLocalFamilyName($inputType->getLocalFamilyName())
             ->setLocalGivenName($inputType->getLocalGivenName())
             ->setLocalParentsName($inputType->getLocalParentsName())
-            ->setUpdatedOn(new \DateTime())
-            ->setProfile(new Profile())
-        ;
+            ->setUpdatedOn(new DateTime())
+            ->setProfile(new Profile());
         $person->getProfile()->setPhoto('');
 
         foreach ($inputType->getPhones() as $phoneInputType) {
@@ -248,6 +248,7 @@ class BeneficiaryService
         if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
             throw new \Exception("Vulnerability $vulnerabilityCriterionId doesn't exist.");
         }
+
         return $vulnerabilityCriterion;
     }
 
@@ -294,23 +295,25 @@ class BeneficiaryService
         $exportableTable = [];
         if ($ids) {
             $households = $this->householdRepository->getAllByIds($ids);
-        } else if ($filters) {
-            // $households = $this->householdService->getAll($countryIso3, $filters)[1];
-            // This should be not used this way
-            throw new \Exception('Using deprecated method.');
         } else {
-            $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
+            if ($filters) {
+                // $households = $this->householdService->getAll($countryIso3, $filters)[1];
+                // This should be not used this way
+                throw new \Exception('Using deprecated method.');
+            } else {
+                $exportableTable = $this->beneficiaryRepository->getAllInCountry($countryIso3);
+            }
         }
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT);
         }
         if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
         }
-        
+
         if ($households) {
             foreach ($households as $household) {
                 foreach ($household->getBeneficiaries() as $beneficiary) {
@@ -322,27 +325,27 @@ class BeneficiaryService
         if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT);
         }
         if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
         }
 
         try {
             return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             throw new BadRequestHttpException("No data to export.");
         }
     }
 
     /**
-     * @param string                   $type
-     * @param string                   $countryIso3
+     * @param string $type
+     * @param string $countryIso3
      * @param HouseholdFilterInputType $filter
-     * @param Pagination               $pagination
-     * @param HouseholdOrderInputType  $order
+     * @param Pagination $pagination
+     * @param HouseholdOrderInputType $order
      *
      * @return string
      * @throws Exception
@@ -359,11 +362,11 @@ class BeneficiaryService
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT);
         }
         if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
         }
 
         $exportableTable = [];
@@ -378,12 +381,12 @@ class BeneficiaryService
         if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is ".ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT);
         }
         if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is ".ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
         }
 
         try {
@@ -413,5 +416,4 @@ class BeneficiaryService
 
         return $beneficiary;
     }
-
 }

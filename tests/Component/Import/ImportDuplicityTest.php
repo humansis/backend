@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Component\Import;
 
@@ -17,6 +19,7 @@ use Enum\PersonGender;
 use InputType\Import\Duplicity\ResolveAllDuplicitiesInputType;
 use InputType\Import\Duplicity\ResolveSingleDuplicityInputType;
 use Enum\Livelihood;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Utils\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Entity\Beneficiary;
@@ -41,7 +44,7 @@ class ImportDuplicityTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    const TEST_COUNTRY = 'KHM';
+    public const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -66,11 +69,12 @@ class ImportDuplicityTest extends KernelTestCase
 
     /** @var ImportFile */
     private $importFile;
+
     /** @var ProjectService */
     private $projectService;
 
     /**
-     * @var object|\Symfony\Bundle\FrameworkBundle\KernelBrowser|null
+     * @var object|KernelBrowser|null
      */
     private $client;
 
@@ -191,11 +195,11 @@ class ImportDuplicityTest extends KernelTestCase
 
     private function checkDuplicityEndpoint(Import $import)
     {
-        $this->request('GET', '/api/basic/web-app/v1/imports/'.$import->getId().'/duplicities');
+        $this->request('GET', '/api/basic/web-app/v1/imports/' . $import->getId() . '/duplicities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -204,9 +208,8 @@ class ImportDuplicityTest extends KernelTestCase
         $headers = array_merge([
             'HTTP_COUNTRY' => 'SYR',
             'PHP_AUTH_USER' => 'admin@example.org',
-            'PHP_AUTH_PW'   => 'pin1234'
+            'PHP_AUTH_PW' => 'pin1234',
         ], (array) $headers);
         $this->client->request($method, $uri, $body, $files, $headers);
     }
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace DataFixtures;
 
 use Repository\CountrySpecificRepository;
@@ -40,12 +39,12 @@ class CountrySpecificFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        foreach($this->countries->getAll() as $country) {
+        foreach ($this->countries->getAll() as $country) {
             foreach ($this->data as $cso) {
                 $countrySpecific = $this->countrySpecificRepository->findOneBy([
                     "fieldString" => $cso[0],
                     "type" => $cso[1],
-                    "countryIso3" => $country->getIso3()
+                    "countryIso3" => $country->getIso3(),
                 ], ['id' => 'asc']);
                 if (!$countrySpecific instanceof CountrySpecific) {
                     $countrySpecific = new CountrySpecific($cso[0], $cso[1], $country->getIso3());

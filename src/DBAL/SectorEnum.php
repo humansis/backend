@@ -25,22 +25,22 @@ class SectorEnum extends AbstractEnum
         self::EARLY_RECOVERY,
     ];
 
-    const FOOD_SECURITY = 'Food Security';
-    const LIVELIHOODS = 'Livelihoods';
-    const MULTIPURPOSE_CASH = 'Multi Purpose Cash Assistance';
-    const SHELTER = 'Shelter';
-    const WASH = 'WASH';
-    const PROTECTION = 'Protection';
-    const EDUCATION_TVET = 'Education & TVET';
-    const EMERGENCY_TELCO = 'Emergency Telecomms';
-    const HEALTH = 'Health';
-    const LOGISTICS = 'Logistics';
-    const NUTRITION = 'Nutrition';
-    const MINE = 'Mine Action';
-    const DRR_RESILIENCE = 'DRR & Resilience';
-    const NON_SECTOR = 'Non-Sector Specific';
-    const CAMP_MANAGEMENT = 'Camp Coordination and Management';
-    const EARLY_RECOVERY = 'Early Recovery';
+    public const FOOD_SECURITY = 'Food Security';
+    public const LIVELIHOODS = 'Livelihoods';
+    public const MULTIPURPOSE_CASH = 'Multi Purpose Cash Assistance';
+    public const SHELTER = 'Shelter';
+    public const WASH = 'WASH';
+    public const PROTECTION = 'Protection';
+    public const EDUCATION_TVET = 'Education & TVET';
+    public const EMERGENCY_TELCO = 'Emergency Telecomms';
+    public const HEALTH = 'Health';
+    public const LOGISTICS = 'Logistics';
+    public const NUTRITION = 'Nutrition';
+    public const MINE = 'Mine Action';
+    public const DRR_RESILIENCE = 'DRR & Resilience';
+    public const NON_SECTOR = 'Non-Sector Specific';
+    public const CAMP_MANAGEMENT = 'Camp Coordination and Management';
+    public const EARLY_RECOVERY = 'Early Recovery';
 
     public function getName()
     {

@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance;
 
 use Entity\CountrySpecific;
+use Entity\Location;
 use Entity\VulnerabilityCriterion;
 use Repository\CountrySpecificRepository;
 use Repository\VulnerabilityCriterionRepository;
@@ -21,24 +24,27 @@ class SelectionCriteriaFactory
 {
     /** @var CriteriaConfigurationLoader $configurationLoader */
     private $configurationLoader;
+
     /** @var CountrySpecificRepository */
     private $countrySpecificRepository;
+
     /** @var VulnerabilityCriterionRepository */
     private $vulnerabilityCriterionRepository;
+
     /** @var LocationRepository */
     private $locationRepository;
 
     /**
-     * @param CriteriaConfigurationLoader      $configurationLoader
-     * @param CountrySpecificRepository        $countrySpecificRepository
+     * @param CriteriaConfigurationLoader $configurationLoader
+     * @param CountrySpecificRepository $countrySpecificRepository
      * @param VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
-     * @param LocationRepository               $locationRepository
+     * @param LocationRepository $locationRepository
      */
     public function __construct(
-        CriteriaConfigurationLoader      $configurationLoader,
-        CountrySpecificRepository        $countrySpecificRepository,
+        CriteriaConfigurationLoader $configurationLoader,
+        CountrySpecificRepository $countrySpecificRepository,
         VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
-        LocationRepository               $locationRepository
+        LocationRepository $locationRepository
     ) {
         $this->configurationLoader = $configurationLoader;
         $this->countrySpecificRepository = $countrySpecificRepository;
@@ -60,19 +66,20 @@ class SelectionCriteriaFactory
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
             if ($this->getVulnerability($input->getField())) {
                 $criterium->setTableString(SelectionCriteriaField::VULNERABILITY_CRITERIA);
+
                 return $criterium;
             }
         }
 
         if (SelectionCriteriaTarget::HOUSEHOLD === $input->getTarget()) {
-
             if ($countrySpecific = $this->getCountrySpecific($input->getField())) {
                 $criterium->setFieldString($countrySpecific->getFieldString());
                 $criterium->setTableString('countrySpecific');
+
                 return $criterium;
             }
             if (SelectionCriteriaField::CURRENT_LOCATION === $input->getField()) {
-                /** @var \Entity\Location $location */
+                /** @var Location $location */
                 $location = $this->locationRepository->find($input->getValue());
                 if (!$location) {
                     throw new EntityNotFoundException();
@@ -80,6 +87,7 @@ class SelectionCriteriaFactory
 
                 $criterium->setFieldString(SelectionCriteriaField::CURRENT_LOCATION);
                 $criterium->setValueString($location->getId());
+
                 return $criterium;
             }
         }
@@ -88,6 +96,7 @@ class SelectionCriteriaFactory
             $genderEnum = PersonGender::valueFromAPI($input->getValue());
             $criterium->setValueString((PersonGender::MALE === $genderEnum) ? '1' : '0');
             $criterium->setFieldString(SelectionCriteriaField::GENDER);
+
             return $criterium;
         }
 
@@ -127,7 +136,6 @@ class SelectionCriteriaFactory
             yield new CriteriaGroup($groupNumber, $group);
         }
     }
-
 
     private function getCountrySpecific(string $fieldName): ?CountrySpecific
     {

@@ -3,10 +3,12 @@
 namespace Utils;
 
 use Controller\ExportController;
+use Exception;
 use InputType\Country;
 use InputType\DataTableType;
 use InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\User;
@@ -19,8 +21,7 @@ use InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
-
-  /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface $em */
     private $em;
 
     /** @var ContainerInterface $container */
@@ -35,8 +36,8 @@ class VoucherService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface     $container
-     * @param Environment            $twig
+     * @param ContainerInterface $container
+     * @param Environment $twig
      */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $twig)
     {
@@ -49,10 +50,10 @@ class VoucherService
      * Creates a new Voucher entity
      *
      * @param array $vouchersData
-     * @param bool  $flush
+     * @param bool $flush
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(array $vouchersData, bool $flush = true)
     {
@@ -60,7 +61,6 @@ class VoucherService
         try {
             $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
-
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
                 /** @var Booklet $booklet */
@@ -77,12 +77,12 @@ class VoucherService
                     $this->em->flush();
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
+
         return $vouchers;
     }
-
 
     /**
      * Generate a new random code for a voucher
@@ -100,14 +100,14 @@ class VoucherService
 
         $fullCode = $currency . $value . '*' . $voucherData['bookletCode'] . '-' . $voucherId;
         $fullCode = $booklet->password ? $fullCode . '-' . $booklet->password : $fullCode;
-        
+
         return $fullCode;
     }
 
     /**
      * @param VoucherRedemptionBatch $batch
      *
-     * @param Vendor|null            $vendor
+     * @param Vendor|null $vendor
      *
      * @return RedemptionVoucherBatchCheck
      */
@@ -128,28 +128,36 @@ class VoucherService
         /** @var Voucher $voucher */
         foreach ($vouchers as $voucher) {
             $error = false;
-            if (Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
-                || null == $voucher->getBooklet()->getAssistanceBeneficiary()) {
+            if (
+                Booklet::UNASSIGNED == $voucher->getBooklet()->getStatus()
+                || null == $voucher->getBooklet()->getAssistanceBeneficiary()
+            ) {
                 $check->addUnassignedVoucher($voucher);
                 $error = true;
             }
 
-            if (Booklet::DISTRIBUTED == $voucher->getBooklet()->getStatus()
-                || null === $voucher->getVoucherPurchase()) {
+            if (
+                Booklet::DISTRIBUTED == $voucher->getBooklet()->getStatus()
+                || null === $voucher->getVoucherPurchase()
+            ) {
                 $check->addUnusedVoucher($voucher);
                 $error = true;
             }
 
-            if (Booklet::USED == $voucher->getBooklet()->getStatus()
-                && null !== $voucher->getRedeemedAt()) {
+            if (
+                Booklet::USED == $voucher->getBooklet()->getStatus()
+                && null !== $voucher->getRedeemedAt()
+            ) {
                 $check->addAlreadyRedeemedVoucher($voucher);
                 $error = true;
             }
 
-            if (Booklet::USED == $voucher->getBooklet()->getStatus()
+            if (
+                Booklet::USED == $voucher->getBooklet()->getStatus()
                 && null !== $vendor
                 && null == $voucher->getRedeemedAt()
-                && $vendor !== $voucher->getVoucherPurchase()->getVendor()) {
+                && $vendor !== $voucher->getVoucherPurchase()->getVendor()
+            ) {
                 $check->addVendorInconsistentVoucher($voucher);
                 $error = true;
             }
@@ -171,7 +179,7 @@ class VoucherService
         $check = $this->checkBatch($batch);
 
         if ($check->hasInvalidVouchers()) {
-            throw new \InvalidArgumentException("Invalid voucher batch");
+            throw new InvalidArgumentException("Invalid voucher batch");
         }
 
         $repository = $this->em->getRepository(Voucher::class);
@@ -196,7 +204,7 @@ class VoucherService
      * @param Voucher $voucher
      * @param bool $removeVoucher
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteOneFromDatabase(Voucher $voucher, bool $removeVoucher = true)
     {
@@ -204,18 +212,20 @@ class VoucherService
             $this->em->remove($voucher);
             $this->em->flush();
         } else {
-            throw new \Exception('$voucher has been used, unable to delete');
+            throw new Exception('$voucher has been used, unable to delete');
         }
+
         return true;
     }
 
     // =============== DELETE A BATCH OF VOUCHERS ===============
+
     /**
      * Deletes all the vouchers of the given booklet
      *
      * @param Booklet $booklet
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteBatchVouchers(Booklet $booklet)
     {
@@ -223,18 +233,20 @@ class VoucherService
         $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $bookletId]);
         foreach ($vouchers as $value) {
             $this->deleteOneFromDatabase($value);
-        };
+        }
+
         return true;
     }
 
     /**
-         * Export all vouchers in a CSV file
-         * @param string $type
-         * @param string $countryIso3
-         * @param array $ids
-         * @param array $filters
-         * @return mixed
-         */
+     * Export all vouchers in a CSV file
+     *
+     * @param string $type
+     * @param string $countryIso3
+     * @param array $ids
+     * @param array $filters
+     * @return mixed
+     */
     public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
     {
         $booklets = null;
@@ -244,14 +256,16 @@ class VoucherService
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
             $exportableCount = $this->em->getRepository(Voucher::class)->countByBookletsIds($ids);
-        } else if ($filters) {
-            /** @var DataTableType $dataTableFilter */
-            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
-            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+            if ($filters) {
+                /** @var DataTableType $dataTableFilter */
+                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+                $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            } else {
+                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+            }
         }
-        
+
         // If we only have the booklets, get the vouchers
         if ($booklets !== null) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
@@ -262,23 +276,30 @@ class VoucherService
         if ('csv' === $type) {
             if ($exportableCount >= ExportController::EXPORT_LIMIT_CSV) {
                 $totalBooklets = $ids ? count($ids) : count($booklets);
-                throw new \Exception("Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). ".
-                    "Export the data in batches of ".ExportController::EXPORT_LIMIT_CSV." vouchers or less");
+                throw new Exception(
+                    "Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). " .
+                    "Export the data in batches of " . ExportController::EXPORT_LIMIT_CSV . " vouchers or less"
+                );
             }
+
             return $this->csvExport($exportableTable);
         }
 
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets booklets). ".
-            "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
+            throw new Exception(
+                "Too much vouchers for the export ($total vouchers in $totalBooklets booklets). " .
+                "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
+            );
         }
+
         return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
     }
 
     /**
      * Export all vouchers in a pdf
+     *
      * @param array $ids
      * @param string $countryIso3
      * @param array $filters
@@ -291,12 +312,14 @@ class VoucherService
 
         if ($ids) {
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
-        } else if ($filters) {
-            /** @var DataTableType $dataTableFilter */
-            $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-            $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
         } else {
-            $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+            if ($filters) {
+                /** @var DataTableType $dataTableFilter */
+                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+                $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            } else {
+                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
+            }
         }
 
         if ($booklets) {
@@ -306,30 +329,33 @@ class VoucherService
         $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new \Exception("Too much vouchers for the export ($total vouchers in $totalBooklets). ".
-                "Export the data in batches of ".ExportController::EXPORT_LIMIT." vouchers or less");
+            throw new Exception(
+                "Too much vouchers for the export ($total vouchers in $totalBooklets). " .
+                "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
+            );
         }
 
         try {
-            $html =  $this->twig->render(
+            $html = $this->twig->render(
                 '@Voucher/Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],
                     $this->container->get('pdf_service')->getInformationStyle()
-                    )
-
-                );
+                )
+            );
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
+
             return $response;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
     }
 
     public function getLastId()
     {
         $lastVoucher = $this->em->getRepository(Voucher::class)->findBy([], ['id' => 'DESC'], 1);
+
         return $lastVoucher ? $lastVoucher[0]->getId() : 0;
     }
 
@@ -346,7 +372,7 @@ class VoucherService
         $response = new StreamedResponse(function () use ($exportableTable) {
             $data = $exportableTable->iterate();
             $csv = fopen('php://output', 'w+');
-            fputcsv($csv, array('Booklet Number', 'Voucher Codes'),';');
+            fputcsv($csv, ['Booklet Number', 'Voucher Codes'], ';');
 
             while (false !== ($row = $data->next())) {
                 fputcsv($csv, [$row[0]->getBooklet()->getCode(), $row[0]->getCode()], ';');
@@ -357,6 +383,7 @@ class VoucherService
         $response->setStatusCode(200);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
+
         return $response;
     }
 }

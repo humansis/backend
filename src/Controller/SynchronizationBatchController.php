@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller;
@@ -18,8 +19,8 @@ class SynchronizationBatchController extends AbstractController
      * @Rest\Get("/web-app/v1/syncs")
      *
      * @param API\FilterInputType $filter
-     * @param API\OrderInputType  $orderBy
-     * @param Pagination      $pagination
+     * @param API\OrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -44,6 +45,7 @@ class SynchronizationBatchController extends AbstractController
         if ($object->getState() === SynchronizationBatchState::ARCHIVED) {
             throw new NotFoundHttpException("Archived");
         }
+
         return $this->json($object);
     }
 }

@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use InputType\PurchaseProductInputType;
 use InputType\SmartcardPurchaseInputType;
 use Psr\Log\LoggerInterface;
@@ -68,13 +69,13 @@ class PurchaseService
     }
 
     /**
-     * @param Smartcard              $smartcard
+     * @param Smartcard $smartcard
      * @param SmartcardPurchaseInputType|SmartcardPurchaseInput $input
      *
      * @return SmartcardPurchase
      *
      * @throws EntityNotFoundException
-     * @throws \Exception
+     * @throws Exception
      */
     public function purchaseSmartcard(Smartcard $smartcard, $input): SmartcardPurchase
     {
@@ -126,15 +127,15 @@ class PurchaseService
     }
 
     /**
-     * @param Beneficiary|null   $beneficiary
-     * @param Vendor             $vendor
+     * @param Beneficiary|null $beneficiary
+     * @param Vendor $vendor
      * @param DateTimeInterface $createdAt
      *
      * @return string
      */
     public function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
     {
-        $stringToHash = ($beneficiary ? $beneficiary->getId() : null).$vendor->getId().$createdAt->getTimestamp();
+        $stringToHash = ($beneficiary ? $beneficiary->getId() : null) . $vendor->getId() . $createdAt->getTimestamp();
 
         return md5($stringToHash);
     }

@@ -22,13 +22,13 @@ use Entity\Project;
  */
 class Booklet implements ExportableInterface
 {
+    use StandardizedPrimaryKey;
+    use CountryDependent;
+
     public const UNASSIGNED = 0;
     public const DISTRIBUTED = 1;
     public const USED = 2;
     public const DEACTIVATED = 3;
-
-    use StandardizedPrimaryKey;
-    use CountryDependent;
 
     /**
      * @var ReliefPackage|null
@@ -114,9 +114,9 @@ class Booklet implements ExportableInterface
     }
 
     /**
+     * @return AssistanceBeneficiary|null
      * @deprecated use getAssistanceBeneficiary instead if you can
      * @SymfonyGroups({"FullBooklet"})
-     * @return AssistanceBeneficiary|null
      */
     public function getDistributionBeneficiary(): ?AssistanceBeneficiary
     {
@@ -142,7 +142,6 @@ class Booklet implements ExportableInterface
 
         return $this;
     }
-
 
     /**
      * @return Project|null
@@ -283,7 +282,6 @@ class Booklet implements ExportableInterface
         return $this->password;
     }
 
-
     /**
      * @return Collection|Voucher[]
      */
@@ -329,6 +327,7 @@ class Booklet implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -362,14 +361,14 @@ class Booklet implements ExportableInterface
             'Distribution' => $distribution,
             'Total value' => $this->getTotalValue(),
             'Currency' => $this->getCurrency(),
-            'Used at' => $this->getUsedAt()
+            'Used at' => $this->getUsedAt(),
         ];
 
         $vouchers = $this->getVouchers();
 
         foreach ($vouchers as $index => $voucher) {
             $displayIndex = $index + 1;
-            $finalArray['Voucher '.$displayIndex] = $voucher->getValue().$this->getCurrency();
+            $finalArray['Voucher ' . $displayIndex] = $voucher->getValue() . $this->getCurrency();
         }
 
         return $finalArray;
@@ -382,6 +381,7 @@ class Booklet implements ExportableInterface
         foreach ($vouchers as $voucher) {
             $value += $voucher->getValue();
         }
+
         return $value;
     }
 

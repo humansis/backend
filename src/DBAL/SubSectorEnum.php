@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DBAL;
 
+use InvalidArgumentException;
+
 class SubSectorEnum extends AbstractEnum
 {
     protected static $values = [
@@ -133,66 +135,58 @@ class SubSectorEnum extends AbstractEnum
         self::DEFAULT_CAMP_MANAGEMENT => 'Default Camp Coordination and Management',
         self::DEFAULT_EARLY_RECOVERY => 'Default Early Recovery',
     ];
-
-    const IN_KIND_FOOD = 'in_kind_food';
-    const FOOD_VOUCHERS = 'food_vouchers';
-    const CASH_TRANSFERS = 'food_cash_transfers';
-    const FOOD_CASH_FOR_WORK = 'food_cash_for_work';
-
-    const SKILLS_TRAINING = 'skills_training';
-    const TECHNICAL_SUPPORT = 'technical_support';
-    const PROVISION_OF_INPUTS = 'provision_of_inputs';
-    const BUSINESS_GRANTS = 'business_grants';
-    const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
-    const LIVELIHOOD_CASH_FOR_WORK = 'livelihood_cash_for_work';
-
-    const MULTI_PURPOSE_CASH_ASSISTANCE = 'multi_purpose_cash_assistance';
-
-    const REHABILITATION = 'rehabilitation';
-    const CONSTRUCTION = 'construction';
-    const SETTLEMENT_UPGRADES = 'settlement_upgrades';
-    const WINTERIZATION_KITS = 'winterization_kits';
-    const WINTERIZATION_UPGRADES = 'winterization_upgrades';
-    const SHELTER_KITS = 'shelter_kits';
-    const NFI_KITS = 'nfi_kits';
-    const CASH_FOR_SHELTER = 'cash_for_shelter';
-
-    const WATER_POINT_REHABILITATION = 'water_point_rehabilitation';
-    const WATER_POINT_CONSTRUCTION = 'water_point_construction';
-    const WATER_TRUCKING = 'water_trucking';
-    const WATER_TREATMENT = 'water_treatment';
-    const VECTOR_CONTROL = 'vector_control';
-    const SOLID_WASTE_MANAGEMENT = 'solid_waste_management';
-    const SANITATION = 'sanitation';
-    const HYGIENE_PROMOTION = 'hygiene_promotion';
-    const HYGIENE_KITS = 'hygiene_kits';
-    const OPERATIONAL_SUPPLIES = 'operational_supplies';
-
-    const PROTECTION_PSYCHOSOCIAL_SUPPORT = 'protection_psychosocial_support';
-    const INDIVIDUAL_PROTECTION_ASSISTANCE = 'individual_protection_assistance';
-    const COMMUNITY_BASED_INTERVENTIONS = 'community_based_interventions';
-    const PROTECTION_ADVOCACY = 'protection_advocacy';
-    const CHILD_PROTECTION = 'child_protection';
-    const GENDER_BASED_VIOLENCE_ACTIVITIES = 'gender_based_violence_activities';
-
-    const TEACHER_INCENTIVE_PAYMENTS = 'teacher_incentive_payments';
-    const TEACHER_TRAINING = 'teacher_training';
-    const LEARNING_MATERIALS = 'learning_materials';
-    const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
-    const LEARNING_SUPPORT = 'learning_support';
-    const EDUCATION_CASH_FOR_WORK = 'education_cash_for_work';
-    const PARENT_SESSIONS = 'education_parent_sessions';
-    const SCHOOL_OPERATIONAL_SUPPORT = 'school_operational_support';
-
-    const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
-    const DEFAULT_HEALTH = 'default_health';
-    const DEFAULT_LOGISTICS = 'default_logistics';
-    const DEFAULT_NUTRITION = 'default_nutrition';
-    const DEFAULT_MINE = 'default_mine';
-    const DEFAULT_DRR_RESILIENCE = 'default_drr_resilience';
-    const DEFAULT_NON_SECTOR = 'default_non_sector';
-    const DEFAULT_CAMP_MANAGEMENT = 'default_camp_management';
-    const DEFAULT_EARLY_RECOVERY = 'default_early_recovery';
+    public const IN_KIND_FOOD = 'in_kind_food';
+    public const FOOD_VOUCHERS = 'food_vouchers';
+    public const CASH_TRANSFERS = 'food_cash_transfers';
+    public const FOOD_CASH_FOR_WORK = 'food_cash_for_work';
+    public const SKILLS_TRAINING = 'skills_training';
+    public const TECHNICAL_SUPPORT = 'technical_support';
+    public const PROVISION_OF_INPUTS = 'provision_of_inputs';
+    public const BUSINESS_GRANTS = 'business_grants';
+    public const AGRICULTURAL_VOUCHERS = 'agricultural_vouchers';
+    public const LIVELIHOOD_CASH_FOR_WORK = 'livelihood_cash_for_work';
+    public const MULTI_PURPOSE_CASH_ASSISTANCE = 'multi_purpose_cash_assistance';
+    public const REHABILITATION = 'rehabilitation';
+    public const CONSTRUCTION = 'construction';
+    public const SETTLEMENT_UPGRADES = 'settlement_upgrades';
+    public const WINTERIZATION_KITS = 'winterization_kits';
+    public const WINTERIZATION_UPGRADES = 'winterization_upgrades';
+    public const SHELTER_KITS = 'shelter_kits';
+    public const NFI_KITS = 'nfi_kits';
+    public const CASH_FOR_SHELTER = 'cash_for_shelter';
+    public const WATER_POINT_REHABILITATION = 'water_point_rehabilitation';
+    public const WATER_POINT_CONSTRUCTION = 'water_point_construction';
+    public const WATER_TRUCKING = 'water_trucking';
+    public const WATER_TREATMENT = 'water_treatment';
+    public const VECTOR_CONTROL = 'vector_control';
+    public const SOLID_WASTE_MANAGEMENT = 'solid_waste_management';
+    public const SANITATION = 'sanitation';
+    public const HYGIENE_PROMOTION = 'hygiene_promotion';
+    public const HYGIENE_KITS = 'hygiene_kits';
+    public const OPERATIONAL_SUPPLIES = 'operational_supplies';
+    public const PROTECTION_PSYCHOSOCIAL_SUPPORT = 'protection_psychosocial_support';
+    public const INDIVIDUAL_PROTECTION_ASSISTANCE = 'individual_protection_assistance';
+    public const COMMUNITY_BASED_INTERVENTIONS = 'community_based_interventions';
+    public const PROTECTION_ADVOCACY = 'protection_advocacy';
+    public const CHILD_PROTECTION = 'child_protection';
+    public const GENDER_BASED_VIOLENCE_ACTIVITIES = 'gender_based_violence_activities';
+    public const TEACHER_INCENTIVE_PAYMENTS = 'teacher_incentive_payments';
+    public const TEACHER_TRAINING = 'teacher_training';
+    public const LEARNING_MATERIALS = 'learning_materials';
+    public const EDUCATION_PSYCHOSOCIAL_SUPPORT = 'education_psychosocial_support';
+    public const LEARNING_SUPPORT = 'learning_support';
+    public const EDUCATION_CASH_FOR_WORK = 'education_cash_for_work';
+    public const PARENT_SESSIONS = 'education_parent_sessions';
+    public const SCHOOL_OPERATIONAL_SUPPORT = 'school_operational_support';
+    public const DEFAULT_EMERGENCY_TELCO = 'default_emergency_telco';
+    public const DEFAULT_HEALTH = 'default_health';
+    public const DEFAULT_LOGISTICS = 'default_logistics';
+    public const DEFAULT_NUTRITION = 'default_nutrition';
+    public const DEFAULT_MINE = 'default_mine';
+    public const DEFAULT_DRR_RESILIENCE = 'default_drr_resilience';
+    public const DEFAULT_NON_SECTOR = 'default_non_sector';
+    public const DEFAULT_CAMP_MANAGEMENT = 'default_camp_management';
+    public const DEFAULT_EARLY_RECOVERY = 'default_early_recovery';
 
     public function getName()
     {
@@ -207,7 +201,7 @@ class SubSectorEnum extends AbstractEnum
     public static function translate(string $livelihood): string
     {
         if (!array_key_exists($livelihood, self::TRANSLATIONS)) {
-            throw new \InvalidArgumentException("$livelihood is not valid Livelihood value.");
+            throw new InvalidArgumentException("$livelihood is not valid Livelihood value.");
         }
 
         return self::TRANSLATIONS[$livelihood];

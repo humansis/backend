@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Assistance;
 
+use DateTimeInterface;
 use Request\InputTypeInterface;
 use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
@@ -48,9 +51,9 @@ class DistributeReliefPackagesInputType implements InputTypeInterface
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDateDistributed(): \DateTimeInterface
+    public function getDateDistributed(): DateTimeInterface
     {
         return Iso8601Converter::toDateTime($this->dateDistributed);
     }
@@ -78,5 +81,4 @@ class DistributeReliefPackagesInputType implements InputTypeInterface
     {
         $this->amountDistributed = $amountDistributed;
     }
-
 }

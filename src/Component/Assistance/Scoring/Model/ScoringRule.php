@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Model;
+
+use InvalidArgumentException;
 
 final class ScoringRule
 {
@@ -79,7 +82,7 @@ final class ScoringRule
             }
         }
 
-        throw new \InvalidArgumentException("Scoring rule {$this->title} does not have option with value $value.");
+        throw new InvalidArgumentException("Scoring rule {$this->title} does not have option with value $value.");
     }
 
     /**

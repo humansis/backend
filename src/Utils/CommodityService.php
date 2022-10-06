@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Utils;
 
 use Entity\Commodity;
@@ -10,17 +9,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Class CommodityService
+ *
  * @package Utils
  */
 class CommodityService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
-
     /**
      * CommodityService constructor.
+     *
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(EntityManagerInterface $entityManager)

@@ -212,7 +212,7 @@ class HouseholdServiceTest extends KernelTestCase
     {
         $countryCode = 'ARM';
         $updateData = new HouseholdUpdateInputType();
-        $updateData->setProjectIds([1,2]);
+        $updateData->setProjectIds([1, 2]);
         $updateData->setAssets(["1", "3", 5]);
         $updateData->setLongitude('1.000');
         $updateData->setLatitude('2.000');
@@ -395,5 +395,4 @@ class HouseholdServiceTest extends KernelTestCase
         $this->assertEquals(1, $household->getBeneficiaries()->count());
         $this->assertEquals(ResidencyStatus::IDP, $household->getBeneficiaries()->first()->getResidencyStatus());
     }
-
 }

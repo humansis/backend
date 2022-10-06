@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Helper;
@@ -12,8 +13,10 @@ class EnumsBuilder
 {
     /** @var string */
     private $enumClassName;
+
     /** @var bool */
     private $nullToEmptyArrayTransformation = false;
+
     private $explodeDelimiters = [',', ';'];
 
     /**
@@ -57,6 +60,7 @@ class EnumsBuilder
                 $enumValues[] = $apiValue;
             }
         }
+
         return $enumValues;
     }
 
@@ -69,6 +73,7 @@ class EnumsBuilder
         foreach ($this->explodeDelimiters as $delimiter) {
             $apiValueCandidates = $this->explode($apiValueCandidates, $delimiter);
         }
+
         return $this->buildInputValues($apiValueCandidates);
     }
 
@@ -76,7 +81,9 @@ class EnumsBuilder
     {
         foreach ($values as $value) {
             foreach (explode($delimiter, $value) as $shard) {
-                if (strlen(trim($shard))>0) yield trim($shard);
+                if (strlen(trim($shard)) > 0) {
+                    yield trim($shard);
+                }
             }
         }
     }

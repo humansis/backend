@@ -2,17 +2,20 @@
 
 namespace Utils\Provider;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Entity\Transaction;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
+use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 
 /**
  * Class DefaultFinancialProvider
+ *
  * @package Utils\Provider
  */
 abstract class DefaultFinancialProvider
@@ -20,11 +23,11 @@ abstract class DefaultFinancialProvider
     /**
      * Limit for one batch site due problems with timeouts
      */
-    const MAX_BATCH_SIZE = 100;
+    public const MAX_BATCH_SIZE = 100;
 
     /** @var EntityManagerInterface $em */
     protected $em;
-    
+
     /** @var ContainerInterface $container */
     protected $container;
 
@@ -39,6 +42,7 @@ abstract class DefaultFinancialProvider
 
     /**
      * DefaultFinancialProvider constructor.
+     *
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
@@ -47,30 +51,32 @@ abstract class DefaultFinancialProvider
         $this->container = $container;
         $this->logger = $container->get('monolog.logger.mobile');
     }
-    
+
     /**
      * Send request to financial API
+     *
      * @param Assistance $assistance
-     * @param  string $type    type of the request ("GET", "POST", etc.)
-     * @param  string $route   url of the request
-     * @param  array  $headers headers of the request (optional)
-     * @param  array  $body    body of the request (optional)
+     * @param string $type type of the request ("GET", "POST", etc.)
+     * @param string $route url of the request
+     * @param array $headers headers of the request (optional)
+     * @param array $body body of the request (optional)
      * @return mixed  response
-     * @throws \Exception
+     * @throws Exception
      */
-    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = array())
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = [])
     {
-        throw new \Exception("You need to define the financial provider for the country.");
+        throw new Exception("You need to define the financial provider for the country.");
     }
 
     /**
      * Send money to one beneficiary
-     * @param  string $phoneNumber
-     * @param  AssistanceBeneficiary $assistanceBeneficiary
-     * @param  float $amount
-     * @param  string $currency
+     *
+     * @param string $phoneNumber
+     * @param AssistanceBeneficiary $assistanceBeneficiary
+     * @param float $amount
+     * @param string $currency
      * @return Transaction
-     * @throws \Exception
+     * @throws Exception
      */
     public function sendMoneyToOne(
         string $phoneNumber,
@@ -78,24 +84,25 @@ abstract class DefaultFinancialProvider
         float $amount,
         string $currency
     ) {
-        throw new \Exception("You need to define the financial provider for the country.");
+        throw new Exception("You need to define the financial provider for the country.");
     }
 
     /**
      * Send money to all beneficiaries
+     *
      * @param Assistance $assistance
-     * @param  float $amount
-     * @param  string $currency
+     * @param float $amount
+     * @param string $currency
      * @param string $from
      * @return array
-     * @throws \Exception
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function sendMoneyToAll(Assistance $assistance, float $amount, string $currency, string $from)
     {
         // temporary variables to limit the amount of money that can be sent for one distribution to: 1000$
         $cache = new FilesystemCache();
-        if (! $cache->has($assistance->getId() . '-amount_sent')) {
+        if (!$cache->has($assistance->getId() . '-amount_sent')) {
             $cache->set($assistance->getId() . '-amount_sent', 0);
         }
 
@@ -106,16 +113,16 @@ abstract class DefaultFinancialProvider
             ->findBy([
                 'assistance' => $assistance,
                 'removed' => 0,
-                ]);
+            ]);
 
-        $this->logger->info("Money sending: Recipient count ".count($distributionBeneficiaries));
+        $this->logger->info("Money sending: Recipient count " . count($distributionBeneficiaries));
 
-        $response = array(
-            'sent'          => array(),
-            'failure'       => array(),
-            'no_mobile'     => array(),
-            'already_sent'  => array()
-        );
+        $response = [
+            'sent' => [],
+            'failure' => [],
+            'no_mobile' => [],
+            'already_sent' => [],
+        ];
 
         $count = 0;
         $requestCount = 0;
@@ -128,9 +135,9 @@ abstract class DefaultFinancialProvider
                 array_push($response['failure'], $assistanceBeneficiary);
                 continue;
             }
-            
+
             $transactions = $assistanceBeneficiary->getTransactions();
-            if (! $transactions->isEmpty()) {
+            if (!$transactions->isEmpty()) {
                 // if this beneficiary already has transactions
                 // filter out the one that is a success (if it exists)
                 $transactions = $transactions->filter(
@@ -150,7 +157,7 @@ abstract class DefaultFinancialProvider
 
             if ($phoneNumber) {
                 // if a successful transaction already exists
-                if (! $transactions->isEmpty()) {
+                if (!$transactions->isEmpty()) {
                     $this->logger->debug("Money sending: Recipient omitted - already sent", [$beneficiary, $assistanceBeneficiary]);
                     array_push($response['already_sent'], $assistanceBeneficiary);
                 } else {
@@ -171,26 +178,28 @@ abstract class DefaultFinancialProvider
                                 array_push($response['sent'], $assistanceBeneficiary);
                             }
                         } catch (Exception $e) {
-                            $this->logger->warning("Money sending: Recipient error: ".$e->getMessage(), [$beneficiary, $assistanceBeneficiary]);
-                            $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, $e->getMessage());
+                            $this->logger->warning("Money sending: Recipient error: " . $e->getMessage(), [$beneficiary, $assistanceBeneficiary]);
+                            $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 2, $e->getMessage());
                             array_push($response['failure'], $assistanceBeneficiary);
                         } finally {
                             $requestCount++;
                         }
                     } else {
                         $this->logger->warning("Money sending: Recipient omitted - money limit", [$beneficiary, $assistanceBeneficiary]);
-                        $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
+                        $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
                     }
                 }
             } else {
                 $this->logger->debug("Money sending: Recipient omitted - no mobile", [$beneficiary, $assistanceBeneficiary]);
-                $this->createTransaction($assistanceBeneficiary, '', new \DateTime(), 0, 2, "No Phone");
+                $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 2, "No Phone");
                 array_push($response['no_mobile'], $assistanceBeneficiary);
             }
 
             $count++;
 
-            if ($requestCount >= self::MAX_BATCH_SIZE) break;
+            if ($requestCount >= self::MAX_BATCH_SIZE) {
+                break;
+            }
         }
 
         $cache->delete($this->from . '-progression-' . $assistance->getId());
@@ -200,24 +209,25 @@ abstract class DefaultFinancialProvider
 
     /**
      * Create transaction
-     * @param  AssistanceBeneficiary $assistanceBeneficiary
-     * @param  string $transactionId
-     * @param \DateTime $dateSent
+     *
+     * @param AssistanceBeneficiary $assistanceBeneficiary
+     * @param string $transactionId
+     * @param DateTime $dateSent
      * @param string $amountSent
-     * @param  int $transactionStatus
-     * @param  string $message
+     * @param int $transactionStatus
+     * @param string $message
      * @return Transaction
      */
     public function createTransaction(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $transactionId,
-        \DateTime $dateSent,
+        DateTime $dateSent,
         string $amountSent,
         int $transactionStatus,
         string $message = null
     ) {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        
+
         $transaction = new Transaction();
         $transaction->setAssistanceBeneficiary($assistanceBeneficiary);
         $transaction->setDateSent($dateSent);
@@ -226,36 +236,37 @@ abstract class DefaultFinancialProvider
         $transaction->setTransactionStatus($transactionStatus);
         $transaction->setMessage($message);
         $transaction->setSentBy($user);
-        
+
         $assistanceBeneficiary->addTransaction($transaction);
         $user->addTransaction($transaction);
-        
+
         $this->em->persist($transaction);
         $this->em->persist($assistanceBeneficiary);
         $this->em->persist($user);
         $this->em->flush();
-        
+
         return $transaction;
     }
-    
+
     /**
      * Save transaction record in file
-     * @param  Assistance $assistance
-     * @param  array           $data
+     *
+     * @param Assistance $assistance
+     * @param array $data
      * @return void
      */
     public function recordTransaction(Assistance $assistance, array $data)
     {
         $dir_root = $this->container->get('kernel')->getRootDir();
         $dir_var = $dir_root . '/../var/logs';
-        if (! is_dir($dir_var)) {
+        if (!is_dir($dir_var)) {
             mkdir($dir_var);
         }
         $file_record = $dir_var . '/record_' . $assistance->getId() . '.csv';
 
         $fp = fopen($file_record, 'a');
         if (!file_get_contents($file_record)) {
-            fputcsv($fp, array('FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR', 'PARAMETERS'), ';');
+            fputcsv($fp, ['FROM', 'DATE', 'URL', 'HTTP CODE', 'RESPONSE', 'ERROR', 'PARAMETERS'], ';');
         }
 
         fputcsv($fp, $data, ";");

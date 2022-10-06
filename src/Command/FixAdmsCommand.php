@@ -3,6 +3,7 @@
 namespace Command;
 
 use Doctrine\DBAL\Connection;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -22,12 +23,12 @@ class FixAdmsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int|void|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -80,7 +81,7 @@ class FixAdmsCommand extends ContainerAwareCommand
 
     private function getFilepath(InputInterface $input)
     {
-        $filepath = __DIR__.'/../Resources/locations/'.strtolower($input->getArgument('country')).'.xml';
+        $filepath = __DIR__ . '/../Resources/locations/' . strtolower($input->getArgument('country')) . '.xml';
         if (!file_exists($filepath)) {
             throw new InvalidArgumentException('Unable to find file with Adms for specified country.');
         }
@@ -115,11 +116,15 @@ class FixAdmsCommand extends ContainerAwareCommand
 
     private function process(Connection $conn, $adm, $admPrev, $code, $name, $codePrev)
     {
-        $data = $conn->fetchAssoc("SELECT {$admPrev}.code AS codePrev, {$adm}.name FROM {$adm} JOIN {$admPrev} ON $adm.{$admPrev}_id={$admPrev}.id WHERE {$adm}.code=?",
-            [$code]);
+        $data = $conn->fetchAssoc(
+            "SELECT {$admPrev}.code AS codePrev, {$adm}.name FROM {$adm} JOIN {$admPrev} ON $adm.{$admPrev}_id={$admPrev}.id WHERE {$adm}.code=?",
+            [$code]
+        );
         if (false === $data) {
-            $conn->executeQuery("INSERT INTO {$adm} SET code=?, name=?, location_id=?, {$admPrev}_id=(SELECT id FROM {$admPrev} WHERE code=?)",
-                [$code, $name, $this->getNewLocationId($conn), $codePrev]);
+            $conn->executeQuery(
+                "INSERT INTO {$adm} SET code=?, name=?, location_id=?, {$admPrev}_id=(SELECT id FROM {$admPrev} WHERE code=?)",
+                [$code, $name, $this->getNewLocationId($conn), $codePrev]
+            );
         } else {
             if ($data['name'] !== $name) {
                 $conn->executeQuery("UPDATE {$adm} SET name=? WHERE code=?", [$name, $code]);
@@ -134,8 +139,10 @@ class FixAdmsCommand extends ContainerAwareCommand
     {
         $data = $conn->fetchAssoc('SELECT code, name FROM adm1 WHERE code=?', [$code]);
         if (false === $data) {
-            $conn->executeQuery('INSERT INTO adm1 SET code=?, name=?, countryIso3=?, location_id=?',
-                [$code, $name, strtoupper($countryIso3), $this->getNewLocationId($conn)]);
+            $conn->executeQuery(
+                'INSERT INTO adm1 SET code=?, name=?, countryIso3=?, location_id=?',
+                [$code, $name, strtoupper($countryIso3), $this->getNewLocationId($conn)]
+            );
         } elseif ($data['name'] !== $name) {
             $conn->executeQuery('UPDATE adm1 SET name=? WHERE code=?', [$name, $code]);
         }

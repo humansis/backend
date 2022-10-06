@@ -1,13 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository\Assistance;
 
+use DateTime;
+use DateTimeInterface;
+use Doctrine\ORM\EntityRepository;
 use Entity\Location;
 use Entity\Beneficiary;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Enum\AssistanceTargetType;
+use InvalidArgumentException;
 use Repository\LocationRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -20,20 +25,20 @@ use InputType\Assistance\ReliefPackageFilterInputType;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 
-class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
+class ReliefPackageRepository extends EntityRepository
 {
     /**
-     * @param AssistanceBeneficiary   $assistanceBeneficiary
-     * @param string|null             $reliefPackageStatus
-     * @param \DateTimeInterface|null $beforeDate
+     * @param AssistanceBeneficiary $assistanceBeneficiary
+     * @param string|null $reliefPackageStatus
+     * @param DateTimeInterface|null $beforeDate
      *
      * @return ReliefPackage|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findForSmartcardByAssistanceBeneficiary(
         AssistanceBeneficiary $assistanceBeneficiary,
-        ?string               $reliefPackageStatus = null,
-        ?\DateTimeInterface   $beforeDate = null
+        ?string $reliefPackageStatus = null,
+        ?DateTimeInterface $beforeDate = null
     ): ?ReliefPackage {
         $qb = $this->createQueryBuilder('rp')
             ->andWhere('rp.modalityType = :smartcardModality')
@@ -60,7 +65,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     /**
      * @param Vendor $vendor
      * @param string $country
-     * 
+     *
      * @return Paginator
      */
 
@@ -68,7 +73,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     {
         $vendorLocation = $vendor->getLocation();
         if (null === $vendorLocation) {
-            throw new \InvalidArgumentException("Vendor need to be in location");
+            throw new InvalidArgumentException("Vendor need to be in location");
         }
 
         /** @var LocationRepository $locationRepository */
@@ -84,7 +89,6 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 
         //if vendor has adm >= 2 filled, try to filter by adm2
         if (null !== $vendorLocation->getAdm2Id()) {
-
             /** @var Location $vendorLocationAdm2 */
             $vendorLocationAdm2 = $vendorLocation->getLvl() === 2
                 ? $vendorLocation
@@ -92,18 +96,17 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
 
             $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocationAdm2);
 
-            $qb->andWhere($qb->expr()->orX(
-                $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
-                $qb->expr()->eq('l.id', ':adm1Id'),  //assistance in adm1 only
-                $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2
-            ))->setParameters([
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
+                    $qb->expr()->eq('l.id', ':adm1Id'),  //assistance in adm1 only
+                    $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2
+                )
+            )->setParameters([
                 'adm2Id' => $vendorLocationAdm2->getId(),
                 'adm1Id' => $vendorLocationAdm2->getParentLocation()->getId(),
             ]);
-        }
-        //vendor location is adm1, filter by assistance in same or children location
-        else {
-
+        } else {  //vendor location is adm1, filter by assistance in same or children location
             $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocation, 'lc', true);
 
             $qb->andWhere(
@@ -120,7 +123,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
             ->setParameter('iso3', $country)
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
-            ->setParameter('currentDate', new \DateTime());
+            ->setParameter('currentDate', new DateTime());
 
         foreach ($qbLoc->getParameters() as $parameter) {
             $qb->setParameter($parameter->getName(), $parameter->getValue());
@@ -130,7 +133,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Assistance                        $assistance
+     * @param Assistance $assistance
      * @param ReliefPackageFilterInputType|null $filter
      *
      * @return Paginator
@@ -151,11 +154,11 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param Assistance  $assistance
+     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
      *
      * @return float|int|mixed|string|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findByAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
     {
@@ -256,7 +259,7 @@ class ReliefPackageRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('rp.state = :toDistributeState')
             ->setParameter('toDistributeState', ReliefPackageState::TO_DISTRIBUTE)
             ->setMaxResults(1)
-            ->andWhere('ab.id NOT IN ('.$qb1->getDQL().')')
+            ->andWhere('ab.id NOT IN (' . $qb1->getDQL() . ')')
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE);
 
         return $qb->getQuery()->getOneOrNullResult();

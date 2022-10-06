@@ -22,6 +22,7 @@ use Entity\User;
 
 /**
  * Class TransactionService
+ *
  * @package Utils
  */
 class TransactionService
@@ -34,7 +35,7 @@ class TransactionService
 
     /** @var ContainerInterface $container */
     private $container;
-    
+
     /** @var DefaultFinancialProvider $financialProvider */
     private $financialProvider;
 
@@ -55,9 +56,9 @@ class TransactionService
      * TransactionService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface     $container
-     * @param CacheInterface         $cache
-     * @param Environment            $twig
+     * @param ContainerInterface $container
+     * @param CacheInterface $cache
+     * @param Environment $twig
      */
     public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, CacheInterface $cache, Environment $twig)
     {
@@ -72,9 +73,9 @@ class TransactionService
     /**
      * Send money to distribution beneficiaries
      *
-     * @param string     $countryISO3
+     * @param string $countryISO3
      * @param Assistance $assistance
-     * @param User       $user
+     * @param User $user
      *
      * @return object
      * @throws InvalidArgumentException
@@ -92,16 +93,17 @@ class TransactionService
             $this->logger->error('Assistance has no Mobile money commodity');
             throw new Exception("The commodity of the distribution does not allow this operation.");
         }
-        
+
         $from = $user->getId();
         $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        
+
         return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
     }
-    
+
     /**
      * Get the financial provider corresponding to the current country
-     * @param  string $countryISO3 iso3 code of the country
+     *
+     * @param string $countryISO3 iso3 code of the country
      * @return object|Class|DefaultFinancialProvider
      * @throws Exception
      */
@@ -112,19 +114,21 @@ class TransactionService
         } catch (Exception $e) {
             $provider = null;
         }
-        
-        if (! ($provider instanceof DefaultFinancialProvider)) {
+
+        if (!($provider instanceof DefaultFinancialProvider)) {
             $this->logger->error("Country $countryISO3 has no defined financial provider");
             throw new Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
-        $this->logger->error("Financial provider for country $countryISO3: ".get_class($provider));
+        $this->logger->error("Financial provider for country $countryISO3: " . get_class($provider));
+
         return $provider;
     }
 
     /**
      * Send email to confirm transaction
-     * @param  User $user
-     * @param  Assistance $assistance
+     *
+     * @param User $user
+     * @param Assistance $assistance
      * @return void
      * @throws InvalidArgumentException
      */
@@ -146,28 +150,29 @@ class TransactionService
             ->setBody(
                 $this->twig->render(
                     'Emails/confirm_transaction.html.twig',
-                    array(
+                    [
                         'distribution' => $assistance->getName(),
                         'amount' => $amountToSend . ' ' . $commodity->getUnit(),
                         'number' => $numberOfBeneficiaries,
                         'date' => new DateTime(),
                         'email' => $user->getEmail(),
-                        'code' => $code
-                    )
+                        'code' => $code,
+                    ]
                 ),
                 'text/html'
             );
 
         $this->container->get('mailer')->send($message);
-        $this->logger->error("Code for verify assistance was sent to ".$user->getEmail(), [$assistance]);
+        $this->logger->error("Code for verify assistance was sent to " . $user->getEmail(), [$assistance]);
     }
 
     /**
      * Verify confirmation code
-     * @param  int $code
+     *
+     * @param int $code
      * @param User $user
      * @param Assistance $assistance
-     * @return boolean
+     * @return bool
      * @throws InvalidArgumentException
      */
     public function verifyCode(int $code, User $user, Assistance $assistance)
@@ -185,6 +190,7 @@ class TransactionService
         if ($result) {
             $cache->delete($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
         }
+
         return $result;
     }
 
@@ -197,7 +203,7 @@ class TransactionService
     {
         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
 
-        $exportableTable = array();
+        $exportableTable = [];
         foreach ($assistanceBeneficiary as $db) {
             $lastTransaction = $this->em->getRepository(Transaction::class)->findOneBy([
                 'assistanceBeneficiary' => $db,
@@ -227,7 +233,7 @@ class TransactionService
             $beneficiary = $db->getBeneficiary();
             $commonFields = $beneficiary->getCommonExportFields();
 
-            $transactionAdditionalInfo = array(
+            $transactionAdditionalInfo = [
                 "Amount Sent" => null,
                 "Sent At" => null,
                 "Phone number" => null,
@@ -238,7 +244,7 @@ class TransactionService
                 "Pickup Date" => null,
                 "Removed" => $db->getRemoved() ? 'Yes' : 'No',
                 "Justification for adding/removing" => $db->getJustification(),
-            );
+            ];
 
             if (null !== $transaction) {
                 $transactionAdditionalInfo["Amount Sent"] = $transaction->getAmountSent();
@@ -250,7 +256,7 @@ class TransactionService
                 $transactionAdditionalInfo["Sent At"] = $transaction->getDateSent()->format('d-m-Y H:i:s');
                 $phoneNumbers = [];
                 foreach ($beneficiary->getPerson()->getPhones() as $phone) {
-                    $phoneNumbers[] = $phone->getPrefix().' '.$phone->getNumber();
+                    $phoneNumbers[] = $phone->getPrefix() . ' ' . $phone->getNumber();
                 }
                 $transactionAdditionalInfo["Phone number"] = implode(', ', $phoneNumbers);
             }
@@ -258,7 +264,8 @@ class TransactionService
                 $transactionAdditionalInfo["Pickup Date"] = $transaction->getPickupDate()->format('d-m-Y H:i:s');
             }
 
-            array_push($exportableTable,
+            array_push(
+                $exportableTable,
                 array_merge($commonFields, $transactionAdditionalInfo)
             );
         }

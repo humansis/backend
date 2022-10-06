@@ -27,7 +27,6 @@ class CommunityControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-
     /**
      * @return mixed
      * @throws ORMException
@@ -73,7 +72,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -116,7 +115,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -173,13 +172,13 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ];
 
-        $this->request('PUT', '/api/basic/web-app/v1/communities/'.$id, $data);
+        $this->request('PUT', '/api/basic/web-app/v1/communities/' . $id, $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -209,13 +208,13 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/communities/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -247,7 +246,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -264,7 +263,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/communities/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/communities/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -280,7 +279,7 @@ class CommunityControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/communities/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/communities/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -297,15 +296,18 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no Community to be tested');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/communities');
+        $this->request('GET', '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/communities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": "*", 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use DateTimeInterface;
 use Enum\ModalityType;
 use Enum\SelectionCriteriaField;
 use InputType\Assistance\CommodityInputType;
@@ -272,9 +273,9 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDateDistribution(): \DateTimeInterface
+    public function getDateDistribution(): DateTimeInterface
     {
         return Iso8601Converter::toDateTime($this->dateDistribution);
     }
@@ -288,9 +289,9 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDateExpiration(): ?\DateTimeInterface
+    public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpiration ? Iso8601Converter::toDateTime($this->dateExpiration) : null;
     }
@@ -697,7 +698,4 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     {
         $this->round = $round;
     }
-
-
-
 }

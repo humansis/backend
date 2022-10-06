@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Model;
 
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 class Criteria
 {
-
     /**
      * @var string $tableString
      * @SymfonyGroups({"Criteria"})
@@ -16,10 +14,10 @@ class Criteria
     protected $tableString;
 
     /**
-    * @var string $target
-    * @SymfonyGroups({"Criteria"})
-    *
-    */
+     * @var string $target
+     * @SymfonyGroups({"Criteria"})
+     *
+     */
     protected $target;
 
     /**
@@ -40,7 +38,6 @@ class Criteria
 
         return $this;
     }
-
 
     /**
      * @return string

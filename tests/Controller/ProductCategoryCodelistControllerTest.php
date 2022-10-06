@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller;
@@ -33,7 +34,7 @@ class ProductCategoryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -42,5 +43,3 @@ class ProductCategoryCodelistControllerTest extends BMSServiceTestCase
         $this->assertEquals(count(ProductCategoryType::values()), $result['totalCount']);
     }
 }
-
-

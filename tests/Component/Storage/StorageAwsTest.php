@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Component\Storage;
 
@@ -44,7 +46,7 @@ class StorageAwsTest extends KernelTestCase
         self::$awsStorageFactory = $kernel->getContainer()->get(AwsStorageFactory::class);
         self::$awsConfig = ($kernel->getContainer()->get(LogsStorageConfigFactory::class))->create();
         self::$aws = self::$awsStorageFactory->create(self::$awsConfig);
-        self::$filePath = self::FOLDER.'/'.self::FILE_NAME;
+        self::$filePath = self::FOLDER . '/' . self::FILE_NAME;
     }
 
     /**
@@ -54,7 +56,7 @@ class StorageAwsTest extends KernelTestCase
     {
         $this->markTestSkipped('not on local');
 
-        $file = file_get_contents(__DIR__.'/../../Resources/logo.png');
+        $file = file_get_contents(__DIR__ . '/../../Resources/logo.png');
         $uploadedPath = self::$aws->upload(self::$filePath, $file);
 
         $this->assertEquals(self::$filePath, $uploadedPath, "Wrong uploaded file path");

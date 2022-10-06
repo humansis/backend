@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Factory;
 
@@ -38,7 +40,6 @@ final class LogsStorageConfigFactory implements Factory
         string $version,
         string $bucketName
     ) {
-
         $this->key = $key;
         $this->secret = $secret;
         $this->region = $region;

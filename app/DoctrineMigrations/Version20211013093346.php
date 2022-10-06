@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,13 +12,14 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20211013093346 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP VIEW view_assistance_statistics');
-        $this->addSql('CREATE VIEW view_assistance_statistics AS
+        $this->addSql(
+            'CREATE VIEW view_assistance_statistics AS
         SELECT
             assistance_id,
             COUNT(beneficiary)                             AS number_of_beneficiaries,
@@ -84,10 +87,11 @@ final class Version20211013093346 extends AbstractMigration
                 WHERE b.distribution_beneficiary_id IS NOT NULL
                 GROUP BY b.id, b.distribution_beneficiary_id
             ) AS b ON b.distribution_beneficiary_id=db.id
-        ) AS counts GROUP BY assistance_id');
+        ) AS counts GROUP BY assistance_id'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf(true, 'Cant be downgraded');

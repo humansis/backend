@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import;
 
+use BadMethodCallException;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Import;
 use Entity\ImportQueue;
@@ -31,9 +34,9 @@ class SimilarityChecker
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine
+        LoggerInterface $logger,
+        WorkflowInterface $importStateMachine,
+        WorkflowInterface $importQueueStateMachine
     ) {
         $this->entityManager = $entityManager;
         $this->logger = $logger;
@@ -43,13 +46,13 @@ class SimilarityChecker
     }
 
     /**
-     * @param Import   $import
+     * @param Import $import
      * @param int|null $batchSize if null => all
      */
     public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::SIMILARITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+            throw new BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
         foreach ($this->queueRepository->getItemsToSimilarityCheck($import, $batchSize) as $i => $item) {
@@ -69,7 +72,7 @@ class SimilarityChecker
     public function checkOne(ImportQueue $item): void
     {
         // similarity check missing, it will be implemented later
-        $item->setSimilarityCheckedAt(new \DateTime());
+        $item->setSimilarityCheckedAt(new DateTime());
         $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
 
         $this->entityManager->persist($item);

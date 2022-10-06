@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Assistance;
 
@@ -51,5 +53,4 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
     {
         $this->amountDistributed = $amountDistributed;
     }
-
 }

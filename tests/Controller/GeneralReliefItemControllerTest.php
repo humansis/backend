@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use DateTime;
 use Entity\GeneralReliefItem;
 use Exception;
 use Tests\BMSServiceTestCase;
@@ -30,18 +31,21 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete('Missing test data: GRI');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/general-relief-items/'.$item->getId());
+        $this->request('GET', '/api/basic/web-app/v1/general-relief-items/' . $item->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonStringEqualsJsonString('{
-            "id": '.$item->getId().',
-            "distributed": '.(null === $item->getDistributedAt() ? 'false' : 'true').',
-            "dateOfDistribution": '.(null === $item->getDistributedAt() ? 'null' : '"'.$item->getDistributedAt()->format(\DateTime::ISO8601).'"').',
-            "note": '.(null === $item->getNotes() ? 'null' : '"'.$item->getNotes().'"').'
-        }', $this->client->getResponse()->getContent());
+        $this->assertJsonStringEqualsJsonString(
+            '{
+            "id": ' . $item->getId() . ',
+            "distributed": ' . (null === $item->getDistributedAt() ? 'false' : 'true') . ',
+            "dateOfDistribution": ' . (null === $item->getDistributedAt() ? 'null' : '"' . $item->getDistributedAt()->format(DateTime::ISO8601) . '"') . ',
+            "note": ' . (null === $item->getNotes() ? 'null' : '"' . $item->getNotes() . '"') . '
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testList()
@@ -52,7 +56,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -68,7 +72,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
             $this->markTestIncomplete('Missing test data: GRI');
         }
 
-        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/' . $item->getId(), [
             'distributed' => true,
             'dateOfDistribution' => "2020-01-01T10:10:00+00",
             'note' => "some note",
@@ -76,14 +80,17 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "id": '.$item->getId().',
+        $this->assertJsonFragment(
+            '{
+            "id": ' . $item->getId() . ',
             "distributed": true,
             "dateOfDistribution": "*",
             "note": "some note"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -92,20 +99,23 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch2()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new \DateTime('2020-01-01T10:10:00+00')], ['id' => 'asc'])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new DateTime('2020-01-01T10:10:00+00')], ['id' => 'asc'])[0];
 
-        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/'.$item->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/' . $item->getId(), [
             'distributed' => false,
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "id": '.$item->getId().',
+        $this->assertJsonFragment(
+            '{
+            "id": ' . $item->getId() . ',
             "distributed": false,
             "dateOfDistribution": null
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

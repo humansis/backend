@@ -43,7 +43,7 @@ class Phone
     private $prefix;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="proxy", type="boolean")
      */
@@ -141,7 +141,7 @@ class Phone
     /**
      * Set proxy.
      *
-     * @param boolean $proxy
+     * @param bool $proxy
      *
      * @return Phone
      */
@@ -155,7 +155,7 @@ class Phone
     /**
      * Get proxy.
      *
-     * @return boolean
+     * @return bool
      */
     public function getProxy()
     {

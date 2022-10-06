@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Generator;
 
 use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
+use Enum\SelectionCriteriaTarget;
 use Repository\VulnerabilityCriterionRepository;
 use Component\SelectionCriteria\FieldGeneratorInterface;
 use Component\SelectionCriteria\Structure\Field;
@@ -39,7 +41,7 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
      */
     public function supports(string $target): bool
     {
-        return $target === \Enum\SelectionCriteriaTarget::BENEFICIARY;
+        return $target === SelectionCriteriaTarget::BENEFICIARY;
     }
 
     public static function validateGender($value): bool

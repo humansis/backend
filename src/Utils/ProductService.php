@@ -14,8 +14,7 @@ use Psr\Container\ContainerInterface;
 
 class ProductService
 {
-
-  /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface $em */
     private $em;
 
     /** @var ContainerInterface $container */
@@ -23,6 +22,7 @@ class ProductService
 
     /**
      * UserService constructor.
+     *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface $container
      */
@@ -49,15 +49,14 @@ class ProductService
             ->setCountryIso3($productData->getIso3())
             ->setUnitPrice($productData->getUnitPrice())
             ->setCurrency($productData->getCurrency())
-            ->setArchived(false)
-        ;
+            ->setArchived(false);
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
             $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
 
             if (!$productCategory instanceof ProductCategory) {
-                throw new EntityNotFoundException('ProductCategory with ID '. $productData->getProductCategoryId() . ' not found');
+                throw new EntityNotFoundException('ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found');
             }
 
             if (ProductCategoryType::CASHBACK === $productCategory->getType() && (empty($product->getUnitPrice()) || empty($product->getCurrency()))) {
@@ -78,7 +77,7 @@ class ProductService
     /**
      * Updates a product according to the $productData.
      *
-     * @param Product                $product
+     * @param Product $product
      * @param ProductUpdateInputType $productData
      *
      * @return Product
@@ -90,15 +89,14 @@ class ProductService
             ->setUnit($productData->getUnit())
             ->setImage($productData->getImage())
             ->setUnitPrice($productData->getUnitPrice())
-            ->setCurrency($productData->getCurrency())
-        ;
+            ->setCurrency($productData->getCurrency());
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
             $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
 
             if (!$productCategory instanceof ProductCategory) {
-                throw new EntityNotFoundException('ProductCategory with ID '. $productData->getProductCategoryId() . ' not found');
+                throw new EntityNotFoundException('ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found');
             }
 
             $product->setProductCategory($productCategory);
@@ -130,6 +128,7 @@ class ProductService
 
     /**
      * Export all products in a CSV file
+     *
      * @param string $type
      * @param string $countryIso3
      * @return mixed

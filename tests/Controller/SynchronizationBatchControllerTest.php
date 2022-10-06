@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller;
@@ -64,7 +65,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertEmpty($this->client->getResponse()->getContent());
     }
@@ -80,13 +81,13 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->em->persist($sync);
         $this->em->flush();
 
-        $this->request('GET', '/api/basic/web-app/v1/syncs/'.$sync->getId());
+        $this->request('GET', '/api/basic/web-app/v1/syncs/' . $sync->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -115,7 +116,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -148,8 +149,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->em->persist($sync);
         $this->em->flush();
 
-        $this->request('GET', '/api/basic/web-app/v1/syncs/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/syncs/' . $id);
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
-
 }

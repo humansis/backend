@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
@@ -20,7 +22,7 @@ class AnalyticsController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/smartcard/analytics/beneficiary/{id}")
      *
-     * @param Beneficiary  $beneficiary
+     * @param Beneficiary $beneficiary
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -33,7 +35,7 @@ class AnalyticsController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/smartcard/analytics/smartcard/{id}")
      *
-     * @param Smartcard    $smartcard
+     * @param Smartcard $smartcard
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -46,7 +48,7 @@ class AnalyticsController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/smartcard/analytics/smartcards/{serialNumber}")
      *
-     * @param string       $serialNumber
+     * @param string $serialNumber
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -59,7 +61,7 @@ class AnalyticsController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/smartcard/analytics/vendor/{id}")
      *
-     * @param Vendor       $vendor
+     * @param Vendor $vendor
      * @param EventService $eventService
      *
      * @return JsonResponse

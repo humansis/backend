@@ -13,11 +13,13 @@ final class Version20201208202557 extends AbstractMigration
     {
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             ALTER TABLE assistance
                 ADD description LONGTEXT DEFAULT NULL,
                 ADD households_targeted INT DEFAULT NULL,
-                ADD individuals_targeted INT DEFAULT NULL');
+                ADD individuals_targeted INT DEFAULT NULL'
+        );
     }
 
     public function down(Schema $schema): void

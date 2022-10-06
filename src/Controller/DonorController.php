@@ -41,7 +41,7 @@ class DonorController extends AbstractController
     {
         $request->query->add(['donors' => true]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -60,8 +60,8 @@ class DonorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/donors")
      *
-     * @param Pagination           $pagination
-     * @param DonorOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param DonorOrderInputType $orderBy
      * @param DonorFilterInputType $filter
      *
      * @return JsonResponse
@@ -91,7 +91,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/donors/{id}")
      *
-     * @param Donor                $donor
+     * @param Donor $donor
      * @param DonorUpdateInputType $inputType
      *
      * @return JsonResponse
@@ -120,7 +120,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/donors/{id}/images")
      *
-     * @param Donor   $donor
+     * @param Donor $donor
      * @param Request $request
      *
      * @return JsonResponse

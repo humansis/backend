@@ -11,7 +11,7 @@ class AbstractSupportAppController extends AbstractController
 {
     /**
      * @param       $data
-     * @param int   $status
+     * @param int $status
      * @param array $headers
      * @param array $context
      *

@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Country;
+
+use InvalidArgumentException;
 
 class Country
 {
@@ -21,25 +24,25 @@ class Country
     public function __construct(array $data)
     {
         if (!isset($data['iso3'])) {
-            throw new \InvalidArgumentException("Invalid argument 1. It must contains attribute 'iso3'.");
+            throw new InvalidArgumentException("Invalid argument 1. It must contains attribute 'iso3'.");
         }
         if (!isset($data['name'])) {
-            throw new \InvalidArgumentException("Invalid argument 2. It must contains attribute 'name'.");
+            throw new InvalidArgumentException("Invalid argument 2. It must contains attribute 'name'.");
         }
         if (!isset($data['currency'])) {
-            throw new \InvalidArgumentException("Invalid argument 3. It must contains attribute 'currency'.");
+            throw new InvalidArgumentException("Invalid argument 3. It must contains attribute 'currency'.");
         }
         if (!isset($data['language'])) {
-            throw new \InvalidArgumentException("Invalid argument 4. It must contains attribute 'currency'.");
+            throw new InvalidArgumentException("Invalid argument 4. It must contains attribute 'currency'.");
         }
         if (!isset($data['adms'])) {
-            throw new \InvalidArgumentException("Invalid argument 5. It must contains attribute 'adms'.");
+            throw new InvalidArgumentException("Invalid argument 5. It must contains attribute 'adms'.");
         }
         if (4 !== count($data['adms'])) {
-            throw new \InvalidArgumentException("Invalid argument 6. Attribute 'adms' does not contains complete list of names.");
+            throw new InvalidArgumentException("Invalid argument 6. Attribute 'adms' does not contains complete list of names.");
         }
         if (!isset($data['archived'])) {
-            throw new \InvalidArgumentException("Invalid argument 7. It must contains attribute 'archived'.");
+            throw new InvalidArgumentException("Invalid argument 7. It must contains attribute 'archived'.");
         }
 
         $this->iso3 = $data['iso3'];

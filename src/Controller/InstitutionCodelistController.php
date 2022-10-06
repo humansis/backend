@@ -23,7 +23,7 @@ class InstitutionCodelistController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
-    
+
     /**
      * @Rest\Get("/web-app/v1/institutions/types")
      *

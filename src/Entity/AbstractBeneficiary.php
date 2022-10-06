@@ -1,4 +1,5 @@
 <?php
+
 namespace Entity;
 
 use Entity\AssistanceBeneficiary;
@@ -18,7 +19,7 @@ use Entity\Project;
  *     "inst" = "Institution",
  *     "comm" = "Community"
  * })
-*/
+ */
 abstract class AbstractBeneficiary
 {
     /**
@@ -52,7 +53,7 @@ abstract class AbstractBeneficiary
     private $assistanceBeneficiary;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
@@ -96,7 +97,7 @@ abstract class AbstractBeneficiary
      *
      * @param Project $project
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeProject(Project $project): bool
     {

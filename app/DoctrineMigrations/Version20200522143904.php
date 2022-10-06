@@ -14,7 +14,8 @@ final class Version20200522143904 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed sIDX_70CFF07FE79FF843afely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE household_activity (
                 id INT AUTO_INCREMENT NOT NULL,
                 household_id INT DEFAULT NULL,
@@ -28,7 +29,8 @@ final class Version20200522143904 extends AbstractMigration
                     REFERENCES household (id),
                 CONSTRAINT FK_4A4E9A65F675F31B FOREIGN KEY (author_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
     }
 
     public function down(Schema $schema): void

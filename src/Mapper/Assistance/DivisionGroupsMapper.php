@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
-
 use Entity\DivisionGroup;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class DivisionGroupsMapper implements MapperInterface
@@ -30,7 +32,7 @@ class DivisionGroupsMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.DivisionGroup::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . DivisionGroup::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getRangeFrom(): int
@@ -47,5 +49,4 @@ class DivisionGroupsMapper implements MapperInterface
     {
         return $this->object->getValue();
     }
-
 }

@@ -125,5 +125,4 @@ class CommodityInputType implements InputTypeNullableDenormalizer
     {
         $this->description = $description;
     }
-
 }

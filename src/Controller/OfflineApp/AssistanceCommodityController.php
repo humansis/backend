@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp;
@@ -16,7 +17,7 @@ class AssistanceCommodityController extends AbstractController
     /**
      * @Rest\Get("/offline-app/v2/commodities")
      *
-     * @param Request                         $request
+     * @param Request $request
      * @param CommodityOfflineFilterInputType $filter
      *
      * @return JsonResponse

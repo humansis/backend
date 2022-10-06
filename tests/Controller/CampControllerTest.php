@@ -28,11 +28,13 @@ class CampControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
-            "data": "*"}', $this->client->getResponse()->getContent()
+            "data": "*"}',
+            $this->client->getResponse()->getContent()
         );
     }
 
@@ -47,24 +49,27 @@ class CampControllerTest extends BMSServiceTestCase
                 ->getSingleScalarResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('You need to have at least one camp with location in system');
+
             return;
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/camps/'.$campId);
+        $this->request('GET', '/api/basic/web-app/v1/camps/' . $campId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "id": '.$campId.',
+        $this->assertJsonFragment(
+            '{
+            "id": ' . $campId . ',
             "name": "*",
             "locationId": "*",
             "adm1Id": "*",
             "adm2Id": "*",
             "adm3Id": "*",
             "adm4Id": "*"
-        }', $this->client->getResponse()->getContent()
+        }',
+            $this->client->getResponse()->getContent()
         );
     }
 
@@ -81,6 +86,7 @@ class CampControllerTest extends BMSServiceTestCase
                 ->getSingleScalarResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('You need to have at least one camp with location in system');
+
             return;
         }
 
@@ -88,9 +94,10 @@ class CampControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -102,8 +109,8 @@ class CampControllerTest extends BMSServiceTestCase
                     "adm3Id": "*",
                     "adm4Id": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
     }
-
 }

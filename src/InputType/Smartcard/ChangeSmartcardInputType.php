@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Smartcard;
 
@@ -68,5 +70,4 @@ class ChangeSmartcardInputType implements InputTypeInterface
     {
         $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);
     }
-
 }

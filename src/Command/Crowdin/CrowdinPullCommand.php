@@ -18,9 +18,11 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use UnexpectedValueException;
 use Utils\FileSystem\ZipError;
+use ZipArchive;
 
 /**
  * Upload source files to Crowdin.
+ *
  * @deprecated use official crowdin package after upgrading symfony to 6.x
  * https://symfony.com/doc/current/translation.html#translation-providers
  */
@@ -80,7 +82,7 @@ class CrowdinPullCommand extends Command
 
         //init build
         $this->output->write('Initializing build');
-        $response = $this->makeRequest('POST', '/projects/'.$this->crowdinProjectId.'/translations/builds', [
+        $response = $this->makeRequest('POST', '/projects/' . $this->crowdinProjectId . '/translations/builds', [
             'body' => json_encode([
                 'skipUntranslatedStrings' => false,
             ], JSON_THROW_ON_ERROR),
@@ -104,7 +106,7 @@ class CrowdinPullCommand extends Command
             $this->output->write('.');
             $response = $this->makeRequest(
                 'GET',
-                '/projects/'.$this->crowdinProjectId.'/translations/builds/'.$buildId
+                '/projects/' . $this->crowdinProjectId . '/translations/builds/' . $buildId
             );
             $status = $response['data']['status'];
             $clock++;
@@ -114,7 +116,7 @@ class CrowdinPullCommand extends Command
         $this->output->writeln('downloading');
         $response = $this->makeRequest(
             'GET',
-            '/projects/'.$this->crowdinProjectId.'/translations/builds/'.$buildId.'/download'
+            '/projects/' . $this->crowdinProjectId . '/translations/builds/' . $buildId . '/download'
         );
 
         if (!isset($response['data']['url'])) {
@@ -123,18 +125,18 @@ class CrowdinPullCommand extends Command
 
         $filesystem = new Filesystem();
         $filesystem->mkdir($this->translationsDir . '/crowdin');
-        
+
         file_put_contents($this->translationsDir . '/crowdin/translations.zip', file_get_contents($response['data']['url']));
 
         //unzip translations
         $this->output->write('unzipping');
-        $zip = new \ZipArchive();
+        $zip = new ZipArchive();
         $res = $zip->open($this->translationsDir . '/crowdin/translations.zip');
-        
+
         if ($res !== true) {
             throw new UnexpectedValueException('Cannot open zip file - ' . $this->getZipError($res));
         }
-        
+
         $zip->extractTo($this->translationsDir . '/crowdin');
         $zip->close();
 
@@ -147,9 +149,9 @@ class CrowdinPullCommand extends Command
             $filesystem->copy($file->getPathname(), $this->translationsDir . '/' . $file->getFilename());
         }
         $filesystem->remove($this->translationsDir . '/crowdin');
-        
+
         $this->output->writeln('finished');
-        
+
         return 0;
     }
 }

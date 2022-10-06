@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -7,10 +8,10 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class ProductOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_NAME = 'name';
-    const SORT_BY_UNIT = 'unit';
-    const SORT_BY_CATEGORY = 'productCategoryId';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_NAME = 'name';
+    public const SORT_BY_UNIT = 'unit';
+    public const SORT_BY_CATEGORY = 'productCategoryId';
 
     protected function getValidNames(): array
     {

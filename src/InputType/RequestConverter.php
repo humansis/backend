@@ -3,6 +3,7 @@
 namespace InputType;
 
 use Exception\BadRequestDataException;
+use InvalidArgumentException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +33,7 @@ class RequestConverter implements ParamConverterInterface
         $errors = [];
         if (Country::class === $configuration->getClass()) {
             if (!$request->request->has(Country::REQUEST_KEY)) {
-                throw new \InvalidArgumentException('Missing '.Country::REQUEST_KEY.' in request body.');
+                throw new InvalidArgumentException('Missing ' . Country::REQUEST_KEY . ' in request body.');
             }
             $country = new Country($request->request->get(Country::REQUEST_KEY));
             $errors = $this->validator->validate($country);
@@ -50,10 +51,11 @@ class RequestConverter implements ParamConverterInterface
             /** @var ConstraintViolationInterface $error */
             foreach ($errors as $error) {
                 $value = $this->toString($error->getInvalidValue());
-                $messages[] = $error->getMessage()." {$error->getPropertyPath()} = $value";
+                $messages[] = $error->getMessage() . " {$error->getPropertyPath()} = $value";
             }
-            throw new BadRequestDataException('Bad request body: '.implode(' | ', $messages));
+            throw new BadRequestDataException('Bad request body: ' . implode(' | ', $messages));
         }
+
         return true;
     }
 
@@ -66,9 +68,11 @@ class RequestConverter implements ParamConverterInterface
             return $value->__toString();
         }
         if (is_array($value)) {
-            $values = array_map(function ($subvalue) { return $this->toString($subvalue); }, $value);
+            $values = array_map(function ($subvalue) {
+                return $this->toString($subvalue);
+            }, $value);
 
-            return '['.implode(', ', $values).']';
+            return '[' . implode(', ', $values) . ']';
         }
 
         return $value;

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity\SynchronizationBatch;
@@ -49,5 +50,4 @@ class Deposits extends SynchronizationBatch
     {
         $this->createdDeposits[] = $createdDeposit;
     }
-
 }

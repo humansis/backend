@@ -127,6 +127,7 @@ class Voucher implements ExportableInterface
         if (!$this->getUsedAtDate()) {
             return null;
         }
+
         return $this->getUsedAtDate()->format('Y-m-d');
     }
 
@@ -138,6 +139,7 @@ class Voucher implements ExportableInterface
         if (!$this->getVoucherPurchase()) {
             return null;
         }
+
         return $this->getVoucherPurchase()->getCreatedAt();
     }
 

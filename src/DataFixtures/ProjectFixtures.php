@@ -2,12 +2,15 @@
 
 namespace DataFixtures;
 
+use DateInterval;
+use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Enum\ProductCategoryType;
 use DBAL\SectorEnum;
 use Entity\Project;
+use Exception;
 use Symfony\Component\HttpKernel\Kernel;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface
@@ -57,12 +60,12 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
      *
      * @param ObjectManager $manager
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() === "prod") {
-            echo __CLASS__." can't be running at production\n";
+            echo __CLASS__ . " can't be running at production\n";
 
             return;
         }
@@ -78,8 +81,10 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 $this->countryNameAdjectives[$country],
                 $this->countryProjectNameTemplate
             );
-            $this->createProjectFromData($manager,
-                [$projectName, 1, 0, 'notes', $country, "$country eng address", "$country local address", [ProductCategoryType::FOOD]]);
+            $this->createProjectFromData(
+                $manager,
+                [$projectName, 1, 0, 'notes', $country, "$country eng address", "$country local address", [ProductCategoryType::FOOD]]
+            );
         }
         $manager->flush();
     }
@@ -87,7 +92,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     /**
      * @param ObjectManager $manager
      * @param               $country
-     * @param array         $data
+     * @param array $data
      */
     private function createProjectFromData(ObjectManager $manager, array $data): void
     {
@@ -97,8 +102,8 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         } else {
             $project = new Project();
             $project->setName($data[self::PROJECT_NAME])
-                ->setStartDate(new \DateTime())
-                ->setEndDate((new \DateTime())->add(new \DateInterval("P1Y")))
+                ->setStartDate(new DateTime())
+                ->setEndDate((new DateTime())->add(new DateInterval("P1Y")))
                 ->setNumberOfHouseholds($data[self::PROJECT_NUMBER_OF_HOUSEHOLDS])
                 ->setTarget($data[self::PROJECT_TARGET])
                 ->setNotes($data[self::PROJECT_NOTES])
@@ -109,7 +114,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
                 ->setSectors(SectorEnum::all());
 
             $manager->persist($project);
-            echo $project->getName()." created\n";
+            echo $project->getName() . " created\n";
         }
     }
 

@@ -1,16 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\SelectionCriteria\Structure;
 
 use Component\SelectionCriteria\Structure\Field;
+use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 class FieldTest extends TestCase
 {
     public function testConditionsShouldNotBeEmpty()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Field('field', 'Text label', [], 'type');
     }
@@ -26,8 +29,8 @@ class FieldTest extends TestCase
             new Field('field', 'Text label', [1], $type);
 
             $this->assertTrue(true);
-        } catch (\Exception $e) {
-            $this->fail($type.' is not valid type');
+        } catch (Exception $e) {
+            $this->fail($type . ' is not valid type');
         }
     }
 
@@ -42,7 +45,7 @@ class FieldTest extends TestCase
             new Field('field', 'Text label', [1], 'integer', $callback);
 
             $this->assertTrue(true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->fail('Invalid callback');
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring;
@@ -40,13 +41,12 @@ final class ScoringCsvParser extends AbstractCsvParser
                 $currentRule = new ScoringRule($row[ScoringCsvColumns::RULE_TYPE], $row[ScoringCsvColumns::FIELD_NAME], $row[ScoringCsvColumns::TITLE]);
             }
 
-            $currentRule->addOption(new ScoringRuleOption($row[ScoringCsvColumns::OPTIONS], (integer) $row[ScoringCsvColumns::POINTS]));
+            $currentRule->addOption(new ScoringRuleOption($row[ScoringCsvColumns::OPTIONS], (int) $row[ScoringCsvColumns::POINTS]));
         }
 
         if (!is_null($currentRule)) {
             $scoringRules[] = $currentRule;
         }
-
 
         return $scoringRules;
     }

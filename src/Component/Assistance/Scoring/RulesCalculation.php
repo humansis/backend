@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring;
@@ -116,10 +117,12 @@ final class RulesCalculation
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
         foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
             if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'No of chronically ill') {
-                if ( (int) $countrySpecificAnswer->getAnswer() === 1) {
+                if ((int) $countrySpecificAnswer->getAnswer() === 1) {
                     return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_ONE)->getScore();
-                } else if ( (int) $countrySpecificAnswer->getAnswer() > 1) {
-                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE)->getScore();
+                } else {
+                    if ((int) $countrySpecificAnswer->getAnswer() > 1) {
+                        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE)->getScore();
+                    }
                 }
             }
         }

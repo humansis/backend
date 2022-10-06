@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DataFixtures;
@@ -39,7 +40,6 @@ class RoleFixtures extends Fixture
         'ROLE_ADMIN' => 'Admin',
         'ROLE_ENUMERATOR' => 'Enumerator',
     ];
-
     private const PRIVILEGES = [
         'addProject' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],
         'editProject' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],

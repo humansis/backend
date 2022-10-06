@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
 use Entity\Household;
-use Utils\HouseholdService;;
+use Exception;
+use Utils\HouseholdService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
@@ -54,19 +57,18 @@ class ImportFinisher
      */
     private $queueRepository;
 
-
     /** @var ManagerRegistry */
     private $managerRegistry;
 
     public function __construct(
-        EntityManagerInterface              $em,
-        HouseholdService                    $householdService,
-        LoggerInterface                     $logger,
-        WorkflowInterface                   $importStateMachine,
-        WorkflowInterface                   $importQueueStateMachine,
+        EntityManagerInterface $em,
+        HouseholdService $householdService,
+        LoggerInterface $logger,
+        WorkflowInterface $importStateMachine,
+        WorkflowInterface $importQueueStateMachine,
         Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
-        ImportQueueRepository               $queueRepository,
-        ManagerRegistry                     $managerRegistry
+        ImportQueueRepository $queueRepository,
+        ManagerRegistry $managerRegistry
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
@@ -80,12 +82,12 @@ class ImportFinisher
 
     /**
      * @param ImportQueue $item
-     * @param Import      $import
+     * @param Import $import
      */
     public function finishCreationQueue(ImportQueue $item, Import $import): void
     {
         if (ImportQueueState::TO_CREATE !== $item->getState()) {
-            throw new InvalidArgumentException("Wrong ImportQueue creation state: ".$item->getState());
+            throw new InvalidArgumentException("Wrong ImportQueue creation state: " . $item->getState());
         }
 
         $createdHousehold = $this->householdService->create(
@@ -108,9 +110,9 @@ class ImportFinisher
 
     /**
      * @param ImportQueue $item
-     * @param Import      $import
+     * @param Import $import
      *
-     * @throws EntityNotFoundException|\Exception
+     * @throws EntityNotFoundException|Exception
      */
     public function finishUpdateQueue(ImportQueue $item, Import $import): void
     {
@@ -127,9 +129,11 @@ class ImportFinisher
         $householdUpdateInputType = $this->householdDecoratorBuilder->buildHouseholdUpdateType($item);
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
-        $projects = array_values(array_map(function (Project $project) {
-            return $project->getId();
-        }, $updatedHousehold->getProjects()->toArray()));
+        $projects = array_values(
+            array_map(function (Project $project) {
+                return $project->getId();
+            }, $updatedHousehold->getProjects()->toArray())
+        );
 
         foreach ($import->getProjects() as $project) {
             $projects[] = $project->getId();

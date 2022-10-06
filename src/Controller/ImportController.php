@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller;
 
 use Controller\ExportController;
+use Doctrine\DBAL\ConnectionException;
+use InvalidArgumentException;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Import\ImportService;
@@ -13,9 +16,11 @@ use Entity;
 use Enum\ImportQueueState;
 use Enum\ImportState;
 use InputType\Import;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Repository\ImportQueueRepository;
 use Repository\ImportRepository;
 use Request\Pagination;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -31,7 +36,7 @@ use Entity\User;
 
 class ImportController extends AbstractController
 {
-    const DISABLE_CRON = 'disable-cron-fast-forward';
+    public const DISABLE_CRON = 'disable-cron-fast-forward';
 
     /**
      * @var ImportService
@@ -64,11 +69,11 @@ class ImportController extends AbstractController
     private $importQueueRepo;
 
     public function __construct(
-        ImportService         $importService,
-        UploadImportService   $uploadImportService,
-        string                $importInvalidFilesDirectory,
-        int                   $maxFileSizeToLoad,
-        ImportRepository      $importRepo,
+        ImportService $importService,
+        UploadImportService $uploadImportService,
+        string $importInvalidFilesDirectory,
+        int $maxFileSizeToLoad,
+        ImportRepository $importRepo,
         ImportQueueRepository $importQueueRepo
     ) {
         $this->importService = $importService;
@@ -91,7 +96,7 @@ class ImportController extends AbstractController
         $request->query->add(['householdsTemplate' => true]);
         $request->request->add(['__country' => $request->headers->get('country')]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -109,9 +114,9 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports")
      *
-     * @param Pagination            $pagination
+     * @param Pagination $pagination
      * @param Import\FilterInputType $filterInputType
-     * @param Import\OrderInputType  $orderInputType
+     * @param Import\OrderInputType $orderInputType
      *
      * @return JsonResponse
      */
@@ -130,7 +135,7 @@ class ImportController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/imports")
      *
-     * @param Request                $request
+     * @param Request $request
      * @param Import\CreateInputType $inputType
      *
      * @return JsonResponse
@@ -152,8 +157,8 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/{id}")
      *
-     * @param Request               $request
-     * @param Entity\Import         $import
+     * @param Request $request
+     * @param Entity\Import $import
      * @param Import\PatchInputType $inputType
      *
      * @return JsonResponse
@@ -181,40 +186,42 @@ class ImportController extends AbstractController
                 'createdAt' => 'DESC',
             ]);
 
-        return $this->json(New Paginator($data));
+        return $this->json(new Paginator($data));
     }
 
     /**
      * @Rest\Post("/web-app/v1/imports/{id}/files")
      *
-     * @param Entity\Import  $import
+     * @param Entity\Import $import
      *
      * @param Request $request
      *BinaryFileResponse
      * @return JsonResponse
-     * @throws \Doctrine\DBAL\ConnectionException
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws ConnectionException
+     * @throws Exception
      */
     public function uploadFile(Entity\Import $import, Request $request): JsonResponse
     {
-        if (!in_array($import->getState(), [
-            ImportState::NEW,
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
-        ])) {
-            throw new \InvalidArgumentException('You cannot upload file to this import.');
+        if (
+            !in_array($import->getState(), [
+                ImportState::NEW,
+                ImportState::INTEGRITY_CHECKING,
+                ImportState::INTEGRITY_CHECK_CORRECT,
+                ImportState::INTEGRITY_CHECK_FAILED,
+            ])
+        ) {
+            throw new InvalidArgumentException('You cannot upload file to this import.');
         }
 
         /** @var UploadedFile[] $files */
         $files = $request->files->all();
 
         if (empty($files)) {
-            throw new \InvalidArgumentException('Missing upload file.');
+            throw new InvalidArgumentException('Missing upload file.');
         }
 
         if (count($files) > 1) {
-            throw new \InvalidArgumentException('It is possible to upload just one file.');
+            throw new InvalidArgumentException('It is possible to upload just one file.');
         }
 
         $this->checkImportFileSizes($files);
@@ -235,16 +242,17 @@ class ImportController extends AbstractController
     /**
      * @param UploadedFile[] $files
      *
-     * @throws \Doctrine\DBAL\ConnectionException
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws ConnectionException
+     * @throws Exception
      */
-    private function checkImportFileSizes(array $files) {
+    private function checkImportFileSizes(array $files)
+    {
         foreach ($files as $file) {
             $fileSize = $file->getSize();
             $fileMaxSize = $this->maxFileSizeToLoad * 1024 * 1024;
             if ($fileSize > $fileMaxSize) {
-                $mbMaxFileSize = round($fileMaxSize/(1024*1024),2);
-                $mbFileSize = round($fileSize/(1024*1024),2);
+                $mbMaxFileSize = round($fileMaxSize / (1024 * 1024), 2);
+                $mbFileSize = round($fileSize / (1024 * 1024), 2);
                 throw new BadRequestHttpException("File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB");
             }
         }
@@ -259,12 +267,14 @@ class ImportController extends AbstractController
      */
     public function deleteFile(Entity\ImportFile $importFile): JsonResponse
     {
-        if (!in_array($importFile->getImport()->getState(), [
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
-        ])) {
-            throw new \InvalidArgumentException('You cannot delete file from this import.');
+        if (
+            !in_array($importFile->getImport()->getState(), [
+                ImportState::INTEGRITY_CHECKING,
+                ImportState::INTEGRITY_CHECK_CORRECT,
+                ImportState::INTEGRITY_CHECK_FAILED,
+            ])
+        ) {
+            throw new InvalidArgumentException('You cannot delete file from this import.');
         }
 
         $this->importService->removeFile($importFile);
@@ -312,10 +322,10 @@ class ImportController extends AbstractController
     public function getInvalidFile(Entity\ImportInvalidFile $importInvalidFile): BinaryFileResponse
     {
         $filename = $importInvalidFile->getFilename();
-        $path = $this->importInvalidFilesDirectory.'/'.$filename;
+        $path = $this->importInvalidFilesDirectory . '/' . $filename;
 
         if (!file_exists($path)) {
-            throw new \RuntimeException('Requested file does not exist on server.');
+            throw new RuntimeException('Requested file does not exist on server.');
         }
 
         $response = new BinaryFileResponse($path);
@@ -364,7 +374,7 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/queue/{id}")
      *
-     * @param Entity\ImportQueue               $importQueue
+     * @param Entity\ImportQueue $importQueue
      *
      * @param Import\Duplicity\ResolveSingleDuplicityInputType $inputType
      *
@@ -383,7 +393,7 @@ class ImportController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/imports/{id}/duplicities")
      *
-     * @param Entity\Import             $import
+     * @param Entity\Import $import
      * @param Import\Duplicity\ResolveAllDuplicitiesInputType $inputType
      *
      * @return JsonResponse
@@ -415,7 +425,7 @@ class ImportController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/imports/{id}/fails")
      *
-     * @param Entity\Import     $import
+     * @param Entity\Import $import
      * @param ImportLineFactory $lineFactory
      *
      * @return JsonResponse
@@ -427,35 +437,38 @@ class ImportController extends AbstractController
             'state' => ImportQueueState::ERROR,
         ]);
 
-        $fails = array_values(array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
-            $line = $lineFactory->create($failedQueue, 0);
-            $messages = json_decode($failedQueue->getMessage(), true);
+        $fails = array_values(
+            array_map(function (Entity\ImportQueue $failedQueue) use ($lineFactory) {
+                $line = $lineFactory->create($failedQueue, 0);
+                $messages = json_decode($failedQueue->getMessage(), true);
 
-            $householdId = null;
-            $householdHeadId = null;
-            if ($failedQueue->getAcceptedDuplicity()) {
-                $household = $failedQueue->getAcceptedDuplicity()->getTheirs();
-                $householdId = $household->getId();
-                $householdHeadId = $household->getHouseholdHead()->getId();
-            }
-            return [
-                "id" => $failedQueue->getId(),
-                "householdId" => $householdId,
-                "beneficiaryId" => $householdHeadId,
-                "failedAction" => $messages[-1]['action'],
-                "errorMessage" => $messages[-1]['message'],
-                "localFamilyName" => $line->localFamilyName,
-                "localGivenName" => $line->localGivenName,
-                "localParentsName" => $line->localParentsName,
-                "enFamilyName" => $line->englishFamilyName,
-                "enGivenName" => $line->englishGivenName,
-                "enParentsName" => $line->englishParentsName,
-                "primaryIdCard" => [
-                    "number" => $line->idNumber,
-                    "type" => $line->idType
-                ]
-            ];
-        }, $importQueues));
+                $householdId = null;
+                $householdHeadId = null;
+                if ($failedQueue->getAcceptedDuplicity()) {
+                    $household = $failedQueue->getAcceptedDuplicity()->getTheirs();
+                    $householdId = $household->getId();
+                    $householdHeadId = $household->getHouseholdHead()->getId();
+                }
+
+                return [
+                    "id" => $failedQueue->getId(),
+                    "householdId" => $householdId,
+                    "beneficiaryId" => $householdHeadId,
+                    "failedAction" => $messages[-1]['action'],
+                    "errorMessage" => $messages[-1]['message'],
+                    "localFamilyName" => $line->localFamilyName,
+                    "localGivenName" => $line->localGivenName,
+                    "localParentsName" => $line->localParentsName,
+                    "enFamilyName" => $line->englishFamilyName,
+                    "enGivenName" => $line->englishGivenName,
+                    "enParentsName" => $line->englishParentsName,
+                    "primaryIdCard" => [
+                        "number" => $line->idNumber,
+                        "type" => $line->idType,
+                    ],
+                ];
+            }, $importQueues)
+        );
 
         return $this->json(new Paginator($fails));
     }

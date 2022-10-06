@@ -36,17 +36,19 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": '.count(BeneficiaryType::values()).', 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": ' . count(BeneficiaryType::values()) . ',
             "data": [
-                {"code": "'.BeneficiaryType::HOUSEHOLD.'", "value": "'.BeneficiaryType::HOUSEHOLD.'"},
-                {"code": "'.BeneficiaryType::BENEFICIARY.'", "value": "'.BeneficiaryType::BENEFICIARY.'"},
-                {"code": "'.BeneficiaryType::COMMUNITY.'", "value": "'.BeneficiaryType::COMMUNITY.'"},
-                {"code": "'.BeneficiaryType::INSTITUTION.'", "value": "'.BeneficiaryType::INSTITUTION.'"}
+                {"code": "' . BeneficiaryType::HOUSEHOLD . '", "value": "' . BeneficiaryType::HOUSEHOLD . '"},
+                {"code": "' . BeneficiaryType::BENEFICIARY . '", "value": "' . BeneficiaryType::BENEFICIARY . '"},
+                {"code": "' . BeneficiaryType::COMMUNITY . '", "value": "' . BeneficiaryType::COMMUNITY . '"},
+                {"code": "' . BeneficiaryType::INSTITUTION . '", "value": "' . BeneficiaryType::INSTITUTION . '"}
              ]
-        }', $this->client->getResponse()->getContent(),
+        }',
+            $this->client->getResponse()->getContent(),
         );
     }
 
@@ -59,10 +61,10 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment(
-            '{"totalCount": '.count(Referral::REFERRALTYPES).', "data": [{"code": "*", "value": "*"}]}',
+            '{"totalCount": ' . count(Referral::REFERRALTYPES) . ', "data": [{"code": "*", "value": "*"}]}',
             $this->client->getResponse()->getContent(),
         );
     }
@@ -78,7 +80,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -101,7 +103,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -123,7 +125,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -143,7 +145,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -12,15 +13,16 @@ use Entity\DistributedItem;
 use Enum\NationalIdType;
 use InputType\DistributedItemFilterInputType;
 use InputType\DistributedItemOrderInputType;
+use InvalidArgumentException;
 use Request\Pagination;
 
 class DistributedItemRepository extends EntityRepository
 {
     /**
-     * @param string                              $countryIso3
+     * @param string $countryIso3
      * @param DistributedItemFilterInputType|null $filter
-     * @param DistributedItemOrderInputType|null  $orderBy
-     * @param Pagination|null                     $pagination
+     * @param DistributedItemOrderInputType|null $orderBy
+     * @param Pagination|null $pagination
      *
      * @return Paginator|DistributedItem[]
      */
@@ -29,8 +31,7 @@ class DistributedItemRepository extends EntityRepository
         ?DistributedItemFilterInputType $filter = null,
         ?DistributedItemOrderInputType $orderBy = null,
         ?Pagination $pagination = null
-    ): Paginator
-    {
+    ): Paginator {
         $qbr = $this->createQueryBuilder('di')
             ->join('di.project', 'pr')
             ->andWhere('pr.countryIso3 = :iso3')
@@ -45,15 +46,17 @@ class DistributedItemRepository extends EntityRepository
                 $qbr->join('di.beneficiary', 'b')
                     ->join('b.person', 'p')
                     ->leftJoin('p.nationalIds', 'ni')
-                    ->andWhere('(b.id = :fulltext OR
-                                p.localGivenName LIKE :fulltextLike OR 
+                    ->andWhere(
+                        '(b.id = :fulltext OR
+                                p.localGivenName LIKE :fulltextLike OR
                                 p.localFamilyName LIKE :fulltextLike OR
                                 p.localParentsName LIKE :fulltextLike OR
                                 p.enParentsName LIKE :fulltextLike OR
-                                (ni.idNumber LIKE :fulltextLike AND ni.idType = :niType))')
+                                (ni.idNumber LIKE :fulltextLike AND ni.idType = :niType))'
+                    )
                     ->setParameter('niType', NationalIdType::NATIONAL_ID)
                     ->setParameter('fulltext', $filter->getFulltext())
-                    ->setParameter('fulltextLike', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltextLike', '%' . $filter->getFulltext() . '%');
             }
             if ($filter->hasProjects()) {
                 $qbr->andWhere('pr.id IN (:projects)')
@@ -61,21 +64,19 @@ class DistributedItemRepository extends EntityRepository
             }
             if ($filter->hasAssistances() && count($filter->getAssistances()) === 1) {
                 $qbr->andWhere('IDENTITY(di.assistance) = :assistance')
-                    ->setParameter('assistance', $filter->getAssistances()[0])
-                ;
+                    ->setParameter('assistance', $filter->getAssistances()[0]);
             }
             if ($filter->hasAssistances() && count($filter->getAssistances()) > 1) {
                 $qbr->andWhere('IDENTITY(di.assistance) IN (:assistances)')
                     ->setParameter('assistances', $filter->getAssistances());
             }
             if ($filter->hasLocations()) {
-
                 /** @var LocationRepository $locationRepository */
                 $locationRepository = $this->_em->getRepository(Location::class);
                 $location = $locationRepository->find($filter->getLocations()[0]);
 
                 if ($location === null || $location->getCountryIso3() !== $countryIso3) {
-                    throw new \InvalidArgumentException("Location not found or in different country");
+                    throw new InvalidArgumentException("Location not found or in different country");
                 }
 
                 $qbr = $locationRepository->joinChildrenLocationsQueryBuilder($qbr, $location, 'di', 'l', true);
@@ -110,7 +111,7 @@ class DistributedItemRepository extends EntityRepository
                         $qbr->addOrderBy('di.amount', $direction);
                         break;
                     default:
-                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }

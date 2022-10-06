@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\WebApp\Assistance;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ReliefPackageController extends AbstractWebAppController
 {
-
     /**
      * @var AssistanceDistributionService
      */
@@ -35,8 +35,8 @@ class ReliefPackageController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
      *
-     * @param Assistance                   $assistance
-     * @param Request                      $request
+     * @param Assistance $assistance
+     * @param Request $request
      * @param ReliefPackageFilterInputType $filter
      *
      * @return JsonResponse
@@ -58,7 +58,7 @@ class ReliefPackageController extends AbstractWebAppController
      * @Cache(lastModified="package.getLastModifiedAt()", public=true)
      *
      * @param ReliefPackage $package
-     * @param Request       $request
+     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -92,14 +92,14 @@ class ReliefPackageController extends AbstractWebAppController
      * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
      * @ParamConverter(class="InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
-     * @param Assistance                                     $assistance
+     * @param Assistance $assistance
      * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
      *
      * @return JsonResponse
      */
     public function distributeBeneficiaryPackages(
         Assistance $assistance,
-        array      $packages
+        array $packages
     ): JsonResponse {
         $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId($packages, $assistance, $this->getUser());
 

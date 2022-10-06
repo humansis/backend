@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Validator;
@@ -7,6 +8,7 @@ use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -19,7 +21,7 @@ final class ScoringValidator extends ConstraintValidator
         }
 
         if (!$value instanceof \Component\Assistance\Scoring\Model\Scoring) {
-            throw new \InvalidArgumentException('Scoring validation constraint can be used only with ' . \Component\Assistance\Scoring\Model\Scoring::class . ' class.');
+            throw new InvalidArgumentException('Scoring validation constraint can be used only with ' . \Component\Assistance\Scoring\Model\Scoring::class . ' class.');
         }
 
         foreach ($value->getRules() as $rule) {
@@ -29,9 +31,10 @@ final class ScoringValidator extends ConstraintValidator
             }
 
             if ($rule->getType() === ScoringRuleType::CALCULATION) {
-
                 if (!in_array($rule->getFieldName(), ScoringRulesCalculationsEnum::values())) {
-                    $this->context->buildViolation("No calculation rule with Field Name {$rule->getFieldName()} is supported. Supported values are: [" . implode(', ', ScoringRulesCalculationsEnum::values()) . ']')
+                    $this->context->buildViolation(
+                        "No calculation rule with Field Name {$rule->getFieldName()} is supported. Supported values are: [" . implode(', ', ScoringRulesCalculationsEnum::values()) . ']'
+                    )
                         ->addViolation();
 
                     continue;

@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTime;
 use Entity\GeneralReliefItem;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class GeneralReliefItemMapper implements MapperInterface
@@ -32,7 +35,7 @@ class GeneralReliefItemMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.GeneralReliefItem::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -47,7 +50,7 @@ class GeneralReliefItemMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(\DateTime::ISO8601) : null;
+        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ISO8601) : null;
     }
 
     public function getNote(): ?string

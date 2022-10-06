@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Repository\Smartcard;
 
@@ -11,7 +13,7 @@ use Entity\Vendor;
 class PreliminaryInvoiceRepository extends EntityRepository
 {
     /**
-     * @param Vendor      $vendor
+     * @param Vendor $vendor
      * @param string|null $invoicingState
      *
      * @return Vendor[]
@@ -31,8 +33,12 @@ class PreliminaryInvoiceRepository extends EntityRepository
                     $qb->andWhere('pi.project IS NOT NULL');
                     break;
                 default:
-                    throw new InvalidArgumentException('Invoicing state should be one of ['.implode(',',
-                            VendorInvoicingState::notCompletedValues()).'], '.$invoicingState.' given.');
+                    throw new InvalidArgumentException(
+                        'Invoicing state should be one of [' . implode(
+                            ',',
+                            VendorInvoicingState::notCompletedValues()
+                        ) . '], ' . $invoicingState . ' given.'
+                    );
             }
         }
 

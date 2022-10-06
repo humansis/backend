@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Import\Duplicity;
 
@@ -18,7 +20,7 @@ class ResolveSingleDuplicityInputType implements InputTypeInterface
     private $status;
 
     /**
-     * @var integer|null
+     * @var int|null
      *
      * @Assert\Type("integer")
      */

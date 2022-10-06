@@ -38,11 +38,11 @@ class BeneficiaryMapper
     }
 
     /**
-     * @deprecated its only for backward consistency, dont use it
-     *
      * @param iterable $bnfs
      *
      * @return iterable
+     * @deprecated its only for backward consistency, dont use it
+     *
      */
     public function toOldMobileArrays(iterable $bnfs): iterable
     {

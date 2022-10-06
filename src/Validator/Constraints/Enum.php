@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
@@ -14,7 +15,9 @@ class Enum extends Constraint
     public $message = 'Provided value {{ providedValue }} is not allowed for parameter "{{ parameter }}". Allowed values are: [ {{ allowedValues }} ].';
 
     public $enumClass;
+
     public $includeAPIAlternatives = true;
+
     public $array = false;
 
     /**

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -11,7 +13,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200730151632 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -38,14 +40,16 @@ final class Version20200730151632 extends AbstractMigration
         $this->addSql('ALTER TABLE institution DROP contact_name, DROP phone_number, DROP phone_prefix, DROP contact_family_name, DROP national_id_id');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE institution DROP FOREIGN KEY FK_3A9F98E5E7A1254A');
         $this->addSql('DROP INDEX UNIQ_3A9F98E5E7A1254A ON institution');
-        $this->addSql('ALTER TABLE institution ADD contact_name VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD phone_number VARCHAR(45) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD phone_prefix VARCHAR(45) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD contact_family_name VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, CHANGE contact_person_id national_id_id INT DEFAULT NULL');
+        $this->addSql(
+            'ALTER TABLE institution ADD contact_name VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD phone_number VARCHAR(45) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD phone_prefix VARCHAR(45) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, ADD contact_family_name VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`, CHANGE contact_person_id national_id_id INT DEFAULT NULL'
+        );
         $this->addSql('ALTER TABLE institution ADD CONSTRAINT FK_3A9F98E5E9E9E294 FOREIGN KEY (national_id_id) REFERENCES national_id (id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_3A9F98E5E9E9E294 ON institution (national_id_id)');
     }

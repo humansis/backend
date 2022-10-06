@@ -1,4 +1,5 @@
 <?php
+
 namespace DataFixtures\Beneficiaries;
 
 use Utils\InstitutionService;
@@ -20,7 +21,7 @@ use Repository\ProjectRepository;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
-    const INSTITUTIONS = [
+    public const INSTITUTIONS = [
         [
             'name' => 'Local mayor office',
             'type' => Institution::TYPE_GOVERNMENT,
@@ -106,16 +107,16 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     /**
      * InstitutionFixture constructor.
      *
-     * @param string             $environment
-     * @param Countries          $countries
+     * @param string $environment
+     * @param Countries $countries
      * @param InstitutionService $institutionService
-     * @param ProjectRepository  $projectRepository
+     * @param ProjectRepository $projectRepository
      */
     public function __construct(
-        string             $environment,
-        Countries          $countries,
+        string $environment,
+        Countries $countries,
         InstitutionService $institutionService,
-        ProjectRepository  $projectRepository
+        ProjectRepository $projectRepository
     ) {
         $this->environment = $environment;
         $this->institutionService = $institutionService;
@@ -160,12 +161,27 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $institutionInputType->setProjectIds($this->getProjectsIds($iso3));
         $institutionInputType->setLongitude($institution['longitude']);
         $institutionInputType->setLatitude($institution['latitude']);
-        $institutionInputType->setAddress(AddressInputType::create($institution['address']['locationId'], $institution['address']['street'],
-            $institution['address']['postcode'], $institution['address']['number']));
-        $institutionInputType->setNationalIdCard(NationalIdCardInputType::create($institution['national_id']['type'],
-            $institution['national_id']['number']));
-        $institutionInputType->setPhone(PhoneInputType::create($institution['phone_prefix'], $institution['phone_number'],
-            $institution['phone_type']));
+        $institutionInputType->setAddress(
+            AddressInputType::create(
+                $institution['address']['locationId'],
+                $institution['address']['street'],
+                $institution['address']['postcode'],
+                $institution['address']['number']
+            )
+        );
+        $institutionInputType->setNationalIdCard(
+            NationalIdCardInputType::create(
+                $institution['national_id']['type'],
+                $institution['national_id']['number']
+            )
+        );
+        $institutionInputType->setPhone(
+            PhoneInputType::create(
+                $institution['phone_prefix'],
+                $institution['phone_number'],
+                $institution['phone_type']
+            )
+        );
         $institutionInputType->setContactGivenName($institution['contact_name']);
         $institutionInputType->setContactFamilyName($institution['contact_family_name']);
 

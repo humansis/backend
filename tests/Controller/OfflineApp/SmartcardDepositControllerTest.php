@@ -2,6 +2,9 @@
 
 namespace Tests\Controller\OfflineApp;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
@@ -48,7 +51,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $reliefPackage = $this->createReliefPackage($ab);
 
-        $this->request('POST', '/api/basic/offline-app/v4/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('POST', '/api/basic/offline-app/v4/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
             'assistanceId' => $ab->getAssistance()->getId(),
             'value' => 255.25,
             'balanceBefore' => 260.00,
@@ -59,7 +62,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
         $this->assertArrayHasKey('id', $smartcard);
         $this->assertArrayHasKey('serialNumber', $smartcard);
         $this->assertArrayHasKey('state', $smartcard);
@@ -73,16 +76,16 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $bnf = $ab->getBeneficiary();
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $reliefPackage = $this->createReliefPackage($ab);
-        $uniqueDate = $this->getUnusedDepositDate()->format(\DateTimeInterface::ATOM);
+        $uniqueDate = $this->getUnusedDepositDate()->format(DateTimeInterface::ATOM);
 
-        $this->request('POST', '/api/basic/offline-app/v5/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
             'value' => 255.25,
             'balance' => 300.00,
             'createdAt' => $uniqueDate,
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
@@ -97,20 +100,20 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
         $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser(self::USER_TESTER));
 
-        $this->request('POST', '/api/basic/offline-app/v5/smartcards/'.$smartcard->getSerialNumber().'/deposit', [
+        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
             'value' => 255.25,
             'balance' => 300.00,
-            'createdAt' => $date->format(\DateTimeInterface::ATOM),
+            'createdAt' => $date->format(DateTimeInterface::ATOM),
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: '.$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
         $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
     }
 
-    private function getUnusedDepositDate(): \DateTimeImmutable
+    private function getUnusedDepositDate(): DateTimeImmutable
     {
-        $date = new \DateTimeImmutable();
+        $date = new DateTimeImmutable();
         do {
             $date = $date->modify('-1 second');
             $deposit = $this->em->getRepository(SmartcardDeposit::class)->findOneBy(['distributedAt' => $date]);
@@ -121,7 +124,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function someSmartcardAssistance(): ?Assistance
     {
-        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
+        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id' => 'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
                     return $assistance;
@@ -135,7 +138,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     private function assistanceBeneficiaryWithoutRelief(): AssistanceBeneficiary
     {
         /** @var Assistance $assistance */
-        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id'=>'asc']) as $assistance) {
+        foreach ($this->em->getRepository(Assistance::class)->findBy([], ['id' => 'asc']) as $assistance) {
             foreach ($assistance->getCommodities() as $commodity) {
                 if (ModalityType::SMART_CARD !== $commodity->getModalityType()) {
                     continue 2;
@@ -171,7 +174,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             }
         }
 
-        $smartcard = new Smartcard($serialNumber, new \DateTime('now'));
+        $smartcard = new Smartcard($serialNumber, new DateTime('now'));
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setState(SmartcardStates::ACTIVE);
 

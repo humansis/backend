@@ -2,6 +2,8 @@
 
 namespace DataFixtures;
 
+use DateInterval;
+use DateTime;
 use Entity\Beneficiary;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
@@ -21,7 +23,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
     private $KHMFinancialProvider;
 
     /**
-     * @param string               $environment
+     * @param string $environment
      * @param KHMFinancialProvider $KHMFinancialProvider
      */
     public function __construct(string $environment, KHMFinancialProvider $KHMFinancialProvider)
@@ -45,7 +47,6 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
         /** @var AssistanceBeneficiary $ab */
         foreach ($this->getAssistanceBeneficiaries($manager) as $ab) {
-
             for ($j = 0; $j < rand(0, 2); ++$j) {
                 $this->generateNoPhoneTransaction($ab, $manager);
             }
@@ -61,13 +62,13 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateNoPhoneTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new \DateInterval("P".rand(30, 200)."D");
+        $days = new DateInterval("P" . rand(30, 200) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
         $transaction = new Transaction();
         $transaction->setAssistanceBeneficiary($ab);
-        $transaction->setDateSent((new \DateTime())->sub($days),);
+        $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
         $transaction->setAmountSent(rand(10, 10000));
         $transaction->setTransactionStatus(Transaction::NO_PHONE);
@@ -91,13 +92,13 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateFailureTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new \DateInterval("P".rand(0, 30)."D");
+        $days = new DateInterval("P" . rand(0, 30) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
         $transaction = new Transaction();
         $transaction->setAssistanceBeneficiary($ab);
-        $transaction->setDateSent((new \DateTime())->sub($days),);
+        $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
         $transaction->setAmountSent(rand(10, 10000));
         $transaction->setTransactionStatus(Transaction::FAILURE);
@@ -114,13 +115,13 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateValidTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new \DateInterval("P".rand(0, 30)."D");
+        $days = new DateInterval("P" . rand(0, 30) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
         $transaction = new Transaction();
         $transaction->setAssistanceBeneficiary($ab);
-        $transaction->setDateSent((new \DateTime())->sub($days),);
+        $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
         $transaction->setAmountSent(rand(10, 10000));
         $transaction->setTransactionStatus(Transaction::SUCCESS);
@@ -140,9 +141,14 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $validatedAssists = $manager->getRepository(Assistance::class)->matching(
             Criteria::create()
                 ->where(Criteria::expr()->neq('validatedBy', null))
-                ->orderBy(['id' => 'asc']))->toArray();
+                ->orderBy(['id' => 'asc'])
+        )->toArray();
 
-        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(['assistance' => $validatedAssists], ['id' => 'asc'], 100);
+        return $manager->getRepository(AssistanceBeneficiary::class)->findBy(
+            ['assistance' => $validatedAssists],
+            ['id' => 'asc'],
+            100,
+        );
     }
 
     public function getDependencies()

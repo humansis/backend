@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
@@ -54,6 +55,4 @@ class ResolverTest extends KernelTestCase
         $this->assertEquals(5, $protocol->getTotalScore());
         $this->assertEquals(5, $protocol->getScore('Test Rule'));
     }
-
 }
-

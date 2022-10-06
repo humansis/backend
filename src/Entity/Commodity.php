@@ -121,11 +121,11 @@ class Commodity
     /**
      * Set assistance.
      *
-     * @param \Entity\Assistance|null $assistance
+     * @param Assistance|null $assistance
      *
      * @return Commodity
      */
-    public function setAssistance(\Entity\Assistance $assistance = null)
+    public function setAssistance(Assistance $assistance = null)
     {
         $this->assistance = $assistance;
 
@@ -135,7 +135,7 @@ class Commodity
     /**
      * Get assistance.
      *
-     * @return \Entity\Assistance|null
+     * @return Assistance|null
      */
     public function getAssistance()
     {
@@ -166,7 +166,7 @@ class Commodity
         return $this->modalityType;
     }
 
-     /**
+    /**
      * Set description.
      *
      * @param string $description
@@ -202,7 +202,7 @@ class Commodity
      * @param string|null $division
      *
      * @throws EnumValueNoFoundException
-    */
+     */
     public function setDivision(?string $division): void
     {
         self::validateValue('division', CommodityDivision::class, $division, true);

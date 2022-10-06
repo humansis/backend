@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\ReliefPackageState;
 
-class ReliefPackageStateEnum extends \DBAL\AbstractEnum
+class ReliefPackageStateEnum extends AbstractEnum
 {
     public function getName(): string
     {

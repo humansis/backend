@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -7,19 +8,19 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class AssistanceOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_NAME = 'name';
-    const SORT_BY_LOCATION = 'location';
-    const SORT_BY_PROJECT = 'project';
-    const SORT_BY_MODALITY_TYPE = 'modalityType';
-    const SORT_BY_DATE = 'dateDistribution';
-    const SORT_BY_DATE_EXPIRATION = 'dateExpiration';
-    const SORT_BY_TARGET = 'target';
-    const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
-    const SORT_BY_ROUND = 'round';
-    const SORT_BY_VALUE = 'value';
-    const SORT_BY_UNIT = 'unit';
-    const SORT_BY_TYPE = 'type';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_NAME = 'name';
+    public const SORT_BY_LOCATION = 'location';
+    public const SORT_BY_PROJECT = 'project';
+    public const SORT_BY_MODALITY_TYPE = 'modalityType';
+    public const SORT_BY_DATE = 'dateDistribution';
+    public const SORT_BY_DATE_EXPIRATION = 'dateExpiration';
+    public const SORT_BY_TARGET = 'target';
+    public const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
+    public const SORT_BY_ROUND = 'round';
+    public const SORT_BY_VALUE = 'value';
+    public const SORT_BY_UNIT = 'unit';
+    public const SORT_BY_TYPE = 'type';
 
     protected function getValidNames(): array
     {

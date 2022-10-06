@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Messaging\Message;
 
@@ -22,14 +24,13 @@ class ImportCheck
 
     /**
      * @param string|null $checkType
-     * @param int|null    $importId
+     * @param int|null $importId
      */
-    private function __construct(?string $checkType = null, ?int $importId=null)
+    private function __construct(?string $checkType = null, ?int $importId = null)
     {
         $this->importId = $importId;
         $this->checkType = $checkType;
     }
-
 
     /**
      * @param Import $import
@@ -112,6 +113,4 @@ class ImportCheck
     {
         $this->importId = $importId;
     }
-
-
 }

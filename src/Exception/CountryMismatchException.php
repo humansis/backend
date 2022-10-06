@@ -2,9 +2,10 @@
 
 namespace Exception;
 
+use RuntimeException;
 use Throwable;
 
-class CountryMismatchException extends \RuntimeException
+class CountryMismatchException extends RuntimeException
 {
     public function __construct($message = "Country codes differ", $code = 0, Throwable $previous = null)
     {

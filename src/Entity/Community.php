@@ -123,7 +123,10 @@ class Community extends AbstractBeneficiary
      */
     public function getPhone(): ?Phone
     {
-        if ($this->contact->getPhones()->count() === 0) return null;
+        if ($this->contact->getPhones()->count() === 0) {
+            return null;
+        }
+
         return $this->contact->getPhones()->current();
     }
 
@@ -148,6 +151,7 @@ class Community extends AbstractBeneficiary
         if ($this->getPhone()) {
             return $this->getPhone()->getNumber();
         }
+
         return null;
     }
 
@@ -159,6 +163,7 @@ class Community extends AbstractBeneficiary
         if (!$this->getPhone()) {
             return null;
         }
+
         return $this->getPhone()->getPrefix();
     }
 
@@ -167,7 +172,10 @@ class Community extends AbstractBeneficiary
      */
     public function getNationalId(): ?NationalId
     {
-        if ($this->contact->getNationalIds()->count() === 0) return null;
+        if ($this->contact->getNationalIds()->count() === 0) {
+            return null;
+        }
+
         return $this->contact->getNationalIds()->current();
     }
 

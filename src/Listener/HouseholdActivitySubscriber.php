@@ -26,9 +26,9 @@ class HouseholdActivitySubscriber implements EventSubscriber
     /**
      * Constuctor.
      *
-     * @param TokenStorageInterface  $tokenStorage
+     * @param TokenStorageInterface $tokenStorage
      * @param EntityManagerInterface $em
-     * @param SerializerInterface    $serializer
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         TokenStorageInterface $tokenStorage,
@@ -78,6 +78,5 @@ class HouseholdActivitySubscriber implements EventSubscriber
         $activity = new HouseholdActivity($household, $user, $json);
         $this->em->persist($activity);
         $this->em->flush();
-
     }
 }

@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\FilterFragment;
+
 use Enum\SourceType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -9,6 +11,7 @@ trait SourceFilterTrait
 {
     /**
      * TODO: add validation from enum
+     *
      * @see SourceType
      * @Assert\Type("array")
      * @Assert\All(

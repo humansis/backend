@@ -1,20 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
 
+use DateTimeInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\DateValidator;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
+
+use function is_object;
+
+use const E_USER_DEPRECATED;
 
 /**
  * Class ImportDateValidator
  *
  * Very ugly hack because DateValidator written bad so it can't be extendable
  */
-class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateValidator
+class ImportDateValidator extends DateValidator
 {
     public const PATTERN = '/^(\d{2})-(\d{2})-(\d{4})$/';
 
@@ -47,13 +54,20 @@ class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateV
             return;
         }
 
-        if ($value instanceof \DateTimeInterface) {
-            @trigger_error(sprintf('Validating a \\DateTimeInterface with "%s" is deprecated since version 4.2. Use "%s" instead or remove the constraint if the underlying model is already type hinted to \\DateTimeInterface.', Date::class, Type::class), \E_USER_DEPRECATED);
+        if ($value instanceof DateTimeInterface) {
+            @trigger_error(
+                sprintf(
+                    'Validating a \\DateTimeInterface with "%s" is deprecated since version 4.2. Use "%s" instead or remove the constraint if the underlying model is already type hinted to \\DateTimeInterface.',
+                    Date::class,
+                    Type::class
+                ),
+                E_USER_DEPRECATED
+            );
 
             return;
         }
 
-        if (!is_scalar($value) && !(\is_object($value) && method_exists($value, '__toString'))) {
+        if (!is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
             throw new UnexpectedValueException($value, 'string');
         }
 
@@ -68,7 +82,7 @@ class ImportDateValidator extends \Symfony\Component\Validator\Constraints\DateV
             return;
         }
 
-        if (!$this::checkDate((int)$matches[1], (int)$matches[2], (int)$matches[3])) {
+        if (!$this::checkDate((int) $matches[1], (int) $matches[2], (int) $matches[3])) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $this->formatValue($value))
                 ->setCode(Date::INVALID_DATE_ERROR)

@@ -26,7 +26,6 @@ class OrganizationControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-
     /**
      * @throws ORMException
      * @throws OptimisticLockException
@@ -40,13 +39,13 @@ class OrganizationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one organization in system to complete this test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/organizations/'.$organization->getId());
+        $this->request('GET', '/api/basic/web-app/v1/organizations/' . $organization->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -64,7 +63,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         /** @var Organization|null $organization */
         $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/organizations/'.$organization->getId(), [
+        $this->request('PUT', '/api/basic/web-app/v1/organizations/' . $organization->getId(), [
             'logo' => 'http://www.example.org/image.jpg',
             'name' => 'Test organisation',
             'primaryColor' => '#000000',
@@ -77,7 +76,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -102,7 +101,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -122,19 +121,18 @@ class OrganizationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/organizations/'.$services[0]->getOrganization()->getId().'/services');
+        $this->request('GET', '/api/basic/web-app/v1/organizations/' . $services[0]->getOrganization()->getId() . '/services');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
     }
-
 
     /**
      * @throws ORMException
@@ -153,13 +151,13 @@ class OrganizationControllerTest extends BMSServiceTestCase
             'enabled' => true,
         ];
 
-        $this->request('PATCH', '/api/basic/web-app/v1/organizations/services/'.$services[0]->getOrganization()->getId(), $data);
+        $this->request('PATCH', '/api/basic/web-app/v1/organizations/services/' . $services[0]->getOrganization()->getId(), $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -170,6 +168,4 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $this->assertEquals($data['enabled'], $result['enabled']);
     }
-
-
 }

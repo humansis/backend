@@ -2,6 +2,7 @@
 
 namespace InputType;
 
+use DateTimeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class VoucherPurchase
@@ -41,7 +42,7 @@ class VoucherPurchase
     private $vendorId;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @Assert\DateTime()
      * @Assert\NotBlank()
@@ -97,17 +98,17 @@ class VoucherPurchase
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTimeInterface $createdAt
+     * @param DateTimeInterface $createdAt
      */
-    public function setCreatedAt(\DateTimeInterface $createdAt): void
+    public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

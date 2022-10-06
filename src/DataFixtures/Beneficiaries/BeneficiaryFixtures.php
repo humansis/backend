@@ -16,6 +16,7 @@ use Enum\Livelihood;
 use Enum\NationalIdType;
 use Enum\PhoneTypes;
 use Enum\ResidencyStatus;
+use Exception;
 use InputType\Beneficiary\Address\CampAddressInputType;
 use InputType\Beneficiary\Address\CampInputType;
 use InputType\Beneficiary\Address\ResidenceAddressInputType;
@@ -25,6 +26,7 @@ use InputType\Beneficiary\CountrySpecificsAnswerInputType;
 use InputType\Beneficiary\NationalIdCardInputType;
 use InputType\Beneficiary\PhoneInputType;
 use InputType\HouseholdCreateInputType;
+use LogicException;
 use Repository\LocationRepository;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Kernel;
@@ -33,7 +35,6 @@ use Utils\ValueGenerator\ValueGenerator;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
-
     /**
      * @var ProjectRepository
      */
@@ -52,9 +53,9 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     private $kernel;
 
     public function __construct(
-        Kernel             $kernel,
-        HouseholdService   $householdService,
-        ProjectRepository  $projectRepository,
+        Kernel $kernel,
+        HouseholdService $householdService,
+        ProjectRepository $projectRepository,
         LocationRepository $locationRepository
     ) {
         $this->householdService = $householdService;
@@ -68,7 +69,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
      *
      * @param ObjectManager $manager
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
@@ -373,8 +374,16 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $inputType->setLivelihood($householdData['livelihood']);
         $inputType->setShelterStatus(ValueGenerator::fromEnum(HouseholdShelterStatus::class));
         $inputType->setProjectIds($this->projectRepository->findAll());
-        $inputType->setNotes(ValueGenerator::fromArray([null, 'Fixture note '.ValueGenerator::int(1, 1000), 'Fixture note '.ValueGenerator::int(1,
-                1000)]));
+        $inputType->setNotes(
+            ValueGenerator::fromArray([
+                null,
+                'Fixture note ' . ValueGenerator::int(1, 1000),
+                'Fixture note ' . ValueGenerator::int(
+                    1,
+                    1000
+                ),
+            ])
+        );
         $inputType->setLongitude(null);
         $inputType->setLatitude(null);
 
@@ -447,7 +456,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $residencyInputType->setLocationId($this->getLocation($iso3)->getId());
         $residencyInputType->setNumber((string) ValueGenerator::int(1, 1000));
         $residencyInputType->setPostcode((string) ValueGenerator::int(1000, 3000));
-        $residencyInputType->setStreet('Street Residency '.ValueGenerator::int(1, 100));
+        $residencyInputType->setStreet('Street Residency ' . ValueGenerator::int(1, 100));
 
         return $residencyInputType;
     }
@@ -458,7 +467,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $settlementInputType->setLocationId($this->getLocation($iso3)->getId());
         $settlementInputType->setNumber((string) ValueGenerator::int(1, 1000));
         $settlementInputType->setPostcode((string) ValueGenerator::int(1000, 3000));
-        $settlementInputType->setStreet('Street Temporary '.ValueGenerator::int(1, 100));
+        $settlementInputType->setStreet('Street Temporary ' . ValueGenerator::int(1, 100));
 
         return $settlementInputType;
     }
@@ -470,7 +479,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $campAddress->setTentNumber((string) ValueGenerator::int(1, 1000));
         $camp = new CampInputType();
         $camp->setLocationId($this->getLocation($iso3)->getId());
-        $camp->setName('Camp '.ValueGenerator::int(1, 1000));
+        $camp->setName('Camp ' . ValueGenerator::int(1, 1000));
         $campAddress->setCamp($camp);
 
         return $campAddress;
@@ -478,7 +487,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 
     /**
      * @param string $iso3
-     * @param int    $level
+     * @param int $level
      *
      * @return Location
      */
@@ -486,7 +495,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         $location = $this->locationRepository->findOneBy(['countryIso3' => $iso3, 'lvl' => $level]);
         if (!$location) {
-            throw new \LogicException("There is no location in country $iso3 and in level $level");
+            throw new LogicException("There is no location in country $iso3 and in level $level");
         }
 
         return $location;
@@ -508,5 +517,4 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
             ValueGenerator::fromEnum(PhoneTypes::class)
         );
     }
-
 }

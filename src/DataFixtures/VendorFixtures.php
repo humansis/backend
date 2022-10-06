@@ -13,14 +13,12 @@ use Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
-    const REF_VENDOR_KHM = 'vendor_fixtures_khm';
-    const REF_VENDOR_SYR = 'vendor_fixtures_syr';
-    const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
-
-    const VENDOR_KHM_NAME = 'Vendor from Cambodia';
-    const VENDOR_SYR_NAME = 'Vendor from Syria';
-
-    const VENDOR_COUNT_PER_COUNTRY = 3;
+    public const REF_VENDOR_KHM = 'vendor_fixtures_khm';
+    public const REF_VENDOR_SYR = 'vendor_fixtures_syr';
+    public const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
+    public const VENDOR_KHM_NAME = 'Vendor from Cambodia';
+    public const VENDOR_SYR_NAME = 'Vendor from Syria';
+    public const VENDOR_COUNT_PER_COUNTRY = 3;
 
     /** @var Kernel */
     private $kernel;
@@ -51,14 +49,13 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($vendorSyr);
         $manager->persist($vendorKhm);
 
-
         $this->setReference(self::REF_VENDOR_SYR, $vendorSyr);
         $this->setReference(self::REF_VENDOR_KHM, $vendorKhm);
 
         foreach ($this->countries->getAll() as $country) {
             foreach (range(1, self::VENDOR_COUNT_PER_COUNTRY) as $index) {
                 $vendor = $this->createGenericVendor($manager, $country->getIso3());
-                $this->setReference(self::REF_VENDOR_GENERIC.'_'.$country->getIso3().'_'.$index, $vendor);
+                $this->setReference(self::REF_VENDOR_GENERIC . '_' . $country->getIso3() . '_' . $index, $vendor);
             }
         }
         $manager->flush();
@@ -91,9 +88,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2)
-            ->setVendorNo('SYR'.sprintf('%07d', random_int(100, 10000)))
-            ->setContractNo('SYRSP'.sprintf('%06d', random_int(100, 10000)))
-        ;
+            ->setVendorNo('SYR' . sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo('SYRSP' . sprintf('%06d', random_int(100, 10000)));
 
         return $vendor;
     }
@@ -114,9 +110,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2)
-            ->setVendorNo('KHM'.sprintf('%07d', random_int(100, 10000)))
-            ->setContractNo('KHMSP'.sprintf('%06d', random_int(100, 10000)))
-        ;
+            ->setVendorNo('KHM' . sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo('KHMSP' . sprintf('%06d', random_int(100, 10000)));
 
         return $vendor;
     }
@@ -129,7 +124,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
         $vendor = new Vendor();
         $vendor
-            ->setName('Generic vendor from '.$country)
+            ->setName('Generic vendor from ' . $country)
             ->setShop('generic')
             ->setAddressNumber(rand(1, 1000))
             ->setAddressStreet('Main street')
@@ -137,9 +132,8 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2)
-            ->setVendorNo($country.sprintf('%07d', random_int(100, 10000)))
-            ->setContractNo($country.'SP'.sprintf('%06d', random_int(100, 10000)))
-        ;
+            ->setVendorNo($country . sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo($country . 'SP' . sprintf('%06d', random_int(100, 10000)));
 
         $manager->persist($vendor);
 
@@ -165,6 +159,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             ->setChangePassword(0);
         $instance->setPassword('no passwd');
         $manager->persist($instance);
+
         return $instance;
     }
 }

@@ -3,6 +3,7 @@
 namespace DataFixtures;
 
 use Entity\User;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -35,7 +36,7 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
      *
      * @param ObjectManager $manager
      *
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function load(ObjectManager $manager)
     {
@@ -57,8 +58,6 @@ class AssistanceValidationFixtures extends Fixture implements DependentFixtureIn
             echo "\n";
             $manager->flush();
         }
-
-
     }
 
     public function getDependencies(): array

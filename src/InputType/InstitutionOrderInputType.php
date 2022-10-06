@@ -6,13 +6,13 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class InstitutionOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_NAME = 'name';
-    const SORT_BY_LONGITUDE = 'longitude';
-    const SORT_BY_LATITUDE = 'latitude';
-    const SORT_BY_CONTACT_GIVEN_NAME = 'contactGivenName';
-    const SORT_BY_CONTACT_FAMILY_NAME = 'contactFamilyName';
-    const SORT_BY_TYPE = 'type';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_NAME = 'name';
+    public const SORT_BY_LONGITUDE = 'longitude';
+    public const SORT_BY_LATITUDE = 'latitude';
+    public const SORT_BY_CONTACT_GIVEN_NAME = 'contactGivenName';
+    public const SORT_BY_CONTACT_FAMILY_NAME = 'contactFamilyName';
+    public const SORT_BY_TYPE = 'type';
 
     protected function getValidNames(): array
     {

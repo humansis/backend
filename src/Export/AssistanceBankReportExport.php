@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Export;
 
-
+use InvalidArgumentException;
+use Punic\Misc;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
 use Repository\AssistanceBeneficiaryRepository;
@@ -15,9 +17,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceBankReportExport
 {
-
-    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
-    const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Type';
+    public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    public const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Type';
 
     /** @var TranslatorInterface */
     private $translator;
@@ -28,9 +29,7 @@ class AssistanceBankReportExport
     /** @var CountrySpecificRepository */
     private $countrySpecificRepository;
 
-
-
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, CountrySpecificRepository $countrySpecificRepository,  TranslatorInterface $translator)
+    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, CountrySpecificRepository $countrySpecificRepository, TranslatorInterface $translator)
     {
         $this->translator = $translator;
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
@@ -40,9 +39,9 @@ class AssistanceBankReportExport
     public function export(Assistance $assistance, string $filetype): string
     {
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new \InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. '.$filetype.' given.');
+            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
         }
-        $filename = sys_get_temp_dir().'/bank-report.'.$filetype;
+        $filename = sys_get_temp_dir() . '/bank-report.' . $filetype;
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
         $countrySpecific1 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE, 'countryIso3' => $assistance->getProject()->getCountryIso3()]);
@@ -50,6 +49,7 @@ class AssistanceBankReportExport
         $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific1, $countrySpecific2));
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
+
         return $filename;
     }
 
@@ -60,7 +60,8 @@ class AssistanceBankReportExport
         $this->generateRows($worksheet, $distributions);
     }
 
-    private function setupColumnHeaders(Worksheet $worksheet) {
+    private function setupColumnHeaders(Worksheet $worksheet)
+    {
         $worksheet->getColumnDimension('A')->setWidth(16.852);
         $worksheet->getColumnDimension('B')->setWidth(16.852);
         $worksheet->getColumnDimension('C')->setWidth(16.614);
@@ -73,7 +74,7 @@ class AssistanceBankReportExport
         $worksheet->getColumnDimension('J')->setWidth(14.853);
         $worksheet->getColumnDimension('K')->setWidth(14.853);
         $worksheet->getRowDimension(1)->setRowHeight(45);
-        $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
+        $worksheet->setRightToLeft('right-to-left' === Misc::getCharacterOrder($this->translator->getLocale()));
         $worksheet->getStyle('A1:K1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -87,7 +88,8 @@ class AssistanceBankReportExport
         ]);
     }
 
-    private function createColumnHeaders(Worksheet $worksheet) {
+    private function createColumnHeaders(Worksheet $worksheet)
+    {
         $worksheet->setCellValue('A1', $this->translator->trans('Ordinal number'));
         $worksheet->setCellValue('B1', $this->translator->trans('Recipient’s surname (Local family name)'));
         $worksheet->setCellValue('C1', $this->translator->trans('Recipient’s name (Local given name)'));
@@ -101,24 +103,23 @@ class AssistanceBankReportExport
         $worksheet->setCellValue('K1', $this->translator->trans('Recipient’s mobile telephone number'));
     }
 
-    private function generateRows(Worksheet $worksheet, $distributions) {
+    private function generateRows(Worksheet $worksheet, $distributions)
+    {
         $i = 1;
 
-        foreach ( $distributions as $distribution) {
+        foreach ($distributions as $distribution) {
             $i++;
-            $worksheet->setCellValue('A'.$i, $distribution['distributionId']);
-            $worksheet->setCellValue('B'.$i, $distribution['localFamilyName']);
-            $worksheet->setCellValue('C'.$i, $distribution['localGivenName']);
-            $worksheet->setCellValue('D'.$i, $distribution['localParentsName']);
-            $worksheet->setCellValue('E'.$i, $distribution['idNumber']);
-            $worksheet->setCellValue('F'.$i, $distribution['countrySpecificValue1']);
-            $worksheet->setCellValue('G'.$i, $distribution['countrySpecificValue2']);
-            $worksheet->setCellValue('H'.$i, 'Благодійна допомога');
-            $worksheet->setCellValue('I'.$i, $distribution['amountToDistribute']);
-            $worksheet->setCellValue('J'.$i, $distribution['currency']);
-            $worksheet->setCellValue('K'.$i, $distribution['phoneNumber']);
-
+            $worksheet->setCellValue('A' . $i, $distribution['distributionId']);
+            $worksheet->setCellValue('B' . $i, $distribution['localFamilyName']);
+            $worksheet->setCellValue('C' . $i, $distribution['localGivenName']);
+            $worksheet->setCellValue('D' . $i, $distribution['localParentsName']);
+            $worksheet->setCellValue('E' . $i, $distribution['idNumber']);
+            $worksheet->setCellValue('F' . $i, $distribution['countrySpecificValue1']);
+            $worksheet->setCellValue('G' . $i, $distribution['countrySpecificValue2']);
+            $worksheet->setCellValue('H' . $i, 'Благодійна допомога');
+            $worksheet->setCellValue('I' . $i, $distribution['amountToDistribute']);
+            $worksheet->setCellValue('J' . $i, $distribution['currency']);
+            $worksheet->setCellValue('K' . $i, $distribution['phoneNumber']);
         }
     }
-
 }

@@ -44,16 +44,16 @@ class ErrorResponseListener
                 'code' => 400,
                 'errors' => $errors,
             ];
-
         } elseif ($exception instanceof ConstraintViolationInterface) {
             $data = [
                 'code' => 400,
-                'errors' => [[
-                    'message' => $exception->getMessage(),
-                    'source' => $exception->getPropertyPath(),
-                ]],
+                'errors' => [
+                    [
+                        'message' => $exception->getMessage(),
+                        'source' => $exception->getPropertyPath(),
+                    ],
+                ],
             ];
-
         } elseif ($exception instanceof HttpExceptionInterface) {
             if ($exception instanceof BadRequestHttpException) {
                 $message = $exception->getMessage();
@@ -67,7 +67,6 @@ class ErrorResponseListener
                     'message' => $message,
                 ],
             ];
-
         } else {
             $data = [
                 'code' => 500,

@@ -1,9 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Pagination;
 
-class Paginator implements \JsonSerializable
+use InvalidArgumentException;
+use JsonSerializable;
+
+class Paginator implements JsonSerializable
 {
     /**
      * @var array
@@ -23,12 +27,12 @@ class Paginator implements \JsonSerializable
     /**
      * @param iterable $data
      * @param int|null $totalCount
-     * @param int      $page
+     * @param int $page
      */
     public function __construct(iterable $data, $totalCount = null, $page = 1)
     {
         if ($page <= 0) {
-            throw new \InvalidArgumentException('Page must be greater than zero');
+            throw new InvalidArgumentException('Page must be greater than zero');
         }
 
         $this->data = $data;

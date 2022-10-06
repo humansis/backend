@@ -2,8 +2,10 @@
 
 namespace Entity;
 
+use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Utils\ExportableInterface;
@@ -47,7 +49,7 @@ class Donor implements ExportableInterface
     private $shortname;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
      *
@@ -75,7 +77,6 @@ class Donor implements ExportableInterface
      */
     private $logo;
 
-
     /**
      * Set id.
      *
@@ -88,7 +89,6 @@ class Donor implements ExportableInterface
 
         return $this;
     }
-
 
     /**
      * Get id.
@@ -151,7 +151,7 @@ class Donor implements ExportableInterface
     /**
      * Set dateAdded.
      *
-     * @param \DateTime $dateAdded
+     * @param DateTime $dateAdded
      *
      * @return Donor
      */
@@ -165,7 +165,7 @@ class Donor implements ExportableInterface
     /**
      * Get dateAdded.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDateAdded()
     {
@@ -195,22 +195,23 @@ class Donor implements ExportableInterface
     {
         return $this->notes;
     }
+
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->projects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     /**
      * Add project.
      *
-     * @param \Entity\Project $project
+     * @param Project $project
      *
      * @return Donor
      */
-    public function addProject(\Entity\Project $project)
+    public function addProject(Project $project)
     {
         $this->projects[] = $project;
 
@@ -220,11 +221,11 @@ class Donor implements ExportableInterface
     /**
      * Remove project.
      *
-     * @param \Entity\Project $project
+     * @param Project $project
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeProject(\Entity\Project $project)
+    public function removeProject(Project $project)
     {
         return $this->projects->removeElement($project);
     }
@@ -232,7 +233,7 @@ class Donor implements ExportableInterface
     /**
      * Get projects.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getProjects()
     {
@@ -241,6 +242,7 @@ class Donor implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -254,14 +256,14 @@ class Donor implements ExportableInterface
 
         return [
             "Full name" => $this->getFullName(),
-            "Short name"=> $this->getShortname(),
+            "Short name" => $this->getShortname(),
             "Date added" => $this->getDateAdded()->format('d-m-Y H:i:s'),
             "Notes" => $this->getNotes(),
             "Project" => $project,
         ];
     }
 
-     /**
+    /**
      * Set logo.
      *
      * @param string|null $logo

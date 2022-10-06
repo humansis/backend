@@ -18,13 +18,14 @@ use UnexpectedValueException;
 
 /**
  * Upload source files to Crowdin.
+ *
  * @deprecated use official crowdin package after upgrading symfony to 6.x
  * https://symfony.com/doc/current/translation.html#translation-providers
  */
 class CrowdinPushCommand extends Command
 {
     use CrowdinRequestTrait;
-    
+
     /** @var HttpClient $client */
     private $client;
 
@@ -81,10 +82,10 @@ class CrowdinPushCommand extends Command
         }
 
         //get source files list
-        $sourceFiles = $this->makeRequest('GET', '/projects/'.$this->crowdinProjectId.'/files');
+        $sourceFiles = $this->makeRequest('GET', '/projects/' . $this->crowdinProjectId . '/files');
 
         foreach ($finder as $file) {
-            $this->output->write('<info>Processing: '.$file->getFilename().'</info>');
+            $this->output->write('<info>Processing: ' . $file->getFilename() . '</info>');
 
             //prepare - upload source file to storage
             $storage = $this->makeRequest('POST', '/storages', [
@@ -112,7 +113,7 @@ class CrowdinPushCommand extends Command
 
             //file exists, update
             if ($fileId) {
-                $uploaded = $this->makeRequest('PUT', '/projects/'.$this->crowdinProjectId.'/files/'.$fileId, [
+                $uploaded = $this->makeRequest('PUT', '/projects/' . $this->crowdinProjectId . '/files/' . $fileId, [
                     'body' => json_encode([
                         'storageId' => $storage['data']['id'],
                         'updateOption' => 'keep_translations_and_approvals',
@@ -120,16 +121,14 @@ class CrowdinPushCommand extends Command
                 ]);
 
                 $status = $uploaded['headers']['crowdin-api-content-status'][0] ?? 'status undefined';
-            }
-            //file does not exist, add new
-            else {
-                $this->makeRequest('POST', '/projects/'.$this->crowdinProjectId.'/files', [
+            } else { //file does not exist, add new
+                $this->makeRequest('POST', '/projects/' . $this->crowdinProjectId . '/files', [
                     'body' => json_encode([
                         'storageId' => $storage['data']['id'],
                         'name' => $file->getFilename(),
                         'type' => 'xliff',
                         'exportOptions' => [
-                            'exportPattern' => str_replace('.en.', '.%two_letters_code%.', $file->getFilename())
+                            'exportPattern' => str_replace('.en.', '.%two_letters_code%.', $file->getFilename()),
                         ],
                     ], JSON_THROW_ON_ERROR),
                 ]);
@@ -137,7 +136,7 @@ class CrowdinPushCommand extends Command
                 $status = 'added';
             }
 
-            $this->output->writeln('<info> uploaded, '.$status.'</info>');
+            $this->output->writeln('<info> uploaded, ' . $status . '</info>');
         }
 
         return 0;

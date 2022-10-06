@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\VendorApp;
@@ -15,7 +16,7 @@ class ReliefPackageController extends AbstractVendorAppController
      * @Rest\Get("/vendor-app/v1/vendors/{id}/relief-packages")
      *
      * @param Request $request
-     * @param Vendor  $vendor
+     * @param Vendor $vendor
      *
      * @return JsonResponse
      */

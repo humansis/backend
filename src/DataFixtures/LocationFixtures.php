@@ -12,7 +12,7 @@ use Component\Country\Countries;
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
     // maximum imported lines per file (due to performace on dev env)
-    const LIMIT = 10;
+    public const LIMIT = 10;
 
     /**
      * @var LocationRepository
@@ -26,7 +26,7 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
     public function __construct(
         LocationRepository $locationRepository,
-        Countries          $countries
+        Countries $countries
     ) {
         $this->locationRepository = $locationRepository;
         $this->countries = $countries;
@@ -39,14 +39,14 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     {
         $manager->getConnection()->getConfiguration()->setSQLLogger(null);
 
-        $directory = __DIR__.'/../Resources/locations';
+        $directory = __DIR__ . '/../Resources/locations';
 
         foreach (scandir($directory) as $file) {
             if ('.' == $file || '..' == $file) {
                 continue;
             }
 
-            $filepath = realpath($directory.'/'.$file);
+            $filepath = realpath($directory . '/' . $file);
 
             $locationImported = new LocationImporter($manager, $filepath, $this->locationRepository);
 
@@ -57,9 +57,9 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
                 echo '.';
             }
             echo "\n";
-            
+
             $country = $this->countries->getCountry($locationImported->getIso3());
-            if(!$country || $country->isArchived()){
+            if (!$country || $country->isArchived()) {
                 echo 'Skip non-existing or archived country ' . $locationImported->getIso3();
             }
         }
@@ -75,6 +75,4 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     {
         return ['location'];
     }
-
-
 }

@@ -64,7 +64,7 @@ class Product implements ExportableInterface
      * @SymfonyGroups({"FullProduct"})
      */
     private $archived;
-    
+
     /**
      * @var ProductCategory|null
      *
@@ -194,6 +194,7 @@ class Product implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -263,5 +264,4 @@ class Product implements ExportableInterface
 
         return $this;
     }
-
 }

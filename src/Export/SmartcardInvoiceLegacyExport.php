@@ -6,6 +6,7 @@ namespace Export;
 
 use Entity\Organization;
 use MapperDeprecated\LocationMapper;
+use PhpOffice\PhpSpreadsheet\Exception;
 use Utils\FileSystem\Exception\ImageException;
 use Utils\FileSystem\Image;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -35,7 +36,7 @@ class SmartcardInvoiceLegacyExport
      * SmartcardInvoiceExport constructor.
      *
      * @param TranslatorInterface $translator
-     * @param LocationMapper      $locationMapper
+     * @param LocationMapper $locationMapper
      */
     public function __construct(TranslatorInterface $translator, LocationMapper $locationMapper)
     {
@@ -66,6 +67,7 @@ class SmartcardInvoiceLegacyExport
         $invoiceName = "{$countryIso3}LEGACY{$id}{$vendorName}.xlsx";
 
         $writer->save($invoiceName);
+
         return $invoiceName;
     }
 
@@ -109,12 +111,12 @@ class SmartcardInvoiceLegacyExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet           $worksheet
+     * @param Worksheet $worksheet
      * @param TranslatorInterface $translator
-     * @param Organization        $organization
-     * @param Invoice             $invoice
+     * @param Organization $organization
+     * @param Invoice $invoice
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
     private static function buildHeaderFirstLineBoxes(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, Invoice $invoice): void
     {
@@ -257,216 +259,225 @@ class SmartcardInvoiceLegacyExport
 
         // style
         $worksheet->getRowDimension('13')->setRowHeight(30);
-        self::setSmallHeadline($worksheet,'B13:J13');
-        self::setSmallBorder($worksheet,'B13:J13');
+        self::setSmallHeadline($worksheet, 'B13:J13');
+        self::setSmallBorder($worksheet, 'B13:J13');
     }
 
     private static function buildBody(Worksheet $worksheet, TranslatorInterface $translator, Invoice $invoice, int $lineStart): int
     {
         // ----------------------- Food items
         // structure
-        $worksheet->mergeCells('B'.$lineStart.':G'.$lineStart);
-        $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
+        $worksheet->mergeCells('B' . $lineStart . ':G' . $lineStart);
+        $worksheet->mergeCells('H' . $lineStart . ':I' . $lineStart);
         // data
         $currency = '';
         foreach ($invoice->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
-        $worksheet->setCellValue('B'.$lineStart, self::makeCommentedImportantInfo(
-            $translator->trans('redemption_payment_items'),
-            $translator->trans('redemption_payment_items_description')
-        ));
-        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $invoice->getValue()));
-        $worksheet->setCellValue('J'.$lineStart, $currency);
+        $worksheet->setCellValue(
+            'B' . $lineStart,
+            self::makeCommentedImportantInfo(
+                $translator->trans('redemption_payment_items'),
+                $translator->trans('redemption_payment_items_description')
+            )
+        );
+        $worksheet->setCellValue('H' . $lineStart, sprintf('%.2f', $invoice->getValue()));
+        $worksheet->setCellValue('J' . $lineStart, $currency);
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(50);
-        self::setImportantInfo($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
+        self::setImportantInfo($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        self::setSmallBorder($worksheet, 'B' . $lineStart . ':J' . $lineStart);
 
         // ----------------------- Cash
         $lineStart++;
         // structure
-        $worksheet->mergeCells('B'.$lineStart.':G'.$lineStart);
-        $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
+        $worksheet->mergeCells('B' . $lineStart . ':G' . $lineStart);
+        $worksheet->mergeCells('H' . $lineStart . ':I' . $lineStart);
 
         // data
-        $worksheet->setCellValue('B'.$lineStart, self::makeCommentedImportantInfo(
-            $translator->trans('redemption_payment_cash'),
-            $translator->trans('redemption_payment_cash_description'),
-            'C0C0C0'
-        ));
-        $worksheet->setCellValue('H'.$lineStart, '');
-        $worksheet->setCellValue('J'.$lineStart, $currency);
+        $worksheet->setCellValue(
+            'B' . $lineStart,
+            self::makeCommentedImportantInfo(
+                $translator->trans('redemption_payment_cash'),
+                $translator->trans('redemption_payment_cash_description'),
+                'C0C0C0'
+            )
+        );
+        $worksheet->setCellValue('H' . $lineStart, '');
+        $worksheet->setCellValue('J' . $lineStart, $currency);
 
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(40);
-        self::setImportantInfo($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
+        self::setImportantInfo($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        self::setSmallBorder($worksheet, 'B' . $lineStart . ':J' . $lineStart);
 
         // ----------------------- Total
         $lineStart += 2;
         // structure
-        $worksheet->mergeCells('B'.$lineStart.':G'.$lineStart);
-        $worksheet->mergeCells('H'.$lineStart.':I'.$lineStart);
+        $worksheet->mergeCells('B' . $lineStart . ':G' . $lineStart);
+        $worksheet->mergeCells('H' . $lineStart . ':I' . $lineStart);
         // data
-        $worksheet->setCellValue('B'.$lineStart, $translator->trans('total_to_pay'));
-        $worksheet->setCellValue('H'.$lineStart, sprintf('%.2f', $invoice->getValue()));
-        $worksheet->setCellValue('J'.$lineStart, $currency);
+        $worksheet->setCellValue('B' . $lineStart, $translator->trans('total_to_pay'));
+        $worksheet->setCellValue('H' . $lineStart, sprintf('%.2f', $invoice->getValue()));
+        $worksheet->setCellValue('J' . $lineStart, $currency);
         // style
         $worksheet->getRowDimension($lineStart)->setRowHeight(22.52);
-        self::setImportantInfo($worksheet, 'B'.$lineStart);
-        self::setImportantFilledInfo($worksheet, 'H'.$lineStart);
-        self::setImportantFilledInfo($worksheet, 'J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getBorders()
+        self::setImportantInfo($worksheet, 'B' . $lineStart);
+        self::setImportantFilledInfo($worksheet, 'H' . $lineStart);
+        self::setImportantFilledInfo($worksheet, 'J' . $lineStart);
+        self::setSmallBorder($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        $worksheet->getStyle('B' . $lineStart . ':J' . $lineStart)->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_DOUBLE);
 
-        return $lineStart+1;
+        return $lineStart + 1;
     }
-
 
     private static function buildAnnex(Worksheet $worksheet, TranslatorInterface $translator, Invoice $invoice, int $lineStart): int
     {
         // header
-        $worksheet->setCellValue('B'.$lineStart, $translator->trans('annex'));
-        $worksheet->setCellValue('C'.$lineStart, $translator->trans('annex_description'));
+        $worksheet->setCellValue('B' . $lineStart, $translator->trans('annex'));
+        $worksheet->setCellValue('C' . $lineStart, $translator->trans('annex_description'));
 
         // table header
         $lineStart += 2;
-        $worksheet->setCellValue('B'.$lineStart, $translator->trans('purchase_customer_id'));
-        $worksheet->setCellValue('C'.$lineStart, $translator->trans('purchase_customer_first_name'));
-        $worksheet->setCellValue('D'.$lineStart, $translator->trans('purchase_customer_family_name'));
-        $worksheet->setCellValue('E'.$lineStart, $translator->trans('purchase_date'));
-        $worksheet->setCellValue('F'.$lineStart, $translator->trans('purchase_time'));
-        $worksheet->setCellValue('G'.$lineStart, $translator->trans('purchase_item'));
-        $worksheet->setCellValue('H'.$lineStart, $translator->trans('purchase_unit'));
-        $worksheet->setCellValue('I'.$lineStart, $translator->trans('purchase_item_total'));
-        $worksheet->setCellValue('J'.$lineStart, $translator->trans('currency'));
+        $worksheet->setCellValue('B' . $lineStart, $translator->trans('purchase_customer_id'));
+        $worksheet->setCellValue('C' . $lineStart, $translator->trans('purchase_customer_first_name'));
+        $worksheet->setCellValue('D' . $lineStart, $translator->trans('purchase_customer_family_name'));
+        $worksheet->setCellValue('E' . $lineStart, $translator->trans('purchase_date'));
+        $worksheet->setCellValue('F' . $lineStart, $translator->trans('purchase_time'));
+        $worksheet->setCellValue('G' . $lineStart, $translator->trans('purchase_item'));
+        $worksheet->setCellValue('H' . $lineStart, $translator->trans('purchase_unit'));
+        $worksheet->setCellValue('I' . $lineStart, $translator->trans('purchase_item_total'));
+        $worksheet->setCellValue('J' . $lineStart, $translator->trans('currency'));
         $worksheet->getRowDimension($lineStart)->setRowHeight(50);
-        self::setSmallHeadline($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        self::setSoftBackground($worksheet, 'B'.$lineStart.':J'.$lineStart);
-        $worksheet->getStyle('B'.$lineStart.':J'.$lineStart)->getAlignment()->setWrapText(true);
+        self::setSmallHeadline($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        self::setSmallBorder($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        self::setSoftBackground($worksheet, 'B' . $lineStart . ':J' . $lineStart);
+        $worksheet->getStyle('B' . $lineStart . ':J' . $lineStart)->getAlignment()->setWrapText(true);
 
         // table with purchases
         foreach ($invoice->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 ++$lineStart;
-                $worksheet->setCellValue('B'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getId());
-                $worksheet->setCellValue('C'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalGivenName());
-                $worksheet->setCellValue('D'.$lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalFamilyName());
-                $worksheet->setCellValue('E'.$lineStart, $purchase->getCreatedAt()->format('Y-m-d'));
-                $worksheet->setCellValue('F'.$lineStart, $purchase->getCreatedAt()->format('H:i'));
-                $worksheet->setCellValue('G'.$lineStart, $record->getProduct()->getName());
-                $worksheet->setCellValue('H'.$lineStart, $record->getProduct()->getUnit());
-                $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $record->getValue()));
-                $worksheet->setCellValue('J'.$lineStart, $purchase->getSmartcard()->getCurrency());
+                $worksheet->setCellValue('B' . $lineStart, $purchase->getSmartcard()->getBeneficiary()->getId());
+                $worksheet->setCellValue('C' . $lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalGivenName());
+                $worksheet->setCellValue('D' . $lineStart, $purchase->getSmartcard()->getBeneficiary()->getPerson()->getLocalFamilyName());
+                $worksheet->setCellValue('E' . $lineStart, $purchase->getCreatedAt()->format('Y-m-d'));
+                $worksheet->setCellValue('F' . $lineStart, $purchase->getCreatedAt()->format('H:i'));
+                $worksheet->setCellValue('G' . $lineStart, $record->getProduct()->getName());
+                $worksheet->setCellValue('H' . $lineStart, $record->getProduct()->getUnit());
+                $worksheet->setCellValue('I' . $lineStart, sprintf('%.2f', $record->getValue()));
+                $worksheet->setCellValue('J' . $lineStart, $purchase->getSmartcard()->getCurrency());
 
-                self::setSmallBorder($worksheet, 'B'.$lineStart.':J'.$lineStart);
+                self::setSmallBorder($worksheet, 'B' . $lineStart . ':J' . $lineStart);
             }
         }
 
         // total
         ++$lineStart;
-        $worksheet->mergeCells('F'.$lineStart.':H'.$lineStart);
+        $worksheet->mergeCells('F' . $lineStart . ':H' . $lineStart);
         $currency = '';
         foreach ($invoice->getPurchases() as $purchase) {
             $currency = $purchase->getSmartcard()->getCurrency();
             break;
         }
-        $worksheet->setCellValue('F'.$lineStart, $translator->trans('purchase_total'));
-        $worksheet->setCellValue('I'.$lineStart, sprintf('%.2f', $invoice->getValue()));
-        $worksheet->setCellValue('J'.$lineStart, $currency);
-        self::setSmallHeadline($worksheet,'F'.$lineStart);
+        $worksheet->setCellValue('F' . $lineStart, $translator->trans('purchase_total'));
+        $worksheet->setCellValue('I' . $lineStart, sprintf('%.2f', $invoice->getValue()));
+        $worksheet->setCellValue('J' . $lineStart, $currency);
+        self::setSmallHeadline($worksheet, 'F' . $lineStart);
 
-        return $lineStart+1;
+        return $lineStart + 1;
     }
 
     private static function buildFooter(Worksheet $worksheet, TranslatorInterface $translator, Organization $organization, User $user, $nextRow): int
     {
         // supplier signature description
-        $worksheet->setCellValue('B'.$nextRow, $translator->trans('signature_recipient'));
-        $worksheet->mergeCells('B'.$nextRow.':D'.$nextRow);
-        $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
+        $worksheet->setCellValue('B' . $nextRow, $translator->trans('signature_recipient'));
+        $worksheet->mergeCells('B' . $nextRow . ':D' . $nextRow);
+        $worksheet->mergeCells('E' . $nextRow . ':J' . $nextRow);
         $worksheet->getRowDimension($nextRow)->setRowHeight(40);
-        $worksheet->getStyle('B'.$nextRow.':D'.$nextRow)->getFont()
+        $worksheet->getStyle('B' . $nextRow . ':D' . $nextRow)->getFont()
             ->setSize(12);
-        $worksheet->getStyle('B'.$nextRow.':D'.$nextRow)->getAlignment()
+        $worksheet->getStyle('B' . $nextRow . ':D' . $nextRow)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle('E'.$nextRow.':J'.$nextRow)->getBorders()
+        $worksheet->getStyle('E' . $nextRow . ':J' . $nextRow)->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_DASHED);
 
         // supplier signature underline
         ++$nextRow;
-        $worksheet->setCellValue('E'.$nextRow, $translator->trans('signature_underline_individual'));
-        $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
-        $worksheet->getStyle('E'.$nextRow.':J'.$nextRow)->getFont()
+        $worksheet->setCellValue('E' . $nextRow, $translator->trans('signature_underline_individual'));
+        $worksheet->mergeCells('E' . $nextRow . ':J' . $nextRow);
+        $worksheet->getStyle('E' . $nextRow . ':J' . $nextRow)->getFont()
             ->setItalic(true)
             ->setSize(9);
 
         // organization signature description
         $nextRow += 2;
-        $worksheet->mergeCells('B'.$nextRow.':D'.$nextRow);
-        $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
-        $worksheet->setCellValue('B'.$nextRow, $translator->trans('signature_organization', ['organization'=>$organization->getName()]));
+        $worksheet->mergeCells('B' . $nextRow . ':D' . $nextRow);
+        $worksheet->mergeCells('E' . $nextRow . ':J' . $nextRow);
+        $worksheet->setCellValue('B' . $nextRow, $translator->trans('signature_organization', ['organization' => $organization->getName()]));
         $worksheet->getRowDimension($nextRow)->setRowHeight(40);
-        $worksheet->getStyle('B'.$nextRow.':D'.$nextRow)->getFont()
+        $worksheet->getStyle('B' . $nextRow . ':D' . $nextRow)->getFont()
             ->setSize(12);
-        $worksheet->getStyle('B'.$nextRow.':D'.$nextRow)->getAlignment()
+        $worksheet->getStyle('B' . $nextRow . ':D' . $nextRow)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $worksheet->getStyle('E'.$nextRow.':J'.$nextRow)->getBorders()
+        $worksheet->getStyle('E' . $nextRow . ':J' . $nextRow)->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_DASHED);
 
         // organization signature underline
         ++$nextRow;
-        $worksheet->setCellValue('E'.$nextRow, $translator->trans('signature_underline_organization'));
-        $worksheet->mergeCells('E'.$nextRow.':J'.$nextRow);
-        $worksheet->getStyle('E'.$nextRow.':J'.$nextRow)->getFont()
+        $worksheet->setCellValue('E' . $nextRow, $translator->trans('signature_underline_organization'));
+        $worksheet->mergeCells('E' . $nextRow . ':J' . $nextRow);
+        $worksheet->getStyle('E' . $nextRow . ':J' . $nextRow)->getFont()
             ->setItalic(true)
             ->setSize(9);
 
         // Generated by: [login or PIN staff name]
         ++$nextRow;
-        self::setMinorText($worksheet, 'H'.$nextRow.':H'.($nextRow+2));
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_by', ['username'=>$user->getUsername()]));
+        self::setMinorText($worksheet, 'H' . $nextRow . ':H' . ($nextRow + 2));
+        $worksheet->setCellValue('H' . $nextRow, $translator->trans('generated_by', ['username' => $user->getUsername()]));
         // Generated on: [date]
         ++$nextRow;
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('generated_on', ['date'=>time()]));
+        $worksheet->setCellValue('H' . $nextRow, $translator->trans('generated_on', ['date' => time()]));
         // Unique document integrity ID: BLANK
         ++$nextRow;
-        $worksheet->setCellValue('H'.$nextRow, $translator->trans('checksum', ['checksum'=>'']));
+        $worksheet->setCellValue('H' . $nextRow, $translator->trans('checksum', ['checksum' => '']));
 
         // delimiter of page end
         ++$nextRow;
-        $worksheet->getStyle('B'.$nextRow.':J'.$nextRow)->getBorders()
+        $worksheet->getStyle('B' . $nextRow . ':J' . $nextRow)->getBorders()
             ->getBottom()
             ->setBorderStyle(Border::BORDER_DOUBLE);
 
         return $nextRow;
     }
 
-    private static function setSpecialBackground(Worksheet $worksheet, string $cellCoordination) {
+    private static function setSpecialBackground(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getFill()
             ->setFillType(Fill::FILL_SOLID)
             ->setStartColor(new Color('C5E0B4'));
     }
 
-    private static function setSoftBackground(Worksheet $worksheet, string $cellCoordination) {
+    private static function setSoftBackground(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getFill()
             ->setFillType(Fill::FILL_SOLID)
             ->setStartColor(new Color('C0C0C0'));
     }
 
-    private static function setSmallHeadline(Worksheet $worksheet, string $cellCoordination) {
+    private static function setSmallHeadline(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    private static function setMinorText(Worksheet $worksheet, string $cellCoordination) {
+    private static function setMinorText(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getFont()
             ->setBold(false)
             ->setSize(10)
@@ -475,7 +486,8 @@ class SmartcardInvoiceLegacyExport
             ->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
 
-    private static function setImportantFilledInfo(Worksheet $worksheet, string $cellCoordination) {
+    private static function setImportantFilledInfo(Worksheet $worksheet, string $cellCoordination)
+    {
         self::setSpecialBackground($worksheet, $cellCoordination);
         $worksheet->getStyle($cellCoordination)->getFont()
             ->setBold(true)
@@ -485,7 +497,8 @@ class SmartcardInvoiceLegacyExport
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
 
-    private static function setImportantInfo(Worksheet $worksheet, string $cellCoordination) {
+    private static function setImportantInfo(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getFont()
             ->setBold(true)
             ->setSize(15)
@@ -497,7 +510,7 @@ class SmartcardInvoiceLegacyExport
     private static function makeCommentedImportantInfo(string $importantInfo, string $commentInfo, ?string $color = null): RichText
     {
         $richText = new RichText();
-        $importantText = $richText->createTextRun($importantInfo."\n");
+        $importantText = $richText->createTextRun($importantInfo . "\n");
         $importantText->getFont()
             ->setBold(true)
             ->setSize(15)
@@ -511,10 +524,12 @@ class SmartcardInvoiceLegacyExport
             $comment->getFont()->getColor()->setRGB($color);
             $importantText->getFont()->getColor()->setRGB($color);
         }
+
         return $richText;
     }
 
-    private static function setSmallBorder(Worksheet $worksheet, string $cellCoordination) {
+    private static function setSmallBorder(Worksheet $worksheet, string $cellCoordination)
+    {
         $worksheet->getStyle($cellCoordination)->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);

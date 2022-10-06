@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Event\Subscriber\Import;
 
@@ -21,9 +23,7 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IdentitySubscriber implements EventSubscriberInterface
 {
-
     public const GUARD_CODE_NOT_COMPLETE = '99a555c7-6ab3-4fa8-9c42-705b4c70931c';
-
 
     /**
      * @var EntityManagerInterface
@@ -45,9 +45,9 @@ class IdentitySubscriber implements EventSubscriberInterface
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        IdentityChecker        $identityChecker,
-        MessageBusInterface    $messageBus,
-        ImportQueueRepository  $queueRepository
+        IdentityChecker $identityChecker,
+        MessageBusInterface $messageBus,
+        ImportQueueRepository $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->identityChecker = $identityChecker;
@@ -58,18 +58,18 @@ class IdentitySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered.'.ImportState::IDENTITY_CHECKING => ['fillQueue'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_IDENTITY => [
+            'workflow.import.entered.' . ImportState::IDENTITY_CHECKING => ['fillQueue'],
+            'workflow.import.guard.' . ImportTransitions::COMPLETE_IDENTITY => [
                 ['guardNothingLeft', -20],
                 ['guardNoSuspiciousItem', -10],
                 ['guardAllItemsChecked', 0],
             ],
-            'workflow.import.guard.'.ImportTransitions::FAIL_IDENTITY => [
+            'workflow.import.guard.' . ImportTransitions::FAIL_IDENTITY => [
                 ['guardNothingLeft', -10],
                 ['guardAllItemsChecked', 0],
                 ['guardAnySuspiciousItem', 10],
             ],
-            'workflow.import.guard.'.ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => [
+            'workflow.import.guard.' . ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES => [
                 ['guardAllItemsChecked', 0],
                 ['guardNoSuspiciousItem', 10],
             ],
@@ -85,10 +85,12 @@ class IdentitySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $event->getSubject();
 
-        foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::VALID,
-        ]) as $item) {
+        foreach (
+            $this->queueRepository->findBy([
+                'import' => $import,
+                'state' => ImportQueueState::VALID,
+            ]) as $item
+        ) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIdentity($item));
         }
 
@@ -100,10 +102,12 @@ class IdentitySubscriber implements EventSubscriberInterface
         /** @var Import $import */
         $import = $guardEvent->getSubject();
 
-        if (0 < $this->entityManager->getRepository(ImportQueue::class)->count([
+        if (
+            0 < $this->entityManager->getRepository(ImportQueue::class)->count([
                 'import' => $import,
                 'state' => ImportQueueState::VALID,
-            ])) {
+            ])
+        ) {
             $guardEvent->addTransitionBlocker(new TransitionBlocker('No valid queue items', '0'));
         }
     }
@@ -131,7 +135,7 @@ class IdentitySubscriber implements EventSubscriberInterface
         // dont commit this
         $suspicious = $this->identityChecker->getSuspiciousItems($import);
         foreach ($suspicious as $susp) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has duplicity suspicious item #'.$susp->getId(), '0'));
+            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has duplicity suspicious item #' . $susp->getId(), '0'));
         }
     }
 
@@ -146,5 +150,4 @@ class IdentitySubscriber implements EventSubscriberInterface
             $guardEvent->addTransitionBlocker(new TransitionBlocker('Identity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
         }
     }
-
 }

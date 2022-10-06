@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\WebApp;
 
 use Entity\Assistance\ReliefPackage;
 use Enum\ProductCategoryType;
+use InvalidArgumentException;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Serializer\MapperInterface;
 
@@ -34,7 +36,7 @@ class DistributeReliefPackagesMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.DistributeReliefPackagesOutputType::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . DistributeReliefPackagesOutputType::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getSuccessfullyDistributed(): array
@@ -67,4 +69,3 @@ class DistributeReliefPackagesMapper implements MapperInterface
         return $this->object->getNotFound();
     }
 }
-

@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -78,7 +80,7 @@ class SmartcardPurchasedItem
     private $vendor;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="date_purchase", type="datetime")
      */
@@ -130,7 +132,6 @@ class SmartcardPurchasedItem
         return $this->location;
     }
 
-
     /**
      * @return Beneficiary
      */
@@ -138,7 +139,6 @@ class SmartcardPurchasedItem
     {
         return $this->beneficiary;
     }
-
 
     /**
      * @return Assistance
@@ -173,9 +173,9 @@ class SmartcardPurchasedItem
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDatePurchase(): \DateTimeInterface
+    public function getDatePurchase(): DateTimeInterface
     {
         return $this->datePurchase;
     }

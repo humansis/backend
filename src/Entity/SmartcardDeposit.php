@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-
 use Entity\User;
 
 /**
@@ -106,15 +105,15 @@ class SmartcardDeposit
     private $hash;
 
     public static function create(
-        Smartcard         $smartcard,
-        User              $distributedBy,
-        ReliefPackage     $reliefPackage,
-                          $value,
-                          $balance,
+        Smartcard $smartcard,
+        User $distributedBy,
+        ReliefPackage $reliefPackage,
+        $value,
+        $balance,
         DateTimeInterface $distributedAt,
-        string            $hash,
-        bool              $suspicious = false,
-        ?array            $message = null
+        string $hash,
+        bool $suspicious = false,
+        ?array $message = null
     ): SmartcardDeposit {
         $entity = new self();
         $entity->distributedBy = $distributedBy;
@@ -257,5 +256,4 @@ class SmartcardDeposit
     {
         $this->hash = $hash;
     }
-
 }

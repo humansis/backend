@@ -13,6 +13,7 @@ use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Throwable;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
@@ -25,8 +26,7 @@ use Entity\User;
  */
 class AssistanceDistributionService
 {
-
-    const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
 
     /**
      * @var ReliefPackageRepository
@@ -51,17 +51,17 @@ class AssistanceDistributionService
     private $registry;
 
     /**
-     * @param ReliefPackageRepository   $reliefPackageRepository
-     * @param BeneficiaryRepository     $beneficiaryRepository
+     * @param ReliefPackageRepository $reliefPackageRepository
+     * @param BeneficiaryRepository $beneficiaryRepository
      * @param CountrySpecificRepository $countrySpecificRepository
-     * @param Registry                  $registry
+     * @param Registry $registry
      */
     public function __construct(
-        ReliefPackageRepository   $reliefPackageRepository,
-        BeneficiaryRepository     $beneficiaryRepository,
+        ReliefPackageRepository $reliefPackageRepository,
+        BeneficiaryRepository $beneficiaryRepository,
         CountrySpecificRepository $countrySpecificRepository,
-        LoggerInterface           $logger,
-        Registry                  $registry
+        LoggerInterface $logger,
+        Registry $registry
     ) {
         $this->reliefPackageRepository = $reliefPackageRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
@@ -72,7 +72,7 @@ class AssistanceDistributionService
 
     /**
      * @param DistributeReliefPackagesInputType[] $packages
-     * @param User                                $distributor
+     * @param User $distributor
      *
      * @return DistributeReliefPackagesOutputType
      */
@@ -80,7 +80,6 @@ class AssistanceDistributionService
     {
         $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
         foreach ($packages as $packageUpdate) {
-
             try {
                 /** @var ReliefPackage $reliefPackage */
                 $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
@@ -94,7 +93,7 @@ class AssistanceDistributionService
                     $distributor
                 );
                 $distributeReliefPackageOutputType = $result['output'];
-            } catch (\Throwable $ex) {
+            } catch (Throwable $ex) {
                 $distributeReliefPackageOutputType->addFailed($packageUpdate->getId(), $ex->getMessage());
                 $this->logger->error($ex->getMessage());
             }
@@ -105,24 +104,30 @@ class AssistanceDistributionService
 
     /**
      * @param DistributeBeneficiaryReliefPackagesInputType[] $inputPackages
-     * @param Assistance                                     $assistance
-     * @param User                                           $distributor
+     * @param Assistance $assistance
+     * @param User $distributor
      *
      * @return DistributeReliefPackagesOutputType
      * @throws NonUniqueResultException
      */
-    public function distributeByBeneficiaryIdAndAssistanceId(array      $inputPackages,
-                                                             Assistance $assistance,
-                                                             User       $distributor
+    public function distributeByBeneficiaryIdAndAssistanceId(
+        array $inputPackages,
+        Assistance $assistance,
+        User $distributor
     ): DistributeReliefPackagesOutputType {
         $distributeReliefPackageOutputType = new DistributeReliefPackagesOutputType();
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
-                'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
-                'countryIso3' => $assistance->getProject()->getCountryIso3()]
-        );
+            'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
+            'countryIso3' => $assistance->getProject()->getCountryIso3(),
+        ]);
         foreach ($inputPackages as $packageData) {
-            $distributeReliefPackageOutputType = $this->processPackageData($packageData, $distributeReliefPackageOutputType, $assistance,
-                $distributor, $countrySpecific);
+            $distributeReliefPackageOutputType = $this->processPackageData(
+                $packageData,
+                $distributeReliefPackageOutputType,
+                $assistance,
+                $distributor,
+                $countrySpecific
+            );
         }
 
         return $distributeReliefPackageOutputType;
@@ -130,14 +135,16 @@ class AssistanceDistributionService
 
     private function processPackageData(
         DistributeBeneficiaryReliefPackagesInputType $packageData,
-        DistributeReliefPackagesOutputType           $distributeReliefPackageOutputType,
-        Assistance                                   $assistance,
-        User                                         $distributor,
-        ?CountrySpecific                             $countrySpecific
+        DistributeReliefPackagesOutputType $distributeReliefPackageOutputType,
+        Assistance $assistance,
+        User $distributor,
+        ?CountrySpecific $countrySpecific
     ) {
-
-        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndAssistance($packageData->getIdNumber(), $assistance,
-            $countrySpecific);
+        $beneficiaries = $this->beneficiaryRepository->findByIdentityAndAssistance(
+            $packageData->getIdNumber(),
+            $assistance,
+            $countrySpecific
+        );
         if (count($beneficiaries) === 0) {
             return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
         }
@@ -185,12 +192,12 @@ class AssistanceDistributionService
 
     private function distributeSinglePackage(
         DistributeReliefPackagesOutputType $distributeReliefPackageOutputType,
-        ReliefPackage                      $reliefPackage,
-                                           $targetDistributionAmount,
-                                           $totalUndistributedAmount,
-        User                               $distributor,
-        Beneficiary                        $beneficiary = null,
-                                           $idNumber = null
+        ReliefPackage $reliefPackage,
+        $targetDistributionAmount,
+        $totalUndistributedAmount,
+        User $distributor,
+        Beneficiary $beneficiary = null,
+        $idNumber = null
     ) {
         $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : null;
         if ($reliefPackage->isFullyDistributed()) {
@@ -204,16 +211,21 @@ class AssistanceDistributionService
             $reliefPackage->addDistributedAmount($toDistribute);
             $this->startReliefPackageDistributionWorkflow($reliefPackage, $distributor);
             $amount = $toDistribute;
-            $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed($reliefPackage->getId(),
-                $beneficiaryId, $idNumber) : $distributeReliefPackageOutputType->addPartiallyDistributed($reliefPackage->getId(), $beneficiaryId,
-                $idNumber);
-        } catch (\Throwable $ex) {
+            $reliefPackage->isFullyDistributed() ? $distributeReliefPackageOutputType->addSuccessfullyDistributed(
+                $reliefPackage->getId(),
+                $beneficiaryId,
+                $idNumber
+            ) : $distributeReliefPackageOutputType->addPartiallyDistributed(
+                $reliefPackage->getId(),
+                $beneficiaryId,
+                $idNumber
+            );
+        } catch (Throwable $ex) {
             $distributeReliefPackageOutputType->addFailed($reliefPackage->getId(), $ex->getMessage());
             $this->logger->error($ex->getMessage());
         } finally {
             return ['amount' => $amount, 'output' => $distributeReliefPackageOutputType];
         }
-
     }
 
     private function startReliefPackageDistributionWorkflow(ReliefPackage $reliefPackage, User $distributor)
@@ -226,7 +238,5 @@ class AssistanceDistributionService
             $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
         }
         $this->reliefPackageRepository->save($reliefPackage);
-
     }
-
 }

@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\ImportDuplicityState;
 
-class ImportDuplicityStateEnum extends \DBAL\AbstractEnum
+class ImportDuplicityStateEnum extends AbstractEnum
 {
     public function getName(): string
     {

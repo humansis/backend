@@ -18,7 +18,7 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
 
         foreach ($filter as $key => $value) {
             if (!property_exists($this, $key)) {
-                throw new BadRequestHttpException($key.' is not valid filter name');
+                throw new BadRequestHttpException($key . ' is not valid filter name');
             }
 
             $value = $this->recursiveNormalize($value);
@@ -48,8 +48,7 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
             foreach ($value as $i => $v) {
                 $value[$i] = $this->recursiveNormalize($v);
             }
-        } 
-        elseif (is_numeric($value) && !is_int($value)) {
+        } elseif (is_numeric($value) && !is_int($value)) {
             if (strlen($value) > 1 && 0 === strpos($value, '0')) {
                 // no transformation for "numbers" like "007"
             } elseif (ctype_digit($value)) {

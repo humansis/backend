@@ -28,7 +28,6 @@ class Profile
      */
     private $photo;
 
-
     /**
      * Get id.
      *

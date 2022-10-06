@@ -2,6 +2,9 @@
 
 namespace Repository;
 
+use DateTimeInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
@@ -23,13 +26,11 @@ class SmartcardRepository extends EntityRepository
             ->orderBy('s.disabledAt', 'desc')
             ->orderBy('s.createdAt', 'desc')
             ->orderBy('s.id', 'desc')
-            ->setMaxResults(1)
-        ;
+            ->setMaxResults(1);
         if (null !== $beneficiary) {
             $qb
                 ->andWhere('s.beneficiary = :beneficiary')
-                ->setParameter('beneficiary', $beneficiary)
-                ;
+                ->setParameter('beneficiary', $beneficiary);
         } else {
             $qb->andWhere('s.beneficiary IS NULL');
         }
@@ -41,7 +42,7 @@ class SmartcardRepository extends EntityRepository
         }
     }
 
-    public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?\DateTimeInterface $timeOfEvent = null): void
+    public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?DateTimeInterface $timeOfEvent = null): void
     {
         $this->createQueryBuilder('s')
             ->update()
@@ -105,8 +106,8 @@ class SmartcardRepository extends EntityRepository
      * @param Smartcard $smartcard
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function save(Smartcard $smartcard): void
     {

@@ -49,9 +49,9 @@ class Address
     private $location;
 
     /**
-     * @param string|null   $street
-     * @param string|null   $number
-     * @param string|null   $postCode
+     * @param string|null $street
+     * @param string|null $number
+     * @param string|null $postCode
      * @param Location|null $location
      *
      * @return self
@@ -63,6 +63,7 @@ class Address
             ->setStreet($street)
             ->setPostcode($postCode)
             ->setLocation($location);
+
         return $address;
     }
 
@@ -73,6 +74,7 @@ class Address
             ->setStreet($addressArray['street'])
             ->setPostcode($addressArray['postcode'])
             ->setLocation($location);
+
         return $address;
     }
 
@@ -158,8 +160,7 @@ class Address
         return $this->postcode;
     }
 
-
-     /**
+    /**
      * Set location.
      *
      * @param \Entity\Location|null $location
@@ -185,12 +186,19 @@ class Address
 
     public function equals(self $address): bool
     {
-        if ($address->number !== $this->number) return false;
-        if ($address->street !== $this->street) return false;
-        if ($address->postcode !== $this->postcode) return false;
-        if ($address->location !== $this->location) return false;
+        if ($address->number !== $this->number) {
+            return false;
+        }
+        if ($address->street !== $this->street) {
+            return false;
+        }
+        if ($address->postcode !== $this->postcode) {
+            return false;
+        }
+        if ($address->location !== $this->location) {
+            return false;
+        }
+
         return true;
     }
-
-
 }

@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\FilterFragment;
+
 use Enum\SourceType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,7 +22,7 @@ trait GenericStateFilterTrait
      */
     protected $states;
 
-    protected abstract function availableStates(): array;
+    abstract protected function availableStates(): array;
 
     public function hasStates(): bool
     {

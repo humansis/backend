@@ -45,10 +45,10 @@ use Utils\ValueGenerator\ValueGenerator;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
-    const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
-    const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
-    const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
+    public const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
+    public const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
+    public const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
+    public const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
 
     private $kernel;
 
@@ -86,14 +86,14 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private $assistanceRepository;
 
     public function __construct(
-        Kernel                 $kernel,
-        Countries              $countries,
-        AssistanceFactory      $assistanceFactory,
-        LocationRepository     $locationRepository,
-        InstitutionRepository  $institutionRepository,
-        CommunityRepository    $communityRepository,
-        ProjectRepository      $projectRepository,
-        AssistanceRepository   $assistanceRepository
+        Kernel $kernel,
+        Countries $countries,
+        AssistanceFactory $assistanceFactory,
+        LocationRepository $locationRepository,
+        InstitutionRepository $institutionRepository,
+        CommunityRepository $communityRepository,
+        ProjectRepository $projectRepository,
+        AssistanceRepository $assistanceRepository
     ) {
         $this->kernel = $kernel;
         $this->countries = $countries;
@@ -131,7 +131,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
         $projects = $this->projectRepository->findAll();
         foreach ($projects as $project) {
-            echo $project->getName()." ";
+            echo $project->getName() . " ";
             $country = $this->countries->getCountry($project->getCountryIso3());
             $this->loadCommonIndividualAssistance($country, $project);
             $this->loadCommonHouseholdAssistance($country, $project);
@@ -199,7 +199,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $assistanceInput->addSelectionCriterion($this->buildSelectionCriteriaInputType());
             $assistance = $this->assistanceFactory->create($assistanceInput);
             $this->assistanceRepository->save($assistance);
-            echo "Bx".count($assistance->getBeneficiaries());
+            echo "Bx" . count($assistance->getBeneficiaries());
         }
     }
 
@@ -229,7 +229,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
             $assistance = $this->assistanceFactory->create($assistanceInput);
             $this->assistanceRepository->save($assistance);
-            echo "Hx".count($assistance->getBeneficiaries());
+            echo "Hx" . count($assistance->getBeneficiaries());
         }
     }
 
@@ -260,7 +260,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $assistanceInput->addCommodity($commodity);
             $assistance = $this->assistanceFactory->create($assistanceInput);
             $this->assistanceRepository->save($assistance);
-            echo "Ix".count($assistance->getBeneficiaries());
+            echo "Ix" . count($assistance->getBeneficiaries());
         }
     }
 
@@ -291,12 +291,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             $assistanceInput->addCommodity($commodity);
             $assistance = $this->assistanceFactory->create($assistanceInput);
             $this->assistanceRepository->save($assistance);
-            echo "Cx".count($assistance->getBeneficiaries());
+            echo "Cx" . count($assistance->getBeneficiaries());
         }
     }
 
     /**
-     * @param Project     $project
+     * @param Project $project
      * @param string|null $currency
      *
      * @return Assistance
@@ -327,7 +327,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
 
     /**
      * @param Assistance $assistance
-     * @param User       $user
+     * @param User $user
      *
      * @return void
      */

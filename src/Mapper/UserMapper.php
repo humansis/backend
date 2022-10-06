@@ -4,6 +4,7 @@ namespace Mapper;
 
 use Component\Country\Countries;
 use Component\Country\Country;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Project;
 use Repository\ProjectRepository;
@@ -47,7 +48,7 @@ class UserMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.User::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . User::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -77,9 +78,11 @@ class UserMapper implements MapperInterface
 
     public function getCountries(): array
     {
-        return array_values(array_map(function (UserCountry $item) {
-            return $item->getCountryIso3();
-        }, $this->object->getCountries()->toArray()));
+        return array_values(
+            array_map(function (UserCountry $item) {
+                return $item->getCountryIso3();
+            }, $this->object->getCountries()->toArray())
+        );
     }
 
     public function getLanguage(): ?string
@@ -94,9 +97,11 @@ class UserMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        return array_values(array_map(function (UserProject $item) {
-            return $item->getProject()->getId();
-        }, $this->object->getProjects()->toArray()));
+        return array_values(
+            array_map(function (UserProject $item) {
+                return $item->getProject()->getId();
+            }, $this->object->getProjects()->toArray())
+        );
     }
 
     public function getChangePassword(): bool

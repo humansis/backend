@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance\DTO;
 
@@ -19,7 +21,7 @@ class DivisionSummary
 
     /**
      * @param string|null $division
-     * @param Collection  $divisionGroups
+     * @param Collection $divisionGroups
      */
     public function __construct(?string $division, Collection $divisionGroups)
     {

@@ -50,9 +50,9 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/organizations/{id}")
      *
-     * @param Organization                $organization
+     * @param Organization $organization
      * @param OrganizationUpdateInputType $inputType
-     * @param OrganizationService         $organizationService
+     * @param OrganizationService $organizationService
      *
      * @return JsonResponse
      */
@@ -66,7 +66,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations")
      *
-     * @param Pagination             $pagination
+     * @param Pagination $pagination
      * @param OrganizationRepository $organizationRepository
      *
      * @return JsonResponse
@@ -81,15 +81,15 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations/{id}/services")
      *
-     * @param Organization                   $organization
-     * @param Pagination                     $pagination
+     * @param Organization $organization
+     * @param Pagination $pagination
      * @param OrganizationServicesRepository $organizationServicesRepository
      *
      * @return JsonResponse
      */
     public function listServices(
-        Organization                   $organization,
-        Pagination                     $pagination,
+        Organization $organization,
+        Pagination $pagination,
         OrganizationServicesRepository $organizationServicesRepository
     ): JsonResponse {
         $organizationServices = $organizationServicesRepository->findByOrganization($organization, $pagination);
@@ -100,9 +100,9 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/organizations/services/{id}")
      *
-     * @param Request              $request
+     * @param Request $request
      * @param OrganizationServices $organizationServices
-     * @param OrganizationService  $organizationService
+     * @param OrganizationService $organizationService
      *
      * @return JsonResponse
      */
@@ -122,8 +122,8 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/organizations/{id}/images")
      *
-     * @param Organization           $organization
-     * @param Request                $request
+     * @param Organization $organization
+     * @param Request $request
      * @param OrganizationRepository $organizationRepository
      *
      * @return JsonResponse
@@ -147,5 +147,4 @@ class OrganizationController extends AbstractController
 
         return $this->json(['url' => $url]);
     }
-
 }

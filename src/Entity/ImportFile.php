@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity;
 
@@ -27,7 +29,7 @@ class ImportFile
     private $filename;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="is_loaded", type="boolean")
      */
@@ -230,5 +232,4 @@ class ImportFile
     {
         $this->structureViolations = $structureViolations;
     }
-
 }

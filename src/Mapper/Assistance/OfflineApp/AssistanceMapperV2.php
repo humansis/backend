@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\OfflineApp;
 
+use DateTimeInterface;
 use Entity\Assistance;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class AssistanceMapperV2 implements MapperInterface
@@ -31,7 +34,7 @@ class AssistanceMapperV2 implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Assistance::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -46,12 +49,12 @@ class AssistanceMapperV2 implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format(\DateTimeInterface::ATOM);
+        return $this->object->getDateDistribution()->format(DateTimeInterface::ATOM);
     }
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(\DateTimeInterface::ATOM) : null;
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(DateTimeInterface::ATOM) : null;
     }
 
     public function getTargetType(): string

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
@@ -17,13 +18,11 @@ use Utils\Objects\PropertySetter;
  */
 class ScoringBlueprint
 {
-
     use StandardizedPrimaryKey;
     use CreatedAt;
     use CreatedBy;
     use CountryDependent;
     use PropertySetter;
-
 
     /**
      * @var string
@@ -111,6 +110,7 @@ class ScoringBlueprint
         stream_copy_to_stream($this->getContent(), $cache);
         rewind($cache);
         rewind($this->content);
+
         return $cache;
     }
 
@@ -121,15 +121,7 @@ class ScoringBlueprint
     public function setContent($content): ScoringBlueprint
     {
         $this->content = $content;
+
         return $this;
     }
-
-
-
-
-
-
-
-
-
 }

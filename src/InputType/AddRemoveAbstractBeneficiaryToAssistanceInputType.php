@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -33,8 +34,7 @@ class AddRemoveAbstractBeneficiaryToAssistanceInputType implements InputTypeInte
     {
         if ($object->getAdded() !== true && $object->getRemoved() !== true) {
             $context->buildViolation('One of added/removed attributes must be set.')
-                ->addViolation()
-            ;
+                ->addViolation();
         }
     }
 

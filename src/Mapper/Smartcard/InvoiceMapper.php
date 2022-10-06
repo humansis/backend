@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Smartcard;
 
+use DateTimeInterface;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Invoice;
 
@@ -29,7 +33,7 @@ class InvoiceMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Invoice::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Invoice::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -64,6 +68,6 @@ class InvoiceMapper implements MapperInterface
 
     public function getDate(): string
     {
-        return $this->object->getInvoicedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getInvoicedAt()->format(DateTimeInterface::ISO8601);
     }
 }

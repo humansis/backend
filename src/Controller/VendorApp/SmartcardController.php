@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\SmartcardPurchaseInputType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,7 +22,7 @@ class SmartcardController extends AbstractVendorAppController
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function beneficiaries(Request $request): Response
     {
@@ -31,7 +33,7 @@ class SmartcardController extends AbstractVendorAppController
 
         //TODO remove after syncs for purchases will be implemented
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors).' data: '.json_encode($request->request->all()));
+            $this->container->get('logger')->error('validation errors: ' . ((string) $errors) . ' data: ' . json_encode($request->request->all()));
 
             $this->writeData(
                 'purchaseV3',
@@ -39,12 +41,13 @@ class SmartcardController extends AbstractVendorAppController
                 $request->get('serialNumber', 'missing'),
                 json_encode($request->request->all())
             );
+
             return new Response();
         }
 
         try {
             $purchase = $this->get('smartcard_service')->purchase($request->get('serialNumber'), $data);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->writeData(
                 'purchaseV3',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
@@ -61,8 +64,8 @@ class SmartcardController extends AbstractVendorAppController
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
     {
-        $filename = $this->get('kernel')->getLogDir().'/';
-        $filename .= implode('_', ['SC-invalidData', $type, 'vendor-'.$user, 'sc-'.$smartcard.'.json']);
+        $filename = $this->get('kernel')->getLogDir() . '/';
+        $filename .= implode('_', ['SC-invalidData', $type, 'vendor-' . $user, 'sc-' . $smartcard . '.json']);
         $logFile = fopen($filename, "a+");
         fwrite($logFile, $data);
         fclose($logFile);

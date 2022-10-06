@@ -112,7 +112,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 [
                     'countrySpecificId' => 1,
                     'answer' => '2',
-                ]
+                ],
             ],
             'residenceAddress' => [
                 'number' => 'string',
@@ -143,15 +143,15 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
-        ],[], [
-            'HTTP_COUNTRY' => $location->getCountryISO3()
+        ], [], [
+            'HTTP_COUNTRY' => $location->getCountryISO3(),
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -209,7 +209,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             }
         }
 
-        $this->request('PUT', '/api/basic/web-app/v1/households/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/households/' . $id, [
             'livelihood' => Livelihood::FARMING_AGRICULTURE,
             'assets' => ['1', '2'],
             'shelterStatus' => '1',
@@ -311,13 +311,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
                 'type' => 'Landline',
                 'proxy' => true,
             ],
-        ], [], [ 'HTTP_COUNTRY' => $location->getCountryISO3() ]);
+        ], [], ['HTTP_COUNTRY' => $location->getCountryISO3()]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -363,13 +363,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -419,7 +419,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -431,7 +431,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/households/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/households/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -443,7 +443,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/households/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/households/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -456,15 +456,15 @@ class HouseholdControllerTest extends BMSServiceTestCase
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
-        $household = $em->getRepository(Household::class)->findOneBy([], ['id'=>'desc']);
+        $household = $em->getRepository(Household::class)->findOneBy([], ['id' => 'desc']);
 
-        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$project->getId().'/households', [
+        $this->request('PUT', '/api/basic/web-app/v1/projects/' . $project->getId() . '/households', [
             'householdIds' => [$household->getId()],
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 }

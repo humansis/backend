@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Deprecated;
@@ -13,6 +14,7 @@ class NationalIdType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     private $type;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")

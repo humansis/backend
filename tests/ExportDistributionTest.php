@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Exception;
 use Utils\ExportService;
 use Entity\Assistance;
 use Tests\BMSServiceTestCase;
@@ -16,7 +17,8 @@ class ExportDistributionTest extends BMSServiceTestCase
     /**
      * Test export distribution
      * expectedDistribution.csv is a file to test the export distribution service
-     * @throws \Exception
+     *
+     * @throws Exception
      */
     public function testExportDistribution()
     {

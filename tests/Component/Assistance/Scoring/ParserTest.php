@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
@@ -28,7 +29,7 @@ class ParserTest extends KernelTestCase
 
     public function testParseAllSupportedCalculation()
     {
-        $csvPath = $this->projectDir .'/tests/Resources/Scoring/all_supported_calculation.csv';
+        $csvPath = $this->projectDir . '/tests/Resources/Scoring/all_supported_calculation.csv';
 
         /** @var ScoringRule[] $scoringRules */
         $scoringRules = $this->parser->parse($csvPath);
@@ -50,7 +51,7 @@ class ParserTest extends KernelTestCase
 
     public function testParseCountrySpecific()
     {
-        $csvPath = $this->projectDir .'/tests/Resources/Scoring/single_country_specific.csv';
+        $csvPath = $this->projectDir . '/tests/Resources/Scoring/single_country_specific.csv';
 
         /** @var ScoringRule[] $scoringRules */
         $scoringRules = $this->parser->parse($csvPath);

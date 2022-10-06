@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
@@ -10,8 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class IsBase64Validator extends ConstraintValidator
 {
-
-    const BASE64_REGEXP = "/^[a-zA-Z0-9\/\r\n+]*={0,2}$/";
+    public const BASE64_REGEXP = "/^[a-zA-Z0-9\/\r\n+]*={0,2}$/";
 
     /**
      * {@inheritdoc}

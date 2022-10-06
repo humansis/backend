@@ -22,7 +22,7 @@ class ModalityCodelistControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment(' [{"code": "*", "value": "*"}]', $this->client->getResponse()->getContent());
     }

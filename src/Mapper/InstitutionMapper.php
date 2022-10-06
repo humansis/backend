@@ -3,6 +3,7 @@
 namespace Mapper;
 
 use Entity\Institution;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class InstitutionMapper implements MapperInterface
@@ -26,7 +27,7 @@ class InstitutionMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Institution::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Institution::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -36,9 +37,11 @@ class InstitutionMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getProjects()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getProjects()->toArray())
+        );
     }
 
     public function getLongitude(): ?string

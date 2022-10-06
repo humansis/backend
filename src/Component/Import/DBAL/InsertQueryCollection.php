@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import\DBAL;
@@ -39,7 +40,7 @@ class InsertQueryCollection
 
     private function save()
     {
-        $sql = 'INSERT INTO `import_queue`(`import_id`, `file_id`, `content`, `state`) VALUES '.substr(str_repeat('(?,?,?,?),', $this->counter), 0, -1);
+        $sql = 'INSERT INTO `import_queue`(`import_id`, `file_id`, `content`, `state`) VALUES ' . substr(str_repeat('(?,?,?,?),', $this->counter), 0, -1);
 
         $this->em->getConnection()->executeQuery($sql, $this->params);
 

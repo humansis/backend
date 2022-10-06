@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Exception;
 
+use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
-class NotUniqueException extends \RuntimeException implements ConstraintViolationInterface
+class NotUniqueException extends RuntimeException implements ConstraintViolationInterface
 {
     protected $value;
 

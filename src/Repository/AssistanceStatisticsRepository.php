@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -14,7 +15,7 @@ use InputType\AssistanceStatisticsFilterInputType;
 class AssistanceStatisticsRepository extends EntityRepository
 {
     /**
-     * @param Assistance  $assistance
+     * @param Assistance $assistance
      * @param string|null $countryIso3
      *
      * @return AssistanceStatistics
@@ -27,7 +28,7 @@ class AssistanceStatisticsRepository extends EntityRepository
             ->andWhere('stat.assistance = :assistance')
             ->setParameter('assistance', $assistance);
 
-        if($countryIso3){
+        if ($countryIso3) {
             $qb->join('stat.assistance', 'a')
                 ->join('a.project', 'p')
                 ->andWhere('p.countryIso3 = :iso3')
@@ -40,7 +41,7 @@ class AssistanceStatisticsRepository extends EntityRepository
     }
 
     /**
-     * @param string                              $countryIso3
+     * @param string $countryIso3
      * @param AssistanceStatisticsFilterInputType $filter
      *
      * @return AssistanceStatistics[]|Paginator
@@ -61,6 +62,5 @@ class AssistanceStatisticsRepository extends EntityRepository
         }
 
         return $qbr->getQuery()->getResult();
-
     }
 }

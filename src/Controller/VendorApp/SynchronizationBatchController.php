@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\VendorApp;
@@ -9,7 +10,7 @@ use Entity\SynchronizationBatch;
 use Enum\SourceType;
 use Enum\SynchronizationBatchValidationType;
 use Symfony\Component\HttpFoundation\Request;
-use InputType\SynchronizationBatch AS API;
+use InputType\SynchronizationBatch as API;
 use Symfony\Component\HttpFoundation\Response;
 
 class SynchronizationBatchController extends AbstractVendorAppController
@@ -17,7 +18,7 @@ class SynchronizationBatchController extends AbstractVendorAppController
     /**
      * @Rest\Post("/vendor-app/v1/syncs/deposit")
      *
-     * @param Request                    $request
+     * @param Request $request
      *
      * @return Response
      */
@@ -33,6 +34,7 @@ class SynchronizationBatchController extends AbstractVendorAppController
 
         $response = new Response();
         $response->setStatusCode(Response::HTTP_NO_CONTENT);
+
         return $response;
     }
 }

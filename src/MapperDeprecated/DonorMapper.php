@@ -14,6 +14,7 @@ class DonorMapper
         if (!$donor) {
             return null;
         }
+
         return [
             'id' => $donor->getId(),
             'fullname' => $donor->getFullname(),

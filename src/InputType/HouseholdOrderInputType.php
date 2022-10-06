@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -7,14 +8,14 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class HouseholdOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_NATIONAL_ID = 'nationalId';
-    const SORT_BY_VULNERABILITIES = 'vulnerabilities';
-    const SORT_BY_PROJECTS = 'projects';
-    const SORT_BY_DEPENDENTS = 'dependents';
-    const SORT_BY_LOCAL_FIRST_NAME = 'localFirstName';
-    const SORT_BY_LOCAL_FAMILY_NAME = 'localFamilyName';
-    const SORT_BY_CURRENT_HOUSEHOLD_LOCATION = 'currentHouseholdLocation';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_NATIONAL_ID = 'nationalId';
+    public const SORT_BY_VULNERABILITIES = 'vulnerabilities';
+    public const SORT_BY_PROJECTS = 'projects';
+    public const SORT_BY_DEPENDENTS = 'dependents';
+    public const SORT_BY_LOCAL_FIRST_NAME = 'localFirstName';
+    public const SORT_BY_LOCAL_FAMILY_NAME = 'localFamilyName';
+    public const SORT_BY_CURRENT_HOUSEHOLD_LOCATION = 'currentHouseholdLocation';
 
     protected function getValidNames(): array
     {

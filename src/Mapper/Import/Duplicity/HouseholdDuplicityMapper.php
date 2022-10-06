@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Import\Duplicity;
 
@@ -6,19 +8,22 @@ use Component\Import\Finishing\HouseholdDecoratorBuilder;
 use Component\Import\Integrity\ImportLineFactory;
 use Component\Import\ValueObject\HouseholdCompare;
 use Entity\ImportHouseholdDuplicity;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class HouseholdDuplicityMapper implements MapperInterface
 {
     /** @var ImportHouseholdDuplicity */
     private $object;
+
     /** @var ImportLineFactory */
     private $importLineFactory;
+
     /** @var HouseholdDecoratorBuilder */
     private $decoratorBuilder;
 
     /**
-     * @param ImportLineFactory         $importLineFactory
+     * @param ImportLineFactory $importLineFactory
      * @param HouseholdDecoratorBuilder $decoratorBuilder
      */
     public function __construct(ImportLineFactory $importLineFactory, HouseholdDecoratorBuilder $decoratorBuilder)
@@ -46,7 +51,7 @@ class HouseholdDuplicityMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportHouseholdDuplicity::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportHouseholdDuplicity::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -89,7 +94,8 @@ class HouseholdDuplicityMapper implements MapperInterface
         foreach ($this->object->getTheirs()->getBeneficiaries() as $missingBeneficiary) {
             yield [
                 'id' => $missingBeneficiary->getId(),
-                'name' => sprintf('%s %s',
+                'name' => sprintf(
+                    '%s %s',
                     $missingBeneficiary->getPerson()->getLocalGivenName() ?: $missingBeneficiary->getPerson()->getEnGivenName(),
                     $missingBeneficiary->getPerson()->getLocalFamilyName() ?: $missingBeneficiary->getPerson()->getEnFamilyName()
                 ),
@@ -100,9 +106,8 @@ class HouseholdDuplicityMapper implements MapperInterface
     public function getAddedBeneficiaries(): iterable
     {
         $importLines = $this->importLineFactory->createAll($this->object->getOurs());
-        foreach($importLines as $index => $importLine){
-            yield $index => $importLine->localGivenName.' '.$importLine->localFamilyName;
+        foreach ($importLines as $index => $importLine) {
+            yield $index => $importLine->localGivenName . ' ' . $importLine->localFamilyName;
         }
     }
-
 }

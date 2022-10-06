@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\AbstractBeneficiary;
 use Entity\Location;
 use Entity\Assistance;
@@ -99,14 +101,14 @@ class PurchasedItem
     private $modalityType;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
      */
     private $dateDistribution;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="date_purchase", type="datetime")
      */
@@ -152,7 +154,6 @@ class PurchasedItem
     {
         return $this->location;
     }
-
 
     /**
      * @return AbstractBeneficiary
@@ -219,17 +220,17 @@ class PurchasedItem
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDateDistribution(): ?\DateTimeInterface
+    public function getDateDistribution(): ?DateTimeInterface
     {
         return $this->dateDistribution;
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDatePurchase(): \DateTimeInterface
+    public function getDatePurchase(): DateTimeInterface
     {
         return $this->datePurchase;
     }
@@ -257,5 +258,4 @@ class PurchasedItem
     {
         return $this->currency;
     }
-
 }

@@ -26,9 +26,10 @@ class ProjectControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[{
+        $this->assertJsonFragment(
+            '[{
             "id": "*",
             "name": "*",
             "internalId": "*",
@@ -40,6 +41,8 @@ class ProjectControllerTest extends BMSServiceTestCase
             "sectors": "*",
             "donorIds": "*",
             "numberOfHouseholds": "*"
-         }]', $this->client->getResponse()->getContent());
+         }]',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

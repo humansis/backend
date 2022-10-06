@@ -2,6 +2,7 @@
 
 namespace Utils;
 
+use InvalidArgumentException;
 use Utils\ExcelColumnsGenerator;
 use Exception\ExportNoDataException;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
@@ -15,20 +16,20 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
  */
 class ExportService
 {
-    const FORMAT_CSV = 'csv';
-    const FORMAT_XLSX = 'xlsx';
-    const FORMAT_ODS = 'ods';
+    public const FORMAT_CSV = 'csv';
+    public const FORMAT_XLSX = 'xlsx';
+    public const FORMAT_ODS = 'ods';
 
     /**
      * Generate file.
      *
      * @param Spreadsheet $spreadsheet
-     * @param string      $name
-     * @param string      $type
+     * @param string $name
+     * @param string $type
      *
      * @return string $filename
      *
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function generateFile(Spreadsheet $spreadsheet, string $name, string $type): string
@@ -38,15 +39,15 @@ class ExportService
             $writer->setEnclosure('');
             $writer->setDelimiter(';');
             $writer->setUseBOM(true);
-            $filename = $name.'.csv';
+            $filename = $name . '.csv';
         } elseif (self::FORMAT_XLSX == $type) {
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-            $filename = $name.'.xlsx';
+            $filename = $name . '.xlsx';
         } elseif (self::FORMAT_ODS == $type) {
             $writer = IOFactory::createWriter($spreadsheet, 'Ods');
-            $filename = $name.'.ods';
+            $filename = $name . '.ods';
         } else {
-            return 'An error occured with the type file: '.$type;
+            return 'An error occured with the type file: ' . $type;
         }
 
         $writer->save($filename);
@@ -60,8 +61,8 @@ class ExportService
      * @param        $exportableTable
      * @param string $name
      * @param string $type
-     * @param bool   $headerDown
-     * @param bool   $headerBold
+     * @param bool $headerDown
+     * @param bool $headerBold
      *
      * @return string $filename
      *
@@ -86,7 +87,7 @@ class ExportService
     }
 
     /**
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
     public function generateSpreadsheet($tableData, bool $headerDown = true, bool $headerBold = false): Spreadsheet
     {
@@ -117,21 +118,21 @@ class ExportService
     {
         $generator->reset();
         foreach ($tableHeaders as $value) {
-            $cellCoords = $generator->getNext().$rowIndex;
+            $cellCoords = $generator->getNext() . $rowIndex;
             $worksheet->setCellValue($cellCoords, $value);
             $worksheet->getStyle($cellCoords)->getFont()->setBold($headerBold);
         }
     }
 
     /**
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception
      */
     private function generateData($worksheet, $tableHeaders, $generator, &$rowIndex, $rows)
     {
         foreach ($rows as $value) {
             $generator->reset();
             foreach ($tableHeaders as $header) {
-                $cellCoords = $generator->getNext().$rowIndex;
+                $cellCoords = $generator->getNext() . $rowIndex;
                 /**
                  * @var Cell $cell
                  */
@@ -141,7 +142,7 @@ class ExportService
                 if ($dataToWrite instanceof Hyperlink) {
                     $url = $dataToWrite->getUrl();
                     $toolTip = $dataToWrite->getTooltip();
-                    $cell->setValue('=Hyperlink("'.$url.'","'.$toolTip.'")');
+                    $cell->setValue('=Hyperlink("' . $url . '","' . $toolTip . '")');
                 } else {
                     $cell->setValue($dataToWrite);
                 }
@@ -165,7 +166,7 @@ class ExportService
             } elseif (is_array($value)) {
                 $normalizedTable[] = $value;
             } else {
-                throw new \InvalidArgumentException("The table to export contains a not allowed content ($value). Allowed content: array, ".ExportableInterface::class);
+                throw new InvalidArgumentException("The table to export contains a not allowed content ($value). Allowed content: array, " . ExportableInterface::class);
             }
         }
 

@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ScoringPatchInputType implements InputTypeInterface
 {
-
     use PropertyList;
 
     /**
@@ -66,12 +65,4 @@ class ScoringPatchInputType implements InputTypeInterface
 
         return $this;
     }
-
-
-
-
-
-
-
-
 }

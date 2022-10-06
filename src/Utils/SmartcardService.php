@@ -1,7 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils;
 
+use DateTime;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use DateTimeInterface;
 use Entity\AssistanceBeneficiary;
@@ -18,6 +24,8 @@ use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardPurchaseInputType;
 use Entity\Project;
 use InputType\Smartcard\UpdateSmartcardInputType;
+use InvalidArgumentException;
+use LogicException;
 use Repository\BeneficiaryRepository;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -63,12 +71,12 @@ class SmartcardService
     private $projectRepository;
 
     public function __construct(
-        EntityManager               $em,
-        PurchaseService             $purchaseService,
-        SmartcardRepository         $smartcardRepository,
+        EntityManager $em,
+        PurchaseService $purchaseService,
+        SmartcardRepository $smartcardRepository,
         SmartcardPurchaseRepository $smartcardPurchaseRepository,
-        BeneficiaryRepository       $beneficiaryRepository,
-        ProjectRepository           $projectRepository
+        BeneficiaryRepository $beneficiaryRepository,
+        ProjectRepository $projectRepository
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
@@ -79,14 +87,14 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard                $smartcard
+     * @param Smartcard $smartcard
      * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
      * @return void
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
     {
@@ -96,8 +104,11 @@ class SmartcardService
 
         if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
             if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
-                throw new SmartcardNotAllowedStateTransition($smartcard, $changeSmartcardInputType->getState(),
-                    "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}.");
+                throw new SmartcardNotAllowedStateTransition(
+                    $smartcard,
+                    $changeSmartcardInputType->getState(),
+                    "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}."
+                );
             }
             $smartcard->setState($changeSmartcardInputType->getState());
             $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
@@ -106,32 +117,36 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard                $smartcard
+     * @param Smartcard $smartcard
      * @param UpdateSmartcardInputType $updateSmartcardInputType
      *
      * @return Smartcard
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function update(Smartcard $smartcard, UpdateSmartcardInputType $updateSmartcardInputType): Smartcard
     {
         if ($smartcard->getState() !== $updateSmartcardInputType->getState()) {
             if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $updateSmartcardInputType->getState())) {
-                throw new SmartcardNotAllowedStateTransition($smartcard, $updateSmartcardInputType->getState(),
-                    "Not allowed transition from state {$smartcard->getState()} to {$updateSmartcardInputType->getState()}.");
+                throw new SmartcardNotAllowedStateTransition(
+                    $smartcard,
+                    $updateSmartcardInputType->getState(),
+                    "Not allowed transition from state {$smartcard->getState()} to {$updateSmartcardInputType->getState()}."
+                );
             }
-            if($updateSmartcardInputType->getState() === SmartcardStates::INACTIVE){
+            if ($updateSmartcardInputType->getState() === SmartcardStates::INACTIVE) {
                 $smartcard->setDisabledAt($updateSmartcardInputType->getCreatedAt());
             }
-            if ($smartcard->isSuspicious() !== $updateSmartcardInputType->isSuspicious()){
-                $smartcard->setSuspicious($updateSmartcardInputType->isSuspicious(),$updateSmartcardInputType->getSuspiciousReason());
+            if ($smartcard->isSuspicious() !== $updateSmartcardInputType->isSuspicious()) {
+                $smartcard->setSuspicious($updateSmartcardInputType->isSuspicious(), $updateSmartcardInputType->getSuspiciousReason());
             }
             $smartcard->setState($updateSmartcardInputType->getState());
             $smartcard->setChangedAt($updateSmartcardInputType->getCreatedAt());
             $this->smartcardRepository->save($smartcard);
         }
+
         return $smartcard;
     }
 
@@ -140,8 +155,8 @@ class SmartcardService
      *
      * @return Smartcard
      * @throws SmartcardDoubledRegistrationException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function register(SmartcardRegisterInputType $registerInputType): Smartcard
     {
@@ -164,7 +179,7 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard         $smartcard
+     * @param Smartcard $smartcard
      * @param DateTimeInterface $registrationDateTime
      *
      * @return void
@@ -185,13 +200,13 @@ class SmartcardService
      * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
      *
      * @return SmartcardPurchase
-     * @throws \Doctrine\ORM\EntityNotFoundException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws EntityNotFoundException
+     * @throws ORMException
      */
     public function purchase(string $serialNumber, $data): SmartcardPurchase
     {
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
-            throw new \InvalidArgumentException('Argument 2 must be of type '.SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
+            throw new InvalidArgumentException('Argument 2 must be of type ' . SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
         }
         $beneficiary = $this->beneficiaryRepository->findOneBy([
             'id' => $data->getBeneficiaryId(),
@@ -202,6 +217,7 @@ class SmartcardService
         }
         $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $data->getCreatedAt());
         $this->em->persist($smartcard);
+
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
@@ -209,18 +225,22 @@ class SmartcardService
     {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
-        if ($smartcard
+        if (
+            $smartcard
             && $smartcard->getBeneficiary()
             && $smartcard->getBeneficiary()->getId() === $beneficiary->getId()
         ) {
             $eventWasBeforeDisable = $smartcard->getDisabledAt()
                 && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
 
-            if (SmartcardStates::ACTIVE === $smartcard->getState()
-                || $eventWasBeforeDisable) {
+            if (
+                SmartcardStates::ACTIVE === $smartcard->getState()
+                || $eventWasBeforeDisable
+            ) {
                 return $smartcard;
-            }else {
+            } else {
                 $smartcard->setSuspicious(true, "Using disabled card");
+
                 return $smartcard;
             }
         }
@@ -232,6 +252,7 @@ class SmartcardService
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setSuspicious(true, "Smartcard made adhoc");
         $this->em->persist($smartcard);
+
         return $smartcard;
     }
 
@@ -241,46 +262,48 @@ class SmartcardService
     }
 
     /**
-     * @param Vendor               $vendor
+     * @param Vendor $vendor
      * @param RedemptionBatchInput $inputBatch
-     * @param User                 $redeemedBy
+     * @param User $redeemedBy
      *
      * @return Invoice
-     * @throws \InvalidArgumentException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws InvalidArgumentException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
     {
         $purchases = $this->smartcardPurchaseRepository->findBy([
             'id' => $inputBatch->getPurchases(),
-        ], ['id'=>'asc']);
+        ], ['id' => 'asc']);
 
         // purchases validation
         $currency = null;
         $projectId = null;
         foreach ($purchases as $purchase) {
             if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                throw new \InvalidArgumentException("Inconsistent vendor and purchase' #{$purchase->getId()} vendor");
+                throw new InvalidArgumentException("Inconsistent vendor and purchase' #{$purchase->getId()} vendor");
             }
             if (null !== $purchase->getRedeemedAt()) {
-                throw new \InvalidArgumentException("Purchase' #{$purchase->getId()} was already redeemed at ".$purchase->getRedeemedAt()->format('Y-m-d H:i:s'));
+                throw new InvalidArgumentException("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'));
             }
             if (null === $currency) {
                 $currency = $purchase->getCurrency();
             }
             if ($purchase->getCurrency() != $currency) {
-                throw new \InvalidArgumentException("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}");
+                throw new InvalidArgumentException("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}");
             }
             $extractedProjectId = $this->extractPurchaseProjectId($purchase);
             if (null === $extractedProjectId) {
-                throw new \InvalidArgumentException("Purchase #{$purchase->getId()} has no project.");
+                throw new InvalidArgumentException("Purchase #{$purchase->getId()} has no project.");
             }
             if (null === $projectId) {
                 $projectId = $extractedProjectId;
             }
             if ($extractedProjectId !== $projectId) {
-                throw new \InvalidArgumentException("Purchases have inconsistent currencies. Project #$extractedProjectId in Purchase #{$purchase->getId()} is different than project of others: {$projectId}");
+                throw new InvalidArgumentException(
+                    "Purchases have inconsistent currencies. Project #$extractedProjectId in Purchase #{$purchase->getId()} is different than project of others: {$projectId}"
+                );
             }
         }
 
@@ -290,7 +313,7 @@ class SmartcardService
         $redemptionBath = new Invoice(
             $vendor,
             $project,
-            new \DateTime(),
+            new DateTime(),
             $redeemedBy,
             $this->smartcardPurchaseRepository->countPurchasesValue($purchases),
             $currency,
@@ -330,7 +353,7 @@ class SmartcardService
     }
 
     /**
-     * @param array             $deposits
+     * @param array $deposits
      * @param DateTimeInterface $purchaseDate
      *
      * @return SmartcardDeposit
@@ -348,6 +371,7 @@ class SmartcardService
                 return $deposit;
             }
         }
+
         return $deposit;
     }
 
@@ -360,15 +384,15 @@ class SmartcardService
             }
         }
 
-        throw new \LogicException('Unable to find currency for AssistanceBeneficiary #'.$assistanceBeneficiary->getId());
+        throw new LogicException('Unable to find currency for AssistanceBeneficiary #' . $assistanceBeneficiary->getId());
     }
 
     /**
-     * @param Smartcard     $smartcard
+     * @param Smartcard $smartcard
      * @param ReliefPackage $reliefPackage
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function setMissingCurrencyToSmartcardAndPurchases(Smartcard $smartcard, ReliefPackage $reliefPackage)
     {
@@ -378,7 +402,7 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard     $smartcard
+     * @param Smartcard $smartcard
      * @param ReliefPackage $reliefPackage
      *
      * @return void
@@ -394,7 +418,7 @@ class SmartcardService
      * @param Smartcard $smartcard
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
     {
@@ -409,18 +433,19 @@ class SmartcardService
     }
 
     /**
-     * @param string  $smartcardCode
+     * @param string $smartcardCode
      *
      * @retrun Smartcard
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function getSmartcardByCode(string $smartcardCode)
     {
         $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
 
-        if (!$smartcard){
+        if (!$smartcard) {
             throw new NotFoundHttpException("Card with code '{$smartcardCode}' does not exists");
         }
+
         return $smartcard;
     }
 }

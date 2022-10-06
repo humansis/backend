@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
 use Entity\CountrySpecificAnswer;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class CountrySpecificAnswerMapper implements MapperInterface
@@ -30,7 +32,7 @@ class CountrySpecificAnswerMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.CountrySpecificAnswer::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . CountrySpecificAnswer::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int

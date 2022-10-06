@@ -1,9 +1,13 @@
 <?php
 
-
 namespace Utils;
 
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
+use Exception;
+use Exception\CsvParserException;
 use Model\Vulnerability\Resolver as OldResolver;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,11 +20,11 @@ use Entity\Project;
 
 /**
  * Class CriteriaAssistanceService
+ *
  * @package Utils
  */
 class CriteriaAssistanceService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -38,11 +42,12 @@ class CriteriaAssistanceService
 
     /**
      * CriteriaAssistanceService constructor.
-     * @param EntityManagerInterface        $entityManager
-     * @param OldResolver                   $oldResolver
-     * @param ScoringResolver               $resolver
-     * @param ScoringBlueprintRepository    $scoringBlueprintRepository
-     * @throws \Exception
+     *
+     * @param EntityManagerInterface $entityManager
+     * @param OldResolver $oldResolver
+     * @param ScoringResolver $resolver
+     * @param ScoringBlueprintRepository $scoringBlueprintRepository
+     * @throws Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -60,34 +65,35 @@ class CriteriaAssistanceService
 
     /**
      * @param iterable|CriteriaGroup[] $criteriaGroups
-     * @param Project         $project
-     * @param string          $targetType
-     * @param string          $sector
-     * @param string|null     $subsector
-     * @param int             $threshold
-     * @param bool            $isCount
+     * @param Project $project
+     * @param string $targetType
+     * @param string $sector
+     * @param string|null $subsector
+     * @param int $threshold
+     * @param bool $isCount
      *
      * @return array
-     * @throws \Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     *@deprecated replace by new method with type control of incoming criteria objects and country code
+     * @throws CsvParserException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @deprecated replace by new method with type control of incoming criteria objects and country code
      */
     public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, ?int $threshold, bool $isCount, int $scoringBlueprintId = null)
     {
-        if (!in_array($targetType, [
-            AssistanceTargetType::INDIVIDUAL,
-            AssistanceTargetType::HOUSEHOLD,
-        ])) {
-            throw new InvalidArgumentException('Beneficiary list cannot be made by criteria for '.$targetType);
+        if (
+            !in_array($targetType, [
+                AssistanceTargetType::INDIVIDUAL,
+                AssistanceTargetType::HOUSEHOLD,
+            ])
+        ) {
+            throw new InvalidArgumentException('Beneficiary list cannot be made by criteria for ' . $targetType);
         }
 
         $reachedBeneficiaries = [];
         $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getCountryIso3());
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
-        foreach ($criteriaGroups as $group)
-        {
+        foreach ($criteriaGroups as $group) {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
                 ->getDistributionBeneficiaries($group, $project);
 
@@ -116,10 +122,9 @@ class CriteriaAssistanceService
                 }
             }
         }
-        
 
         if ($isCount) {
-            return ['number' =>  count($reachedBeneficiaries)];
+            return ['number' => count($reachedBeneficiaries)];
         } else {
             // !!!! Those are ids, not directly beneficiaries !!!!
             return ['finalArray' => $reachedBeneficiaries];

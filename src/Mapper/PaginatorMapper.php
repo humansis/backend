@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class PaginatorMapper implements MapperInterface
@@ -30,7 +32,7 @@ class PaginatorMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Paginator::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Paginator::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getTotalCount(): int

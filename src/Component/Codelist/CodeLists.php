@@ -15,8 +15,7 @@ class CodeLists
     public static function mapEnum(
         iterable $list,
         ?TranslatorInterface $translator = null
-    )
-    {
+    ) {
         $data = [];
         foreach ($list as $value) {
             $translation = $translator !== null
@@ -32,8 +31,7 @@ class CodeLists
     public static function mapArray(
         iterable $list,
         ?TranslatorInterface $translator = null
-    )
-    {
+    ) {
         $data = [];
         foreach ($list as $key => $value) {
             $translation = $translator !== null

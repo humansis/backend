@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\PersonGender;
 
-class PersonGenderEnum extends \DBAL\AbstractEnum
+class PersonGenderEnum extends AbstractEnum
 {
     use EnumTrait;
 

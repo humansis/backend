@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance;
 
@@ -8,6 +10,7 @@ use Entity\Commodity;
 class CommodityAssignBuilder
 {
     private $fixedValues = [];
+
     private $callbacks = [];
 
     public function addCommodityValue(string $modality, string $unit, float $value): void
@@ -43,6 +46,7 @@ class CommodityAssignBuilder
                 $sum += $callback($target);
             }
         }
+
         return $sum;
     }
 }

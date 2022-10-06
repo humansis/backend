@@ -27,9 +27,10 @@ class TransactionControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": 4,
             "data": [
                {"code": "0", "value": "Failure"},
@@ -37,6 +38,8 @@ class TransactionControllerTest extends BMSServiceTestCase
                {"code": "2", "value": "No Phone"},
                {"code": "3", "value": "Canceled"}
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

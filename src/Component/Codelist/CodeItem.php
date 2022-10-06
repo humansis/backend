@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Codelist;
 
-class CodeItem implements \JsonSerializable
+use JsonSerializable;
+
+class CodeItem implements JsonSerializable
 {
     private $code;
 

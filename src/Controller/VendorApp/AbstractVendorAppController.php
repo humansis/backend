@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\VendorApp;
@@ -12,7 +13,7 @@ class AbstractVendorAppController extends AbstractController
 {
     /**
      * @param       $data
-     * @param int   $status
+     * @param int $status
      * @param array $headers
      * @param array $context
      *

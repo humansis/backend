@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -21,11 +23,12 @@ class BookletController extends AbstractVendorAppController
     {
         try {
             $booklets = $this->get('voucher.booklet_service')->findDeactivated();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('serializer')->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
+
         return new Response($json);
     }
 
@@ -41,7 +44,7 @@ class BookletController extends AbstractVendorAppController
     {
         try {
             $booklets = $this->get('voucher.booklet_service')->findProtected();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
@@ -49,11 +52,12 @@ class BookletController extends AbstractVendorAppController
 
         foreach ($booklets as $booklet) {
             $bookletPasswords[] = [
-                $booklet->getCode() => $booklet->getPassword()
+                $booklet->getCode() => $booklet->getPassword(),
             ];
         }
 
         $json = $this->get('serializer')->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
+
         return new Response($json);
     }
 
@@ -70,8 +74,9 @@ class BookletController extends AbstractVendorAppController
             $data = $request->request->all();
             $bookletCodes = $data['bookletCodes'];
             $this->get('voucher.booklet_service')->deactivateMany($bookletCodes);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -7,10 +8,10 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class DonorOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_FULLNAME = 'fullname';
-    const SORT_BY_SHORTNAME = 'shortname';
-    const SORT_BY_DATE_ADDED = 'dateAdded';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_FULLNAME = 'fullname';
+    public const SORT_BY_SHORTNAME = 'shortname';
+    public const SORT_BY_DATE_ADDED = 'dateAdded';
 
     protected function getValidNames(): array
     {

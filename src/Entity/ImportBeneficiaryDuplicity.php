@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity;
 
@@ -50,7 +52,6 @@ class ImportBeneficiaryDuplicity
      */
     private $reasons;
 
-
     public function __construct(ImportHouseholdDuplicity $householdDuplicity, ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
     {
         $this->queue = $ours;
@@ -59,7 +60,6 @@ class ImportBeneficiaryDuplicity
         $this->memberIndex = $memberIndex;
         $this->householdDuplicity = $householdDuplicity;
     }
-
 
     /**
      * @return ImportQueue

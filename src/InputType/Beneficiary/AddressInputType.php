@@ -31,7 +31,7 @@ class AddressInputType implements InputTypeInterface
     private $locationId;
 
     /**
-     * @param int         $locationId
+     * @param int $locationId
      * @param string|null $street
      * @param string|null $postcode
      * @param string|null $number
@@ -39,7 +39,7 @@ class AddressInputType implements InputTypeInterface
      * @return AddressInputType
      */
     public static function create(
-        int     $locationId,
+        int $locationId,
         ?string $street,
         ?string $postcode,
         ?string $number

@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Exception;
 use Component\Import\Finishing\UnexpectedError;
@@ -14,6 +16,7 @@ use Entity\ImportQueue;
 use Enum\ImportQueueState;
 use Enum\ImportState;
 use Entity\Project;
+use InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Tests\BMSServiceTestCase;
@@ -34,7 +37,7 @@ class ImportControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return integer
+     * @return int
      * @throws Exception
      */
     public function testCreate()
@@ -56,7 +59,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -83,7 +86,7 @@ class ImportControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testCreate
+     * @depends      testCreate
      * @dataProvider uploadFilesDataProvider
      */
     public function testUploadFile(string $filename, bool $expectingViolation)
@@ -92,7 +95,7 @@ class ImportControllerTest extends BMSServiceTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../Resources/'.$filename, $uploadedFilePath, true);
+        $fs->copy(__DIR__ . '/../Resources/' . $filename, $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
 
@@ -100,7 +103,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         // $this->request('GET', "/api/basic/web-app/v1/imports/$id/files");
@@ -125,13 +128,13 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/imports/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -157,7 +160,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -178,30 +181,30 @@ class ImportControllerTest extends BMSServiceTestCase
             'description change' => [
                 'description',
                 'Lorem ipsum dolor sit amet',
-            ]
+            ],
         ];
     }
 
     /**
-     * @depends testCreate
+     * @depends      testCreate
      * @dataProvider patchDataProvider
      *
-     * @param int    $id
+     * @param int $id
      * @param string $parameter
      * @param        $value
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/'.$id.'?'.ImportController::DISABLE_CRON.'=true', [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/' . $id . '?' . ImportController::DISABLE_CRON . '=true', [
             $parameter => $value,
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->request('GET', '/api/basic/web-app/v1/imports/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/imports/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -223,10 +226,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -235,7 +239,8 @@ class ImportControllerTest extends BMSServiceTestCase
                     "duplicityCandidateId": "*",
                     "reasons": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
     }
 
@@ -256,7 +261,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -287,7 +292,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -305,34 +310,34 @@ class ImportControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one duplicity with entries in queue in system.');
         }
 
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/' . $duplicity->getOurs()->getId(), [
             'status' => 'To Update',
             'acceptedDuplicityId' => $duplicity->getId(),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/' . $duplicity->getOurs()->getId(), [
             'status' => 'To Link',
             'acceptedDuplicityId' => $duplicity->getId(),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/'.$duplicity->getOurs()->getId(), [
+        $this->request('PATCH', '/api/basic/web-app/v1/imports/queue/' . $duplicity->getOurs()->getId(), [
             'status' => 'To Update',
             'acceptedDuplicityId' => $duplicity->getId(),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -359,10 +364,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -376,7 +382,8 @@ class ImportControllerTest extends BMSServiceTestCase
                     "unexpectedColumns": "*",
                     "violations": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
 
         return $importFile->getId();
@@ -386,7 +393,7 @@ class ImportControllerTest extends BMSServiceTestCase
      * @return int
      *
      * @depends testUploadFile
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function testListInvalidImportedFiles(): int
     {
@@ -407,10 +414,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -424,7 +432,8 @@ class ImportControllerTest extends BMSServiceTestCase
                     "unexpectedColumns": "*",
                     "violations": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
 
         return $importFile->getId();
@@ -445,10 +454,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -457,7 +467,8 @@ class ImportControllerTest extends BMSServiceTestCase
                     "uploadedDate": "*",
                     "invalidQueueCount": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
 
         return $importInvalidFile->getId();
@@ -474,7 +485,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -493,10 +504,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -504,13 +516,14 @@ class ImportControllerTest extends BMSServiceTestCase
                     "values": "*",
                     "status": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
     }
 
     public function testListFailedQueue()
     {
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy(['state'=>ImportQueueState::ERROR], ['id' => 'asc']);
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy(['state' => ImportQueueState::ERROR], ['id' => 'asc']);
         if (!$importQueue) {
             /** @var ImportQueue|null $importQueue */
             $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
@@ -519,7 +532,7 @@ class ImportControllerTest extends BMSServiceTestCase
                 $this->markTestSkipped('There needs to be at least one import with items in queue in system.');
             }
 
-            $importQueue->setUnexpectedError(UnexpectedError::create('finishing', new \InvalidArgumentException('Some error')));
+            $importQueue->setUnexpectedError(UnexpectedError::create('finishing', new InvalidArgumentException('Some error')));
             $importQueue->setState(ImportQueueState::ERROR);
             $this->em->persist($importQueue);
             $this->em->flush();
@@ -532,10 +545,11 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -552,7 +566,8 @@ class ImportControllerTest extends BMSServiceTestCase
                     "enParentsName": "*",
                     "primaryIdCard": "*"
                 }
-            ]}', $this->client->getResponse()->getContent()
+            ]}',
+            $this->client->getResponse()->getContent()
         );
     }
 }

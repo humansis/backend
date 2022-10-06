@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Controller\VendorApp;
 
@@ -27,7 +29,7 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->client->request('POST', '/api/jwt/vendor-app/v2/login', [], [], [], json_encode($body));
 
         $responseBody = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: " . $this->client->getResponse()->getContent());
         $this->assertTrue(gettype($responseBody) == 'array');
         $this->assertArrayHasKey('id', $responseBody);
         $this->assertArrayHasKey('vendorId', $responseBody);

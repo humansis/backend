@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\ImportState;
 
-class ImportStateEnum extends \DBAL\AbstractEnum
+class ImportStateEnum extends AbstractEnum
 {
     public function getName(): string
     {

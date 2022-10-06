@@ -5,14 +5,16 @@ namespace Listener;
 use Entity\Logs;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
+use function is_object;
+
 class ResponseListener
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -27,8 +29,8 @@ class ResponseListener
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        $response  = $event->getResponse();
-        $request   = $event->getRequest();
+        $response = $event->getResponse();
+        $request = $event->getRequest();
         $user = $this->getUser();
 
         //Uid
@@ -57,11 +59,11 @@ class ResponseListener
         //Fake POST urls
         $isFakePost = preg_match('/.*\/households\/get\/.*/', $url) ||
             preg_match('/.*\/export/', $url) ||
-            preg_match('/.*\/location\/.+/', $url) || 
-            preg_match('/.*\/distributions\/criteria\/project\/\d+\/number/', $url) || 
-            preg_match('/.*\/distributions\/beneficiaries\/project\/\d+/', $url) || 
-            preg_match('/.*\/indicators/', $url) || 
-            preg_match('/.*\/login.+/', $url) || 
+            preg_match('/.*\/location\/.+/', $url) ||
+            preg_match('/.*\/distributions\/criteria\/project\/\d+\/number/', $url) ||
+            preg_match('/.*\/distributions\/beneficiaries\/project\/\d+/', $url) ||
+            preg_match('/.*\/indicators/', $url) ||
+            preg_match('/.*\/login.+/', $url) ||
             preg_match('/.*\/booklets-print/', $url) ||
             // Unused until the App is fixed to not send a request each time it syncs;
             preg_match('/.*\/vouchers\/scanned/', $url) ||
@@ -97,14 +99,14 @@ class ResponseListener
     protected function getUser()
     {
         if (!$this->container->has('security.token_storage')) {
-            throw new \LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
+            throw new LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
         }
 
         if (null === $token = $this->container->get('security.token_storage')->getToken()) {
             return;
         }
 
-        if (!\is_object($user = $token->getUser())) {
+        if (!is_object($user = $token->getUser())) {
             // e.g. anonymous authentication
             return;
         }

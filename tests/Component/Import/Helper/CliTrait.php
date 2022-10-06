@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Import\Helper;
@@ -9,7 +10,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 trait CliTrait
 {
-
     private function userStartedUploading(Import $import, bool $shouldEndCorrect): void
     {
         $this->importService->updateStatus($import, ImportState::UPLOADING);
@@ -69,5 +69,4 @@ trait CliTrait
         $commandTester->execute(['import' => $import->getId()]);
         $this->assertEquals(0, $commandTester->getStatusCode(), "Command $commandName failed");
     }
-
 }

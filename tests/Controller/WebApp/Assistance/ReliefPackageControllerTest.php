@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller\WebApp\Assistance;
@@ -31,7 +32,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -47,11 +48,12 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
-            "totalCount": '.$packageCount.',
+        $this->assertJsonFragment(
+            '{
+            "totalCount": ' . $packageCount . ',
             "data": [
                 {
                     "id": "*",
@@ -65,7 +67,9 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
                     "lastModifiedAt": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testFilteredList()
@@ -75,18 +79,19 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
 
-        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=".$reliefPackage->getId());
+        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=" . $reliefPackage->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": 1,
             "data": [
                 {
-                    "id": '.$reliefPackage->getId().',
+                    "id": ' . $reliefPackage->getId() . ',
                     "state": "*",
                     "modalityType": "*",
                     "amountToDistribute": "*",
@@ -97,23 +102,28 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
                     "lastModifiedAt": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testDistributeByBeneficiaryId()
     {
         $assistance = $this->em->getRepository(Assistance::class)->findOneBy([], ['id' => 'asc']);
 
-        $this->request('PATCH', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages/distribute",
+        $this->request(
+            'PATCH',
+            "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages/distribute",
             [
                 [
                     "idNumber" => "PIN-1234",
                 ],
-            ]);
+            ]
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 }

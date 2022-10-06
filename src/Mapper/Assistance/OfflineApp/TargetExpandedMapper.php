@@ -1,11 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\OfflineApp;
 
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\AssistanceBeneficiary;
 use Entity\GeneralReliefItem;
+use InvalidArgumentException;
 use Mapper\MapperContextTrait;
 use Serializer\MapperInterface;
 use Entity\Voucher;
@@ -58,12 +61,13 @@ class TargetExpandedMapper implements MapperInterface
         foreach ($beneficiary->getPerson()->getNationalIds() as $nationalId) {
             return $nationalId->getIdNumber();
         }
+
         return null;
     }
 
     public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ISO8601) : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
@@ -88,7 +92,7 @@ class TargetExpandedMapper implements MapperInterface
                 'status' => $booklet->getStatus(),
                 'voucherValues' => $booklet->getVouchers()->map(function (Voucher $voucher) {
                     return $voucher->getValue();
-                })
+                }),
             ];
         }
 
@@ -103,6 +107,6 @@ class TargetExpandedMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.AssistanceBeneficiary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class($object) . ' given.');
     }
 }

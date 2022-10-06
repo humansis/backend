@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Smartcard;
 
@@ -34,7 +36,7 @@ class SmartcardRegisterInputType implements InputTypeInterface
 
     /**
      * @param string $serialNumber
-     * @param int    $beneficiaryId
+     * @param int $beneficiaryId
      * @param string $createdAt
      *
      * @return static
@@ -96,5 +98,4 @@ class SmartcardRegisterInputType implements InputTypeInterface
     {
         $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);
     }
-
 }

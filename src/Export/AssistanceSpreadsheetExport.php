@@ -68,10 +68,10 @@ class AssistanceSpreadsheetExport
     public function export(Assistance $assistance, Organization $organization, string $filetype)
     {
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. '.$filetype.' given.');
+            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
         }
 
-        $filename = 'transaction.'.$filetype;
+        $filename = 'transaction.' . $filetype;
 
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
@@ -235,14 +235,14 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C5')->setValue($this->translator->trans('Distribution No.', [], 'messages', $languageCode));
         $worksheet->getCell('C5')->getStyle()->applyFromArray($labelStyle);
 
-        $worksheet->getCell('D4')->setValue('#'.$assistance->getId());
+        $worksheet->getCell('D4')->setValue('#' . $assistance->getId());
         $worksheet->getCell('D4')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->mergeCells('D4:D5');
 
         $worksheet->getCell('E4')->setValue('Location:');
         $worksheet->getCell('E4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('E5')->setValue($this->translator->trans('Location', [], 'messages', $languageCode).':');
+        $worksheet->getCell('E5')->setValue($this->translator->trans('Location', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('E5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('F4')->setValue($assistance->getLocation()->getName());
@@ -252,7 +252,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('G4')->setValue('Project & Donor:');
         $worksheet->getCell('G4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor', [], 'messages', $languageCode).':');
+        $worksheet->getCell('G5')->setValue($this->translator->trans('Project & Donor', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('G5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('H4')->setValue(self::getProjectsAndDonors($assistance));
@@ -262,7 +262,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I4')->setValue('Date:');
         $worksheet->getCell('I4')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('I5')->setValue($this->translator->trans('Date', [], 'messages', $languageCode).':');
+        $worksheet->getCell('I5')->setValue($this->translator->trans('Date', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('I5')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('J4')->setValue($assistance->getDateDistribution()->format('Y-m-d'));
@@ -272,7 +272,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C7')->setValue('Distributed item(s):');
         $worksheet->getCell('C7')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('C8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode).':');
+        $worksheet->getCell('C8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('C8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('D7')->setValue($assistance->getCommodities()->get(0)->getModalityType());
@@ -283,7 +283,7 @@ class AssistanceSpreadsheetExport
             $worksheet->getCell('E7')->setValue('Distributed item(s):');
             $worksheet->getCell('E7')->getStyle()->applyFromArray($labelEnStyle);
 
-            $worksheet->getCell('E8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode).':');
+            $worksheet->getCell('E8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode) . ':');
             $worksheet->getCell('E8')->getStyle()->applyFromArray($labelStyle);
 
             $worksheet->getCell('F7')->setValue($assistance->getCommodities()->get(1)->getModalityType());
@@ -295,7 +295,7 @@ class AssistanceSpreadsheetExport
             $worksheet->getCell('G7')->setValue('Distributed item(s):');
             $worksheet->getCell('G7')->getStyle()->applyFromArray($labelEnStyle);
 
-            $worksheet->getCell('G8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode).':');
+            $worksheet->getCell('G8')->setValue($this->translator->trans('Distributed item(s)', [], 'messages', $languageCode) . ':');
             $worksheet->getCell('G8')->getStyle()->applyFromArray($labelStyle);
 
             $worksheet->getCell('H7')->setValue($assistance->getCommodities()->get(2)->getModalityType());
@@ -306,7 +306,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('I7')->setValue('Round:');
         $worksheet->getCell('I7')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('I8')->setValue($this->translator->trans('Round', [], 'messages', $languageCode).':');
+        $worksheet->getCell('I8')->setValue($this->translator->trans('Round', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('I8')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
@@ -316,7 +316,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C10')->setValue('Validated by:');
         $worksheet->getCell('C10')->getStyle()->applyFromArray($labelEnStyle);
 
-        $worksheet->getCell('C11')->setValue($this->translator->trans('Validated by', [], 'messages', $languageCode).':');
+        $worksheet->getCell('C11')->setValue($this->translator->trans('Validated by', [], 'messages', $languageCode) . ':');
         $worksheet->getCell('C11')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
@@ -351,17 +351,26 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('H13')->applyFromArray($userInputStyle);
         $worksheet->mergeCells('H13:J16');
 
-        $worksheet->getCell('B19')->setValue('The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.');
+        $worksheet->getCell('B19')->setValue(
+            'The below listed person confirm by their signature of this distribution list that they obtained and accepted the donation of the below specified items from People in Need.'
+        );
         $worksheet->mergeCells('B19:K19');
 
-        $worksheet->getCell('B20')->setValue($this->translator->trans('The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.', [], 'messages', $languageCode));
+        $worksheet->getCell('B20')->setValue(
+            $this->translator->trans(
+                'The below listed person confirm by their signature of this Distribution List that they obtained and accepted the donation of the below specified items from People in Need.',
+                [],
+                'messages',
+                $languageCode
+            )
+        );
         $worksheet->getStyle('B20')->getFont()->setItalic(true);
         $worksheet->getStyle('B19:K20')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         $worksheet->mergeCells('B20:K20');
 
         $worksheet->getCell('B22')->setValue(
-            self::GDPR_TEXT_1.
-            "\n".
+            self::GDPR_TEXT_1 .
+            "\n" .
             self::GDPR_TEXT_2
         );
         $worksheet->mergeCells('B22:K22');
@@ -370,8 +379,8 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('B22')->getAlignment()->setWrapText(true);
 
         $worksheet->getCell('B23')->setValue(
-            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1', [], 'messages', $languageCode)).
-            "\n".
+            self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_1', [], 'messages', $languageCode)) .
+            "\n" .
             self::getStringWithoutNewLineCharacters($this->translator->trans('GDPR_Distribution_protocol_text_2', [], 'messages', $languageCode))
         );
         $worksheet->mergeCells('B23:K23');
@@ -446,21 +455,27 @@ class AssistanceSpreadsheetExport
 
         $rowNumber = 27;
         $rowIndex = 1;
-        foreach ($assistance->getDistributionBeneficiaries() as  $id => $distributionBeneficiary) {
+        foreach ($assistance->getDistributionBeneficiaries() as $id => $distributionBeneficiary) {
             if (!$distributionBeneficiary->getRemoved()) {
-                $rowNumber = $this->createBeneficiaryRow($worksheet, $distributionBeneficiary, $rowNumber, $rowIndex++, $rowStyle,
-                    $this->shouldDistributionContainDate($assistance));
+                $rowNumber = $this->createBeneficiaryRow(
+                    $worksheet,
+                    $distributionBeneficiary,
+                    $rowNumber,
+                    $rowIndex++,
+                    $rowStyle,
+                    $this->shouldDistributionContainDate($assistance)
+                );
             }
         }
     }
 
     private function createBeneficiaryRow(
-        Worksheet             $worksheet,
+        Worksheet $worksheet,
         AssistanceBeneficiary $distributionBeneficiary,
-                              $rowNumber,
-                              $id,
-                              $rowStyle,
-        bool                  $shouldContainDate
+        $rowNumber,
+        $id,
+        $rowStyle,
+        bool $shouldContainDate
     ): int {
         $bnf = $distributionBeneficiary->getBeneficiary();
         if ($bnf instanceof Household) {
@@ -473,20 +488,20 @@ class AssistanceSpreadsheetExport
             $person = $bnf->getPerson();
         }
 
-        $worksheet->setCellValue('B'.$rowNumber, $id);
-        $worksheet->setCellValue('C'.$rowNumber, $person->getLocalGivenName());
-        $worksheet->setCellValue('D'.$rowNumber, $person->getLocalFamilyName());
-        $worksheet->setCellValueExplicit('E'.$rowNumber, self::getNationalId($person), DataType::TYPE_STRING);
-        $worksheet->setCellValueExplicit('F'.$rowNumber, self::getPhone($person), DataType::TYPE_STRING);
-        $worksheet->setCellValue('G'.$rowNumber, null);
-        $worksheet->setCellValue('H'.$rowNumber, null);
-        $worksheet->setCellValue('I'.$rowNumber, self::getProxyPhone($person));
-        $worksheet->setCellValue('J'.$rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
-        $worksheet->getStyle('B'.$rowNumber.':K'.$rowNumber)->applyFromArray($rowStyle);
+        $worksheet->setCellValue('B' . $rowNumber, $id);
+        $worksheet->setCellValue('C' . $rowNumber, $person->getLocalGivenName());
+        $worksheet->setCellValue('D' . $rowNumber, $person->getLocalFamilyName());
+        $worksheet->setCellValueExplicit('E' . $rowNumber, self::getNationalId($person), DataType::TYPE_STRING);
+        $worksheet->setCellValueExplicit('F' . $rowNumber, self::getPhone($person), DataType::TYPE_STRING);
+        $worksheet->setCellValue('G' . $rowNumber, null);
+        $worksheet->setCellValue('H' . $rowNumber, null);
+        $worksheet->setCellValue('I' . $rowNumber, self::getProxyPhone($person));
+        $worksheet->setCellValue('J' . $rowNumber, $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary));
+        $worksheet->getStyle('B' . $rowNumber . ':K' . $rowNumber)->applyFromArray($rowStyle);
         $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
 
         if ($shouldContainDate) {
-            $worksheet->setCellValue('K'.$rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
+            $worksheet->setCellValue('K' . $rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
         }
 
         return $rowNumber + 1;
@@ -499,7 +514,7 @@ class AssistanceSpreadsheetExport
             $donors[] = $donor->getShortname();
         }
 
-        return [] === $donors ? $assistance->getProject()->getName() :  $assistance->getProject()->getName().' & '.implode(', ', $donors);
+        return [] === $donors ? $assistance->getProject()->getName() : $assistance->getProject()->getName() . ' & ' . implode(', ', $donors);
     }
 
     private static function getNationalId(Person $person): ?string
@@ -508,7 +523,7 @@ class AssistanceSpreadsheetExport
         if (count($ids) > 0) {
             $id = $ids[0];
 
-            return $id->getIdNumber().PHP_EOL."({$id->getIdType()})";
+            return $id->getIdNumber() . PHP_EOL . "({$id->getIdType()})";
         }
 
         return null;
@@ -518,7 +533,7 @@ class AssistanceSpreadsheetExport
     {
         foreach ($person->getPhones() as $p) {
             if (!$p->getProxy()) {
-                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
+                return $p->getPrefix() . ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
@@ -528,6 +543,7 @@ class AssistanceSpreadsheetExport
     private static function splitStringToGroupsOfThree(string $phoneNumber): string
     {
         $splitPhoneNumber = str_split(str_replace(' ', '', $phoneNumber), 3);
+
         return implode(' ', $splitPhoneNumber);
     }
 
@@ -535,7 +551,7 @@ class AssistanceSpreadsheetExport
     {
         foreach ($person->getPhones() as $p) {
             if ($p->getProxy()) {
-                return $p->getPrefix(). ' ' . self::splitStringToGroupsOfThree($p->getNumber());
+                return $p->getPrefix() . ' ' . self::splitStringToGroupsOfThree($p->getNumber());
             }
         }
 
@@ -547,11 +563,11 @@ class AssistanceSpreadsheetExport
         $result = [];
 
         foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
-            $result[] = 'Smartcard deposit: '.$deposit->getValue().' '.$deposit->getSmartcard()->getCurrency();
+            $result[] = 'Smartcard deposit: ' . $deposit->getValue() . ' ' . $deposit->getSmartcard()->getCurrency();
         }
 
         foreach ($assistanceBeneficiary->getReliefPackagesNotInStates([ReliefPackageState::CANCELED]) as $relief) {
-                $result[] = $relief->getModalityType().', '.$relief->getAmountToDistribute().' '.$relief->getUnit();
+            $result[] = $relief->getModalityType() . ', ' . $relief->getAmountToDistribute() . ' ' . $relief->getUnit();
         }
 
         return implode("\n", $result);
@@ -569,16 +585,19 @@ class AssistanceSpreadsheetExport
 
     private function getDistributionDateTime(AssistanceBeneficiary $distributionBeneficiary): string
     {
-        $deposits = array_filter($this->smartCardDeposits, function($smartcardDeposit) use($distributionBeneficiary) {
-           return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
+        $deposits = array_filter($this->smartCardDeposits, function ($smartcardDeposit) use ($distributionBeneficiary) {
+            return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId() === $distributionBeneficiary->getId();
         });
 
         if (empty($deposits)) {
             return "";
         }
 
-        return implode("\n", array_map(function($deposit) {
-            return $deposit->getDistributedAt()->format('d. m. Y H:i');
-        }, $deposits));
+        return implode(
+            "\n",
+            array_map(function ($deposit) {
+                return $deposit->getDistributedAt()->format('d. m. Y H:i');
+            }, $deposits)
+        );
     }
 }

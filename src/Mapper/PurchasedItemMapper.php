@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTimeInterface;
 use Entity\PurchasedItem;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class PurchasedItemMapper implements MapperInterface
@@ -31,7 +34,7 @@ class PurchasedItemMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.PurchasedItem::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . PurchasedItem::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getBeneficiaryId(): int
@@ -81,7 +84,7 @@ class PurchasedItemMapper implements MapperInterface
 
     public function getDatePurchase(): string
     {
-        return $this->object->getDatePurchase()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getDatePurchase()->format(DateTimeInterface::ISO8601);
     }
 
     public function getCommodityId(): int

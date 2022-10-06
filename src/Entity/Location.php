@@ -58,7 +58,6 @@ class Location implements TreeInterface
      */
     private $name;
 
-
     /**
      * @var string|null
      *
@@ -74,12 +73,12 @@ class Location implements TreeInterface
     private $enumNormalizedName;
 
     /**
-     * @param string      $countryIso3
+     * @param string $countryIso3
      * @param string|null $name
      * @param string|null $code
      */
     public function __construct(
-        string  $countryIso3,
+        string $countryIso3,
         ?string $name = null,
         ?string $code = null
     ) {

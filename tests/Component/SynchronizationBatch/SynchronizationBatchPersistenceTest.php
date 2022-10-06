@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\SynchronizationBatch;
@@ -21,8 +22,10 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
 {
     /** @var ObjectManager */
     private $manager;
+
     /** @var EntityRepository */
     private $syncRepo;
+
     /** @var Deposits */
     private $sync;
 
@@ -34,7 +37,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $container = self::$kernel->getContainer();
         $this->manager = $container->get('doctrine.orm.default_entity_manager');
         $this->syncRepo = $this->manager->getRepository(SynchronizationBatch::class);
-        $this->sync = new Deposits(['test'=>'xyz','array'=>[1,2,5,1024], 0=>0, false=>true]);
+        $this->sync = new Deposits(['test' => 'xyz', 'array' => [1, 2, 5, 1024], 0 => 0, false => true]);
         $this->manager->persist($this->sync);
     }
 
@@ -46,7 +49,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
         $testViolations->add(new ConstraintViolation("Test2 should be longer", null, [], null, 'test2', 'xyz'));
         $arrayViolation = new ConstraintViolationList();
         $arrayViolation->add(new ConstraintViolation("5th array is wrong", null, [], null, 'array[3]', '5'));
-        $this->sync->setViolations(['fst'=>$testViolations,'snd'=>$arrayViolation]);
+        $this->sync->setViolations(['fst' => $testViolations, 'snd' => $arrayViolation]);
         $this->manager->flush();
 
         $this->assertNotNull($this->sync->getId(), "Sync wasn't saved");
@@ -61,5 +64,4 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
     {
         parent::tearDown();
     }
-
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,21 +12,24 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20191108095855 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE service (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 parameters JSON NOT NULL,
                 country VARCHAR(255) DEFAULT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE organization_service (
                 id INT AUTO_INCREMENT NOT NULL,
                 organization_id INT DEFAULT NULL,
@@ -38,10 +43,11 @@ final class Version20191108095855 extends AbstractMigration
                     REFERENCES organization (id),
                 CONSTRAINT FK_2C4F1291ED5CA9E6 FOREIGN KEY (service_id)
                     REFERENCES service (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

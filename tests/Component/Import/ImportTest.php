@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Import;
 
+use DateTime;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\NationalId;
@@ -43,7 +45,7 @@ class ImportTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    const TEST_COUNTRY = 'KHM';
+    public const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -68,6 +70,7 @@ class ImportTest extends KernelTestCase
 
     /** @var ImportFile */
     private $importFile;
+
     /** @var ProjectService */
     private $projectService;
 
@@ -96,7 +99,6 @@ class ImportTest extends KernelTestCase
                 $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
-
     }
 
     public function correctFiles(): array
@@ -194,14 +196,14 @@ class ImportTest extends KernelTestCase
                 'SYR-WrongDatedImport-5HH.xlsx',
                 'SYR-only-camp-1HH.xlsx',
                 1,
-                7
+                7,
             ],
             'reupload fixed households' => [
                 'KHM',
                 'import_3duplicity_first_run.ods',
                 'import_3duplicityFixed_second_run.ods',
                 4,
-                4
+                4,
             ],
         ];
     }
@@ -212,8 +214,8 @@ class ImportTest extends KernelTestCase
      * @param string $country
      * @param string $integrityWrongFile
      * @param string $fixedFile
-     * @param int    $expectedHouseholdCount
-     * @param int    $expectedBeneficiaryCount
+     * @param int $expectedHouseholdCount
+     * @param int $expectedBeneficiaryCount
      */
     public function testFixIntegrityErrors(string $country, string $integrityWrongFile, string $fixedFile, int $expectedHouseholdCount, int $expectedBeneficiaryCount)
     {
@@ -250,7 +252,7 @@ class ImportTest extends KernelTestCase
         $expectedBeneficiaryCount = 11;
 
         // prepare country specifics
-        $customLocationSpecific = $this->entityManager->getRepository(CountrySpecific::class)->findOneBy(['fieldString'=>'Custom Location', 'countryIso3'=>$country]);
+        $customLocationSpecific = $this->entityManager->getRepository(CountrySpecific::class)->findOneBy(['fieldString' => 'Custom Location', 'countryIso3' => $country]);
         if (!$customLocationSpecific) {
             $customLocationSpecific = new CountrySpecific('Custom Location', 'text', $country);
             $this->entityManager->persist($customLocationSpecific);
@@ -302,9 +304,20 @@ class ImportTest extends KernelTestCase
 
     public function testEnumCaseSensitivity()
     {
-        foreach ($this->entityManager->getRepository(NationalId::class)->findBy(['idNumber'=>[
-            '98300834', '124483434', '102', '789465432654', '789', '456', '8798798', '345456',
-        ]]) as $idCard) {
+        foreach (
+            $this->entityManager->getRepository(NationalId::class)->findBy([
+                'idNumber' => [
+                    '98300834',
+                    '124483434',
+                    '102',
+                    '789465432654',
+                    '789',
+                    '456',
+                    '8798798',
+                    '345456',
+                ],
+            ]) as $idCard
+        ) {
             $this->entityManager->remove($idCard);
         }
         $this->entityManager->flush();
@@ -354,15 +367,15 @@ class ImportTest extends KernelTestCase
         $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '789');
         $this->assertIsMember($bnf);
         $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
-        // Maggie	Simpson
+        // Maggie   Simpson
         $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '456');
         $this->assertIsMember($bnf);
         $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
-        // Abraham	Simpson
+        // Abraham  Simpson
         $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '8798798');
         $this->assertIsMember($bnf);
         $this->assertEquals(PersonGender::MALE, $bnf->getPerson()->getGender());
-        // Mona	Simpson
+        // Mona Simpson
         $bnf = $this->findOneIdentity(NationalIdType::NATIONAL_ID, '345456');
         $this->assertIsMember($bnf);
         $this->assertEquals(PersonGender::FEMALE, $bnf->getPerson()->getGender());
@@ -380,29 +393,41 @@ class ImportTest extends KernelTestCase
 
     private function assertHHHasShelterStatus(Household $household, string $expectedType): void
     {
-        $this->assertEquals($expectedType, $household->getShelterStatus(), "Shelter status doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [{$household->getShelterStatus()}]");
+        $this->assertEquals(
+            $expectedType,
+            $household->getShelterStatus(),
+            "Shelter status doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName() . " [{$household->getShelterStatus()}]"
+        );
     }
 
     private function assertHHHasLivelihood(Household $household, string $expectedLivelihood): void
     {
-        $this->assertEquals($expectedLivelihood, $household->getLivelihood(), "Livelihood doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [{$household->getLivelihood()}]");
+        $this->assertEquals(
+            $expectedLivelihood,
+            $household->getLivelihood(),
+            "Livelihood doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName() . " [{$household->getLivelihood()}]"
+        );
     }
 
     private function assertHHHasSupportTypes(Household $household, array $expectedTypes): void
     {
-        $this->assertCount(count($expectedTypes), $household->getSupportReceivedTypes(), "Support types count doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName());
+        $this->assertCount(count($expectedTypes), $household->getSupportReceivedTypes(), "Support types count doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName());
         $supportTypes = implode(', ', $household->getSupportReceivedTypes());
         foreach ($expectedTypes as $expectedAsset) {
-            $this->assertContains($expectedAsset, $household->getSupportReceivedTypes(), "Support types doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [$supportTypes]");
+            $this->assertContains(
+                $expectedAsset,
+                $household->getSupportReceivedTypes(),
+                "Support types doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName() . " [$supportTypes]"
+            );
         }
     }
 
     private function assertHHHasAssets(Household $household, array $expectedAssets): void
     {
-        $this->assertCount(count($expectedAssets), $household->getAssets(), "Asset count doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName());
+        $this->assertCount(count($expectedAssets), $household->getAssets(), "Asset count doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName());
         $hhAssets = implode(', ', $household->getAssets());
         foreach ($expectedAssets as $expectedAsset) {
-            $this->assertContains($expectedAsset, $household->getAssets(), "Assets doesn't fit for HH ".$household->getHouseholdHead()->getLocalFamilyName()." [$hhAssets]");
+            $this->assertContains($expectedAsset, $household->getAssets(), "Assets doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName() . " [$hhAssets]");
         }
     }
 
@@ -412,6 +437,7 @@ class ImportTest extends KernelTestCase
         $bnfRepo = $this->entityManager->getRepository(Beneficiary::class);
         $identities = $bnfRepo->findIdentity($idType, $idNumber);
         $this->assertCount(1, $identities, "There are ID conflict for $idType with $idNumber");
+
         return $identities[0];
     }
 
@@ -445,6 +471,7 @@ class ImportTest extends KernelTestCase
 
         if ($expectedDuplicities === 0) {
             $this->assertEquals(ImportState::IDENTITY_CHECK_CORRECT, $import->getState());
+
             return; // another check doesn't have any meaning
         } else {
             $this->assertEquals(ImportState::IDENTITY_CHECK_FAILED, $import->getState());
@@ -473,7 +500,7 @@ class ImportTest extends KernelTestCase
         $this->userStartedSimilarityCheck($import, true, $this->getBatchCount($import, 'similarity_check'));
 
         $this->assertQueueCount($expectedHouseholdCount, $import);
-        $this->assertQueueCount($expectedHouseholdCount-$expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
+        $this->assertQueueCount($expectedHouseholdCount - $expectedDuplicities, $import, [ImportQueueState::TO_CREATE]);
         $this->assertQueueCount($expectedDuplicities, $import, [ImportQueueState::TO_UPDATE]);
         $this->assertQueueCount(0, $import, [ImportQueueState::TO_LINK]);
 
@@ -490,7 +517,7 @@ class ImportTest extends KernelTestCase
             $householdIds[] = $beneficiary->getHousehold()->getId();
             $beneficiaryIds[] = $beneficiary->getId();
         }
-        $this->assertCount($expectedHouseholdCount*2 - $expectedDuplicities, array_unique($householdIds), "Some duplicities was saved instead of updated");
+        $this->assertCount($expectedHouseholdCount * 2 - $expectedDuplicities, array_unique($householdIds), "Some duplicities was saved instead of updated");
         // dont know how many bnf shold be in database
         // $this->assertCount($expectedBeneficiaryCount, array_unique($beneficiaryIds), "Some duplicities was saved instead of updated");
     }
@@ -595,8 +622,8 @@ class ImportTest extends KernelTestCase
         $project = new Project();
         $project->setName(uniqid());
         $project->setNotes(get_class($this));
-        $project->setStartDate(new \DateTime());
-        $project->setEndDate(new \DateTime());
+        $project->setStartDate(new DateTime());
+        $project->setEndDate(new DateTime());
         $project->setCountryIso3('ARM');
         $this->entityManager->persist($project);
         $this->entityManager->flush();
@@ -631,11 +658,12 @@ class ImportTest extends KernelTestCase
         $project = new Project();
         $project->setName(uniqid());
         $project->setNotes(implode("\n", $notes));
-        $project->setStartDate(new \DateTime());
-        $project->setEndDate(new \DateTime());
+        $project->setStartDate(new DateTime());
+        $project->setEndDate(new DateTime());
         $project->setCountryIso3($country);
         $this->entityManager->persist($project);
         $this->entityManager->flush();
+
         return $project;
     }
 
@@ -644,18 +672,18 @@ class ImportTest extends KernelTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../Resources/'.$filename, $uploadedFilePath, true);
+        $fs->copy(__DIR__ . '/../../Resources/' . $filename, $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
         $this->uploadService->uploadFile($import, $file, $this->getUser());
     }
 
     /**
-     * @deprecated
      * @param Import $import
      * @param        $phase
      *
      * @return int
+     * @deprecated
      */
     private function getBatchCount(Import $import, $phase): int
     {

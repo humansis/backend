@@ -2,6 +2,8 @@
 
 namespace Utils;
 
+use Generator;
+
 /**
  * ExcelColumnsGenerator generates list of excel columns index, eg. A, B, C, ..., Y, Z, AA, AB ...
  */
@@ -26,7 +28,7 @@ class ExcelColumnsGenerator
     }
 
     /**
-     * @return \Generator|string[]
+     * @return Generator|string[]
      */
     private function generate()
     {
@@ -42,7 +44,7 @@ class ExcelColumnsGenerator
 
         $char = ord('A') + $pos;
 
-        yield $prefix.chr($char);
+        yield $prefix . chr($char);
 
         ++$this->position;
     }

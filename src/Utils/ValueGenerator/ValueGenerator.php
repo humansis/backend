@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils\ValueGenerator;
 
@@ -9,7 +11,6 @@ use Utils\Objects\Reflection;
 
 class ValueGenerator
 {
-
     public static function string(int $length): string
     {
         $bytes = random_bytes((int) ceil($length / 2));
@@ -59,5 +60,4 @@ class ValueGenerator
 
         return $enumClass::valueFromAPI($value);
     }
-
 }

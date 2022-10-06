@@ -10,6 +10,7 @@ use Serializer\MapperInterface;
 
 /**
  * Class CommunityMapper
+ *
  * @package Mapper
  */
 class CommunityMapper implements MapperInterface
@@ -38,7 +39,7 @@ class CommunityMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of '. Community::class . ', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Community::class . ', ' . get_class($object) . ' given.');
     }
 
     /**
@@ -59,9 +60,11 @@ class CommunityMapper implements MapperInterface
 
     public function getProjectIds(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getProjects()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getProjects()->toArray())
+        );
     }
 
     /**

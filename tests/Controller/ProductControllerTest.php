@@ -46,7 +46,7 @@ class ProductControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -88,7 +88,7 @@ class ProductControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -114,7 +114,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/products/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/products/' . $id, [
             'image' => 'http://example.org/image2.jpg',
         ]);
 
@@ -122,7 +122,7 @@ class ProductControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -141,13 +141,13 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/products/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/products/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -172,7 +172,7 @@ class ProductControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -215,22 +215,27 @@ class ProductControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $expectedFilteredProducts = 0;
-        if ($canSellFood) $expectedFilteredProducts += count($foods);
-        if ($canSellNonFood) $expectedFilteredProducts += count($nonfoods);
-        if ($canSellCashback) $expectedFilteredProducts += count($cashbacks);
+        if ($canSellFood) {
+            $expectedFilteredProducts += count($foods);
+        }
+        if ($canSellNonFood) {
+            $expectedFilteredProducts += count($nonfoods);
+        }
+        if ($canSellCashback) {
+            $expectedFilteredProducts += count($cashbacks);
+        }
 
-        $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[vendors][]='.$vendor->getId());
+        $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[vendors][]=' . $vendor->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertEquals($expectedFilteredProducts, $result['totalCount']);
-
     }
 
     /**
@@ -238,7 +243,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/products/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/products/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -250,7 +255,7 @@ class ProductControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/products/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/products/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

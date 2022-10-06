@@ -97,7 +97,7 @@ class UserCreateInputType implements InputTypeInterface
     private $projectIds;
 
     /**
-     * @var boolean $changePassword
+     * @var bool $changePassword
      *
      * @Assert\Type("boolean")
      * @Assert\NotNull

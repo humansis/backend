@@ -20,7 +20,7 @@ abstract class AbstractCsvParser
     public function parse(string $pathToCsv)
     {
         if (!file_exists($pathToCsv)) {
-            throw new CsvParserException($pathToCsv,'File not found');
+            throw new CsvParserException($pathToCsv, 'File not found');
         }
 
         $fileHandler = fopen($pathToCsv, 'r');
@@ -56,10 +56,9 @@ abstract class AbstractCsvParser
         return $this->processCsv($csv);
     }
 
-
     /**
      * @param string $pathToCsv
-     * @param array  $firstRow
+     * @param array $firstRow
      *
      * @throws CsvParserException
      */
@@ -75,10 +74,9 @@ abstract class AbstractCsvParser
         }
 
         if (!empty($missingColumns)) {
-            throw new CsvParserException($pathToCsv, 'CSV file has wrong structure (missing columns '.implode(', ', $missingColumns).' )');
+            throw new CsvParserException($pathToCsv, 'CSV file has wrong structure (missing columns ' . implode(', ', $missingColumns) . ' )');
         }
     }
-
 
     protected function rowEmpty(array $row): bool
     {

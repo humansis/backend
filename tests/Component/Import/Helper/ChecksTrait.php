@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Import\Helper;
@@ -16,7 +17,7 @@ trait ChecksTrait
         } else {
             $queueCount = $this->entityManager->getRepository(ImportQueue::class)->count([
                 'import' => $import,
-                'state' => $filterQueueStates
+                'state' => $filterQueueStates,
             ]);
             $this->assertEquals($expectedCount, $queueCount);
         }

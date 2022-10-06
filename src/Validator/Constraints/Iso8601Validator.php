@@ -1,13 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
 
+use DateTime;
+use DateTimeInterface;
+use Symfony\Component\Validator\Constraints\DateTimeValidator;
 use Utils\DateTime\Iso8601Converter;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class Iso8601Validator extends \Symfony\Component\Validator\Constraints\DateTimeValidator
+use function is_object;
+
+class Iso8601Validator extends DateTimeValidator
 {
     /**
      * {@inheritdoc}
@@ -18,18 +24,18 @@ class Iso8601Validator extends \Symfony\Component\Validator\Constraints\DateTime
             throw new UnexpectedTypeException($constraint, Iso8601::class);
         }
 
-        if (null === $value || '' === $value || $value instanceof \DateTimeInterface) {
+        if (null === $value || '' === $value || $value instanceof DateTimeInterface) {
             return;
         }
 
-        if (!is_scalar($value) && !(\is_object($value) && method_exists($value, '__toString'))) {
+        if (!is_scalar($value) && !(is_object($value) && method_exists($value, '__toString'))) {
             throw new UnexpectedTypeException($value, 'string');
         }
 
         $value = (string) $value;
 
         Iso8601Converter::toDateTime($value);
-        $errors = \DateTime::getLastErrors();
+        $errors = DateTime::getLastErrors();
 
         if (0 < $errors['error_count']) {
             $this->context->buildViolation($constraint->message)

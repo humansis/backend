@@ -81,8 +81,7 @@ class PurchasedItemController extends AbstractController
         PurchasedItemFilterInputType $filterInputType,
         PurchasedItemOrderInputType $order,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
@@ -98,7 +97,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/purchased-items/exports")
      *
-     * @param Request                      $request
+     * @param Request $request
      * @param PurchasedItemFilterInputType $filter
      *
      * @return Response
@@ -122,11 +121,11 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items")
      *
-     * @param Request                               $request
+     * @param Request $request
      * @param SmartcardPurchasedItemFilterInputType $filterInputType
-     * @param PurchasedItemOrderInputType           $order
-     * @param SmartcardPurchasedItemRepository      $purchasedItemRepository
-     * @param Pagination                            $pagination
+     * @param PurchasedItemOrderInputType $order
+     * @param SmartcardPurchasedItemRepository $purchasedItemRepository
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -136,8 +135,7 @@ class PurchasedItemController extends AbstractController
         PurchasedItemOrderInputType $order,
         SmartcardPurchasedItemRepository $purchasedItemRepository,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
@@ -150,7 +148,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items/exports")
      *
-     * @param Request                      $request
+     * @param Request $request
      * @param SmartcardPurchasedItemFilterInputType $filter
      *
      * @return Response

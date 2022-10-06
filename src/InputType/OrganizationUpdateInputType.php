@@ -150,5 +150,4 @@ class OrganizationUpdateInputType implements InputTypeInterface
     {
         $this->footerContent = $footerContent;
     }
-
 }

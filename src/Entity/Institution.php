@@ -14,14 +14,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Institution extends AbstractBeneficiary
 {
-    const TYPE_SCHOOL = 'school';
-    const TYPE_HEALTH_CENTER = 'health';
-    const TYPE_COMMUNITY_CENTER = 'community_center';
-    const TYPE_GOVERNMENT = 'government';
-    const TYPE_PRODUCTION = 'production';
-    const TYPE_COMMERCE = 'commerce';
-
-    const TYPE_ALL = [
+    public const TYPE_SCHOOL = 'school';
+    public const TYPE_HEALTH_CENTER = 'health';
+    public const TYPE_COMMUNITY_CENTER = 'community_center';
+    public const TYPE_GOVERNMENT = 'government';
+    public const TYPE_PRODUCTION = 'production';
+    public const TYPE_COMMERCE = 'commerce';
+    public const TYPE_ALL = [
         self::TYPE_SCHOOL,
         self::TYPE_HEALTH_CENTER,
         self::TYPE_COMMUNITY_CENTER,
@@ -70,8 +69,6 @@ class Institution extends AbstractBeneficiary
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
     private $longitude;
-
-
 
     /**
      * Institution constructor.
@@ -171,7 +168,10 @@ class Institution extends AbstractBeneficiary
      */
     public function getPhone(): ?Phone
     {
-        if ($this->contact->getPhones()->count() === 0) return null;
+        if ($this->contact->getPhones()->count() === 0) {
+            return null;
+        }
+
         return $this->contact->getPhones()->current();
     }
 
@@ -196,6 +196,7 @@ class Institution extends AbstractBeneficiary
         if ($this->getPhone()) {
             return $this->getPhone()->getNumber();
         }
+
         return null;
     }
 
@@ -207,6 +208,7 @@ class Institution extends AbstractBeneficiary
         if (!$this->getPhone()) {
             return null;
         }
+
         return $this->getPhone()->getPrefix();
     }
 
@@ -215,7 +217,10 @@ class Institution extends AbstractBeneficiary
      */
     public function getNationalId(): ?NationalId
     {
-        if ($this->contact->getNationalIds()->count() === 0) return null;
+        if ($this->contact->getNationalIds()->count() === 0) {
+            return null;
+        }
+
         return $this->contact->getNationalIds()->current();
     }
 
@@ -293,5 +298,4 @@ class Institution extends AbstractBeneficiary
     {
         return $this->longitude;
     }
-
 }

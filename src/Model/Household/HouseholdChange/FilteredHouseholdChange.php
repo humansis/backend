@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class FilteredHouseholdChange extends AbstractHouseholdChange
 {
-    const ALLOWED_FIELDS = [
+    public const ALLOWED_FIELDS = [
         'income',
         'debt_level',
         'food_consumption_score',

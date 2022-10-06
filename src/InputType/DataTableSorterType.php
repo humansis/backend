@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,6 +12,7 @@ class DataTableSorterType implements InputTypeInterface
      * @ Assert\NotBlank()
      */
     public $sort;
+
     /**
      * @var string
      * @ Assert\NotBlank()

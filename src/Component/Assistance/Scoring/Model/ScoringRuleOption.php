@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Model;
@@ -11,7 +12,7 @@ final class ScoringRuleOption
     private $value;
 
     /**
-     * @var integer
+     * @var int
      */
     private $score;
 
@@ -37,4 +38,3 @@ final class ScoringRuleOption
         return $this->score;
     }
 }
-

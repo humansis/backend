@@ -10,8 +10,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ScoringInputType implements InputTypeInterface
 {
-
-
     /**
      * @var string
      * @Assert\Type("string")
@@ -91,7 +89,4 @@ class ScoringInputType implements InputTypeInterface
 
         return $this;
     }
-
-
-
 }

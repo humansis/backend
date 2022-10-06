@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace MapperDeprecated;
 
@@ -25,9 +27,9 @@ class ProjectMapper
     /**
      * ProjectMapper constructor.
      *
-     * @param DonorMapper           $donorMapper
-     * @param SectorMapper          $sectorMapper
-     * @param AssistanceMapper      $assistanceMapper
+     * @param DonorMapper $donorMapper
+     * @param SectorMapper $sectorMapper
+     * @param AssistanceMapper $assistanceMapper
      * @param BeneficiaryRepository $beneficiaryRepo
      */
     public function __construct(
@@ -48,6 +50,7 @@ class ProjectMapper
             return null;
         }
         $bnfCount = $this->beneficiaryRepo->countAllInProject($project);
+
         return [
             'id' => $project->getId(),
             'iso3' => $project->getCountryIso3(),

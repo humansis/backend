@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\ReliefPackage;
 
@@ -36,7 +38,7 @@ class ReliefPackageService
     }
 
     /**
-     * @param ReliefPackage    $reliefPackage
+     * @param ReliefPackage $reliefPackage
      * @param SmartcardDeposit $deposit
      *
      * @return void
@@ -52,7 +54,7 @@ class ReliefPackageService
 
     /**
      * @param ReliefPackage $reliefPackage
-     * @param string        $transition
+     * @param string $transition
      *
      * @return void
      */
@@ -65,7 +67,7 @@ class ReliefPackageService
     }
 
     /**
-     * @param ReliefPackage    $reliefPackage
+     * @param ReliefPackage $reliefPackage
      * @param SmartcardDeposit $deposit
      *
      * @return void
@@ -77,7 +79,8 @@ class ReliefPackageService
 
         if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
             $deposit->setSuspicious(true);
-            $message = sprintf('Deposit amount (%s) is over the total Relief Package (#%s) amount to distribute (%s).',
+            $message = sprintf(
+                'Deposit amount (%s) is over the total Relief Package (#%s) amount to distribute (%s).',
                 $deposit->getValue(),
                 $reliefPackage->getId(),
                 $reliefPackage->getAmountToDistribute()
@@ -94,5 +97,4 @@ class ReliefPackageService
             $this->logger->info($message);
         }
     }
-
 }

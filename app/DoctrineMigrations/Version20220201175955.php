@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -17,7 +19,8 @@ final class Version20220201175955 extends AbstractMigration
 
         $this->addSql('DROP VIEW view_smartcard_purchased_item');
 
-        $this->addSql('CREATE VIEW view_smartcard_purchased_item AS
+        $this->addSql(
+            'CREATE VIEW view_smartcard_purchased_item AS
             SELECT
                 spr.id,
                 s.beneficiary_id as beneficiary_id,
@@ -60,7 +63,8 @@ final class Version20220201175955 extends AbstractMigration
                 LIMIT 1
             )
             LEFT JOIN assistance a ON db.assistance_id = a.id
-        ');
+        '
+        );
     }
 
     public function down(Schema $schema): void

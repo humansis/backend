@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance;
@@ -6,6 +7,7 @@ namespace Mapper\Assistance;
 use Entity;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain;
+use InvalidArgumentException;
 use Utils\AssistanceService;
 use Component\Assistance\DTO\CommoditySummary;
 use Serializer\MapperInterface;
@@ -36,7 +38,7 @@ class CommoditySummaryMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.CommoditySummary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . CommoditySummary::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getModalityType(): string
@@ -53,5 +55,4 @@ class CommoditySummaryMapper implements MapperInterface
     {
         return $this->object->getAmount();
     }
-
 }

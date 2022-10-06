@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Utils\FileSystem;
@@ -9,7 +10,7 @@ use ZipArchive;
 
 final class Zip
 {
-    private CONST TEMP_DIR_CREATION_ATTEMPTS = 1000;
+    private const TEMP_DIR_CREATION_ATTEMPTS = 1000;
 
     /**
      * @return string
@@ -38,7 +39,7 @@ final class Zip
     {
         $zipArchive = new ZipArchive();
 
-        if (!$zipArchive->open($file->getRealPath())){
+        if (!$zipArchive->open($file->getRealPath())) {
             throw new RuntimeException("File {$file->getRealPath()} could not be open as archive.");
         }
 

@@ -42,8 +42,7 @@ class LocationController extends AbstractController
         Countries $countries,
         LocationRepository $locationRepository,
         ProjectRepository $projectRepository
-    )
-    {
+    ) {
         $this->countries = $countries;
         $this->locationRepository = $locationRepository;
         $this->projectRepository = $projectRepository;
@@ -69,7 +68,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/users/{id}/countries")
      *
-     * @param User$user
+     * @param User $user
      *
      * @return JsonResponse
      */
@@ -79,10 +78,8 @@ class LocationController extends AbstractController
         $data = [];
 
         if (in_array(RoleType::ADMIN, $userRoles)) {
-
             return $this->json(new Paginator($this->countries->getAll()));
         } elseif (in_array(RoleType::COUNTRY_MANAGER, $userRoles) || in_array(RoleType::REGIONAL_MANAGER, $userRoles)) {
-
             /** @var UserCountry $userCountry */
             foreach ($user->getCountries() as $userCountry) {
                 $country = $this->countries->getCountry($userCountry->getCountryIso3());
@@ -91,7 +88,7 @@ class LocationController extends AbstractController
                 }
             }
         } else {
-            foreach($this->projectRepository->getProjectCountriesByUser($user) as $countryIso3){
+            foreach ($this->projectRepository->getProjectCountriesByUser($user) as $countryIso3) {
                 $country = $this->countries->getCountry($countryIso3['countryIso3']);
                 if ($country) {
                     $data[] = $country;
@@ -163,7 +160,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm1")
      *
-     * @param Request            $request
+     * @param Request $request
      * @param LocationFilterInputType $inputType
      *
      * @return JsonResponse
@@ -171,7 +168,7 @@ class LocationController extends AbstractController
     public function adm1List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
         $data = $this->getAdmList($request, $inputType, 1);
-        
+
         return $this->json($data);
     }
 
@@ -210,7 +207,7 @@ class LocationController extends AbstractController
      *
      * @param Request $request
      * @param Location $location
-     * 
+     *
      * @return JsonResponse
      */
     public function adm3ListByAdm2(Request $request, Location $location): JsonResponse
@@ -241,7 +238,7 @@ class LocationController extends AbstractController
      *
      * @param Request $request
      * @param Location $location
-     * 
+     *
      * @return JsonResponse
      */
     public function adm4ListByAdm3(Request $request, Location $location): JsonResponse
@@ -282,7 +279,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations")
      *
-     * @param Request                 $request
+     * @param Request $request
      * @param LocationFilterInputType $filter
      *
      * @return JsonResponse
@@ -310,6 +307,7 @@ class LocationController extends AbstractController
         if ($parent) {
             $inputType->setFilter(['parent' => $parent]);
         }
+
         return $this->locationRepository->findByParams($inputType, $countryIso3);
     }
 }

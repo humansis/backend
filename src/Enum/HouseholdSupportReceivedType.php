@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,18 +8,18 @@ class HouseholdSupportReceivedType
 {
     use EnumTrait;
 
-    const MPCA = 'MPCA';
-    const CASH_FOR_WORK = 'Cash for Work';
-    const FOOD_KIT = 'Food Kit';
-    const FOOD_VOUCHER = 'Food Voucher';
-    const HYGIENE_KIT = 'Hygiene Kit';
-    const SHELTER_KIT = 'Shelter Kit';
-    const SHELTER_RECONSTRUCTION_SUPPORT = 'Shelter Reconstruction Support';
-    const NON_FOOD_ITEMS = 'Non Food Items';
-    const LIVELIHOODS_SUPPORT = 'Livelihoods Support';
-    const VOCATIONAL_TRAINING = 'Vocational Training';
-    const NONE = 'None';
-    const OTHER = 'Other';
+    public const MPCA = 'MPCA';
+    public const CASH_FOR_WORK = 'Cash for Work';
+    public const FOOD_KIT = 'Food Kit';
+    public const FOOD_VOUCHER = 'Food Voucher';
+    public const HYGIENE_KIT = 'Hygiene Kit';
+    public const SHELTER_KIT = 'Shelter Kit';
+    public const SHELTER_RECONSTRUCTION_SUPPORT = 'Shelter Reconstruction Support';
+    public const NON_FOOD_ITEMS = 'Non Food Items';
+    public const LIVELIHOODS_SUPPORT = 'Livelihoods Support';
+    public const VOCATIONAL_TRAINING = 'Vocational Training';
+    public const NONE = 'None';
+    public const OTHER = 'Other';
 
     protected static $values = [
         0 => self::MPCA,

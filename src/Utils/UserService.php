@@ -3,6 +3,7 @@
 namespace Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use InvalidArgumentException;
 use InputType\UserCreateInputType;
 use InputType\UserUpdateInputType;
@@ -21,6 +22,7 @@ use Repository\UserRepository;
 
 /**
  * Class UserService
+ *
  * @package Utils
  */
 class UserService
@@ -46,17 +48,17 @@ class UserService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface     $validator
-     * @param ContainerInterface     $container
+     * @param ValidatorInterface $validator
+     * @param ContainerInterface $container
      * @param RoleHierarchyInterface $roleHierarchy
-     * @param Security               $security
+     * @param Security $security
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface     $validator,
-        ContainerInterface     $container,
+        ValidatorInterface $validator,
+        ContainerInterface $container,
         RoleHierarchyInterface $roleHierarchy,
-        Security               $security
+        Security $security
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
@@ -69,7 +71,7 @@ class UserService
      * @param UserInitializeInputType $inputType
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function initialize(UserInitializeInputType $inputType): array
     {
@@ -77,7 +79,7 @@ class UserService
             ->findBy(['email' => $inputType->getUsername()]);
 
         if ($user instanceof User) {
-            throw new \InvalidArgumentException('User with username '. $inputType->getUsername());
+            throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
         }
 
         $salt = $this->generateSalt();
@@ -110,7 +112,7 @@ class UserService
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 
         if (!$user instanceof User) {
-            throw new \InvalidArgumentException("User with username $username does not exists.");
+            throw new InvalidArgumentException("User with username $username does not exists.");
         }
 
         return ["userId" => $user->getId(), "salt" => $user->getSalt()];
@@ -120,7 +122,7 @@ class UserService
      * @param string $username
      * @param string $saltedPassword
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function login(string $username, string $saltedPassword)
     {
@@ -129,38 +131,40 @@ class UserService
         $user = $repository->findOneBy([
             'username' => $username,
             'password' => $saltedPassword,
-            'enabled' => 1
+            'enabled' => 1,
         ]);
 
         if (!$user instanceof User) {
-            throw new \Exception('Wrong password', Response::HTTP_BAD_REQUEST);
+            throw new Exception('Wrong password', Response::HTTP_BAD_REQUEST);
         }
 
         return $user;
     }
 
     /**
-     * @deprecated Remove in 3.0
-     *
      * @param array $userData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
+     * @deprecated Remove in 3.0
+     *
      */
     public function createFromArray(array $userData)
     {
         $roles = $userData['roles'];
 
         if (!isset($roles) || empty($roles)) {
-            throw new \Exception("Rights can not be empty");
+            throw new Exception("Rights can not be empty");
         }
 
         $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
 
         if (!$user instanceof User) {
-            throw new \Exception("The user with username " . $userData['username'] . " has been not preconfigured. You need to ask 
-            the salt for this username beforehand.");
+            throw new Exception(
+                "The user with username " . $userData['username'] . " has been not preconfigured. You need to ask
+            the salt for this username beforehand."
+            );
         } elseif ($user->isEnabled()) {
-            throw new \Exception("The user with username " . $userData['username'] . " has already been added");
+            throw new Exception("The user with username " . $userData['username'] . " has already been added");
         }
 
         $user->setSalt($userData['salt'])
@@ -171,11 +175,11 @@ class UserService
             ->setEnabled(1)
             ->setRoles($roles)
             ->setChangePassword($userData['change_password']);
-        
+
         $user->setPhonePrefix($userData['phone_prefix'])
             ->setPhoneNumber($userData['phone_number'])
             ->setTwoFactorAuthentication($userData['two_factor_authentication']);
-        
+
         $user->setPassword($userData['password']);
 
         $this->em->persist($user);
@@ -210,15 +214,18 @@ class UserService
             foreach ($errors as $error) {
                 $errorsArray[] = $error->getMessage();
             }
+
             return $errorsArray;
         }
 
         $this->em->flush();
+
         return $user;
     }
 
     /**
      * Export all users in a CSV file
+     *
      * @param string $type
      * @return mixed
      */
@@ -254,7 +261,7 @@ class UserService
         $userRepository = $this->em->getRepository(User::class);
 
         if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
-            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' has already been added');
+            throw new InvalidArgumentException('The user with email ' . $inputType->getEmail() . ' has already been added');
         }
 
         $initializedUser->setEmail($inputType->getEmail())
@@ -308,12 +315,12 @@ class UserService
 
         $existingUser = $userRepository->findOneBy(['email' => $inputType->getEmail()]);
         if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
-            throw new InvalidArgumentException('The user with email '.$inputType->getEmail().' already exists');
+            throw new InvalidArgumentException('The user with email ' . $inputType->getEmail() . ' already exists');
         }
 
         $existingUser = $userRepository->findOneBy(['username' => $inputType->getUsername()]);
         if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
-            throw new InvalidArgumentException('The user with username '.$inputType->getUsername().' already exists');
+            throw new InvalidArgumentException('The user with username ' . $inputType->getUsername() . ' already exists');
         }
 
         $user->setEmail($inputType->getEmail())
@@ -383,7 +390,7 @@ class UserService
     }
 
     /**
-     * @param User   $user
+     * @param User $user
      * @param string $role
      *
      * @return bool
@@ -401,7 +408,7 @@ class UserService
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function generateSalt()
     {

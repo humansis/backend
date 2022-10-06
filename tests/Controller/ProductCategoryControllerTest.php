@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller;
@@ -35,17 +36,21 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/product-categories', $data = [
-            'name' => 'Test category',
-            'type' => ProductCategoryType::FOOD,
-            'image' => 'http://example.org/image.jpg',
-        ]);
+        $this->request(
+            'POST',
+            '/api/basic/web-app/v1/product-categories',
+            $data = [
+                'name' => 'Test category',
+                'type' => ProductCategoryType::FOOD,
+                'image' => 'http://example.org/image.jpg',
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -65,17 +70,21 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('POST', '/api/basic/web-app/v1/product-categories/'.$id, $data = [
-            'name' => 'Another Test category',
-            'type' => ProductCategoryType::NONFOOD,
-            'image' => 'http://example.org/other-image.jpg',
-        ]);
+        $this->request(
+            'POST',
+            '/api/basic/web-app/v1/product-categories/' . $id,
+            $data = [
+                'name' => 'Another Test category',
+                'type' => ProductCategoryType::NONFOOD,
+                'image' => 'http://example.org/other-image.jpg',
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -95,13 +104,13 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/product-categories/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/product-categories/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -119,7 +128,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -165,22 +174,27 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
         $this->em->clear();
 
         $expectedFilteredCategories = 0;
-        if ($canSellFood) $expectedFilteredCategories += count($foods);
-        if ($canSellNonFood) $expectedFilteredCategories += count($nonfoods);
-        if ($canSellCashback) $expectedFilteredCategories += count($cashbacks);
+        if ($canSellFood) {
+            $expectedFilteredCategories += count($foods);
+        }
+        if ($canSellNonFood) {
+            $expectedFilteredCategories += count($nonfoods);
+        }
+        if ($canSellCashback) {
+            $expectedFilteredCategories += count($cashbacks);
+        }
 
-        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]='.$vendor->getId());
+        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=' . $vendor->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertEquals($expectedFilteredCategories, $result['totalCount']);
-
     }
 
     public function testListFilteredByNonExistentVendor()
@@ -189,7 +203,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isClientError(),
-            'Request should failed by NotFound error: '.$this->client->getResponse()->getContent()
+            'Request should failed by NotFound error: ' . $this->client->getResponse()->getContent()
         );
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Utils;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use InputType\DonorCreateInputType;
 use InputType\DonorUpdateInputType;
 use Entity\Donor;
@@ -10,6 +12,7 @@ use Psr\Container\ContainerInterface;
 
 /**
  * Class DonorService
+ *
  * @package Utils
  */
 class DonorService
@@ -22,6 +25,7 @@ class DonorService
 
     /**
      * DonorService constructor.
+     *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface $container
      */
@@ -38,7 +42,7 @@ class DonorService
             ->setShortname($inputType->getShortname())
             ->setNotes($inputType->getNotes())
             ->setLogo($inputType->getLogo())
-            ->setDateAdded(new \DateTime());
+            ->setDateAdded(new DateTime());
 
         $this->em->persist($donor);
         $this->em->flush();
@@ -67,7 +71,7 @@ class DonorService
         try {
             $this->em->remove($donor);
             $this->em->flush();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return false;
         }
 
@@ -76,6 +80,7 @@ class DonorService
 
     /**
      * Export all the donors in the CSV file
+     *
      * @param string $type
      * @return mixed
      */

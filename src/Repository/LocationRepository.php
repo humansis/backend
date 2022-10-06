@@ -3,6 +3,7 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\EntityRepository;
 use Entity\Location;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Join;
@@ -17,9 +18,8 @@ use InputType\LocationFilterInputType;
  *
  * @method Location|null find($id, $lockMode = null, $lockVersion = null)
  */
-class LocationRepository extends \Doctrine\ORM\EntityRepository
+class LocationRepository extends EntityRepository
 {
-
     /**
      * @param $country
      *
@@ -35,7 +35,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * @param string $countryIso3
-     * @param array  $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
+     * @param array $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
      *
      * @return Location|null
      */
@@ -67,7 +67,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
      * It will iterate through location path and check if all parts of location are equal to ADMs array
      *
      * @param Location $location
-     * @param array    $adms
+     * @param array $adms
      *
      * @return bool
      */
@@ -149,22 +149,20 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         Location $ancestor,
         string $childAlias = 'subqChildLoc',
         bool $withParent = false
-    ): QueryBuilder
-    {
+    ): QueryBuilder {
         $qb = $this->createQueryBuilder($childAlias);
-        
+
         return $this->inChildrenLocationsQueryBuilder(
             $qb,
             $ancestor,
             $childAlias,
             $withParent,
         );
-        
     }
 
     /**
      * add join for children locations to query in param
-     * 
+     *
      * @param QueryBuilder $qb
      * @param Location $ancestor
      * @param string $joinAlias
@@ -178,8 +176,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         string $joinAlias,
         string $childAlias = 'subqChildLoc',
         bool $withParent = false
-    ): QueryBuilder
-    {
+    ): QueryBuilder {
         $qb->join($joinAlias . '.location', $childAlias);
 
         return $this->inChildrenLocationsQueryBuilder(
@@ -200,14 +197,17 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
         int $level,
         string $childAlias,
         string $parentAlias = 'subqParentLoc'
-    ): QueryBuilder
-    {
+    ): QueryBuilder {
         $qb = $this->createQueryBuilder($parentAlias);
+
         return $qb
-            ->andWhere($qb->expr()->between(
-                $childAlias .'.lft', 
-                $parentAlias . '.lft',
-                $parentAlias . '.rgt'))
+            ->andWhere(
+                $qb->expr()->between(
+                    $childAlias . '.lft',
+                    $parentAlias . '.lft',
+                    $parentAlias . '.rgt'
+                )
+            )
             ->andWhere($parentAlias . '.lvl = :' . $parentAlias . 'Level')
             ->andWhere($parentAlias . '.countryIso3 = :iso3')
             ->andWhere($parentAlias . '.name like :fulltext')
@@ -216,7 +216,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
     /**
      * @param LocationFilterInputType $filter
-     * @param string|null             $iso3
+     * @param string|null $iso3
      *
      * @return Paginator
      */
@@ -240,7 +240,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
                 ->add($qbr->expr()->like('l.code', ':fulltext'));
             $qbr->andWhere($orX);
             $qbr->setParameter('id', $filter->getFulltext());
-            $qbr->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+            $qbr->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
         }
         if ($filter->hasLevel()) {
             $qbr->andWhere('l.lvl = :level')
@@ -257,9 +257,9 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param string      $code
+     * @param string $code
      * @param string|null $iso3
-     * @param array|null  $context
+     * @param array|null $context
      *
      * @return Location[]
      */
@@ -275,30 +275,28 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
-    
+
     private function inChildrenLocationsQueryBuilder(
         QueryBuilder $qb,
         Location $ancestor,
         string $childAlias = 'subqChildLoc',
         bool $withParent = false
-    ): QueryBuilder
-    {
+    ): QueryBuilder {
         if ($withParent) {
             //include parent in the query
             $qb
                 ->andWhere(
-                    $qb->expr()->lte($childAlias.'.rgt', ':parentRgt'),
-                    $qb->expr()->gte($childAlias.'.lft', ':parentLft'),
-                    $qb->expr()->gte($childAlias.'.lvl', ':parentLvl')
+                    $qb->expr()->lte($childAlias . '.rgt', ':parentRgt'),
+                    $qb->expr()->gte($childAlias . '.lft', ':parentLft'),
+                    $qb->expr()->gte($childAlias . '.lvl', ':parentLvl')
                 );
-        }
-        else {
+        } else {
             //get only children
             $qb
                 ->andWhere(
-                    $qb->expr()->lt($childAlias.'.rgt', ':parentRgt'),
-                    $qb->expr()->gt($childAlias.'.lft', ':parentLft'),
-                    $qb->expr()->gt($childAlias.'.lvl', ':parentLvl')
+                    $qb->expr()->lt($childAlias . '.rgt', ':parentRgt'),
+                    $qb->expr()->gt($childAlias . '.lft', ':parentLft'),
+                    $qb->expr()->gt($childAlias . '.lvl', ':parentLvl')
                 );
         }
 
@@ -309,7 +307,7 @@ class LocationRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param int    $id
+     * @param int $id
      * @param string $countryCode
      *
      * @return Location

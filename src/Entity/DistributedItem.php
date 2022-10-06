@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\Location;
 use Entity\Assistance;
@@ -84,7 +86,7 @@ class DistributedItem
     private $modalityType;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
      */
@@ -177,9 +179,9 @@ class DistributedItem
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDateDistribution(): ?\DateTimeInterface
+    public function getDateDistribution(): ?DateTimeInterface
     {
         return $this->dateDistribution;
     }

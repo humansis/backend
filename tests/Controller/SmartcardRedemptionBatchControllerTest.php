@@ -33,18 +33,21 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/' . $vendorId . '/smartcard-redemption-batches');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {"id": "*", "projectId": "*", "contractNumber": "*", "value": "*", "currency": "*", "quantity": "*", "date": "*"}
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testCreateRedemptionBatchByVendor()
@@ -66,20 +69,23 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getResult(Query::HYDRATE_ARRAY);
 
-        $this->request('POST', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-batches', [
+        $this->request('POST', '/api/basic/web-app/v1/vendors/' . $vendorId . '/smartcard-redemption-batches', [
             'purchaseIds' => (array) $purchaseIds[0]['id'],
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "projectId": "*",
             "value": "*",
             "currency": "*",
             "date": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testRedemptionCandidatesByVendor()
@@ -93,17 +99,20 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendorId.'/smartcard-redemption-candidates');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/' . $vendorId . '/smartcard-redemption-candidates');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {"purchaseIds": "*", "projectId": "*", "value": "*", "currency": "*"}
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-
 /**
  * Voucher purchase.
  *
@@ -125,7 +124,7 @@ class VoucherPurchase
     }
 
     /**
-     * @param Product    $product
+     * @param Product $product
      * @param float|null $quantity
      * @param float|null $value
      */

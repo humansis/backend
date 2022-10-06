@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType;
 
 /**
@@ -6,5 +7,4 @@ namespace InputType;
  */
 interface InputTypeInterface
 {
-
 }

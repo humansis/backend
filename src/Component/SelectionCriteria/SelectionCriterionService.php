@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\SelectionCriteria;
 
+use BadMethodCallException;
 use Component\SelectionCriteria\Structure\Field;
 use Enum\SelectionCriteriaTarget;
+use InvalidArgumentException;
 
 class SelectionCriterionService
 {
@@ -22,13 +25,13 @@ class SelectionCriterionService
      *
      * @return Field[]
      *
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
+     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
      */
     public function findFieldsByTarget(string $target, string $countryIso3): iterable
     {
         if (!in_array($target, SelectionCriteriaTarget::values())) {
-            throw new \InvalidArgumentException($target.' is not valid Selection criterion target.');
+            throw new InvalidArgumentException($target . ' is not valid Selection criterion target.');
         }
 
         $data = [];
@@ -48,8 +51,8 @@ class SelectionCriterionService
      *
      * @return array
      *
-     * @throws \InvalidArgumentException
-     * @throws \BadMethodCallException
+     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
      */
     public function findFieldConditions(string $fieldCode, string $target, string $countryIso3): array
     {
@@ -60,7 +63,7 @@ class SelectionCriterionService
             }
         }
 
-        throw new \InvalidArgumentException('Field '.$fieldCode.' for country '.$countryIso3.' does not exists');
+        throw new InvalidArgumentException('Field ' . $fieldCode . ' for country ' . $countryIso3 . ' does not exists');
     }
 
     /**
@@ -68,7 +71,7 @@ class SelectionCriterionService
      *
      * @return FieldGeneratorInterface
      *
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     private function getGenerator(string $target): FieldGeneratorInterface
     {
@@ -78,6 +81,6 @@ class SelectionCriterionService
             }
         }
 
-        throw new \BadMethodCallException("No generator exists for target '$target'");
+        throw new BadMethodCallException("No generator exists for target '$target'");
     }
 }

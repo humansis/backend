@@ -11,7 +11,6 @@ use Validator\Constraints\CountrySpecificDataType;
 
 class CountrySpecificsAnswerInputType implements InputTypeInterface
 {
-
     /**
      * @Assert\Type("integer")
      * @Assert\GreaterThanOrEqual("0")
@@ -57,6 +56,4 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     {
         $this->answer = $answer;
     }
-
-
 }

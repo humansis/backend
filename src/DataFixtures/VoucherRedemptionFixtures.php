@@ -20,7 +20,7 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
     private $voucherService;
 
     /**
-     * @param string         $environment
+     * @param string $environment
      * @param VoucherService $voucherService
      */
     public function __construct(string $environment, VoucherService $voucherService)
@@ -47,7 +47,7 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
         // $user = $this->getReference('user_admin');
 
         foreach ($vendors as $vendor) {
-            echo "Vendor ".$vendor->getName().'#'.$vendor->getId();
+            echo "Vendor " . $vendor->getName() . '#' . $vendor->getId();
 
             $vouchers = [];
             $usedVouchers = $manager->getRepository(Voucher::class)->findUsedButUnredeemedByVendor($vendor);

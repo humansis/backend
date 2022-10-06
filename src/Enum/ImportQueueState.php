@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,23 +8,22 @@ final class ImportQueueState
 {
     use EnumTrait;
 
-    const NEW = 'New';
-    const VALID = 'Valid';
-    const INVALID = 'Invalid';
-    const INVALID_EXPORTED = 'Invalid Exported';
-    const IDENTITY_CANDIDATE = 'Identity Candidate';
-    const UNIQUE_CANDIDATE = 'Unique Candidate';
-    const SIMILARITY_CANDIDATE = 'Similarity Candidate';
-    const TO_CREATE = 'To Create';
-    const TO_UPDATE = 'To Update';
-    const TO_LINK = 'To Link';
-    const TO_IGNORE = 'To Ignore';
-    const CREATED = 'Created';
-    const UPDATED = 'Updated';
-    const LINKED = 'Linked';
-    const IGNORED = 'Ignored';
-    const ERROR = 'Error';
-
+    public const NEW = 'New';
+    public const VALID = 'Valid';
+    public const INVALID = 'Invalid';
+    public const INVALID_EXPORTED = 'Invalid Exported';
+    public const IDENTITY_CANDIDATE = 'Identity Candidate';
+    public const UNIQUE_CANDIDATE = 'Unique Candidate';
+    public const SIMILARITY_CANDIDATE = 'Similarity Candidate';
+    public const TO_CREATE = 'To Create';
+    public const TO_UPDATE = 'To Update';
+    public const TO_LINK = 'To Link';
+    public const TO_IGNORE = 'To Ignore';
+    public const CREATED = 'Created';
+    public const UPDATED = 'Updated';
+    public const LINKED = 'Linked';
+    public const IGNORED = 'Ignored';
+    public const ERROR = 'Error';
 
     public static function values(): array
     {

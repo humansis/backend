@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -7,13 +9,13 @@ use Doctrine\Migrations\AbstractMigration;
 
 class Version20220916142518 extends AbstractMigration
 {
-
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP VIEW view_distributed_item');
-        $this->addSql("
+        $this->addSql(
+            "
 CREATE VIEW view_distributed_item AS
 SELECT
     pack.id,
@@ -74,10 +76,12 @@ FROM distribution_beneficiary db
             WHERE b.relief_package_id IS NOT NULL
             GROUP BY b.id, b.code, b.relief_package_id
 ) AS b ON b.relief_package_id=pack.id;
-");
+"
+        );
 
         $this->addSql('DROP VIEW view_purchased_item');
-        $this->addSql('CREATE VIEW view_purchased_item AS
+        $this->addSql(
+            'CREATE VIEW view_purchased_item AS
 SELECT
     CASE
         WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id, "_", spr.product_id)
@@ -148,15 +152,13 @@ FROM distribution_beneficiary db
          LEFT JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
 
 WHERE (spr.id IS NOT NULL OR vpr.id IS NOT NULL)
-');
-
+'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
         $this->abortIf(true, 'No downgrade');
     }
-
-
 }

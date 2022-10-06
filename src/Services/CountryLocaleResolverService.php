@@ -8,7 +8,7 @@ class CountryLocaleResolverService
      * @var array
      */
     private $countries;
-    
+
     public function __construct(array $countries)
     {
         $this->countries = [];
@@ -27,6 +27,7 @@ class CountryLocaleResolverService
         if (key_exists($countryCode, $this->countries)) {
             return $this->countries[$countryCode];
         }
+
         return 'en';
     }
 }

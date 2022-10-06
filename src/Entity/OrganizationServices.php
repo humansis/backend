@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -11,7 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="Repository\OrganizationServicesRepository")
  */
-class OrganizationServices implements \JsonSerializable
+class OrganizationServices implements JsonSerializable
 {
     /**
      * @var int
@@ -123,11 +124,11 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Set organization.
      *
-     * @param \Entity\Organization $organization
+     * @param Organization $organization
      *
      * @return OrganizationServices
      */
-    public function setOrganization(\Entity\Organization $organization)
+    public function setOrganization(Organization $organization)
     {
         $this->organization = $organization;
 
@@ -137,7 +138,7 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Get Organization.
      *
-     * @return \Entity\Organization
+     * @return Organization
      */
     public function getOrganization()
     {
@@ -147,11 +148,11 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Set Service.
      *
-     * @param \Entity\Service $service
+     * @param Service $service
      *
      * @return OrganizationServices
      */
-    public function setService(\Entity\Service $service = null)
+    public function setService(Service $service = null)
     {
         $this->service = $service;
 
@@ -161,7 +162,7 @@ class OrganizationServices implements \JsonSerializable
     /**
      * Get Service.
      *
-     * @return \Entity\Service
+     * @return Service
      */
     public function getService()
     {

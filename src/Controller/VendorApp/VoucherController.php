@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
 use InputType\VoucherPurchase;
 
-
 class VoucherController extends Controller
 {
     /**
@@ -27,7 +26,7 @@ class VoucherController extends Controller
      */
     public function purchase(Request $request)
     {
-        $data = $this->get('serializer')->deserialize($request->getContent(), VoucherPurchase::class.'[]', 'json');
+        $data = $this->get('serializer')->deserialize($request->getContent(), VoucherPurchase::class . '[]', 'json');
 
         $errors = $this->get('validator')->validate($data, [
             new All([new Type(['type' => VoucherPurchase::class])]),
@@ -35,7 +34,8 @@ class VoucherController extends Controller
         ]);
 
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: '.((string) $errors));
+            $this->container->get('logger')->error('validation errors: ' . ((string) $errors));
+
             return new Response((string) $errors, Response::HTTP_BAD_REQUEST);
         }
 
@@ -47,6 +47,7 @@ class VoucherController extends Controller
             return new Response(json_encode(true));
         } catch (EntityNotFoundException $ex) {
             $this->container->get('logger')->error('Entity not found: ', [$ex->getMessage()]);
+
             return new Response($ex->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }

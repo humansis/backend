@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Entity\Assistance;
 use Entity\Commodity;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -32,17 +33,18 @@ class CommodityControllerTest extends BMSServiceTestCase
         $commodity1 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[0];
         $commodity2 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[1];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]='.$commodity1->getId().'&filter[id][]='.$commodity2->getId());
+        $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]=' . $commodity1->getId() . '&filter[id][]=' . $commodity2->getId());
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": 2, 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": 2,
             "data": [
                 {
-                    "id": '.$commodity1->getId().',
+                    "id": ' . $commodity1->getId() . ',
                     "modalityType": "*",
                     "unit": "*",
                     "value": "*",
@@ -50,14 +52,16 @@ class CommodityControllerTest extends BMSServiceTestCase
                     "division": "*"
                 },
                 {
-                    "id": '.$commodity2->getId().',
+                    "id": ' . $commodity2->getId() . ',
                     "modalityType": "*",
                     "unit": "*",
                     "value": "*",
                     "description": "*",
                     "division": "*"
                 }
-            ]}', $this->client->getResponse()->getContent());
+            ]}',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -67,16 +71,17 @@ class CommodityControllerTest extends BMSServiceTestCase
     {
         /** @var EntityManagerInterface $em */
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
-        $assistance = $em->getRepository(\Entity\Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
+        $assistance = $em->getRepository(Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/'.$assistance->getId().'/commodities');
+        $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/commodities');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": '.count($assistance->getCommodities()).', 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": ' . count($assistance->getCommodities()) . ',
             "data": [
                 {
                     "id": "*",
@@ -86,7 +91,8 @@ class CommodityControllerTest extends BMSServiceTestCase
                     "description": "*",
                     "division": "*"
                 }
-            ]}', $this->client->getResponse()->getContent());
+            ]}',
+            $this->client->getResponse()->getContent()
+        );
     }
-
 }

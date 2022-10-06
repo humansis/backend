@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -11,18 +12,18 @@ use Request\Pagination;
 
 class ScoringBlueprintRepository extends EntityRepository
 {
-
     /**
-     * @param string|null                          $countryIso3
-     * @param Pagination|null                      $pagination
+     * @param string|null $countryIso3
+     * @param Pagination|null $pagination
      * @param ScoringBlueprintFilterInputType|null $filter
      *
      * @return Paginator
      */
-    public function findByParams(?string $countryIso3 = null,
-                                 ?Pagination $pagination = null,
-                                 ?ScoringBlueprintFilterInputType $filter = null): Paginator
-    {
+    public function findByParams(
+        ?string $countryIso3 = null,
+        ?Pagination $pagination = null,
+        ?ScoringBlueprintFilterInputType $filter = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('s');
 
         if (null !== $countryIso3) {
@@ -36,7 +37,6 @@ class ScoringBlueprintRepository extends EntityRepository
                     ->setParameter('archived', $filter->isArchived());
             }
         }
-
 
         if ($pagination) {
             $qb->setMaxResults($pagination->getLimit());
@@ -56,5 +56,4 @@ class ScoringBlueprintRepository extends EntityRepository
     {
         return $this->findOneBy(['id' => $id, 'archived' => false, 'countryIso3' => $iso3]);
     }
-
 }

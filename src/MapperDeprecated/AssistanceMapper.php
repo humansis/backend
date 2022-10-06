@@ -13,7 +13,7 @@ use Enum\ProductCategoryType;
  */
 class AssistanceMapper
 {
-    const TARGET_TYPE_TO_TYPE_MAPPING = [
+    public const TARGET_TYPE_TO_TYPE_MAPPING = [
         AssistanceTargetType::INDIVIDUAL => 1,
         AssistanceTargetType::HOUSEHOLD => 0,
         AssistanceTargetType::COMMUNITY => 2,
@@ -34,9 +34,9 @@ class AssistanceMapper
     /**
      * AssistanceMapper constructor.
      *
-     * @param BeneficiaryMapper               $beneficiaryMapper
+     * @param BeneficiaryMapper $beneficiaryMapper
      * @param AssistanceBeneficiaryRepository $distributionBNFRepo
-     * @param BeneficiaryRepository           $beneficiaryRepository
+     * @param BeneficiaryRepository $beneficiaryRepository
      */
     public function __construct(
         BeneficiaryMapper $beneficiaryMapper,

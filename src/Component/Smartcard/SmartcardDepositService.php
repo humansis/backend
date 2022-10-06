@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Smartcard;
@@ -60,15 +61,14 @@ class SmartcardDepositService
     private $smartcardDepositRepository;
 
     public function __construct(
-        EntityManager              $em,
-        Registry                   $workflowRegistry,
-        ValidatorInterface         $validator,
-        DepositFactory             $depositFactory,
-        ReliefPackageRepository    $reliefPackageRepository,
-        LoggerInterface            $logger,
+        EntityManager $em,
+        Registry $workflowRegistry,
+        ValidatorInterface $validator,
+        DepositFactory $depositFactory,
+        ReliefPackageRepository $reliefPackageRepository,
+        LoggerInterface $logger,
         SmartcardDepositRepository $smartcardDepositRepository
-    )
-    {
+    ) {
         $this->em = $em;
         $this->workflowRegistry = $workflowRegistry;
         $this->validator = $validator;
@@ -79,8 +79,8 @@ class SmartcardDepositService
     }
 
     /**
-     * @param string        $smartcardSerialNumber
-     * @param int           $timestamp
+     * @param string $smartcardSerialNumber
+     * @param int $timestamp
      * @param               $value
      * @param ReliefPackage $reliefPackage
      *
@@ -88,14 +88,15 @@ class SmartcardDepositService
      */
     public static function generateDepositHash(string $smartcardSerialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
     {
-        return md5($smartcardSerialNumber.
-            '-'.
-            $timestamp.
-            '-'.
-            $value.
-            '-'.
-            $reliefPackage->getUnit().
-            '-'.
+        return md5(
+            $smartcardSerialNumber .
+            '-' .
+            $timestamp .
+            '-' .
+            $value .
+            '-' .
+            $reliefPackage->getUnit() .
+            '-' .
             $reliefPackage->getId()
         );
     }
@@ -104,16 +105,17 @@ class SmartcardDepositService
      * @param Deposits $deposits
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      */
     public function validateSync(Deposits $deposits): void
     {
         $workflow = $this->workflowRegistry->get($deposits);
-        if (!$workflow->can($deposits, SynchronizationBatchTransitions::COMPLETE_VALIDATION)
-            || !$workflow->can($deposits, SynchronizationBatchTransitions::FAIL_VALIDATION))
-        {
+        if (
+            !$workflow->can($deposits, SynchronizationBatchTransitions::COMPLETE_VALIDATION)
+            || !$workflow->can($deposits, SynchronizationBatchTransitions::FAIL_VALIDATION)
+        ) {
             return;
         }
         $anyError = false;
@@ -126,19 +128,21 @@ class SmartcardDepositService
             if ($depositInput->getReliefPackageId()) {
                 $reliefPackage = $this->reliefPackageRepository->find($depositInput->getReliefPackageId());
                 if (null == $reliefPackage) {
-                    $violation->add(new ConstraintViolation(
-                        "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
-                        null,
-                        [],
-                        [],
-                        'reliefPackageId',
-                        $depositInput->getReliefPackageId()
-                    ));
+                    $violation->add(
+                        new ConstraintViolation(
+                            "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
+                            null,
+                            [],
+                            [],
+                            'reliefPackageId',
+                            $depositInput->getReliefPackageId()
+                        )
+                    );
                 } else {
                     $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
                     if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);;
+                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
 
                         $tbMessages = [];
                         /** @var TransitionBlocker $item */
@@ -146,14 +150,19 @@ class SmartcardDepositService
                             $tbMessages[] = $item->getMessage();
                         }
 
-                        $violation->add(new ConstraintViolation(
-                            "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode($tbMessages, ', ') . ']',
-                            null,
-                            [],
-                            [],
-                            'reliefPackageId',
-                            $depositInput->getReliefPackageId()
-                        ));
+                        $violation->add(
+                            new ConstraintViolation(
+                                "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode(
+                                    $tbMessages,
+                                    ', '
+                                ) . ']',
+                                null,
+                                [],
+                                [],
+                                'reliefPackageId',
+                                $depositInput->getReliefPackageId()
+                            )
+                        );
                     }
                 }
             }
@@ -183,7 +192,7 @@ class SmartcardDepositService
 
     /**
      * @param CreateDepositInputType $input
-     * @param User                   $user
+     * @param User $user
      *
      * @return void
      * @throws InvalidArgumentException
@@ -227,11 +236,14 @@ class SmartcardDepositService
             ->where('rp.state = :state')
             ->andWhere('ab.id IN (:abstractBeneficiaryIds)')
             ->setParameter('state', ReliefPackageState::DISTRIBUTED)
-            ->setParameter('abstractBeneficiaryIds', array_map(function($distributionBeneficiary) {
-                return $distributionBeneficiary->getId();
-            }, $distributionBeneficiaries));
+            ->setParameter(
+                'abstractBeneficiaryIds',
+                array_map(function ($distributionBeneficiary) {
+                    return $distributionBeneficiary->getId();
+                }, $distributionBeneficiaries)
+            );
+
         /** @var SmartcardDeposit[] $result */
         return $qb->getQuery()->getResult();
     }
-
 }

@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\FilterFragment;
+
 use Symfony\Component\Validator\Constraints as Assert;
 
 trait FulltextFilterTrait

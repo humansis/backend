@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\ValueObject;
 
@@ -19,7 +21,7 @@ class HouseholdCompare
 
     /**
      * @param HouseholdCreateInputType $imported
-     * @param Entity\Household         $current
+     * @param Entity\Household $current
      */
     public function __construct(HouseholdCreateInputType $imported, Entity\Household $current)
     {
@@ -42,6 +44,4 @@ class HouseholdCompare
     {
         return $this->current;
     }
-
-
 }

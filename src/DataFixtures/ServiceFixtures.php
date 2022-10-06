@@ -8,12 +8,12 @@ use Entity\Service;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use Exception;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
-
     /** @var UserManager $manager */
     private $manager;
 
@@ -44,11 +44,11 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                 "properties" => [
                     "token" => [
                         "type" => "string",
-                        "description" => "The token for the SMS service"
-                    ]
-                ]
+                        "description" => "The token for the SMS service",
+                    ],
+                ],
             ],
-            "country" => null
+            "country" => null,
         ],
         [
             "name" => "IDPoor API",
@@ -61,15 +61,15 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                     "email" => [
                         "type" => "string",
                         "format" => "email",
-                        "description" => "The email used for the IDPoor"
+                        "description" => "The email used for the IDPoor",
                     ],
                     "token" => [
                         "type" => "string",
-                        "description" => "The token for the IDPoor"
-                    ]
-                ]
+                        "description" => "The token for the IDPoor",
+                    ],
+                ],
             ],
-            "country" => "KHM"
+            "country" => "KHM",
         ],
         [
             "name" => "WING Cash Transfer",
@@ -82,27 +82,27 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                     "password" => [
                         "type" => "string",
                         "format" => "password",
-                        "description" => "The password for the WING API"
+                        "description" => "The password for the WING API",
                     ],
                     "username" => [
                         "type" => "string",
-                        "description" => "The username for the WING API"
+                        "description" => "The username for the WING API",
                     ],
                     "production" => [
                         "type" => "boolean",
-                        "description" => "Whether the service should use the production API or not"
-                    ]
-                ]
+                        "description" => "Whether the service should use the production API or not",
+                    ],
+                ],
             ],
-            "country" => "KHM"
-        ]
+            "country" => "KHM",
+        ],
     ];
 
     /**
      * Load data fixtures with the passed EntityManager
      *
      * @param ObjectManager $manager
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
@@ -111,8 +111,8 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
             if (!$service instanceof Service) {
                 $service = new Service();
                 $service->setName($datum["name"])
-                         ->setParameters($datum["parameters"])
-                         ->setCountry($datum["country"]);
+                    ->setParameters($datum["parameters"])
+                    ->setCountry($datum["country"]);
 
                 $manager->persist($service);
                 $manager->flush();
@@ -129,10 +129,10 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                 }
 
                 $organizationService->setOrganization($organization)
-                                    ->setService($service)
-                                    ->setEnabled(false)
-                                    ->setParametersValue($parameters);
-                
+                    ->setService($service)
+                    ->setEnabled(false)
+                    ->setParametersValue($parameters);
+
                 $manager->persist($organizationService);
                 $manager->flush();
             }

@@ -24,7 +24,7 @@ class ModalityCodelistController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
-    
+
     /**
      * @Rest\Get("/web-app/v1/modalities")
      *
@@ -33,7 +33,7 @@ class ModalityCodelistController extends AbstractController
     public function modalities(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(Modality::values());
-        
+
         return $this->json(new Paginator($data));
     }
 

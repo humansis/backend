@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,10 +8,10 @@ final class SourceType
 {
     use EnumTrait;
 
-    const WEB_APP = 'Web';
-    const VENDOR_APP = 'Vendor';
-    const USER_APP = 'User';
-    const CLI = 'CLI';
+    public const WEB_APP = 'Web';
+    public const VENDOR_APP = 'Vendor';
+    public const USER_APP = 'User';
+    public const CLI = 'CLI';
 
     public static function values(): array
     {

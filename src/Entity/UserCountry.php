@@ -38,7 +38,6 @@ class UserCountry
      */
     private $user;
 
-
     /**
      * Get id.
      *

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
@@ -23,7 +24,7 @@ class AssistanceSelection
     private $id;
 
     /**
-     * @var integer|null
+     * @var int|null
      *
      * @ORM\Column(name="threshold", type="integer", nullable=true)
      */
@@ -94,6 +95,4 @@ class AssistanceSelection
     {
         $this->assistance = $assistance;
     }
-
-
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Validator\Constraints;
 
@@ -61,5 +63,4 @@ class TestDummyObject
     {
         return $this->countryISO3;
     }
-
 }

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Exception;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\TransactionFilterInputType;
+use Psr\SimpleCache\InvalidArgumentException;
 use Services\CodeListService;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,11 +28,11 @@ class TransactionController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
-    
+
     /**
      * @Rest\Get("/web-app/v1/transactions")
      *
-     * @param Request                    $request
+     * @param Request $request
      * @param TransactionFilterInputType $filter
      *
      * @return JsonResponse
@@ -52,7 +54,7 @@ class TransactionController extends AbstractController
      *
      * @return JsonResponse
      * @throws \Psr\Cache\InvalidArgumentException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      * @deprecated Probably does not work. Do not try to use transaction before you refactor them, please.
      *
      */
@@ -71,8 +73,9 @@ class TransactionController extends AbstractController
         $code = (int) trim(preg_replace('/\s+/', ' ', $code));
 
         $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
-        if (! $validatedTransaction) {
+        if (!$validatedTransaction) {
             $logger->warning('Code: did not match');
+
             return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
         } else {
             $logger->error('Code: verified');
@@ -80,13 +83,15 @@ class TransactionController extends AbstractController
 
         try {
             $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
-        } catch (\Exception $exception) {
-            $logger->error('Sending money failed: '.$exception->getMessage());
+        } catch (Exception $exception) {
+            $logger->error('Sending money failed: ' . $exception->getMessage());
+
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
         $json = $this->get('serializer')
             ->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
+
         return new Response($json);
     }
 

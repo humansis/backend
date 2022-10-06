@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Deprecated;
 
@@ -13,59 +15,70 @@ class UpdateInstitutionType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     protected $name;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Choice(choices=Entity\Institution::TYPE_ALL)
      */
     protected $type;
+
     /**
      * @var BeneficiaryAddressType|null
      * @Assert\Valid()
      */
     private $address;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $latitude;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $longitude;
+
     /**
      * @var NationalIdType|null
      * @Assert\Valid()
      */
     private $national_id;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     private $phone_prefix;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     private $phone_type;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $phone_number;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $contact_name;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $contact_family_name;
+
     /**
      * @var int[]
      * @Assert\NotNull
@@ -164,7 +177,7 @@ class UpdateInstitutionType implements InputTypeInterface
     /**
      * @param NationalIdType|null $national_id
      */
-    public function setNational_id(?NationalIdType $national_id): void
+    public function setNationalId(?NationalIdType $national_id): void
     {
         $this->national_id = $national_id;
     }
@@ -264,5 +277,4 @@ class UpdateInstitutionType implements InputTypeInterface
     {
         $this->projects = $projects;
     }
-
 }

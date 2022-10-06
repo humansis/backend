@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTimeInterface;
 use Entity\DistributedItem;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class DistributedItemMapper implements MapperInterface
@@ -30,7 +33,7 @@ class DistributedItemMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.DistributedItem::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . DistributedItem::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getProjectId(): int
@@ -50,7 +53,7 @@ class DistributedItemMapper implements MapperInterface
 
     public function getDateDistribution(): ?string
     {
-        return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(\DateTimeInterface::ISO8601) : null;
+        return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(DateTimeInterface::ISO8601) : null;
     }
 
     public function getCommodityId(): int

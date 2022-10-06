@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Loader;
 
@@ -47,6 +49,7 @@ class CriteriaConfigurationLoader
         if (strpos($value, '.') !== false) {
             return CriteriaValueTransformerEnum::CONVERT_TO_FLOAT;
         }
+
         return CriteriaValueTransformerEnum::CONVERT_TO_INT;
     }
 }

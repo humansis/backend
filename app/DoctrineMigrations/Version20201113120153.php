@@ -14,7 +14,8 @@ final class Version20201113120153 extends AbstractMigration
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE smartcard ADD currency VARCHAR(3) DEFAULT NULL');
-        $this->addSql('
+        $this->addSql(
+            '
             UPDATE smartcard s
             LEFT JOIN smartcard_deposit sd ON sd.smartcard_id=s.id
             LEFT JOIN distribution_beneficiary db ON db.id=sd.distribution_beneficiary_id
@@ -22,7 +23,8 @@ final class Version20201113120153 extends AbstractMigration
             LEFT JOIN modality_type mt ON mt.id=c.modality_type_id AND mt.name=\'Smartcard\'
             SET s.currency=c.unit
             WHERE c.unit IS NOT NULL
-        ');
+        '
+        );
     }
 
     public function down(Schema $schema): void

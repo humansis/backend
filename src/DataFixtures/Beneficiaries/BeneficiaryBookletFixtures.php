@@ -29,7 +29,6 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
     /** @var BookletService */
     private $bookletService;
 
-
     public function __construct(Kernel $kernel, BookletService $bookletService)
     {
         $this->kernel = $kernel;
@@ -46,6 +45,7 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
     {
         if ($this->kernel->getEnvironment() === "prod") {
             echo __CLASS__ . " can't be running at production\n";
+
             return;
         }
 
@@ -59,7 +59,7 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
             $bookletGenerator = $this->bookletGenerator($manager, $project->getCountryIso3());
 
             foreach ($voucherAssistances as $assistance) {
-                echo $project->getName()." - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";
+                echo $project->getName() . " - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";
                 foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
                     $booklet = $bookletGenerator->current();
                     if (null === $booklet) {
@@ -69,8 +69,8 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                     }
                     if (
                         $distributionBeneficiary->getBeneficiary() instanceof Household
-                        && null !== $distributionBeneficiary->getBeneficiary()->getHouseholdHead())
-                    {
+                        && null !== $distributionBeneficiary->getBeneficiary()->getHouseholdHead()
+                    ) {
                         $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary()->getHouseholdHead());
                     }
                     if ($distributionBeneficiary->getBeneficiary() instanceof Beneficiary) {
@@ -87,12 +87,16 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
 
     private function bookletGenerator(ObjectManager $manager, string $country): iterable
     {
-        $booklets = $manager->getRepository(Booklet::class)->getAllBy($country, 0, 1000, [], [[
-            'category' =>'status',
-            'filter' => [Booklet::UNASSIGNED],
-        ]])[1];
+        $booklets = $manager->getRepository(Booklet::class)->getAllBy($country, 0, 1000, [], [
+            [
+                'category' => 'status',
+                'filter' => [Booklet::UNASSIGNED],
+            ],
+        ])[1];
         foreach ($booklets as $booklet) {
-            if ($booklet->getStatus() !== Booklet::UNASSIGNED) continue;
+            if ($booklet->getStatus() !== Booklet::UNASSIGNED) {
+                continue;
+            }
             yield $booklet;
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller;
@@ -30,14 +31,14 @@ class AssistanceCodelistController extends AbstractController
 
     /**
      * AssistanceCodelistController constructor.
+     *
      * @param SectorService $sectorService
      * @param CodeListService $codeListService
      */
     public function __construct(
         SectorService $sectorService,
         CodeListService $codeListService
-    )
-    {
+    ) {
         $this->sectorService = $sectorService;
         $this->codeListService = $codeListService;
     }

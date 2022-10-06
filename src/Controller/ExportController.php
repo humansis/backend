@@ -5,6 +5,7 @@ namespace Controller;
 use Entity\Organization;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
+use Exception;
 use Repository\AssistanceRepository;
 use Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 
 /**
  * Class ExportController
+ *
  * @package Controller
  *
  * @SWG\Parameter(
@@ -31,8 +33,8 @@ use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 class ExportController extends Controller
 {
     /** @var int maximum count of exported entities */
-    const EXPORT_LIMIT = 10000;
-    const EXPORT_LIMIT_CSV = 20000;
+    public const EXPORT_LIMIT = 10000;
+    public const EXPORT_LIMIT_CSV = 20000;
 
     /**
      * @var AssistanceRepository
@@ -111,11 +113,13 @@ class ExportController extends Controller
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('transactionDistribution') ||
-                      $request->query->get('smartcardDistribution') ||
-                      $request->query->get('voucherDistribution') ||
-                      $request->query->get('generalreliefDistribution') ||
-                      $request->query->get('beneficiariesInDistribution')) {
+            } elseif (
+                $request->query->get('transactionDistribution') ||
+                $request->query->get('smartcardDistribution') ||
+                $request->query->get('voucherDistribution') ||
+                $request->query->get('generalreliefDistribution') ||
+                $request->query->get('beneficiariesInDistribution')
+            ) {
                 $idDistribution = $request->query->get('transactionDistribution') ??
                     $request->query->get('smartcardDistribution') ??
                     $request->query->get('voucherDistribution') ??
@@ -129,7 +133,9 @@ class ExportController extends Controller
                 }
                 $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
                 // raw export for legacy purpose
-                if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
+                if (
+                    $type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])
+                ) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
                         $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
                     }
@@ -182,7 +188,7 @@ class ExportController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }

@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTime;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Transaction;
 
@@ -30,7 +33,7 @@ class TransactionMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Transaction::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Transaction::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -55,12 +58,12 @@ class TransactionMapper implements MapperInterface
 
     public function getDateSent(): string
     {
-        return $this->object->getDateSent()->format(\DateTime::ISO8601);
+        return $this->object->getDateSent()->format(DateTime::ISO8601);
     }
 
     public function getDatePickedUp(): ?string
     {
-        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(\DateTime::ISO8601) : null;
+        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(DateTime::ISO8601) : null;
     }
 
     public function getStatus(): string

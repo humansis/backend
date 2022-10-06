@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\WebApp\Assistance;
 
+use BadMethodCallException;
+use InvalidArgumentException;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -24,6 +28,7 @@ class SelectionCriterionController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
+
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
      * @Cache(expires="+5 days", public=true)
@@ -40,8 +45,8 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields")
      *
-     * @param Request                   $request
-     * @param string                    $targetCode
+     * @param Request $request
+     * @param string $targetCode
      * @param SelectionCriterionService $selectionCriterionService
      *
      * @return JsonResponse
@@ -64,9 +69,9 @@ class SelectionCriterionController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
-     * @param Request                   $request
-     * @param string                    $targetCode
-     * @param string                    $fieldCode
+     * @param Request $request
+     * @param string $targetCode
+     * @param string $fieldCode
      * @param SelectionCriterionService $selectionCriterionService
      *
      * @return JsonResponse
@@ -80,7 +85,7 @@ class SelectionCriterionController extends AbstractController
 
         try {
             $data = $selectionCriterionService->findFieldConditions($fieldCode, $targetCode, $countryIso3);
-        } catch (\InvalidArgumentException|\BadMethodCallException $ex) {
+        } catch (InvalidArgumentException | BadMethodCallException $ex) {
             throw $this->createNotFoundException($ex->getMessage(), $ex);
         }
 

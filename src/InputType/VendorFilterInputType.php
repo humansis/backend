@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
 
+use Enum\EnumValueNoFoundException;
 use Enum\VendorInvoicingState;
 use InputType\FilterFragment\FulltextFilterTrait;
 use InputType\FilterFragment\LocationFilterTrait;
@@ -36,11 +38,10 @@ class VendorFilterInputType extends AbstractFilterInputType
 
     /**
      * @return string
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     public function getInvoicing(): string
     {
         return VendorInvoicingState::valueFromAPI($this->invoicing);
     }
-
 }

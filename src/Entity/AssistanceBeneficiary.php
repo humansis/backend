@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,9 +14,9 @@ use Entity\Assistance\ReliefPackage;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
+use JsonException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
-
 use Entity\Transaction;
 use Entity\Booklet;
 use Entity\SmartcardDeposit;
@@ -127,9 +128,9 @@ class AssistanceBeneficiary
     /**
      * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      *
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getSmartcardDistributedAt(): ?\DateTimeInterface
+    public function getSmartcardDistributedAt(): ?DateTimeInterface
     {
         foreach ($this->getSmartcardDeposits() as $deposit) {
             return $deposit->getCreatedAt();
@@ -197,11 +198,13 @@ class AssistanceBeneficiary
                 $collection->add($deposit);
             }
         }
+
         return $collection;
     }
 
     /**
      * Get the value of Transaction.
+     *
      * @deprecated you shouldn't know about transaction here
      *
      * @return Collection|Transaction[]
@@ -335,7 +338,7 @@ class AssistanceBeneficiary
     /**
      * @return ScoringProtocol|null valid JSON string
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function getVulnerabilityScores(): ?ScoringProtocol
     {
@@ -354,7 +357,7 @@ class AssistanceBeneficiary
      *
      * @return AssistanceBeneficiary
      *
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function setVulnerabilityScores(ScoringProtocol $vulnerabilityScores): self
     {
@@ -369,7 +372,8 @@ class AssistanceBeneficiary
     public function hasDistributionStarted(): bool
     {
         foreach ($this->getReliefPackages() as $reliefPackage) {
-            if ($reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
+            if (
+                $reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
                 || $reliefPackage->getAmountDistributed() > 0
             ) {
                 return true;
@@ -380,6 +384,7 @@ class AssistanceBeneficiary
                 return true;
             }
         }
+
         return false;
     }
 
@@ -391,7 +396,7 @@ class AssistanceBeneficiary
         if ($criteria === null) {
             $criteria = Criteria::create();
         }
-        
+
         return $this->reliefPackages->matching($criteria);
     }
 
@@ -424,18 +429,19 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @param string                $modalityName
-     * @param string                $unit
+     * @param string $modalityName
+     * @param string $unit
      * @param                       $value
      */
     public function setCommodityToDistribute(string $modalityName, string $unit, $value): void
     {
         foreach ($this->reliefPackages as $package) {
-            if(!$package->isOnStartupState() && !$package->isSameModalityAndUnit($modalityName, $unit)) {
+            if (!$package->isOnStartupState() && !$package->isSameModalityAndUnit($modalityName, $unit)) {
                 continue;
             }
             if ($package->getModalityType() === $modalityName && $package->getUnit() === $unit) {
                 $package->setAmountToDistribute($value);
+
                 return;
             }
         }
@@ -447,5 +453,4 @@ class AssistanceBeneficiary
         );
         $this->reliefPackages->add($reliefPackage);
     }
-
 }

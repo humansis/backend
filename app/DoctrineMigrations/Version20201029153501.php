@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20201029153501 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -22,12 +24,14 @@ final class Version20201029153501 extends AbstractMigration
         $this->addSql('ALTER TABLE assistance DROP target_type_bak');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE assistance CHANGE target_type target_type_bak ENUM(\'individual\', \'household\', \'community\', \'institution\') NOT NULL COMMENT \'(DC2Type:enum_assistance_target_type)\'');
+        $this->addSql(
+            'ALTER TABLE assistance CHANGE target_type target_type_bak ENUM(\'individual\', \'household\', \'community\', \'institution\') NOT NULL COMMENT \'(DC2Type:enum_assistance_target_type)\''
+        );
         $this->addSql('ALTER TABLE assistance CHANGE target_type target_type INT DEFAULT NULL');
         $this->addSql('UPDATE assistance SET target_type=0 WHERE target_type_bak like \'household\'');
         $this->addSql('UPDATE assistance SET target_type=1 WHERE target_type_bak like \'individual\'');

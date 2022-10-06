@@ -4,6 +4,7 @@ namespace Tests\Controller\OfflineApp;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
+use Entity\Assistance;
 use Exception;
 use Entity\Project;
 use Tests\BMSServiceTestCase;
@@ -31,7 +32,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         try {
             $projectId = $em->createQueryBuilder()
                 ->select('p.id')
-                ->from(\Entity\Assistance::class, 'a')
+                ->from(Assistance::class, 'a')
                 ->join('a.project', 'p')
                 ->andWhere('a.validatedBy IS NOT NULL')
                 ->andWhere('a.archived = 0')
@@ -42,16 +43,18 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ->getSingleScalarResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('You need to have at least one project with assistance in database to complete this test.');
+
             return;
         }
 
-        $this->request('GET', '/api/basic/offline-app/v2/projects/'.$projectId.'/distributions');
+        $this->request('GET', '/api/basic/offline-app/v2/projects/' . $projectId . '/distributions');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[{
+        $this->assertJsonFragment(
+            '[{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -66,6 +69,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "completed": "*",
             "validated": "*",
             "archived": "*"
-         }]', $this->client->getResponse()->getContent());
+         }]',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

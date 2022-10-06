@@ -1,12 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Utils\Exception;
 
 use Entity\Beneficiary;
+use InvalidArgumentException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
-class RemoveBeneficiaryWithReliefException extends \InvalidArgumentException implements ConstraintViolationInterface
+class RemoveBeneficiaryWithReliefException extends InvalidArgumentException implements ConstraintViolationInterface
 {
     /** @var Beneficiary */
     protected $beneficiary;
@@ -34,7 +36,7 @@ class RemoveBeneficiaryWithReliefException extends \InvalidArgumentException imp
      */
     public function getParameters()
     {
-        return ['{{ name }}' => $this->beneficiary->getLocalGivenName().' '.$this->beneficiary->getLocalFamilyName()];
+        return ['{{ name }}' => $this->beneficiary->getLocalGivenName() . ' ' . $this->beneficiary->getLocalFamilyName()];
     }
 
     /**

@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CreateDepositInputType implements InputTypeInterface
 {
     /**
-     * @var integer
+     * @var int
      *
      * @Assert\NotNull
      * @Assert\Type(type="integer")
@@ -135,5 +135,4 @@ class CreateDepositInputType implements InputTypeInterface
     {
         $this->balanceAfter = $balanceAfter;
     }
-
 }

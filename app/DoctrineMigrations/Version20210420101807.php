@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -9,7 +11,8 @@ final class Version20210420101807 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE VIEW view_distributed_item AS
+        $this->addSql(
+            'CREATE VIEW view_distributed_item AS
             SELECT
                 CASE
                     WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id)
@@ -84,7 +87,8 @@ final class Version20210420101807 extends AbstractMigration
 
             WHERE (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL OR b.id IS NOT NULL)
                 AND (sd.used_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.used_at)
-        ');
+        '
+        );
     }
 
     public function down(Schema $schema): void

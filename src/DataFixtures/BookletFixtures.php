@@ -42,10 +42,10 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
     private $beneficiaryRepository;
 
     public function __construct(
-        Kernel                $kernel,
-        Countries             $countries,
-        BookletService        $bookletService,
-        ProjectRepository     $projectRepository,
+        Kernel $kernel,
+        Countries $countries,
+        BookletService $bookletService,
+        ProjectRepository $projectRepository,
         BeneficiaryRepository $beneficiaryRepository
     ) {
         $this->kernel = $kernel;
@@ -65,6 +65,7 @@ class BookletFixtures extends Fixture implements FixtureGroupInterface, Dependen
     {
         if ($this->kernel->getEnvironment() === "prod") {
             echo __CLASS__ . " can't be running at production\n";
+
             return;
         }
 

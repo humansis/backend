@@ -27,7 +27,7 @@ class SectorMapper
 
     private function getLabel(string $enumValue): string
     {
-        return $this->translator->trans('label_sector_'.$enumValue, [], 'messages', 'en');
+        return $this->translator->trans('label_sector_' . $enumValue, [], 'messages', 'en');
     }
 
     /**

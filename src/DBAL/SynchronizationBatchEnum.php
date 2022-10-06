@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\SynchronizationBatchState;
 
-class SynchronizationBatchEnum extends \DBAL\AbstractEnum
+class SynchronizationBatchEnum extends AbstractEnum
 {
     public function getName(): string
     {

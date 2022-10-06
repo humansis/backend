@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\InvalidCell\ColumnSpecific;
 
@@ -6,7 +8,6 @@ use Utils\HouseholdExportCSVService;
 
 final class HeadSpecific implements ColumnSpecific
 {
-
     public function getColumn(): string
     {
         return HouseholdExportCSVService::HEAD;

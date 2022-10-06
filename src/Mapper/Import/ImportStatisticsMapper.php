@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Import;
 
 use Component\Import\ValueObject\ImportStatisticsValueObject;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class ImportStatisticsMapper implements MapperInterface
@@ -29,7 +32,7 @@ class ImportStatisticsMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportStatisticsValueObject::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportStatisticsValueObject::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getTotalEntries(): int

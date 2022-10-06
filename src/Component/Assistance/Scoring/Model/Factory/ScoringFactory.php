@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Model\Factory;
 
+use Exception;
 use Exception\CsvParserException;
 use Component\Assistance\Scoring\Exception\ScoreValidationException;
 use Component\Assistance\Scoring\Model\Scoring;
@@ -24,7 +26,6 @@ final class ScoringFactory
      */
     private $parser;
 
-
     /** @var ValidatorInterface */
     private $validator;
 
@@ -40,16 +41,17 @@ final class ScoringFactory
      * @return Scoring
      *
      * @throws CsvParserException
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildScoring(ScoringBlueprint $scoringBlueprint): Scoring
     {
         $scoringRules = $this->parser->parseStream($scoringBlueprint->getStream());
+
         return $this->createScoring($scoringBlueprint->getName(), $scoringRules);
     }
 
     /**
-     * @param string        $name
+     * @param string $name
      * @param ScoringRule[] $scoringRules
      *
      * @return Scoring

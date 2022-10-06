@@ -20,7 +20,7 @@ class GeneralReliefItemController extends AbstractOfflineAppController
     /**
      * @Rest\Patch("/offline-app/v2/general-relief-items/{id}")
      *
-     * @param GeneralReliefItem           $object
+     * @param GeneralReliefItem $object
      * @param GeneralReliefPatchInputType $inputType
      *
      * @return JsonResponse
@@ -33,9 +33,9 @@ class GeneralReliefItemController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/general-relief-items")
      *
-     * @param Request                      $request
+     * @param Request $request
      * @param GeneralReliefFilterInputType $filter
-     * @param Pagination                   $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */

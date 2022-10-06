@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -11,18 +13,21 @@ final class Version20210218123210 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             ALTER TABLE smartcard_purchase_record
                 ADD currency VARCHAR(255) DEFAULT NULL,
                 CHANGE value value NUMERIC(10, 2) NOT NULL
-        ');
-        $this->addSql('
+        '
+        );
+        $this->addSql(
+            '
             UPDATE smartcard_purchase_record spr
                 JOIN smartcard_purchase sp on sp.id=spr.smartcard_purchase_id
                 JOIN smartcard s on s.id=sp.smartcard_id
                 SET spr.currency=s.currency
-        ');
-
+        '
+        );
     }
 
     public function down(Schema $schema): void

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller;
@@ -71,7 +72,7 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/product-categories/{id}")
      *
-     * @param ProductCategory          $productCategory
+     * @param ProductCategory $productCategory
      * @param ProductCategoryInputType $inputType
      *
      * @return JsonResponse
@@ -81,6 +82,7 @@ class ProductCategoryController extends AbstractController
         $productCategory = $this->productCategoryService->update($productCategory, $inputType);
         $this->getDoctrine()->getManager()->persist($productCategory);
         $this->getDoctrine()->getManager()->flush();
+
         return $this->json($productCategory);
     }
 

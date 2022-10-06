@@ -2,10 +2,12 @@
 
 namespace Utils;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Household;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use InvalidArgumentException;
 use Entity\Import;
 use Exception\ConstraintViolationException;
@@ -21,6 +23,7 @@ use Entity\UserProject;
 
 /**
  * Class ProjectService
+ *
  * @package Utils
  */
 class ProjectService
@@ -35,6 +38,7 @@ class ProjectService
 
     /**
      * ProjectService constructor.
+     *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface $container
      */
@@ -52,12 +56,13 @@ class ProjectService
     public function countActive(string $countryIso3): int
     {
         $count = $this->em->getRepository(Project::class)->countActiveInCountry($countryIso3);
+
         return $count;
     }
 
     /**
      * @param ProjectCreateInputType $inputType
-     * @param User                   $user
+     * @param User $user
      *
      * @return Project
      * @throws EntityNotFoundException
@@ -107,7 +112,7 @@ class ProjectService
     }
 
     /**
-     * @param Project                $project
+     * @param Project $project
      * @param ProjectUpdateInputType $inputType
      *
      * @return Project
@@ -156,7 +161,7 @@ class ProjectService
     }
 
     /**
-     * @param Project                         $project
+     * @param Project $project
      * @param AddHouseholdsToProjectInputType $inputType
      */
     public function addHouseholds(Project $project, AddHouseholdsToProjectInputType $inputType): void
@@ -188,7 +193,7 @@ class ProjectService
             $userProject->setUser($user)
                 ->setProject($project)
                 ->setRights($right[0]);
-    
+
             $this->em->persist($userProject);
             $this->em->flush();
         }
@@ -196,7 +201,7 @@ class ProjectService
 
     public function isDeletable(Project $project): bool
     {
-        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        /** @var Paginator $assistance */
         $assistances = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
@@ -209,7 +214,7 @@ class ProjectService
      */
     public function delete(Project $project)
     {
-        /** @var \Doctrine\ORM\Tools\Pagination\Paginator $assistance */
+        /** @var Paginator $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
 
         if (0 === $assistance->count()) {
@@ -228,7 +233,7 @@ class ProjectService
             $this->em->remove($project);
         } else {
             if (!$this->checkIfAllDistributionClosed($assistance)) {
-                throw new \Exception("You can't delete this project as it has an unfinished distribution");
+                throw new Exception("You can't delete this project as it has an unfinished distribution");
             } else {
                 try {
                     foreach ($assistance as $distributionDatum) {
@@ -237,8 +242,8 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-                } catch (\Exception $error) {
-                    throw new \Exception("Error archiving project");
+                } catch (Exception $error) {
+                    throw new Exception("Error archiving project");
                 }
             }
         }
@@ -247,8 +252,9 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
+     *
      * @param Assistance[] $assistance
-     * @return boolean
+     * @return bool
      */
     private function checkIfAllDistributionClosed(iterable $assistances)
     {
@@ -257,11 +263,13 @@ class ProjectService
                 return false;
             }
         }
+
         return true;
     }
 
     /**
      * Export all projects of the country in the CSV file
+     *
      * @param $countryIso3
      * @param string $type
      * @return mixed
@@ -269,6 +277,7 @@ class ProjectService
     public function exportToCsv($countryIso3, string $type)
     {
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
+
         return $this->container->get('export_csv_service')->export($exportableTable, 'projects', $type);
     }
 }

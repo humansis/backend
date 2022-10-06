@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Beneficiary;
 
+use Enum\EnumValueNoFoundException;
 use Enum\PhoneTypes;
 use Enum\VariableBool;
 use Request\InputTypeInterface;
@@ -39,10 +40,10 @@ class PhoneInputType implements InputTypeInterface
     private $proxy;
 
     /**
-     * @param string      $prefix
-     * @param string      $number
+     * @param string $prefix
+     * @param string $number
      * @param string|null $type
-     * @param bool|null   $proxy
+     * @param bool|null $proxy
      *
      * @return PhoneInputType
      */
@@ -93,7 +94,7 @@ class PhoneInputType implements InputTypeInterface
 
     /**
      * @return string|null
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     public function getType(): ?string
     {
@@ -113,8 +114,8 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
-     * @return boolean
-     * @throws \Enum\EnumValueNoFoundException
+     * @return bool
+     * @throws EnumValueNoFoundException
      */
     public function getProxy()
     {
@@ -126,7 +127,7 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
-     * @param boolean $proxy
+     * @param bool $proxy
      */
     public function setProxy($proxy)
     {

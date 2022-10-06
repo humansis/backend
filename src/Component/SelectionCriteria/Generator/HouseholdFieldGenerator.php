@@ -1,14 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Generator;
 
 use Entity\HouseholdLocation;
+use Generator;
 use Repository\CountrySpecificRepository;
 use Component\SelectionCriteria\FieldGeneratorInterface;
 use Component\SelectionCriteria\Structure\Field;
 use Enum\SelectionCriteriaTarget;
 use Enum\Livelihood;
+use RuntimeException;
 
 class HouseholdFieldGenerator implements FieldGeneratorInterface
 {
@@ -26,7 +29,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
     public function generate(?string $countryIso3)
     {
         yield from $this->getStaticFields();
-        foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']) as $countrySpecific) {
+        foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']) as $countrySpecific) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             switch ($type) {
@@ -57,9 +60,10 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
     }
 
     /**
-     * @return \Generator
+     * @return Generator
      */
-    private function getStaticFields(): \Generator {
+    private function getStaticFields(): Generator
+    {
         //yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'integer');
         //yield new Field('foodConsumptionScore', 'Food Consumption Score', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('livelihood', 'Livelihood', ['='], 'livelihood', [self::class, 'validateLivelihood']);
@@ -67,7 +71,6 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         yield new Field('householdSize', 'Household Size', ['=', '<', '>', '<=', '>='], 'integer');
         yield new Field('location', 'Location', ['='], 'location', 'is_int');
         yield new Field('locationType', 'Location Type', ['='], 'locationType', [self::class, 'validateLocationType']);
-
     }
 
     /**
@@ -85,7 +88,7 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         } elseif ('text' === $type) {
             return 'string';
         } else {
-            throw new \RuntimeException('Invalid CountrySpecific type '.$type);
+            throw new RuntimeException('Invalid CountrySpecific type ' . $type);
         }
     }
 

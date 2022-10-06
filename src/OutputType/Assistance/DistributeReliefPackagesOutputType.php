@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace OutputType\Assistance;
 
@@ -9,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DistributeReliefPackagesOutputType implements InputTypeInterface
 {
-
     /**
      * @var array
      */
@@ -239,5 +240,4 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
 
         return $this;
     }
-
 }

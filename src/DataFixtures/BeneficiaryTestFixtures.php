@@ -2,10 +2,12 @@
 
 namespace DataFixtures;
 
+use DateTime;
 use Entity\Address;
 use Entity\Beneficiary;
 use Entity\Household;
 use Entity\HouseholdLocation;
+use Exception;
 use Utils\HouseholdService;
 use Entity\Adm1;
 use Entity\Adm2;
@@ -128,10 +130,10 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     /**
      * @param ObjectManager $manager
-     * @param Location      $location
-     * @param Project       $project
+     * @param Location $location
+     * @param Project $project
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function createHouseholds(ObjectManager $manager, Location $location, Project $project)
     {
@@ -140,7 +142,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $manager->flush();
         }
     }
-
 
     private function createIndividuals(ObjectManager $manager, Location $location, Project $project)
     {
@@ -178,7 +179,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
             $bnf = new Beneficiary();
             $bnf->setHousehold($household);
-            $birthDate = new \DateTime();
+            $birthDate = new DateTime();
             $birthDate->modify("-$age year");
             $bnf->setDateOfBirth($birthDate);
             $bnf->setEnFamilyName($bnfData['en_family_name']);
@@ -205,7 +206,6 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         echo '.';
     }
 
-
     private function replacePlaceholders(array $data, array $replaces)
     {
         foreach ($data as $key => $value) {
@@ -226,7 +226,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $hhLocation->setLocationGroup('current');
 
         $address = new Address();
-        $address->setStreet(md5($location->getId().$location->getCode()));
+        $address->setStreet(md5($location->getId() . $location->getCode()));
         $address->setNumber($location->getId());
         $address->setPostcode(rand(10001, 99999));
         $address->setLocation($location);

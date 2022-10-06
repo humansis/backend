@@ -2,6 +2,7 @@
 
 namespace Command;
 
+use Exception;
 use Repository\LocationRepository;
 use Utils\LocationImporter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,11 +29,11 @@ class AdmXML2DBCommand extends ContainerAwareCommand
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param LocationRepository     $locationRepository
+     * @param LocationRepository $locationRepository
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        LocationRepository     $locationRepository
+        LocationRepository $locationRepository
     ) {
         $this->entityManager = $entityManager;
         $this->locationRepository = $locationRepository;
@@ -47,32 +48,39 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             ->setDescription('Interactive import ADM into DB')
             ->addArgument('country', InputArgument::IS_ARRAY, 'Country iso3 code')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Use all known locations')
-            ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Adm count limit per country')
-            ;
+            ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Adm count limit per country');
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int|void|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->hasArgument('country') && !empty($input->getArgument('country'))) {
             $countries = $input->getArgument('country');
-        } elseif (empty($input->getArgument('country'))
-            && true === $input->getOption('all')) {
+        } elseif (
+            empty($input->getArgument('country'))
+            && true === $input->getOption('all')
+        ) {
             $countries = array_keys($this->getADMFiles());
         } else {
-            $countries = [$this->getHelper('question')->ask($input, $output, new ChoiceQuestion(
-                'Which file do you want import? ',
-                $this->getADMFiles()
-            ))];
+            $countries = [
+                $this->getHelper('question')->ask(
+                    $input,
+                    $output,
+                    new ChoiceQuestion(
+                        'Which file do you want import? ',
+                        $this->getADMFiles()
+                    )
+                ),
+            ];
         }
-        $output->writeln("Countries to upload: ".implode(', ', $countries));
+        $output->writeln("Countries to upload: " . implode(', ', $countries));
         foreach ($countries as $countryCode) {
             if (!isset($this->getADMFiles()[$countryCode])) {
                 $output->writeln("$countryCode is not valid iso3 country code");
@@ -90,13 +98,13 @@ class AdmXML2DBCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      * @param AdmsImporter|LocationImporter $importer
      */
     private function importLocations(InputInterface $input, OutputInterface $output, $importer): void
     {
-        $output->writeln(" - Importing by ".get_class($importer));
+        $output->writeln(" - Importing by " . get_class($importer));
         if ($input->hasOption('limit')) {
             $importer->setLimit($input->getOption('limit'));
         }
@@ -123,7 +131,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
 
     private function getADMFiles(): array
     {
-        $directory = __DIR__.'/../Resources/locations';
+        $directory = __DIR__ . '/../Resources/locations';
 
         $choices = [];
         foreach (scandir($directory) as $file) {
@@ -132,7 +140,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             }
             $iso3 = explode('.', $file)[0];
 
-            $choices[$iso3] = realpath($directory.'/'.$file);
+            $choices[$iso3] = realpath($directory . '/' . $file);
         }
 
         return $choices;
@@ -143,7 +151,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
      */
     protected function createCountryQuestion(): Question
     {
-        $directory = __DIR__.'/../Resources/locations';
+        $directory = __DIR__ . '/../Resources/locations';
 
         $choices = [];
         foreach (scandir($directory) as $file) {
@@ -152,7 +160,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             }
             $iso3 = explode('.', $file)[0];
 
-            $choices[$iso3] = realpath($directory.'/'.$file);
+            $choices[$iso3] = realpath($directory . '/' . $file);
         }
 
         return new ChoiceQuestion(

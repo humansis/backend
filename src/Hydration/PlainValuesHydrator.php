@@ -3,6 +3,7 @@
 namespace Hydration;
 
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use PDO;
 
 class PlainValuesHydrator extends AbstractHydrator
 {
@@ -12,7 +13,7 @@ class PlainValuesHydrator extends AbstractHydrator
     protected function hydrateAllData()
     {
         $result = [];
-        foreach ($this->_stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+        foreach ($this->_stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $result[] = reset($row);
         }
 

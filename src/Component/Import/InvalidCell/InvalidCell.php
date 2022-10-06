@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\InvalidCell;
 
@@ -10,7 +12,6 @@ use PhpOffice\PhpSpreadsheet\Cell\DataType;
 final class InvalidCell
 {
     private const FORMULA_ERROR_CELL_VALUE = 'INVALID VALUE: formulas are not supported, please fill a value';
-
     private const COLUMNS_SPECIFIC = [
         HeadSpecific::class,
     ];
@@ -41,14 +42,14 @@ final class InvalidCell
     private $columnsSpecific = [];
 
     /**
-     * @param string           $columnName
+     * @param string $columnName
      * @param string|int|float $cellValue
-     * @param string           $cellDataType
-     * @param array|null       $cellErrors
+     * @param string $cellDataType
+     * @param array|null $cellErrors
      */
     public function __construct(
         string $columnName,
-               $cellValue,
+        $cellValue,
         string $cellDataType,
         ?array $cellErrors = null
     ) {
@@ -58,7 +59,6 @@ final class InvalidCell
         $this->cellErrors = $cellErrors;
 
         foreach (self::COLUMNS_SPECIFIC as $columnSpecific) {
-
             /** @var ColumnSpecific $columnSpecificClass */
             $columnSpecificClass = new $columnSpecific();
             $this->columnsSpecific[$columnSpecificClass->getColumn()] = $columnSpecificClass;
@@ -99,5 +99,4 @@ final class InvalidCell
             $this->cellValue = self::FORMULA_ERROR_CELL_VALUE;
         }
     }
-
 }

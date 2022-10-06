@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use DateTimeImmutable;
 use Entity;
 use Enum\CacheTarget;
 use Enum\ReliefPackageState;
@@ -28,7 +31,7 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
         return [
             // every successful change state
             'workflow.reliefPackage.entered' => ['clearAssistanceStatisticCache'],
-            'workflow.reliefPackage.entered.'.ReliefPackageState::DISTRIBUTED => ['markAsDistributed'],
+            'workflow.reliefPackage.entered.' . ReliefPackageState::DISTRIBUTED => ['markAsDistributed'],
         ];
     }
 
@@ -36,7 +39,7 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
     {
         /** @var Entity\Assistance\ReliefPackage $reliefPackage */
         $reliefPackage = $event->getSubject();
-        $reliefPackage->setDistributedAt(new \DateTimeImmutable());
+        $reliefPackage->setDistributedAt(new DateTimeImmutable());
     }
 
     /**
@@ -53,5 +56,4 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
         } catch (InvalidArgumentException $e) {
         }
     }
-
 }

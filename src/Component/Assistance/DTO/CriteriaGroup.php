@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance\DTO;
 
@@ -6,13 +8,14 @@ use Component\Assistance\Domain\SelectionCriteria;
 
 class CriteriaGroup
 {
-    /** @var integer */
+    /** @var int */
     private $groupNumber;
+
     /** @var SelectionCriteria[] */
     private $criteria;
 
     /**
-     * @param int                 $groupNumber
+     * @param int $groupNumber
      * @param SelectionCriteria[] $criteria
      */
     public function __construct(int $groupNumber, array $criteria)
@@ -36,5 +39,4 @@ class CriteriaGroup
     {
         return $this->criteria;
     }
-
 }

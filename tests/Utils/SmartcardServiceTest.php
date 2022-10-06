@@ -2,6 +2,10 @@
 
 namespace Tests\Utils;
 
+use DateTimeInterface;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\Location;
 use Entity\Beneficiary;
 use DateTime;
@@ -16,6 +20,7 @@ use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
@@ -28,7 +33,7 @@ use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
 {
-    const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
+    public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
     /** @var ObjectManager|null */
     private $em;
@@ -85,7 +90,7 @@ class SmartcardServiceTest extends KernelTestCase
         return [
             'vendor has nothing' => [
                 [],
-                []
+                [],
             ],
             'deposit alone' => [
                 [
@@ -102,7 +107,7 @@ class SmartcardServiceTest extends KernelTestCase
                 ],
                 [
                     [500.8, 'USD', $projectA],
-                ]
+                ],
             ],
             'multiproject' => [
                 [
@@ -116,7 +121,7 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [200, 'USD', $projectA],
                     [40, 'USD', $projectB],
-                ]
+                ],
             ],
             'multicurrency' => [
                 [
@@ -129,7 +134,7 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [200, 'USD', $projectA],
                     [40, 'SYP', $projectA],
-                ]
+                ],
             ],
             'multiproject and multicurrency' => [
                 [
@@ -143,7 +148,7 @@ class SmartcardServiceTest extends KernelTestCase
                 [
                     [200, 'SYP', $projectA],
                     [40, 'USD', $projectB],
-                ]
+                ],
             ],
             'chaos' => [
                 [
@@ -171,7 +176,7 @@ class SmartcardServiceTest extends KernelTestCase
                     [100, 'USD', $projectA],
                     [340, 'SYP', $projectA],
                     [80, 'USD', $projectB],
-                ]
+                ],
             ],
         ];
     }
@@ -182,16 +187,16 @@ class SmartcardServiceTest extends KernelTestCase
      * @param array $actions
      * @param array $expectedResults
      *
-     * @throws \Doctrine\ORM\EntityNotFoundException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
         $admin = $this->user;
         $assistanceRepository = $this->em->getRepository(Assistance::class);
-        $product = $this->em->getRepository(Product::class)->findOneBy(['countryIso3'=>'SYR'], ['id' => 'asc']);
+        $product = $this->em->getRepository(Product::class)->findOneBy(['countryIso3' => 'SYR'], ['id' => 'asc']);
 
         $date = DateTime::createFromFormat('Y-m-d', '2000-01-01');
         foreach ($actions as $actionData) {
@@ -201,7 +206,7 @@ class SmartcardServiceTest extends KernelTestCase
                     /** @var Assistance $assistance */
                     $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
                     $beneficiary = $assistance->getDistributionBeneficiaries()->get(0)->getBeneficiary();
-                    $registerInputType = SmartcardRegisterInputType::create($this->smartcardNumber, $beneficiaryId, $date->format(\DateTimeInterface::ATOM));
+                    $registerInputType = SmartcardRegisterInputType::create($this->smartcardNumber, $beneficiaryId, $date->format(DateTimeInterface::ATOM));
                     try {
                         $this->smartcardService->register($registerInputType);
                     } catch (SmartcardDoubledRegistrationException $e) {
@@ -212,12 +217,14 @@ class SmartcardServiceTest extends KernelTestCase
                     $purchase = new SmartcardPurchase();
                     $purchase->setVendorId($this->vendor->getId());
                     $purchase->setCreatedAt($date);
-                    $purchase->setProducts([[
-                        'id' => $product->getId(),
-                        'quantity' => 2.5,
-                        'value' => $value,
-                        'currency' => $currency,
-                    ]]);
+                    $purchase->setProducts([
+                        [
+                            'id' => $product->getId(),
+                            'quantity' => 2.5,
+                            'value' => $value,
+                            'currency' => $currency,
+                        ],
+                    ]);
                     $purchase->setBeneficiaryId($beneficiaryId);
                     $purchase = $this->smartcardService->purchase($this->smartcardNumber, $purchase);
                     $purchase->setAssistance($assistanceRepository->find($assistanceId));
@@ -234,7 +241,7 @@ class SmartcardServiceTest extends KernelTestCase
 
                     $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
                         'assistance' => $assistance,
-                        'beneficiary'=> $beneficiary
+                        'beneficiary' => $beneficiary,
                     ], ['id' => 'asc']);
 
                     $reliefPackage = new ReliefPackage(
@@ -328,14 +335,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[3], $beneficiary3, ['register', 'deposit', 'purchase'], $vendorA],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 100, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'standard lazy flow' => [
                 [
@@ -344,14 +351,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[3], $beneficiary3, ['deposit', 'purchase'], $vendorA],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 100, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'standard lazy vendor flow' => [
                 [
@@ -363,14 +370,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[6], $beneficiary3, ['purchase'], $vendorA],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 100, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'standard lazy distributor flow' => [
                 [
@@ -383,14 +390,14 @@ class SmartcardServiceTest extends KernelTestCase
 
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 100, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'two lazy distributors in reverse order' => [
                 [
@@ -405,14 +412,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[7], $beneficiary3, ['register']],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>100, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>100, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 100, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 100, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'incomplete purchases' => [
                 [
@@ -421,14 +428,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[9], $beneficiary3, ['purchase'], $vendorA],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>0, 'purchased' => 10],
-                    $beneficiary2 => ['distributed'=>0, 'purchased' => 10],
-                    $beneficiary3 => ['distributed'=>0, 'purchased' => 10],
+                    $beneficiary1 => ['distributed' => 0, 'purchased' => 10],
+                    $beneficiary2 => ['distributed' => 0, 'purchased' => 10],
+                    $beneficiary3 => ['distributed' => 0, 'purchased' => 10],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
                     $vendorB => null,
-                ]
+                ],
             ],
             'incomplete purchases in wrong order' => [
                 [
@@ -440,14 +447,14 @@ class SmartcardServiceTest extends KernelTestCase
                     [$times[9], $beneficiary3, ['purchase'], $vendorB],
                 ],
                 [
-                    $beneficiary1 => ['distributed'=>0, 'purchased' => 20],
-                    $beneficiary2 => ['distributed'=>0, 'purchased' => 20],
-                    $beneficiary3 => ['distributed'=>0, 'purchased' => 20],
+                    $beneficiary1 => ['distributed' => 0, 'purchased' => 20],
+                    $beneficiary2 => ['distributed' => 0, 'purchased' => 20],
+                    $beneficiary3 => ['distributed' => 0, 'purchased' => 20],
                 ],
                 [
-                    $vendorA => ['purchases'=>3, 'records'=>6, 'value'=>30],
-                    $vendorB => ['purchases'=>3, 'records'=>6, 'value'=>30],
-                ]
+                    $vendorA => ['purchases' => 3, 'records' => 6, 'value' => 30],
+                    $vendorB => ['purchases' => 3, 'records' => 6, 'value' => 30],
+                ],
             ],
         ];
     }
@@ -459,10 +466,10 @@ class SmartcardServiceTest extends KernelTestCase
      * @param array $expectedBeneficiaryResults
      * @param array $expectedVendorResults
      *
-     * @throws \Doctrine\ORM\EntityNotFoundException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      */
     public function testSmartcardReuseFlows(array $actions, array $expectedBeneficiaryResults, array $expectedVendorResults): void
     {
@@ -481,19 +488,19 @@ class SmartcardServiceTest extends KernelTestCase
         $packages = $this->em->getRepository(ReliefPackage::class)->findBy([
             'assistanceBeneficiary' => $targets,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$packages], ['id' => 'asc']);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage' => $packages], ['id' => 'asc']);
         foreach ($packages as $package) {
             $this->em->remove($package);
         }
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$allTestingBeneficiaries], ['id' => 'asc']);
-        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary' => $allTestingBeneficiaries], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard' => $smartcards], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
-        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['vendor'=>$allTestingVendors], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['vendor' => $allTestingVendors], ['id' => 'asc']);
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -505,7 +512,7 @@ class SmartcardServiceTest extends KernelTestCase
                 switch ($action) {
                     case 'register':
                         $createdAt = DateTime::createFromFormat('Y-m-d', $dateOfEvent);
-                        $registerInputType = SmartcardRegisterInputType::create($serialNumber, $beneficiaryId, $createdAt->format(\DateTimeInterface::ATOM));
+                        $registerInputType = SmartcardRegisterInputType::create($serialNumber, $beneficiaryId, $createdAt->format(DateTimeInterface::ATOM));
                         try {
                             $this->smartcardService->register($registerInputType);
                         } catch (SmartcardDoubledRegistrationException $e) {
@@ -519,7 +526,7 @@ class SmartcardServiceTest extends KernelTestCase
 
                         $assistanceBeneficiary = $this->em->getRepository(AssistanceBeneficiary::class)->findOneBy([
                             'assistance' => $assistance,
-                            'beneficiary'=> $beneficiary
+                            'beneficiary' => $beneficiary,
                         ], ['id' => 'asc']);
 
                         $reliefPackage = new ReliefPackage(
@@ -538,7 +545,7 @@ class SmartcardServiceTest extends KernelTestCase
                                 $reliefPackage->getId(),
                                 100,
                                 null,
-                                \DateTime::createFromFormat('Y-m-d', $dateOfEvent)
+                                DateTime::createFromFormat('Y-m-d', $dateOfEvent)
                             ),
                             $admin
                         );
@@ -561,7 +568,7 @@ class SmartcardServiceTest extends KernelTestCase
                                 'quantity' => 1,
                                 'value' => 8,
                                 'currency' => 'USD',
-                            ]
+                            ],
                         ]);
                         $purchase = $this->smartcardService->purchase($serialNumber, $purchaseData);
                         $purchase->setAssistance($this->em->getRepository(Assistance::class)->find($assistanceId));
@@ -569,7 +576,7 @@ class SmartcardServiceTest extends KernelTestCase
                         $this->em->flush();
                         break;
                     default:
-                        $this->fail('Wrong test data. Unknown action '.$action);
+                        $this->fail('Wrong test data. Unknown action ' . $action);
                 }
             }
         }
@@ -578,17 +585,17 @@ class SmartcardServiceTest extends KernelTestCase
             $target = $this->em->getRepository(AssistanceBeneficiary::class)->findBy([
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
-                ]);
-            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary'=>$target], ['id' => 'asc']);
-            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage'=>$package], ['id' => 'asc']);
+            ]);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $target], ['id' => 'asc']);
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage' => $package], ['id' => 'asc']);
             $distributed = 0;
             foreach ($deposits as $deposit) {
                 $distributed += $deposit->getValue();
             }
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
-            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary'=>$beneficiaryId], ['id' => 'asc']);
-            $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard'=>$smartcards], ['id' => 'asc']);
+            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary' => $beneficiaryId], ['id' => 'asc']);
+            $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard' => $smartcards], ['id' => 'asc']);
             $purchased = 0;
             foreach ($purchases as $purchase) {
                 $purchased += $purchase->getRecordsValue();
@@ -616,16 +623,16 @@ class SmartcardServiceTest extends KernelTestCase
 
     private function createTempVendor(EntityManagerInterface $em): void
     {
-        $id = substr(md5(uniqid()), 0, 5)."_";
+        $id = substr(md5(uniqid()), 0, 5) . "_";
         $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryIso3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
 
         $this->user = new User();
         $this->user->injectObjectManager($em);
         $this->user->setEnabled(1)
-            ->setEmail($id.self::VENDOR_USERNAME)
-            ->setEmailCanonical($id.self::VENDOR_USERNAME)
-            ->setUsername($id.self::VENDOR_USERNAME)
-            ->setUsernameCanonical($id.self::VENDOR_USERNAME)
+            ->setEmail($id . self::VENDOR_USERNAME)
+            ->setEmailCanonical($id . self::VENDOR_USERNAME)
+            ->setUsername($id . self::VENDOR_USERNAME)
+            ->setUsernameCanonical($id . self::VENDOR_USERNAME)
             ->setSalt('')
             ->setRoles(['ROLE_ADMIN'])
             ->setChangePassword(0)
@@ -640,6 +647,6 @@ class SmartcardServiceTest extends KernelTestCase
             ->setArchived(false)
             ->setUser($this->user)
             ->setLocation($adm2);
-        $this->vendor->setName("Test Vendor for ".__CLASS__);
+        $this->vendor->setName("Test Vendor for " . __CLASS__);
     }
 }

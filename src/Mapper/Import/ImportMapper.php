@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Import;
 
+use DateTimeInterface;
 use Entity\Import;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Project;
 
@@ -28,7 +31,7 @@ class ImportMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Import::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Import::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -48,9 +51,11 @@ class ImportMapper implements MapperInterface
 
     public function getProjects(): array
     {
-        return array_values(array_map(function (Project $project) {
-            return $project->getId();
-        }, $this->object->getProjects()->toArray()));
+        return array_values(
+            array_map(function (Project $project) {
+                return $project->getId();
+            }, $this->object->getProjects()->toArray())
+        );
     }
 
     public function getStatus(): string
@@ -65,6 +70,6 @@ class ImportMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
 }

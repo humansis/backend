@@ -6,6 +6,8 @@ namespace Controller;
 
 use Entity\Beneficiary;
 use Controller\ExportController;
+use Entity\UserCountry;
+use Entity\UserProject;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\ProjectCreateInputType;
@@ -57,7 +59,7 @@ class ProjectController extends AbstractController
                     $result[] = ['code' => $code, 'value' => $repository->countAllInProject($project)];
                     break;
                 default:
-                    throw new BadRequestHttpException('Invalid query parameter code.'.$code);
+                    throw new BadRequestHttpException('Invalid query parameter code.' . $code);
             }
         }
 
@@ -75,7 +77,7 @@ class ProjectController extends AbstractController
     {
         $request->query->add(['projects' => $request->headers->get('country')]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -98,10 +100,10 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects")
      *
-     * @param Request                $request
+     * @param Request $request
      * @param ProjectFilterInputType $filter
-     * @param ProjectOrderInputType  $orderBy
-     * @param Pagination             $pagination
+     * @param ProjectOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -134,7 +136,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/projects/{id}")
      *
-     * @param Project                $project
+     * @param Project $project
      * @param ProjectUpdateInputType $inputType
      *
      * @return JsonResponse
@@ -174,17 +176,21 @@ class ProjectController extends AbstractController
     public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {
-            $projects = array_values(array_map(function (\Entity\UserProject $item) {
-                return $item->getProject();
-            }, $user->getProjects()->toArray()));
+            $projects = array_values(
+                array_map(function (UserProject $item) {
+                    return $item->getProject();
+                }, $user->getProjects()->toArray())
+            );
 
             return $this->json(new Paginator($projects));
         }
 
         if ($user->getCountries()->count() > 0) {
-            $countries = array_values(array_map(function (\Entity\UserCountry $item) {
-                return $item->getId();
-            }, $user->getCountries()->toArray()));
+            $countries = array_values(
+                array_map(function (UserCountry $item) {
+                    return $item->getId();
+                }, $user->getCountries()->toArray())
+            );
 
             $data = $this->projectRepository->findByCountries($countries);
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20210425094651 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -37,26 +39,24 @@ final class Version20210425094651 extends AbstractMigration
         $bothOldAndNewSectors = array_merge(array_keys($mapping), array_values($mapping));
         $newSectors = array_values($mapping);
 
-
-        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('".implode('\',\'', $bothOldAndNewSectors)."') COLLATE utf8_bin");
+        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('" . implode('\',\'', $bothOldAndNewSectors) . "') COLLATE utf8_bin");
 
         foreach ($mapping as $oldValue => $newValue) {
             $this->addSql("UPDATE assistance SET sector='$newValue' WHERE sector='$oldValue'");
         }
 
-        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('".implode('\',\'', $newSectors)."') COLLATE utf8_unicode_ci");
+        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('" . implode('\',\'', $newSectors) . "') COLLATE utf8_unicode_ci");
 
-
-        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('".implode('\',\'', $bothOldAndNewSectors)."') COLLATE utf8_bin");
+        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('" . implode('\',\'', $bothOldAndNewSectors) . "') COLLATE utf8_bin");
 
         foreach ($mapping as $oldValue => $newValue) {
             $this->addSql("UPDATE project_sector SET sector='$newValue' WHERE sector='$oldValue'");
         }
 
-        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('".implode('\',\'', $newSectors)."') COLLATE utf8_unicode_ci");
+        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('" . implode('\',\'', $newSectors) . "') COLLATE utf8_unicode_ci");
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

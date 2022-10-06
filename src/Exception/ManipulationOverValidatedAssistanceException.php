@@ -2,7 +2,8 @@
 
 namespace Exception;
 
-class ManipulationOverValidatedAssistanceException extends \InvalidArgumentException
-{
+use InvalidArgumentException;
 
+class ManipulationOverValidatedAssistanceException extends InvalidArgumentException
+{
 }

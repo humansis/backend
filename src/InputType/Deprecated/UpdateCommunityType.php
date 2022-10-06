@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType\Deprecated;
 
 use InputType\InputTypeInterface;
@@ -11,48 +12,57 @@ class UpdateCommunityType implements InputTypeInterface
      * @Assert\Valid()
      */
     public $address;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     public $latitude;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     public $longitude;
+
     /**
      * @var NationalIdType|null
      * @Assert\Valid()
      */
     public $national_id;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     public $phone_prefix;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      * @Assert\Expression("this.getPhoneNumber() == null or value != null")
      */
     private $phone_type;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     public $phone_number;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     public $contact_name;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     public $contact_family_name;
+
     /**
      * @var int[]
      * @Assert\NotNull
@@ -119,7 +129,7 @@ class UpdateCommunityType implements InputTypeInterface
     /**
      * @param NationalIdType|null $national_id
      */
-    public function setNational_id(?NationalIdType $national_id): void
+    public function setNationalId(?NationalIdType $national_id): void
     {
         $this->national_id = $national_id;
     }
@@ -219,5 +229,4 @@ class UpdateCommunityType implements InputTypeInterface
     {
         $this->projects = $projects;
     }
-
 }

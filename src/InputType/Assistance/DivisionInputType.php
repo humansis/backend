@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Assistance;
 
@@ -12,7 +14,6 @@ use Validator\Constraints\Enum;
  */
 class DivisionInputType implements InputTypeNullableDenormalizer
 {
-
     /**
      * @var string
      * @Assert\Type("string")
@@ -26,7 +27,6 @@ class DivisionInputType implements InputTypeNullableDenormalizer
      * @Assert\NotBlank(allowNull=true)
      */
     private $quantities;
-
 
     /**
      * @Assert\IsTrue(groups="Primary", message="For selection 'Per Household Members' should be defined at least one group.")
@@ -129,7 +129,8 @@ class DivisionInputType implements InputTypeNullableDenormalizer
                     continue;
                 }
 
-                if ((($quantitySub->getRangeFrom() <= $quantity->getRangeFrom()) && ($quantity->getRangeFrom() <= $quantitySub->getRangeTo())) ||
+                if (
+                    (($quantitySub->getRangeFrom() <= $quantity->getRangeFrom()) && ($quantity->getRangeFrom() <= $quantitySub->getRangeTo())) ||
                     (($quantitySub->getRangeFrom() <= $quantity->getRangeTo()) && ($quantity->getRangeTo() <= $quantitySub->getRangeTo()))
                 ) {
                     return false;
@@ -211,5 +212,4 @@ class DivisionInputType implements InputTypeNullableDenormalizer
     {
         // method must be declared to fulfill normalizer requirements
     }
-
 }

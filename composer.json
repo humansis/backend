@@ -68,6 +68,8 @@
 		"twig/twig": "2.14.4"
 	},
 	"require-dev": {
+		"captainhook/captainhook": "^5.10",
+		"captainhook/plugin-composer": "^5.3",
 		"doctrine/coding-standard": "^9.0",
 		"mashape/unirest-php": "^3.0",
 		"phpunit/phpunit": "~9.5.23",
@@ -83,7 +85,8 @@
 		},
 		"sort-packages": true,
 		"allow-plugins": {
-			"dealerdirect/phpcodesniffer-composer-installer": true
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"captainhook/plugin-composer": true
 		}
 	},
 	"extra": {

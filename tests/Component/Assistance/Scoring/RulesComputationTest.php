@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
@@ -47,7 +48,7 @@ class RulesComputationTest extends KernelTestCase
                 continue;
             }
 
-            $this->assertEquals( 2, $method->getNumberOfParameters());
+            $this->assertEquals(2, $method->getNumberOfParameters());
 
             $this->assertEquals(Household::class, $method->getParameters()[0]->getClass()->getName());
             $this->assertEquals(ScoringRule::class, $method->getParameters()[1]->getClass()->getName());
@@ -69,7 +70,10 @@ class RulesComputationTest extends KernelTestCase
             }
         }
 
-        $this->assertEmpty($supportedNotImplementedCalculations, 'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesCalculationsEnum::class);
+        $this->assertEmpty(
+            $supportedNotImplementedCalculations,
+            'Class ' . RulesCalculation::class . ' does not contain implementation for every rule defined in ' . ScoringRulesCalculationsEnum::class
+        );
     }
 
     public function testEveryMethodIsDefinedInEnum()
@@ -81,10 +85,13 @@ class RulesComputationTest extends KernelTestCase
                 continue;
             }
 
-            $this->assertContains($method->getName(), ScoringRulesCalculationsEnum::values(), 'There is implemented public method which is not in ' . ScoringRulesCalculationsEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.');
+            $this->assertContains(
+                $method->getName(),
+                ScoringRulesCalculationsEnum::values(),
+                'There is implemented public method which is not in ' . ScoringRulesCalculationsEnum::class . '. Class ' . RulesCalculation::class . ' should contain only methods which performs calculation of rules.'
+            );
         }
     }
-
 
     public function testDependencyRatioUkr()
     {
@@ -131,10 +138,9 @@ class RulesComputationTest extends KernelTestCase
     public function testEnumHouseholdShelterStatus()
     {
         $scoringRule = new ScoringRule('enum', 'HouseholdShelterStatus', 'Test');
-        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Lightly Damaged',1));
-        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged',4));
-        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged',5));
-
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Lightly Damaged', 1));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Moderately Damaged', 4));
+        $scoringRule->addOption(new ScoringRuleOption('House/Apartment - Severely Damaged', 5));
 
         $household = new Household();
 

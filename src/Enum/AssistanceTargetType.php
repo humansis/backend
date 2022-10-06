@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
 
 final class AssistanceTargetType
 {
-    const INDIVIDUAL = 'individual';
-    const HOUSEHOLD = 'household';
-    const COMMUNITY = 'community';
-    const INSTITUTION = 'institution';
+    public const INDIVIDUAL = 'individual';
+    public const HOUSEHOLD = 'household';
+    public const COMMUNITY = 'community';
+    public const INSTITUTION = 'institution';
 
     public static function values()
     {

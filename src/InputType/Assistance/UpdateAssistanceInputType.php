@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Assistance;
 
@@ -236,5 +238,4 @@ class UpdateAssistanceInputType implements InputTypeInterface
     {
         return !is_string($this->round);
     }
-
 }

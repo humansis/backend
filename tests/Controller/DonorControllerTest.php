@@ -31,7 +31,7 @@ class DonorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -48,7 +48,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/donors/'.$id, [
+        $this->request('PUT', '/api/basic/web-app/v1/donors/' . $id, [
             'fullname' => 'Test Donor',
             'shortname' => 'TD',
             'notes' => 'some note',
@@ -58,7 +58,7 @@ class DonorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -75,13 +75,13 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/donors/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -104,7 +104,7 @@ class DonorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -116,7 +116,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/donors/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/donors/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -128,7 +128,7 @@ class DonorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/donors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/donors/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

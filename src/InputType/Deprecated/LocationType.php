@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType\Deprecated;
 
 use InputType\InputTypeInterface;
@@ -11,16 +12,19 @@ class LocationType implements InputTypeInterface
      * @Assert\GreaterThanOrEqual(0)
      */
     private $adm1;
+
     /**
      * @var int|null
      * @Assert\GreaterThanOrEqual(0)
      */
     private $adm2;
+
     /**
      * @var int|null
      * @Assert\GreaterThanOrEqual(0)
      */
     private $adm3;
+
     /**
      * @var int|null
      * @Assert\GreaterThanOrEqual(0)

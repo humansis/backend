@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Validator\Constraints;
 
@@ -23,7 +25,6 @@ class CustomValidatorTest extends KernelTestCase
         $kernel = self::bootKernel();
         $this->validator = $kernel->getContainer()->get('validator');
     }
-
 
     public function data(): iterable
     {

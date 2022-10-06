@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Command\Import;
@@ -20,21 +21,24 @@ class CleanCommand extends AbstractImportQueueCommand
      */
     private $importInvalidFileService;
 
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine, ImportInvalidFileService $importInvalidFileService)
-    {
+    public function __construct(
+        ObjectManager $manager,
+        ImportService $importService,
+        LoggerInterface $importLogger,
+        WorkflowInterface $importStateMachine,
+        ImportInvalidFileService $importInvalidFileService
+    ) {
         parent::__construct($manager, $importService, $importLogger, $importStateMachine);
 
         $this->importInvalidFileService = $importInvalidFileService;
     }
-
 
     protected function configure()
     {
         parent::configure();
         $this
             ->setName('app:import:clean')
-            ->setDescription('Clean data of finished import')
-        ;
+            ->setDescription('Clean data of finished import');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -52,11 +56,12 @@ class CleanCommand extends AbstractImportQueueCommand
             $this->logAffectedImports($this->imports, 'app:import:clean');
         } else {
             $this->logger->debug('app:import:clean affects no imports');
+
             return 0;
         }
 
         $output->writeln([
-            "Clean of ".count($this->imports)." imports",
+            "Clean of " . count($this->imports) . " imports",
         ]);
 
         foreach ($this->imports as $import) {

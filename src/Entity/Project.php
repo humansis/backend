@@ -14,6 +14,7 @@ use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Enum\ProductCategoryType;
 use Exception\CountryMismatchException;
+use InvalidArgumentException;
 use Utils\ExportableInterface;
 use Entity\Helper\CountryDependent;
 
@@ -107,7 +108,7 @@ class Project implements ExportableInterface
     private $sectors;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      */
@@ -385,7 +386,7 @@ class Project implements ExportableInterface
      *
      * @param Donor $donor
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeDonor(Donor $donor): bool
     {
@@ -449,7 +450,7 @@ class Project implements ExportableInterface
      *
      * @param Sector $sector
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeSector(Sector $sector): bool
     {
@@ -497,7 +498,7 @@ class Project implements ExportableInterface
      *
      * @param UserProject $usersProject
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeUsersProject(UserProject $usersProject): bool
     {
@@ -517,27 +518,28 @@ class Project implements ExportableInterface
     /**
      * Add household.
      *
-     * @param \Entity\Household $household
+     * @param Household $household
      *
      * @return Project
      */
-    public function addHousehold(\Entity\Household $household): Project
+    public function addHousehold(Household $household): Project
     {
-        if($household->getCountryIso3() !== $this->getCountryIso3()) {
+        if ($household->getCountryIso3() !== $this->getCountryIso3()) {
             throw new CountryMismatchException();
         }
         $this->households->add($household);
+
         return $this;
     }
 
     /**
      * Remove household.
      *
-     * @param \Entity\Household $household
+     * @param Household $household
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeHousehold(\Entity\Household $household): bool
+    public function removeHousehold(Household $household): bool
     {
         return $this->households->removeElement($household);
     }
@@ -571,7 +573,7 @@ class Project implements ExportableInterface
      *
      * @param Assistance $distribution
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeDistribution(Assistance $distribution): bool
     {
@@ -590,6 +592,7 @@ class Project implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array
@@ -612,7 +615,7 @@ class Project implements ExportableInterface
             "ID" => $this->getId(),
             "Project name" => $this->getName(),
             "Internal ID" => $this->getInternalId(),
-            "Start date"=> $this->getStartDate()->format('d-m-Y'),
+            "Start date" => $this->getStartDate()->format('d-m-Y'),
             "End date" => $this->getEndDate()->format('d-m-Y'),
             "Number of households" => $this->getNumberOfHouseholds(),
             "Total Target beneficiaries" => $this->getTarget(),
@@ -634,7 +637,7 @@ class Project implements ExportableInterface
         $em = $args->getEntityManager();
         /** @var Project $entity */
         $entity = $args->getObject();
-        
+
         $this->setNumberOfHouseholds(intval($em->getRepository(Household::class)->countUnarchivedByProject($entity)));
     }
 
@@ -712,7 +715,7 @@ class Project implements ExportableInterface
     {
         foreach ($allowedProductCategoryTypes as $categoryType) {
             if (!in_array($categoryType, ProductCategoryType::values())) {
-                throw new \InvalidArgumentException("$categoryType is not valid category type value. Allowed values: [" . implode(',', ProductCategoryType::values()) . ']');
+                throw new InvalidArgumentException("$categoryType is not valid category type value. Allowed values: [" . implode(',', ProductCategoryType::values()) . ']');
             }
         }
 
@@ -736,5 +739,4 @@ class Project implements ExportableInterface
     {
         $this->lastModifiedAtIncludingBeneficiaries = $lastModifiedAtIncludingBeneficiaries;
     }
-
 }

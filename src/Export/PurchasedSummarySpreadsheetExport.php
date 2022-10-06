@@ -12,6 +12,9 @@ use Component\Country\Countries;
 use Component\Country\Country;
 use Enum\NationalIdType;
 use InputType\PurchasedItemFilterInputType;
+use IntlDateFormatter;
+use InvalidArgumentException;
+use Punic\Misc;
 use Repository\PurchasedItemRepository;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -48,14 +51,14 @@ class PurchasedSummarySpreadsheetExport
     {
         $country = $this->countries->getCountry($countryIso3);
         if (!$country) {
-            throw new \InvalidArgumentException('Invalid country '.$countryIso3);
+            throw new InvalidArgumentException('Invalid country ' . $countryIso3);
         }
 
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new \InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. '.$filetype.' given.');
+            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
         }
 
-        $filename = sys_get_temp_dir().'/purchased_items.'.$filetype;
+        $filename = sys_get_temp_dir() . '/purchased_items.' . $filetype;
 
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
@@ -94,7 +97,7 @@ class PurchasedSummarySpreadsheetExport
         $worksheet->getColumnDimension('V')->setWidth(14.423);
         $worksheet->getColumnDimension('W')->setWidth(28.080);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
-        $worksheet->setRightToLeft('right-to-left' === \Punic\Misc::getCharacterOrder($this->translator->getLocale()));
+        $worksheet->setRightToLeft('right-to-left' === Misc::getCharacterOrder($this->translator->getLocale()));
         $worksheet->getStyle('A1:W1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -107,7 +110,7 @@ class PurchasedSummarySpreadsheetExport
             ],
         ]);
 
-        $dateFormatter = new \IntlDateFormatter($this->translator->getLocale(), \IntlDateFormatter::SHORT, \IntlDateFormatter::NONE);
+        $dateFormatter = new IntlDateFormatter($this->translator->getLocale(), IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
 
         $worksheet->setCellValue('A1', $this->translator->trans('Beneficiary ID'));
         $worksheet->setCellValue('B1', $this->translator->trans('Beneficiary Type'));
@@ -142,29 +145,29 @@ class PurchasedSummarySpreadsheetExport
             $fullLocation = self::adms($assistance);
 
             $i++;
-            $worksheet->setCellValue('A'.$i, $beneficiary->getId());
-            $worksheet->setCellValue('B'.$i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
-            $worksheet->setCellValue('C'.$i, $beneficiary->getLocalGivenName());
-            $worksheet->setCellValue('D'.$i, $beneficiary->getLocalFamilyName());
-            $worksheet->setCellValue('E'.$i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('F'.$i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('G'.$i, $purchasedItem->getProject()->getName());
-            $worksheet->setCellValue('H'.$i, $assistance->getName());
-            $worksheet->setCellValue('I'.$i, $fullLocation[0]);
-            $worksheet->setCellValue('J'.$i, $fullLocation[1]);
-            $worksheet->setCellValue('K'.$i, $fullLocation[2]);
-            $worksheet->setCellValue('L'.$i, $fullLocation[3]);
-            $worksheet->setCellValue('M'.$i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
-            $worksheet->setCellValue('N'.$i, $purchasedItem->getModalityType());
-            $worksheet->setCellValue('O'.$i, $purchasedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('P'.$i, $purchasedItem->getProduct()->getName());
-            $worksheet->setCellValue('Q'.$i, $commodity->getUnit());
-            $worksheet->setCellValue('R'.$i, $purchasedItem->getValue());
-            $worksheet->setCellValue('S'.$i, $purchasedItem->getCurrency());
-            $worksheet->setCellValue('T'.$i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('U'.$i, $purchasedItem->getVendor()->getId());
-            $worksheet->setCellValue('V'.$i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('W'.$i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('A' . $i, $beneficiary->getId());
+            $worksheet->setCellValue('B' . $i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
+            $worksheet->setCellValue('C' . $i, $beneficiary->getLocalGivenName());
+            $worksheet->setCellValue('D' . $i, $beneficiary->getLocalFamilyName());
+            $worksheet->setCellValue('E' . $i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('F' . $i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('G' . $i, $purchasedItem->getProject()->getName());
+            $worksheet->setCellValue('H' . $i, $assistance->getName());
+            $worksheet->setCellValue('I' . $i, $fullLocation[0]);
+            $worksheet->setCellValue('J' . $i, $fullLocation[1]);
+            $worksheet->setCellValue('K' . $i, $fullLocation[2]);
+            $worksheet->setCellValue('L' . $i, $fullLocation[3]);
+            $worksheet->setCellValue('M' . $i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue('N' . $i, $purchasedItem->getModalityType());
+            $worksheet->setCellValue('O' . $i, $purchasedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('P' . $i, $purchasedItem->getProduct()->getName());
+            $worksheet->setCellValue('Q' . $i, $commodity->getUnit());
+            $worksheet->setCellValue('R' . $i, $purchasedItem->getValue());
+            $worksheet->setCellValue('S' . $i, $purchasedItem->getCurrency());
+            $worksheet->setCellValue('T' . $i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('U' . $i, $purchasedItem->getVendor()->getId());
+            $worksheet->setCellValue('V' . $i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('W' . $i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
         }
     }
 
@@ -173,7 +176,7 @@ class PurchasedSummarySpreadsheetExport
         /** @var Phone $phone */
         foreach ($beneficiary->getPerson()->getPhones() as $phone) {
             if (!$phone->getProxy()) {
-                return $phone->getPrefix().' '.$phone->getNumber();
+                return $phone->getPrefix() . ' ' . $phone->getNumber();
             }
         }
 
@@ -196,7 +199,7 @@ class PurchasedSummarySpreadsheetExport
     private static function adms(Assistance $assistance): array
     {
         $location = $assistance->getLocation();
-        $names = array_fill(0, 4 , null);
+        $names = array_fill(0, 4, null);
 
         while ($location) {
             $names[$location->getLvl() - 1] = $location->getName();
@@ -206,4 +209,3 @@ class PurchasedSummarySpreadsheetExport
         return $names;
     }
 }
-

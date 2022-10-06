@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Utils;
 
 use Entity\Address;
@@ -17,6 +16,7 @@ use Entity\Project;
 
 /**
  * Class InstitutionService
+ *
  * @package Utils
  */
 class InstitutionService
@@ -26,6 +26,7 @@ class InstitutionService
 
     /**
      * InstitutionService constructor.
+     *
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
@@ -67,12 +68,14 @@ class InstitutionService
             $location = $this->em->getRepository(Location::class)
                 ->find($addressType->getLocationId());
 
-            $institution->setAddress(Address::create(
-                $addressType->getStreet(),
-                $addressType->getNumber(),
-                $addressType->getPostcode(),
-                $location
-            ));
+            $institution->setAddress(
+                Address::create(
+                    $addressType->getStreet(),
+                    $addressType->getNumber(),
+                    $addressType->getPostcode(),
+                    $location
+                )
+            );
         }
 
         if ($inputType->getPhone()) {

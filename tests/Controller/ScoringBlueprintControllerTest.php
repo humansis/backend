@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller;
@@ -10,12 +11,9 @@ use Tests\BMSServiceTestCase;
 
 class ScoringBlueprintControllerTest extends BMSServiceTestCase
 {
-
-
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
     }
 
     /**
@@ -70,11 +68,10 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
             $response->getStatusCode(),
             'Expected different response code'
         );
-        $data =  json_decode($response->getContent());
+        $data = json_decode($response->getContent());
+
         return $data->id;
     }
-
-
 
     /**
      * @depends testCreateSuccess
@@ -109,15 +106,19 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/scoring-blueprints/'.$id, $data = [
-            'name' => 'New name',
-        ]);
+        $this->request(
+            'PATCH',
+            '/api/basic/web-app/v1/scoring-blueprints/' . $id,
+            $data = [
+                'name' => 'New name',
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertArrayHasKey('name', $result);
         $this->assertEquals($data['name'], $result['name']);
@@ -130,34 +131,32 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/scoring-blueprints/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/scoring-blueprints/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
+
         return $id;
     }
-
-
 
     /**
      * @depends testCreateSuccess
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/scoring-blueprints/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/scoring-blueprints/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
         return $id;
     }
-
 
     public function testGetNotexists()
     {

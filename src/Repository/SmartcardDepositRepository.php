@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
@@ -33,7 +35,7 @@ class SmartcardDepositRepository extends EntityRepository
     /**
      * @param string $hash
      *
-     * @return object|\Entity\SmartcardDeposit|null
+     * @return object|SmartcardDeposit|null
      */
     public function findByHash(string $hash): ?SmartcardDeposit
     {
@@ -44,8 +46,8 @@ class SmartcardDepositRepository extends EntityRepository
      * @param SmartcardDeposit $deposit
      *
      * @return void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function save(SmartcardDeposit $deposit)
     {

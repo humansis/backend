@@ -34,8 +34,15 @@ class InputTypeConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration): bool
     {
-        $serializer = new Serializer([new ObjectNormalizer(null, null, null,
-            new ReflectionExtractor()), $this->getArrayDenormalizer()]);
+        $serializer = new Serializer([
+            new ObjectNormalizer(
+                null,
+                null,
+                null,
+                new ReflectionExtractor()
+            ),
+            $this->getArrayDenormalizer(),
+        ]);
         $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
             ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
         ]);
@@ -56,7 +63,7 @@ class InputTypeConverter implements ParamConverterInterface
     public function supports(ParamConverter $configuration): bool
     {
         $class = $this->getClassFromConfiguration($configuration);
-        if(!$class) {
+        if (!$class) {
             return false;
         }
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Identity;
 
@@ -8,10 +10,13 @@ use Entity\ImportQueue;
 class NationalIdHashSet
 {
     private $hashSet = [];
+
     /** @var ImportQueue[] */
     private $items = [];
+
     /** @var string[] */
     private $types = [];
+
     /** @var string[] */
     private $numbers = [];
 
@@ -41,17 +46,18 @@ class NationalIdHashSet
 
     /**
      * @param NationalId $nationalId
-     * @param callable   $callbackForAllItems(ImportQueue $item, int $index, NationalId $nationalId)
+     * @param callable $callbackForAllItems (ImportQueue $item, int $index, NationalId $nationalId)
      */
     public function forItems(NationalId $nationalId, callable $callbackForAllItems): void
     {
-        if (!$this->hasItems($nationalId)) return;
+        if (!$this->hasItems($nationalId)) {
+            return;
+        }
         foreach ($this->hashSet[$nationalId->getIdType()][$nationalId->getIdNumber()] as $itemCouple) {
-            list($itemId, $index) = $itemCouple;
+            [$itemId, $index] = $itemCouple;
             $item = $this->items[$itemId];
 
             $callbackForAllItems($item, $index, $nationalId);
         }
     }
-
 }

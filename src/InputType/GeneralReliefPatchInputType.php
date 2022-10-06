@@ -33,7 +33,7 @@ class GeneralReliefPatchInputType implements InputTypeInterface
     private $isSet = [];
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getDistributed()
     {
@@ -41,7 +41,7 @@ class GeneralReliefPatchInputType implements InputTypeInterface
     }
 
     /**
-     * @param boolean $distributed
+     * @param bool $distributed
      */
     public function setDistributed($distributed): void
     {

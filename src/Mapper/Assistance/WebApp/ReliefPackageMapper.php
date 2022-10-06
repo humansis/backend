@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\WebApp;
 
+use DateTimeInterface;
 use Entity\Assistance\ReliefPackage;
 use Enum\ProductCategoryType;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class ReliefPackageMapper implements MapperInterface
@@ -33,7 +36,7 @@ class ReliefPackageMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ReliefPackage::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): ?int
@@ -73,18 +76,18 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
 
     public function getLastModifiedAt(): string
     {
-        return $this->object->getLastModifiedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ISO8601);
     }
 
     public function getDistributedAt(): ?string
     {
         $distributionDate = $this->object->getDistributedAt();
 
-        return $distributionDate ? $distributionDate->format(\DateTimeInterface::ISO8601) : null;
+        return $distributionDate ? $distributionDate->format(DateTimeInterface::ISO8601) : null;
     }
 }

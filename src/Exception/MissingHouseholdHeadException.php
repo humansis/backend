@@ -2,7 +2,7 @@
 
 namespace Exception;
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 class MissingHouseholdHeadException extends InvalidArgumentException
 {

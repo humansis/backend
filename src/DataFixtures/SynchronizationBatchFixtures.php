@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DataFixtures;
@@ -17,7 +18,7 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     /** @var SmartcardDepositService */
     private $smartcardDepositService;
 
-    const DEPOSIT_SYNC_DATA = [
+    public const DEPOSIT_SYNC_DATA = [
         ['{"reliefPackageId":1024, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": null, "balanceAfter": 10.99}'],
         ['{"reliefPackageId":1, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": 1000000.99, "balanceAfter": 10.99}'],
         ['{"reliefPackageId":null, "createdAt": "garbage", "smartcardSerialNumber": null, "balanceBefore": null, "balanceAfter": null}'],
@@ -25,7 +26,7 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
     ];
 
     /**
-     * @param string                  $environment
+     * @param string $environment
      * @param SmartcardDepositService $smartcardDepositService
      */
     public function __construct(string $environment, SmartcardDepositService $smartcardDepositService)

@@ -1,21 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Country\Countries;
 use Entity\ImportQueue;
+use InvalidArgumentException;
 
 class ImportLineFactory
 {
     /** @var EntityManagerInterface */
     private $entityManager;
+
     /** @var Countries */
     private $countries;
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param Countries              $countries
+     * @param Countries $countries
      */
     public function __construct(EntityManagerInterface $entityManager, Countries $countries)
     {
@@ -26,8 +30,9 @@ class ImportLineFactory
     public function createFromData(array $data, string $countryIso): ImportLine
     {
         if (!$this->countries->hasCountry($countryIso)) {
-            throw new \InvalidArgumentException("Country $countryIso doesn't exist");
+            throw new InvalidArgumentException("Country $countryIso doesn't exist");
         }
+
         return new ImportLine($data, $countryIso, $this->entityManager);
     }
 
@@ -45,7 +50,7 @@ class ImportLineFactory
 
     /**
      * @param ImportQueue $importQueue
-     * @param int         $beneficiaryIndex
+     * @param int $beneficiaryIndex
      *
      * @return ImportLine
      */

@@ -1,13 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\Household;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
 use Entity\User;
+use InvalidArgumentException;
 
 /**
  * Information about duplicity between queue record and household.
@@ -54,7 +58,7 @@ class ImportHouseholdDuplicity
     private $decideBy;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
@@ -106,7 +110,7 @@ class ImportHouseholdDuplicity
     public function setState(string $state)
     {
         if (!in_array($state, ImportDuplicityState::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$state.' is not valid Import duplicity state');
+            throw new InvalidArgumentException('Invalid argument. ' . $state . ' is not valid Import duplicity state');
         }
 
         $this->state = $state;
@@ -129,19 +133,18 @@ class ImportHouseholdDuplicity
     }
 
     /**
-     * @param \DateTimeInterface $dateTime
+     * @param DateTimeInterface $dateTime
      */
-    public function setDecideAt(\DateTimeInterface $dateTime): void
+    public function setDecideAt(DateTimeInterface $dateTime): void
     {
         $this->decideAt = $dateTime;
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDecideAt(): \DateTimeInterface
+    public function getDecideAt(): DateTimeInterface
     {
         return $this->decideAt;
     }
-
 }

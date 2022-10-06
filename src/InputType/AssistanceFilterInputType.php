@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -46,5 +47,4 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     {
         return $this->type;
     }
-
 }

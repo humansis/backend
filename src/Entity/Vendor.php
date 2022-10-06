@@ -42,7 +42,7 @@ class Vendor implements ExportableInterface
      */
     private $shop;
 
-     /**
+    /**
      * @var string
      *
      * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
@@ -66,7 +66,7 @@ class Vendor implements ExportableInterface
      */
     private $addressPostcode;
 
-     /**
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Entity\Location")
@@ -136,7 +136,6 @@ class Vendor implements ExportableInterface
     {
         $this->archived = false;
     }
-
 
     /**
      * Get id.
@@ -319,11 +318,11 @@ class Vendor implements ExportableInterface
     /**
      * Set user.
      *
-     * @param \Entity\User|null $user
+     * @param User|null $user
      *
      * @return Vendor
      */
-    public function setUser(\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
         $user->setVendor($this);
@@ -334,7 +333,7 @@ class Vendor implements ExportableInterface
     /**
      * Get user.
      *
-     * @return \Entity\User|null
+     * @return User|null
      */
     public function getUser()
     {
@@ -343,7 +342,6 @@ class Vendor implements ExportableInterface
 
     public function getMappedValueForExport(): array
     {
-
         $adm1 = $this->getLocation() ? $this->getLocation()->getAdm1Name() : null;
         $adm2 = $this->getLocation() ? $this->getLocation()->getAdm2Name() : null;
         $adm3 = $this->getLocation() ? $this->getLocation()->getAdm3Name() : null;
@@ -357,11 +355,11 @@ class Vendor implements ExportableInterface
             "Address street" => $this->getAddressStreet(),
             "Address postcode" => $this->getAddressPostcode(),
             'Contract No.' => $this->getContractNo(),
-            'Vendor No.'=> $this->getVendorNo(),
+            'Vendor No.' => $this->getVendorNo(),
             "adm1" => $adm1,
-            "adm2" =>$adm2,
-            "adm3" =>$adm3,
-            "adm4" =>$adm4,
+            "adm2" => $adm2,
+            "adm3" => $adm3,
+            "adm4" => $adm4,
         ];
     }
 

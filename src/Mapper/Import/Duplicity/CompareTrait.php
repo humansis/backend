@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Import\Duplicity;
 
@@ -6,7 +8,10 @@ trait CompareTrait
 {
     protected function compareScalarValue($databaseValue, $importValue): ?array
     {
-        if ($databaseValue === $importValue) return null;
+        if ($databaseValue === $importValue) {
+            return null;
+        }
+
         return [
             'database' => $databaseValue,
             'import' => $importValue,
@@ -20,7 +25,10 @@ trait CompareTrait
             'database' => array_diff($databaseValues, $importValues),
             'import' => array_diff($importValues, $databaseValues),
         ];
-        if (empty($data['database']) && empty($data['import'])) return null;
+        if (empty($data['database']) && empty($data['import'])) {
+            return null;
+        }
+
         return $data;
     }
 }

@@ -16,7 +16,7 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/camps")
      *
-     * @param Request             $request
+     * @param Request $request
      * @param CampFilterInputType $filterInputType
      *
      * @return JsonResponse
@@ -32,7 +32,6 @@ class CampController extends AbstractController
 
         return $this->json(new Paginator($beneficiaries));
     }
-
 
     /**
      * @Rest\Get("/web-app/v1/camps/{id}")

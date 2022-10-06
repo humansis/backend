@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Enum;
@@ -9,10 +10,10 @@ class ExampleEnum
 {
     use EnumTrait;
 
-    const HORSE = 'příliš žluťoučký kůň pěl ďábelské ódy';
-    const AAA = 'AAA';
-    const OBFUSCATE = 'A - B - C/D_E';
-    const YES = true;
+    public const HORSE = 'příliš žluťoučký kůň pěl ďábelské ódy';
+    public const AAA = 'AAA';
+    public const OBFUSCATE = 'A - B - C/D_E';
+    public const YES = true;
 
     public static function values(): array
     {
@@ -43,5 +44,4 @@ class ExampleEnum
             self::YES => 1024,
         ];
     }
-
 }

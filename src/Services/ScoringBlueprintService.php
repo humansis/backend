@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Services;
@@ -15,11 +16,8 @@ use Utils\UserService;
 
 class ScoringBlueprintService
 {
-
-
     /** @var EntityManagerInterface $em */
     private $em;
-
 
     /** @var UserService */
     private $userService;
@@ -29,15 +27,14 @@ class ScoringBlueprintService
 
     /**
      * @param EntityManagerInterface $em
-     * @param UserService            $userService
-     * @param ScoringService         $scoringService
+     * @param UserService $userService
+     * @param ScoringService $scoringService
      */
     public function __construct(
-        EntityManagerInterface  $em,
+        EntityManagerInterface $em,
         UserService $userService,
         ScoringService $scoringService
-    )
-    {
+    ) {
         $this->userService = $userService;
         $this->em = $em;
         $this->scoringService = $scoringService;
@@ -45,32 +42,30 @@ class ScoringBlueprintService
 
     /**
      * @param ScoringInputType $scoringInput
-     * @param string           $iso3
+     * @param string $iso3
      *
      * @return ScoringBlueprint
      * @throws CsvParserException
      * @throws ScoreValidationException
      */
-    public function create(ScoringInputType $scoringInput,string $iso3): ScoringBlueprint
+    public function create(ScoringInputType $scoringInput, string $iso3): ScoringBlueprint
     {
-            $this->scoringService->validateScoring($scoringInput->getName(), $scoringInput->getContent());
-            $scoringBlueprint = new ScoringBlueprint();
-            $scoringBlueprint->setArchived(false)
-                ->setName($scoringInput->getName())
-                ->setContent($scoringInput->getContent())
-                ->setCreatedBy($this->userService->getCurrentUser())
-                ->setCountryIso3($iso3);
-            $this->em->persist($scoringBlueprint);
-            $this->em->flush();
+        $this->scoringService->validateScoring($scoringInput->getName(), $scoringInput->getContent());
+        $scoringBlueprint = new ScoringBlueprint();
+        $scoringBlueprint->setArchived(false)
+            ->setName($scoringInput->getName())
+            ->setContent($scoringInput->getContent())
+            ->setCreatedBy($this->userService->getCurrentUser())
+            ->setCountryIso3($iso3);
+        $this->em->persist($scoringBlueprint);
+        $this->em->flush();
 
-            return $scoringBlueprint;
-
-
+        return $scoringBlueprint;
     }
 
     /**
      * @param ScoringPatchInputType $scoringInput
-     * @param ScoringBlueprint      $blueprint
+     * @param ScoringBlueprint $blueprint
      */
     public function patch(ScoringPatchInputType $scoringInput, ScoringBlueprint $blueprint): void
     {
@@ -91,5 +86,4 @@ class ScoringBlueprintService
         $this->em->persist($scoring);
         $this->em->flush();
     }
-
 }

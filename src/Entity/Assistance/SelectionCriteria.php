@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity\Assistance;
 
@@ -110,8 +112,8 @@ class SelectionCriteria
         if ($this->tableString === SelectionCriteriaField::COUNTRY_SPECIFIC) {
             $iso3 = $this->assistanceSelection->getAssistance()->getProject()->getCountryIso3();
             $this->deprecated = $lifecycleEventArgs->getEntityManager()
-                ->getRepository(CountrySpecific::class)
-                ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
+                    ->getRepository(CountrySpecific::class)
+                    ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
         } else {
             $this->deprecated = !in_array($this->fieldString, SelectionCriteriaField::values());
         }

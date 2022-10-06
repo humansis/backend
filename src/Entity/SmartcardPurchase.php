@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
@@ -126,7 +127,7 @@ class SmartcardPurchase
     }
 
     /**
-     * @param Product    $product
+     * @param Product $product
      * @param float|null $quantity
      * @param float|null $value
      * @param string|null $currency
@@ -142,6 +143,7 @@ class SmartcardPurchase
         foreach ($this->getRecords() as $record) {
             $purchased += $record->getValue();
         }
+
         return $purchased;
     }
 

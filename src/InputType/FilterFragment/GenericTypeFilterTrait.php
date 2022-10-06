@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\FilterFragment;
+
 use Enum\SourceType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -14,7 +16,7 @@ trait GenericTypeFilterTrait
      */
     protected $type;
 
-    protected abstract function availableTypes(): array;
+    abstract protected function availableTypes(): array;
 
     public function hasType(): bool
     {

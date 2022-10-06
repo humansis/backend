@@ -57,11 +57,11 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/distributed-items")
      *
-     * @param Request                        $request
+     * @param Request $request
      * @param DistributedItemFilterInputType $inputType
-     * @param DistributedItemOrderInputType  $order
-     * @param DistributedItemRepository      $distributedItemRepository
-     * @param Pagination                     $pagination
+     * @param DistributedItemOrderInputType $order
+     * @param DistributedItemRepository $distributedItemRepository
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -71,8 +71,7 @@ class DistributedItemController extends AbstractController
         DistributedItemOrderInputType $order,
         DistributedItemRepository $distributedItemRepository,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
@@ -85,7 +84,7 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/distributed-items/exports")
      *
-     * @param Request                        $request
+     * @param Request $request
      * @param DistributedItemFilterInputType $inputType
      *
      * @return Response

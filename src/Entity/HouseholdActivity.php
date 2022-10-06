@@ -2,6 +2,8 @@
 
 namespace Entity;
 
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\User;
 
@@ -44,7 +46,7 @@ class HouseholdActivity
     private $content;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
@@ -55,7 +57,7 @@ class HouseholdActivity
         $this->household = $household;
         $this->author = $author;
         $this->content = $content;
-        $this->createdAt = new \DateTime('now');
+        $this->createdAt = new DateTime('now');
     }
 
     /**
@@ -91,9 +93,9 @@ class HouseholdActivity
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }

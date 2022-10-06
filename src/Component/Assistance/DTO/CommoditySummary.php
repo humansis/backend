@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance\DTO;
 
@@ -6,15 +8,17 @@ class CommoditySummary
 {
     /** @var string */
     private $modalityType;
+
     /** @var float */
     private $amount;
+
     /** @var string */
     private $unit;
 
     /**
      * @param string $modalityType
      * @param string $unit
-     * @param float  $amount
+     * @param float $amount
      */
     public function __construct(string $modalityType, string $unit, float $amount = 0)
     {
@@ -46,5 +50,4 @@ class CommoditySummary
     {
         return $this->unit;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
@@ -7,9 +8,9 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class CountrySpecificOrderInputType extends AbstractSortInputType
 {
-    const SORT_BY_ID = 'id';
-    const SORT_BY_FIELD = 'field';
-    const SORT_BY_TYPE = 'type';
+    public const SORT_BY_ID = 'id';
+    public const SORT_BY_FIELD = 'field';
+    public const SORT_BY_TYPE = 'type';
 
     protected function getValidNames(): array
     {

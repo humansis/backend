@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Command;
@@ -46,7 +47,7 @@ class WingMoneyReportImportCommand extends Command
         $this->setName('app:wing-money:import')
             ->addArgument('reportFile', InputArgument::REQUIRED, 'Report file in xlsx format')
             ->addArgument('assistance', InputArgument::REQUIRED, 'ID of an assistance in which the transactions will be imported')
-            ->addArgument('user',InputArgument::REQUIRED, 'ID of an user. Will be saved as sendBy for transactions.')
+            ->addArgument('user', InputArgument::REQUIRED, 'ID of an user. Will be saved as sendBy for transactions.')
             ->addOption('check');
     }
 
@@ -56,22 +57,26 @@ class WingMoneyReportImportCommand extends Command
         $assistance = $this->getAssistance($input);
         $user = $this->getUser($input);
 
-        $output->writeln('Parsing file "'.$reportFile.'"');
+        $output->writeln('Parsing file "' . $reportFile . '"');
 
         $entries = $this->reportParser->parseEntries($reportFile);
 
         $totalEntries = count($entries);
-        $output->writeln('Found '.$totalEntries.' valid entries in given file');
+        $output->writeln('Found ' . $totalEntries . ' valid entries in given file');
 
         $newEntries = $this->importService->filterExistingTransactions($entries);
         $totalInSystem = $totalEntries - count($newEntries);
 
-        $output->writeln($totalInSystem.' entries are already in system');
+        $output->writeln($totalInSystem . ' entries are already in system');
 
         $entriesToImport = $this->importService->filterTransactionsInAssistanceOnly($newEntries, $assistance);
 
-        $output->writeln(count($newEntries) - count($entriesToImport).' entries won\'t be imported (phone number not found, phone number does not belong to beneficiary in given assistance, amount does not match with assistance commodity)');
-        $output->writeln(count($entriesToImport).' entries ready to import');
+        $output->writeln(
+            count($newEntries) - count(
+                $entriesToImport
+            ) . ' entries won\'t be imported (phone number not found, phone number does not belong to beneficiary in given assistance, amount does not match with assistance commodity)'
+        );
+        $output->writeln(count($entriesToImport) . ' entries ready to import');
 
         /** @var ReportEntry $entry */
         foreach ($entriesToImport as $entry) {
@@ -90,7 +95,6 @@ class WingMoneyReportImportCommand extends Command
         return 0;
     }
 
-
     /**
      * @param InputInterface $input
      *
@@ -100,12 +104,11 @@ class WingMoneyReportImportCommand extends Command
     {
         $filepath = $input->getArgument('reportFile');
         if (!file_exists($filepath)) {
-            throw new InvalidArgumentException('Unable to find source file with Wing Money report for import: '.$filepath);
+            throw new InvalidArgumentException('Unable to find source file with Wing Money report for import: ' . $filepath);
         }
 
         return $filepath;
     }
-
 
     private function getAssistance(InputInterface $input): Assistance
     {

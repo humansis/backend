@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,12 +12,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20190204151850 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE donor (
                 id INT AUTO_INCREMENT NOT NULL,
                 fullname VARCHAR(255) NOT NULL,
@@ -23,20 +26,26 @@ final class Version20190204151850 extends AbstractMigration
                 dateAdded DATETIME NOT NULL,
                 notes VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE sector (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE profile (
                 id INT AUTO_INCREMENT NOT NULL,
                 photo VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE project (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
@@ -47,8 +56,10 @@ final class Version20190204151850 extends AbstractMigration
                 iso3 LONGTEXT NOT NULL,
                 archived TINYINT(1) DEFAULT \'0\' NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE project_donor (
                 project_id INT NOT NULL,
                 donor_id INT NOT NULL,
@@ -61,8 +72,10 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_C4A749093DD7B7A7 FOREIGN KEY (donor_id)
                     REFERENCES donor (id)
                     ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE project_sector (project_id INT NOT NULL,
                 sector_id INT NOT NULL,
                 INDEX IDX_5C0732A2166D1F9C (project_id),
@@ -74,13 +87,17 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_5C0732A2DE95C867 FOREIGN KEY (sector_id)
                     REFERENCES sector (id)
                     ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE location (
                 id INT AUTO_INCREMENT NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE adm1 (
                 id INT AUTO_INCREMENT NOT NULL,
                 location_id INT DEFAULT NULL,
@@ -91,8 +108,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_6C8D395664D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE adm2 (
                 id INT AUTO_INCREMENT NOT NULL,
                 adm1_id INT DEFAULT NULL,
@@ -106,8 +125,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES adm1 (id),
                 CONSTRAINT FK_F58468EC64D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE adm3 (
                 id INT AUTO_INCREMENT NOT NULL,
                 adm2_id INT DEFAULT NULL,
@@ -121,8 +142,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES adm2 (id),
                 CONSTRAINT FK_8283587A64D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE adm4 (
                 id INT AUTO_INCREMENT NOT NULL,
                 adm3_id INT DEFAULT NULL,
@@ -136,8 +159,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES adm3 (id),
                 CONSTRAINT FK_1CE7CDD964D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE household (
                 id INT AUTO_INCREMENT NOT NULL,
                 location_id INT DEFAULT NULL,
@@ -153,8 +178,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_54C32FC064D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE household_project (
                 household_id INT NOT NULL,
                 project_id INT NOT NULL,
@@ -167,8 +194,10 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_42473AC0166D1F9C FOREIGN KEY (project_id)
                     REFERENCES project (id)
                     ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE `user` (id INT AUTO_INCREMENT NOT NULL,
                 username VARCHAR(180) NOT NULL,
                 username_canonical VARCHAR(180) NOT NULL,
@@ -186,8 +215,10 @@ final class Version20190204151850 extends AbstractMigration
                 UNIQUE INDEX UNIQ_8D93D649A0D96FBF (email_canonical),
                 UNIQUE INDEX UNIQ_8D93D649C05FB297 (confirmation_token),
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE user_country (
                 id INT AUTO_INCREMENT NOT NULL,
                 user_id INT DEFAULT NULL,
@@ -197,8 +228,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_B7ED76CA76ED395 FOREIGN KEY (user_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE user_project (
                 id INT AUTO_INCREMENT NOT NULL,
                 user_id INT DEFAULT NULL,
@@ -211,14 +244,18 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES `user` (id),
                 CONSTRAINT FK_77BECEE4166D1F9C FOREIGN KEY (project_id)
                     REFERENCES project (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE vulnerability_criterion (
                 id INT AUTO_INCREMENT NOT NULL,
                 field_string VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE beneficiary (
                 id INT AUTO_INCREMENT NOT NULL,
                 profile_id INT DEFAULT NULL,
@@ -236,8 +273,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES profile (id),
                 CONSTRAINT FK_7ABF446AE79FF843 FOREIGN KEY (household_id)
                     REFERENCES household (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE beneficiary_vulnerability_criterion (
                 beneficiary_id INT NOT NULL,
                 vulnerability_criterion_id INT NOT NULL,
@@ -250,16 +289,20 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_566B5C77255F7BA FOREIGN KEY (vulnerability_criterion_id)
                     REFERENCES vulnerability_criterion (id)
                     ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE country_specific (
                 id INT AUTO_INCREMENT NOT NULL,
                 field_string VARCHAR(45) NOT NULL,
                 type VARCHAR(45) NOT NULL,
                 country_iso3 VARCHAR(45) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE phone (
                 id INT AUTO_INCREMENT NOT NULL,
                 beneficiary_id INT DEFAULT NULL,
@@ -271,8 +314,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_444F97DDECCAAFA0 FOREIGN KEY (beneficiary_id)
                     REFERENCES beneficiary (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE national_id (
                 id INT AUTO_INCREMENT NOT NULL,
                 beneficiary_id INT DEFAULT NULL,
@@ -282,8 +327,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_36491297ECCAAFA0 FOREIGN KEY (beneficiary_id)
                     REFERENCES beneficiary (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE country_specific_answer (
                 id INT AUTO_INCREMENT NOT NULL,
                 country_specific_id INT DEFAULT NULL,
@@ -296,8 +343,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES country_specific (id),
                 CONSTRAINT FK_4680BB30E79FF843 FOREIGN KEY (household_id)
                     REFERENCES household (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE distribution_data (
                 id INT AUTO_INCREMENT NOT NULL,
                 location_id INT DEFAULT NULL,
@@ -315,8 +364,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES location (id),
                 CONSTRAINT FK_A54E7FD7166D1F9C FOREIGN KEY (project_id)
                     REFERENCES project (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE distribution_beneficiary (
                 id INT AUTO_INCREMENT NOT NULL,
                 distribution_data_id INT DEFAULT NULL,
@@ -328,8 +379,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES distribution_data (id),
                 CONSTRAINT FK_EA141F30ECCAAFA0 FOREIGN KEY (beneficiary_id)
                     REFERENCES beneficiary (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE selection_criteria (
                 id INT AUTO_INCREMENT NOT NULL,
                 distribution_data_id INT DEFAULT NULL,
@@ -344,15 +397,19 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_61BAEEC9D744EF8E FOREIGN KEY (distribution_data_id)
                     REFERENCES distribution_data (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE modality (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 UNIQUE INDEX UNIQ_307988C05E237E06 (name),
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE modality_type (
                 id INT AUTO_INCREMENT NOT NULL,
                 modality_id INT DEFAULT NULL,
@@ -361,8 +418,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_946534112D6D889B FOREIGN KEY (modality_id)
                     REFERENCES modality (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE commodity (
                 id INT AUTO_INCREMENT NOT NULL,
                 modality_type_id INT DEFAULT NULL,
@@ -376,8 +435,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES modality_type (id),
                 CONSTRAINT FK_5E8D2F74D744EF8E FOREIGN KEY (distribution_data_id)
                     REFERENCES distribution_data (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE transaction (
                 id INT AUTO_INCREMENT NOT NULL,
                 distribution_beneficiary_id INT DEFAULT NULL,
@@ -396,8 +457,10 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_723705D195AAFAA9 FOREIGN KEY (distribution_beneficiary_id)
                     REFERENCES distribution_beneficiary (id),
                 CONSTRAINT FK_723705D1A45BB98C FOREIGN KEY (sent_by_id) REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE financial_provider (
                 id INT AUTO_INCREMENT NOT NULL,
                 username VARCHAR(255) NOT NULL,
@@ -405,8 +468,10 @@ final class Version20190204151850 extends AbstractMigration
                 country VARCHAR(255) NOT NULL,
                 UNIQUE INDEX UNIQ_3FF138985373C966 (country),
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE logs (
                 id INT AUTO_INCREMENT NOT NULL,
                 url VARCHAR(255) NOT NULL,
@@ -418,8 +483,10 @@ final class Version20190204151850 extends AbstractMigration
                 controller VARCHAR(255) NOT NULL,
                 request LONGTEXT NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE reporting_indicator (
                 id INT AUTO_INCREMENT NOT NULL,
                 reference VARCHAR(255) NOT NULL,
@@ -428,16 +495,20 @@ final class Version20190204151850 extends AbstractMigration
                 graph VARCHAR(255) DEFAULT NULL,
                 UNIQUE INDEX UNIQ_158D0C7177153098 (code),
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE reporting_value (
                 id INT AUTO_INCREMENT NOT NULL,
                 value VARCHAR(255) NOT NULL,
                 unity VARCHAR(255) NOT NULL,
                 creationDate DATETIME NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE reporting_project (
                 id INT AUTO_INCREMENT NOT NULL,
                 project_id INT DEFAULT NULL,
@@ -453,8 +524,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES reporting_indicator (id),
                 CONSTRAINT FK_F9E2F346F920BBA2 FOREIGN KEY (value_id)
                     REFERENCES reporting_value (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE reporting_distribution (
                 id INT AUTO_INCREMENT NOT NULL,
                 distribution_id INT DEFAULT NULL,
@@ -470,8 +543,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES reporting_indicator (id),
                 CONSTRAINT FK_EC84C518F920BBA2 FOREIGN KEY (value_id)
                     REFERENCES reporting_value (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE reporting_country (
                 id INT AUTO_INCREMENT NOT NULL,
                 indicator_id INT DEFAULT NULL,
@@ -484,14 +559,18 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES reporting_indicator (id),
                 CONSTRAINT FK_8522EACEF920BBA2 FOREIGN KEY (value_id)
                     REFERENCES reporting_value (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE product (
                 id INT AUTO_INCREMENT NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE booklet (
                 id INT AUTO_INCREMENT NOT NULL,
                 distribution_beneficiary_id INT DEFAULT NULL,
@@ -505,8 +584,10 @@ final class Version20190204151850 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_818DB72095AAFAA9 FOREIGN KEY (distribution_beneficiary_id)
                     REFERENCES distribution_beneficiary (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE booklet_product (
                 booklet_id INT NOT NULL,
                 product_id INT NOT NULL,
@@ -518,8 +599,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES booklet (id) ON DELETE CASCADE,
                 CONSTRAINT FK_950E688C4584665A FOREIGN KEY (product_id)
                     REFERENCES product (id) ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE vendor (
                 id INT AUTO_INCREMENT NOT NULL,
                 name VARCHAR(255) NOT NULL,
@@ -530,8 +613,10 @@ final class Version20190204151850 extends AbstractMigration
                 archived TINYINT(1) NOT NULL,
                 UNIQUE INDEX UNIQ_F52233F6F85E0677 (username),
                 PRIMARY KEY(id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE voucher (
                 id INT AUTO_INCREMENT NOT NULL,
                 booklet_id INT NOT NULL,
@@ -547,8 +632,10 @@ final class Version20190204151850 extends AbstractMigration
                     REFERENCES booklet (id),
                 CONSTRAINT FK_1392A5D8F603EE73 FOREIGN KEY (vendor_id)
                     REFERENCES vendor (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE voucher_product (
                 voucher_id INT NOT NULL,
                 product_id INT NOT NULL,
@@ -562,10 +649,11 @@ final class Version20190204151850 extends AbstractMigration
                 CONSTRAINT FK_10872EAA4584665A FOREIGN KEY (product_id)
                     REFERENCES product (id)
                     ON DELETE CASCADE
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

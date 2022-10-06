@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard\Analytics;
 
@@ -11,26 +13,31 @@ use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
+use JsonSerializable;
 
-class Event implements \JsonSerializable
+class Event implements JsonSerializable
 {
     /** @var string what is about, assistance|purchase|vendor|... */
     private $subject;
+
     /** @var string what was happened, created|sync|closed|... */
     private $action;
+
     /** @var DateTimeInterface when was it happened */
     private $when;
+
     /** @var object[] */
     private $linkedObjects;
+
     /** @var array */
     private $additionalData;
 
     /**
-     * @param string            $subject
-     * @param string            $action
+     * @param string $subject
+     * @param string $action
      * @param DateTimeInterface $when
-     * @param array             $additionalData
-     * @param object            $linkedObjects
+     * @param array $additionalData
+     * @param object $linkedObjects
      */
     public function __construct(string $subject, string $action, DateTimeInterface $when, array $linkedObjects = [], array $additionalData = [])
     {
@@ -73,7 +80,9 @@ class Event implements \JsonSerializable
             'date' => $this->getWhen()->format('Y-m-d H:i'),
         ];
         foreach ($this->linkedObjects as $object) {
-            if ($object == null) continue;
+            if ($object == null) {
+                continue;
+            }
             switch (get_class($object)) {
                 case Assistance::class:
                     $serializedData['assistanceId'] = $object->getId();
@@ -108,7 +117,7 @@ class Event implements \JsonSerializable
         foreach ($this->additionalData as $key => $value) {
             $serializedData[$key] = $value;
         }
+
         return $serializedData;
     }
-
 }

@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Assistance\Scoring;
 
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Exception\CsvParserException;
 use Model\Vulnerability\Resolver as OldResolver;
 use Repository\BeneficiaryRepository;
@@ -52,8 +55,7 @@ final class ScoringService
         ScoringFactory $scoringFactory,
         BeneficiaryRepository $beneficiaryRepository,
         ScoringBlueprintRepository $scoringBlueprintRepository
-    )
-    {
+    ) {
         $this->resolver = $resolver;
         $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
@@ -68,9 +70,9 @@ final class ScoringService
      *
      * @return VulnerabilityScore[]
      *
-     * @throws \Exception\CsvParserException
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws CsvParserException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function computeTotalScore(VulnerabilityScoreInputType $input, string $countryCode): iterable
     {
@@ -96,25 +98,26 @@ final class ScoringService
 
             $scores[] = new VulnerabilityScore($beneficiary, $protocol);
         }
-        
+
         return $scores;
     }
 
     /**
-     * @param string   $name
-     * @param string   $csv
+     * @param string $name
+     * @param string $csv
      *
      * @return bool
      * @throws CsvParserException
      * @throws ScoreValidationException
      */
-    public function validateScoring(string $name,string $csv): bool
+    public function validateScoring(string $name, string $csv): bool
     {
-        $stream = fopen('php://memory','r+');
+        $stream = fopen('php://memory', 'r+');
         fwrite($stream, $csv);
         rewind($stream);
         $scoringRules = $this->parser->parseStream($stream);
         $this->scoringFactory->createScoring($name, $scoringRules);
+
         return true;
     }
 }

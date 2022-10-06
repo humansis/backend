@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Event\Subscriber\Import;
 
@@ -23,9 +25,7 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class SimilaritySubscriber implements EventSubscriberInterface
 {
-
     public const GUARD_CODE_NOT_COMPLETE = '7135e866-fb87-4e4f-bfa6-c42f48cfebc9';
-
 
     /**
      * @var EntityManagerInterface
@@ -45,12 +45,11 @@ class SimilaritySubscriber implements EventSubscriberInterface
     /** @var MessageBusInterface */
     private $messageBus;
 
-
     public function __construct(
         EntityManagerInterface $entityManager,
-        SimilarityChecker      $similarityChecker,
-        ImportQueueRepository  $queueRepository,
-        MessageBusInterface    $messageBus
+        SimilarityChecker $similarityChecker,
+        ImportQueueRepository $queueRepository,
+        MessageBusInterface $messageBus
     ) {
         $this->entityManager = $entityManager;
         $this->similarityChecker = $similarityChecker;
@@ -61,19 +60,19 @@ class SimilaritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered.'.ImportState::SIMILARITY_CHECKING => ['checkSimilarity'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_SIMILARITY => [
+            'workflow.import.entered.' . ImportState::SIMILARITY_CHECKING => ['checkSimilarity'],
+            'workflow.import.guard.' . ImportTransitions::COMPLETE_SIMILARITY => [
                 ['guardNothingLeft', -10],
                 ['guardIfImportHasNotSuspiciousItems', 0],
             ],
-            'workflow.import.guard.'.ImportTransitions::FAIL_SIMILARITY => [
+            'workflow.import.guard.' . ImportTransitions::FAIL_SIMILARITY => [
                 ['guardNothingLeft', -10],
                 ['guardIfImportHasSuspiciousItems', 0],
             ],
-            'workflow.import.guard.'.ImportTransitions::REDO_SIMILARITY => ['guardSomeItemsLeft'],
-            'workflow.import.guard.'.ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES => ['guardIfImportHasNotSuspiciousItems'],
-            'workflow.import.entered.'.ImportTransitions::COMPLETE_SIMILARITY => ['completeSimilarity'],
-            'workflow.import.completed.'.ImportTransitions::REDO_SIMILARITY => ['checkSimilarityAgain'],
+            'workflow.import.guard.' . ImportTransitions::REDO_SIMILARITY => ['guardSomeItemsLeft'],
+            'workflow.import.guard.' . ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES => ['guardIfImportHasNotSuspiciousItems'],
+            'workflow.import.entered.' . ImportTransitions::COMPLETE_SIMILARITY => ['completeSimilarity'],
+            'workflow.import.completed.' . ImportTransitions::REDO_SIMILARITY => ['checkSimilarityAgain'],
         ];
     }
 
@@ -168,10 +167,12 @@ class SimilaritySubscriber implements EventSubscriberInterface
          * This is important because Import object is not yet flushed
          */
         $this->entityManager->flush();
-        foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => [ImportQueueState::NEW],
-        ]) as $item) {
+        foreach (
+            $this->queueRepository->findBy([
+                'import' => $import,
+                'state' => [ImportQueueState::NEW],
+            ]) as $item
+        ) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemSimilarity($item));
         }
         $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);

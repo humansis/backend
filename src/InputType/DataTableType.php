@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,17 +12,20 @@ class DataTableType implements InputTypeInterface
      * @Assert\GreaterThanOrEqual(0)
      */
     public $pageIndex = 0;
+
     /**
      * @var int
      * @Assert\NotBlank()
      * @Assert\GreaterThan(0)
      */
     public $pageSize = 30;
+
     /**
      * @var DataTableFilterType[]
      * @ Assert\Valid(traverse=true)
      */
     public $filter = [];
+
     /**
      * @var DataTableSorterType
      * @ Assert\Valid()
@@ -46,7 +50,7 @@ class DataTableType implements InputTypeInterface
 
     public function getLimitMinimum(): int
     {
-        return $this->pageIndex*$this->pageSize;
+        return $this->pageIndex * $this->pageSize;
     }
 
     /**

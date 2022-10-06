@@ -3,6 +3,7 @@
 namespace Controller;
 
 use Controller\ExportController;
+use Enum\EnumValueNoFoundException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\VendorCreateInputType;
@@ -42,7 +43,7 @@ class VendorController extends AbstractController
         $request->query->add(['vendors' => true]);
         $request->request->add(['__country' => $request->headers->get('country')]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -64,13 +65,13 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors")
      *
-     * @param Request               $request
+     * @param Request $request
      * @param VendorFilterInputType $filter
-     * @param Pagination            $pagination
-     * @param VendorOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param VendorOrderInputType $orderBy
      *
      * @return JsonResponse
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     public function list(Request $request, VendorFilterInputType $filter, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
     {
@@ -102,7 +103,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor                $vendor
+     * @param Vendor $vendor
      * @param VendorUpdateInputType $inputType
      *
      * @return JsonResponse

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Command;
 
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +18,7 @@ use ZipArchive;
 class TranslationsDownloadCommand extends Command
 {
     use ZipError;
-    
+
     /** @var HttpClient $client */
     private $client;
 
@@ -26,7 +27,7 @@ class TranslationsDownloadCommand extends Command
 
     /** @var string */
     private $translationsDir;
-    
+
     private $envConfig = [
         'local' => [
             'url' => 'http://172.17.0.1:8087/api/jwt',
@@ -59,7 +60,7 @@ class TranslationsDownloadCommand extends Command
             'username' => 'admin@example.org',
         ],
     ];
-    
+
     private $env = 'test';
 
     public function __construct(
@@ -85,20 +86,21 @@ class TranslationsDownloadCommand extends Command
         $this->output = $output;
 
         $this->env = $input->getArgument('env') ?? 'test';
-        
+
         $jwt = $this->login();
 
         //download translations
         $response = $this->client->request('GET', $this->envConfig[$this->env]['url'] . '/web-app/v1/translations-xml', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $jwt,
-            ]
+            ],
         ]);
 
         $statusCode = $response->getStatusCode();
         if ($statusCode >= 400) {
             $this->output->writeln('<error>Translations download failed with code ' . $statusCode . '</error>');
             $this->output->writeln($response->getContent());
+
             return 1;
         }
 
@@ -121,7 +123,7 @@ class TranslationsDownloadCommand extends Command
         $zip->close();
         $filesystem->remove($this->translationsDir . '/temp');
         $this->output->writeln('translations unpacked');
-        
+
         return 0;
     }
 
@@ -140,12 +142,12 @@ class TranslationsDownloadCommand extends Command
         $statusCode = $response->getStatusCode();
         if ($statusCode >= 400) {
             $this->output->writeln('<error>Login failed</error>');
-            throw new \RuntimeException('Request failed with status code '.$statusCode);
+            throw new RuntimeException('Request failed with status code ' . $statusCode);
         }
-        
+
         $response = $response->toArray();
-        $this->output->writeln('login to ' . $this->env .  ' successful');
-        
+        $this->output->writeln('login to ' . $this->env . ' successful');
+
         return $response['token'];
     }
 }

@@ -8,6 +8,7 @@ use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Controller\ExportController;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\CountrySpecificCreateInputType;
 use InputType\CountrySpecificFilterInputType;
@@ -73,12 +74,11 @@ class CountrySpecificController extends AbstractController
      * @return JsonResponse
      */
     public function list(
-        Request                        $request,
+        Request $request,
         CountrySpecificFilterInputType $filter,
-        Pagination                     $pagination,
-        CountrySpecificOrderInputType  $orderBy
-    ): JsonResponse
-    {
+        Pagination $pagination,
+        CountrySpecificOrderInputType $orderBy
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw new BadRequestHttpException('Missing country header');
         }
@@ -95,7 +95,7 @@ class CountrySpecificController extends AbstractController
      * @param CountrySpecificCreateInputType $inputType
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(CountrySpecificCreateInputType $inputType): JsonResponse
     {
@@ -118,7 +118,7 @@ class CountrySpecificController extends AbstractController
      * @param CountrySpecificUpdateInputType $inputType
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {

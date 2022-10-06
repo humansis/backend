@@ -13,7 +13,7 @@ class HouseholdActivityChangeTest extends TestCase
     /**
      * @param HouseholdActivity $old
      * @param HouseholdActivity $new
-     * @param array             $expectedChanges
+     * @param array $expectedChanges
      *
      * @dataProvider providerChanges
      */

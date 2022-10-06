@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -11,7 +13,8 @@ final class Version20210421113520 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE VIEW view_assistance_statistics AS
+        $this->addSql(
+            'CREATE VIEW view_assistance_statistics AS
         SELECT
             assistance_id,
             COUNT(beneficiary)                             AS number_of_beneficiaries,
@@ -78,7 +81,8 @@ final class Version20210421113520 extends AbstractMigration
                 WHERE b.distribution_beneficiary_id IS NOT NULL
                 GROUP BY b.id, b.distribution_beneficiary_id
             ) AS b ON b.distribution_beneficiary_id=db.id
-        ) AS counts GROUP BY assistance_id');
+        ) AS counts GROUP BY assistance_id'
+        );
     }
 
     public function down(Schema $schema): void

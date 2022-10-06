@@ -1,11 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard\Exception;
 
+use Exception;
 use Throwable;
 use Entity\Smartcard;
 
-class SmartcardException extends \Exception
+class SmartcardException extends Exception
 {
     /**
      * @var Smartcard|null
@@ -25,5 +28,4 @@ class SmartcardException extends \Exception
     {
         return $this->smartcard;
     }
-
 }

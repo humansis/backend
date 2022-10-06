@@ -37,38 +37,41 @@ class PurchaseItemControllerTest extends BMSServiceTestCase
         $size = min($itemCount, 5);
 
         $this->request('GET', "/api/basic/web-app/v1/smartcard-purchased-items?size=$size&page=1", [], [], [
-            'country' => 'SYR'
+            'country' => 'SYR',
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
-                "householdId": "*", 
-                "beneficiaryId": "*", 
-                "projectId": "*", 
-                "assistanceId": "*", 
-                "locationId": "*", 
-                "adm1Id": "*", 
-                "adm2Id": "*", 
-                "adm3Id": "*", 
-                "adm4Id": "*", 
-                "datePurchase": "*", 
-                "smartcardCode": "*", 
-                "productId": "*", 
-                "unit": "*", 
-                "value": "*", 
-                "currency": "*", 
+                "householdId": "*",
+                "beneficiaryId": "*",
+                "projectId": "*",
+                "assistanceId": "*",
+                "locationId": "*",
+                "adm1Id": "*",
+                "adm2Id": "*",
+                "adm3Id": "*",
+                "adm4Id": "*",
+                "datePurchase": "*",
+                "smartcardCode": "*",
+                "productId": "*",
+                "unit": "*",
+                "value": "*",
+                "currency": "*",
                 "vendorId": "*",
                 "invoiceNumber": "*",
                 "contractNumber": "*",
                 "idNumber": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

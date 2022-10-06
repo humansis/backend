@@ -1,11 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Model;
 
-use \JsonException;
+use JsonException;
+use Serializable;
 
-final class ScoringProtocol implements \Serializable
+final class ScoringProtocol implements Serializable
 {
     /** @var int[] */
     private $score = [];

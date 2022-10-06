@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Utils\Test\Contraint;
@@ -36,7 +37,6 @@ class MatchArrayFragment extends Constraint
 
     private function recursiveMatches($actual, $expected)
     {
-
         foreach ($expected as $key => $expectedValue) {
             if (array_key_exists($key, $actual)) {
                 if (is_array($expectedValue)) {
@@ -70,6 +70,6 @@ class MatchArrayFragment extends Constraint
 
     public function toString(): string
     {
-        return 'match '.$this->exporter()->export($this->expected);
+        return 'match ' . $this->exporter()->export($this->expected);
     }
 }

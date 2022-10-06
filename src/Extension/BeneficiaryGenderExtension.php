@@ -22,10 +22,12 @@ class BeneficiaryGenderExtension extends AbstractExtension
     public function formatGender(Beneficiary $beneficiary): string
     {
         switch ($beneficiary->getPerson()->getGender()) {
-            case PersonGender::FEMALE: return 'Female';
-            case PersonGender::MALE: return 'Male';
-            default: return '~';
+            case PersonGender::FEMALE:
+                return 'Female';
+            case PersonGender::MALE:
+                return 'Male';
+            default:
+                return '~';
         }
     }
-
 }

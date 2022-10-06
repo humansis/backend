@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Import;
@@ -24,7 +25,7 @@ class ImportInvalidFileTest extends KernelTestCase
     /** @var string */
     private static $invalidFilesDirectory;
 
-    /** @var UploadImportService  */
+    /** @var UploadImportService */
     private static $importUploadService;
 
     public static function setUpBeforeClass(): void
@@ -56,7 +57,7 @@ class ImportInvalidFileTest extends KernelTestCase
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename(), $uploadedFilePath, true);
+        $fs->copy(self::$invalidFilesDirectory . '/' . $invalidFilePath->getFilename(), $uploadedFilePath, true);
 
         $uploadFile = new UploadedFile($uploadedFilePath, $invalidFilePath->getFilename(), null, null, true);
 

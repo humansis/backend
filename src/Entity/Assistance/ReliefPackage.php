@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity\Assistance;
 
+use DateTimeInterface;
 use Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -86,7 +89,7 @@ class ReliefPackage
     private $smartcardDeposits;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
      */
@@ -102,19 +105,19 @@ class ReliefPackage
 
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param string                $modalityType
-     * @param float|string|int      $amountToDistribute
-     * @param string                $unit
-     * @param string                $state
-     * @param float|string|int      $amountDistributed
+     * @param string $modalityType
+     * @param float|string|int $amountToDistribute
+     * @param string $unit
+     * @param string $state
+     * @param float|string|int $amountDistributed
      */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
-        string                $modalityType,
-                              $amountToDistribute,
-        string                $unit,
-        string                $state = ReliefPackageState::TO_DISTRIBUTE,
-                              $amountDistributed = 0.0
+        string $modalityType,
+        $amountToDistribute,
+        string $unit,
+        string $state = ReliefPackageState::TO_DISTRIBUTE,
+        $amountDistributed = 0.0
     ) {
         if (!in_array($modalityType, ModalityType::values())) {
             throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
@@ -295,17 +298,17 @@ class ReliefPackage
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDistributedAt(): ?\DateTimeInterface
+    public function getDistributedAt(): ?DateTimeInterface
     {
         return $this->distributedAt;
     }
 
     /**
-     * @param \DateTimeInterface|null $distributedAt
+     * @param DateTimeInterface|null $distributedAt
      */
-    public function setDistributedAt(?\DateTimeInterface $distributedAt): void
+    public function setDistributedAt(?DateTimeInterface $distributedAt): void
     {
         $this->distributedAt = $distributedAt;
     }

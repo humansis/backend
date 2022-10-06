@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Command\Crowdin;
 
 use JsonException;
+use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
@@ -17,9 +18,9 @@ trait CrowdinRequestTrait
      */
     private function makeRequest(string $method, string $endpoint, array $options = []): array
     {
-        $url = 'https://api.crowdin.com/api/v2'.$endpoint;
+        $url = 'https://api.crowdin.com/api/v2' . $endpoint;
 
-        $options['headers']['Authorization'] = 'Bearer '.$this->crowdinApiKey;
+        $options['headers']['Authorization'] = 'Bearer ' . $this->crowdinApiKey;
         if (!isset($options['headers']['Content-Type'])) {
             $options['headers']['Content-Type'] = 'application/json';
         }
@@ -30,8 +31,8 @@ trait CrowdinRequestTrait
         $headers = $response->getHeaders(false);
 
         if ($statusCode >= 400) {
-            $this->output->writeln('<error>'.$method.' '.$url."\n".$statusCode.': '.$content.'</error>');
-            throw new \RuntimeException('Request failed with status code '.$statusCode);
+            $this->output->writeln('<error>' . $method . ' ' . $url . "\n" . $statusCode . ': ' . $content . '</error>');
+            throw new RuntimeException('Request failed with status code ' . $statusCode);
         }
 
         return array_merge(

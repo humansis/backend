@@ -2,6 +2,7 @@
 
 namespace Model\Household\HouseholdChange;
 
+use DateTimeInterface;
 use Entity\HouseholdActivity;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Entity\User;
@@ -29,7 +30,7 @@ abstract class AbstractHouseholdChange
     /**
      * @SymfonyGroups({"HouseholdChanges"})
      */
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->activity->getCreatedAt();
     }

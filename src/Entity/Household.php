@@ -46,6 +46,7 @@ class Household extends AbstractBeneficiary
 
     /**
      * TODO: migrate to enum sometimes
+     *
      * @var int
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
@@ -214,9 +215,11 @@ class Household extends AbstractBeneficiary
      */
     public function getAssets(): array
     {
-        return array_values(array_map(function ($asset) {
-            return HouseholdAssetsEnum::valueFromDB($asset);
-        }, $this->assets));
+        return array_values(
+            array_map(function ($asset) {
+                return HouseholdAssetsEnum::valueFromDB($asset);
+            }, $this->assets)
+        );
     }
 
     /**
@@ -227,16 +230,20 @@ class Household extends AbstractBeneficiary
     public function setAssets(array $assets): self
     {
         self::validateValues('assets', HouseholdAssets::class, $assets);
-        $this->assets = array_values(array_unique(array_map(function ($asset) {
-            return HouseholdAssetsEnum::valueToDB($asset);
-        }, $assets)));
+        $this->assets = array_values(
+            array_unique(
+                array_map(function ($asset) {
+                    return HouseholdAssetsEnum::valueToDB($asset);
+                }, $assets)
+            )
+        );
 
         return $this;
     }
 
     /**
-     * @see HouseholdShelterStatus::values()
      * @return string|null
+     * @see HouseholdShelterStatus::values()
      */
     public function getShelterStatus(): ?string
     {
@@ -244,10 +251,10 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @see HouseholdShelterStatus::values()
      * @param string|null $shelterStatus
      *
      * @return self
+     * @see HouseholdShelterStatus::values()
      */
     public function setShelterStatus(?string $shelterStatus): self
     {
@@ -377,7 +384,7 @@ class Household extends AbstractBeneficiary
      *
      * @param CountrySpecificAnswer $countrySpecificAnswer
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer)
     {
@@ -413,7 +420,7 @@ class Household extends AbstractBeneficiary
      *
      * @param Beneficiary $beneficiary
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeBeneficiary(Beneficiary $beneficiary)
     {
@@ -431,6 +438,7 @@ class Household extends AbstractBeneficiary
         if (!$showArchived) {
             $criteria->where(Criteria::expr()->eq('archived', false));
         }
+
         return $this->beneficiaries->matching($criteria);
     }
 
@@ -529,7 +537,7 @@ class Household extends AbstractBeneficiary
      *
      * @param HouseholdLocation $householdLocation
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeHouseholdLocation(HouseholdLocation $householdLocation)
     {
@@ -547,6 +555,7 @@ class Household extends AbstractBeneficiary
     {
         $this->householdLocations[] = $householdLocation;
         $householdLocation->setHousehold($this);
+
         return $this;
     }
 
@@ -585,9 +594,11 @@ class Household extends AbstractBeneficiary
      */
     public function getSupportReceivedTypes(): array
     {
-        return array_values(array_map(function ($type) {
-            return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
-        }, $this->supportReceivedTypes));
+        return array_values(
+            array_map(function ($type) {
+                return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
+            }, $this->supportReceivedTypes)
+        );
     }
 
     /**
@@ -598,9 +609,11 @@ class Household extends AbstractBeneficiary
     public function setSupportReceivedTypes(array $supportReceivedTypes): self
     {
         self::validateValues('supportReceivedType', HouseholdSupportReceivedType::class, $supportReceivedTypes);
-        $this->supportReceivedTypes = array_values(array_map(function ($type) {
-            return HouseholdSupportReceivedTypeEnum::valueToDB($type);
-        }, $supportReceivedTypes));
+        $this->supportReceivedTypes = array_values(
+            array_map(function ($type) {
+                return HouseholdSupportReceivedTypeEnum::valueToDB($type);
+            }, $supportReceivedTypes)
+        );
 
         return $this;
     }
@@ -624,7 +637,6 @@ class Household extends AbstractBeneficiary
 
         return $this;
     }
-
 
     /**
      * @return DateTimeInterface|null
@@ -686,7 +698,6 @@ class Household extends AbstractBeneficiary
         return $this->householdIncome;
     }
 
-
     /**
      * @return Beneficiary|null
      */
@@ -747,5 +758,4 @@ class Household extends AbstractBeneficiary
     {
         $this->beneficiaries->add($beneficiary);
     }
-
 }

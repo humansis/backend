@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance;
 
@@ -9,12 +11,13 @@ class AssistanceQuery
 {
     /** @var AssistanceRepository */
     private $rootRepository;
+
     /** @var AssistanceFactory */
     private $factory;
 
     /**
      * @param AssistanceRepository $rootRepository
-     * @param AssistanceFactory    $factory
+     * @param AssistanceFactory $factory
      */
     public function __construct(AssistanceRepository $rootRepository, AssistanceFactory $factory)
     {
@@ -25,6 +28,7 @@ class AssistanceQuery
     public function find(int $assistanceRootId): Assistance
     {
         $assistanceRoot = $this->rootRepository->find($assistanceRootId);
+
         return $this->factory->hydrate($assistanceRoot);
     }
 }

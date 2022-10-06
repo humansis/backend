@@ -30,13 +30,13 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
         /** @var Project $project */
         $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v2/projects/'.$project->getId().'/sectors');
+        $this->request('GET', '/api/basic/web-app/v2/projects/' . $project->getId() . '/sectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -52,13 +52,13 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
     {
         $testSector = SectorEnum::all()[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/sectors/'.$testSector.'/subsectors');
+        $this->request('GET', '/api/basic/web-app/v1/sectors/' . $testSector . '/subsectors');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);

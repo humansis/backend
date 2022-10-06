@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
 use Component\LogsStorage\LogsStorageService;
+use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,11 +28,11 @@ class LogController extends AbstractOfflineAppController
     /**
      * @Rest\Post("/offline-app/v1/users/{id}/logs")
      *
-     * @param User    $user
+     * @param User $user
      * @param Request $request
      *
      * @return JsonResponse
-     * @throws \League\Flysystem\FilesystemException
+     * @throws FilesystemException
      */
     public function uploadLogs(User $user, Request $request): Response
     {

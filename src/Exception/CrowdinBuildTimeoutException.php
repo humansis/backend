@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Exception;
 
-class CrowdinBuildTimeoutException extends \RuntimeException
+use RuntimeException;
+
+class CrowdinBuildTimeoutException extends RuntimeException
 {
 }

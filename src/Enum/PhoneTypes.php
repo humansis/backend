@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,8 +8,8 @@ final class PhoneTypes
 {
     use EnumTrait;
 
-    const LANDLINE = 'Landline';
-    const MOBILE = 'Mobile';
+    public const LANDLINE = 'Landline';
+    public const MOBILE = 'Mobile';
 
     public static function values(): array
     {
@@ -25,5 +26,4 @@ final class PhoneTypes
             self::MOBILE => self::MOBILE,
         ];
     }
-
 }

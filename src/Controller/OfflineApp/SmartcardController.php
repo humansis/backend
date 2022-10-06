@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
@@ -23,7 +25,7 @@ class SmartcardController extends AbstractOfflineAppController
      * @Rest\Post("/offline-app/v1/smartcards")
      *
      * @param SmartcardRegisterInputType $registerInputType
-     * @param SmartcardService           $smartcardService
+     * @param SmartcardService $smartcardService
      *
      * @return Response
      * @throws ORMException
@@ -45,27 +47,27 @@ class SmartcardController extends AbstractOfflineAppController
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      *
-     * @param string                   $serialNumber
+     * @param string $serialNumber
      * @param ChangeSmartcardInputType $changeSmartcardInputType
-     * @param SmartcardRepository      $smartcardRepository
-     * @param SmartcardService         $smartcardService
+     * @param SmartcardRepository $smartcardRepository
+     * @param SmartcardService $smartcardService
      *
      * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function change(
-        string                   $serialNumber,
+        string $serialNumber,
         ChangeSmartcardInputType $changeSmartcardInputType,
-        SmartcardRepository      $smartcardRepository,
-        SmartcardService         $smartcardService
+        SmartcardRepository $smartcardRepository,
+        SmartcardService $smartcardService
     ): Response {
         $smartcard = $smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
         try {
             $smartcardService->change($smartcard, $changeSmartcardInputType);
 
             return Response::create();
-        } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
+        } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition $e) {
             return Response::create('', Response::HTTP_ACCEPTED);
         }
     }
@@ -77,7 +79,7 @@ class SmartcardController extends AbstractOfflineAppController
      * @ParamConverter("smartcard")
      *
      * @param Smartcard $smartcard
-     * @param Request   $request
+     * @param Request $request
      *
      * @return Response
      */

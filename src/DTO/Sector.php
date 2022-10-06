@@ -43,7 +43,7 @@ class Sector
     /**
      * Sector constructor.
      *
-     * @param string      $sectorName
+     * @param string $sectorName
      * @param string|null $subSectorName
      */
     public function __construct(string $sectorName, ?string $subSectorName)
@@ -216,8 +216,7 @@ class Sector
         return $target instanceof Beneficiary && $this->isBeneficiaryAllowed()
             || $target instanceof Household && $this->isHouseholdAllowed()
             || $target instanceof Institution && $this->isInstitutionAllowed()
-            || $target instanceof Community && $this->isCommunityAllowed()
-            ;
+            || $target instanceof Community && $this->isCommunityAllowed();
     }
 
     /**

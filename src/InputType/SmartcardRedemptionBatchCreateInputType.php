@@ -24,7 +24,7 @@ class SmartcardRedemptionBatchCreateInputType implements InputTypeInterface
     private $purchaseIds;
 
     /**
-     * @return integer[]
+     * @return int
      */
     public function getPurchaseIds()
     {
@@ -32,7 +32,7 @@ class SmartcardRedemptionBatchCreateInputType implements InputTypeInterface
     }
 
     /**
-     * @param integer[]
+     * @param int
      */
     public function setPurchaseIds($purchaseIds)
     {

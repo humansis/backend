@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -7,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20210404094800 extends AbstractMigration
 {
-    const PRIVILEGES = [
+    public const PRIVILEGES = [
         'addProject' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],
         'editProject' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],
         'deleteProject' => ['ROLE_ADMIN', 'ROLE_PROJECT_MANAGER'],
@@ -43,22 +45,23 @@ final class Version20210404094800 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql("INSERT INTO privilege (code) VALUES ('".implode("'), ('", array_keys(self::PRIVILEGES))."')");
+        $this->addSql("INSERT INTO privilege (code) VALUES ('" . implode("'), ('", array_keys(self::PRIVILEGES)) . "')");
 
         foreach (self::PRIVILEGES as $privilege => $roles) {
-            $this->addSql("
+            $this->addSql(
+                "
             INSERT INTO role_privilege (role_id, privilege_id)
                 SELECT
                    role.id AS role_id,
                    privilege.id AS privilege_id
                 FROM role, privilege
-                WHERE privilege.code=? AND role.name IN (".implode(',', array_fill(0, count($roles), '?')).")",
-                array_merge([$privilege], $roles));
+                WHERE privilege.code=? AND role.name IN (" . implode(',', array_fill(0, count($roles), '?')) . ")",
+                array_merge([$privilege], $roles)
+            );
         }
     }
 
     public function down(Schema $schema): void
     {
-
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -9,12 +10,11 @@ final class Modality
 {
     use EnumTrait;
 
-    public const CASH    = 'Cash';
+    public const CASH = 'Cash';
     public const VOUCHER = 'Voucher';
     public const IN_KIND = 'In Kind';
-    public const OTHER   = 'Other';
-
-    public const CASH_TYPES    = [ModalityType::MOBILE_MONEY, ModalityType::CASH, ModalityType::SMART_CARD];
+    public const OTHER = 'Other';
+    public const CASH_TYPES = [ModalityType::MOBILE_MONEY, ModalityType::CASH, ModalityType::SMART_CARD];
     public const VOUCHER_TYPES = [ModalityType::QR_CODE_VOUCHER, ModalityType::PAPER_VOUCHER];
     public const IN_KIND_TYPES = [
         ModalityType::FOOD_RATIONS,
@@ -28,7 +28,7 @@ final class Modality
         ModalityType::NFI_KIT,
         ModalityType::WINTERIZATION_KIT,
     ];
-    public const OTHER_TYPES   = [ModalityType::LOAN, ModalityType::BUSINESS_GRANT];
+    public const OTHER_TYPES = [ModalityType::LOAN, ModalityType::BUSINESS_GRANT];
 
     /**
      * @return string[]
@@ -70,5 +70,4 @@ final class Modality
 
         return $modalityTypes;
     }
-
 }

@@ -2,12 +2,15 @@
 
 namespace Utils;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Entity\AbstractBeneficiary;
 use Entity\AssistanceBeneficiary;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use InputType\BookletBatchCreateInputType;
 use Entity\Project;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\Booklet;
@@ -16,7 +19,6 @@ use InputType;
 
 class BookletService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -33,17 +35,16 @@ class BookletService
 
     /**
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface     $container
-     * @param BookletGenerator       $generator
-     * @param Environment            $twig
+     * @param ContainerInterface $container
+     * @param BookletGenerator $generator
+     * @param Environment $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ContainerInterface     $container,
-        BookletGenerator       $generator,
-        Environment            $twig
-    )
-    {
+        ContainerInterface $container,
+        BookletGenerator $generator,
+        Environment $twig
+    ) {
         $this->em = $entityManager;
         $this->container = $container;
         $this->generator = $generator;
@@ -67,7 +68,7 @@ class BookletService
      *
      * @param array $bookletData
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function create($countryISO3, array $bookletData)
@@ -90,12 +91,17 @@ class BookletService
     {
         $project = $this->em->getRepository(Project::class)->find($inputType->getProjectId());
         if (!$project) {
-            throw new \Doctrine\ORM\EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists');
+            throw new EntityNotFoundException('Project #' . $inputType->getProjectId() . ' does not exists');
         }
 
         $this->generator->generate(
-            $project, $inputType->getIso3(), $inputType->getQuantityOfBooklets(), $inputType->getQuantityOfVouchers(), $inputType->getCurrency(),
-            $inputType->getValues(), $inputType->getPassword()
+            $project,
+            $inputType->getIso3(),
+            $inputType->getQuantityOfBooklets(),
+            $inputType->getQuantityOfVouchers(),
+            $inputType->getCurrency(),
+            $inputType->getValues(),
+            $inputType->getPassword()
         );
     }
 
@@ -125,7 +131,7 @@ class BookletService
      * @param Booklet $booklet
      * @param array $bookletData
      * @return Booklet
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(Booklet $booklet, array $bookletData)
     {
@@ -151,8 +157,8 @@ class BookletService
                     ];
 
                     $this->container->get('voucher.voucher_service')->create($voucherData);
-                } catch (\Exception $e) {
-                    throw new \Exception('Error creating vouchers');
+                } catch (Exception $e) {
+                    throw new Exception('Error creating vouchers');
                 }
             } elseif ($vouchersToAdd < 0) {
                 $vouchersToRemove = -$vouchersToAdd;
@@ -179,9 +185,10 @@ class BookletService
             }
 
             $this->em->flush();
-        } catch (\Exception $e) {
-            throw new \Exception('Error updating Booklet');
+        } catch (Exception $e) {
+            throw new Exception('Error updating Booklet');
         }
+
         return $booklet;
     }
 
@@ -242,13 +249,13 @@ class BookletService
      * @param AbstractBeneficiary $abstractBeneficiary
      * @param Assistance $assistance
      * @return string
-     * @throws \Exception
+     * @throws Exception
      *
      */
     public function assign(Booklet $booklet, Assistance $assistance, AbstractBeneficiary $abstractBeneficiary)
     {
         if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
-            throw new \Exception("This booklet has already been distributed, used or is actually deactivated");
+            throw new Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
         /** @var AssistanceBeneficiary|null $assistanceBeneficiary */
@@ -257,7 +264,7 @@ class BookletService
         );
 
         if (!$assistanceBeneficiary instanceof AssistanceBeneficiary) {
-            throw new \InvalidArgumentException('Beneficiary with id '.$abstractBeneficiary->getId().' does not belong to assistance with id '.$assistance->getId());
+            throw new InvalidArgumentException('Beneficiary with id ' . $abstractBeneficiary->getId() . ' does not belong to assistance with id ' . $assistance->getId());
         }
 
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
@@ -277,7 +284,7 @@ class BookletService
      * @param Booklet $booklet
      * @param bool $removeBooklet
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function deleteBookletFromDatabase(Booklet $booklet, bool $removeBooklet = true)
     {
@@ -288,8 +295,8 @@ class BookletService
                 // === if no vouchers then delete ===
                 $this->em->remove($booklet);
                 $this->em->flush();
-            } catch (\Exception $exception) {
-                throw new \Exception('Unable to delete Booklet');
+            } catch (Exception $exception) {
+                throw new Exception('Unable to delete Booklet');
             }
         } elseif ($removeBooklet && $vouchers) {
             try {
@@ -297,12 +304,13 @@ class BookletService
                 $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
                 $this->em->remove($booklet);
                 $this->em->flush();
-            } catch (\Exception $exception) {
-                throw new \Exception('This booklet still contains potentially used vouchers.');
+            } catch (Exception $exception) {
+                throw new Exception('This booklet still contains potentially used vouchers.');
             }
         } else {
             return false;
         }
+
         return true;
     }
 
@@ -325,8 +333,8 @@ class BookletService
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'booklets');
 
             return $response;
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
     }
 
@@ -348,13 +356,13 @@ class BookletService
         $bookletHtml = $this->twig->render(
             '@Voucher/Pdf/booklet.html.twig',
             array_merge(
-                array(
+                [
                     'name' => $name,
                     'value' => $totalValue,
                     'currency' => $currency,
                     'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
-                    'numberVouchers' => $numberVouchers
-                ),
+                    'numberVouchers' => $numberVouchers,
+                ],
                 $this->container->get('pdf_service')->getInformationStyle()
             )
         );
@@ -366,12 +374,12 @@ class BookletService
 
             $voucherHtml = $this->twig->render(
                 '@Voucher/Pdf/voucher.html.twig',
-                array(
+                [
                     'name' => $name,
                     'value' => $voucher->getValue(),
                     'currency' => $currency,
-                    'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=' . $voucherQrCode
-                )
+                    'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=' . $voucherQrCode,
+                ]
             );
 
             if ($pageBreak === true) {
@@ -401,6 +409,7 @@ class BookletService
         $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3->getIso3(), $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
         $length = $booklets[0];
         $booklets = $booklets[1];
+
         return [$length, $booklets];
     }
 }

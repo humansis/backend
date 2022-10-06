@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220428100413 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql("UPDATE adm1 SET adm1.countryISO3 = 'UA1' WHERE adm1.countryISO3 = 'UKR';");
         $this->addSql("UPDATE booklet b SET b.country_iso3 = 'UA1' WHERE b.country_iso3 = 'UKR';");
@@ -24,7 +26,7 @@ final class Version20220428100413 extends AbstractMigration
         $this->addSql("UPDATE user_country us SET us.iso3 = 'UA1' WHERE us.iso3 = 'UKR';");
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf(true, 'This migration could not be migrated back');
     }

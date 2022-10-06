@@ -9,7 +9,7 @@ use Entity\Organization;
 class OrganizationFixtures extends Fixture
 {
     private $data = [
-        ['YourOrganization', null, 'Arial', '#02617F', '#4AA896', 'What should be displayed in your pdf\'s footer']
+        ['YourOrganization', null, 'Arial', '#02617F', '#4AA896', 'What should be displayed in your pdf\'s footer'],
     ];
 
     /**

@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
 use Entity\AssistanceSelection;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class SelectionMapper implements MapperInterface
@@ -30,7 +32,7 @@ class SelectionMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.AssistanceSelection::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . AssistanceSelection::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int

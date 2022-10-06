@@ -5,6 +5,7 @@ namespace Controller;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
+use Exception;
 use Exception\CsvParserException;
 use Repository\BeneficiaryRepository;
 use Utils\BeneficiaryService;
@@ -65,15 +66,15 @@ class BeneficiaryController extends AbstractController
 
     /**
      * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
-     * @param AssistanceService           $assistanceService
-     * @param BeneficiaryService          $beneficiaryService
-     * @param ScoringService              $scoringService
+     * @param AssistanceService $assistanceService
+     * @param BeneficiaryService $beneficiaryService
+     * @param ScoringService $scoringService
      */
     public function __construct(
         AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
-        AssistanceService           $assistanceService,
-        BeneficiaryService          $beneficiaryService,
-        ScoringService              $scoringService
+        AssistanceService $assistanceService,
+        BeneficiaryService $beneficiaryService,
+        ScoringService $scoringService
     ) {
         $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
         $this->scoringService = $scoringService;
@@ -85,7 +86,7 @@ class BeneficiaryController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination                $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      * @throws EntityNotFoundException
@@ -101,7 +102,7 @@ class BeneficiaryController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination                $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      * @throws EntityNotFoundException
@@ -138,7 +139,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/exports")
      *
-     * @param Request                          $request
+     * @param Request $request
      * @param BeneficiaryExportFilterInputType $inputType
      *
      * @return Response
@@ -152,7 +153,7 @@ class BeneficiaryController extends AbstractController
             foreach ($inputType->getIds() as $id) {
                 $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
                 if (!$bnf) {
-                    throw new EntityNotFoundException('Beneficiary with ID #'.$id.' does not exists.');
+                    throw new EntityNotFoundException('Beneficiary with ID #' . $id . ' does not exists.');
                 }
 
                 $sample[] = [
@@ -171,14 +172,14 @@ class BeneficiaryController extends AbstractController
         $request->query->add(['distributionSample' => true]);
         $request->request->add(['sample' => $sample]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports")
      *
      * @param Assistance $assistance
-     * @param Request    $request
+     * @param Request $request
      *
      * @return Response
      */
@@ -191,19 +192,19 @@ class BeneficiaryController extends AbstractController
 
         try {
             // Create binary file to send
-            $response = new BinaryFileResponse(getcwd().'/'.$filename);
+            $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
             $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
             if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
         }
     }
@@ -212,7 +213,7 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports-raw")
      *
      * @param Assistance $assistance
-     * @param Request    $request
+     * @param Request $request
      *
      * @return Response
      */
@@ -220,12 +221,12 @@ class BeneficiaryController extends AbstractController
     {
         $file = $this->assistanceService->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
 
-        $response = new BinaryFileResponse(getcwd().'/'.$file);
+        $response = new BinaryFileResponse(getcwd() . '/' . $file);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
         if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd().'/'.$file));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
         } else {
             $response->headers->set('Content-Type', 'text/plain');
         }
@@ -305,7 +306,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/beneficiaries/{id}")
      *
-     * @param Beneficiary              $beneficiary
+     * @param Beneficiary $beneficiary
      * @param BenefciaryPatchInputType $inputType
      *
      * @return JsonResponse
@@ -338,23 +339,23 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
-     * @param Project                            $project
-     * @param string                             $target
+     * @param Project $project
+     * @param string $target
      * @param BeneficiarySelectedFilterInputType $filter
-     * @param BeneficiaryRepository              $beneficiaryRepository
-     * @param AssistanceRepository               $assistanceRepository
+     * @param BeneficiaryRepository $beneficiaryRepository
+     * @param AssistanceRepository $assistanceRepository
      *
      * @return JsonResponse
      */
     public function getBeneficiaries(
-        Project                            $project,
-        string                             $target,
+        Project $project,
+        string $target,
         BeneficiarySelectedFilterInputType $filter,
-        BeneficiaryRepository              $beneficiaryRepository,
-        AssistanceRepository               $assistanceRepository
+        BeneficiaryRepository $beneficiaryRepository,
+        AssistanceRepository $assistanceRepository
     ): JsonResponse {
         if (!in_array($target, AssistanceTargetType::values())) {
-            throw $this->createNotFoundException('Invalid target. Allowed are '.implode(', ', AssistanceTargetType::values()));
+            throw $this->createNotFoundException('Invalid target. Allowed are ' . implode(', ', AssistanceTargetType::values()));
         }
 
         if ($filter->hasExcludeAssistance()) {

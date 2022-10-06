@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import\ValueObject;
@@ -6,42 +7,42 @@ namespace Component\Import\ValueObject;
 class ImportStatisticsValueObject
 {
     /**
-     * @var integer
+     * @var int
      */
     private $totalEntries = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountIntegrityCorrect = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountIntegrityFailed = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountIdentityDuplicities = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountIdentityDuplicitiesResolved = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountSimilarityDuplicities = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountSimilarityDuplicitiesResolved = 0;
 
     /**
-     * @var integer
+     * @var int
      */
     private $amountEntriesToImport = 0;
 

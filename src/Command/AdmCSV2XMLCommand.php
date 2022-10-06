@@ -2,6 +2,8 @@
 
 namespace Command;
 
+use Exception;
+use RuntimeException;
 use SimpleXMLElement;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -20,17 +22,16 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $this
             ->setName('app:adm:convert')
             ->setDescription('Check CSV file consistency and transform it into importable xml file')
-            ->addArgument('sourceFile', InputArgument::REQUIRED, 'Source file in CSV format')
-            ;
+            ->addArgument('sourceFile', InputArgument::REQUIRED, 'Source file in CSV format');
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      *
      * @return int|void|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -64,8 +65,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
                 $nameColumn,
                 $parentCodeColumn
             );
-        } catch (\Exception $e) {
-            echo $e->getMessage()."\n";
+        } catch (Exception $e) {
+            echo $e->getMessage() . "\n";
+
             return 1;
         }
         $progressBar->finish();
@@ -79,7 +81,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
 
-        list($added, $omitted) = $this->saveNewLocations(
+        [$added, $omitted] = $this->saveNewLocations(
             $targetFilepath,
             $sourceFilePath,
             $parentCodeColumn,
@@ -104,7 +106,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     {
         $filepath = $input->getArgument('sourceFile');
         if (!file_exists($filepath)) {
-            throw new InvalidArgumentException('Unable to find source file with Adms for import: '.$filepath);
+            throw new InvalidArgumentException('Unable to find source file with Adms for import: ' . $filepath);
         }
 
         return $filepath;
@@ -112,7 +114,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
     private function createTargetFilepath(string $countryCode): string
     {
-        return __DIR__.'/../Resources/locations/'.$countryCode.'.xml';
+        return __DIR__ . '/../Resources/locations/' . $countryCode . '.xml';
     }
 
     private function getCount(string $filepath): int
@@ -130,6 +132,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $file = fopen($filePath, 'r');
         $line = fgetcsv($file);
         fclose($file);
+
         return $line;
     }
 
@@ -137,7 +140,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     {
         $file = fopen($filePath, 'r');
         $first = true;
-        while (($line = fgetcsv($file)) !== FALSE) {
+        while (($line = fgetcsv($file)) !== false) {
             if (!$first) {
                 yield $line;
             } else {
@@ -155,7 +158,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $question = new Question('Country code in ISO3 format? (example: KHM) ');
         $question->setValidator(function ($answer) {
             if (!is_string($answer) || 3 != strlen($answer)) {
-                throw new \RuntimeException('Please use ISO3 format');
+                throw new RuntimeException('Please use ISO3 format');
             }
 
             return $answer;
@@ -172,7 +175,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $question = new Question('Which level do you want import? (example: ADM2) ');
         $question->setValidator(function ($answer) {
             if (!is_string($answer) || 4 != strlen($answer) || !preg_match('/adm\d/', strtolower($answer))) {
-                throw new \RuntimeException('Please use ADMx format');
+                throw new RuntimeException('Please use ADMx format');
             }
 
             return $answer;
@@ -189,11 +192,12 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $question = new Question('What is country name in EN? ');
         $question->setValidator(function ($answer) {
             if (!is_string($answer) || 2 >= strlen($answer)) {
-                throw new \RuntimeException('Please use at least 3 letters');
+                throw new RuntimeException('Please use at least 3 letters');
             }
 
             return $answer;
         });
+
         return $question;
     }
 
@@ -202,7 +206,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $question = new Question('What is ADM0/ISO2 country abbrev.? (example: CZ) ');
         $question->setValidator(function ($answer) {
             if (!is_string($answer) || 2 != strlen($answer)) {
-                throw new \RuntimeException('Please use ISO2 format');
+                throw new RuntimeException('Please use ISO2 format');
             }
 
             return $answer;
@@ -226,7 +230,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
                 fclose($f);
             } else {
                 if (!file_exists($targetFilepath)) {
-                    throw new InvalidArgumentException('target file must exists: '.$targetFilepath);
+                    throw new InvalidArgumentException('target file must exists: ' . $targetFilepath);
                 }
             }
         }
@@ -237,6 +241,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $header = $this->getCSVHeader($sourceFilePath);
         $question = $this->columnChoice($sourceFilePath, 'codes', $header);
         $answer = $this->getHelper('question')->ask($input, $output, $question);
+
         return array_search($answer, $header);
     }
 
@@ -245,6 +250,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $header = $this->getCSVHeader($sourceFilePath);
         $question = $this->columnChoice($sourceFilePath, 'names', $header);
         $answer = $this->getHelper('question')->ask($input, $output, $question);
+
         return array_search($answer, $header);
     }
 
@@ -253,6 +259,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $header = $this->getCSVHeader($sourceFilePath);
         $question = $this->columnChoice($sourceFilePath, 'parent codes', $header);
         $answer = $this->getHelper('question')->ask($input, $output, $question);
+
         return array_search($answer, $header);
     }
 
@@ -264,20 +271,20 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         }
 
         return new ChoiceQuestion(
-            'In which column are '.$need,
+            'In which column are ' . $need,
             $choices
         );
     }
 
     /**
      * @param ProgressBar $progressBar
-     * @param string      $targetFilepath
-     * @param string      $sourceFilePath
-     * @param string      $codeColumnIndex
-     * @param string      $nameColumnIndex
-     * @param string      $parentCodeColumnIndex
+     * @param string $targetFilepath
+     * @param string $sourceFilePath
+     * @param string $codeColumnIndex
+     * @param string $nameColumnIndex
+     * @param string $parentCodeColumnIndex
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function validate(
         ProgressBar $progressBar,
@@ -345,23 +352,23 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
             foreach ($admParentCodeMissing as $codeMissing => ['count' => $count]) {
                 echo "$codeMissing;$count times\n";
             }
-            throw new \Exception("There are missing parents");
+            throw new Exception("There are missing parents");
         }
         if ($emptyLines > 0) {
             echo "There is $emptyLines lines without code\n";
         }
         unset($admCodes);
         unset($admCodeDuplicities);
-}
+    }
 
     /**
-     * @param string      $targetFilepath
-     * @param string      $sourceFilePath
-     * @param string      $parentCodeColumn
-     * @param string      $codeColumn
-     * @param string      $nameColumn
+     * @param string $targetFilepath
+     * @param string $sourceFilePath
+     * @param string $parentCodeColumn
+     * @param string $codeColumn
+     * @param string $nameColumn
      * @param ProgressBar $progressBar
-     * @param string      $admLevel
+     * @param string $admLevel
      *
      * @return int[]
      */
@@ -403,6 +410,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         }
         $xml->saveXML($targetFilepath);
 
-        return array($added, $omitted);
+        return [$added, $omitted];
     }
 }

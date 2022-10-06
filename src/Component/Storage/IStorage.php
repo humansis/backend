@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Storage;
 
@@ -11,7 +13,7 @@ interface IStorage
      *
      * @return string
      */
-    public function upload(string $path, $file, string $visibility = StorageEnum::PRIVATE): string;
+    public function upload(string $path, $file, string $visibility = StorageEnum::PRIVATE_S): string;
 
     /**
      * @param string $filePath

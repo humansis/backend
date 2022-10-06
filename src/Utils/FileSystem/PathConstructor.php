@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Utils\FileSystem;
@@ -9,7 +10,7 @@ final class PathConstructor
 {
     /**
      * @param string $pathTemplate
-     * @param array  $parameters
+     * @param array $parameters
      *
      * @return string
      */

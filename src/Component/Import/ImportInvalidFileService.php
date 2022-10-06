@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
+use InvalidArgumentException;
+use JsonException;
 use Utils\HouseholdExportCSVService;
 use Utils\ExportService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -110,12 +114,13 @@ class ImportInvalidFileService
     private function generateInvalidFileName(Import $import): string
     {
         $slugger = new AsciiSlugger();
-        return $slugger->slug($import->getTitle()).'-'.$import->getId().'-invalid-entries_'.time().'.xlsx';
+
+        return $slugger->slug($import->getTitle()) . '-' . $import->getId() . '-invalid-entries_' . time() . '.xlsx';
     }
 
     private function saveToFile(Spreadsheet $spreadsheet, string $name): void
     {
-        $path = $this->importInvalidFilesDirectory.'/' . $name;
+        $path = $this->importInvalidFilesDirectory . '/' . $name;
 
         if (!is_dir($this->importInvalidFilesDirectory)) {
             mkdir($this->importInvalidFilesDirectory, 0775, true);
@@ -138,7 +143,7 @@ class ImportInvalidFileService
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
             if ($entry->getState() !== ImportQueueState::INVALID) {
-                throw new \InvalidArgumentException("Wrong ImportQueue state for export invalid items: ".$entry->getState());
+                throw new InvalidArgumentException("Wrong ImportQueue state for export invalid items: " . $entry->getState());
             }
 
             $messages = $this->decodeMessages($entry->getMessage());
@@ -161,7 +166,7 @@ class ImportInvalidFileService
         try {
             //depth=512 is default value
             return json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             return [];
         }
     }
@@ -184,7 +189,7 @@ class ImportInvalidFileService
         }
 
         return array_map(function (array $messages) {
-            return $messages['column'].": ".$messages['violation'];
+            return $messages['column'] . ": " . $messages['violation'];
         }, $messages[$rowNumber]);
     }
 
@@ -193,31 +198,31 @@ class ImportInvalidFileService
         $fs = new Filesystem();
 
         foreach ($import->getImportInvalidFiles() as $invalidFile) {
-            $fs->remove($this->importInvalidFilesDirectory.'/'.$invalidFile->getFilename());
+            $fs->remove($this->importInvalidFilesDirectory . '/' . $invalidFile->getFilename());
 
             $this->em->remove($invalidFile);
-        };
+        }
 
         $this->em->flush();
     }
 
     /**
      * @param Worksheet $sheet
-     * @param array     $header
-     * @param array     $row
-     * @param array     $invalidColumns
-     * @param int       $currentRow
-     * @param array     $validationViolations
+     * @param array $header
+     * @param array $row
+     * @param array $invalidColumns
+     * @param int $currentRow
+     * @param array $validationViolations
      *
      * @throws Exception
      */
     private function writeRow(
         Worksheet $sheet,
-        array     $header,
-        array     $row,
-        array     $invalidColumns,
-        int       $currentRow,
-        array     $validationViolations
+        array $header,
+        array $row,
+        array $invalidColumns,
+        int $currentRow,
+        array $validationViolations
     ): void {
         $errorIsElsewhereInHousehold = empty($validationViolations);
         if ($errorIsElsewhereInHousehold) {
@@ -238,8 +243,10 @@ class ImportInvalidFileService
             }
             if ($column === ImportTemplate::ROW_NAME_STATUS) {
                 $cell->setValue($errorIsElsewhereInHousehold ? self::HOUSEHOLD_ERROR : self::MEMBER_ERROR);
-            } else if ($column === ImportTemplate::ROW_NAME_MESSAGES) {
-                $cell->setValue(implode("\n", $validationViolations));
+            } else {
+                if ($column === ImportTemplate::ROW_NAME_MESSAGES) {
+                    $cell->setValue(implode("\n", $validationViolations));
+                }
             }
 
             if (count($invalidColumns) === 0) {

@@ -34,14 +34,17 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": 2, 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": 2,
             "data": [
                 {"code": "total_registrations", "value": "*"},
                 {"code": "active_projects", "value": "*"}
-            ]}', $this->client->getResponse()->getContent());
+            ]}',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -53,7 +56,7 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment(
             '[{"key": "*", "svg": "*"}]',
@@ -70,11 +73,14 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[
+        $this->assertJsonFragment(
+            '[
             {"code": "*", "value": "*"}
-        ]', $this->client->getResponse()->getContent());
+        ]',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -86,11 +92,14 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[
+        $this->assertJsonFragment(
+            '[
             {"code": "en", "value": "English"}
-        ]', $this->client->getResponse()->getContent());
+        ]',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -102,7 +111,7 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment('{"Assistance": "*"}', $this->client->getResponse()->getContent());
     }
@@ -116,13 +125,16 @@ class CommonControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "adm1": "*",
             "adm2": "*",
             "adm3": "*",
             "adm4": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

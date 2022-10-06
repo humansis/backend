@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\NationalIdType;
 
-class NationalIdTypeEnum extends \DBAL\AbstractEnum
+class NationalIdTypeEnum extends AbstractEnum
 {
     use EnumTrait;
 

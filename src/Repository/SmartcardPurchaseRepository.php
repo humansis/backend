@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Repository;
 
@@ -73,8 +75,7 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('prod.productCategory', 'category')
             ->where('p.id IN (:purchases)')
             ->setParameter('purchases', $invoice->getPurchases())
-            ->groupBy('prod.name, pr.currency, prod.unit')
-        ;
+            ->groupBy('prod.name, pr.currency, prod.unit');
 
         return $qb->getQuery()->getArrayResult();
     }
@@ -92,20 +93,19 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->setParameter('type', $productCategoryType)
             ->setParameter('currency', $invoice->getCurrency())
             ->setParameter('batch', $invoice)
-            ->groupBy('p.redemptionBatch')
-        ;
+            ->groupBy('p.redemptionBatch');
 
         try {
             return $qb->getQuery()->getSingleScalarResult();
         } catch (NoResultException $e) {
             return "-";
         } catch (NonUniqueResultException $e) {
-            return "Error: ".$e->getMessage();
+            return "Error: " . $e->getMessage();
         }
     }
 
     /**
-     * @param Invoice         $invoice
+     * @param Invoice $invoice
      * @param Pagination|null $pagination
      *
      * @return Paginator|SmartcardPurchase[]
@@ -141,7 +141,7 @@ class SmartcardPurchaseRepository extends EntityRepository
 
     /**
      * @param SmartcardPurchaseFilterInputType $filter
-     * @param Pagination|null                  $pagination
+     * @param Pagination|null $pagination
      *
      * @return Paginator|SmartcardPurchase[]
      */

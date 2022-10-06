@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -9,7 +10,6 @@ use Entity\ImportFile;
 
 class ImportFileRepository extends EntityRepository
 {
-
     /**
      * @param Import $import
      *

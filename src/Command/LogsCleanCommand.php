@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Command;
@@ -34,8 +35,7 @@ class LogsCleanCommand extends Command
         parent::configure();
         $this
             ->setName('aws:logs:clean')
-            ->setDescription('Clean all old logs sent by vendor app or field app')
-        ;
+            ->setDescription('Clean all old logs sent by vendor app or field app');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,17 +8,17 @@ final class NationalIdType
 {
     use EnumTrait;
 
-    const NATIONAL_ID = 'National ID';
-    const TAX_NUMBER = 'Tax Number';
-    const PASSPORT = 'Passport';
-    const FAMILY = 'Family Registration';
-    const BIRTH_CERTIFICATE = 'Birth Certificate';
-    const DRIVERS_LICENSE = 'Driver’s License';
-    const CAMP_ID = 'Camp ID';
-    const SOCIAL_SERVICE_ID = 'Social Service Card';
-    const OTHER = 'Other';
-    const NONE = 'None';
-    const CIVIL_REGISTRATION_RECORD = 'Civil registration record';
+    public const NATIONAL_ID = 'National ID';
+    public const TAX_NUMBER = 'Tax Number';
+    public const PASSPORT = 'Passport';
+    public const FAMILY = 'Family Registration';
+    public const BIRTH_CERTIFICATE = 'Birth Certificate';
+    public const DRIVERS_LICENSE = 'Driver’s License';
+    public const CAMP_ID = 'Camp ID';
+    public const SOCIAL_SERVICE_ID = 'Social Service Card';
+    public const OTHER = 'Other';
+    public const NONE = 'None';
+    public const CIVIL_REGISTRATION_RECORD = 'Civil registration record';
 
     public static function values(): array
     {
@@ -43,5 +44,4 @@ final class NationalIdType
             self::NATIONAL_ID => ['Card ID'],
         ];
     }
-
 }

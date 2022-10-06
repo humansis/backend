@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller;
@@ -29,13 +30,13 @@ class SmartcardController extends AbstractController
 
         $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export($invoice, $organization, $this->getUser());
 
-        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response = new BinaryFileResponse(getcwd() . '/' . $filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
         $response->deleteFileAfterSend(true);
 
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
         if ($mimeTypeGuesser->isSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd().'/'.$filename));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
         }
 
         return $response;

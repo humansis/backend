@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\File;
@@ -27,7 +28,7 @@ class UploadService
 
     /**
      * @param UploadedFile $uploadedFile
-     * @param string       $filesystem
+     * @param string $filesystem
      *
      * @return string URL of file
      *
@@ -42,7 +43,7 @@ class UploadService
             $adapter->setMetadata('Content-Type', $uploadedFile->getMimeType());
             $adapter->write($filename, file_get_contents($uploadedFile->getPathname()));
 
-            return 'https://s3.'.$this->region.'.amazonaws.com/'.$this->bucketName.'/'.$filesystem.'/'.$filename;
+            return 'https://s3.' . $this->region . '.amazonaws.com/' . $this->bucketName . '/' . $filesystem . '/' . $filename;
         } catch (S3Exception $ex) {
             throw new  Exception\UploadException('Upload to AWS S3 failed.', $ex);
         }

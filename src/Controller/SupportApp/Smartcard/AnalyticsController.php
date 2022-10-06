@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\SupportApp\Smartcard;
 
@@ -16,11 +18,10 @@ use Repository\SmartcardRepository;
 
 class AnalyticsController extends AbstractSupportAppController
 {
-
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/beneficiaries/{id}")
      *
-     * @param Beneficiary  $beneficiary
+     * @param Beneficiary $beneficiary
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -33,7 +34,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/smartcard/{id}")
      *
-     * @param Smartcard    $smartcard
+     * @param Smartcard $smartcard
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -46,7 +47,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/smartcards/{serialNumber}")
      *
-     * @param string       $serialNumber
+     * @param string $serialNumber
      * @param EventService $eventService
      *
      * @return JsonResponse
@@ -59,7 +60,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/vendors/{id}")
      *
-     * @param Vendor       $vendor
+     * @param Vendor $vendor
      * @param EventService $eventService
      *
      * @return JsonResponse

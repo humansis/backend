@@ -40,12 +40,6 @@ To trick Levenshtein activation, run: `php bin/console jrk:levenshtein:install`
 - `clean` : Delete your database, create a new one, migrate migrations, load fixtures, start the cron service and clean cache of import CSV
 - `cron-launch` : Start the cron service
 
-#### Git Hooks
-
-Just after installation, don't forget to set your hook directory in order to enable the custom hooks (pre-commit and pre-push):
-
-`git config core.hooksPath hooks`
-
 #### Useful Commands
 
 - `php bin/console r:c:c` : clear cache files created for the import process of households
@@ -96,41 +90,6 @@ END
 git clone https://gitlab-public.quanti.cz/humansis/web-platform/backend customdir
 ```
 
-Open `docker-compose.yml` and add:
-```
-php:
-    environment:
-        ENVIRONMENT: dev
-        XDEBUG_CONFIG: 'remote_host=172.17.0.1'
-        PHP_IDE_CONFIG: 'serverName=humansis.local'
-        AWS_ACCESS_KEY: 'aaa'
-        AWS_SECRET_KEY: 'aaa'
-        AWS_LOGS_ACCESS_KEY: 'access_key'
-        AWS_LOGS_SECRET_KEY: 'secret_key'
-        SES_USERNAME: 'aaa'
-        SES_PASSWORD: 'aaa'
-        RDS_HOSTNAME: db
-        RDS_PORT: 3306
-        RDS_DB_NAME: bmstest
-        RDS_USERNAME: bms_user
-        RDS_PASSWORD: aA123
-        HID_SECRET: xxx
-        GOOGLE_CLIENT: xxx
-        MOBILE_MASTER_KEY: xxx
-        MOBILE_MASTER_KEY_VERSION: xxx
-        JWT_PASSPHRASE: xxx
-        GELF_SERVER_NAME: xxx
-        GELF_HOST: xxx
-        GELF_PORT: 9999
-        MOBILE_APP_VERSION: xxx
-        MOBILE_APP_ID: xxx
-        AWS_LOGS_ACCESS_KEY: secret_key
-        AWS_LOGS_SECRET_KEY: secret_key
-        SYMFONY_SECRET: 'ThisIsLocalVerySecretToken'
-        CROWDIN_API_KEY: 'ThisIsLocalVerySecretKey'
-        CROWDIN_PROJECT_ID: 'ThisIsLocalNotSoMuchSecretId'
-```
-
 ### Test interpret and docker environment
 - Run in terminal:
   - start containers `docker-compose up -d`
@@ -159,8 +118,9 @@ php:
   ```
 - OK
 
-#### PhpStorm Code Style
-Code style file humansis.xml is located in root directory
+#### Code Style
+use `.editorconfig`
+run `docker-compose exec php bash -c 'vendor/bin/captainhook install pre-commit'` to install pre-commit hook
 
 #### Makefile
 Docker and others already described commands are accessible from Makefile
@@ -174,14 +134,14 @@ Docker and others already described commands are accessible from Makefile
 
 ## Translations
 
-When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin.  
+When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin.
 When any environment is deployed, translations are downloaded from crowdin.
 
 ### Update translations on production
 It is possible to update translations on production without deploying the whole application, ask admin to run `bin/console crowdin:pull` on production environment.
 
 ### Add new key
-1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
+1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:
    `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
 2. run `make translation-keys` to keep generated ids of keys in repository
 3. the key will be uploaded to crowdin automatically when your code is merged into `develop`

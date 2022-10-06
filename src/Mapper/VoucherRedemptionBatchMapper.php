@@ -25,7 +25,7 @@ class VoucherRedemptionBatchMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of '.VoucherRedemptionBatch::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . VoucherRedemptionBatch::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getDatetime(): string
@@ -76,8 +76,10 @@ class VoucherRedemptionBatchMapper implements MapperInterface
 
     public function getVoucherIds(): array
     {
-        return array_values(array_map(function (Voucher $item) {
-            return $item->getId();
-        }, $this->object->getVouchers()->toArray()));
+        return array_values(
+            array_map(function (Voucher $item) {
+                return $item->getId();
+            }, $this->object->getVouchers()->toArray())
+        );
     }
 }

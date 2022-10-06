@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity\Helper;
@@ -33,7 +34,7 @@ trait CreatedBy
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;
+
         return $this;
     }
-
 }

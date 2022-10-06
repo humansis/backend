@@ -80,11 +80,11 @@ class UserProject
     /**
      * Set user.
      *
-     * @param \Entity\User|null $user
+     * @param User|null $user
      *
      * @return UserProject
      */
-    public function setUser(\Entity\User $user = null)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
 
@@ -94,7 +94,7 @@ class UserProject
     /**
      * Get user.
      *
-     * @return \Entity\User|null
+     * @return User|null
      */
     public function getUser()
     {

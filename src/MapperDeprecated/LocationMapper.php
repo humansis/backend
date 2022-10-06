@@ -1,4 +1,5 @@
 <?php
+
 namespace MapperDeprecated;
 
 use Entity\Location;
@@ -10,7 +11,10 @@ class LocationMapper
 {
     public function toFlatArray(?Location $location): ?array
     {
-        if (!$location) return null;
+        if (!$location) {
+            return null;
+        }
+
         return $this->expandLocation($location);
     }
 
@@ -27,7 +31,7 @@ class LocationMapper
             $ids['adm' . $location->getLvl()] = $location->getId();
             $location = $location->getParent();
         }
-        
+
         return $ids;
     }
 
@@ -39,9 +43,7 @@ class LocationMapper
             $names[] = $location->getName();
             $location = $location->getParent();
         }
-        
+
         return implode(', ', $names);
     }
-
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,11 +8,11 @@ class SmartcardStates
 {
     use EnumTrait;
 
-    const UNASSIGNED = 'unassigned';
-    const ACTIVE = 'active';
-    const INACTIVE = 'inactive';
-    const REUSED = 'reused';
-    const CANCELLED = 'cancelled';
+    public const UNASSIGNED = 'unassigned';
+    public const ACTIVE = 'active';
+    public const INACTIVE = 'inactive';
+    public const REUSED = 'reused';
+    public const CANCELLED = 'cancelled';
 
     protected static $values = [
         self::UNASSIGNED,

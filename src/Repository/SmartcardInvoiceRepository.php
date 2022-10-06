@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Repository;
 
@@ -16,7 +18,7 @@ use Entity\Vendor;
 class SmartcardInvoiceRepository extends EntityRepository
 {
     /**
-     * @param Vendor     $vendor
+     * @param Vendor $vendor
      * @param Pagination $pagination
      *
      * @return Paginator|Invoice[]

@@ -13,6 +13,7 @@ use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Enum\AssistanceTargetType;
 use Enum\ModalityType;
+use RA\RequestValidatorBundle\RequestValidator\ValidationException;
 use Utils\AssistanceService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -37,7 +38,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
      *
      * @param ObjectManager $manager
      *
-     * @throws \RA\RequestValidatorBundle\RequestValidator\ValidationException
+     * @throws ValidationException
      */
     public function load(ObjectManager $manager)
     {
@@ -47,13 +48,13 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
-            echo $project->getName()."#{$project->getId()}: \n";
+            echo $project->getName() . "#{$project->getId()}: \n";
             $assistances = $manager->getRepository(Assistance::class)->findBy([
                 'project' => $project,
             ], ['id' => 'asc']);
 
             foreach ($assistances as $assistance) {
-                echo "P#{$project->getId()} - ".$assistance->getName().": ";
+                echo "P#{$project->getId()} - " . $assistance->getName() . ": ";
                 if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::SMART_CARD) {
                     continue;
                 }
@@ -96,25 +97,26 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     private function addBNFsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $BNFs = $manager->getRepository(Beneficiary::class)->getUnarchivedByProject($project);
-        echo "(".count($BNFs).") ";
+        echo "(" . count($BNFs) . ") ";
         $count = 0;
         foreach ($BNFs as $beneficiary) {
             $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($beneficiary)
                 ->setAssistance($assistance)
-                ->setJustification('added randomly in fixtures')
-            ;
+                ->setJustification('added randomly in fixtures');
             $assistance->addAssistanceBeneficiary($bnf);
             $manager->persist($bnf);
             echo "B";
-            if (++$count == 3) return;
+            if (++$count == 3) {
+                return;
+            }
         }
     }
 
     private function addHHsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $HHs = $manager->getRepository(Household::class)->getUnarchivedByProject($project)->getQuery()->getResult();
-        echo "(".count($HHs).") ";
+        echo "(" . count($HHs) . ") ";
         $count = 0;
         /** @var Household $household */
         foreach ($HHs as $household) {
@@ -125,49 +127,52 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
             $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($household->getHouseholdHead())
                 ->setAssistance($assistance)
-                ->setJustification('added randomly in fixtures')
-            ;
+                ->setJustification('added randomly in fixtures');
             $assistance->addAssistanceBeneficiary($bnf);
             $manager->persist($bnf);
             echo "H";
-            if (++$count == 3) return;
+            if (++$count == 3) {
+                return;
+            }
         }
     }
 
     private function addInstsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
-        echo "(".count($institutions).") ";
+        echo "(" . count($institutions) . ") ";
         $count = 0;
         foreach ($institutions as $institution) {
             $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($institution)
                 ->setAssistance($assistance)
-                ->setJustification('added randomly in fixtures')
-            ;
+                ->setJustification('added randomly in fixtures');
             $assistance->addAssistanceBeneficiary($bnf);
             $manager->persist($bnf);
             echo "I";
-            if (++$count == 3) return;
+            if (++$count == 3) {
+                return;
+            }
         }
     }
 
     private function addCommsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project);
-        echo "(".count($communities).") ";
+        echo "(" . count($communities) . ") ";
         $count = 0;
         foreach ($communities as $community) {
             $bnf = (new AssistanceBeneficiary())
                 ->setBeneficiary($community)
                 ->setAssistance($assistance)
                 ->setRemoved(false)
-                ->setJustification('added randomly in fixtures')
-            ;
+                ->setJustification('added randomly in fixtures');
             $assistance->addAssistanceBeneficiary($bnf);
             $manager->persist($bnf);
             echo "C";
-            if (++$count == 3) return;
+            if (++$count == 3) {
+                return;
+            }
         }
     }
 }

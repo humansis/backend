@@ -35,7 +35,7 @@ class UserController extends AbstractController
     {
         $request->query->add(['users' => true]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -87,7 +87,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/users/{id}")
      *
-     * @param User                $user
+     * @param User $user
      * @param UserCreateInputType $inputType
      *
      * @return JsonResponse
@@ -105,7 +105,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/users/{id}")
      *
-     * @param User                $user
+     * @param User $user
      * @param UserUpdateInputType $inputType
      *
      * @return JsonResponse
@@ -123,7 +123,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/users/{id}")
      *
-     * @param User    $user
+     * @param User $user
      * @param Request $request
      *
      * @return JsonResponse

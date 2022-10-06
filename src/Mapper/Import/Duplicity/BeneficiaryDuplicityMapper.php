@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Import\Duplicity;
 
@@ -7,12 +9,14 @@ use Component\Import\CellParameters;
 use Component\Import\Integrity\ImportLineFactory;
 use Component\Import\ValueObject\BeneficiaryCompare;
 use Entity\ImportBeneficiaryDuplicity;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class BeneficiaryDuplicityMapper implements MapperInterface
 {
     /** @var ImportBeneficiaryDuplicity */
     private $object;
+
     /** @var ImportLineFactory */
     private $importLineFactory;
 
@@ -43,7 +47,7 @@ class BeneficiaryDuplicityMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ImportBeneficiaryDuplicity::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportBeneficiaryDuplicity::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getReasons(): iterable
@@ -64,9 +68,9 @@ class BeneficiaryDuplicityMapper implements MapperInterface
     {
         $person = $this->object->getBeneficiary()->getPerson();
         if (!empty($person->getLocalFamilyName()) || !empty($person->getLocalGivenName())) {
-            return $person->getLocalGivenName().' '.$person->getLocalFamilyName();
+            return $person->getLocalGivenName() . ' ' . $person->getLocalFamilyName();
         } else {
-            return $person->getEnGivenName().' '.$person->getEnFamilyName();
+            return $person->getEnGivenName() . ' ' . $person->getEnFamilyName();
         }
     }
 
@@ -75,10 +79,9 @@ class BeneficiaryDuplicityMapper implements MapperInterface
         $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
 
         if (!empty($importLine->localFamilyName) || !empty($importLine->localGivenName)) {
-            return $importLine->localGivenName.' '.$importLine->localFamilyName;
+            return $importLine->localGivenName . ' ' . $importLine->localFamilyName;
         } else {
-            return $importLine->englishGivenName.' '.$importLine->englishFamilyName;
+            return $importLine->englishGivenName . ' ' . $importLine->englishFamilyName;
         }
     }
-
 }

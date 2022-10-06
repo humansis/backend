@@ -1,14 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
 
 class VariableBool
 {
-    use EnumTrait { valueFromAPI as private parentValueFromAPI; }
+    use EnumTrait {
+        valueFromAPI as private parentValueFromAPI;
+    }
 
-    const TRUE = 1;
-    const FALSE = 0;
+    public const TRUE = 1;
+    public const FALSE = 0;
 
     protected static $values = [
         1 => self::TRUE,
@@ -32,5 +35,4 @@ class VariableBool
     {
         return (bool) self::parentValueFromAPI($APIValue);
     }
-
 }

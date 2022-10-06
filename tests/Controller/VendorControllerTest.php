@@ -19,7 +19,7 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->vendorUsername = time().'-testvendor@example.org';
+        $this->vendorUsername = time() . '-testvendor@example.org';
     }
 
     /**
@@ -55,27 +55,31 @@ class VendorControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
         }
 
-        $this->request('POST', '/api/basic/web-app/v1/vendors', $data = [
-            'shop' => 'test shop',
-            'name' => $this->vendorUsername,
-            'addressStreet' => 'test street',
-            'addressNumber' => '1234566',
-            'addressPostcode' => '039 98',
-            'locationId' => $adm1Results[0]->getId(),
-            'userId' => $users[0]->getId(),
-            'vendorNo' => 'v-10',
-            'contractNo' => 'c-10',
-            'canSellFood' => false,
-            'canSellNonFood' => false,
-            'canSellCashback' => false,
-            'canDoRemoteDistributions' => true,
-        ]);
+        $this->request(
+            'POST',
+            '/api/basic/web-app/v1/vendors',
+            $data = [
+                'shop' => 'test shop',
+                'name' => $this->vendorUsername,
+                'addressStreet' => 'test street',
+                'addressNumber' => '1234566',
+                'addressPostcode' => '039 98',
+                'locationId' => $adm1Results[0]->getId(),
+                'userId' => $users[0]->getId(),
+                'vendorNo' => 'v-10',
+                'contractNo' => 'c-10',
+                'canSellFood' => false,
+                'canSellNonFood' => false,
+                'canSellCashback' => false,
+                'canDoRemoteDistributions' => true,
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed (status code '.$this->client->getResponse()->getStatusCode().'): '.$this->client->getResponse()->getContent()
+            'Request failed (status code ' . $this->client->getResponse()->getStatusCode() . '): ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -118,26 +122,30 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(array $vendor)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/vendors/'.$vendor['id'], $data = [
-            'shop' => 'edited',
-            'name' => $this->vendorUsername,
-            'addressStreet' => $vendor['addressStreet'],
-            'addressNumber' => $vendor['addressNumber'],
-            'addressPostcode' => '0000',
-            'locationId' => $vendor['locationId'],
-            'vendorNo' => 'v-10-changed',
-            'contractNo' => 'c-10-changed',
-            'canSellFood' => true,
-            'canSellNonFood' => true,
-            'canSellCashback' => true,
-            'canDoRemoteDistributions' => false,
-        ]);
+        $this->request(
+            'PUT',
+            '/api/basic/web-app/v1/vendors/' . $vendor['id'],
+            $data = [
+                'shop' => 'edited',
+                'name' => $this->vendorUsername,
+                'addressStreet' => $vendor['addressStreet'],
+                'addressNumber' => $vendor['addressNumber'],
+                'addressPostcode' => '0000',
+                'locationId' => $vendor['locationId'],
+                'vendorNo' => 'v-10-changed',
+                'contractNo' => 'c-10-changed',
+                'canSellFood' => true,
+                'canSellNonFood' => true,
+                'canSellCashback' => true,
+                'canDoRemoteDistributions' => false,
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -181,13 +189,13 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/vendors/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -224,7 +232,7 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -235,16 +243,19 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $vendor = $this->em->getRepository(Vendor::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$vendor->getId().'/summaries');
+        $this->request('GET', '/api/basic/web-app/v1/vendors/' . $vendor->getId() . '/summaries');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "redeemedSmartcardPurchasesTotalCount": "*",
             "redeemedSmartcardPurchasesTotalValue": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     /**
@@ -257,7 +268,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/vendors/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -273,7 +284,7 @@ class VendorControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/vendors/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/vendors/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

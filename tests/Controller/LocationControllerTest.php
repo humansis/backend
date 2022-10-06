@@ -37,7 +37,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -52,13 +52,13 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetUserCountriesAdmin()
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER)->getId().'/countries');
+        $this->request('GET', '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER)->getId() . '/countries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $allCountries = $this->countries->getAll();
@@ -75,12 +75,12 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetUserCountriesNoAdmin(): void
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/'.$this->getTestUser(self::USER_TESTER_VENDOR)->getId().'/countries');
+        $this->request('GET', '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER_VENDOR)->getId() . '/countries');
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $numberOfCountries = 0;
@@ -93,8 +93,8 @@ class LocationControllerTest extends BMSServiceTestCase
             $projects[] = $userProject->getProject()->getcountryIso3();
         }
 
-        foreach($allCountries as $country){
-            if(in_array($country->getIso3(), $projects)){
+        foreach ($allCountries as $country) {
+            if (in_array($country->getIso3(), $projects)) {
                 $numberOfCountries++;
             }
         }
@@ -114,13 +114,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetCountry($iso3)
     {
-        $this->request('GET', '/api/basic/web-app/v1/countries/'.$iso3);
+        $this->request('GET', '/api/basic/web-app/v1/countries/' . $iso3);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('name', $result);
@@ -139,7 +139,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -165,13 +165,13 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]=' . $location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -189,13 +189,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm1($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm1/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm1/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertArrayHasKey('id', $result);
@@ -210,13 +210,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm2($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm1/'.$id.'/adm2');
+        $this->request('GET', '/api/basic/web-app/v1/adm1/' . $id . '/adm2');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -226,6 +226,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
+
 //        $this->assertArrayHasKey('adm1Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
@@ -238,13 +239,13 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]=' . $location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -262,13 +263,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm2($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm2/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm2/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertArrayHasKey('id', $result);
@@ -283,13 +284,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm3($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm2/'.$id.'/adm3');
+        $this->request('GET', '/api/basic/web-app/v1/adm2/' . $id . '/adm3');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -299,6 +300,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
+
 //        $this->assertArrayHasKey('adm2Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
@@ -311,13 +313,13 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]=' . $location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -335,13 +337,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm3($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm3/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm3/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertArrayHasKey('id', $result);
@@ -356,13 +358,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetListOfAdm4($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm3/'.$id.'/adm4');
+        $this->request('GET', '/api/basic/web-app/v1/adm3/' . $id . '/adm4');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -372,6 +374,7 @@ class LocationControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('name', $result['data'][0]);
         $this->assertArrayHasKey('code', $result['data'][0]);
         $this->assertArrayHasKey('locationId', $result['data'][0]);
+
 //        $this->assertArrayHasKey('adm3Id', $result['data'][0]);
 
         return $result['data'][0]['id'];
@@ -384,13 +387,13 @@ class LocationControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no such location to test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]=' . $location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -408,13 +411,13 @@ class LocationControllerTest extends BMSServiceTestCase
      */
     public function testGetDetailOfAdm4($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/adm4/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/adm4/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertArrayHasKey('id', $result);
@@ -431,13 +434,13 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $location = $this->locationRepository->findBy(['countryIso3' => 'KHM'], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]='.$location->getId());
+        $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]=' . $location->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);

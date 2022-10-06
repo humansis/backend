@@ -1,8 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
+use DateTime;
 use Entity\CountrySpecific;
+use Exception;
 use Utils\HouseholdExportCSVService;
 use Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -382,12 +386,12 @@ class ImportLine
             }
         }
 
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
         foreach ($countrySpecifics as $countrySpecific) {
             if (isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString()][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL) {
                 $this->countrySpecifics[$countrySpecific->getId()] = [
                     'countrySpecific' => $countrySpecific,
-                    'value' =>  $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
+                    'value' => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
                 ];
             }
         }
@@ -425,13 +429,12 @@ class ImportLine
         return !$this->numberPhone2 || $this->prefixPhone2;
     }
 
-    
     /**
      * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
      */
     public function isCampValidOrEmpty(): bool
     {
-       return $this->isCampValid()
+        return $this->isCampValid()
             xor ($this->isEmpty($this->tentNumber) && $this->isEmpty($this->campName));
     }
 
@@ -454,7 +457,8 @@ class ImportLine
         return (!$this->isEmpty($this->addressNumber)) && !$this->isEmpty($this->addressPostcode) && !$this->isEmpty($this->addressStreet);
     }
 
-    private function isEmpty($value) {
+    private function isEmpty($value)
+    {
         return "" === trim((string) $value);
     }
 
@@ -491,6 +495,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -506,6 +511,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -521,6 +527,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -536,6 +543,7 @@ class ImportLine
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2), EnumTrait::normalizeValue($this->adm3), EnumTrait::normalizeValue($this->adm4)];
 
         $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames($this->countryIso3, $locationsArray);
+
         return null !== $location;
     }
 
@@ -566,7 +574,7 @@ class ImportLine
     /**
      * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.", payload={"propertyPath"="dateOfBirth"}, groups={"household", "member"})
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function isDateOfBirthValid(): bool
     {
@@ -599,17 +607,17 @@ class ImportLine
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getDateOfBirth(): \DateTime
+    public function getDateOfBirth(): DateTime
     {
         return ImportDateConverter::toDatetime($this->dateOfBirth);
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getSupportDateReceived(): \DateTime
+    public function getSupportDateReceived(): DateTime
     {
         return ImportDateConverter::toDatetime($this->supportDateReceived);
     }

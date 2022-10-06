@@ -1,8 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Exception;
 
-class InvalidFormulaException extends \Exception
+use Exception;
+
+class InvalidFormulaException extends Exception
 {
     /** @var string */
     private $formula;
@@ -28,5 +32,4 @@ class InvalidFormulaException extends \Exception
     {
         $this->formula = $formula;
     }
-
 }

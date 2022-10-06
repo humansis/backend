@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\WebApp;
 
@@ -11,7 +13,7 @@ class AbstractWebAppController extends AbstractController
 {
     /**
      * @param       $data
-     * @param int   $status
+     * @param int $status
      * @param array $headers
      * @param array $context
      *

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Import\Duplicity;
 
@@ -42,5 +44,4 @@ class ResolveAllDuplicitiesInputType implements InputTypeInterface
     {
         $this->status = $status;
     }
-
 }

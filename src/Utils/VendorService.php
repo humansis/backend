@@ -6,9 +6,11 @@ use Entity\Location;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use Exception\NotUniqueException;
 use InputType\VendorCreateInputType;
 use InputType\VendorUpdateInputType;
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -19,8 +21,7 @@ use Entity\VoucherPurchase;
 
 class VendorService
 {
-
-  /** @var EntityManagerInterface $em */
+    /** @var EntityManagerInterface $em */
     private $em;
 
     /** @var ContainerInterface $container */
@@ -35,8 +36,8 @@ class VendorService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface     $container
-     * @param Environment            $twig
+     * @param ContainerInterface $container
+     * @param Environment $twig
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -47,7 +48,6 @@ class VendorService
         $this->container = $container;
         $this->twig = $twig;
     }
-
 
     /**
      * @param VendorCreateInputType $inputType
@@ -60,17 +60,17 @@ class VendorService
         $user = $this->em->getRepository(User::class)->find($inputType->getUserId());
 
         if (!$user instanceof User) {
-            throw new EntityNotFoundException('User with ID #'.$inputType->getUserId().' does not exists.');
+            throw new EntityNotFoundException('User with ID #' . $inputType->getUserId() . ' does not exists.');
         }
 
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
         if (!$location instanceof Location) {
-            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+            throw new EntityNotFoundException('Location with ID #' . $inputType->getLocationId() . ' does not exists.');
         }
 
         if (null !== $user->getVendor()) {
-            throw new \InvalidArgumentException('User with ID #'.$inputType->getUserId().' is already defined as vendor.');
+            throw new InvalidArgumentException('User with ID #' . $inputType->getUserId() . ' is already defined as vendor.');
         }
 
         $vendor = new Vendor();
@@ -87,8 +87,7 @@ class VendorService
             ->setCanSellFood($inputType->isCanSellFood())
             ->setCanSellNonFood($inputType->isCanSellNonFood())
             ->setCanSellCashback($inputType->isCanSellCashback())
-            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions())
-        ;
+            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -97,7 +96,7 @@ class VendorService
     }
 
     /**
-     * @param Vendor                $vendor
+     * @param Vendor $vendor
      * @param VendorUpdateInputType $inputType
      * @return Vendor
      * @throws EntityNotFoundException
@@ -108,7 +107,7 @@ class VendorService
         $location = $this->em->getRepository(Location::class)->find($inputType->getLocationId());
 
         if (!$location instanceof Location) {
-            throw new EntityNotFoundException('Location with ID #'.$inputType->getLocationId().' does not exists.');
+            throw new EntityNotFoundException('Location with ID #' . $inputType->getLocationId() . ' does not exists.');
         }
 
         $vendor->setShop($inputType->getShop())
@@ -122,8 +121,7 @@ class VendorService
             ->setCanSellFood($inputType->isCanSellFood())
             ->setCanSellNonFood($inputType->isCanSellNonFood())
             ->setCanSellCashback($inputType->isCanSellCashback())
-            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions())
-        ;
+            ->setCanDoRemoteDistributions($inputType->getCanDoRemoteDistributions());
 
         $this->em->persist($vendor);
         $this->em->flush();
@@ -137,7 +135,7 @@ class VendorService
      * @param Vendor $vendor
      * @param bool $archiveVendor
      * @return Vendor
-     * @throws \Exception
+     * @throws Exception
      */
     public function archiveVendor(Vendor $vendor, bool $archiveVendor = true)
     {
@@ -145,9 +143,10 @@ class VendorService
             $vendor->setArchived($archiveVendor);
             $this->em->persist($vendor);
             $this->em->flush();
-        } catch (\Exception $exception) {
-            throw new \Exception('Error archiving Vendor');
+        } catch (Exception $exception) {
+            throw new Exception('Error archiving Vendor');
         }
+
         return $vendor;
     }
 
@@ -162,6 +161,7 @@ class VendorService
         if (!$vendor) {
             throw new NotFoundHttpException("Vendor bind to user (Username: {$user->getUsername()}, ID: {$user->getId()}) does not exists.");
         }
+
         return $vendor;
     }
 
@@ -170,7 +170,7 @@ class VendorService
         try {
             $voucherPurchases = $this->em->getRepository(VoucherPurchase::class)->findByVendor($vendor);
             if (0 === count($voucherPurchases)) {
-                throw new \Exception('This vendor has no voucher. Try syncing with the server.');
+                throw new Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
             foreach ($voucherPurchases as $voucherPurchase) {
@@ -196,12 +196,12 @@ class VendorService
             $html = $this->twig->render(
                 '@Voucher/Pdf/invoice.html.twig',
                 array_merge(
-                    array(
-                        'name'  => $vendor->getName(),
-                        'shop'  => $vendor->getShop(),
-                        'addressStreet'  => $vendor->getAddressStreet(),
-                        'addressPostcode'  => $vendor->getAddressPostcode(),
-                        'addressNumber'  => $vendor->getAddressNumber(),
+                    [
+                        'name' => $vendor->getName(),
+                        'shop' => $vendor->getShop(),
+                        'addressStreet' => $vendor->getAddressStreet(),
+                        'addressPostcode' => $vendor->getAddressPostcode(),
+                        'addressNumber' => $vendor->getAddressNumber(),
                         'vendorNo' => $vendor->getVendorNo(),
                         'contractNo' => $vendor->getContractNo(),
                         'addressVillage' => $locationNames['adm4'],
@@ -209,17 +209,18 @@ class VendorService
                         'addressDistrict' => $locationNames['adm2'],
                         'addressProvince' => $locationNames['adm1'],
                         'addressCountry' => $locationCountry,
-                        'date'  => (new DateTime())->format('d-m-Y'),
+                        'date' => (new DateTime())->format('d-m-Y'),
                         'voucherPurchases' => $voucherPurchases,
-                        'totalValue' => $totalValue
-                    ),
+                        'totalValue' => $totalValue,
+                    ],
                     $this->container->get('pdf_service')->getInformationStyle()
                 )
             );
 
             $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
+
             return $response;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
 
@@ -228,6 +229,7 @@ class VendorService
 
     /**
      * Export all vendors in a CSV file
+     *
      * @param string $type
      * @param string $countryISO3
      * @return mixed

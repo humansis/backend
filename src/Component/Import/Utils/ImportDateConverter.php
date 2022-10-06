@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import\Utils;
 
 use DateTime;
+use DateTimeInterface;
 use Negotiation\Exception\InvalidArgument;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
@@ -35,9 +37,12 @@ class ImportDateConverter
         throw new InvalidArgument("Provided value '$value' should be of type string, float or integer. Type of provided value: " . gettype($value));
     }
 
-    public static function toIso(?\DateTimeInterface $dateTime): ?string
+    public static function toIso(?DateTimeInterface $dateTime): ?string
     {
-        if (!$dateTime) return null;
-        return $dateTime->format(\DateTimeInterface::ISO8601);
+        if (!$dateTime) {
+            return null;
+        }
+
+        return $dateTime->format(DateTimeInterface::ISO8601);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,8 +8,8 @@ class PersonGender
 {
     use EnumTrait;
 
-    const MALE = 'male';
-    const FEMALE = 'female';
+    public const MALE = 'male';
+    public const FEMALE = 'female';
 
     protected static $values = [
         'Female' => self::FEMALE,
@@ -27,5 +28,4 @@ class PersonGender
             self::FEMALE => [0, 'f', 'fem', 'false', 'woman'],
         ];
     }
-
 }

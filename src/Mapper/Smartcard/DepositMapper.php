@@ -1,8 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Smartcard;
 
 use Component\Smartcard\EmptySmartcardDeposit;
+use DateTimeInterface;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\SmartcardDeposit;
 
@@ -30,7 +34,7 @@ class DepositMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SmartcardDeposit::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SmartcardDeposit::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): ?int
@@ -73,6 +77,6 @@ class DepositMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object instanceof SmartcardDeposit ? $this->object->getDistributedAt()->format(\DateTimeInterface::ISO8601) : null;
+        return $this->object instanceof SmartcardDeposit ? $this->object->getDistributedAt()->format(DateTimeInterface::ISO8601) : null;
     }
 }

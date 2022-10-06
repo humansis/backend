@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Utils;
 
 use Entity\Address;
@@ -35,6 +34,7 @@ use Repository\LocationRepository;
 
 /**
  * Class HouseholdService
+ *
  * @package Utils
  */
 class HouseholdService
@@ -54,15 +54,14 @@ class HouseholdService
      * HouseholdService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param BeneficiaryService     $beneficiaryService
-     * @param LocationRepository     $locationRepository
+     * @param BeneficiaryService $beneficiaryService
+     * @param LocationRepository $locationRepository
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         BeneficiaryService $beneficiaryService,
         LocationRepository $locationRepository
-    )
-    {
+    ) {
         $this->em = $entityManager;
         $this->beneficiaryService = $beneficiaryService;
         $this->locationRepository = $locationRepository;
@@ -70,7 +69,7 @@ class HouseholdService
 
     /**
      * @param HouseholdCreateInputType $inputType
-     * @param string                   $countryCode
+     * @param string $countryCode
      *
      * @return Household
      * @throws Exception
@@ -96,12 +95,13 @@ class HouseholdService
         }
 
         $this->em->persist($household);
+
         return $household;
     }
 
     /**
      * @param ResidenceAddressInputType $inputType
-     * @param string                    $countryCode
+     * @param string $countryCode
      *
      * @return HouseholdLocation
      * @throws EntityNotFoundException
@@ -113,19 +113,21 @@ class HouseholdService
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
 
         $location = $this->locationRepository->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
-        $householdLocation->setAddress(Address::create(
-            $inputType->getStreet(),
-            $inputType->getNumber(),
-            $inputType->getPostcode(),
-            $location
-        ));
+        $householdLocation->setAddress(
+            Address::create(
+                $inputType->getStreet(),
+                $inputType->getNumber(),
+                $inputType->getPostcode(),
+                $location
+            )
+        );
 
         return $householdLocation;
     }
 
     /**
      * @param TemporarySettlementAddressInputType $inputType
-     * @param string                              $countryCode
+     * @param string $countryCode
      *
      * @return HouseholdLocation
      * @throws EntityNotFoundException
@@ -137,19 +139,21 @@ class HouseholdService
         $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_SETTLEMENT);
 
         $location = $this->locationRepository->getLocationByIdAndCountryCode($inputType->getLocationId(), $countryCode);
-        $householdLocation->setAddress(Address::create(
-            $inputType->getStreet(),
-            $inputType->getNumber(),
-            $inputType->getPostcode(),
-            $location
-        ));
+        $householdLocation->setAddress(
+            Address::create(
+                $inputType->getStreet(),
+                $inputType->getNumber(),
+                $inputType->getPostcode(),
+                $location
+            )
+        );
 
         return $householdLocation;
     }
 
     /**
      * @param CampAddressInputType $inputType
-     * @param string               $countryCode
+     * @param string $countryCode
      *
      * @return HouseholdLocation
      * @throws EntityNotFoundException
@@ -179,13 +183,14 @@ class HouseholdService
         $campAddress->setTentNumber($inputType->getTentNumber())
             ->setCamp($camp);
         $householdLocation->setCampAddress($campAddress);
+
         return $householdLocation;
     }
 
     /**
-     * @param Household                $household
+     * @param Household $household
      * @param HouseholdUpdateInputType $inputType
-     * @param string                   $countryCode
+     * @param string $countryCode
      *
      * @return Household
      * @throws EntityNotFoundException
@@ -211,7 +216,9 @@ class HouseholdService
             unset($currentIds[$head->getId()]);
         }
         foreach ($inputType->getBeneficiaries() as $beneficiaryInputType) {
-            if ($beneficiaryInputType->isHead()) continue;
+            if ($beneficiaryInputType->isHead()) {
+                continue;
+            }
 
             $existingBeneficiary = $this->tryToPairBeneficiaryInHousehold($household, $beneficiaryInputType);
 
@@ -229,12 +236,12 @@ class HouseholdService
         }
 
         $this->em->persist($household);
+
         return $household;
     }
 
-
     /**
-     * @param Household            $household
+     * @param Household $household
      * @param BeneficiaryInputType $beneficiaryInputType
      *
      * @return Beneficiary|null
@@ -264,7 +271,9 @@ class HouseholdService
             $existingBeneficiariesByNationalId = array_merge(...$existingBeneficiariesByNationalId);
         }
 
-        if (count($existingBeneficiariesByNationalId)>1) throw new Exception("too much duplicities (found ".count($existingBeneficiariesByNationalId).")");
+        if (count($existingBeneficiariesByNationalId) > 1) {
+            throw new Exception("too much duplicities (found " . count($existingBeneficiariesByNationalId) . ")");
+        }
 
         if (!empty($existingBeneficiariesByNationalId)) {
             return $existingBeneficiariesByNationalId[0];
@@ -282,13 +291,13 @@ class HouseholdService
             ->find($inputType->getCountrySpecificId());
 
         if (!$countrySpecific instanceof CountrySpecific) {
-            throw new EntityNotFoundException('Country specific with id '.$inputType->getCountrySpecificId().' not found.');
+            throw new EntityNotFoundException('Country specific with id ' . $inputType->getCountrySpecificId() . ' not found.');
         }
 
         $countrySpecificAnswer = $this->em->getRepository(CountrySpecificAnswer::class)
             ->findOneBy([
                 "countrySpecific" => $countrySpecific,
-                "household" => $household
+                "household" => $household,
             ]);
 
         if (!is_null($inputType->getAnswer())) {
@@ -322,8 +331,8 @@ class HouseholdService
 
     /**
      * @param HouseholdUpdateInputType $inputType
-     * @param Household                $household
-     * @param string                   $countryCode
+     * @param Household $household
+     * @param string $countryCode
      *
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException

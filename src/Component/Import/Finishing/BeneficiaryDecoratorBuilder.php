@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Finishing;
 
@@ -12,7 +14,6 @@ use InputType\Helper\EnumsBuilder;
 
 class BeneficiaryDecoratorBuilder
 {
-
     public function buildBeneficiaryInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();

@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType;
 
+use Entity\VulnerabilityCriterion;
 use InputType\FilterFragment\FulltextFilterTrait;
 use InputType\FilterFragment\LocationFilterTrait;
 use InputType\FilterFragment\PrimaryIdFilterTrait;
@@ -82,7 +84,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
 
     public static function vulnerabilities(): array
     {
-        return array_keys(\Entity\VulnerabilityCriterion::all());
+        return array_keys(VulnerabilityCriterion::all());
     }
 
     public function hasGender(): bool

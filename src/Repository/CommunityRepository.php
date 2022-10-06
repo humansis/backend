@@ -74,7 +74,7 @@ class CommunityRepository extends EntityRepository
      *
      * @param string $iso3
      * @param string $stringToSearch
-     * @param int    $minimumTolerance
+     * @param int $minimumTolerance
      *
      * @return mixed
      */
@@ -97,7 +97,8 @@ class CommunityRepository extends EntityRepository
                         COALESCE(b.localFamilyName, '')
                     ),
                     :stringToSearch
-                ) as levenshtein")
+                ) as levenshtein"
+            )
             ->groupBy("b, ad")
             ->having("levenshtein <= :minimumTolerance")
             ->setParameter("stringToSearch", $stringToSearch)
@@ -111,7 +112,7 @@ class CommunityRepository extends EntityRepository
      * Get all Community by country and id
      *
      * @param string $iso3
-     * @param array  $ids
+     * @param array $ids
      *
      * @return mixed
      */
@@ -157,18 +158,18 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * @param string                   $countryIso3
-     * @param CommunityOrderInputType  $orderBy
+     * @param string $countryIso3
+     * @param CommunityOrderInputType $orderBy
      * @param CommunityFilterType|null $filter
-     * @param Pagination|null          $pagination
+     * @param Pagination|null $pagination
      *
      * @return Paginator
      */
     public function findByParams(
-        string                  $countryIso3,
+        string $countryIso3,
         CommunityOrderInputType $orderBy,
-        ?CommunityFilterType    $filter,
-        ?Pagination             $pagination = null
+        ?CommunityFilterType $filter,
+        ?Pagination $pagination = null
     ): Paginator {
         // Recover global information for the page
         $qb = $this->createQueryBuilder("comm");
@@ -187,19 +188,21 @@ class CommunityRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('comm.contact', 'per');
 
-                $qb->andWhere('(comm.id LIKE :fulltextId OR
+                $qb->andWhere(
+                    '(comm.id LIKE :fulltextId OR
                                 comm.name LIKE :fulltext OR
                                 comm.latitude LIKE :fulltext OR
                                 comm.longitude LIKE :fulltext OR
-                                per.localGivenName LIKE :fulltext OR 
+                                per.localGivenName LIKE :fulltext OR
                                 per.localFamilyName LIKE :fulltext OR
                                 per.localParentsName LIKE :fulltext OR
                                 per.enGivenName LIKE :fulltext OR
                                 per.enFamilyName LIKE :fulltext OR
                                 per.enParentsName LIKE :fulltext OR
-                                per.enParentsName LIKE :fulltext)')
+                                per.enParentsName LIKE :fulltext)'
+                )
                     ->setParameter('fulltextId', $filter->getFulltext())
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
         }
 
@@ -223,18 +226,18 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance                                $assistance
+     * @param Assistance $assistance
      * @param AssistanceCommunitiesFilterInputType|null $filter
-     * @param CommunityOrderInputType|null              $orderBy
-     * @param Pagination|null                           $pagination
+     * @param CommunityOrderInputType|null $orderBy
+     * @param Pagination|null $pagination
      *
      * @return Paginator|Assistance[]
      */
     public function findByAssistance(
-        Assistance                            $assistance,
+        Assistance $assistance,
         ?AssistanceCommunitiesFilterInputType $filter,
-        ?CommunityOrderInputType              $orderBy = null,
-        ?Pagination                           $pagination = null
+        ?CommunityOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('comm')
             ->join('comm.assistanceBeneficiary', 'ab')
@@ -250,19 +253,21 @@ class CommunityRepository extends EntityRepository
 
         if ($filter) {
             if ($filter->hasFulltext()) {
-                $qb->andWhere('(comm.id LIKE :fulltextId OR
+                $qb->andWhere(
+                    '(comm.id LIKE :fulltextId OR
                                 comm.name LIKE :fulltext OR
                                 comm.latitude LIKE :fulltext OR
                                 comm.longitude LIKE :fulltext OR
-                                c.localGivenName LIKE :fulltext OR 
+                                c.localGivenName LIKE :fulltext OR
                                 c.localFamilyName LIKE :fulltext OR
                                 c.localParentsName LIKE :fulltext OR
                                 c.enGivenName LIKE :fulltext OR
                                 c.enFamilyName LIKE :fulltext OR
                                 c.enParentsName LIKE :fulltext OR
-                                c.enParentsName LIKE :fulltext)')
+                                c.enParentsName LIKE :fulltext)'
+                )
                     ->setParameter('fulltextId', $filter->getFulltext())
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
 
             if ($filter->hasIds()) {
@@ -307,7 +312,7 @@ class CommunityRepository extends EntityRepository
                     $qb->orderBy('c.enFamilyName', $direction);
                     break;
                 default:
-                    throw new InvalidArgumentException('Invalid order by directive '.$name);
+                    throw new InvalidArgumentException('Invalid order by directive ' . $name);
             }
         }
     }

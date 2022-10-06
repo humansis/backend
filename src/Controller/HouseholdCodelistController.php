@@ -28,7 +28,7 @@ class HouseholdCodelistController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
-    
+
     /**
      * @Rest\Get("/web-app/v1/households/livelihoods")
      *

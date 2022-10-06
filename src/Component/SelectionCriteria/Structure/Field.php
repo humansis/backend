@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Structure;
+
+use InvalidArgumentException;
 
 class Field
 {
@@ -23,23 +26,25 @@ class Field
     public function __construct(string $code, string $label, array $conditions, string $type, ?callable $callback = null)
     {
         if (count($conditions) <= 0) {
-            throw new \InvalidArgumentException('Argument 3 is not valid array. Conditions must be non empty value');
+            throw new InvalidArgumentException('Argument 3 is not valid array. Conditions must be non empty value');
         }
 
         if ($callback && !is_callable($callback)) {
-            throw new \InvalidArgumentException('Argument 5 is not valid callback');
+            throw new InvalidArgumentException('Argument 5 is not valid callback');
         }
 
         if (null === $callback) {
-            $callback = 'boolean' === $type ? 'is_bool' : 'is_'.$type;
+            $callback = 'boolean' === $type ? 'is_bool' : 'is_' . $type;
             if ('is_integer' === $callback || 'is_int' === $callback) {
                 $callback = function ($integerString) {
                     return is_integer($integerString) || (
-                        is_numeric($integerString) && (string)intval($integerString) === $integerString
+                            is_numeric($integerString) && (string) intval($integerString) === $integerString
                         );
                 };
-            } else if (!function_exists($callback)) {
-                throw new \InvalidArgumentException('Argument 5 missing. Callback is necessary for type '.$type);
+            } else {
+                if (!function_exists($callback)) {
+                    throw new InvalidArgumentException('Argument 5 missing. Callback is necessary for type ' . $type);
+                }
             }
         }
 

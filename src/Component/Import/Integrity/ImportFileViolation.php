@@ -1,9 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
-class ImportFileViolation implements \JsonSerializable
+use JsonSerializable;
+
+class ImportFileViolation implements JsonSerializable
 {
     /** @var string[]|null */
     private $columns;
@@ -15,7 +18,7 @@ class ImportFileViolation implements \JsonSerializable
      * HeaderColumnReview constructor.
      *
      * @param string $message
-     * @param string[]    $columns
+     * @param string[] $columns
      */
     public function __construct(string $message, ?array $columns = null)
     {

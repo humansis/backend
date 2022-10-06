@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
 
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +15,7 @@ use Entity\Helper\EnumTrait;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
 use Enum\ImportQueueState;
+use InvalidArgumentException;
 use Utils\Concurrency\ConcurrencyLockableInterface;
 use Utils\Concurrency\ConcurrencyLockTrait;
 
@@ -98,14 +101,14 @@ class ImportQueue implements ConcurrencyLockableInterface
     private $importQueueDuplicitiesTheirs;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
      */
     private $identityCheckedAt;
 
     /**
-     * @var \DateTimeInterface|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
      */
@@ -151,11 +154,14 @@ class ImportQueue implements ConcurrencyLockableInterface
     public function getAcceptedDuplicity(): ?ImportHouseholdDuplicity
     {
         foreach ($this->getHouseholdDuplicities() as $duplicityCandidate) {
-            if (ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
-            || ImportDuplicityState::DUPLICITY_KEEP_OURS === $duplicityCandidate->getState()) {
+            if (
+                ImportDuplicityState::DUPLICITY_KEEP_THEIRS === $duplicityCandidate->getState()
+                || ImportDuplicityState::DUPLICITY_KEEP_OURS === $duplicityCandidate->getState()
+            ) {
                 return $duplicityCandidate;
             }
         }
+
         return null;
     }
 
@@ -200,8 +206,8 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @see ImportQueueState::values()
      * @param string $state one of ImportQueueState::* values
+     * @see ImportQueueState::values()
      */
     public function setState(string $state)
     {
@@ -219,7 +225,10 @@ class ImportQueue implements ConcurrencyLockableInterface
 
     public function hasViolations(?int $index = null): bool
     {
-        if ($index) return !empty($this->rawMessageData[$index]);
+        if ($index) {
+            return !empty($this->rawMessageData[$index]);
+        }
+
         return !empty($this->rawMessageData);
     }
 
@@ -246,7 +255,7 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @param int    $index
+     * @param int $index
      * @param string $column
      *
      * @return bool
@@ -264,7 +273,7 @@ class ImportQueue implements ConcurrencyLockableInterface
     public function addDuplicity(int $index, Beneficiary $beneficiary, array $reasons): void
     {
         if ($index < 0 || $index >= count($this->content)) {
-            throw new \InvalidArgumentException("Member index was not found in imported Household");
+            throw new InvalidArgumentException("Member index was not found in imported Household");
         }
 
         $householdDuplicity = $this->getHouseholdDuplicityById($beneficiary->getHouseholdId());
@@ -284,8 +293,11 @@ class ImportQueue implements ConcurrencyLockableInterface
     public function getHouseholdDuplicityById(int $householdId): ?ImportHouseholdDuplicity
     {
         foreach ($this->householdDuplicities as $householdDuplicity) {
-            if ($householdDuplicity->getTheirs()->getId() === $householdId) return $householdDuplicity;
+            if ($householdDuplicity->getTheirs()->getId() === $householdId) {
+                return $householdDuplicity;
+            }
         }
+
         return null;
     }
 
@@ -322,33 +334,33 @@ class ImportQueue implements ConcurrencyLockableInterface
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getIdentityCheckedAt(): ?\DateTimeInterface
+    public function getIdentityCheckedAt(): ?DateTimeInterface
     {
         return $this->identityCheckedAt;
     }
 
     /**
-     * @param \DateTimeInterface|null $identityCheckedAt
+     * @param DateTimeInterface|null $identityCheckedAt
      */
-    public function setIdentityCheckedAt(?\DateTimeInterface $identityCheckedAt): void
+    public function setIdentityCheckedAt(?DateTimeInterface $identityCheckedAt): void
     {
         $this->identityCheckedAt = $identityCheckedAt;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getSimilarityCheckedAt(): ?\DateTimeInterface
+    public function getSimilarityCheckedAt(): ?DateTimeInterface
     {
         return $this->similarityCheckedAt;
     }
 
     /**
-     * @param \DateTimeInterface|null $similarityCheckedAt
+     * @param DateTimeInterface|null $similarityCheckedAt
      */
-    public function setSimilarityCheckedAt(?\DateTimeInterface $similarityCheckedAt): void
+    public function setSimilarityCheckedAt(?DateTimeInterface $similarityCheckedAt): void
     {
         $this->similarityCheckedAt = $similarityCheckedAt;
     }
@@ -356,9 +368,11 @@ class ImportQueue implements ConcurrencyLockableInterface
     public function hasResolvedDuplicities(): bool
     {
         foreach ($this->getHouseholdDuplicities() as $duplicity) {
-            if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) return false;
+            if ($duplicity->getState() == ImportDuplicityState::DUPLICITY_CANDIDATE) {
+                return false;
+            }
         }
+
         return true;
     }
-
 }

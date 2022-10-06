@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CommunityController
+ *
  * @package Controller
  */
 class CommunityController extends AbstractController
@@ -86,7 +87,7 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/communities/{id}")
      *
-     * @param Community                $community
+     * @param Community $community
      * @param CommunityUpdateInputType $inputType
      *
      * @return JsonResponse

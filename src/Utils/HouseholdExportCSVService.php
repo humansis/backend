@@ -78,7 +78,6 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
-
     private const LINE_2_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => '(!) Do not remove columns A-B',
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -136,7 +135,6 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
-
     private const LINE_3_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => '',
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -194,7 +192,6 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
-
     private const LINE_4_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => ImportTemplate::CURRENT_TEMPLATE_VERSION,
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -252,7 +249,6 @@ class HouseholdExportCSVService
         'M 18 - 59' => 'Number',
         'M 60+' => 'Number',
     ];
-
     public const MAPPING_PROPERTIES = [
         ImportTemplate::ROW_NAME_STATUS => 'humansisData',
         ImportTemplate::ROW_NAME_MESSAGES => 'humansisComment',
@@ -310,7 +306,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => 'm18',
         'M 60+' => 'm60',
     ];
-    
+
     public function __construct(EntityManagerInterface $entityManager, ExportService $exportService)
     {
         $this->em = $entityManager;
@@ -324,7 +320,7 @@ class HouseholdExportCSVService
      */
     private function getCountrySpecifics($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id'=>'asc']);
+        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
     }
 
     /**
@@ -366,6 +362,6 @@ class HouseholdExportCSVService
      */
     public function exportToCsv(string $type, string $countryISO3)
     {
-        return $this->exportService->export($this->getHeaders($countryISO3), 'pattern_household_'.$countryISO3, $type, true);
+        return $this->exportService->export($this->getHeaders($countryISO3), 'pattern_household_' . $countryISO3, $type, true);
     }
 }

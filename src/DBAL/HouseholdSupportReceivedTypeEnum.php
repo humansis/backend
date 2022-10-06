@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\HouseholdSupportReceivedType;
 
-class HouseholdSupportReceivedTypeEnum extends \DBAL\AbstractEnum
+class HouseholdSupportReceivedTypeEnum extends AbstractEnum
 {
     use EnumTrait;
 

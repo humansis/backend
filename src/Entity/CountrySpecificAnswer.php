@@ -84,11 +84,11 @@ class CountrySpecificAnswer
     /**
      * Set countrySpecific.
      *
-     * @param \Entity\CountrySpecific|null $countrySpecific
+     * @param CountrySpecific|null $countrySpecific
      *
      * @return CountrySpecificAnswer
      */
-    public function setCountrySpecific(\Entity\CountrySpecific $countrySpecific = null)
+    public function setCountrySpecific(CountrySpecific $countrySpecific = null)
     {
         $this->countrySpecific = $countrySpecific;
 
@@ -98,7 +98,7 @@ class CountrySpecificAnswer
     /**
      * Get countrySpecific.
      *
-     * @return \Entity\CountrySpecific|null
+     * @return CountrySpecific|null
      */
     public function getCountrySpecific()
     {
@@ -108,11 +108,11 @@ class CountrySpecificAnswer
     /**
      * Set household.
      *
-     * @param \Entity\Household|null $household
+     * @param Household|null $household
      *
      * @return CountrySpecificAnswer
      */
-    public function setHousehold(\Entity\Household $household = null)
+    public function setHousehold(Household $household = null)
     {
         $this->household = $household;
 
@@ -122,7 +122,7 @@ class CountrySpecificAnswer
     /**
      * Get household.
      *
-     * @return \Entity\Household|null
+     * @return Household|null
      */
     public function getHousehold()
     {

@@ -2,14 +2,15 @@
 
 namespace Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\AssistanceBeneficiary;
 use Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-
 /**
  * GeneralReliefItem
+ *
  * @deprecated don't use, it is replaced by ReliefPackage
  * @see ReliefPackage
  *
@@ -30,7 +31,7 @@ class GeneralReliefItem
     private $id;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
      * @SymfonyGroups({"ValidatedAssistance"})
@@ -45,7 +46,7 @@ class GeneralReliefItem
      * @SymfonyGroups({"ValidatedAssistance"})
      */
     private $notes;
-    
+
     /**
      * @var AssistanceBeneficiary
      *
@@ -53,7 +54,6 @@ class GeneralReliefItem
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
     private $assistanceBeneficiary;
-
 
     /**
      * Get id.
@@ -68,7 +68,7 @@ class GeneralReliefItem
     /**
      * Set distributedAt.
      *
-     * @param \DateTime|null $distributedAt
+     * @param DateTime|null $distributedAt
      *
      * @return GeneralReliefItem
      */
@@ -82,7 +82,7 @@ class GeneralReliefItem
     /**
      * Get distributedAt.
      *
-     * @return \DateTime|null
+     * @return DateTime|null
      */
     public function getDistributedAt()
     {
@@ -123,10 +123,10 @@ class GeneralReliefItem
     public function setId($id)
     {
         $this->id = $id;
- 
+
         return $this;
     }
- 
+
     /**
      * Get the value of Distribution Beneficiary
      *
@@ -136,7 +136,7 @@ class GeneralReliefItem
     {
         return $this->assistanceBeneficiary;
     }
- 
+
     /**
      * Set the value of Distribution Beneficiary
      *
@@ -147,7 +147,7 @@ class GeneralReliefItem
     public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
         $this->assistanceBeneficiary = $assistanceBeneficiary;
- 
+
         return $this;
     }
 }

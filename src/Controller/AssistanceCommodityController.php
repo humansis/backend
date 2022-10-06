@@ -22,7 +22,7 @@ class AssistanceCommodityController extends AbstractController
      * @Rest\Get("/web-app/v1/assistances/commodities")
      *
      * @param CommodityFilterInputType $filter
-     * @param CommodityRepository      $commodityRepository
+     * @param CommodityRepository $commodityRepository
      *
      * @return JsonResponse
      */
@@ -53,7 +53,7 @@ class AssistanceCommodityController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/commodities")
      *
      * @param AssistanceCreateInputType $inputType
-     * @param AssistanceFactory         $factory
+     * @param AssistanceFactory $factory
      *
      * @return JsonResponse
      * @throws CsvParserException

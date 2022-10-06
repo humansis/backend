@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard\Exception;
 
+use DateTimeInterface;
 use Throwable;
 use Entity\Smartcard;
 
@@ -11,7 +14,7 @@ class SmartcardDoubledChangeException extends SmartcardException
     {
         parent::__construct($smartcard, $message, $code, $previous);
         if (empty($message)) {
-            $this->message = "Smartcard #{$smartcard->getId()} was already changed at {$smartcard->getChangedAt()->format(\DateTimeInterface::ATOM)}";
+            $this->message = "Smartcard #{$smartcard->getId()} was already changed at {$smartcard->getChangedAt()->format(DateTimeInterface::ATOM)}";
         }
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use DateTime;
+use DateTimeInterface;
 use Request\InputTypeInterface;
 use Validator\Constraints\Country;
 use Validator\Constraints\DateGreaterThan;
@@ -191,11 +193,11 @@ class ProjectUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
     public function getStartDate()
     {
-        return new \DateTime($this->startDate);
+        return new DateTime($this->startDate);
     }
 
     /**
@@ -207,11 +209,11 @@ class ProjectUpdateInputType implements InputTypeInterface
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
     public function getEndDate()
     {
-        return new \DateTime($this->endDate);
+        return new DateTime($this->endDate);
     }
 
     /**

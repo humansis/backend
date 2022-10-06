@@ -2,6 +2,8 @@
 
 namespace Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
@@ -14,16 +16,15 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Organization
 {
     /**
-    * @var int
-    *
-    * @ORM\Column(name="id", type="integer")
-    * @ORM\Id
-    * @ORM\GeneratedValue(strategy="AUTO")
-    *
-    * @SymfonyGroups({"FullOrganization"})
-    */
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @SymfonyGroups({"FullOrganization"})
+     */
     private $id;
-
 
     /**
      * @var string
@@ -81,7 +82,6 @@ class Organization
      */
     private $organizationServices;
 
-
     /**
      * Set id.
      *
@@ -94,7 +94,6 @@ class Organization
 
         return $this;
     }
-
 
     /**
      * Get id.
@@ -131,12 +130,12 @@ class Organization
     }
 
     /**
-    * Set logo.
-    *
-    * @param string $logo
-    *
-    * @return Organization
-    */
+     * Set logo.
+     *
+     * @param string $logo
+     *
+     * @return Organization
+     */
     public function setLogo($logo)
     {
         $this->logo = $logo;
@@ -227,12 +226,12 @@ class Organization
     }
 
     /**
-    * Set footerContent.
-    *
-    * @param string $footerContent
-    *
-    * @return Organization
-    */
+     * Set footerContent.
+     *
+     * @param string $footerContent
+     *
+     * @return Organization
+     */
     public function setFooterContent($footerContent)
     {
         $this->footerContent = $footerContent;
@@ -253,14 +252,14 @@ class Organization
     /**
      * Add OrganizationServices.
      *
-     * @param \Entity\OrganizationServices $organizationServices
+     * @param OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
-    public function addOrganizationServices(\Entity\OrganizationServices $organizationServices)
+    public function addOrganizationServices(OrganizationServices $organizationServices)
     {
         if (null === $this->organizationServices) {
-            $this->organizationServices = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->organizationServices = new ArrayCollection();
         }
         $this->organizationServices[] = $organizationServices;
 
@@ -270,11 +269,11 @@ class Organization
     /**
      * Remove OrganizationServices.
      *
-     * @param \Entity\OrganizationServices $organizationServices
+     * @param OrganizationServices $organizationServices
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeOrganizationServices(\Entity\OrganizationServices $organizationServices)
+    public function removeOrganizationServices(OrganizationServices $organizationServices)
     {
         return $this->organizationServices->removeElement($organizationServices);
     }
@@ -282,7 +281,7 @@ class Organization
     /**
      * Get OrganizationServices.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getOrganizationServices()
     {

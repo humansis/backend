@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
@@ -46,11 +48,11 @@ class DuplicityResolver
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        LoggerInterface        $logger,
-        IdentityChecker        $identityChecker,
-        SimilarityChecker      $similarityChecker,
-        WorkflowInterface      $importQueueStateMachine,
-        WorkflowInterface      $importStateMachine
+        LoggerInterface $logger,
+        IdentityChecker $identityChecker,
+        SimilarityChecker $similarityChecker,
+        WorkflowInterface $importQueueStateMachine,
+        WorkflowInterface $importStateMachine
     ) {
         $this->em = $entityManager;
         $this->logger = $logger;
@@ -62,21 +64,23 @@ class DuplicityResolver
 
     /**
      * @param ImportQueue $importQueue
-     * @param int|null    $acceptedDuplicityId
-     * @param string      $status
-     * @param User        $user
+     * @param int|null $acceptedDuplicityId
+     * @param string $status
+     * @param User $user
      */
     public function resolve(ImportQueue $importQueue, ?int $acceptedDuplicityId, string $status, User $user)
     {
         $import = $importQueue->getImport();
-        if (!in_array($import->getState(), [
-            ImportState::IDENTITY_CHECKING,
-            ImportState::IDENTITY_CHECK_CORRECT,
-            ImportState::IDENTITY_CHECK_FAILED,
-            ImportState::SIMILARITY_CHECKING,
-            ImportState::SIMILARITY_CHECK_CORRECT,
-            ImportState::SIMILARITY_CHECK_FAILED,
-        ])) {
+        if (
+            !in_array($import->getState(), [
+                ImportState::IDENTITY_CHECKING,
+                ImportState::IDENTITY_CHECK_CORRECT,
+                ImportState::IDENTITY_CHECK_FAILED,
+                ImportState::SIMILARITY_CHECKING,
+                ImportState::SIMILARITY_CHECK_CORRECT,
+                ImportState::SIMILARITY_CHECK_FAILED,
+            ])
+        ) {
             throw new BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
         }
 
@@ -90,21 +94,19 @@ class DuplicityResolver
         $uniques = [];
         foreach ($duplicities as $duplicity) {
             if ($duplicity->getTheirs()->getId() === $acceptedDuplicityId) {
-
                 switch ($status) {
                     case ImportQueueState::TO_UPDATE:
                         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
-                        $updates[] = '#'.$duplicity->getId();
+                        $updates[] = '#' . $duplicity->getId();
                         break;
                     case ImportQueueState::TO_LINK:
                         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_THEIRS);
-                        $links[] = '#'.$duplicity->getId();
+                        $links[] = '#' . $duplicity->getId();
                         break;
                 }
-
             } else {
                 $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
-                $uniques[] = '#'.$duplicity->getId();
+                $uniques[] = '#' . $duplicity->getId();
             }
 
             $duplicity->setDecideBy($user);
@@ -112,20 +114,26 @@ class DuplicityResolver
         }
         $this->importQueueStateMachine->apply($importQueue, $status);
         if (!empty($updates)) {
-            $this->logQueueInfo($importQueue,
-                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as more current duplicity");
+            $this->logQueueInfo(
+                $importQueue,
+                "Duplicity suspect(s) [" . implode(', ', $updates) . "] was resolved as more current duplicity"
+            );
         } else {
             $this->logQueueDebug($importQueue, "[Queue #{$importQueue->getId()}] Nothing was resolved as more current duplicity");
         }
         if (!empty($links)) {
-            $this->logQueueInfo($importQueue,
-                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as older duplicity");
+            $this->logQueueInfo(
+                $importQueue,
+                "Duplicity suspect(s) [" . implode(', ', $updates) . "] was resolved as older duplicity"
+            );
         } else {
             $this->logQueueDebug($importQueue, "Nothing was resolved as older duplicity");
         }
         if (!empty($uniques)) {
-            $this->logQueueInfo($importQueue,
-                "Duplicity suspect(s) [".implode(', ', $updates)."] was resolved as mistake and will be inserted");
+            $this->logQueueInfo(
+                $importQueue,
+                "Duplicity suspect(s) [" . implode(', ', $updates) . "] was resolved as mistake and will be inserted"
+            );
         } else {
             $this->logQueueDebug($importQueue, "Nothing was resolved as mistake");
         }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
@@ -10,10 +11,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-
 class CountrySpecificDataTypeValidator extends ConstraintValidator
 {
-
     private $propertyAccessor;
 
     public function __construct(PropertyAccessorInterface $propertyAccessor = null)
@@ -33,7 +32,6 @@ class CountrySpecificDataTypeValidator extends ConstraintValidator
 
         $path = 'countrySpecific';
         $valuePath = 'value';
-
 
         if (!key_exists($path, $object)) {
             throw new ConstraintDefinitionException(sprintf('Invalid property path "%s" provided to "%s" constraint: ', $path, get_debug_type($constraint)), 0);
@@ -59,6 +57,7 @@ class CountrySpecificDataTypeValidator extends ConstraintValidator
         if ($countrySpecific->getType() === 'number') {
             return is_numeric($value);
         }
+
         return true;
     }
 

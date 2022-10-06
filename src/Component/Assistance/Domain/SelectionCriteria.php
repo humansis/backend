@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance\Domain;
 
@@ -10,12 +12,13 @@ class SelectionCriteria
 {
     /** @var SelectionCriteriaEntity */
     private $criteriaRoot;
+
     /** @var CriterionConfiguration */
     private $configuration;
 
     /**
      * @param SelectionCriteriaEntity $criteriaRoot
-     * @param CriterionConfiguration  $configuration
+     * @param CriterionConfiguration $configuration
      */
     public function __construct(SelectionCriteriaEntity $criteriaRoot, CriterionConfiguration $configuration)
     {
@@ -39,6 +42,7 @@ class SelectionCriteria
         if ($this->criteriaRoot->getTableString() === 'Personnal') {
             return $this->configuration->getType();
         }
+
         return 'table_field';
     }
 

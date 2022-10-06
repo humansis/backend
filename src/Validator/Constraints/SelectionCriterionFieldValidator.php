@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use UnexpectedValueException;
 
 class SelectionCriterionFieldValidator extends ConstraintValidator
 {
@@ -33,7 +35,7 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
         }
 
         if (!$value instanceof SelectionCriterionInputType) {
-            throw new \UnexpectedValueException(self::class.' supports only '.SelectionCriterionInputType::class);
+            throw new UnexpectedValueException(self::class . ' supports only ' . SelectionCriterionInputType::class);
         }
 
         /** @var AssistanceCreateInputType $root */
@@ -41,7 +43,7 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
         $countryIso3 = $root->getIso3();
 
         if (!is_string($value->getTarget()) || !in_array($value->getTarget(), SelectionCriteriaTarget::values())) {
-            $this->context->addViolation("Target should be one of ".implode(',', SelectionCriteriaTarget::values()));
+            $this->context->addViolation("Target should be one of " . implode(',', SelectionCriteriaTarget::values()));
 
             return;
         }
@@ -91,5 +93,4 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
             ->atPath('value')
             ->addViolation();
     }
-
 }

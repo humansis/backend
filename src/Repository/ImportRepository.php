@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -23,15 +24,15 @@ class ImportRepository extends EntityRepository
         if (null !== $countryIso3) {
             $qb
                 ->andWhere('i.countryIso3 = :country')
-                ->setParameter('country', $countryIso3)
-            ;
+                ->setParameter('country', $countryIso3);
         }
 
         if ($filter) {
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('i.project', 'p')
                     ->leftJoin('i.createdBy', 'u');
-                $qb->andWhere('(
+                $qb->andWhere(
+                    '(
                     i.id LIKE :fulltextId OR
                     i.title LIKE :fulltext OR
                     i.notes LIKE :fulltext OR
@@ -39,14 +40,15 @@ class ImportRepository extends EntityRepository
                     i.state LIKE :fulltext OR
                     u.email LIKE :fulltext OR
                     i.createdAt LIKE :fulltext
-                )');
+                )'
+                );
                 $qb->setParameter('fulltextId', $filter->getFulltext());
-                $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                $qb->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
 
             if ($filter->hasStatus()) {
                 $qb->andWhere('i.state IN (:states)')
-                ->setParameter('states', $filter->getStatus());
+                    ->setParameter('states', $filter->getStatus());
             }
 
             if ($filter->hasProjects()) {
@@ -84,7 +86,7 @@ class ImportRepository extends EntityRepository
                         $qb->orderBy('i.createdAt', $direction);
                         break;
                     default:
-                        throw new InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }
@@ -102,8 +104,8 @@ class ImportRepository extends EntityRepository
         $qb = $this->createQueryBuilder('i')
             ->leftJoin('i.projects', 'p')
             ->andWhere('p = :project')
-            ->setParameter('project', $project)
-        ;
+            ->setParameter('project', $project);
+
         return $qb->getQuery()->getResult();
     }
 
@@ -116,8 +118,7 @@ class ImportRepository extends EntityRepository
             ->andWhere('i.countryIso3 = :country')
             ->setParameter('importingState', ImportState::IMPORTING)
             ->setParameter('importCandidate', $importCandidate)
-            ->setParameter('country', $countryIso3)
-            ;
+            ->setParameter('country', $countryIso3);
 
         return $qb->getQuery()->getSingleScalarResult() > 0 ? false : true;
     }
@@ -134,8 +135,7 @@ class ImportRepository extends EntityRepository
             ->andWhere('i.countryIso3 = :country')
             ->setParameter('country', $import->getCountryIso3())
             ->andWhere('i != :pivotImport')
-            ->setParameter('pivotImport', $import)
-        ;
+            ->setParameter('pivotImport', $import);
 
         return $qb->getQuery()->getResult();
     }
@@ -145,7 +145,7 @@ class ImportRepository extends EntityRepository
         return $this->createQueryBuilder('i')
             ->join('i.importInvalidFiles', 'if')
             ->where('i.state IN (:states)')
-            ->setParameter('states',  [
+            ->setParameter('states', [
                 ImportState::FINISHED,
                 ImportState::CANCELED,
             ])

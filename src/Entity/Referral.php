@@ -13,9 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class Referral
 {
     /**
-    * Mapping of possible referral types
-    */
-    const REFERRALTYPES = [
+     * Mapping of possible referral types
+     */
+    public const REFERRALTYPES = [
         '1' => 'Health',
         '2' => 'Protection',
         '3' => 'Shelter',
@@ -55,7 +55,6 @@ class Referral
      * @ORM\Column(name="comment", type="string", length=255)
      */
     private $comment;
-
 
     /**
      * Get id.

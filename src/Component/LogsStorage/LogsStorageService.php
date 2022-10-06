@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\LogsStorage;
 
@@ -40,7 +42,7 @@ class LogsStorageService
         string $filedLogPathTemplate,
         int $logsLifetime,
         LogsStorageConfigFactory $logsStorageFactory,
-        AwsStorageFactory        $awsStorageFactory
+        AwsStorageFactory $awsStorageFactory
     ) {
         $this->vendorLogPathTemple = $vendorLogPathTemplate;
         $this->fieldLogPathTemplate = $filedLogPathTemplate;
@@ -58,14 +60,14 @@ class LogsStorageService
      */
     private function upload(string $fileName, $file): string
     {
-        $path = 'test/'.$fileName;
+        $path = 'test/' . $fileName;
 
         return $this->aws->upload($path, $file);
     }
 
     /**
      * @param Vendor $vendor
-     * @param File   $file
+     * @param File $file
      *
      * @throws FilesystemException
      */

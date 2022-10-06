@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
@@ -29,15 +31,15 @@ class SmartcardPurchaseController extends AbstractWebAppController
      * @Rest\Get("/vendor-app/v2/smartcard-purchases")
      *
      * @param SmartcardPurchaseFilterInputType $filter
-     * @param Pagination                       $pagination
-     * @param SmartcardPurchaseRepository      $smartcardPurchaseRepository
+     * @param Pagination $pagination
+     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      *
      * @return JsonResponse
      */
     public function purchases(
         SmartcardPurchaseFilterInputType $filter,
-        Pagination                       $pagination,
-        SmartcardPurchaseRepository      $smartcardPurchaseRepository
+        Pagination $pagination,
+        SmartcardPurchaseRepository $smartcardPurchaseRepository
     ): JsonResponse {
         $purchases = $smartcardPurchaseRepository->findByParams($filter, $pagination);
 
@@ -48,15 +50,15 @@ class SmartcardPurchaseController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
      * @ParamConverter("redemptionBatch", class="Entity\Invoice")
      *
-     * @param Invoice                     $redemptionBatch
-     * @param Pagination                  $pagination
+     * @param Invoice $redemptionBatch
+     * @param Pagination $pagination
      * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      *
      * @return JsonResponse
      */
     public function purchasesByRedemptionBatch(
-        Invoice                     $redemptionBatch,
-        Pagination                  $pagination,
+        Invoice $redemptionBatch,
+        Pagination $pagination,
         SmartcardPurchaseRepository $smartcardPurchaseRepository
     ): JsonResponse {
         $purchases = $smartcardPurchaseRepository->findByBatch($redemptionBatch, $pagination);
@@ -69,9 +71,9 @@ class SmartcardPurchaseController extends AbstractWebAppController
      * @ParamConverter("vendor", options={"mapping": {"vendorId": "id"}})
      * @ParamConverter("project", options={"mapping": {"projectId" : "id"}})
      *
-     * @param Vendor  $vendor
+     * @param Vendor $vendor
      * @param Project $project
-     * @param string  $currency
+     * @param string $currency
      *
      * @return JsonResponse
      */

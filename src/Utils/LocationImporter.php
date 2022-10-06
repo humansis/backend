@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Utils;
 
+use Doctrine\DBAL\Exception;
 use Entity\Location;
 use Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
+use SimpleXMLElement;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use XMLReader;
 
 class LocationImporter
 {
@@ -38,8 +41,8 @@ class LocationImporter
     /**
      * LocationService constructor.
      *
-     * @param ObjectManager      $entityManager
-     * @param string             $file
+     * @param ObjectManager $entityManager
+     * @param string $file
      * @param LocationRepository $locationRepository
      */
     public function __construct(ObjectManager $entityManager, string $file, LocationRepository $locationRepository)
@@ -68,7 +71,8 @@ class LocationImporter
 
     public function getCount(): int
     {
-        $xml = new \SimpleXMLElement(file_get_contents($this->file));
+        $xml = new SimpleXMLElement(file_get_contents($this->file));
+
         return count($xml->xpath('//*'));
     }
 
@@ -82,27 +86,27 @@ class LocationImporter
 
     /**
      * @return iterable
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function importLocations(): iterable
     {
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
 
-        $xml = new \XMLReader();
+        $xml = new XMLReader();
         if (false === $xml->open($this->file)) {
-            throw new FileNotFoundException('File '.$this->file.' does not exists.');
+            throw new FileNotFoundException('File ' . $this->file . ' does not exists.');
         }
 
         $i = 0;
         $adm1 = $adm2 = $adm3 = $adm4 = null;
         while ($xml->read()) {
-            if (\XMLReader::END_ELEMENT === $xml->nodeType && 'adm1' === $xml->name) {
+            if (XMLReader::END_ELEMENT === $xml->nodeType && 'adm1' === $xml->name) {
                 $this->em->flush();
                 $this->em->clear();
                 continue;
             }
 
-            if (\XMLReader::ELEMENT !== $xml->nodeType) {
+            if (XMLReader::ELEMENT !== $xml->nodeType) {
                 continue;
             }
 
@@ -196,5 +200,4 @@ class LocationImporter
     {
         return $this->omittedLocations;
     }
-
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity;
 
@@ -105,15 +107,15 @@ class Invoice implements JsonSerializable
     /**
      * SmartcardPurchaseBatch constructor.
      *
-     * @param Vendor       $vendor
+     * @param Vendor $vendor
      * @param Project|null $project
-     * @param DateTime     $redeemedAt
-     * @param User         $redeemedBy
-     * @param mixed        $value
-     * @param string       $currency
-     * @param string|null  $contractNo
-     * @param string|null  $vendorNo
-     * @param array        $purchases
+     * @param DateTime $redeemedAt
+     * @param User $redeemedBy
+     * @param mixed $value
+     * @param string $currency
+     * @param string|null $contractNo
+     * @param string|null $vendorNo
+     * @param array $purchases
      */
     public function __construct(
         Vendor $vendor,
@@ -125,8 +127,7 @@ class Invoice implements JsonSerializable
         ?string $contractNo,
         ?string $vendorNo,
         array $purchases
-    )
-    {
+    ) {
         $this->vendor = $vendor;
         $this->project = $project;
         $this->invoicedAt = $redeemedAt;
@@ -301,7 +302,6 @@ class Invoice implements JsonSerializable
     {
         return $this->projectInvoiceAddressEnglish;
     }
-
 
     /**
      * @param string|null $projectInvoiceAddressEnglish

@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\SynchronizationBatchValidationType;
 
-class SynchronizationBatchValidationTypeEnum extends \DBAL\AbstractEnum
+class SynchronizationBatchValidationTypeEnum extends AbstractEnum
 {
     public function getName(): string
     {

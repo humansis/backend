@@ -15,7 +15,6 @@ use InputType\CommunityCreateInputType;
 use InputType\CommunityUpdateInputType;
 use Entity\Project;
 
-
 /**
  * Class CommunityService.
  */
@@ -31,7 +30,7 @@ class CommunityService
      * CommunityService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param LocationMapper         $locationMapper
+     * @param LocationMapper $locationMapper
      */
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -79,12 +78,14 @@ class CommunityService
             $location = $this->em->getRepository(Location::class)
                 ->find($addressType->getLocationId());
 
-            $community->setAddress(Address::create(
-                $addressType->getStreet(),
-                $addressType->getNumber(),
-                $addressType->getPostcode(),
-                $location
-            ));
+            $community->setAddress(
+                Address::create(
+                    $addressType->getStreet(),
+                    $addressType->getNumber(),
+                    $addressType->getPostcode(),
+                    $location
+                )
+            );
         }
 
         if (!is_null($inputType->getNationalIdCard())) {

@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CommunityUpdateInputType
+ *
  * @package InputType
  */
 class CommunityUpdateInputType implements InputTypeInterface
@@ -43,7 +44,6 @@ class CommunityUpdateInputType implements InputTypeInterface
      */
     private $latitude;
 
-
     /**
      * @var string $contactGivenName
      *
@@ -59,7 +59,6 @@ class CommunityUpdateInputType implements InputTypeInterface
      * @Assert\Type("string")
      */
     private $contactFamilyName;
-
 
     /**
      * @var AddressInputType $address

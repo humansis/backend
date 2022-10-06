@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\OfflineApp;
 
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
@@ -47,7 +49,7 @@ class AssistanceMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Assistance::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int

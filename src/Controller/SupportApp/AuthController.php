@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
  */
 class AuthController extends AbstractController
 {
-
     /**
      * @var JWTTokenManagerInterface
      */
@@ -28,7 +27,7 @@ class AuthController extends AbstractController
     /**
      * @Rest\Post
      *
-     * @param Profiler|null            $profiler
+     * @param Profiler|null $profiler
      *
      * @return JsonResponse
      */

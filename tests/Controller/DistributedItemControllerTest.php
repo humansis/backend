@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Entity\DistributedItem;
 use Tests\BMSServiceTestCase;
@@ -33,17 +34,18 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (\Doctrine\ORM\NoResultException $exception) {
+        } catch (NoResultException $exception) {
             $this->markTestSkipped("There is no household in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/distributed-items');
+        $this->request('GET', '/api/basic/web-app/v1/households/' . $householdId . '/distributed-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -65,7 +67,9 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                     "fieldOfficerId": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testFindByBeneficiary()
@@ -80,17 +84,18 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (\Doctrine\ORM\NoResultException $exception) {
+        } catch (NoResultException $exception) {
             $this->markTestSkipped("There is no beneficiary in distibuted items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/distributed-items');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/' . $beneficiaryId . '/distributed-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -111,21 +116,29 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                     "fieldOfficerId": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/web-app/v1/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary'.
-        '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/distributed-items?filter[fulltext]=a&filter[projects][]=1&filter[dateFrom]=2020-01-01&filter[beneficiaryTypes][]=Beneficiary' .
+            '&sort[]=dateDistribution.asc&sort[]=beneficiaryId.asc&sort[]=amount.asc'
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\HouseholdShelterStatus;
 
-class HouseholdShelterStatusEnum extends \DBAL\AbstractEnum
+class HouseholdShelterStatusEnum extends AbstractEnum
 {
     use EnumTrait;
 

@@ -36,7 +36,7 @@ class ProjectOfflineMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of '.Project::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Project::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -81,16 +81,20 @@ class ProjectOfflineMapper implements MapperInterface
 
     public function getSectors(): array
     {
-        return array_values(array_map(function (ProjectSector $item) {
-            return $item->getSector();
-        }, $this->object->getSectors()->toArray()));
+        return array_values(
+            array_map(function (ProjectSector $item) {
+                return $item->getSector();
+            }, $this->object->getSectors()->toArray())
+        );
     }
 
     public function getDonorIds(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getDonors()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getDonors()->toArray())
+        );
     }
 
     public function getNumberOfHouseholds(): int

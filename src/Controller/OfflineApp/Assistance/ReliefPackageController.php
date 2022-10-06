@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp\Assistance;
@@ -13,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReliefPackageController extends AbstractOfflineAppController
 {
-
     /**
      * @var AssistanceDistributionService
      */
@@ -46,4 +46,3 @@ class ReliefPackageController extends AbstractOfflineAppController
         return Response::create();
     }
 }
-

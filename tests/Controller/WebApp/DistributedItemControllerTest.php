@@ -2,6 +2,7 @@
 
 namespace Tests\Controller\WebApp;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Entity\Assistance;
 use Exception;
 use Entity\DistributedItem;
@@ -42,14 +43,15 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         $size = min($itemCount, 5);
 
         $this->request('GET', "/api/basic/web-app/v1/distributed-items?size=$size&page=1", [], [], [
-            'country' => 'SYR'
+            'country' => 'SYR',
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -70,7 +72,9 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                 "fieldOfficerId": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function modalityTypeGenerator(): iterable
@@ -92,7 +96,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
      *
      * @param string $modalityType
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function testCompletion(string $modalityType): void
     {
@@ -100,10 +104,10 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         $assistance = $this->em->createQueryBuilder()
             ->select('a')
             ->from(Assistance::class, 'a')
-                ->andWhere('a.validatedBy IS NOT NULL')
+            ->andWhere('a.validatedBy IS NOT NULL')
             ->innerJoin('a.commodities', 'c')
             ->andWhere('c.modalityType = :modalityType')
-                ->setParameter('modalityType', $modalityType)
+            ->setParameter('modalityType', $modalityType)
             ->orderBy('a.id', 'asc')
             ->getQuery()
             ->setMaxResults(1)
@@ -111,13 +115,13 @@ class DistributedItemControllerTest extends BMSServiceTestCase
 
         $this->assertNotNull($assistance, "There must be some testing assistances with modality $modalityType for /web-app/v1/distributed-items");
 
-        $this->request('GET', "/api/basic/web-app/v1/distributed-items?filter[assistances][]=".$assistance->getId(), [], [], [
+        $this->request('GET', "/api/basic/web-app/v1/distributed-items?filter[assistances][]=" . $assistance->getId(), [], [], [
             'HTTP_COUNTRY' => $assistance->getProject()->getCountryIso3(),
         ]);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed'.$this->client->getResponse()->getContent()
+            'Request failed' . $this->client->getResponse()->getContent()
         );
 
         $items = json_decode($this->client->getResponse()->getContent());
@@ -138,9 +142,12 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             if ($shouldBeDistributed > 0) {
                 $this->assertEquals($shouldBeDistributed, $beneficiaryAmounts[$beneficiaryId]);
             } else {
-                $this->assertArrayNotHasKey($beneficiaryId, $beneficiaryAmounts, "Target {$assistanceBeneficiary->getId()} shouldn't be distributed. Distributed amount=".($beneficiaryAmounts[$beneficiaryId] ?? 'noAmount'));
+                $this->assertArrayNotHasKey(
+                    $beneficiaryId,
+                    $beneficiaryAmounts,
+                    "Target {$assistanceBeneficiary->getId()} shouldn't be distributed. Distributed amount=" . ($beneficiaryAmounts[$beneficiaryId] ?? 'noAmount')
+                );
             }
-
         }
     }
 }

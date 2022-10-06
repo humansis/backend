@@ -23,7 +23,7 @@ class BeneficiaryCodelistController extends AbstractController
 {
     /** @var CodeListService */
     private $codeListService;
-    
+
     public function __construct(CodeListService $codeListService)
     {
         $this->codeListService = $codeListService;

@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
 use Entity\Privilege;
 use Entity\Role;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class RoleMapper implements MapperInterface
@@ -31,7 +33,7 @@ class RoleMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Role::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Role::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getCode(): string

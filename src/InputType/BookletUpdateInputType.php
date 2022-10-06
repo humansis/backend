@@ -52,8 +52,7 @@ class BookletUpdateInputType implements InputTypeInterface
         if (count($array) > $context->getObject()->getQuantityOfVouchers()) {
             $context->buildViolation('Too many individual values')
                 ->atPath('individualValues')
-                ->addViolation()
-            ;
+                ->addViolation();
         }
     }
 

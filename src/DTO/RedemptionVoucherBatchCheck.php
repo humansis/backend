@@ -3,19 +3,25 @@
 namespace DTO;
 
 use Entity\Voucher;
+use JsonSerializable;
 
-class RedemptionVoucherBatchCheck implements \JsonSerializable
+class RedemptionVoucherBatchCheck implements JsonSerializable
 {
     /** @var Voucher[] */
     private $validVouchers = [];
+
     /** @var Voucher[] */
     private $alreadyRedeemedVouchers = [];
+
     /** @var Voucher[] */
     private $unassignedVouchers = [];
+
     /** @var Voucher[] */
     private $unusedVouchers = [];
+
     /** @var Voucher[] */
     private $vendorInconsistentVouchers = [];
+
     /** @var string[] */
     private $notExistedIds = [];
 
@@ -79,8 +85,7 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
             || !empty($this->unusedVouchers)
             || !empty($this->vendorInconsistentVouchers)
             || !empty($this->unassignedVouchers)
-            || !empty($this->alreadyRedeemedVouchers)
-            ;
+            || !empty($this->alreadyRedeemedVouchers);
     }
 
     public function jsonSerialize()
@@ -97,8 +102,10 @@ class RedemptionVoucherBatchCheck implements \JsonSerializable
 
     private function toIdArray(array $vouchers): array
     {
-        return array_values(array_map(function (Voucher $voucher) {
-            return $voucher->getId();
-        }, $vouchers));
+        return array_values(
+            array_map(function (Voucher $voucher) {
+                return $voucher->getId();
+            }, $vouchers)
+        );
     }
 }

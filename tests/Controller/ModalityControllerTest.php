@@ -31,7 +31,7 @@ class ModalityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment(
             '{"totalCount": "*", "data": [{"code": "*", "value": "*"}]}',
@@ -48,11 +48,11 @@ class ModalityControllerTest extends BMSServiceTestCase
         $em = self::$kernel->getContainer()->get('doctrine')->getManager();
         $modality = Modality::values()[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/modalities/'.$modality.'/types');
+        $this->request('GET', '/api/basic/web-app/v1/modalities/' . $modality . '/types');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertJsonFragment(
             '{"totalCount": "*", "data": [{"code": "*", "value": "*"}]}',

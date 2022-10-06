@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Import\Duplicity;
 
@@ -14,6 +16,7 @@ use Enum\HouseholdAssets;
 use Enum\PersonGender;
 use Enum\VulnerabilityCriteria;
 use InputType\Helper\EnumsBuilder;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class BeneficiaryCompareMapper implements MapperInterface
@@ -42,9 +45,8 @@ class BeneficiaryCompareMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.BeneficiaryCompare::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . BeneficiaryCompare::class . ', ' . get_class($object) . ' given.');
     }
-
 
     public function getHouseholdId(): ?array
     {
@@ -59,18 +61,18 @@ class BeneficiaryCompareMapper implements MapperInterface
         $person = $this->object->getBeneficiary()->getPerson();
         $localDatabaseName = $person->getLocalGivenName();
         if (!empty($person->getLocalParentsName())) {
-            $localDatabaseName .= ' '.$person->getLocalParentsName();
+            $localDatabaseName .= ' ' . $person->getLocalParentsName();
         }
         if (!empty($person->getLocalFamilyName())) {
-            $localDatabaseName .= ' '.$person->getLocalFamilyName();
+            $localDatabaseName .= ' ' . $person->getLocalFamilyName();
         }
 
         $localImportName = $this->object->getImportLine()->localGivenName;
         if (!empty($this->object->getImportLine()->localParentsName)) {
-            $localImportName .= ' '.$this->object->getImportLine()->localParentsName;
+            $localImportName .= ' ' . $this->object->getImportLine()->localParentsName;
         }
         if (!empty($this->object->getImportLine()->localFamilyName)) {
-            $localImportName .= ' '.$this->object->getImportLine()->localFamilyName;
+            $localImportName .= ' ' . $this->object->getImportLine()->localFamilyName;
         }
 
         return $this->compareScalarValue($localDatabaseName, $localImportName);
@@ -81,18 +83,18 @@ class BeneficiaryCompareMapper implements MapperInterface
         $person = $this->object->getBeneficiary()->getPerson();
         $enDatabaseName = $person->getEnGivenName();
         if (!empty($person->getEnParentsName())) {
-            $enDatabaseName .= ' '.$person->getEnParentsName();
+            $enDatabaseName .= ' ' . $person->getEnParentsName();
         }
         if (!empty($person->getEnFamilyName())) {
-            $enDatabaseName .= ' '.$person->getEnFamilyName();
+            $enDatabaseName .= ' ' . $person->getEnFamilyName();
         }
 
         $englishImportName = $this->object->getImportLine()->englishGivenName;
         if (!empty($this->object->getImportLine()->englishParentsName)) {
-            $englishImportName .= ' '.$this->object->getImportLine()->englishParentsName;
+            $englishImportName .= ' ' . $this->object->getImportLine()->englishParentsName;
         }
         if (!empty($this->object->getImportLine()->englishFamilyName)) {
-            $englishImportName .= ' '.$this->object->getImportLine()->englishFamilyName;
+            $englishImportName .= ' ' . $this->object->getImportLine()->englishFamilyName;
         }
 
         return $this->compareScalarValue($enDatabaseName, $englishImportName);
@@ -118,14 +120,15 @@ class BeneficiaryCompareMapper implements MapperInterface
     {
         $databasePhones = [];
         foreach ($this->object->getBeneficiary()->getPerson()->getPhones() as $phone) {
-            $databasePhones[] = trim($phone->getPrefix().$phone->getNumber());
+            $databasePhones[] = trim($phone->getPrefix() . $phone->getNumber());
         }
         $importPhones = [];
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone1.$this->object->getImportLine()->numberPhone1);
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone2.$this->object->getImportLine()->numberPhone2);
+        $importPhones[] = trim($this->object->getImportLine()->prefixPhone1 . $this->object->getImportLine()->numberPhone1);
+        $importPhones[] = trim($this->object->getImportLine()->prefixPhone2 . $this->object->getImportLine()->numberPhone2);
         $importPhones = array_filter($importPhones, function ($number) {
             return !empty($number);
         });
+
         return $this->compareLists($databasePhones, $importPhones);
     }
 
@@ -139,6 +142,7 @@ class BeneficiaryCompareMapper implements MapperInterface
         $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
         $importedVulnerabilities = $enumBuilder->buildInputValues($this->object->getImportLine()->vulnerabilityCriteria);
+
         return $this->compareLists($databaseVulnerabilities, $importedVulnerabilities);
     }
 

@@ -2,12 +2,14 @@
 
 namespace Model\Household;
 
+use ArrayIterator;
 use Entity\HouseholdActivity;
+use IteratorAggregate;
 use Model\Household\HouseholdChange\Factory\HouseholdChangeFactoryInterface;
 use Model\Household\HouseholdChange\Factory\SimpleHouseholdChangeFactory;
 use JsonSerializable;
 
-class HouseholdActivityChangesCollection implements JsonSerializable, \IteratorAggregate
+class HouseholdActivityChangesCollection implements JsonSerializable, IteratorAggregate
 {
     /** @var HouseholdActivity[] */
     private $collection;
@@ -16,7 +18,7 @@ class HouseholdActivityChangesCollection implements JsonSerializable, \IteratorA
     private $factory;
 
     /**
-     * @param HouseholdActivity[]             $collection list of household activities
+     * @param HouseholdActivity[] $collection list of household activities
      * @param HouseholdChangeFactoryInterface $factory
      */
     public function __construct($collection, HouseholdChangeFactoryInterface $factory = null)
@@ -57,6 +59,6 @@ class HouseholdActivityChangesCollection implements JsonSerializable, \IteratorA
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->jsonSerialize());
+        return new ArrayIterator($this->jsonSerialize());
     }
 }

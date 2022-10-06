@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import;
@@ -35,7 +36,7 @@ trait ImportLoggerTrait
     protected function logImportTransitionConstraints(WorkflowInterface $workflow, Import $import, string $transition): void
     {
         foreach ($workflow->buildTransitionBlockerList($import, $transition) as $block) {
-            $this->logImportDebug($import, " can't go to '$transition' because ".$block->getMessage());
+            $this->logImportDebug($import, " can't go to '$transition' because " . $block->getMessage());
         }
     }
 }

@@ -242,5 +242,4 @@ class InstitutionUpdateInputType implements InputTypeInterface
     {
         $this->phone = $phone;
     }
-
 }

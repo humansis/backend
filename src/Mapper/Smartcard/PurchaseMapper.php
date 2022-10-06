@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Smartcard;
 
+use DateTimeInterface;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\SmartcardPurchase;
 use Entity\SmartcardPurchaseRecord;
@@ -30,7 +34,7 @@ class PurchaseMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SmartcardPurchase::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SmartcardPurchase::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -59,6 +63,6 @@ class PurchaseMapper implements MapperInterface
 
     public function getDateOfPurchase(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
 }

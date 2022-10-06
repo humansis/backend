@@ -1,17 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
 use Entity\ScoringBlueprint;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class ScoringBlueprintMapper implements MapperInterface
 {
     /** @var ScoringBlueprint */
     private $object;
-
-
 
     /**
      * {@inheritdoc}
@@ -30,12 +30,12 @@ class ScoringBlueprintMapper implements MapperInterface
     {
         if ($object instanceof ScoringBlueprint) {
             $this->object = $object;
+
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.ScoringBlueprint::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ScoringBlueprint::class . ', ' . get_class($object) . ' given.');
     }
-
 
     public function getId()
     {
@@ -56,5 +56,4 @@ class ScoringBlueprintMapper implements MapperInterface
     {
         return $this->object->isArchived();
     }
-
 }

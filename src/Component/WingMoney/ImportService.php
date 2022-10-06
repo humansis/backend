@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\WingMoney;
@@ -55,7 +56,7 @@ class ImportService
     }
 
     /**
-     * @param array      $entries
+     * @param array $entries
      * @param Assistance $assistance
      *
      * @return array
@@ -115,7 +116,7 @@ class ImportService
 
         $transaction->setAssistanceBeneficiary($this->findAssistanceBeneficiaryByPhoneNumber($entry, $assistance));
         $transaction->setTransactionId($entry->getTransactionId());
-        $transaction->setAmountSent($entry->getCurrency().' '.number_format($entry->getAmount(), 2));
+        $transaction->setAmountSent($entry->getCurrency() . ' ' . number_format($entry->getAmount(), 2));
         $transaction->setDateSent($entry->getTransactionDate());
         $transaction->setTransactionStatus(Transaction::SUCCESS);
         $transaction->setSentBy($user);

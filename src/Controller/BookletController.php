@@ -8,6 +8,7 @@ use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
 use Controller\ExportController;
+use Exception;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -35,7 +36,7 @@ class BookletController extends AbstractController
     {
         $this->codeListService = $codeListService;
     }
-    
+
     /**
      * @Rest\Get("/web-app/v1/booklets/statuses")
      *
@@ -51,7 +52,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/exports")
      *
-     * @param Request                      $request
+     * @param Request $request
      * @param BookletExportFilterInputType $inputType
      *
      * @return Response
@@ -69,7 +70,7 @@ class BookletController extends AbstractController
             $request->request->add(['ids' => $inputType->getIds()]);
         }
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -101,7 +102,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet                $object
+     * @param Booklet $object
      * @param BookletUpdateInputType $inputType
      *
      * @return JsonResponse
@@ -121,10 +122,10 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets")
      *
-     * @param Request                $request
+     * @param Request $request
      * @param BookletFilterInputType $filter
-     * @param Pagination             $pagination
-     * @param BookletOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param BookletOrderInputType $orderBy
      *
      * @return JsonResponse
      */
@@ -166,7 +167,7 @@ class BookletController extends AbstractController
     {
         try {
             $deleted = $this->get('voucher.booklet_service')->deleteBookletFromDatabase($object);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $deleted = false;
         }
 
@@ -179,9 +180,9 @@ class BookletController extends AbstractController
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance  $assistance
+     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
-     * @param Booklet     $booklet
+     * @param Booklet $booklet
      *
      * @return JsonResponse
      */
@@ -199,8 +200,8 @@ class BookletController extends AbstractController
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
      * @param Assistance $assistance
-     * @param Community  $community
-     * @param Booklet    $booklet
+     * @param Community $community
+     * @param Booklet $booklet
      *
      * @return JsonResponse
      */
@@ -217,9 +218,9 @@ class BookletController extends AbstractController
      * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance  $assistance
+     * @param Assistance $assistance
      * @param Institution $institution
-     * @param Booklet     $booklet
+     * @param Booklet $booklet
      *
      * @return JsonResponse
      */

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -8,6 +9,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Enum\ProductCategoryType;
 use InputType\ProductCategoryFilterInputType;
 use InputType\ProductCategoryOrderInputType;
+use InvalidArgumentException;
 use Request\Pagination;
 use Entity\Vendor;
 
@@ -17,8 +19,7 @@ class ProductCategoryRepository extends EntityRepository
         ?ProductCategoryFilterInputType $filter = null,
         ?ProductCategoryOrderInputType $orderBy = null,
         ?Pagination $pagination = null
-    ): Paginator
-    {
+    ): Paginator {
         $qb = $this->createQueryBuilder('c')
             ->where('c.archived = 0');
 
@@ -29,18 +30,23 @@ class ProductCategoryRepository extends EntityRepository
             }
             if ($filter->hasFulltext()) {
                 $qb->andWhere('(c.id LIKE :fulltext OR c.name LIKE :fulltext)')
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
             if ($filter->hasVendors()) {
-                $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(['id'=>$filter->getVendors()]);
+                $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(['id' => $filter->getVendors()]);
                 $sellableCategoryTypes = [];
-                if ($vendor->canSellFood()) $sellableCategoryTypes[] = ProductCategoryType::FOOD;
-                if ($vendor->canSellNonFood()) $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
-                if ($vendor->canSellCashback()) $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
+                if ($vendor->canSellFood()) {
+                    $sellableCategoryTypes[] = ProductCategoryType::FOOD;
+                }
+                if ($vendor->canSellNonFood()) {
+                    $sellableCategoryTypes[] = ProductCategoryType::NONFOOD;
+                }
+                if ($vendor->canSellCashback()) {
+                    $sellableCategoryTypes[] = ProductCategoryType::CASHBACK;
+                }
 
                 $qb->andWhere('c.type in (:availableTypes)')
-                    ->setParameter('availableTypes', $sellableCategoryTypes)
-                ;
+                    ->setParameter('availableTypes', $sellableCategoryTypes);
             }
         }
 
@@ -59,7 +65,7 @@ class ProductCategoryRepository extends EntityRepository
                         $qb->orderBy('c.name', $direction);
                         break;
                     default:
-                        throw new \InvalidArgumentException('Invalid order directive '.$name);
+                        throw new InvalidArgumentException('Invalid order directive ' . $name);
                 }
             }
         }

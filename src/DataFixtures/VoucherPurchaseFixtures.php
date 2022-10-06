@@ -15,7 +15,7 @@ use Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface
 {
-    const FRACTION_TO_SPENT = 5;
+    public const FRACTION_TO_SPENT = 5;
 
     /** @var string */
     private $environment;
@@ -24,7 +24,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
     private $purchaseService;
 
     /**
-     * @param string          $environment
+     * @param string $environment
      * @param PurchaseService $purchaseService
      */
     public function __construct(string $environment, PurchaseService $purchaseService)
@@ -49,7 +49,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         $booklets = $manager->getRepository(Booklet::class)->findBy([
             'status' => Booklet::DISTRIBUTED,
         ], ['id' => 'asc']);
-        echo "Booklets to purchase: ".count($booklets).", make purchases for 1/".self::FRACTION_TO_SPENT."\n";
+        echo "Booklets to purchase: " . count($booklets) . ", make purchases for 1/" . self::FRACTION_TO_SPENT . "\n";
         $bookletIndex = 0;
         foreach ($booklets as $booklet) {
             /** @var Assistance $assistance */
@@ -64,7 +64,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
 
             $vendorCode = ($bookletIndex++ % VendorFixtures::VENDOR_COUNT_PER_COUNTRY) + 1;
             /** @var Vendor $vendor */
-            $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC.'_'.$assistance->getProject()->getCountryIso3().'_'.$vendorCode);
+            $vendor = $this->getReference(VendorFixtures::REF_VENDOR_GENERIC . '_' . $assistance->getProject()->getCountryIso3() . '_' . $vendorCode);
 
             if ($booklet->getVouchers()->count() < 3) {
                 echo "(too little vouchers, Booklet#{$booklet->getId()}) ";
@@ -80,7 +80,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
                 case 2:
                     $this->generatePurchase($vendor, [
                         $booklet->getVouchers()[0],
-                        $booklet->getVouchers()[1]
+                        $booklet->getVouchers()[1],
                     ], $manager);
                     $this->generatePurchase($vendor, [$booklet->getVouchers()[2]], $manager);
                     break;
@@ -89,7 +89,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
                     $this->generatePurchase($vendor, [
                         $booklet->getVouchers()[0],
                         $booklet->getVouchers()[1],
-                        $booklet->getVouchers()[2]
+                        $booklet->getVouchers()[2],
                     ], $manager);
                     break;
             }
@@ -111,15 +111,19 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
             $value = rand(1, 10000);
             $products[] = [
                 'id' => $this->randomEntity(Product::class, $manager),
-                'quantity' => $quantity/100,
-                'value' =>$value/100
+                'quantity' => $quantity / 100,
+                'value' => $value / 100,
             ];
         }
         $input->setProducts($products);
 
         $input->setCreatedAt(new DateTimeImmutable('now'));
         $input->setVendorId($vendor->getId());
-        $input->setVouchers(array_map(function ($voucher) {return $voucher->getId(); }, $vouchers));
+        $input->setVouchers(
+            array_map(function ($voucher) {
+                return $voucher->getId();
+            }, $vouchers)
+        );
 
         return $this->purchaseService->purchase($input);
     }

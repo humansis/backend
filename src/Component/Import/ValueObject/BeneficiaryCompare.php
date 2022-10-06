@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\ValueObject;
 
@@ -22,14 +24,15 @@ class BeneficiaryCompare
     private $beneficiaryDuplicity;
 
     /**
-     * @param Integrity\ImportLine       $importLine
-     * @param Entity\Beneficiary         $beneficiary
+     * @param Integrity\ImportLine $importLine
+     * @param Entity\Beneficiary $beneficiary
      * @param ImportBeneficiaryDuplicity $beneficiaryDuplicity
      */
-    public function __construct(Integrity\ImportLine                            $importLine, Entity\Beneficiary $beneficiary,
-                                ImportBeneficiaryDuplicity $beneficiaryDuplicity
-    )
-    {
+    public function __construct(
+        Integrity\ImportLine $importLine,
+        Entity\Beneficiary $beneficiary,
+        ImportBeneficiaryDuplicity $beneficiaryDuplicity
+    ) {
         $this->importLine = $importLine;
         $this->beneficiary = $beneficiary;
         $this->beneficiaryDuplicity = $beneficiaryDuplicity;
@@ -58,5 +61,4 @@ class BeneficiaryCompare
     {
         return $this->beneficiaryDuplicity;
     }
-
 }

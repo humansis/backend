@@ -26,15 +26,18 @@ class AssistanceCommodityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[{
+        $this->assertJsonFragment(
+            '[{
             "id": "*",
             "modalityType": "*",
             "unit": "*",
             "value": "*",
             "description": "*"
-        }]', $this->client->getResponse()->getContent());
+        }]',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testGetFilteredByModalityTypes()
@@ -43,14 +46,17 @@ class AssistanceCommodityControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[{
+        $this->assertJsonFragment(
+            '[{
             "id": "*",
             "modalityType": "*",
             "unit": "*",
             "value": "*",
             "description": "*"
-        }]', $this->client->getResponse()->getContent());
+        }]',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

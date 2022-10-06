@@ -28,14 +28,17 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {"id": "*", "beneficiaryId": "*", "value": "*", "currency": "*", "dateOfPurchase": "*"}
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testPurchasesInRedemptionBatch()
@@ -49,18 +52,21 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleScalarResult();
 
-        $this->request('GET', '/api/basic/web-app/v1/smartcard-redemption-batches/'.$batchId.'/smartcard-purchases');
+        $this->request('GET', '/api/basic/web-app/v1/smartcard-redemption-batches/' . $batchId . '/smartcard-purchases');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {"id": "*", "beneficiaryId": "*", "value": "*", "currency": "*", "dateOfPurchase": "*"}
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testPurchasesByRedemptionCandidates()
@@ -82,14 +88,17 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
 
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['vendorNo' => $result['vendorNo']], ['id' => 'asc']);
 
-        $this->request('GET', '/api/basic/vendor-app/v1/vendors/'.$vendor->getId().'/projects/'.$result['id'].'/currencies/'.$result['currency'].'/smartcard-purchases');
+        $this->request('GET', '/api/basic/vendor-app/v1/vendors/' . $vendor->getId() . '/projects/' . $result['id'] . '/currencies/' . $result['currency'] . '/smartcard-purchases');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('[
+        $this->assertJsonFragment(
+            '[
             {"id": "*", "beneficiaryId": "*", "value": "*", "currency": "*", "dateOfPurchase": "*"}
-        ]', $this->client->getResponse()->getContent());
+        ]',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

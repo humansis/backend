@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Beneficiary;
 
+use DateTimeInterface;
 use Enum\ResidencyStatus;
 use Enum\HouseholdHead;
 use Enum\PersonGender;
@@ -127,11 +129,13 @@ class BeneficiaryInputType implements InputTypeInterface
 
     /**
      * @Assert\NotNull
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDateOfBirth(): ?\DateTimeInterface
+    public function getDateOfBirth(): ?DateTimeInterface
     {
-        if (!$this->dateOfBirth) return null;
+        if (!$this->dateOfBirth) {
+            return null;
+        }
 
         return Iso8601Converter::toDateTime($this->dateOfBirth) ?: null;
     }
@@ -241,8 +245,8 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @see PersonGender::values()
      * @return string
+     * @see PersonGender::values()
      */
     public function getGender()
     {
@@ -350,12 +354,11 @@ class BeneficiaryInputType implements InputTypeInterface
     public function hasReferral(): bool
     {
         return null !== $this->referralType
-            && null !== $this->referralComment
-            ;
+            && null !== $this->referralComment;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isHead()
     {
@@ -363,7 +366,7 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @param boolean|int|string $isHead
+     * @param bool|int|string $isHead
      */
     public function setIsHead($isHead)
     {

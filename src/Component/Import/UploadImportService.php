@@ -1,14 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
 use Component\Import\DBAL\InsertQueryCollection;
 use Component\Import\Integrity;
 use Component\Import\Messaging\Message\UploadFileFinished;
+use Doctrine\DBAL\ConnectionException;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Import;
 use Entity\ImportFile;
 use Entity\User;
+use Exception;
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
@@ -38,16 +42,13 @@ class UploadImportService
     /** @var MessageBusInterface */
     private $messageBus;
 
-
-
     public function __construct(
-        string                     $uploadDirectory,
-        EntityManagerInterface     $em,
-        ImportFileValidator        $importFileValidator,
+        string $uploadDirectory,
+        EntityManagerInterface $em,
+        ImportFileValidator $importFileValidator,
         Integrity\DuplicityService $integrityDuplicityService,
         MessageBusInterface $messageBus
-    )
-    {
+    ) {
         $this->parser = new ImportParser();
         $this->em = $em;
         $this->sqlCollection = new InsertQueryCollection($em);
@@ -57,13 +58,11 @@ class UploadImportService
         $this->messageBus = $messageBus;
     }
 
-
-
     /**
      * @param ImportFile $importFile
      *
      * @return ImportFile
-     * @throws \Doctrine\DBAL\ConnectionException
+     * @throws ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function load(ImportFile $importFile): ImportFile
@@ -75,7 +74,7 @@ class UploadImportService
             throw new InvalidArgumentException('This import file has serious structure issues.');
         }
 
-        $fileToImport = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
+        $fileToImport = new File($this->uploadDirectory . '/' . $importFile->getSavedAsFilename());
         $list = $this->parser->parse($fileToImport);
 
         $this->em->getConnection()->beginTransaction();
@@ -105,7 +104,7 @@ class UploadImportService
             $this->em->getConnection()->commit();
 
             return $importFile;
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             if ($this->em->getConnection()->isTransactionActive()) {
                 $this->em->getConnection()->rollBack();
             }
@@ -115,15 +114,15 @@ class UploadImportService
     }
 
     /**
-     * @param Import       $import
+     * @param Import $import
      * @param UploadedFile $uploadedFile
-     * @param User         $user
+     * @param User $user
      *
      * @return ImportFile
      */
     public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
     {
-        $savedAsFilename = time().'-'.$uploadedFile->getClientOriginalName();
+        $savedAsFilename = time() . '-' . $uploadedFile->getClientOriginalName();
 
         $uploadedFile->move($this->uploadDirectory, $savedAsFilename);
 

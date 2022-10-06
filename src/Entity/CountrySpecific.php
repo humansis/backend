@@ -44,7 +44,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
      */
     private $type;
 
-
     /**
      * @var CountrySpecificAnswer
      *
@@ -120,7 +119,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      *
      * @param CountrySpecificAnswer $countrySpecificAnswer
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): bool
     {
@@ -161,13 +160,12 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this->fieldString;
     }
 
-
     public function getMappedValueForExport(): array
     {
         return [
             "type" => $this->getType(),
-            "Country Iso3"=> $this->getCountryIso3(),
-            "Field" => $this->getFieldString()
+            "Country Iso3" => $this->getCountryIso3(),
+            "Field" => $this->getFieldString(),
         ];
     }
 }

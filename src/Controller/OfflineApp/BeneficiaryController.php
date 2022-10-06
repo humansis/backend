@@ -12,11 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractOfflineAppController
 {
-
     /**
      * @Rest\Get("/offline-app/v2/beneficiaries")
      *
-     * @param Request                    $request
+     * @param Request $request
      * @param BeneficiaryFilterInputType $filter
      *
      * @return JsonResponse
@@ -38,7 +37,7 @@ class BeneficiaryController extends AbstractOfflineAppController
      * @Rest\Get("/offline-app/v2/beneficiary/{id}")
      *
      * @param Beneficiary $beneficiary
-     * @param Request     $request
+     * @param Request $request
      *
      * @return JsonResponse
      */

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Import;
 
@@ -41,7 +43,7 @@ class CreateInputType implements InputTypeInterface
     /**
      * TODO remove after FE part of PIN-2820 will be implemented
      *
-     * @var integer
+     * @var int
      *
      * @Assert\Type("integer")
      */

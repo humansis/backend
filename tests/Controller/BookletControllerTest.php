@@ -42,7 +42,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -50,7 +50,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/booklets/'.$booklet->getId(), [
+        $this->request('PUT', '/api/basic/web-app/v1/booklets/' . $booklet->getId(), [
             'quantityOfVouchers' => 2,
             'values' => [333],
             'password' => null,
@@ -59,7 +59,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -70,13 +70,13 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
+        $this->request('GET', '/api/basic/web-app/v1/booklets/' . $booklet->getId());
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -104,7 +104,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -118,7 +118,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
-        $this->request('DELETE', '/api/basic/web-app/v1/booklets/'.$booklet->getId());
+        $this->request('DELETE', '/api/basic/web-app/v1/booklets/' . $booklet->getId());
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
     }
@@ -139,16 +139,17 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getSingleResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('There needs to be at least one beneficiary assigned to an assistance to complete this test');
+
             return;
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/beneficiaries/'.$result['beneficiaryId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/beneficiaries/' . $result['beneficiaryId'] . '/booklets/' . $booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
-            'Request failed: '.$this->client->getResponse()->getStatusCode()
+            'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
         $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }
@@ -169,16 +170,17 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getSingleResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('There needs to be at least one community assigned to an assistance to complete this test');
+
             return;
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/communities/'.$result['communityId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/communities/' . $result['communityId'] . '/booklets/' . $booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
-            'Request failed: '.$this->client->getResponse()->getStatusCode()
+            'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
         $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }
@@ -199,16 +201,17 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getSingleResult();
         } catch (NoResultException $e) {
             $this->markTestSkipped('There needs to be at least one institution assigned to an assistance to complete this test');
+
             return;
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/'.$result['assistanceId'].'/institutions/'.$result['institutionId'].'/booklets/'.$booklet->getCode());
+        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/institutions/' . $result['institutionId'] . '/booklets/' . $booklet->getCode());
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
-            'Request failed: '.$this->client->getResponse()->getStatusCode()
+            'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
         $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
     }

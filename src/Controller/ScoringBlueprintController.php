@@ -25,8 +25,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class ScoringBlueprintController extends AbstractController
 {
-
-
     /** @var ScoringBlueprintService $scoringBlueprintService */
     private $scoringBlueprintService;
 
@@ -34,21 +32,20 @@ class ScoringBlueprintController extends AbstractController
     private $scoringBlueprintRepository;
 
     /**
-     * @param ScoringBlueprintService    $scoringBlueprintService
+     * @param ScoringBlueprintService $scoringBlueprintService
      * @param ScoringBlueprintRepository $scoringBlueprintRepository
      */
     public function __construct(
         ScoringBlueprintService $scoringBlueprintService,
         ScoringBlueprintRepository $scoringBlueprintRepository
-    )
-    {
+    ) {
         $this->scoringBlueprintService = $scoringBlueprintService;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
     }
 
     /**
      * @Rest\Get()
-     * @param Request                         $request
+     * @param Request $request
      * @param ScoringBlueprintFilterInputType $scoringFilterInputType
      *
      * @return JsonResponse
@@ -56,12 +53,13 @@ class ScoringBlueprintController extends AbstractController
     public function list(Request $request, ScoringBlueprintFilterInputType $scoringFilterInputType): JsonResponse
     {
         $scoringBlueprints = $this->scoringBlueprintRepository->findByParams($this->getCountryCode($request), null, $scoringFilterInputType);
+
         return $this->json($scoringBlueprints);
     }
 
     /**
      * @Rest\Post()
-     * @param Request          $request
+     * @param Request $request
      * @param ScoringInputType $inputType
      *
      * @return JsonResponse
@@ -70,12 +68,12 @@ class ScoringBlueprintController extends AbstractController
     {
         try {
             $scoringBlueprint = $this->scoringBlueprintService->create($inputType, $this->getCountryCode($request));
+
             return $this->json($this->scoringBlueprintRepository->find($scoringBlueprint), 201);
         } catch (CsvParserException $ex) {
             // This is because CsvParserException is mapped to 500 and case where Base64 is not CSV
             throw new BadRequestHttpException($ex->getMessage());
         }
-
     }
 
     /**
@@ -91,7 +89,7 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Patch("/{id}")
-     * @param ScoringBlueprint      $scoringBlueprint
+     * @param ScoringBlueprint $scoringBlueprint
      * @param ScoringPatchInputType $inputType
      *
      * @return JsonResponse
@@ -99,6 +97,7 @@ class ScoringBlueprintController extends AbstractController
     public function patch(ScoringBlueprint $scoringBlueprint, ScoringPatchInputType $inputType): JsonResponse
     {
         $this->scoringBlueprintService->patch($inputType, $scoringBlueprint);
+
         return $this->json($scoringBlueprint);
     }
 
@@ -111,6 +110,7 @@ class ScoringBlueprintController extends AbstractController
     public function archive(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
         $this->scoringBlueprintService->archive($scoringBlueprint);
+
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
@@ -123,18 +123,17 @@ class ScoringBlueprintController extends AbstractController
     public function getContent(ScoringBlueprint $scoringBlueprint): StreamedResponse
     {
         $stream = $scoringBlueprint->getStream();
-        $filename = "scoring-".$scoringBlueprint->getName().".csv";
+        $filename = "scoring-" . $scoringBlueprint->getName() . ".csv";
+
         return new StreamedResponse(function () use ($stream) {
             fpassthru($stream);
             exit();
         }, 200, [
-            'Content-Transfer-Encoding', 'binary',
+            'Content-Transfer-Encoding',
+            'binary',
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename='$filename'",
             'Content-Length' => fstat($stream)['size'],
         ]);
     }
-
-
-
 }

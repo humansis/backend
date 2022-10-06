@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard\Analytics;
 
@@ -25,6 +27,7 @@ class EventCollector
         usort($this->events, function (Event $a, Event $b) {
             return $a->getWhen()->getTimestamp() - $b->getWhen()->getTimestamp();
         });
+
         return $this->events;
     }
 }

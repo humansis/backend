@@ -2,9 +2,9 @@
 
 namespace Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-
 
 /**
  * Logs
@@ -20,7 +20,7 @@ class Logs
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     private $id;
@@ -29,7 +29,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255)
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     private $url;
@@ -45,7 +45,7 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="mailUser", type="string", length=255)
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     private $mailUser;
@@ -54,13 +54,13 @@ class Logs
      * @var string
      *
      * @ORM\Column(name="method", type="string", length=255)
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     private $method;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date", type="datetime")
      * @SymfonyGroups({"FullLogs"})
@@ -71,7 +71,7 @@ class Logs
      * @var int
      *
      * @ORM\Column(name="httpStatus", type="integer")
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     private $httpStatus;
@@ -88,7 +88,7 @@ class Logs
      * @var array
      *
      * @ORM\Column(name="request", type="text")
-     * 
+     *
      * @SymfonyGroups({"FullLogs"})
      */
     protected $request;
@@ -202,7 +202,7 @@ class Logs
     /**
      * Set date.
      *
-     * @param \DateTime $date
+     * @param DateTime $date
      *
      * @return Logs
      */
@@ -216,7 +216,7 @@ class Logs
     /**
      * Get date.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDate()
     {

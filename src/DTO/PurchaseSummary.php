@@ -16,7 +16,7 @@ class PurchaseSummary
     /**
      * SmartcardPurchaseSummary constructor.
      *
-     * @param int   $count
+     * @param int $count
      * @param mixed $value
      */
     public function __construct(int $count, $value)

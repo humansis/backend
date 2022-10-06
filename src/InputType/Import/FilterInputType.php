@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Import;
 
@@ -38,5 +40,4 @@ class FilterInputType extends AbstractFilterInputType
     {
         return $this->status;
     }
-
 }

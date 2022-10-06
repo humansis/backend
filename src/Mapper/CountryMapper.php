@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
 use Component\Country\Country;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class CountryMapper implements MapperInterface
@@ -30,7 +32,7 @@ class CountryMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Country::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Country::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getIso3(): string

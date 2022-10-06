@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper;
 
@@ -27,5 +29,4 @@ trait MapperContextTrait
         return isset($context[MapperInterface::OFFLINE_APP]) &&
             $context[MapperInterface::OFFLINE_APP] === true;
     }
-
 }

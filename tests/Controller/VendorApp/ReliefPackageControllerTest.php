@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Controller\VendorApp;
@@ -59,7 +60,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $assistance->setDateExpiration(null);
 
         $user = new User();
-        $username = __METHOD__.random_int(100, 10000);
+        $username = __METHOD__ . random_int(100, 10000);
         $user->setUsername($username)
             ->setUsernameCanonical($username)
             ->setEmail($username)
@@ -77,9 +78,8 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ->setAddressPostcode('12345')
             ->setArchived(false)
             ->setUser($user)
-            ->setVendorNo($location.sprintf('%07d', random_int(100, 10000)))
-            ->setContractNo($location.'SP'.sprintf('%06d', random_int(100, 10000)))
-        ;
+            ->setVendorNo($location . sprintf('%07d', random_int(100, 10000)))
+            ->setContractNo($location . 'SP' . sprintf('%06d', random_int(100, 10000)));
         $vendor->setLocation($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getLocation());
         $vendor->setCanSellCashback(true);
         $vendor->setCanSellNonFood(true);
@@ -98,16 +98,17 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             [],
             [],
             [
-                'HTTP_COUNTRY' => $location
+                'HTTP_COUNTRY' => $location,
             ]
         );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": [
                 {
@@ -123,7 +124,9 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
                     "expirationDate": "*"
                 }
             ]
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
 
         $this->em->flush();
     }

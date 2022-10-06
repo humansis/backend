@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Model;
@@ -24,6 +25,7 @@ final class Scoring
     /**
      * Scoring constructor
      * .
+     *
      * @param string $name
      * @param ScoringRule[] $rules
      */

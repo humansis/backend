@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Component\Import;
 
@@ -14,17 +16,17 @@ use Entity\ImportQueue;
 use Enum\ImportQueueState;
 use Enum\ImportState;
 use Entity\Project;
+use ReflectionMethod;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\File;
 use Entity\User;
 
 class IntegrityCheckerTest extends KernelTestCase
 {
-
     /** @var EntityManagerInterface */
     private static $entityManager;
 
-    /** @var \Component\Import\IntegrityChecker */
+    /** @var IntegrityChecker */
     private static $integrityChecker;
 
     /** @var DuplicityService */
@@ -62,7 +64,7 @@ class IntegrityCheckerTest extends KernelTestCase
         self::$entityManager->persist($item);
         self::$entityManager->flush();
 
-        $method = new \ReflectionMethod(self::$integrityChecker, 'checkOne');
+        $method = new ReflectionMethod(self::$integrityChecker, 'checkOne');
         $method->setAccessible(true);
         $method->invoke(self::$integrityChecker, $item);
 
@@ -86,7 +88,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $checker = self::$integrityChecker;
 
-        $method = new \ReflectionMethod($checker, 'checkOne');
+        $method = new ReflectionMethod($checker, 'checkOne');
         $method->setAccessible(true);
         $method->invoke($checker, $item);
 
@@ -113,10 +115,10 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(1, $queue);
         foreach ($queue as $item) {
-            $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because ".$item->getMessage());
+            $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because " . $item->getMessage());
         }
     }
 
@@ -141,7 +143,7 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $checker = self::$integrityChecker;
 
-        $method = new \ReflectionMethod($checker, 'checkOne');
+        $method = new ReflectionMethod($checker, 'checkOne');
         $method->setAccessible(true);
         $method->invoke($checker, $correctItem);
         $method->invoke($checker, $incorrectItem);
@@ -153,7 +155,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $this->assertNotNull($incorrectItem->getMessage());
 
         $invalidFilePath = self::$importInvalidFileService->generateFile($import);
-        $invalidFile = new File(self::$invalidFilesDirectory.'/'.$invalidFilePath->getFilename());
+        $invalidFile = new File(self::$invalidFilesDirectory . '/' . $invalidFilePath->getFilename());
         $parser = new ImportParser();
 
         $headers = $parser->parseHeadersOnly($invalidFile);
@@ -190,7 +192,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(2, $queue);
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::INVALID, $item->getState(), "Queue shouldn't be valid.");
@@ -219,7 +221,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(\Entity\ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(2, $queue);
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue should be valid.");
@@ -231,5 +233,4 @@ class IntegrityCheckerTest extends KernelTestCase
         parent::tearDown();
         self::$entityManager->clear();
     }
-
 }

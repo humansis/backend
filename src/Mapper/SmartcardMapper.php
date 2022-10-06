@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTimeInterface;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Smartcard;
 
@@ -20,8 +23,7 @@ class SmartcardMapper implements MapperInterface
     {
         return ($object instanceof Smartcard)
             && $this->isNewApi($context)
-            && $this->isOfflineApp($context)
-            ;
+            && $this->isOfflineApp($context);
     }
 
     /**
@@ -35,7 +37,7 @@ class SmartcardMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Smartcard::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Smartcard::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): ?int
@@ -60,7 +62,6 @@ class SmartcardMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
-
 }

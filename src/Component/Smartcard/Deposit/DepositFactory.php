@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
@@ -64,11 +66,11 @@ class DepositFactory
 
     public function __construct(
         SmartcardDepositRepository $smartcardDepositRepository,
-        SmartcardService           $smartcardService,
-        ReliefPackageRepository    $reliefPackageRepository,
-        CacheInterface             $cache,
-        ReliefPackageService       $reliefPackageService,
-        LoggerInterface            $logger
+        SmartcardService $smartcardService,
+        ReliefPackageRepository $reliefPackageRepository,
+        CacheInterface $cache,
+        ReliefPackageService $reliefPackageService,
+        LoggerInterface $logger
     ) {
         $this->smartcardDepositRepository = $smartcardDepositRepository;
         $this->smartcardService = $smartcardService;
@@ -79,9 +81,9 @@ class DepositFactory
     }
 
     /**
-     * @param string           $smartcardSerialNumber
+     * @param string $smartcardSerialNumber
      * @param DepositInputType $depositInputType
-     * @param User             $user
+     * @param User $user
      *
      * @return SmartcardDeposit
      * @throws DoubledDepositException
@@ -97,10 +99,14 @@ class DepositFactory
             $smartcardSerialNumber,
             $depositInputType->getCreatedAt()->getTimestamp(),
             $depositInputType->getValue(),
-            $reliefPackage);
+            $reliefPackage
+        );
         $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew($smartcardSerialNumber, $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
-            $depositInputType->getCreatedAt());
+        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew(
+            $smartcardSerialNumber,
+            $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
+            $depositInputType->getCreatedAt()
+        );
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
         $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
@@ -110,20 +116,20 @@ class DepositFactory
     }
 
     /**
-     * @param Smartcard        $smartcard
-     * @param User             $user
-     * @param ReliefPackage    $reliefPackage
+     * @param Smartcard $smartcard
+     * @param User $user
+     * @param ReliefPackage $reliefPackage
      * @param DepositInputType $depositInputType
-     * @param string           $hash
+     * @param string $hash
      *
      * @return SmartcardDeposit
      */
     private function createNewDepositRoot(
-        Smartcard        $smartcard,
-        User             $user,
-        ReliefPackage    $reliefPackage,
+        Smartcard $smartcard,
+        User $user,
+        ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,
-        string           $hash
+        string $hash
     ): SmartcardDeposit {
         $deposit = SmartcardDeposit::create(
             $smartcard,
@@ -161,5 +167,4 @@ class DepositFactory
             throw new DoubledDepositException($deposit);
         }
     }
-
 }

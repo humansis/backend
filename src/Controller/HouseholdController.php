@@ -3,6 +3,7 @@
 namespace Controller;
 
 use Entity\Household;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\AddHouseholdsToProjectInputType;
 use InputType\HouseholdCreateInputType;
@@ -23,7 +24,6 @@ use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class HouseholdController extends AbstractController
 {
-
     /** @var HouseholdService */
     private $householdService;
 
@@ -31,7 +31,7 @@ class HouseholdController extends AbstractController
     private $householdRepository;
 
     /**
-     * @param HouseholdService    $householdService
+     * @param HouseholdService $householdService
      * @param HouseholdRepository $householdRepository
      */
     public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository)
@@ -43,10 +43,10 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/households/exports")
      *
-     * @param Request                  $request
+     * @param Request $request
      * @param HouseholdFilterInputType $filter
-     * @param Pagination               $pagination
-     * @param HouseholdOrderInputType  $order
+     * @param Pagination $pagination
+     * @param HouseholdOrderInputType $order
      *
      * @return Response
      */
@@ -63,18 +63,22 @@ class HouseholdController extends AbstractController
             $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
                 $request->query->get('type'),
                 $request->headers->get('country'),
-                $filter, $pagination, $order
+                $filter,
+                $pagination,
+                $order
             );
         } catch (BadRequestHttpException $e) {
             return new JsonResponse([
                 'code' => 400,
-                'errors' => [[
-                    'message' => $e->getMessage(),
-                ]],
-            ],Response::HTTP_BAD_REQUEST);
+                'errors' => [
+                    [
+                        'message' => $e->getMessage(),
+                    ],
+                ],
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        $response = new BinaryFileResponse(getcwd().'/'.$filename);
+        $response = new BinaryFileResponse(getcwd() . '/' . $filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, '$filename');
         $response->deleteFileAfterSend(true);
 
@@ -107,10 +111,10 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/households")
      *
-     * @param Request                  $request
+     * @param Request $request
      * @param HouseholdFilterInputType $filter
-     * @param Pagination               $pagination
-     * @param HouseholdOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param HouseholdOrderInputType $orderBy
      *
      * @return JsonResponse
      */
@@ -128,33 +132,35 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/households")
      *
-     * @param Request                  $request
+     * @param Request $request
      * @param HouseholdCreateInputType $inputType
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
         $household = $this->householdService->create($inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
+
         return $this->json($household);
     }
 
     /**
      * @Rest\Put("/web-app/v1/households/{id}")
      *
-     * @param Request                  $request
-     * @param Household                $household
+     * @param Request $request
+     * @param Household $household
      * @param HouseholdUpdateInputType $inputType
      *
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
         $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
         $this->getDoctrine()->getManager()->flush();
+
         return $this->json($object);
     }
 
@@ -175,7 +181,7 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/projects/{id}/households")
      *
-     * @param Project                         $project
+     * @param Project $project
      *
      * @param AddHouseholdsToProjectInputType $inputType
      *

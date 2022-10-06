@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\Import;
 
+use Component\Import\IdentityChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Import;
 use Entity\ImportQueueDuplicity;
@@ -29,7 +31,7 @@ class IdentityCheckerTest extends KernelTestCase
         $import = self::$entityManager->getRepository(Import::class)->findBy(['title' => 'test_fixtures'], ['id' => 'asc'])[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = self::$container->get(\Component\Import\IdentityChecker::class);
+        $checker = self::$container->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()

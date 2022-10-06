@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace OutputType\Assistance;
 
@@ -7,7 +9,6 @@ use Request\InputTypeInterface;
 
 class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
-
     private $documentNumbers;
 
     private $documentType;
@@ -36,12 +37,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
      * @param array $documentNumbers
      * @param string $documentType
      */
-    public function __construct(array $documentNumbers,string $documentType)
+    public function __construct(array $documentNumbers, string $documentType)
     {
         $this->documentNumbers = $documentNumbers;
         $this->documentType = $documentType;
     }
-
 
     /**
      * @return array
@@ -54,6 +54,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     public function addNotFound($notFound): AssistanceBeneficiaryOperationOutputType
     {
         $this->notFound[] = $notFound;
+
         return $this;
     }
 
@@ -63,8 +64,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         $this->notFound[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
-            'message' => "BNF with {$this->documentType} '{$number}' was found but he is not in assistance."
+            'message' => "BNF with {$this->documentType} '{$number}' was found but he is not in assistance.",
         ];
+
         return $this;
     }
 
@@ -103,6 +105,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     public function addSuccess($success): AssistanceBeneficiaryOperationOutputType
     {
         $this->success[] = $success;
+
         return $this;
     }
 
@@ -113,6 +116,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
+
         return $this;
     }
 
@@ -139,40 +143,43 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     public function addFailed(array $failed): AssistanceBeneficiaryOperationOutputType
     {
         $this->failed[] = $failed;
+
         return $this;
     }
 
     /**
      * @param Beneficiary $beneficiary
-     * @param string      $message
+     * @param string $message
      *
      * @return $this
      */
-    public function addBeneficiaryFailed(Beneficiary $beneficiary,string $message): AssistanceBeneficiaryOperationOutputType
+    public function addBeneficiaryFailed(Beneficiary $beneficiary, string $message): AssistanceBeneficiaryOperationOutputType
     {
         $documentNumber = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->failed[] = [
             'documentNumber' => $documentNumber,
             'beneficiaryId' => $beneficiary->getId(),
-            'message' => $message
+            'message' => $message,
         ];
+
         return $this;
     }
 
     /**
      * @param Beneficiary $beneficiary
-     * @param array       $documentNumbers
-     * @param string      $documentType
+     * @param array $documentNumbers
+     * @param string $documentType
      *
      * @return string|null
      */
-    private function getInputIdNumber(Beneficiary $beneficiary,array $documentNumbers,string $documentType)
+    private function getInputIdNumber(Beneficiary $beneficiary, array $documentNumbers, string $documentType)
     {
         foreach ($beneficiary->getNationalIds() as $document) {
             if ($document->getIdType() === $documentType && in_array($document->getIdNumber(), $documentNumbers)) {
                 return $document->getIdNumber();
             }
         }
+
         return null;
     }
 
@@ -191,6 +198,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
+
         return $this;
     }
 
@@ -205,9 +213,4 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
         return $this;
     }
-
-
-
-
-
 }

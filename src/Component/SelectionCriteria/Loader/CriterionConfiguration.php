@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Loader;
 
@@ -76,7 +78,7 @@ class CriterionConfiguration
         if (!in_array($type, CriteriaValueTransformerEnum::values())) {
             throw new InvalidArgumentException('invalid return type - "' . $type . '", has to be defined in CriteriaValueTransformerEnum');
         }
-        
+
         $this->returnType = $type;
     }
 }

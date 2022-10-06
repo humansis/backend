@@ -2,7 +2,6 @@
 
 namespace InputType\Smartcard;
 
-
 use Request\InputTypeInterface;
 
 class UpdateSmartcardInputType extends ChangeSmartcardInputType implements InputTypeInterface
@@ -48,6 +47,4 @@ class UpdateSmartcardInputType extends ChangeSmartcardInputType implements Input
     {
         $this->suspiciousReason = $suspiciousReason;
     }
-
-
 }

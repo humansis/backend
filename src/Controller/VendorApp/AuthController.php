@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
@@ -11,10 +13,8 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
 use Entity\User;
 use Utils\VendorService;
 
-
 class AuthController extends AbstractVendorAppController
 {
-
     private $vendorService;
 
     /**
@@ -24,7 +24,6 @@ class AuthController extends AbstractVendorAppController
     {
         $this->vendorService = $vendorService;
     }
-
 
     /**
      * @Rest\Post("/vendor-app/v2/login")
@@ -49,5 +48,4 @@ class AuthController extends AbstractVendorAppController
 
         return $this->json($vendor, Response::HTTP_OK, [], ['login' => true]);
     }
-
 }

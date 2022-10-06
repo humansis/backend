@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Application\Migrations;
@@ -169,27 +170,27 @@ final class Version20210413094425 extends AbstractMigration
             'school_operational_support',
         ];
 
-        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('".implode('\',\'', $bothOldAndNewSectors)."')");
+        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('" . implode('\',\'', $bothOldAndNewSectors) . "')");
         $this->addSql("UPDATE assistance SET sector='education_tvet' WHERE sector='education'");
-        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('".implode('\',\'', $newSectors)."')");
+        $this->addSql("ALTER TABLE assistance CHANGE sector sector ENUM('" . implode('\',\'', $newSectors) . "')");
 
-        $this->addSql("ALTER TABLE assistance CHANGE subsector subsector ENUM('".implode('\',\'', $bothOldAndNewSubSectors)."')");
+        $this->addSql("ALTER TABLE assistance CHANGE subsector subsector ENUM('" . implode('\',\'', $bothOldAndNewSubSectors) . "')");
         $this->addSql("UPDATE assistance SET subsector='in-kind-food' WHERE subsector='food_distribution'");
         $this->addSql("UPDATE assistance SET subsector='food_cash_transfers' WHERE subsector='food_cash_grants'");
         $this->addSql("UPDATE assistance SET subsector='provision_of_inputs' WHERE subsector='distribution_of_inputs'");
         $this->addSql("UPDATE assistance SET subsector='learning_support' WHERE subsector='education_services'");
-        $this->addSql("ALTER TABLE assistance CHANGE subsector subsector ENUM('".implode('\',\'', $newSubSectors)."')");
+        $this->addSql("ALTER TABLE assistance CHANGE subsector subsector ENUM('" . implode('\',\'', $newSubSectors) . "')");
 
-        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('".implode('\',\'', $bothOldAndNewSectors)."')");
+        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('" . implode('\',\'', $bothOldAndNewSectors) . "')");
         $this->addSql("UPDATE project_sector SET sector='education_tvet' WHERE sector='education'");
-        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('".implode('\',\'', $newSectors)."')");
+        $this->addSql("ALTER TABLE project_sector CHANGE sector sector ENUM('" . implode('\',\'', $newSectors) . "')");
 
-        $this->addSql("ALTER TABLE project_sector CHANGE subsector subsector ENUM('".implode('\',\'', $bothOldAndNewSubSectors)."')");
+        $this->addSql("ALTER TABLE project_sector CHANGE subsector subsector ENUM('" . implode('\',\'', $bothOldAndNewSubSectors) . "')");
         $this->addSql("UPDATE project_sector SET subsector='in-kind-food' WHERE subsector='food_distribution'");
         $this->addSql("UPDATE project_sector SET subsector='food_cash_transfers' WHERE subsector='food_cash_grants'");
         $this->addSql("UPDATE project_sector SET subsector='provision_of_inputs' WHERE subsector='distribution_of_inputs'");
         $this->addSql("UPDATE project_sector SET subsector='learning_support' WHERE subsector='education_services'");
-        $this->addSql("ALTER TABLE project_sector CHANGE subsector subsector ENUM('".implode('\',\'', $newSubSectors)."')");
+        $this->addSql("ALTER TABLE project_sector CHANGE subsector subsector ENUM('" . implode('\',\'', $newSubSectors) . "')");
     }
 
     public function down(Schema $schema): void

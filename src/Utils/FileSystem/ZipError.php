@@ -31,6 +31,6 @@ trait ZipError
                 return 'Seek error.';
         }
 
-        return 'error code '.$res;
+        return 'error code ' . $res;
     }
 }

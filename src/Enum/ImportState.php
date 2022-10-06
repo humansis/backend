@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,21 +8,21 @@ final class ImportState
 {
     use EnumTrait;
 
-    const NEW = 'New';
-    const UPLOADING = 'Uploading';
-    const UPLOAD_FAILED = 'Upload Failed';
-    const INTEGRITY_CHECKING = 'Integrity Checking';
-    const INTEGRITY_CHECK_CORRECT = 'Integrity Check Correct';
-    const INTEGRITY_CHECK_FAILED = 'Integrity Check Failed';
-    const IDENTITY_CHECKING = 'Identity Checking';
-    const IDENTITY_CHECK_CORRECT = 'Identity Check Correct';
-    const IDENTITY_CHECK_FAILED = 'Identity Check Failed';
-    const SIMILARITY_CHECKING = 'Similarity Checking';
-    const SIMILARITY_CHECK_CORRECT = 'Similarity Check Correct';
-    const SIMILARITY_CHECK_FAILED = 'Similarity Check Failed';
-    const IMPORTING = 'Importing';
-    const FINISHED = 'Finished';
-    const CANCELED = 'Canceled';
+    public const NEW = 'New';
+    public const UPLOADING = 'Uploading';
+    public const UPLOAD_FAILED = 'Upload Failed';
+    public const INTEGRITY_CHECKING = 'Integrity Checking';
+    public const INTEGRITY_CHECK_CORRECT = 'Integrity Check Correct';
+    public const INTEGRITY_CHECK_FAILED = 'Integrity Check Failed';
+    public const IDENTITY_CHECKING = 'Identity Checking';
+    public const IDENTITY_CHECK_CORRECT = 'Identity Check Correct';
+    public const IDENTITY_CHECK_FAILED = 'Identity Check Failed';
+    public const SIMILARITY_CHECKING = 'Similarity Checking';
+    public const SIMILARITY_CHECK_CORRECT = 'Similarity Check Correct';
+    public const SIMILARITY_CHECK_FAILED = 'Similarity Check Failed';
+    public const IMPORTING = 'Importing';
+    public const FINISHED = 'Finished';
+    public const CANCELED = 'Canceled';
 
     public static function values(): array
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace InputType\Deprecated;
 
 use InputType\InputTypeInterface;
@@ -11,16 +12,19 @@ class BeneficiaryAddressType implements InputTypeInterface
      * @Assert\Length(max="255")
      */
     private $street;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $number;
+
     /**
      * @var string|null
      * @Assert\Length(max="255")
      */
     private $postcode;
+
     /**
      * @var LocationType|null
      * @Assert\Valid()

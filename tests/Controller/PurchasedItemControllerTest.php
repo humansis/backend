@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Entity\DistributedItem;
 use Entity\PurchasedItem;
@@ -34,20 +35,23 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (\Doctrine\ORM\NoResultException $exception) {
+        } catch (NoResultException $exception) {
             $this->markTestSkipped("There is no household in purchased items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/households/'.$householdId.'/purchased-items');
+        $this->request('GET', '/api/basic/web-app/v1/households/' . $householdId . '/purchased-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testFindByBeneficiary()
@@ -62,20 +66,23 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (\Doctrine\ORM\NoResultException $exception) {
+        } catch (NoResultException $exception) {
             $this->markTestSkipped("There is no beneficiary in purchased items.");
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/'.$beneficiaryId.'/purchased-items');
+        $this->request('GET', '/api/basic/web-app/v1/beneficiaries/' . $beneficiaryId . '/purchased-items');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testFindByParams()
@@ -84,11 +91,14 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

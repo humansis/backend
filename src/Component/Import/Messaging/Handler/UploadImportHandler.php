@@ -1,6 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
+
 use Component\Import\ImportLoggerTrait;
 use Component\Import\ImportQueueLoggerTrait;
 use Component\Import\Messaging\Message\ImportCheck;
@@ -10,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Repository\ImportFileRepository;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 
 class UploadImportHandler implements MessageHandlerInterface
 {
@@ -26,16 +30,16 @@ class UploadImportHandler implements MessageHandlerInterface
     private $messageBus;
 
     /**
-     * @param LoggerInterface      $importLogger
+     * @param LoggerInterface $importLogger
      * @param ImportFileRepository $importFileRepository
-     * @param UploadImportService  $uploadImportService
-     * @param MessageBusInterface  $messageBus
+     * @param UploadImportService $uploadImportService
+     * @param MessageBusInterface $messageBus
      */
     public function __construct(
-        LoggerInterface            $importLogger,
-        ImportFileRepository       $importFileRepository,
-        UploadImportService        $uploadImportService,
-        MessageBusInterface        $messageBus
+        LoggerInterface $importLogger,
+        ImportFileRepository $importFileRepository,
+        UploadImportService $uploadImportService,
+        MessageBusInterface $messageBus
     ) {
         $this->logger = $importLogger;
         $this->importFileRepository = $importFileRepository;
@@ -53,7 +57,7 @@ class UploadImportHandler implements MessageHandlerInterface
         if ($importFile !== null) {
             try {
                 $this->uploadImportService->load($importFile);
-            } catch (\Throwable $ex) {
+            } catch (Throwable $ex) {
                 $this->logImportWarning($importFile->getImport(), $ex->getMessage());
             } finally {
                 $this->messageBus->dispatch(ImportCheck::checkUploadingComplete($importFile->getImport()));

@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Finishing;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Entity\Location;
 use Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,14 +39,15 @@ class HouseholdDecoratorBuilder
     private $beneficiaryDecoratorBuilder;
 
     /**
-     * @param EntityManagerInterface      $entityManager
-     * @param Import\Integrity\ImportLineFactory           $importLineFactory
+     * @param EntityManagerInterface $entityManager
+     * @param Import\Integrity\ImportLineFactory $importLineFactory
      * @param BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
      */
-    public function __construct(EntityManagerInterface $entityManager, Import\Integrity\ImportLineFactory $importLineFactory,
-                                BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
-    )
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        Import\Integrity\ImportLineFactory $importLineFactory,
+        BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
+    ) {
         $this->entityManager = $entityManager;
         $this->importLineFactory = $importLineFactory;
         $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
@@ -55,6 +60,7 @@ class HouseholdDecoratorBuilder
 
         $household = new HouseholdCreateInputType();
         $this->fillHousehold($household, $importQueue->getImport()->getCountryIso3());
+
         return $household;
     }
 
@@ -65,6 +71,7 @@ class HouseholdDecoratorBuilder
 
         $household = new HouseholdUpdateInputType();
         $this->fillHousehold($household, $importQueue->getImport()->getCountryIso3());
+
         return $household;
     }
 
@@ -99,7 +106,7 @@ class HouseholdDecoratorBuilder
         }
 
         // defined must be Camp or Address - it's checked in Integrity Checking
-        if($this->householdLine->isCampValid()){
+        if ($this->householdLine->isCampValid()) {
             $household->setCampAddress($this->buildCampAddress($this->householdLine, $countryIso3));
         } else {
             /** @var LocationRepository $locationRepository */
@@ -108,7 +115,7 @@ class HouseholdDecoratorBuilder
                 EnumTrait::normalizeValue($this->householdLine->adm1),
                 EnumTrait::normalizeValue($this->householdLine->adm2),
                 EnumTrait::normalizeValue($this->householdLine->adm3),
-                EnumTrait::normalizeValue($this->householdLine->adm4)
+                EnumTrait::normalizeValue($this->householdLine->adm4),
             ];
             $locationsArray = array_filter($adms, function ($value) {
                 return !empty($value);
@@ -148,26 +155,48 @@ class HouseholdDecoratorBuilder
      */
     private function buildNamelessMembers(): iterable
     {
-        foreach ($this->buildMembersByAgeAndGender('F', 1, $this->householdLine->f0 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('M', 1, $this->householdLine->m0 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('F', 3, $this->householdLine->f2 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('M', 3, $this->householdLine->m2 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('F', 7, $this->householdLine->f6 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('M', 7, $this->householdLine->m6 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('F', 19, $this->householdLine->f18 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('M', 19, $this->householdLine->m18 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('F', 66, $this->householdLine->f60 ?? 0) as $bnf) { yield $bnf; }
-        foreach ($this->buildMembersByAgeAndGender('M', 66, $this->householdLine->m60 ?? 0) as $bnf) { yield $bnf; }
+        foreach ($this->buildMembersByAgeAndGender('F', 1, $this->householdLine->f0 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('M', 1, $this->householdLine->m0 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('F', 3, $this->householdLine->f2 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('M', 3, $this->householdLine->m2 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('F', 7, $this->householdLine->f6 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('M', 7, $this->householdLine->m6 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('F', 19, $this->householdLine->f18 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('M', 19, $this->householdLine->m18 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('F', 66, $this->householdLine->f60 ?? 0) as $bnf) {
+            yield $bnf;
+        }
+        foreach ($this->buildMembersByAgeAndGender('M', 66, $this->householdLine->m60 ?? 0) as $bnf) {
+            yield $bnf;
+        }
     }
 
     private function buildMembersByAgeAndGender(string $gender, int $age, int $count): iterable
     {
-        if (0 === $count) return;
-        $today = new \DateTimeImmutable();
+        if (0 === $count) {
+            return;
+        }
+        $today = new DateTimeImmutable();
 
-        for ($i=0; $i<$count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $beneficiary = new BeneficiaryInputType();
-            $beneficiary->setDateOfBirth($today->modify("-$age year")->format(\DateTimeInterface::ISO8601));
+            $beneficiary->setDateOfBirth($today->modify("-$age year")->format(DateTimeInterface::ISO8601));
             $beneficiary->setGender($gender);
             $beneficiary->setIsHead(false);
             yield $beneficiary;
@@ -201,7 +230,7 @@ class HouseholdDecoratorBuilder
             EnumTrait::normalizeValue($line->adm1),
             EnumTrait::normalizeValue($line->adm2),
             EnumTrait::normalizeValue($line->adm3),
-            EnumTrait::normalizeValue($line->adm4)
+            EnumTrait::normalizeValue($line->adm4),
         ];
 
         $locationsArray = array_filter($adms, function ($value) {
@@ -215,5 +244,4 @@ class HouseholdDecoratorBuilder
 
         return $campInput;
     }
-
 }

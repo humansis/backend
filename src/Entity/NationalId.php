@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Entity;
 
@@ -94,11 +96,11 @@ class NationalId
     /**
      * Set beneficiary.
      *
-     * @param \Entity\Person|null $person
+     * @param Person|null $person
      *
      * @return NationalId
      */
-    public function setPerson(\Entity\Person $person = null)
+    public function setPerson(Person $person = null)
     {
         $this->person = $person;
 
@@ -108,7 +110,7 @@ class NationalId
     /**
      * Get beneficiary.
      *
-     * @return \Entity\Person|null
+     * @return Person|null
      */
     public function getPerson()
     {

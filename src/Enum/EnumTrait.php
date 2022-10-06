@@ -1,30 +1,35 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
 
 trait EnumTrait
 {
-    public static abstract function values(): array;
+    abstract public static function values(): array;
 
     /**
      * @return string[][] key = value, value = array of possible values from API
      */
-    public static function apiAlternatives(): array {
+    public static function apiAlternatives(): array
+    {
         return [];
     }
 
     /**
      * @return string[] key = value, value to return to API
      */
-    protected static function apiMap(): array {
+    protected static function apiMap(): array
+    {
         if (!isset(self::$values)) {
             $values = [];
             foreach (self::values() as $value) {
                 $values[$value] = $value;
             }
+
             return $values;
         }
+
         return array_flip(self::$values);
     }
 
@@ -66,8 +71,10 @@ trait EnumTrait
      */
     public static function valueToAPI($value)
     {
-        if (!isset(self::apiMap()[$value]))
+        if (!isset(self::apiMap()[$value])) {
             throw new EnumApiValueNoFoundException(__CLASS__, $value);
+        }
+
         return self::apiMap()[$value];
     }
 
@@ -86,7 +93,10 @@ trait EnumTrait
             //removes every character which is not a number or a letter
             return preg_replace('|[\W_]+|', '', $lowered);
         }
-        if (is_bool($value)) return $value === true ? 'true' : 'false';
+        if (is_bool($value)) {
+            return $value === true ? 'true' : 'false';
+        }
+
         return (string) $value;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Assistance\Scoring;
@@ -6,6 +7,7 @@ namespace Component\Assistance\Scoring;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
+use ReflectionClass;
 use Repository\CountrySpecificAnswerRepository;
 use Repository\CountrySpecificRepository;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
@@ -39,8 +41,7 @@ final class ScoringResolver
         RulesEnum $enumResolver,
         CountrySpecificRepository $countrySpecificRepository,
         CountrySpecificAnswerRepository $countrySpecificAnswerRepository
-    )
-    {
+    ) {
         $this->customComputation = $customComputation;
         $this->enumResolver = $enumResolver;
         $this->countrySpecificRepository = $countrySpecificRepository;
@@ -86,7 +87,7 @@ final class ScoringResolver
      */
     private function customComputation(Household $household, ScoringRule $rule): int
     {
-        $customComputationReflection = new \ReflectionClass(RulesCalculation::class);
+        $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
         if (!$customComputationReflection->hasMethod($rule->getFieldName())) {
             //TODO zalogovat? dát někam vědět?

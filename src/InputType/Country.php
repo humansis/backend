@@ -1,12 +1,13 @@
 <?php
+
 namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
 class Country implements InputTypeInterface
 {
-    const HEADER_KEY = 'country';
-    const REQUEST_KEY = '__country';
+    public const HEADER_KEY = 'country';
+    public const REQUEST_KEY = '__country';
 
     /**
      * @var string
@@ -17,6 +18,7 @@ class Country implements InputTypeInterface
 
     /**
      * Country constructor.
+     *
      * @param $iso3Code
      */
     public function __construct(string $iso3Code)

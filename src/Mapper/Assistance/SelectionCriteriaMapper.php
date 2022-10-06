@@ -1,10 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
 use Component\Assistance\Domain\SelectionCriteria as SelectionCriteriaDomain;
 use Component\Assistance\SelectionCriteriaFactory;
 use Entity\Assistance\SelectionCriteria;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class SelectionCriteriaMapper implements MapperInterface
@@ -45,7 +48,7 @@ class SelectionCriteriaMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SelectionCriteria::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SelectionCriteria::class . ', ' . get_class($object) . ' given.');
     }
 
     private function isGenderCriterium(): bool
@@ -69,6 +72,7 @@ class SelectionCriteriaMapper implements MapperInterface
         if ($this->isGenderCriterium()) {
             return 'gender';
         }
+
         return $this->object->getFieldString();
     }
 
@@ -82,6 +86,7 @@ class SelectionCriteriaMapper implements MapperInterface
         if ($this->isGenderCriterium()) {
             return (1 == $this->object->getValueString()) ? 'M' : 'F';
         }
+
         return $this->criteriaDomain->getTypedValue();
     }
 

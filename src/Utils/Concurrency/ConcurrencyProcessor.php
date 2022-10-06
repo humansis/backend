@@ -1,21 +1,31 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils\Concurrency;
+
+use Exception;
 
 class ConcurrencyProcessor
 {
     /** @var int */
     private $batchSize = 10;
+
     /** @var callable */
     private $countAllCallback;
+
     /** @var callable */
     private $lockBatchCallback;
+
     /** @var callable */
     private $batchItemsCallback;
+
     /** @var callable */
     private $batchUnlockCallback;
+
     /** @var callable */
     private $batchCleanupCallback;
+
     /** @var int */
     private $maxResultsToProcess;
 
@@ -87,10 +97,9 @@ class ConcurrencyProcessor
     public function setBatchCleanupCallback(callable $batchCleanupCallback): ConcurrencyProcessor
     {
         $this->batchCleanupCallback = $batchCleanupCallback;
+
         return $this;
     }
-
-
 
     /**
      * @param int $maxResultsToProcess
@@ -114,13 +123,13 @@ class ConcurrencyProcessor
         $lockItemsCallback = $this->lockBatchCallback;
         $getBatchCallback = $this->batchItemsCallback;
         $batchUnlockCallback = $this->batchUnlockCallback;
-        $batchCleanupCallback = $this->batchCleanupCallback ?? function () {};
+        $batchCleanupCallback = $this->batchCleanupCallback ?? function () {
+        };
         $itemCount = $allItemCountCallback();
 
         if ($itemCount === 0) {
             return;
         }
-
 
         $totalItemsToProcess = $itemCount > $this->maxResultsToProcess ? $this->maxResultsToProcess : $itemCount;
         $rounds = ceil($totalItemsToProcess / $this->batchSize);
@@ -131,7 +140,7 @@ class ConcurrencyProcessor
             foreach ($itemsToProceed as $item) {
                 try {
                     $processItemCallback($item);
-                } catch (\Exception $ex) {
+                } catch (Exception $ex) {
                     $batchUnlockCallback($runCode);
                     break;
                 }

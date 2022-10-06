@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Assistance;
@@ -11,13 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
 {
-
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank
      */
     protected $justification;
-
 
     /**
      * @Assert\Type("array")
@@ -95,10 +94,4 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
 
         return $this;
     }
-
-
-
-
-
-
 }

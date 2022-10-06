@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,12 +12,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220901125618 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql(<<<SQL
+        $this->addSql(
+            <<<SQL
             CREATE OR REPLACE VIEW view_smartcard_preliminary_invoice AS
             SELECT IF(
                        a.project_id IS NOT NULL,
@@ -45,15 +48,17 @@ final class Version20220901125618 extends AbstractMigration
                 LEFT JOIN assistance a on spa.sp_ass = a.id
             GROUP BY spa.currency, a.project_id, spa.vendor_id
             ORDER BY spa.currency, a.project_id, spa.vendor_id;
-        SQL);
+        SQL
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql(<<<SQL
+        $this->addSql(
+            <<<SQL
             CREATE OR REPLACE VIEW view_smartcard_preliminary_invoice AS
                 SELECT IF(a.project_id IS NOT NULL, CONCAT(sp.vendor_id, "_", spr.currency, "_", a.project_id),
                           CONCAT(sp.vendor_id, "_", spr.currency, "_", "NULL")) AS id,
@@ -71,6 +76,7 @@ final class Version20220901125618 extends AbstractMigration
                   AND currency IS NOT NULL
                 GROUP BY spr.currency, a.project_id, sp.vendor_id
                 ORDER BY spr.currency, a.project_id, sp.vendor_id;
-        SQL);
+        SQL
+        );
     }
 }

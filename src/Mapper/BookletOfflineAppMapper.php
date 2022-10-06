@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use Entity\Voucher;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Booklet;
 
@@ -32,7 +35,7 @@ class BookletOfflineAppMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Booklet::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Booklet::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -57,7 +60,7 @@ class BookletOfflineAppMapper implements MapperInterface
 
     public function getVoucherValues(): array
     {
-        $fn = function (\Entity\Voucher $item) {
+        $fn = function (Voucher $item) {
             return $item->getValue();
         };
 

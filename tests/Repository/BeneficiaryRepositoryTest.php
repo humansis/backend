@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Tests\Repository;
-
 
 use Entity\Beneficiary;
 use Entity\Household;
@@ -17,7 +15,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     /** @var EntityManagerInterface */
     private $em;
 
-
     protected function setUp(): void
     {
         $kernel = self::bootKernel();
@@ -27,7 +24,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
             ->getManager();
     }
 
-
     public function countByHouseholdDataProvider()
     {
         return [
@@ -35,7 +31,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
             '4 beneficiaries' => [3, 4],
         ];
     }
-
 
     /**
      * @param int $householdId
@@ -59,7 +54,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
 
         $this->assertEquals($expectedBeneficiariesCount, $beneficiariesCount);
     }
-
 
     protected function tearDown(): void
     {

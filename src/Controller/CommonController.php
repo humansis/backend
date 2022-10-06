@@ -6,6 +6,7 @@ namespace Controller;
 
 use Entity\Household;
 use Pagination\Paginator;
+use Punic\Language;
 use Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Country\Countries;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use UnexpectedValueException;
+use ZipArchive;
 
 class CommonController extends AbstractController
 {
@@ -34,8 +37,7 @@ class CommonController extends AbstractController
         Countries $countries,
         string $translationsDir,
         TranslatorInterface $translator
-    )
-    {
+    ) {
         $this->countries = $countries;
         $this->translationsDir = $translationsDir;
         $this->translator = $translator;
@@ -74,7 +76,7 @@ class CommonController extends AbstractController
                     $result[] = ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)];
                     break;
                 default:
-                    throw new BadRequestHttpException('Invalid query parameter code.'.$code);
+                    throw new BadRequestHttpException('Invalid query parameter code.' . $code);
             }
         }
 
@@ -123,7 +125,7 @@ class CommonController extends AbstractController
         foreach ($this->getParameter('app.locales') as $locale) {
             $data[] = [
                 'code' => $locale,
-                'value' => \Punic\Language::getName($locale),
+                'value' => Language::getName($locale),
             ];
         }
 
@@ -161,7 +163,7 @@ class CommonController extends AbstractController
     public function translations(string $language): JsonResponse
     {
         if (!in_array($language, $this->getParameter('app.locales'))) {
-            throw $this->createNotFoundException('Locale '.$language.' does not exists.');
+            throw $this->createNotFoundException('Locale ' . $language . ' does not exists.');
         }
 
         $data = [];
@@ -191,17 +193,17 @@ class CommonController extends AbstractController
             ->name('*.xlf') //only files with translations
             ->notName('*.en.xlf'); //exclude source keys
         if (!$finder->hasResults()) {
-            throw new \UnexpectedValueException('No translations found');
+            throw new UnexpectedValueException('No translations found');
         }
 
         $filename = 'translations' . time() . '.zip';
-        $zip = new \ZipArchive();
-        $zip->open($filename,  \ZipArchive::CREATE);
+        $zip = new ZipArchive();
+        $zip->open($filename, ZipArchive::CREATE);
         foreach ($finder as $file) {
             $zip->addFile($file->getRealPath(), $file->getFilename()); //add file but flatten path
         }
         $zip->close();
-        
+
         $response = new BinaryFileResponse($filename);
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
@@ -228,7 +230,7 @@ class CommonController extends AbstractController
 
         $country = $this->countries->getCountry($countryIso3);
         if (null === $country) {
-            throw $this->createNotFoundException('Country '.$countryIso3.' does not exists.');
+            throw $this->createNotFoundException('Country ' . $countryIso3 . ' does not exists.');
         }
 
         return $this->json([

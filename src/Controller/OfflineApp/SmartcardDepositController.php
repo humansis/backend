@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
@@ -37,7 +40,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/smartcard-deposits")
      *
-     * @param Request                         $request
+     * @param Request $request
      * @param SmartcardDepositFilterInputType $filter
      *
      * @return JsonResponse
@@ -60,7 +63,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @Rest\Get("/offline-app/v1/last-smartcard-deposit/{id}")
      *
      * @param SmartcardDeposit $smartcardDeposit
-     * @param Request          $request
+     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -78,30 +81,29 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * Put money to smartcard. If smartcard does not exist, it will be created.
      *
      * @Rest\Post("/offline-app/v4/smartcards/{serialNumber}/deposit")
-     * @deprecated Use /offline-app/v5/smartcards/{serialNumber}/deposit instead (version with Relief package)
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     * @param string                          $serialNumber
-     * @param Request                         $request
-     * @param DepositInputType                $depositInputType
-     * @param DepositFactory                  $depositFactory
-     * @param ReliefPackageRepository         $reliefPackageRepository
+     * @param string $serialNumber
+     * @param Request $request
+     * @param DepositInputType $depositInputType
+     * @param DepositFactory $depositFactory
+     * @param ReliefPackageRepository $reliefPackageRepository
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      *
      * @return Response
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws InvalidArgumentException
      * @throws DoubledDepositException
+     * @deprecated Use /offline-app/v5/smartcards/{serialNumber}/deposit instead (version with Relief package)
+     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
+     *
      */
     public function depositLegacy(
-        string                          $serialNumber,
-        Request                         $request,
-        DepositFactory                  $depositFactory,
-        ReliefPackageRepository         $reliefPackageRepository,
+        string $serialNumber,
+        Request $request,
+        DepositFactory $depositFactory,
+        ReliefPackageRepository $reliefPackageRepository,
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
     ): Response {
-
         $depositInputType = new DepositInputType();
         $assistanceId = $request->request->getInt('assistanceId');
         $beneficiaryId = $request->request->getInt('beneficiaryId');
@@ -113,11 +115,16 @@ class SmartcardDepositController extends AbstractOfflineAppController
             }
 
             // try to find relief package with correct state
-            $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($assistanceBeneficiary,
-                ReliefPackageState::TO_DISTRIBUTE);
+            $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
+                $assistanceBeneficiary,
+                ReliefPackageState::TO_DISTRIBUTE
+            );
             if (!$reliefPackage) {  // try to find relief package with incorrect state but created before distribution date
-                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($assistanceBeneficiary, null,
-                    $depositInputType->getCreatedAt());
+                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
+                    $assistanceBeneficiary,
+                    null,
+                    $depositInputType->getCreatedAt()
+                );
             }
             if (!$reliefPackage) {  // try to find any relief package for distribution
                 $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($assistanceBeneficiary);
@@ -142,9 +149,10 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 $request->get('serialNumber', 'missing'),
                 json_encode($request->request->all())
             );
+
             // due to PIN-2943 was removed exception propagation
             return new Response();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->writeData(
                 'depositV4',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
@@ -160,10 +168,10 @@ class SmartcardDepositController extends AbstractOfflineAppController
     /**
      * @Rest\Post("/offline-app/v5/smartcards/{serialNumber}/deposit")
      *
-     * @param Request          $request
-     * @param string           $serialNumber
+     * @param Request $request
+     * @param string $serialNumber
      * @param DepositInputType $depositInputType
-     * @param DepositFactory   $depositFactory
+     * @param DepositFactory $depositFactory
      *
      * @return Response
      * @throws DoubledDepositException
@@ -184,7 +192,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
             );
         } catch (DoubledDepositException $e) {
             return new Response('', Response::HTTP_ACCEPTED);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->writeData(
                 'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
@@ -199,8 +207,8 @@ class SmartcardDepositController extends AbstractOfflineAppController
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
     {
-        $filename = $this->logsDir.'/';
-        $filename .= implode('_', ['SC-invalidData', $type, 'vendor-'.$user, 'sc-'.$smartcard.'.json']);
+        $filename = $this->logsDir . '/';
+        $filename .= implode('_', ['SC-invalidData', $type, 'vendor-' . $user, 'sc-' . $smartcard . '.json']);
         $logFile = fopen($filename, "a+");
         fwrite($logFile, $data);
         fclose($logFile);

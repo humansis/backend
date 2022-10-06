@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\File\Exception;
 
-class UploadException extends \RuntimeException
-{
+use RuntimeException;
 
+class UploadException extends RuntimeException
+{
 }

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Utils\FileSystem;
-
 
 use InvalidArgumentException;
 use Utils\FileSystem\PathConstructor;
@@ -40,7 +40,7 @@ class PathConstructorTest extends TestCase
      * @dataProvider constructDataProvider
      *
      * @param string $template
-     * @param array  $params
+     * @param array $params
      * @param string $expectedResultPath
      */
     public function testConstruct(string $template, array $params, string $expectedResultPath)
@@ -57,5 +57,3 @@ class PathConstructorTest extends TestCase
         PathConstructor::construct('/<<param1>>/<<param2>>', ['param1' => 'test']);
     }
 }
-
-

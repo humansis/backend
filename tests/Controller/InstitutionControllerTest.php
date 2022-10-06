@@ -74,7 +74,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -137,13 +137,13 @@ class InstitutionControllerTest extends BMSServiceTestCase
             ],
         ];
 
-        $this->request('PUT', '/api/basic/web-app/v1/institutions/'.$id, $data);
+        $this->request('PUT', '/api/basic/web-app/v1/institutions/' . $id, $data);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -175,13 +175,13 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/institutions/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/institutions/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -214,7 +214,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -232,7 +232,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/institutions/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/institutions/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -249,7 +249,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/institutions/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/institutions/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }
@@ -266,15 +266,18 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no institution to be tested');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$institution->getProjects()[0]->getId().'/institutions');
+        $this->request('GET', '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/institutions');
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "totalCount": "*", 
+        $this->assertJsonFragment(
+            '{
+            "totalCount": "*",
             "data": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 }

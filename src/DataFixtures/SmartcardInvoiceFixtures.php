@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DataFixtures;
 
@@ -18,7 +20,7 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     private $smartcardService;
 
     /**
-     * @param string           $environment
+     * @param string $environment
      * @param SmartcardService $smartcardService
      */
     public function __construct(string $environment, SmartcardService $smartcardService)

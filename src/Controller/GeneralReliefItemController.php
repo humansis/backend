@@ -31,7 +31,7 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v2/general-relief-items/{id}")
      *
-     * @param GeneralReliefItem           $object
+     * @param GeneralReliefItem $object
      * @param GeneralReliefPatchInputType $inputType
      *
      * @return JsonResponse
@@ -44,7 +44,7 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/general-relief-items/{id}")
      *
-     * @param Request           $request
+     * @param Request $request
      * @param GeneralReliefItem $object
      *
      * @return JsonResponse
@@ -58,9 +58,9 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/general-relief-items")
      *
-     * @param Request                      $request
+     * @param Request $request
      * @param GeneralReliefFilterInputType $filter
-     * @param Pagination                   $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */

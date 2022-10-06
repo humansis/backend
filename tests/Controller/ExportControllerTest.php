@@ -2,7 +2,10 @@
 
 namespace Tests\Controller;
 
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\Project;
+use Exception;
 use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use Entity\UserProject;
@@ -10,7 +13,7 @@ use Entity\UserProject;
 class ExportControllerTest extends BMSServiceTestCase
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function setUp(): void
     {
@@ -26,17 +29,17 @@ class ExportControllerTest extends BMSServiceTestCase
     {
         $allTypes = ['csv', 'pdf', 'xlsx', 'ods'];
         $exceptPdf = ['csv', 'xlsx', 'ods'];
-        $emptyFilter = ['filter'=>[], 'sort'=>[''], 'pageIndex'=>0, 'pageSize'=>-1, 'sort'=>['sort'=>null,'direction'=>null]];
+        $emptyFilter = ['filter' => [], 'sort' => [''], 'pageIndex' => 0, 'pageSize' => -1, 'sort' => ['sort' => null, 'direction' => null]];
         $availableExports = [
             'Assistance' => [$allTypes, 'distributions=2'],
-            'Assistance2' => [$allTypes, 'officialDistributions=2' ],
-            'Beneficiaries' => [$exceptPdf, 'beneficiaries=true', ['ids'=>[2,3]]],
+            'Assistance2' => [$allTypes, 'officialDistributions=2'],
+            'Beneficiaries' => [$exceptPdf, 'beneficiaries=true', ['ids' => [2, 3]]],
             'Beneficiaries in Distribution' => [$allTypes, 'beneficiariesInDistribution=1'],
             'Users' => [$exceptPdf, 'users=true'],
             'Countries' => [$exceptPdf, 'countries=true'],
             'Donors' => [$exceptPdf, 'donors=true'],
             'Project in country' => [$exceptPdf, 'projects=ARM'],
-            'Booklets' => [$allTypes, 'bookletCodes=true', ['ids'=>[1, 2, 3, 4]]],
+            'Booklets' => [$allTypes, 'bookletCodes=true', ['ids' => [1, 2, 3, 4]]],
             // 'General assistance' => [$allTypes, 'generalreliefDistribution=2'], TODO: fix Fixtures to make testable assistance
             'Voucher assistance' => [$allTypes, 'voucherDistribution=4'],
             'Transaction assistance' => [$allTypes, 'transactionDistribution=1'],
@@ -47,9 +50,10 @@ class ExportControllerTest extends BMSServiceTestCase
         $expandedTypes = [];
         foreach ($availableExports as $name => $export) {
             foreach ($export[0] as $type) {
-                $expandedTypes[$name." into ".$type] = [$type, $export[1], $export[2] ?? []];
+                $expandedTypes[$name . " into " . $type] = [$type, $export[1], $export[2] ?? []];
             }
         }
+
         return $expandedTypes;
     }
 
@@ -58,18 +62,18 @@ class ExportControllerTest extends BMSServiceTestCase
      *
      * @param string $type
      * @param string $otherQuery
-     * @param array  $body
+     * @param array $body
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function testExport(string $type, string $otherQuery, array $body = [])
     {
         $this->markTestSkipped('Export tests takes too much time. It kills processing.');
 
-        $url = "/api/basic/export?type=$type&".$otherQuery;
+        $url = "/api/basic/export?type=$type&" . $otherQuery;
         $crawler = $this->request('POST', $url, $body);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request $url failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request $url failed: " . $this->client->getResponse()->getContent());
     }
 }

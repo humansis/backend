@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Controller\OfflineApp;
 
@@ -15,7 +17,7 @@ class AuthControllerTest extends BMSServiceTestCase
     private const PASSWORD = 'pin1234';
     private const USER = 'test-no-vendor@test.org';
 
-    /** @var EntityRepository|ObjectRepository|UserRepository  */
+    /** @var EntityRepository|ObjectRepository|UserRepository */
     private $userRepository;
 
     /** @var User */
@@ -43,7 +45,7 @@ class AuthControllerTest extends BMSServiceTestCase
     private function getUser(): User
     {
         $user = $this->userRepository->findOneBy(['username' => self::USER]);
-        if(is_null($user)){
+        if (is_null($user)) {
             $user = new User();
             $user->setUsername('test-no-vendor@test.org');
             $user->setUsernameCanonical('test-no-vendor@test.org');
@@ -82,7 +84,7 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body));
 
         $responseBody = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: ".$this->client->getResponse()->getContent());
+        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: " . $this->client->getResponse()->getContent());
         $this->assertTrue(gettype($responseBody) == 'array');
         $this->assertArrayHasKey('id', $responseBody);
         $this->assertArrayHasKey('username', $responseBody);

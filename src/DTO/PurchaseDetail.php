@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace DTO;
 
-class PurchaseDetail implements \JsonSerializable
+use DateTimeInterface;
+use JsonSerializable;
+
+class PurchaseDetail implements JsonSerializable
 {
-    /** @var \DateTimeInterface */
+    /** @var DateTimeInterface */
     private $date;
 
     /** @var int */
@@ -30,16 +33,16 @@ class PurchaseDetail implements \JsonSerializable
     /**
      * PurchaseDetail constructor.
      *
-     * @param \DateTimeInterface $date
-     * @param int                $beneficiaryId
-     * @param string|null        $beneficiaryEnGivenName
-     * @param string|null        $beneficiaryEnFamilyName
-     * @param string|null        $beneficiaryLocalGivenName
-     * @param string|null        $beneficiaryLocalFamilyName
-     * @param string             $amount
+     * @param DateTimeInterface $date
+     * @param int $beneficiaryId
+     * @param string|null $beneficiaryEnGivenName
+     * @param string|null $beneficiaryEnFamilyName
+     * @param string|null $beneficiaryLocalGivenName
+     * @param string|null $beneficiaryLocalFamilyName
+     * @param string $amount
      */
     public function __construct(
-        \DateTimeInterface $date,
+        DateTimeInterface $date,
         int $beneficiaryId,
         ?string $beneficiaryEnGivenName,
         ?string $beneficiaryEnFamilyName,
@@ -57,9 +60,9 @@ class PurchaseDetail implements \JsonSerializable
     }
 
     /**
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDate(): \DateTimeInterface
+    public function getDate(): DateTimeInterface
     {
         return $this->date;
     }

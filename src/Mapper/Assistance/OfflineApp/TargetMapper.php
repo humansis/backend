@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\OfflineApp;
@@ -31,8 +32,10 @@ class TargetMapper extends AbstractTargetMapper
 
     public function getBookletIds(): array
     {
-        return array_values(array_map(function (Booklet $booklet) {
-            return $booklet->getId();
-        }, $this->object->getBooklets()->toArray()));
+        return array_values(
+            array_map(function (Booklet $booklet) {
+                return $booklet->getId();
+            }, $this->object->getBooklets()->toArray())
+        );
     }
 }

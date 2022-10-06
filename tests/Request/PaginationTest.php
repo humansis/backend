@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Request;
 
+use InvalidArgumentException;
 use Request\Pagination;
 use PHPUnit\Framework\TestCase;
 
@@ -10,14 +12,14 @@ class PaginationTest extends TestCase
 {
     public function testFirstPaginationArgumentShouldBeGreaterThanZero()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Pagination(0, 0);
     }
 
     public function testSecondPaginationArgumentShouldBeGreaterThanZero()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         new Pagination(1, 0);
     }

@@ -1,9 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTimeInterface;
 use Entity\Assistance;
+use Exception;
+use InvalidArgumentException;
 use Utils\AssistanceService;
 use Entity\SynchronizationBatch;
 use Serializer\MapperInterface;
@@ -32,7 +36,7 @@ class SynchronizationBatchMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.SynchronizationBatch::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SynchronizationBatch::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -47,20 +51,19 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidationType(): string
     {
-        switch (get_class($this->object))
-        {
+        switch (get_class($this->object)) {
             case SynchronizationBatch\Deposits::class:
                 return 'Deposit';
             case SynchronizationBatch\Purchases::class:
                 return 'Purchase';
             default:
-                throw new \Exception("Unknown validation type");
+                throw new Exception("Unknown validation type");
         }
     }
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(\DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
     }
 
     public function getCreatedBy(): int
@@ -90,6 +93,6 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidatedAt(): ?string
     {
-        return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(\DateTimeInterface::ISO8601) : null;
+        return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(DateTimeInterface::ISO8601) : null;
     }
 }

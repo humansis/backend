@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Command\Import;
@@ -7,6 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\ImportService;
 use Entity\Import;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,19 +22,22 @@ abstract class AbstractImportQueueCommand extends Command
 
     /** @var Import[] */
     protected $imports = [];
+
     /** @var ObjectManager */
     protected $manager;
+
     /** @var ImportService */
     protected $importService;
+
     /** @var WorkflowInterface */
     protected $importStateMachine;
 
     /**
      * AbstractImportQueueCommand constructor.
      *
-     * @param ObjectManager                                 $manager
-     * @param ImportService                                 $importService
-     * @param LoggerInterface                               $importLogger
+     * @param ObjectManager $manager
+     * @param ImportService $importService
+     * @param LoggerInterface $importLogger
      * @param WorkflowInterface $importStateMachine
      */
     public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine)
@@ -63,29 +68,29 @@ abstract class AbstractImportQueueCommand extends Command
                 $this->imports = [$byTitle];
             }
             if (!$byId && !$byTitle) {
-                throw new \InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
+                throw new InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
             }
         }
+
         return 0;
     }
 
     /**
      * @param Import[] $imports
-     * @param string   $commandType
+     * @param string $commandType
      */
     protected function logAffectedImports(iterable $imports, string $commandType): void
     {
         $count = 0;
         $importsByCountry = [];
         foreach ($imports as $import) {
-            $importsByCountry[$import->getCountryIso3()][] = '#'.$import->getId()."|".$import->getState();
+            $importsByCountry[$import->getCountryIso3()][] = '#' . $import->getId() . "|" . $import->getState();
             $count++;
         }
         $countryList = [];
         foreach ($importsByCountry as $country => $ids) {
-            $countryList[] = $country.'('.implode(', ', $ids).')';
+            $countryList[] = $country . '(' . implode(', ', $ids) . ')';
         }
-        $this->logger->info("$commandType will affect $count imports: ".implode(' ', $countryList));
+        $this->logger->info("$commandType will affect $count imports: " . implode(' ', $countryList));
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Repository;
@@ -9,19 +10,25 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\SynchronizationBatch\Deposits;
 use Entity\SynchronizationBatch\Purchases;
 use InputType\SynchronizationBatch;
+use InvalidArgumentException;
 use Request\Pagination;
 
 class SynchronizationBatchRepository extends EntityRepository
 {
-    public function findByParams(?Country $country, ?Pagination $pagination = null, ?SynchronizationBatch\FilterInputType $filter = null, ?SynchronizationBatch\OrderInputType $orderBy = null): Paginator
-    {
+    public function findByParams(
+        ?Country $country,
+        ?Pagination $pagination = null,
+        ?SynchronizationBatch\FilterInputType $filter = null,
+        ?SynchronizationBatch\OrderInputType $orderBy = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('s');
 
         if ($filter) {
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('s.createdBy', 'u');
                 $qb->leftJoin('u.vendor', 'v');
-                $qb->andWhere('(
+                $qb->andWhere(
+                    '(
                     s.id LIKE :fulltextId OR
                     u.email LIKE :fulltext OR
                     u.username LIKE :fulltext OR
@@ -29,9 +36,10 @@ class SynchronizationBatchRepository extends EntityRepository
                     v.vendorNo LIKE :fulltextId OR
                     v.contractNo LIKE :fulltextId OR
                     v.name LIKE :fulltext
-                )');
+                )'
+                );
                 $qb->setParameter('fulltextId', $filter->getFulltext());
-                $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                $qb->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
 
             if ($filter->hasStates()) {
@@ -41,8 +49,12 @@ class SynchronizationBatchRepository extends EntityRepository
 
             if ($filter->hasType()) {
                 $qb->andWhere('s INSTANCE OF :type');
-                if ($filter->getType() == 'Deposit') $qb->setParameter('type', Deposits::class);
-                if ($filter->getType() == 'Purchase') $qb->setParameter('type', Purchases::class);
+                if ($filter->getType() == 'Deposit') {
+                    $qb->setParameter('type', Deposits::class);
+                }
+                if ($filter->getType() == 'Purchase') {
+                    $qb->setParameter('type', Purchases::class);
+                }
             }
         }
 
@@ -59,7 +71,7 @@ class SynchronizationBatchRepository extends EntityRepository
                         $qb->orderBy('s.createdAt', $direction);
                         break;
                     default:
-                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }

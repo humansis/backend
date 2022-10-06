@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Enum;
 
@@ -22,5 +24,4 @@ class CriteriaValueTransformerEnum
             self::CONVERT_TO_BOOL,
         ];
     }
-
 }

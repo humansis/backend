@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,23 +12,26 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20211115134701 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE location
+        $this->addSql(
+            'ALTER TABLE location
             ADD parent_location_id INT DEFAULT NULL,
             ADD name VARCHAR(255) DEFAULT NULL,
             ADD countryISO3 VARCHAR(3) DEFAULT NULL,
             ADD code VARCHAR(255) DEFAULT NULL,
             ADD nested_tree_level INT DEFAULT NULL,
             ADD nested_tree_left INT DEFAULT NULL,
-            ADD nested_tree_right INT DEFAULT NULL');
+            ADD nested_tree_right INT DEFAULT NULL'
+        );
         $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB6D6133FE FOREIGN KEY (parent_location_id) REFERENCES location (id)');
         $this->addSql('CREATE INDEX IDX_5E9E89CB6D6133FE ON location (parent_location_id)');
 
-        $this->addSql("
+        $this->addSql(
+            "
             UPDATE location l INNER JOIN adm1 as adm ON l.id=adm.location_id
             SET
                 l.parent_location_id=NULL,
@@ -34,9 +39,11 @@ final class Version20211115134701 extends AbstractMigration
                 l.countryISO3=adm.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=1
-            ;");
+            ;"
+        );
 
-        $this->addSql("
+        $this->addSql(
+            "
             UPDATE location l
                 INNER JOIN adm2 as adm ON l.id=adm.location_id
                 INNER JOIN adm1 on adm.adm1_id = adm1.id
@@ -46,9 +53,11 @@ final class Version20211115134701 extends AbstractMigration
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=2
-            ;");
+            ;"
+        );
 
-        $this->addSql("
+        $this->addSql(
+            "
             UPDATE location l
                 INNER JOIN adm3 as adm ON l.id=adm.location_id
                 INNER JOIN adm2 on adm.adm2_id = adm2.id
@@ -59,9 +68,11 @@ final class Version20211115134701 extends AbstractMigration
                 l.countryISO3=adm1.countryISO3,
                 l.code=adm.code,
                 l.nested_tree_level=3
-            ;");
+            ;"
+        );
 
-        $this->addSql("
+        $this->addSql(
+            "
             UPDATE location l
                 INNER JOIN adm4 as adm ON l.id=adm.location_id
                 INNER JOIN adm3 on adm.adm3_id = adm3.id
@@ -74,12 +85,14 @@ final class Version20211115134701 extends AbstractMigration
                 l.code=adm.code,
                 l.nested_tree_level=4
             ;
-        ");
+        "
+        );
 
         // recount nested set
         $this->addSql('DROP PROCEDURE IF EXISTS recalculateLocationNestedSet;');
         $this->addSql('DROP PROCEDURE IF EXISTS recalculateLocationNestedSet_recurse;');
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE PROCEDURE recalculateLocationNestedSet()
             BEGIN
                 SET @left_value = 1;
@@ -133,7 +146,8 @@ final class Version20211115134701 extends AbstractMigration
                 CLOSE roots;
                 CLOSE children;
             END;
-        ');
+        '
+        );
         $this->addSql('CALL recalculateLocationNestedSet');
 
         $this->addSql('CREATE INDEX search_name ON location (name)');
@@ -141,10 +155,9 @@ final class Version20211115134701 extends AbstractMigration
         $this->addSql('CREATE INDEX search_subtree ON location (countryISO3, nested_tree_level, nested_tree_left, nested_tree_right)');
         $this->addSql('CREATE INDEX search_superpath ON location (nested_tree_level, nested_tree_left, nested_tree_right)');
         $this->addSql('CREATE INDEX search_level ON location (countryISO3, nested_tree_left)');
-
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

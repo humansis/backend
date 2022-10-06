@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
 use Doctrine\Common\Collections\Collection;
 use Component\Assistance\DTO\DivisionSummary;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class DivisionSummaryMapper implements MapperInterface
@@ -30,7 +33,7 @@ class DivisionSummaryMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.DivisionSummary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . DivisionSummary::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getCode(): ?string

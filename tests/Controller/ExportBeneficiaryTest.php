@@ -3,6 +3,7 @@
 namespace Tests\Controller;
 
 use Entity\Beneficiary;
+use Exception;
 use Utils\ExportService;
 use Tests\BMSServiceTestCase;
 
@@ -18,7 +19,7 @@ class ExportBeneficiaryTest extends BMSServiceTestCase
 
     /**
      * @dataProvider
-     * @throws \Exception
+     * @throws Exception
      */
     public function testExport()
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
@@ -7,10 +8,10 @@ final class BeneficiaryType
 {
     use EnumTrait;
 
-    const HOUSEHOLD = 'Household';
-    const BENEFICIARY = 'Beneficiary';
-    const COMMUNITY = 'Community';
-    const INSTITUTION = 'Institution';
+    public const HOUSEHOLD = 'Household';
+    public const BENEFICIARY = 'Beneficiary';
+    public const COMMUNITY = 'Community';
+    public const INSTITUTION = 'Institution';
 
     public static function values(): array
     {

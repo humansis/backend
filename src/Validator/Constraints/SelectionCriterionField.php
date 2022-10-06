@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Validator\Constraints;
@@ -11,9 +12,9 @@ use Symfony\Component\Validator\Constraint;
  */
 class SelectionCriterionField extends Constraint
 {
-    const INVALID_FIELD_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd1';
-    const INVALID_CONDITION_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd2';
-    const INVALID_VALUE_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd3';
+    public const INVALID_FIELD_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd1';
+    public const INVALID_CONDITION_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd2';
+    public const INVALID_VALUE_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd3';
 
     protected static $errorNames = [
         self::INVALID_FIELD_ERROR => 'INVALID_FIELD_ERROR',

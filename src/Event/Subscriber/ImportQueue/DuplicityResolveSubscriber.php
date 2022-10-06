@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Event\Subscriber\ImportQueue;
 
@@ -39,10 +41,10 @@ class DuplicityResolveSubscriber implements EventSubscriberInterface
             // 'workflow.import_queue.transition.'.ImportQueueTransitions::TO_LINK => ['resolveDuplicity'],
             // 'workflow.import_queue.transition.'.ImportQueueTransitions::TO_UPDATE => ['resolveDuplicity'],
             // 'workflow.import_queue.transition.'.ImportQueueTransitions::TO_CREATE => ['resolveDuplicity'],
-            'workflow.import_queue.completed.'.ImportQueueTransitions::TO_IGNORE => ['resolveImport'],
-            'workflow.import_queue.completed.'.ImportQueueTransitions::TO_LINK => ['resolveImport'],
-            'workflow.import_queue.completed.'.ImportQueueTransitions::TO_UPDATE => ['resolveImport'],
-            'workflow.import_queue.completed.'.ImportQueueTransitions::TO_CREATE => ['resolveImport'],
+            'workflow.import_queue.completed.' . ImportQueueTransitions::TO_IGNORE => ['resolveImport'],
+            'workflow.import_queue.completed.' . ImportQueueTransitions::TO_LINK => ['resolveImport'],
+            'workflow.import_queue.completed.' . ImportQueueTransitions::TO_UPDATE => ['resolveImport'],
+            'workflow.import_queue.completed.' . ImportQueueTransitions::TO_CREATE => ['resolveImport'],
         ];
     }
 
@@ -53,7 +55,11 @@ class DuplicityResolveSubscriber implements EventSubscriberInterface
     {
         /** @var ImportQueue $importQueue */
         $importQueue = $enteredEvent->getSubject();
-        WorkflowTool::checkAndApply($this->importStateMachine, $importQueue->getImport(),
-            [ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES, ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES], false);
+        WorkflowTool::checkAndApply(
+            $this->importStateMachine,
+            $importQueue->getImport(),
+            [ImportTransitions::RESOLVE_IDENTITY_DUPLICITIES, ImportTransitions::RESOLVE_SIMILARITY_DUPLICITIES],
+            false
+        );
     }
 }

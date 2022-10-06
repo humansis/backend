@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp;
@@ -35,11 +36,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
      *
-     * @param Request                    $request
-     * @param Assistance                 $assistance
+     * @param Request $request
+     * @param Assistance $assistance
      * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param BeneficiaryOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -49,8 +50,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         BeneficiaryFilterInputType $filter,
         BeneficiaryOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -69,11 +69,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v3/assistances/{id}/targets/beneficiaries")
      *
-     * @param Request                    $request
-     * @param Assistance                 $assistance
+     * @param Request $request
+     * @param Assistance $assistance
      * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param BeneficiaryOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -83,8 +83,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         BeneficiaryFilterInputType $filter,
         BeneficiaryOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -103,11 +102,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-institutions")
      *
-     * @param Request                    $request
-     * @param Assistance                 $assistance
+     * @param Request $request
+     * @param Assistance $assistance
      * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param InstitutionOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -117,8 +116,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         InstitutionFilterInputType $filter,
         InstitutionOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -137,11 +135,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-communities")
      *
-     * @param Request                 $request
-     * @param Assistance              $assistance
-     * @param CommunityFilterType     $filter
+     * @param Request $request
+     * @param Assistance $assistance
+     * @param CommunityFilterType $filter
      * @param CommunityOrderInputType $orderBy
-     * @param Pagination              $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -151,8 +149,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         CommunityFilterType $filter,
         CommunityOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -167,5 +164,4 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
 
         return $response;
     }
-
 }

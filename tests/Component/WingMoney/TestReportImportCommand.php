@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Component\WingMoney;
@@ -19,6 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Entity\Transaction;
 use Entity\User;
+
 use function Matrix\trace;
 
 class TestReportImportCommand extends KernelTestCase

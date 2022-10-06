@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper;
 
 use Entity\Beneficiary;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class BeneficiaryOfflineAppMapper implements MapperInterface
@@ -11,8 +14,8 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
     private $object;
 
     /**
-     * @param object     $object
-     * @param null       $format
+     * @param object $object
+     * @param null $format
      * @param array|null $context
      *
      * @return bool
@@ -35,7 +38,7 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Beneficiary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -55,9 +58,11 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
 
     public function getNationalIdCards(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getPerson()->getNationalIds()->toArray())
+        );
     }
 
     public function getReferralType(): ?string

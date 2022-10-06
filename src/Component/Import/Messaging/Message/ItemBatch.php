@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Messaging\Message;
 
@@ -16,7 +18,7 @@ class ItemBatch
 
     /**
      * @SerializedName("importId")
-     * @var integer
+     * @var int
      */
     private $importId;
 
@@ -28,9 +30,9 @@ class ItemBatch
 
     /**
      * @param string|null $checkType
-     * @param int[]|null       $queueItemIds
+     * @param int[]|null $queueItemIds
      */
-    private function __construct(int $importId, ?string $checkType = null, ?array $queueItemIds=null)
+    private function __construct(int $importId, ?string $checkType = null, ?array $queueItemIds = null)
     {
         $this->queueItemIds = $queueItemIds;
         $this->checkType = $checkType;
@@ -54,12 +56,12 @@ class ItemBatch
      */
     public static function checkSingleItemIdentity(ImportQueue $item): self
     {
-        return new self($item->getImport()->getId(),ImportState::IDENTITY_CHECKING, [$item->getId()]);
+        return new self($item->getImport()->getId(), ImportState::IDENTITY_CHECKING, [$item->getId()]);
     }
 
     public static function finishSingleItem(ImportQueue $item): self
     {
-        return new self($item->getImport()->getId(),ImportState::IMPORTING, [$item->getId()]);
+        return new self($item->getImport()->getId(), ImportState::IMPORTING, [$item->getId()]);
     }
 
     /**
@@ -69,7 +71,7 @@ class ItemBatch
      */
     public static function checkSingleItemSimilarity(ImportQueue $item): self
     {
-        return new self($item->getImport()->getId(),ImportState::SIMILARITY_CHECKING, [$item->getId()]);
+        return new self($item->getImport()->getId(), ImportState::SIMILARITY_CHECKING, [$item->getId()]);
     }
 
     /**
@@ -91,7 +93,6 @@ class ItemBatch
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -134,6 +135,4 @@ class ItemBatch
             return $queue->getId();
         }, $queueItems);
     }
-
-
 }

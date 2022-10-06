@@ -2,10 +2,13 @@
 
 namespace Entity;
 
+use BadMethodCallException;
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Enum\SmartcardStates;
 
@@ -17,10 +20,10 @@ use Enum\SmartcardStates;
  */
 class Smartcard
 {
-    const STATE_UNASSIGNED = 'unassigned';
-    const STATE_ACTIVE = 'active';
-    const STATE_INACTIVE = 'inactive';
-    const STATE_CANCELLED = 'cancelled';
+    public const STATE_UNASSIGNED = 'unassigned';
+    public const STATE_ACTIVE = 'active';
+    public const STATE_INACTIVE = 'inactive';
+    public const STATE_CANCELLED = 'cancelled';
 
     /**
      * @var int
@@ -82,7 +85,7 @@ class Smartcard
     private $currency;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
@@ -90,23 +93,22 @@ class Smartcard
     private $createdAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
      * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
     private $disabledAt;
 
-
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="registered_at", type="datetime", nullable=true)
      */
     private $registeredAt;
 
     /**
-     * @var \DateTimeInterface
+     * @var DateTimeInterface
      *
      * @ORM\Column(name="changed_at", type="datetime", nullable=true)
      */
@@ -126,10 +128,10 @@ class Smartcard
      */
     private $suspiciousReason;
 
-    public function __construct(string $serialNumber, \DateTimeInterface $createdAt)
+    public function __construct(string $serialNumber, DateTimeInterface $createdAt)
     {
         if (!self::check($serialNumber)) {
-            throw new \InvalidArgumentException('Smartcard serial number '.$serialNumber.'is not valid');
+            throw new InvalidArgumentException('Smartcard serial number ' . $serialNumber . 'is not valid');
         }
 
         $this->serialNumber = strtoupper($serialNumber);
@@ -226,7 +228,7 @@ class Smartcard
     public function setCurrency(string $currency): self
     {
         if (null !== $this->currency) {
-            throw new \BadMethodCallException('Currency is already defined for smartcard #'.$this->getId());
+            throw new BadMethodCallException('Currency is already defined for smartcard #' . $this->getId());
         }
 
         $this->currency = $currency;
@@ -242,9 +244,13 @@ class Smartcard
     public function setState(string $state): self
     {
         if (!in_array($state, self::states())) {
-            throw new \InvalidArgumentException(sprintf('Argument 1 must be one of [%s]. %s given.',
-                implode(', ', self::states()), $state
-            ));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Argument 1 must be one of [%s]. %s given.',
+                    implode(', ', self::states()),
+                    $state
+                )
+            );
         }
 
         $this->state = $state;
@@ -260,7 +266,7 @@ class Smartcard
     public function setSuspicious(bool $suspicious, ?string $reason = null): self
     {
         if (true === $suspicious && true === $this->suspicious) {
-            $reason = trim($this->suspiciousReason.', '.$reason);
+            $reason = trim($this->suspiciousReason . ', ' . $reason);
         }
 
         $this->suspicious = $suspicious;
@@ -295,23 +301,23 @@ class Smartcard
         return $sum;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDisabledAt(): ?\DateTimeInterface
+    public function getDisabledAt(): ?DateTimeInterface
     {
         return $this->disabledAt;
     }
 
     /**
-     * @param \DateTimeInterface $disabledAt
+     * @param DateTimeInterface $disabledAt
      */
-    public function setDisabledAt(\DateTimeInterface $disabledAt): void
+    public function setDisabledAt(DateTimeInterface $disabledAt): void
     {
         $this->disabledAt = $disabledAt;
     }
@@ -351,35 +357,34 @@ class Smartcard
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getRegisteredAt(): ?\DateTimeInterface
+    public function getRegisteredAt(): ?DateTimeInterface
     {
         return $this->registeredAt;
     }
 
     /**
-     * @param \DateTimeInterface $registeredAt
+     * @param DateTimeInterface $registeredAt
      */
-    public function setRegisteredAt(\DateTimeInterface $registeredAt): void
+    public function setRegisteredAt(DateTimeInterface $registeredAt): void
     {
         $this->registeredAt = $registeredAt;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getChangedAt(): ?\DateTimeInterface
+    public function getChangedAt(): ?DateTimeInterface
     {
         return $this->changedAt;
     }
 
     /**
-     * @param \DateTimeInterface $changedAt
+     * @param DateTimeInterface $changedAt
      */
-    public function setChangedAt(\DateTimeInterface $changedAt): void
+    public function setChangedAt(DateTimeInterface $changedAt): void
     {
         $this->changedAt = $changedAt;
     }
-
 }

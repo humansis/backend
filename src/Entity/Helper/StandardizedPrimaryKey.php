@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity\Helper;
@@ -23,5 +24,4 @@ trait StandardizedPrimaryKey
     {
         return $this->id;
     }
-
 }

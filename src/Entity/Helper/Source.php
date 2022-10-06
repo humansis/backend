@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity\Helper;
@@ -31,5 +32,4 @@ trait Source
     {
         $this->source = $source;
     }
-
 }

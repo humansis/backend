@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\Import;
@@ -6,6 +7,7 @@ namespace Component\Import;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Integrity\ImportFileViolation;
 use Entity\ImportFile;
+use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use Symfony\Component\HttpFoundation\File\File;
 
 class ImportFileValidator
@@ -21,7 +23,7 @@ class ImportFileValidator
     /** @var string */
     private $uploadDirectory;
 
-    /** @var ImportTemplate  */
+    /** @var ImportTemplate */
     private $importTemplate;
 
     /** @var EntityManagerInterface */
@@ -40,11 +42,11 @@ class ImportFileValidator
      */
     public function validate(ImportFile $importFile): void
     {
-        $file = new File($this->uploadDirectory.'/'.$importFile->getSavedAsFilename());
+        $file = new File($this->uploadDirectory . '/' . $importFile->getSavedAsFilename());
 
         try {
             $fileHeaders = $this->importParser->parseHeadersOnly($file);
-        } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
+        } catch (Exception $e) {
             $violation = new ImportFileViolation('Unable to read provided file. File is malformed or it has unsupported format.');
 
             $importFile->setStructureViolations([$violation]);
@@ -74,7 +76,7 @@ class ImportFileValidator
 
         $fileViolations = $this->validateMandatoryColumns($fileHeaders);
 
-        if ( ($addressViolation = $this->validateAddressColumns($fileHeaders)) instanceof ImportFileViolation) {
+        if (($addressViolation = $this->validateAddressColumns($fileHeaders)) instanceof ImportFileViolation) {
             $fileViolations[] = $addressViolation;
         }
 

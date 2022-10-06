@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InputType\CountrySpecificFilterInputType;
 use InputType\CountrySpecificOrderInputType;
+use InvalidArgumentException;
 use Request\Pagination;
 
 /**
@@ -29,8 +30,7 @@ class CountrySpecificRepository extends EntityRepository
         ?CountrySpecificFilterInputType $filter,
         ?CountrySpecificOrderInputType $orderBy = null,
         ?Pagination $pagination = null
-    ): Paginator
-    {
+    ): Paginator {
         $qb = $this->createQueryBuilder('cs')
             ->andWhere('cs.countryIso3 = :iso3')
             ->setParameter('iso3', $countryIso3);
@@ -39,7 +39,7 @@ class CountrySpecificRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->andWhere('(cs.id LIKE :id OR cs.fieldString LIKE :fulltext)')
                     ->setParameter('id', $filter->getFulltext())
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
         }
 
@@ -61,7 +61,7 @@ class CountrySpecificRepository extends EntityRepository
                         $qb->orderBy('cs.type', $direction);
                         break;
                     default:
-                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }

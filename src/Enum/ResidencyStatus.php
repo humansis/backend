@@ -6,10 +6,10 @@ class ResidencyStatus
 {
     use EnumTrait;
 
-    const REFUGEE = 'refugee';
-    const IDP = 'IDP';
-    const RESIDENT = 'resident';
-    const RETURNEE = 'returnee';
+    public const REFUGEE = 'refugee';
+    public const IDP = 'IDP';
+    public const RESIDENT = 'resident';
+    public const RETURNEE = 'returnee';
 
     protected static $values = [
         self::REFUGEE,
@@ -19,8 +19,8 @@ class ResidencyStatus
     ];
 
     /**
-     * @deprecated use ResidencyStatus::values instead
      * @return string[]
+     * @deprecated use ResidencyStatus::values instead
      */
     public static function all()
     {

@@ -1,21 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Serializer;
 
 interface MapperInterface
 {
-    const
-        NEW_API = 'new_api',
-        OFFLINE_APP = 'offline-app',
-        VENDOR_APP = 'vendor-app',
-        WEB_API = 'web-app',
-        SUPPORT_APP = 'support-app'
-    ;
+    public const NEW_API = 'new_api';
+    public const OFFLINE_APP = 'offline-app';
+    public const VENDOR_APP = 'vendor-app';
+    public const WEB_API = 'web-app';
+    public const SUPPORT_APP = 'support-app';
 
     /**
-     * @param object     $object
-     * @param null       $format
+     * @param object $object
+     * @param null $format
      * @param array|null $context
      *
      * @return bool

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Storage\Aws;
 
@@ -53,7 +55,7 @@ class AwsStorage implements IStorage
      * @return string
      * @throws FilesystemException
      */
-    public function upload(string $path, $file, string $visibility = StorageEnum::PRIVATE): string
+    public function upload(string $path, $file, string $visibility = StorageEnum::PRIVATE_S): string
     {
         $this->filesystem->write($path, $file, [StorageEnum::VISIBILITY => $visibility]);
 
@@ -66,9 +68,9 @@ class AwsStorage implements IStorage
     }
 
     /**
+     * @return FileAttributes[]
      * @throws FilesystemException
      *
-     * @return FileAttributes[]
      */
     public function listModifiedBefore(DateTime $time): iterable
     {
@@ -76,7 +78,7 @@ class AwsStorage implements IStorage
 
         /** @var FileAttributes $item */
         foreach ($list as $item) {
-            if ( (new DateTime())->setTimestamp($item->lastModified()) < $time ) {
+            if ((new DateTime())->setTimestamp($item->lastModified()) < $time) {
                 yield $item;
             }
         }

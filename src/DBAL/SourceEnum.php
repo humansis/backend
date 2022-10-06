@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace DBAL;
 
 use Enum\SourceType;
 
-class SourceEnum extends \DBAL\AbstractEnum
+class SourceEnum extends AbstractEnum
 {
     public function getName(): string
     {

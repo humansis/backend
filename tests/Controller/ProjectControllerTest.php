@@ -16,7 +16,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->projectName = 'Test project No. '.time();
+        $this->projectName = 'Test project No. ' . time();
     }
 
     /**
@@ -34,27 +34,31 @@ class ProjectControllerTest extends BMSServiceTestCase
 
     public function testCreate()
     {
-        $this->request('POST', '/api/basic/web-app/v1/projects', $data = [
-            'name' => $this->projectName,
-            'internalId' => 'PT23',
-            'iso3' => 'KHM',
-            'target' => 10,
-            'startDate' => '2010-10-10T00:00:00+0000',
-            'endDate' => '2022-10-10T00:00:00+0000',
-            'sectors' => [SectorEnum::FOOD_SECURITY],
-            'projectInvoiceAddressLocal' => 'Local invoice address',
-            'projectInvoiceAddressEnglish' => 'English invoice address',
-            'allowedProductCategoryTypes' => [
-                ProductCategoryType::FOOD,
-                ProductCategoryType::NONFOOD,
-            ],
-        ]);
+        $this->request(
+            'POST',
+            '/api/basic/web-app/v1/projects',
+            $data = [
+                'name' => $this->projectName,
+                'internalId' => 'PT23',
+                'iso3' => 'KHM',
+                'target' => 10,
+                'startDate' => '2010-10-10T00:00:00+0000',
+                'endDate' => '2022-10-10T00:00:00+0000',
+                'sectors' => [SectorEnum::FOOD_SECURITY],
+                'projectInvoiceAddressLocal' => 'Local invoice address',
+                'projectInvoiceAddressEnglish' => 'English invoice address',
+                'allowedProductCategoryTypes' => [
+                    ProductCategoryType::FOOD,
+                    ProductCategoryType::NONFOOD,
+                ],
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -85,13 +89,13 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testSummaries($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id.'/summaries?code[]=reached_beneficiaries');
+        $this->request('GET', '/api/basic/web-app/v1/projects/' . $id . '/summaries?code[]=reached_beneficiaries');
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -110,27 +114,31 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $this->request('PUT', '/api/basic/web-app/v1/projects/'.$id, $data = [
-            'name' => $this->projectName,
-            'internalId' => 'TPX',
-            'iso3' => 'KHM',
-            'target' => 10,
-            'startDate' => '2010-10-10T00:00:00+0000',
-            'endDate' => '2022-10-10T00:00:00+0000',
-            'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
-            'projectInvoiceAddressLocal' => 'Local invoice address',
-            'projectInvoiceAddressEnglish' => 'English invoice address',
-            'allowedProductCategoryTypes' => [
-                ProductCategoryType::CASHBACK,
-                ProductCategoryType::NONFOOD,
-            ],
-        ]);
+        $this->request(
+            'PUT',
+            '/api/basic/web-app/v1/projects/' . $id,
+            $data = [
+                'name' => $this->projectName,
+                'internalId' => 'TPX',
+                'iso3' => 'KHM',
+                'target' => 10,
+                'startDate' => '2010-10-10T00:00:00+0000',
+                'endDate' => '2022-10-10T00:00:00+0000',
+                'sectors' => [SectorEnum::EARLY_RECOVERY, SectorEnum::CAMP_MANAGEMENT],
+                'projectInvoiceAddressLocal' => 'Local invoice address',
+                'projectInvoiceAddressEnglish' => 'English invoice address',
+                'allowedProductCategoryTypes' => [
+                    ProductCategoryType::CASHBACK,
+                    ProductCategoryType::NONFOOD,
+                ],
+            ]
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -162,13 +170,13 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGet(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/projects/' . $id);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('id', $result);
@@ -195,13 +203,13 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetList($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects?filter[id][]='.$id.'&filter[fulltext]='.$this->projectName);
+        $this->request('GET', '/api/basic/web-app/v1/projects?filter[id][]=' . $id . '&filter[fulltext]=' . $this->projectName);
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -215,7 +223,7 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testDelete(int $id)
     {
-        $this->request('DELETE', '/api/basic/web-app/v1/projects/'.$id);
+        $this->request('DELETE', '/api/basic/web-app/v1/projects/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isEmpty());
 
@@ -227,7 +235,7 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetNotexists(int $id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects/'.$id);
+        $this->request('GET', '/api/basic/web-app/v1/projects/' . $id);
 
         $this->assertTrue($this->client->getResponse()->isNotFound());
     }

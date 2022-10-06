@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Component\WingMoney;
@@ -12,7 +13,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class ReportParser
 {
     private const FIRST_ENTRY_ROW = 9;
-
     //mapping
     private const TRANSACTION_DATE = 2;
     private const TRANSACTION_ID = 3;
@@ -45,8 +45,7 @@ class ReportParser
 
         $entries = [];
 
-        for ($row = self::FIRST_ENTRY_ROW; ; $row++) {
-
+        for ($row = self::FIRST_ENTRY_ROW;; $row++) {
             if ($worksheet->getCellByColumnAndRow(1, $row)->getValue() === null) {
                 break;
             }

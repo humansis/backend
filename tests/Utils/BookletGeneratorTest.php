@@ -6,13 +6,14 @@ use Doctrine\Persistence\ObjectManager;
 use Entity\Project;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\Booklet;
+use Utils\BookletGenerator;
 
 class BookletGeneratorTest extends KernelTestCase
 {
     /** @var ObjectManager|null */
     private $em;
 
-    /** @var \Utils\BookletGenerator */
+    /** @var BookletGenerator */
     private $generator;
 
     public function setUp(): void
@@ -31,7 +32,7 @@ class BookletGeneratorTest extends KernelTestCase
         }
         $this->em->flush();
 
-        $this->generator = new \Utils\BookletGenerator($this->em);
+        $this->generator = new BookletGenerator($this->em);
     }
 
     public function testGenerateOneBooklet(): void

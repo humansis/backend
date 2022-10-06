@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Event\Subscriber\Import;
 
@@ -25,7 +27,6 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IntegritySubscriber implements EventSubscriberInterface
 {
-
     public const GUARD_CODE_NOT_COMPLETE = '93226f1a-1b68-4ed4-bd78-1129d16d3333';
 
     /**
@@ -53,10 +54,10 @@ class IntegritySubscriber implements EventSubscriberInterface
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        IntegrityChecker         $integrityChecker,
+        IntegrityChecker $integrityChecker,
         ImportInvalidFileService $importInvalidFileService,
-        MessageBusInterface      $messageBus,
-        ImportQueueRepository    $queueRepository
+        MessageBusInterface $messageBus,
+        ImportQueueRepository $queueRepository
     ) {
         $this->entityManager = $entityManager;
         $this->integrityChecker = $integrityChecker;
@@ -68,19 +69,19 @@ class IntegritySubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.import.entered.'.ImportState::INTEGRITY_CHECKING => ['checkIntegrity'],
-            'workflow.import.guard.'.ImportTransitions::COMPLETE_INTEGRITY => [
+            'workflow.import.entered.' . ImportState::INTEGRITY_CHECKING => ['checkIntegrity'],
+            'workflow.import.guard.' . ImportTransitions::COMPLETE_INTEGRITY => [
                 ['guardNothingLeft', -10],
                 ['guardNoItemsFailed', 10],
-                ['guardNotEmptyImport', 20]
+                ['guardNotEmptyImport', 20],
             ],
-            'workflow.import.guard.'.ImportTransitions::FAIL_INTEGRITY => [
+            'workflow.import.guard.' . ImportTransitions::FAIL_INTEGRITY => [
                 ['guardNothingLeft', 0],
-                ['guardSomeItemsFailedOrEmptyQueue', 20]
+                ['guardSomeItemsFailedOrEmptyQueue', 20],
             ],
-            'workflow.import.guard.'.ImportTransitions::REDO_INTEGRITY => ['guardSomeItemsLeft'],
-            'workflow.import.completed.'.ImportTransitions::REDO_INTEGRITY => ['checkIntegrityAgain'],
-            'workflow.import.entered.'.ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
+            'workflow.import.guard.' . ImportTransitions::REDO_INTEGRITY => ['guardSomeItemsLeft'],
+            'workflow.import.completed.' . ImportTransitions::REDO_INTEGRITY => ['checkIntegrityAgain'],
+            'workflow.import.entered.' . ImportTransitions::FAIL_INTEGRITY => ['generateFile'],
         ];
     }
 
@@ -107,10 +108,12 @@ class IntegritySubscriber implements EventSubscriberInterface
          * This is important because Import object is not yet flushed
          */
         $this->entityManager->flush();
-        foreach ($this->queueRepository->findBy([
-            'import' => $import,
-            'state' => ImportQueueState::NEW,
-        ]) as $item) {
+        foreach (
+            $this->queueRepository->findBy([
+                'import' => $import,
+                'state' => ImportQueueState::NEW,
+            ]) as $item
+        ) {
             $this->messageBus->dispatch(ItemBatch::checkSingleItemIntegrity($item));
         }
         $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);

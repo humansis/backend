@@ -98,5 +98,4 @@ class DonorUpdateInputType implements InputTypeInterface
     {
         $this->logo = $logo;
     }
-
 }

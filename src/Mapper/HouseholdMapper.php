@@ -1,12 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
 
+use DateTime;
 use Entity\Beneficiary;
 use Entity\Household;
 use Entity\HouseholdLocation;
 use Entity\VulnerabilityCriterion;
+use InvalidArgumentException;
+use LogicException;
 use Serializer\MapperInterface;
 
 class HouseholdMapper implements MapperInterface
@@ -33,7 +37,7 @@ class HouseholdMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Household::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Household::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getId(): int
@@ -51,9 +55,11 @@ class HouseholdMapper implements MapperInterface
      */
     public function getAssets(): iterable
     {
-        return array_values(array_map(function ($item) {
-            return (string) $item;
-        }, $this->object->getAssets()));
+        return array_values(
+            array_map(function ($item) {
+                return (string) $item;
+            }, $this->object->getAssets())
+        );
     }
 
     public function getShelterStatus(): ?string
@@ -66,9 +72,11 @@ class HouseholdMapper implements MapperInterface
      */
     public function getProjectIds(): iterable
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getProjects()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getProjects()->toArray())
+        );
     }
 
     public function getNotes(): ?string
@@ -95,14 +103,16 @@ class HouseholdMapper implements MapperInterface
             }
         }
 
-        throw new \LogicException('Household #'.$this->object->getId().' does not have HH head.');
+        throw new LogicException('Household #' . $this->object->getId() . ' does not have HH head.');
     }
 
     public function getCountrySpecificAnswerIds(): iterable
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getCountrySpecificAnswers()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getCountrySpecificAnswers()->toArray())
+        );
     }
 
     /**
@@ -110,9 +120,11 @@ class HouseholdMapper implements MapperInterface
      */
     public function getBeneficiaryIds(): iterable
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getBeneficiaries()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getBeneficiaries()->toArray())
+        );
     }
 
     /**
@@ -127,6 +139,7 @@ class HouseholdMapper implements MapperInterface
             }, $beneficiary->getVulnerabilityCriteria()->toArray());
             $vulnerabilities = array_merge($vulnerabilities, $vulnerabilityNames);
         }
+
         return array_values(array_unique($vulnerabilities));
     }
 
@@ -152,7 +165,7 @@ class HouseholdMapper implements MapperInterface
 
     public function getSupportDateReceived(): ?string
     {
-        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(\DateTime::ISO8601) : null;
+        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(DateTime::ISO8601) : null;
     }
 
     /**
@@ -160,9 +173,11 @@ class HouseholdMapper implements MapperInterface
      */
     public function getSupportReceivedTypes(): iterable
     {
-        return array_values(array_map(function ($item) {
-            return (string) $item;
-        }, $this->object->getSupportReceivedTypes()));
+        return array_values(
+            array_map(function ($item) {
+                return (string) $item;
+            }, $this->object->getSupportReceivedTypes())
+        );
     }
 
     public function getSupportOrganizationName(): ?string

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
@@ -46,11 +48,11 @@ class ImportReset
 
     public function __construct(
         EntityManagerInterface $em,
-        LoggerInterface        $logger,
-        WorkflowInterface      $importStateMachine,
-        WorkflowInterface      $importQueueStateMachine,
-        ImportRepository       $importRepository,
-        ImportQueueRepository  $queueRepository
+        LoggerInterface $logger,
+        WorkflowInterface $importStateMachine,
+        WorkflowInterface $importQueueStateMachine,
+        ImportRepository $importRepository,
+        ImportQueueRepository $queueRepository
     ) {
         $this->em = $em;
         $this->importStateMachine = $importStateMachine;
@@ -70,7 +72,7 @@ class ImportReset
         }
 
         $importConflicts = $this->importRepository->getConflictingImports($import);
-        $this->logImportInfo($import, count($importConflicts)." conflicting imports to reset duplicity checks");
+        $this->logImportInfo($import, count($importConflicts) . " conflicting imports to reset duplicity checks");
         foreach ($importConflicts as $conflictImport) {
             if ($this->importStateMachine->can($conflictImport, ImportTransitions::RESET)) {
                 $this->logImportInfo($conflictImport, "reset to another duplicity check");
@@ -79,7 +81,6 @@ class ImportReset
             } else {
                 $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
             }
-
         }
         $this->em->flush();
     }
@@ -96,8 +97,10 @@ class ImportReset
             $this->resetItem($item);
         }
         $this->em->flush();
-        $this->logImportInfo($conflictImport,
-            "Duplicity checks of ".count($conflictQueue)." queue items reset because finish Import#{$conflictImport->getId()} ({$conflictImport->getTitle()})");
+        $this->logImportInfo(
+            $conflictImport,
+            "Duplicity checks of " . count($conflictQueue) . " queue items reset because finish Import#{$conflictImport->getId()} ({$conflictImport->getTitle()})"
+        );
     }
 
     /**
@@ -115,7 +118,7 @@ class ImportReset
         if ($this->importQueueStateMachine->can($item, ImportQueueTransitions::RESET)) {
             $this->importQueueStateMachine->apply($item, ImportQueueTransitions::RESET);
         } else {
-            $this->logQueueTransitionConstraints($this->importQueueStateMachine, $item,ImportQueueTransitions::RESET);
+            $this->logQueueTransitionConstraints($this->importQueueStateMachine, $item, ImportQueueTransitions::RESET);
         }
 
         $this->em->persist($item);

@@ -37,10 +37,10 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/institutions")
      *
-     * @param Request                    $request
-     * @param Pagination                 $pagination
+     * @param Request $request
+     * @param Pagination $pagination
      * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType  $orderBy
+     * @param InstitutionOrderInputType $orderBy
      *
      * @return JsonResponse
      */
@@ -73,7 +73,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/institutions/{id}")
      *
-     * @param Institution                $institution
+     * @param Institution $institution
      * @param InstitutionUpdateInputType $inputType
      *
      * @return JsonResponse

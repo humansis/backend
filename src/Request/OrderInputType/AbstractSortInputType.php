@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Request\OrderInputType;
@@ -27,15 +28,15 @@ abstract class AbstractSortInputType implements SortInputTypeInterface
                 $name = $value;
                 $direction = 'asc';
             } else {
-                list($name, $direction) = explode('.', $value);
+                [$name, $direction] = explode('.', $value);
             }
 
             if (!in_array(strtolower($direction), ['asc', 'desc'])) {
-                throw new BadRequestHttpException('Invalid sort direction for '.$value);
+                throw new BadRequestHttpException('Invalid sort direction for ' . $value);
             }
 
             if (!in_array($name, $validNames)) {
-                throw new BadRequestHttpException('Invalid sort name for '.$value);
+                throw new BadRequestHttpException('Invalid sort name for ' . $value);
             }
 
             $this->sort[$name] = $direction;

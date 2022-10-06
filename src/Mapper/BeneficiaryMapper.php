@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper;
@@ -6,6 +7,7 @@ namespace Mapper;
 use Entity\Beneficiary;
 use Entity\VulnerabilityCriterion;
 use Enum\PersonGender;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Utils\DateTime\DateOnlyFormat;
 
@@ -35,7 +37,7 @@ class BeneficiaryMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Beneficiary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.');
     }
 
     public function getEnParentsName(): ?string
@@ -50,16 +52,20 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getNationalIds(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getPerson()->getNationalIds()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getPerson()->getNationalIds()->toArray())
+        );
     }
 
     public function getPhoneIds(): array
     {
-        return array_values(array_map(function ($item) {
-            return $item->getId();
-        }, $this->object->getPerson()->getPhones()->toArray()));
+        return array_values(
+            array_map(function ($item) {
+                return $item->getId();
+            }, $this->object->getPerson()->getPhones()->toArray())
+        );
     }
 
     public function getResidencyStatus(): string

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,14 +12,15 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220517165725 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP VIEW view_distributed_item');
 
-        $this->addSql('CREATE VIEW view_distributed_item AS
+        $this->addSql(
+            'CREATE VIEW view_distributed_item AS
                 SELECT
                     pack.id,
                     db.beneficiary_id,
@@ -77,10 +80,11 @@ final class Version20220517165725 extends AbstractMigration
                             WHERE b.relief_package_id IS NOT NULL
                             GROUP BY b.id, b.code, b.relief_package_id
                     ) AS b ON b.relief_package_id=pack.id;
-        ');
+        '
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

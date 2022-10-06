@@ -105,7 +105,7 @@ class UserUpdateInputType implements InputTypeInterface
     private $projectIds;
 
     /**
-     * @var boolean $changePassword
+     * @var bool $changePassword
      *
      * @Assert\Type("boolean")
      * @Assert\NotNull
@@ -271,5 +271,4 @@ class UserUpdateInputType implements InputTypeInterface
     {
         $this->changePassword = $changePassword;
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace DataFixtures\Beneficiaries;
 
 use Doctrine\ORM\EntityNotFoundException;
@@ -20,7 +21,7 @@ use Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    const COMMUNITIES = [
+    public const COMMUNITIES = [
         [
             'longitude' => '20,254871',
             'latitude' => '45,47854425',
@@ -109,15 +110,15 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     /**
      * CommunityFixture constructor.
      *
-     * @param string            $environment
-     * @param Countries         $countries
-     * @param CommunityService  $communityService
+     * @param string $environment
+     * @param Countries $countries
+     * @param CommunityService $communityService
      * @param ProjectRepository $projectRepository
      */
     public function __construct(
-        string            $environment,
-        Countries         $countries,
-        CommunityService  $communityService,
+        string $environment,
+        Countries $countries,
+        CommunityService $communityService,
         ProjectRepository $projectRepository
     ) {
         $this->countries = $countries;
@@ -160,10 +161,20 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setProjectIds($this->getProjectsIds($iso3));
         $communityInputType->setLongitude($community['longitude']);
         $communityInputType->setLatitude('latitude');
-        $communityInputType->setAddress(AddressInputType::create($community['address']['locationId'], $community['address']['street'],
-            $community['address']['postcode'], $community['address']['number']));
-        $communityInputType->setNationalIdCard(NationalIdCardInputType::create($community['national_id']['type'],
-            $community['national_id']['number']));
+        $communityInputType->setAddress(
+            AddressInputType::create(
+                $community['address']['locationId'],
+                $community['address']['street'],
+                $community['address']['postcode'],
+                $community['address']['number']
+            )
+        );
+        $communityInputType->setNationalIdCard(
+            NationalIdCardInputType::create(
+                $community['national_id']['type'],
+                $community['national_id']['number']
+            )
+        );
         $communityInputType->setPhone(PhoneInputType::create($community['phone_prefix'], $community['phone_number'], $community['phone_type']));
         $communityInputType->setContactFamilyName($community['contact_family_name']);
         $communityInputType->setContactGivenName($community['contact_name']);

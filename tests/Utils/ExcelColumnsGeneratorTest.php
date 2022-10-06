@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class ExcelColumnsGeneratorTest extends KernelTestCase
 {
     /**
-     * @param int   $arg            number of iterations
+     * @param int $arg number of iterations
      * @param array $expectedResult
      *
      * @dataProvider providerGenerateCells
@@ -47,7 +47,69 @@ class ExcelColumnsGeneratorTest extends KernelTestCase
         return [
             'A - E' => [5, ['A', 'B', 'C', 'D', 'E']],
             'A - AD' => [30, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD']],
-            'A - BF' => [58, ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ', 'BA', 'BB', 'BC', 'BD', 'BE', 'BF']],
+            'A - BF' => [
+                58,
+                [
+                    'A',
+                    'B',
+                    'C',
+                    'D',
+                    'E',
+                    'F',
+                    'G',
+                    'H',
+                    'I',
+                    'J',
+                    'K',
+                    'L',
+                    'M',
+                    'N',
+                    'O',
+                    'P',
+                    'Q',
+                    'R',
+                    'S',
+                    'T',
+                    'U',
+                    'V',
+                    'W',
+                    'X',
+                    'Y',
+                    'Z',
+                    'AA',
+                    'AB',
+                    'AC',
+                    'AD',
+                    'AE',
+                    'AF',
+                    'AG',
+                    'AH',
+                    'AI',
+                    'AJ',
+                    'AK',
+                    'AL',
+                    'AM',
+                    'AN',
+                    'AO',
+                    'AP',
+                    'AQ',
+                    'AR',
+                    'AS',
+                    'AT',
+                    'AU',
+                    'AV',
+                    'AW',
+                    'AX',
+                    'AY',
+                    'AZ',
+                    'BA',
+                    'BB',
+                    'BC',
+                    'BD',
+                    'BE',
+                    'BF',
+                ],
+            ],
         ];
     }
 }

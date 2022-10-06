@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace InputType\Smartcard;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
@@ -9,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class DepositInputType implements InputTypeInterface
 {
-
     /**
      * @var int
      * @Assert\NotBlank
@@ -83,7 +85,7 @@ final class DepositInputType implements InputTypeInterface
      */
     public function setCreatedAt(string $createdAt): void
     {
-        $this->createdAt = \DateTimeImmutable::createFromFormat(DateTimeInterface::ISO8601, $createdAt);
+        $this->createdAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ISO8601, $createdAt);
     }
 
     /**
@@ -101,5 +103,4 @@ final class DepositInputType implements InputTypeInterface
     {
         $this->reliefPackageId = $reliefPackageId;
     }
-
 }

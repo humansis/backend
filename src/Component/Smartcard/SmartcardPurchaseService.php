@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Smartcard;
 
@@ -11,11 +13,12 @@ class SmartcardPurchaseService
 {
     /** @var SmartcardPurchaseRepository */
     private $smartcardPurchaseRepository;
+
     /** @var PreliminaryInvoiceRepository */
     private $preliminaryInvoiceRepository;
 
     /**
-     * @param SmartcardPurchaseRepository  $smartcardPurchaseRepository
+     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      */
     public function __construct(SmartcardPurchaseRepository $smartcardPurchaseRepository, PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
@@ -29,7 +32,7 @@ class SmartcardPurchaseService
         $preliminaryInvoices = $this->preliminaryInvoiceRepository->findBy([
             'vendor' => $vendor,
             'project' => $project,
-            'currency' => $currency
+            'currency' => $currency,
         ]);
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
             return $this->smartcardPurchaseRepository->findBy(['id' => $preliminaryInvoice->getPurchaseIds()]);

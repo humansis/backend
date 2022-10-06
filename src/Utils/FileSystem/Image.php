@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils\FileSystem;
 
+use GdImage;
 use Utils\FileSystem\Exception\CorruptedFileException;
 use Utils\FileSystem\Exception\NotSupportedExtensionException;
 
@@ -28,7 +31,7 @@ class Image
     /**
      * @param string $filePath
      *
-     * @return \GdImage|resource
+     * @return GdImage|resource
      * @throws NotSupportedExtensionException|CorruptedFileException
      */
     public static function getImageResource(string $filePath)
@@ -46,8 +49,13 @@ class Image
                 $image = imagecreatefrompng($filePath);
                 break;
             default:
-                throw new NotSupportedExtensionException(sprintf('Unsupported type %s. Supported types are (%s)', $type,
-                    implode(self::getSupportedImageExtensions())));
+                throw new NotSupportedExtensionException(
+                    sprintf(
+                        'Unsupported type %s. Supported types are (%s)',
+                        $type,
+                        implode(self::getSupportedImageExtensions())
+                    )
+                );
         }
 
         if ($image) {

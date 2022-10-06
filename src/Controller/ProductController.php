@@ -46,7 +46,7 @@ class ProductController extends AbstractController
             '__country' => $request->headers->get('country'),
         ]);
 
-        return $this->forward(ExportController::class.'::exportAction', [], $request->query->all());
+        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
     /**
@@ -70,10 +70,10 @@ class ProductController extends AbstractController
      * @Rest\Get("/web-app/v1/products")
      * @Rest\Get("/vendor-app/v2/products")
      *
-     * @param Request                $request
+     * @param Request $request
      * @param ProductFilterInputType $filter
-     * @param Pagination             $pagination
-     * @param ProductOrderInputType  $orderBy
+     * @param Pagination $pagination
+     * @param ProductOrderInputType $orderBy
      *
      * @return JsonResponse
      */
@@ -107,7 +107,7 @@ class ProductController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/products/{id}")
      *
-     * @param Product                $product
+     * @param Product $product
      * @param ProductUpdateInputType $inputType
      *
      * @return JsonResponse

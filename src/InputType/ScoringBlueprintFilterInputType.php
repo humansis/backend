@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ScoringBlueprintFilterInputType extends AbstractFilterInputType
 {
-
     /**
      * @var string
      * @Assert\Choice({"true", "false"})
@@ -43,8 +42,4 @@ class ScoringBlueprintFilterInputType extends AbstractFilterInputType
     {
         return $this->has('archived');
     }
-
-
-
-
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
@@ -30,7 +32,7 @@ final class QueueViolation
     }
 
     /**
-     * @param int    $lineIndex
+     * @param int $lineIndex
      * @param string $column
      * @param string $message
      * @param        $value
@@ -105,5 +107,4 @@ final class QueueViolation
     {
         $this->lineIndex = $lineIndex;
     }
-
 }

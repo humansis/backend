@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Entity;
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Enum\ImportState;
 use Enum\ProductCategoryType;
 use Entity\Product;
+use InvalidArgumentException;
 
 /**
  * Product
@@ -115,7 +117,7 @@ class ProductCategory
     public function setType(string $type): void
     {
         if (!in_array($type, ProductCategoryType::values())) {
-            throw new \InvalidArgumentException('Invalid argument. '.$type.' is not valid Product category type');
+            throw new InvalidArgumentException('Invalid argument. ' . $type . ' is not valid Product category type');
         }
 
         $this->type = $type;
@@ -152,5 +154,4 @@ class ProductCategory
     {
         $this->archived = $archived;
     }
-
 }

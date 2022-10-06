@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Enum;
 
 final class AssistanceType
 {
-    const DISTRIBUTION = 'distribution';
-    const ACTIVITY = 'activity';
+    public const DISTRIBUTION = 'distribution';
+    public const ACTIVITY = 'activity';
 
     public static function values()
     {
