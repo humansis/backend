@@ -20,36 +20,6 @@ Set the header `country` of your request, with ISO3 code, if you need something 
 Header `country` contains the ISO3 of a country. A listener will add it to the body of the request (`__country`)
 before that the controller process.
 
-#### Translations
-
-When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin.  
-When any environment is deployed, translations are downloaded from crowdin.
-
-##### Update translations on production
-It is possible to update translations on production without deploying the whole application, just ask admin.
-
-##### Add new key
-1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
-   `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
-2. run `make translation-keys` to keep generated ids of keys in repository 
-3. the key will be uploaded to crowdin automatically when your code is merged into `develop`
-
-#### Deploy translations
-If you need fresh translations on eny environment, redeploy the application. On production, ask admin.
-
-#### Get translations to localhost
-1. (if you need fresh translations, first redeploy any environment)
-2. run
-```bash
-make translations-get
-```
-to download translations from test environment, or run
-
-```bash
-make translations-get c={ENVIRONMENT}
-```
-where `{ENVIRONMENT}` is one of `dev1-3`, `test`, `stage`
-
 #### Specific Documentation
 - [Distribution Bundle](src/DistributionBundle/README.md)
 
@@ -201,3 +171,33 @@ Docker and others already described commands are accessible from Makefile
 * clean -> Recreate DB, migrate migrations, load fixtures, start cron service
 * cron-launch -> Start the cron service
 * test -> Run phpunit tests
+
+## Translations
+
+When a feature branch is merged into devel, new keys are extracted and uploaded to crowdin.  
+When any environment is deployed, translations are downloaded from crowdin.
+
+### Update translations on production
+It is possible to update translations on production without deploying the whole application, ask admin to run `bin/console crowdin:pull` on production environment.
+
+### Add new key
+1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:  
+   `<trans-unit id="{KEY}"><source>{KEY}</source></trans-unit>`
+2. run `make translation-keys` to keep generated ids of keys in repository
+3. the key will be uploaded to crowdin automatically when your code is merged into `develop`
+
+### Deploy translations
+If you need fresh translations on eny environment, redeploy the application. On production, ask admin.
+
+### Get translations to localhost
+1. (if you need fresh translations, first redeploy any environment)
+2. run
+```bash
+make translations-get
+```
+to download translations from test environment, or run
+
+```bash
+make translations-get c={ENVIRONMENT}
+```
+where `{ENVIRONMENT}` is one of `dev1`, `dev2`, `dev3`, `test`, `stage`
