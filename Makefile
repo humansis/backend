@@ -14,6 +14,12 @@ stop: ## Docker: Stop containers
 start: ## Docker: Start containers
 	docker-compose start
 
+up: ## Docker: Start containers
+	docker-compose up -d
+
+down: ## Docker: Stop and remove containers
+	docker-compose down
+
 restart: ## Docker: Restart containers
 	docker-compose restart
 
@@ -58,6 +64,7 @@ cron-launch: ## Start the cron service
 test: ## Run phpunit tests
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/'
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit'
+	docker-compose exec php bash -c 'vendor/bin/phpcs --standard=psr12 ./src ./tests'
 
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'
