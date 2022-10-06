@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Controller\WebApp\Assistance;
 
+use DateTimeImmutable;
 use Entity\Assistance;
 use Entity\Assistance\ReliefPackage;
 use Entity\DistributedItem;
@@ -143,10 +144,10 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ->andWhere('r.amountSpent < r.amountToDistribute')
             ->getQuery()
             ->getResult()[0];
-        
+
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
-        $spent = (double)$reliefPackage->getAmountSpent();
-        $amount = ceil(((double)$reliefPackage->getAmountToDistribute() - $spent) / 2);
+        $spent = (double) $reliefPackage->getAmountSpent();
+        $amount = ceil(((double) $reliefPackage->getAmountToDistribute() - $spent) / 2);
         $product = $this->em->getRepository(Product::class)->findOneBy(['id' => 1]);
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['location' => $assistance->getLocation()]);
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(['serialNumber' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber()]);
@@ -154,7 +155,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $purchase = SmartcardPurchase::create(
             $smartcard,
             $vendor,
-            new \DateTimeImmutable(),
+            new DateTimeImmutable(),
             $assistance,
         );
         $purchase->setHash('abc');
@@ -165,12 +166,12 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             $amount,
             $reliefPackage->getUnit()
         );
-        
+
         $this->em->persist($purchase);
         $this->em->persist($record);
-        
+
         $this->em->flush();
-        
+
         $item = $this->em->getRepository(DistributedItem::class)->findOneBy([
             'assistance' => $assistance,
             'beneficiary' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
@@ -183,7 +184,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 //            (double)$reliefPackage->getAmountToDistribute(),
 //            $amount
 //        );
-        
+
         $this->assertEquals($item->getSpent(), $spent + $amount);
     }
 }

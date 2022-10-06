@@ -67,7 +67,7 @@ class ReliefPackage
 
     /**
      * @var string
-     * 
+     *
      * controlled by database triggers on smartcard_payment_record table
      *
      * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2)

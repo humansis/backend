@@ -15,6 +15,7 @@ use DTO\VulnerabilityScore;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Enum\AssistanceTargetType;
+use Psr\Cache\InvalidArgumentException;
 use Repository\Assistance\ReliefPackageRepository;
 use Repository\AssistanceRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,11 +43,11 @@ use Component\Assistance\Domain\Assistance as AssistanceDomain;
 
 /**
  * Class AssistanceService
+ *
  * @package Utils
  */
 class AssistanceService
 {
-
     /** @var EntityManagerInterface $em */
     private $em;
 
@@ -101,34 +102,34 @@ class AssistanceService
     /**
      * AssistanceService constructor.
      *
-     * @param EntityManagerInterface    $entityManager
+     * @param EntityManagerInterface $entityManager
      * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param Environment               $twig
-     * @param FilesystemAdapter         $cache
-     * @param AssistanceFactory         $assistanceFactory
-     * @param AssistanceRepository      $assistanceRepository
-     * @param SelectionCriteriaFactory  $selectionCriteriaFactory
-     * @param TranslatorInterface       $translator
-     * @param ProjectRepository         $projectRepository
-     * @param BeneficiaryRepository     $beneficiaryRepository
-     * @param ReliefPackageRepository   $reliefPackageRepository
-     * @param ExportService             $exportService
-     * @param PdfService                $pdfService
+     * @param Environment $twig
+     * @param FilesystemAdapter $cache
+     * @param AssistanceFactory $assistanceFactory
+     * @param AssistanceRepository $assistanceRepository
+     * @param SelectionCriteriaFactory $selectionCriteriaFactory
+     * @param TranslatorInterface $translator
+     * @param ProjectRepository $projectRepository
+     * @param BeneficiaryRepository $beneficiaryRepository
+     * @param ReliefPackageRepository $reliefPackageRepository
+     * @param ExportService $exportService
+     * @param PdfService $pdfService
      */
     public function __construct(
-        EntityManagerInterface    $entityManager,
+        EntityManagerInterface $entityManager,
         CriteriaAssistanceService $criteriaAssistanceService,
-        Environment               $twig,
-        CacheInterface            $cache,
-        AssistanceFactory         $assistanceFactory,
-        AssistanceRepository      $assistanceRepository,
-        SelectionCriteriaFactory  $selectionCriteriaFactory,
-        TranslatorInterface       $translator,
-        ProjectRepository         $projectRepository,
-        BeneficiaryRepository     $beneficiaryRepository,
-        ReliefPackageRepository   $reliefPackageRepository,
-        ExportService             $exportService,
-        PdfService                $pdfService
+        Environment $twig,
+        CacheInterface $cache,
+        AssistanceFactory $assistanceFactory,
+        AssistanceRepository $assistanceRepository,
+        SelectionCriteriaFactory $selectionCriteriaFactory,
+        TranslatorInterface $translator,
+        ProjectRepository $projectRepository,
+        BeneficiaryRepository $beneficiaryRepository,
+        ReliefPackageRepository $reliefPackageRepository,
+        ExportService $exportService,
+        PdfService $pdfService
     ) {
         $this->em = $entityManager;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -146,16 +147,16 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance                $assistanceRoot
+     * @param Assistance $assistanceRoot
      * @param UpdateAssistanceInputType $updateAssistanceInputType
-     * @param User                      $user
+     * @param User $user
      *
      * @return AssistanceDomain
      */
     public function update(
-        Assistance                $assistanceRoot,
+        Assistance $assistanceRoot,
         UpdateAssistanceInputType $updateAssistanceInputType,
-        User                      $user
+        User $user
     ): AssistanceDomain {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
         if ($updateAssistanceInputType->hasValidated()) {
@@ -188,7 +189,7 @@ class AssistanceService
 
     /**
      * @param Assistance $assistanceRoot
-     * @param User       $user
+     * @param User $user
      *
      * @deprecated use Assistance::validate instead
      */
@@ -204,11 +205,20 @@ class AssistanceService
     {
         $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
-            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+            throw new EntityNotFoundException('Project #' . $inputType->getProjectId() . ' does not exists.');
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false,  $inputType->getScoringBlueprintId());
+        $result = $this->criteriaAssistanceService->load(
+            $selectionGroups,
+            $project,
+            $inputType->getTarget(),
+            $inputType->getSector(),
+            $inputType->getSubsector(),
+            $inputType->getThreshold(),
+            false,
+            $inputType->getScoringBlueprintId()
+        );
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -221,7 +231,7 @@ class AssistanceService
 
     /**
      * @param AssistanceCreateInputType $inputType
-     * @param Pagination                $pagination
+     * @param Pagination $pagination
      *
      * @return Paginator|VulnerabilityScore[]
      * @throws EntityNotFoundException
@@ -234,11 +244,20 @@ class AssistanceService
     {
         $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
-            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
+            throw new EntityNotFoundException('Project #' . $inputType->getProjectId() . ' does not exists.');
         }
 
         $selectionGroups = $this->selectionCriteriaFactory->createGroups($inputType->getSelectionCriteria());
-        $result = $this->criteriaAssistanceService->load($selectionGroups, $project, $inputType->getTarget(), $inputType->getSector(), $inputType->getSubsector(), $inputType->getThreshold(), false, $inputType->getScoringBlueprintId());
+        $result = $this->criteriaAssistanceService->load(
+            $selectionGroups,
+            $project,
+            $inputType->getTarget(),
+            $inputType->getSector(),
+            $inputType->getSubsector(),
+            $inputType->getThreshold(),
+            false,
+            $inputType->getScoringBlueprintId()
+        );
         $ids = array_keys($result['finalArray']);
         $count = count($ids);
 
@@ -281,7 +300,7 @@ class AssistanceService
     }
 
     /**
-     * @param int    $projectId
+     * @param int $projectId
      * @param string $type
      *
      * @return string
@@ -292,11 +311,12 @@ class AssistanceService
     public function exportToCsv(int $projectId, string $type): string
     {
         $exportableTable = $this->assistanceRepository->findBy(['project' => $projectId]);
+
         return $this->exportService->export($exportableTable, 'distributions', $type);
     }
 
     /**
-     * @param int    $projectId
+     * @param int $projectId
      * @param string $type
      *
      * @return string
@@ -315,12 +335,14 @@ class AssistanceService
         $assistances = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
         $exportableTable = [];
 
-        $donors = implode(', ',
-            array_map(function($donor) { return $donor->getShortname(); }, $project->getDonors()->toArray())
+        $donors = implode(
+            ', ',
+            array_map(function ($donor) {
+                return $donor->getShortname();
+            }, $project->getDonors()->toArray())
         );
 
-        foreach ($assistances as $assistance)
-        {
+        foreach ($assistances as $assistance) {
             $idps = $this->beneficiaryRepository->countByResidencyStatus($assistance, "IDP");
             $residents = $this->beneficiaryRepository->countByResidencyStatus($assistance, "resident");
             $maleHHH = $this->beneficiaryRepository->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
@@ -340,36 +362,46 @@ class AssistanceService
             $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
             $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $assistance->getCommodities()[0]->getModalityType();
-            $beneficiaryServed =  $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
+            $beneficiaryServed = $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
-            $commodityNames = implode(', ',
-                    array_map(
-                        function($commodity) { return  $commodity->getModalityType(); },
-                        $assistance->getCommodities()->toArray()
-                    )
-                );
-            $commodityUnit = implode(', ',
+            $commodityNames = implode(
+                ', ',
                 array_map(
-                    function($commodity) { return  $commodity->getUnit(); }, 
+                    function ($commodity) {
+                        return $commodity->getModalityType();
+                    },
                     $assistance->getCommodities()->toArray()
                 )
             );
-            $numberOfUnits = implode(', ',
+            $commodityUnit = implode(
+                ', ',
                 array_map(
-                    function($commodity) { return  $commodity->getValue(); }, 
+                    function ($commodity) {
+                        return $commodity->getUnit();
+                    },
                     $assistance->getCommodities()->toArray()
                 )
             );
-            
-            $totalAmount = implode(', ',
+            $numberOfUnits = implode(
+                ', ',
                 array_map(
-                    function($commodity) use($noFamilies) { return  $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit(); }, 
+                    function ($commodity) {
+                        return $commodity->getValue();
+                    },
                     $assistance->getCommodities()->toArray()
                 )
             );
 
-            
-            
+            $totalAmount = implode(
+                ', ',
+                array_map(
+                    function ($commodity) use ($noFamilies) {
+                        return $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit();
+                    },
+                    $assistance->getCommodities()->toArray()
+                )
+            );
+
             $row = [
                 $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
                 $this->translator->trans("DISTR. NO.") => $assistance->getId(),
@@ -418,10 +450,11 @@ class AssistanceService
                 $this->translator->trans("Total\nMales") => $maleTotal,
                 $this->translator->trans("Total\nFemales") => $femaleTotal,
                 $this->translator->trans("Individ. Benef.\nServed") => $beneficiaryServed,
-                $this->translator->trans("Family\nSize") => $familySize
+                $this->translator->trans("Family\nSize") => $familySize,
             ];
             $exportableTable[] = $row;
         }
+
         return $this->exportService->export($exportableTable, 'distributions', $type);
     }
 
@@ -439,14 +472,15 @@ class AssistanceService
         $project = $this->projectRepository->find($projectId);
 
         try {
-            $html =  $this->twig->render(
+            $html = $this->twig->render(
                 '@Distribution/Pdf/distributions.html.twig',
                 array_merge(
-                    ['project' => $project,
-                    'distributions' => $exportableTable],
+                    [
+                        'project' => $project,
+                        'distributions' => $exportableTable,
+                    ],
                     $this->pdfService->getInformationStyle()
                 )
-
             );
 
             return $this->pdfService->printPdf($html, 'landscape', 'bookletCodes');
@@ -458,7 +492,7 @@ class AssistanceService
     /**
      * @param Assistance $assistanceEntity
      *
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function delete(Assistance $assistanceEntity)
     {
@@ -467,6 +501,7 @@ class AssistanceService
             $assistance = $this->assistanceFactory->hydrate($assistanceEntity);
             $assistance->archive();
             $this->assistanceRepository->save($assistance);
+
             return;
         }
 
@@ -491,7 +526,7 @@ class AssistanceService
             }
             foreach ($assistanceBeneficiary->getBooklets() as $booklet) {
                 foreach ($booklet->getVouchers() as $voucher) {
-                    if($voucher->getVoucherPurchase()) {
+                    if ($voucher->getVoucherPurchase()) {
                         foreach ($voucher->getVoucherPurchase() as $voucherPurchase) {
                             foreach ($voucherPurchase->getRecords() as $record) {
                                 $this->em->remove($record);
@@ -512,7 +547,7 @@ class AssistanceService
 
     /**
      * @param Assistance $assistance
-     * @param string     $type
+     * @param string $type
      *
      * @return string
      * @throws ExportNoDataException
@@ -526,7 +561,7 @@ class AssistanceService
 
         /** @var ReliefPackage[] $packages */
         $packages = [];
-        $exportableTable = array();
+        $exportableTable = [];
         foreach ($distributionBeneficiaries as $db) {
             $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($db);
 
@@ -541,7 +576,7 @@ class AssistanceService
 
             $commonFields = $beneficiary->getCommonExportFields();
 
-            $exportableTable[] = array_merge($commonFields, array(
+            $exportableTable[] = array_merge($commonFields, [
                     $this->translator->trans("Commodity") => $commodityNames,
                     $this->translator->trans("Value") => $relief->getAmountToDistribute(),
                     $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
@@ -550,8 +585,7 @@ class AssistanceService
                     $this->translator->trans("Notes Distribution") => $relief->getNotes(),
                     $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
                     $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary()->getJustification(),
-                )
-            );
+                ]);
         }
 
         return $this->exportService->export($exportableTable, 'relief', $type);
@@ -559,7 +593,7 @@ class AssistanceService
 
     /**
      * @param Assistance $assistance
-     * @param string     $type
+     * @param string $type
      *
      * @return string
      * @throws ExportNoDataException
@@ -572,8 +606,8 @@ class AssistanceService
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findByAssistance($assistance);
 
-        $beneficiaries = array();
-        $exportableTable = array();
+        $beneficiaries = [];
+        $exportableTable = [];
         foreach ($distributionBeneficiaries as $assistanceBeneficiary) {
             $beneficiary = $assistanceBeneficiary->getBeneficiary();
             $booklets = $assistanceBeneficiary->getBooklets();
@@ -604,7 +638,7 @@ class AssistanceService
             }
             $products = implode(', ', array_unique($products));
 
-            $exportableTable[] = array_merge($commonFields, array(
+            $exportableTable[] = array_merge($commonFields, [
                     $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
                     $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
                     $this->translator->trans("Value") => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
@@ -612,8 +646,7 @@ class AssistanceService
                     $this->translator->trans("Purchased items") => $products,
                     $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
                     $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary->getJustification(),
-                )
-            );
+                ]);
         }
 
         return $this->exportService->export($exportableTable, 'qrVouchers', $type);
@@ -621,7 +654,7 @@ class AssistanceService
 
     /**
      * @param Assistance $assistance
-     * @param string     $type
+     * @param string $type
      *
      * @return string
      * @throws ExportNoDataException
@@ -632,6 +665,7 @@ class AssistanceService
     public function exportToCsvBeneficiariesInDistribution(Assistance $assistance, string $type): string
     {
         $beneficiaries = $this->beneficiaryRepository->getNotRemovedofDistribution($assistance);
+
         return $this->exportService->export($beneficiaries, 'beneficiaryInDistribution', $type);
     }
 }

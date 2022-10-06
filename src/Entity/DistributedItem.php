@@ -86,7 +86,7 @@ class DistributedItem
      * @ORM\Column(type="decimal", precision=10, scale=2)
      */
     private $spent;
-    
+
     /**
      * @var string
      *

@@ -189,7 +189,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $smartcard = $this->smartcardRepository->findActiveBySerialNumber($ab->getBeneficiary()->getSmartcardSerialNumber());
         $max = $smartcard->getDeposites()[0]->getReliefPackage()->getAmountDistributed();
         $purchasesCount = $this->generateRandomNumbers($max, rand(1, 10));
-        
+
         foreach ($purchasesCount as $index => $purchaseMax) {
             if ($purchaseMax === 0) {
                 continue;
@@ -257,7 +257,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     }
 
     //helper to randomly divide amount_distributed of relief_package
-    function generateRandomNumbers($max, $count): array
+    public function generateRandomNumbers($max, $count): array
     {
         $numbers = [];
 
