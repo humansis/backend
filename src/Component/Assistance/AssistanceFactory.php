@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\Auditor\AuditorService;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
 use Exception\CsvParserException;
@@ -41,6 +40,7 @@ class AssistanceFactory
     /** @var SerializerInterface */
     private $serializer;
 
+
     /** @var LocationRepository */
     private $locationRepository;
 
@@ -72,34 +72,41 @@ class AssistanceFactory
     private $scoringBlueprintRepository;
 
     /**
-     * @param CacheInterface $cache
-     * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param SerializerInterface $serializer
-     * @param LocationRepository $locationRepository
-     * @param ProjectRepository $projectRepository
-     * @param CommunityRepository $communityRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param Registry $workflowRegistry
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
+     * @param CacheInterface                  $cache
+     * @param CriteriaAssistanceService       $criteriaAssistanceService
+     * @param SerializerInterface             $serializer
+     * @param LocationRepository              $locationRepository
+     * @param ProjectRepository               $projectRepository
+     * @param CommunityRepository             $communityRepository
+     * @param InstitutionRepository           $institutionRepository
+     * @param BeneficiaryRepository           $beneficiaryRepository
+     * @param AssistanceStatisticsRepository  $assistanceStatisticRepository
+     * @param Registry                        $workflowRegistry
      * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
+     * @param SelectionCriteriaFactory        $selectionCriteriaFactory
+     * @param ScoringBlueprintRepository      $scoringBlueprintRepository
+     * @param AuditorService                  $auditorService
      */
     public function __construct(
-        CacheInterface $cache,
-        CriteriaAssistanceService $criteriaAssistanceService,
-        SerializerInterface $serializer,
-        LocationRepository $locationRepository,
-        ProjectRepository $projectRepository,
-        CommunityRepository $communityRepository,
-        InstitutionRepository $institutionRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        Registry $workflowRegistry,
+        CacheInterface                  $cache,
+        CriteriaAssistanceService       $criteriaAssistanceService,
+        SerializerInterface             $serializer,
+        LocationRepository              $locationRepository,
+        ProjectRepository               $projectRepository,
+        CommunityRepository             $communityRepository,
+        InstitutionRepository           $institutionRepository,
+        BeneficiaryRepository           $beneficiaryRepository,
+        AssistanceStatisticsRepository  $assistanceStatisticRepository,
+        Registry                        $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory,
-        ScoringBlueprintRepository $scoringBlueprintRepository
+        SelectionCriteriaFactory        $selectionCriteriaFactory,
+        ScoringBlueprintRepository      $scoringBlueprintRepository,
+        AuditorService                  $auditorService
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -114,6 +121,7 @@ class AssistanceFactory
         $this->targetRepository = $targetRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+        $this->auditorService = $auditorService;
     }
 
     /**
@@ -125,10 +133,12 @@ class AssistanceFactory
      */
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
     {
+        $this->auditorService->disableAuditing();
+
         /** @var Project $project */
         $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
-            throw new EntityNotFoundException('Project #' . $inputType->getProjectId() . ' does not exists.');
+            throw new EntityNotFoundException('Project #'.$inputType->getProjectId().' does not exists.');
         }
 
         $this->checkExpirationDate($inputType, $project);
@@ -158,14 +168,9 @@ class AssistanceFactory
         $assistanceRoot->setName(self::generateName($assistanceRoot));
 
         if (!is_null($inputType->getScoringBlueprintId())) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findActive(
-                $inputType->getScoringBlueprintId(),
-                $location->getCountryIso3()
-            );
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryIso3());
             if (!$scoringBlueprint) {
-                throw new EntityNotFoundException(
-                    'Scoring blueprint #' . $inputType->getScoringBlueprintId() . ' does not exists.'
-                );
+                throw new EntityNotFoundException('Scoring blueprint #'.$inputType->getScoringBlueprintId().' does not exists.');
             }
             $assistanceRoot->setScoringBlueprint($scoringBlueprint);
         }
@@ -224,13 +229,10 @@ class AssistanceFactory
 
     private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
     {
-        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution(
-        ) : $inputType->getDateExpiration();
+        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution() : $inputType->getDateExpiration();
 
         if ($dateToCheck > $project->getEndDate()) {
-            throw new BadRequestHttpException(
-                'Expiration / Distribution date of assistance must be earlier than the end of project'
-            );
+            throw new BadRequestHttpException('Expiration / Distribution date of assistance must be earlier than the end of project');
         }
     }
 

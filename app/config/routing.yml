@@ -24,3 +24,7 @@ rest:
     prefix: /api/{firewall}
     defaults: { _format: 'json'}
     resource: '../../src/Controller/'
+
+dh_auditor:
+    resource: "@DHAuditorBundle/Controller/"
+    type: auditor

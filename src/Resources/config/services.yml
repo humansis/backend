@@ -1412,3 +1412,5 @@ services:
     Component\Smartcard\Invoice\PreliminaryInvoiceService:
 
     Component\Smartcard\Invoice\InvoiceChecker:
+
+    Component\Auditor\AuditorService:

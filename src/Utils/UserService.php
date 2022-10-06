@@ -78,7 +78,7 @@ class UserService
             ->findBy(['email' => $inputType->getUsername()]);
 
         if ($user instanceof User) {
-            throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
+            throw new InvalidArgumentException('User with username '. $inputType->getUsername());
         }
 
         $salt = $this->generateSalt();
@@ -141,90 +141,7 @@ class UserService
     }
 
     /**
-     * @param array $userData
-     * @return mixed
-     * @throws Exception
-     * @deprecated Remove in 3.0
-     *
-     */
-    public function createFromArray(array $userData)
-    {
-        $roles = $userData['roles'];
-
-        if (!isset($roles) || empty($roles)) {
-            throw new Exception("Rights can not be empty");
-        }
-
-        $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
-
-        if (!$user instanceof User) {
-            throw new Exception(
-                "The user with username " . $userData['username'] . " has been not preconfigured. You need to ask
-            the salt for this username beforehand."
-            );
-        } elseif ($user->isEnabled()) {
-            throw new Exception("The user with username " . $userData['username'] . " has already been added");
-        }
-
-        $user->setSalt($userData['salt'])
-            ->setEmail($user->getUsername())
-            ->setEmailCanonical($user->getUsername())
-            ->setUsername($user->getUsername())
-            ->setUsernameCanonical($user->getUsername())
-            ->setEnabled(1)
-            ->setRoles($roles)
-            ->setChangePassword($userData['change_password']);
-
-        $user->setPhonePrefix($userData['phone_prefix'])
-            ->setPhoneNumber($userData['phone_number'])
-            ->setTwoFactorAuthentication($userData['two_factor_authentication']);
-
-        $user->setPassword($userData['password']);
-
-        $this->em->persist($user);
-
-        if (key_exists('projects', $userData)) {
-            foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->findOneById($project);
-
-                if ($project instanceof Project) {
-                    $userProject = new UserProject();
-                    $userProject->setRights($roles[0])
-                        ->setUser($user)
-                        ->setProject($project);
-                    $this->em->persist($userProject);
-                }
-            }
-        }
-
-        if (key_exists('countries', $userData)) {
-            foreach ($userData['countries'] as $country) {
-                $userCountry = new UserCountry();
-                $userCountry->setUser($user)
-                    ->setCountryIso3($country)
-                    ->setRights($roles[0]);
-                $this->em->persist($userCountry);
-            }
-        }
-
-        $errors = $this->validator->validate($user);
-        if (count($errors) > 0) {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-
-            return $errorsArray;
-        }
-
-        $this->em->flush();
-
-        return $user;
-    }
-
-    /**
      * Export all users in a CSV file
-     *
      * @param string $type
      * @return mixed
      */

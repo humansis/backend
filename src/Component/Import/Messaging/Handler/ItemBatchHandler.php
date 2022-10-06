@@ -1,9 +1,7 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
-
+use Component\Auditor\AuditorService;
 use Component\Import\IdentityChecker;
 use Component\Import\ImportFinisher;
 use Component\Import\ImportQueueLoggerTrait;
@@ -25,38 +23,41 @@ class ItemBatchHandler implements MessageHandlerInterface
 
     /** @var ImportQueueRepository */
     private $queueRepository;
-
     /** @var ImportRepository */
     private $importRepository;
-
     /** @var IntegrityChecker */
     private $integrityChecker;
-
     /** @var IdentityChecker */
     private $identityChecker;
-
     /** @var SimilarityChecker */
     private $similarityChecker;
-
     /** @var ImportFinisher */
     private $finisher;
 
     /**
-     * @param LoggerInterface $importLogger
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
+     * @param LoggerInterface       $importLogger
      * @param ImportQueueRepository $queueRepository
-     * @param IntegrityChecker $integrityChecker
-     * @param IdentityChecker $identityChecker
-     * @param SimilarityChecker $similarityChecker
-     * @param ImportFinisher $finisher
+     * @param ImportRepository      $importRepository
+     * @param IntegrityChecker      $integrityChecker
+     * @param IdentityChecker       $identityChecker
+     * @param SimilarityChecker     $similarityChecker
+     * @param ImportFinisher        $finisher
+     * @param AuditorService        $auditorService
      */
     public function __construct(
-        LoggerInterface $importLogger,
+        LoggerInterface       $importLogger,
         ImportQueueRepository $queueRepository,
-        ImportRepository $importRepository,
-        IntegrityChecker $integrityChecker,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        ImportFinisher $finisher
+        ImportRepository      $importRepository,
+        IntegrityChecker      $integrityChecker,
+        IdentityChecker       $identityChecker,
+        SimilarityChecker     $similarityChecker,
+        ImportFinisher        $finisher,
+        AuditorService        $auditorService
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;
@@ -65,10 +66,13 @@ class ItemBatchHandler implements MessageHandlerInterface
         $this->similarityChecker = $similarityChecker;
         $this->finisher = $finisher;
         $this->importRepository = $importRepository;
+        $this->auditorService = $auditorService;
     }
 
     public function __invoke(ItemBatch $batch): void
     {
+        $this->auditorService->disableAuditing();
+
         $import = $this->importRepository->find($batch->getImportId());
         switch ($batch->getCheckType()) {
             case ImportState::INTEGRITY_CHECKING:
@@ -96,15 +100,11 @@ class ItemBatchHandler implements MessageHandlerInterface
                 }
                 break;
             case ImportState::SIMILARITY_CHECKING:
-                $this->foreach(
-                    $batch,
-                    ImportQueueState::UNIQUE_CANDIDATE,
-                    function (Import $import, ImportQueue $item) {
-                        $this->logQueueInfo($item, "Similarity check");
-                        $this->similarityChecker->checkOne($item);
-                        $this->queueRepository->save($item);
-                    }
-                );
+                $this->foreach($batch, ImportQueueState::UNIQUE_CANDIDATE, function (Import $import, ImportQueue $item) {
+                    $this->logQueueInfo($item, "Similarity check");
+                    $this->similarityChecker->checkOne($item);
+                    $this->queueRepository->save($item);
+                });
                 break;
             case ImportState::IMPORTING:
                 $this->foreach($batch, ImportQueueState::TO_CREATE, function (Import $import, ImportQueue $item) {

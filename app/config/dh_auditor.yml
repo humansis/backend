@@ -7,7 +7,26 @@ dh_auditor:
                 - '@doctrine.orm.default_entity_manager'
             auditing_services:
                 - '@doctrine.orm.default_entity_manager'
-            table_prefix: 'audit_'
             viewer: true
             ignored_columns:
                 - 'createdAt'
+                - 'createdBy'
+                - 'lastModifiedAt'
+            entities:
+                Entity\User:
+                    ignored_columns:
+                        - 'lastLogin'
+                Entity\Import:
+                Entity\Assistance\ReliefPackage:
+                Entity\Assistance:
+                Entity\Community:
+                Entity\Household:
+                Entity\Beneficiary:
+                Entity\Person:
+                Entity\NationalId:
+                Entity\Smartcard:
+                Entity\SmartcardDeposit:
+                Entity\SmartcardPurchase:
+                Entity\SmartcardPurchaseRecord:
+                Entity\SmartcardRedemptionBatch:
+                Entity\Vendor:

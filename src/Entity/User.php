@@ -204,12 +204,12 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         ];
     }
 
-    public function getLanguage(): string
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    public function setLanguage($language): User
+    public function setLanguage(?string $language): User
     {
         $this->language = $language;
         return $this;
@@ -237,14 +237,14 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return $this->vendor;
     }
 
-        /**
+    /**
      * Set phonePrefix.
      *
-     * @param string $phonePrefix
+     * @param string|null $phonePrefix
      *
      * @return User
      */
-    public function setPhonePrefix(string $phonePrefix): User
+    public function setPhonePrefix(?string $phonePrefix): User
     {
         $this->phonePrefix = $phonePrefix;
 
@@ -254,9 +254,9 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Get phonePrefix.
      *
-     * @return string
+     * @return string|null
      */
-    public function getPhonePrefix(): string
+    public function getPhonePrefix(): ?string
     {
         return $this->phonePrefix;
     }

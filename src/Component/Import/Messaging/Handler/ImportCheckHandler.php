@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
 
+use Component\Auditor\AuditorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\Messaging\Message\ImportCheck;
@@ -38,28 +37,39 @@ class ImportCheckHandler implements MessageHandlerInterface
     private $em;
 
     /**
-     * @param LoggerInterface $importLogger
-     * @param WorkflowInterface $importStateMachine
-     * @param ImportRepository $importRepository
-     * @param MessageBusInterface $messageBus
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
+     * @param LoggerInterface        $importLogger
+     * @param WorkflowInterface      $importStateMachine
+     * @param ImportRepository       $importRepository
+     * @param MessageBusInterface    $messageBus
      * @param EntityManagerInterface $em
+     * @param AuditorService         $auditorService
      */
     public function __construct(
-        LoggerInterface $importLogger,
-        WorkflowInterface $importStateMachine,
-        ImportRepository $importRepository,
-        MessageBusInterface $messageBus,
-        EntityManagerInterface $em
+        LoggerInterface             $importLogger,
+        WorkflowInterface           $importStateMachine,
+        ImportRepository            $importRepository,
+        MessageBusInterface         $messageBus,
+        EntityManagerInterface      $em,
+        AuditorService              $auditorService
     ) {
         $this->logger = $importLogger;
         $this->importStateMachine = $importStateMachine;
         $this->importRepository = $importRepository;
         $this->messageBus = $messageBus;
         $this->em = $em;
+        $this->auditorService = $auditorService;
     }
+
 
     public function __invoke(ImportCheck $importCheck): void
     {
+        $this->auditorService->disableAuditing();
+
         $import = $this->importRepository->find($importCheck->getImportId());
         $this->logImportInfo($import, "Import check message");
 
@@ -82,6 +92,8 @@ class ImportCheckHandler implements MessageHandlerInterface
         }
     }
 
+
+
     protected function tryTransitions(Import $import, array $transitions): void
     {
         $transitionNames = implode("', '", $transitions);
@@ -91,7 +103,6 @@ class ImportCheckHandler implements MessageHandlerInterface
                 $this->logImportInfo($import, "is going to '$transition'");
                 $this->importStateMachine->apply($import, $transition);
                 $this->em->flush();
-
                 return;
             } else {
                 $this->logImportTransitionConstraints($this->importStateMachine, $import, $transition);
@@ -108,7 +119,7 @@ class ImportCheckHandler implements MessageHandlerInterface
     {
         $this->tryTransitions($import, [
             ImportTransitions::CHECK_INTEGRITY,
-            ImportTransitions::FAIL_UPLOAD,
+            ImportTransitions::FAIL_UPLOAD
         ]);
     }
 
@@ -119,18 +130,12 @@ class ImportCheckHandler implements MessageHandlerInterface
      */
     private function checkIntegrity(Import $import)
     {
-        if (
-            $this->isBlockedByNotCompleted(
-                $import,
-                ImportTransitions::COMPLETE_INTEGRITY,
-                IntegritySubscriber::GUARD_CODE_NOT_COMPLETE
-            )
-        ) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_INTEGRITY, IntegritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
             $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
                 ImportTransitions::FAIL_INTEGRITY,
-                ImportTransitions::COMPLETE_INTEGRITY,
+                ImportTransitions::COMPLETE_INTEGRITY
             ]);
         }
     }
@@ -140,22 +145,16 @@ class ImportCheckHandler implements MessageHandlerInterface
      *
      * @return void
      */
-    private function checkIdentity(Import $import)
-    {
-        if (
-            $this->isBlockedByNotCompleted(
-                $import,
-                ImportTransitions::COMPLETE_IDENTITY,
-                IdentitySubscriber::GUARD_CODE_NOT_COMPLETE
-            )
-        ) {
+    private function checkIdentity(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_IDENTITY, IdentitySubscriber::GUARD_CODE_NOT_COMPLETE)) {
             $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
                 ImportTransitions::FAIL_IDENTITY,
-                ImportTransitions::COMPLETE_IDENTITY,
+                ImportTransitions::COMPLETE_IDENTITY
             ]);
         }
+
     }
 
     /**
@@ -163,20 +162,13 @@ class ImportCheckHandler implements MessageHandlerInterface
      *
      * @return void
      */
-    private function checkSimilarity(Import $import)
-    {
-        if (
-            $this->isBlockedByNotCompleted(
-                $import,
-                ImportTransitions::COMPLETE_SIMILARITY,
-                SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE
-            )
-        ) {
+    private function checkSimilarity(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_SIMILARITY, SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
             $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
                 ImportTransitions::FAIL_SIMILARITY,
-                ImportTransitions::COMPLETE_SIMILARITY,
+                ImportTransitions::COMPLETE_SIMILARITY
             ]);
         }
     }
@@ -186,21 +178,15 @@ class ImportCheckHandler implements MessageHandlerInterface
      *
      * @return void
      */
-    private function checkImport(Import $import)
-    {
-        if (
-            $this->isBlockedByNotCompleted(
-                $import,
-                ImportTransitions::FINISH,
-                FinishSubscriber::GUARD_CODE_NOT_COMPLETE
-            )
-        ) {
+    private function checkImport(Import $import) {
+        if ($this->isBlockedByNotCompleted($import, ImportTransitions::FINISH, FinishSubscriber::GUARD_CODE_NOT_COMPLETE)) {
             $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
                 ImportTransitions::FINISH,
             ]);
         }
+
     }
 
     /**
@@ -210,14 +196,12 @@ class ImportCheckHandler implements MessageHandlerInterface
      *
      * @return bool
      */
-    private function isBlockedByNotCompleted(Import $import, string $transition, string $code): bool
-    {
+    private function isBlockedByNotCompleted(Import $import,string $transition,string $code): bool {
         foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {
             if ($block->getCode() === $code) {
                 return true;
             }
         }
-
         return false;
     }
 }

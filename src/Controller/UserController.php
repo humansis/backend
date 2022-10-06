@@ -143,7 +143,7 @@ class UserController extends AbstractController
         }
 
         if ($request->request->has('phoneNumber')) {
-            $user->setPhoneNumber($request->request->get('phoneNumber'));
+            $user->setPhoneNumber((int) $request->request->get('phoneNumber'));
 
             if ($request->request->has('phonePrefix')) {
                 $user->setPhonePrefix($request->request->get('phonePrefix'));
