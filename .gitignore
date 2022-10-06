@@ -1,5 +1,7 @@
 /.web-server-pid
 /app/config/jwt/*
+/app/Resources/translations/*.xlf
+!/app/Resources/translations/*.en.xlf
 /docker-compose.yml
 /build/
 /var/*
@@ -16,6 +18,7 @@
 /vendor/
 /web/bundles/
 .DS_Store
+.env
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

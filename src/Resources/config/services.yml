@@ -73,8 +73,20 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
-        
-    Command\TranslationsUpdateGenerateCommand:
+    
+    Command\Crowdin\CrowdinPullCommand:
+      arguments:
+        - '%crowdin_api_key%'
+        - '%crowdin_project_id%'
+        - '%app.translations_dir%'
+
+    Command\Crowdin\CrowdinPushCommand:
+      arguments:
+        - '%crowdin_api_key%'
+        - '%crowdin_project_id%'
+        - '%app.translations_dir%'
+
+    Command\TranslationsDownloadCommand:
         arguments:
           - '%app.translations_dir%'
 
@@ -199,6 +211,7 @@ services:
     Controller\CommonController:
         arguments:
             - '@Component\Country\Countries'
+            - '%app.translations_dir%'
 
     Controller\DonorController:
         arguments:
@@ -534,12 +547,6 @@ services:
           - '@translator'
 
     Services\ScoringBlueprintService:
-
-    Services\TranslationExportService:
-        arguments:
-            - '@Utils\ExportService'
-            - '%app.translations_dir%'
-            - '%app.locales%'
 
     Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:

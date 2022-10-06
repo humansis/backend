@@ -10,7 +10,6 @@ use Enum\ResidencyStatus;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Enum\BeneficiaryType;
-use Enum\Domain;
 use Enum\NationalIdType;
 use Enum\PhoneTypes;
 use Services\CodeListService;
@@ -49,7 +48,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getReferralTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES, Domain::SECTORS);
+        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES);
 
         return $this->json(new Paginator($data));
     }
@@ -61,7 +60,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getResidencyStatuses(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(ResidencyStatus::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(ResidencyStatus::values());
 
         return $this->json(new Paginator($data));
     }
@@ -86,7 +85,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getNationalIdTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(NationalIdType::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(NationalIdType::values());
 
         return $this->json(new Paginator($data));
     }
@@ -98,7 +97,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getPhoneTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(PhoneTypes::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(PhoneTypes::values());
 
         return $this->json(new Paginator($data));
     }

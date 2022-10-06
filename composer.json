@@ -30,6 +30,7 @@
 		"ext-json": "*",
 		"ext-simplexml": "*",
 		"ext-xmlreader": "*",
+		"ext-zip": "*",
 		"aws/aws-sdk-php": "3.176.5",
 		"beberlei/doctrineextensions": "v1.3.0",
 		"doctrine/doctrine-bundle": "1.12.13",

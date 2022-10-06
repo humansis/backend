@@ -7,7 +7,6 @@ namespace Controller;
 use Entity\HouseholdLocation;
 use Entity\Referral;
 use Pagination\Paginator;
-use Enum\Domain;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
@@ -37,7 +36,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLivelihoods(): JsonResponse
     {
-        $data = $this->codeListService->mapEnum(Livelihood::values(), Domain::ENUMS);
+        $data = $this->codeListService->mapEnum(Livelihood::values());
 
         return $this->json(new Paginator($data));
     }
@@ -85,7 +84,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function getLocationTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapArray(HouseholdLocation::LOCATION_TYPES, Domain::ENUMS);
+        $data = $this->codeListService->mapArray(HouseholdLocation::LOCATION_TYPES);
 
         return $this->json(new Paginator($data));
     }
@@ -97,7 +96,7 @@ class HouseholdCodelistController extends AbstractController
      */
     public function referralTypes(): JsonResponse
     {
-        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES, Domain::SECTORS);
+        $data = $this->codeListService->mapArray(Referral::REFERRALTYPES);
 
         return $this->json(new Paginator($data));
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MapperDeprecated;
 
 use Entity\ProjectSector;
-use Enum\Domain;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -28,7 +27,7 @@ class SectorMapper
 
     private function getLabel(string $enumValue): string
     {
-        return $this->translator->trans('label_sector_'.$enumValue, [], Domain::SECTORS, 'en');
+        return $this->translator->trans('label_sector_'.$enumValue, [], 'messages', 'en');
     }
 
     /**

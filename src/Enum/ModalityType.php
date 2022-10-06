@@ -26,6 +26,7 @@ final class ModalityType
     public const WINTERIZATION_KIT = 'Winterization Kit';
     public const ACTIVITY_ITEM = 'Activity item';
     public const LOAN = 'Loan';
+    public const LOAN_TEST = 'Loan Test';
     public const BUSINESS_GRANT = 'Business Grant';
 
     /**
@@ -51,6 +52,7 @@ final class ModalityType
             self::WINTERIZATION_KIT,
             self::ACTIVITY_ITEM,
             self::LOAN,
+            self::LOAN_TEST,
             self::BUSINESS_GRANT,
         ];
     }
