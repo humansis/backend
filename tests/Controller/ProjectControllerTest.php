@@ -203,7 +203,10 @@ class ProjectControllerTest extends BMSServiceTestCase
      */
     public function testGetList($id)
     {
-        $this->request('GET', '/api/basic/web-app/v1/projects?filter[id][]=' . $id . '&filter[fulltext]=' . $this->projectName);
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/projects?filter[id][]=' . $id . '&filter[fulltext]=' . $this->projectName
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

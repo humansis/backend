@@ -23,8 +23,13 @@ class Field
     /** @var callable|null */
     private $callback;
 
-    public function __construct(string $code, string $label, array $conditions, string $type, ?callable $callback = null)
-    {
+    public function __construct(
+        string $code,
+        string $label,
+        array $conditions,
+        string $type,
+        ?callable $callback = null
+    ) {
         if (count($conditions) <= 0) {
             throw new InvalidArgumentException('Argument 3 is not valid array. Conditions must be non empty value');
         }

@@ -142,7 +142,9 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         }
         foreach ($this->countries->getAll() as $country) {
             foreach (self::COMMUNITIES as $communityTypeData) {
-                $this->communityService->create($this->buildCommunityInputType($communityTypeData, $country->getIso3()));
+                $this->communityService->create(
+                    $this->buildCommunityInputType($communityTypeData, $country->getIso3())
+                );
             }
         }
     }
@@ -175,7 +177,9 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
                 $community['national_id']['number']
             )
         );
-        $communityInputType->setPhone(PhoneInputType::create($community['phone_prefix'], $community['phone_number'], $community['phone_type']));
+        $communityInputType->setPhone(
+            PhoneInputType::create($community['phone_prefix'], $community['phone_number'], $community['phone_type'])
+        );
         $communityInputType->setContactFamilyName($community['contact_family_name']);
         $communityInputType->setContactGivenName($community['contact_name']);
 

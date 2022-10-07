@@ -120,8 +120,12 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, Import\FilterInputType $filterInputType, Import\OrderInputType $orderInputType, Request $request): JsonResponse
-    {
+    public function list(
+        Pagination $pagination,
+        Import\FilterInputType $filterInputType,
+        Import\OrderInputType $orderInputType,
+        Request $request
+    ): JsonResponse {
         $data = $this->importRepo->findByParams(
             $request->headers->get('country'),
             $pagination,
@@ -163,8 +167,11 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function updateStatus(Request $request, Entity\Import $import, Import\PatchInputType $inputType): JsonResponse
-    {
+    public function updateStatus(
+        Request $request,
+        Entity\Import $import,
+        Import\PatchInputType $inputType
+    ): JsonResponse {
         $this->importService->patch($import, $inputType);
 
         return $this->json(null, Response::HTTP_ACCEPTED);
@@ -253,7 +260,9 @@ class ImportController extends AbstractController
             if ($fileSize > $fileMaxSize) {
                 $mbMaxFileSize = round($fileMaxSize / (1024 * 1024), 2);
                 $mbFileSize = round($fileSize / (1024 * 1024), 2);
-                throw new BadRequestHttpException("File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB");
+                throw new BadRequestHttpException(
+                    "File reached maximum file size! Maximum file size is {$mbMaxFileSize} MB but your file size is {$mbFileSize} MB"
+                );
             }
         }
     }
@@ -380,8 +389,10 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function singleDuplicityResolve(Entity\ImportQueue $importQueue, Import\Duplicity\ResolveSingleDuplicityInputType $inputType): Response
-    {
+    public function singleDuplicityResolve(
+        Entity\ImportQueue $importQueue,
+        Import\Duplicity\ResolveSingleDuplicityInputType $inputType
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
 
@@ -398,8 +409,10 @@ class ImportController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function allDuplicitiesResolve(Entity\Import $import, Import\Duplicity\ResolveAllDuplicitiesInputType $inputType): Response
-    {
+    public function allDuplicitiesResolve(
+        Entity\Import $import,
+        Import\Duplicity\ResolveAllDuplicitiesInputType $inputType
+    ): Response {
         /** @var User $user */
         $user = $this->getUser();
 

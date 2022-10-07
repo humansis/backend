@@ -64,7 +64,12 @@ final class Modality
                 break;
 
             case null:
-                $modalityTypes = array_merge(self::CASH_TYPES, self::VOUCHER_TYPES, self::IN_KIND_TYPES, self::OTHER_TYPES);
+                $modalityTypes = array_merge(
+                    self::CASH_TYPES,
+                    self::VOUCHER_TYPES,
+                    self::IN_KIND_TYPES,
+                    self::OTHER_TYPES
+                );
                 break;
         }
 

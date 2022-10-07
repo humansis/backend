@@ -34,10 +34,20 @@ class CountrySpecificDataTypeValidator extends ConstraintValidator
         $valuePath = 'value';
 
         if (!key_exists($path, $object)) {
-            throw new ConstraintDefinitionException(sprintf('Invalid property path "%s" provided to "%s" constraint: ', $path, get_debug_type($constraint)), 0);
+            throw new ConstraintDefinitionException(
+                sprintf('Invalid property path "%s" provided to "%s" constraint: ', $path, get_debug_type($constraint)),
+                0
+            );
         }
         if (!key_exists($valuePath, $object)) {
-            throw new ConstraintDefinitionException(sprintf('Invalid property path "%s" provided to "%s" constraint: ', $valuePath, get_debug_type($constraint)), 0);
+            throw new ConstraintDefinitionException(
+                sprintf(
+                    'Invalid property path "%s" provided to "%s" constraint: ',
+                    $valuePath,
+                    get_debug_type($constraint)
+                ),
+                0
+            );
         }
         $countrySpecific = $object[$path];
         if (!$this->hasValueCorrectNumberType($countrySpecific, $object['value'])) {

@@ -84,7 +84,12 @@ class ReliefPackageRepository extends EntityRepository
             ->join('ab.assistance', 'a')
             ->join('ab.beneficiary', 'abstB')
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
-            ->join('b.smartcards', 's', Join::WITH, 's.beneficiary=b AND s.state=:smartcardStateActive') //filter only bnf with active card
+            ->join(
+                'b.smartcards',
+                's',
+                Join::WITH,
+                's.beneficiary=b AND s.state=:smartcardStateActive'
+            ) //filter only bnf with active card
             ->join('a.location', 'l');
 
         //if vendor has adm >= 2 filled, try to filter by adm2
@@ -210,8 +215,10 @@ class ReliefPackageRepository extends EntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function sumDistributedReliefPackagesAmountByAssistance(Assistance $assistance, ?array $reliefPackageStates = null)
-    {
+    public function sumDistributedReliefPackagesAmountByAssistance(
+        Assistance $assistance,
+        ?array $reliefPackageStates = null
+    ) {
         $qb = $this->createQueryBuilder('rp');
         $qb->select('SUM(rp.amountDistributed)')
             ->join('rp.assistanceBeneficiary', 'ab')

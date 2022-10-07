@@ -28,7 +28,11 @@ class SmartcardController extends AbstractController
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export($invoice, $organization, $this->getUser());
+        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export(
+            $invoice,
+            $organization,
+            $this->getUser()
+        );
 
         $response = new BinaryFileResponse(getcwd() . '/' . $filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);

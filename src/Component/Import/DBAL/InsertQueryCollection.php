@@ -24,7 +24,13 @@ class InsertQueryCollection
 
     public function add(ImportFile $importFile, string $content)
     {
-        array_push($this->params, $importFile->getImport()->getId(), $importFile->getId(), $content, ImportQueueState::NEW);
+        array_push(
+            $this->params,
+            $importFile->getImport()->getId(),
+            $importFile->getId(),
+            $content,
+            ImportQueueState::NEW
+        );
 
         if (500 === ++$this->counter) {
             $this->save();
@@ -40,7 +46,8 @@ class InsertQueryCollection
 
     private function save()
     {
-        $sql = 'INSERT INTO `import_queue`(`import_id`, `file_id`, `content`, `state`) VALUES ' . substr(str_repeat('(?,?,?,?),', $this->counter), 0, -1);
+        $sql = 'INSERT INTO `import_queue`(`import_id`, `file_id`, `content`, `state`) VALUES '
+            . substr(str_repeat('(?,?,?,?),', $this->counter), 0, -1);
 
         $this->em->getConnection()->executeQuery($sql, $this->params);
 

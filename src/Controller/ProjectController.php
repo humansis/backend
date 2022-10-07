@@ -107,14 +107,24 @@ class ProjectController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, ProjectFilterInputType $filter, ProjectOrderInputType $orderBy, Pagination $pagination): JsonResponse
-    {
+    public function list(
+        Request $request,
+        ProjectFilterInputType $filter,
+        ProjectOrderInputType $orderBy,
+        Pagination $pagination
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->projectRepository->findByParams($this->getUser(), $countryIso3, $filter, $orderBy, $pagination);
+        $projects = $this->projectRepository->findByParams(
+            $this->getUser(),
+            $countryIso3,
+            $filter,
+            $orderBy,
+            $pagination
+        );
 
         return $this->json($projects);
     }

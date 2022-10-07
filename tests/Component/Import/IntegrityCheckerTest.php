@@ -53,7 +53,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testParseEmpty()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -73,7 +77,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testParseCorrect()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -97,7 +105,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testCheck()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -115,22 +127,35 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(1, $queue);
         foreach ($queue as $item) {
-            $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue is invalid because " . $item->getMessage());
+            $this->assertEquals(
+                ImportQueueState::VALID,
+                $item->getState(),
+                "Queue is invalid because " . $item->getMessage()
+            );
         }
     }
 
     public function testValidationMessages()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
         $file = new ImportFile('fake_file.xlsx', $import, $user);
         $correctItem = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_QUEUE_ITEM, true));
-        $incorrectItem = new ImportQueue($import, $file, json_decode(ImportFinishServiceTest::TEST_WRONG_QUEUE_ITEM, true));
+        $incorrectItem = new ImportQueue(
+            $import,
+            $file,
+            json_decode(ImportFinishServiceTest::TEST_WRONG_QUEUE_ITEM, true)
+        );
         self::$entityManager->persist($import);
         self::$entityManager->persist($file);
         self::$entityManager->persist($correctItem);
@@ -149,9 +174,17 @@ class IntegrityCheckerTest extends KernelTestCase
         $method->invoke($checker, $incorrectItem);
         self::$entityManager->flush();
 
-        $this->assertEquals(ImportQueueState::VALID, $correctItem->getState(), "Correct item should be recognize as one");
+        $this->assertEquals(
+            ImportQueueState::VALID,
+            $correctItem->getState(),
+            "Correct item should be recognize as one"
+        );
         $this->assertNull($correctItem->getMessage());
-        $this->assertEquals(ImportQueueState::INVALID, $incorrectItem->getState(), "Incorrect item should be recognize as one");
+        $this->assertEquals(
+            ImportQueueState::INVALID,
+            $incorrectItem->getState(),
+            "Incorrect item should be recognize as one"
+        );
         $this->assertNotNull($incorrectItem->getMessage());
 
         $invalidFilePath = self::$importInvalidFileService->generateFile($import);
@@ -167,12 +200,19 @@ class IntegrityCheckerTest extends KernelTestCase
         $beneficiariesData = $householdsData[0];
         $this->assertCount(1, $beneficiariesData);
         $this->assertEquals('ERROR', $beneficiariesData[0][ImportTemplate::ROW_NAME_STATUS]['value']);
-        $this->assertGreaterThan(0, count(explode("\n", $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value'])));
+        $this->assertGreaterThan(
+            0,
+            count(explode("\n", $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value']))
+        );
     }
 
     public function testAllDuplicitiesIdentified()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -192,7 +232,8 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(2, $queue);
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::INVALID, $item->getState(), "Queue shouldn't be valid.");
@@ -201,7 +242,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
     public function testNoDuplicitiesIdentified()
     {
-        $project = self::$entityManager->getRepository(Project::class)->findBy(['archived' => false, 'countryIso3' => 'KHM'], null, 1)[0];
+        $project = self::$entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false, 'countryIso3' => 'KHM'],
+            null,
+            1
+        )[0];
         $user = self::$entityManager->getRepository(User::class)->findBy([], null, 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -221,7 +266,8 @@ class IntegrityCheckerTest extends KernelTestCase
         $checker = self::$integrityChecker;
         $checker->check($import);
 
-        $queue = self::$entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = self::$entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import], ['id' => 'asc']);
         $this->assertCount(2, $queue);
         foreach ($queue as $item) {
             $this->assertEquals(ImportQueueState::VALID, $item->getState(), "Queue should be valid.");

@@ -37,7 +37,9 @@ class BeneficiaryMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getEnParentsName(): ?string
@@ -80,7 +82,8 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getReferralComment(): ?string
     {
-        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getComment() : null;
+        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getComment(
+        ) : null;
     }
 
     public function getIsHead(): bool
@@ -108,7 +111,9 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getDateOfBirth(): ?string
     {
-        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(DateOnlyFormat::FORMAT) : null;
+        return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(
+            DateOnlyFormat::FORMAT
+        ) : null;
     }
 
     public function getLocalFamilyName(): string

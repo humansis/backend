@@ -40,8 +40,12 @@ abstract class AbstractImportQueueCommand extends Command
      * @param LoggerInterface $importLogger
      * @param WorkflowInterface $importStateMachine
      */
-    public function __construct(ObjectManager $manager, ImportService $importService, LoggerInterface $importLogger, WorkflowInterface $importStateMachine)
-    {
+    public function __construct(
+        ObjectManager $manager,
+        ImportService $importService,
+        LoggerInterface $importLogger,
+        WorkflowInterface $importStateMachine
+    ) {
         parent::__construct();
         $this->manager = $manager;
         $this->logger = $importLogger;
@@ -68,7 +72,9 @@ abstract class AbstractImportQueueCommand extends Command
                 $this->imports = [$byTitle];
             }
             if (!$byId && !$byTitle) {
-                throw new InvalidArgumentException('Argument Import must be ID or title of existing Import. No such found.');
+                throw new InvalidArgumentException(
+                    'Argument Import must be ID or title of existing Import. No such found.'
+                );
             }
         }
 

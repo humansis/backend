@@ -45,13 +45,19 @@ class TestReportImportCommand extends KernelTestCase
 
     private function prepareTestAssistance(): Assistance
     {
-        $oldPhones = $this->entityManager->getRepository(Phone::class)->findBy(['number' => '999999999'], ['id' => 'asc']);
+        $oldPhones = $this->entityManager->getRepository(Phone::class)->findBy(
+            ['number' => '999999999'],
+            ['id' => 'asc']
+        );
 
         foreach ($oldPhones as $oldPhone) {
             $this->entityManager->remove($oldPhone);
         }
 
-        $oldTransactions = $this->entityManager->getRepository(Transaction::class)->findBy(['transactionId' => 'AMC6666666'], ['id' => 'asc']);
+        $oldTransactions = $this->entityManager->getRepository(Transaction::class)->findBy(
+            ['transactionId' => 'AMC6666666'],
+            ['id' => 'asc']
+        );
 
         $user = $this->entityManager->getRepository(User::class)->findOneBy([]);
 

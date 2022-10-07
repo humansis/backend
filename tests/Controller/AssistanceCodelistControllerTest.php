@@ -50,7 +50,10 @@ class AssistanceCodelistControllerTest extends BMSServiceTestCase
      */
     public function testGetAssistanceTypes()
     {
-        $this->request('GET', '/api/basic/web-app/v1/assistances/types?filter[subsector]=' . SubSectorEnum::FOOD_CASH_FOR_WORK);
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/assistances/types?filter[subsector]=' . SubSectorEnum::FOOD_CASH_FOR_WORK
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

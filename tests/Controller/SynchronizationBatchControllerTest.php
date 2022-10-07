@@ -110,7 +110,10 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI'
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

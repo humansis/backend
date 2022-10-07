@@ -58,7 +58,9 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardsAnalytics()
     {
-        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getSerialNumber();
+        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)
+            ->findOneBy([], ['id' => 'asc'])
+            ->getSerialNumber();
 
         $this->request('GET', '/api/basic/web-app/v1/smartcard/analytics/smartcards/' . $smartcardSerialNumber);
 

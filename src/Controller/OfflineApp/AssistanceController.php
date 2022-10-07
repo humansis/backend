@@ -45,10 +45,15 @@ class AssistanceController extends AbstractOfflineAppController
             'notModalityTypes' => [ModalityType::MOBILE_MONEY],
         ]);
 
-        $assistances = $this->assistanceRepository->findByProjectInOfflineApp($project, $project->getCountryIso3(), $filter);
+        $assistances = $this->assistanceRepository->findByProjectInOfflineApp(
+            $project,
+            $project->getCountryIso3(),
+            $filter
+        );
 
         return $this->json($assistances, Response::HTTP_OK, [], [
-            MapperInterface::NEW_API => false, //workaround to be able to match right mapper. Will be (hopefully) done better in the future. See a techdebt topic about mappers context.
+            MapperInterface::NEW_API => false,
+            //workaround to be able to match right mapper. Will be (hopefully) done better in the future. See a techdebt topic about mappers context.
             'version' => $version,
         ]);
     }

@@ -36,7 +36,9 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
      */
     public function getParameters()
     {
-        return ['{{ name }}' => $this->beneficiary->getLocalGivenName() . ' ' . $this->beneficiary->getLocalFamilyName()];
+        return [
+            '{{ name }}' => $this->beneficiary->getLocalGivenName() . ' ' . $this->beneficiary->getLocalFamilyName(),
+        ];
     }
 
     /**

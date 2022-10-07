@@ -261,7 +261,9 @@ class UserService
         $userRepository = $this->em->getRepository(User::class);
 
         if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
-            throw new InvalidArgumentException('The user with email ' . $inputType->getEmail() . ' has already been added');
+            throw new InvalidArgumentException(
+                'The user with email ' . $inputType->getEmail() . ' has already been added'
+            );
         }
 
         $initializedUser->setEmail($inputType->getEmail())
@@ -283,7 +285,9 @@ class UserService
                 }
 
                 $userProject = new UserProject();
-                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                $userProject->setRights(
+                    $inputType->getRoles()[0]
+                )//TODO edit after decision about roles and authorization will be made
                 ->setUser($initializedUser)
                     ->setProject($project);
 
@@ -296,7 +300,9 @@ class UserService
                 $userCountry = new UserCountry();
                 $userCountry->setUser($initializedUser)
                     ->setCountryIso3($country)
-                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+                    ->setRights(
+                        $inputType->getRoles()[0]
+                    );//TODO edit after decision about roles and authorization will be made
 
                 $this->em->persist($userCountry);
             }
@@ -320,7 +326,9 @@ class UserService
 
         $existingUser = $userRepository->findOneBy(['username' => $inputType->getUsername()]);
         if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
-            throw new InvalidArgumentException('The user with username ' . $inputType->getUsername() . ' already exists');
+            throw new InvalidArgumentException(
+                'The user with username ' . $inputType->getUsername() . ' already exists'
+            );
         }
 
         $user->setEmail($inputType->getEmail())
@@ -353,7 +361,9 @@ class UserService
                 }
 
                 $userProject = new UserProject();
-                $userProject->setRights($inputType->getRoles()[0])//TODO edit after decision about roles and authorization will be made
+                $userProject->setRights(
+                    $inputType->getRoles()[0]
+                )//TODO edit after decision about roles and authorization will be made
                 ->setUser($user)
                     ->setProject($project);
 
@@ -372,7 +382,9 @@ class UserService
                 $userCountry = new UserCountry();
                 $userCountry->setUser($user)
                     ->setCountryIso3($country)
-                    ->setRights($inputType->getRoles()[0]);//TODO edit after decision about roles and authorization will be made
+                    ->setRights(
+                        $inputType->getRoles()[0]
+                    );//TODO edit after decision about roles and authorization will be made
 
                 $this->em->persist($userCountry);
             }
@@ -420,6 +432,8 @@ class UserService
      */
     public function getCurrentUser()
     {
-        return $this->em->getRepository(User::class)->findOneBy(['username' => $this->security->getUser()->getUsername()]);
+        return $this->em->getRepository(User::class)->findOneBy(
+            ['username' => $this->security->getUser()->getUsername()]
+        );
     }
 }

@@ -40,8 +40,11 @@ class PurchasedSummarySpreadsheetExport
     /** @var PurchasedItemRepository */
     private $repository;
 
-    public function __construct(TranslatorInterface $translator, Countries $countries, PurchasedItemRepository $repository)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        Countries $countries,
+        PurchasedItemRepository $repository
+    ) {
         $this->translator = $translator;
         $this->countries = $countries;
         $this->repository = $repository;
@@ -55,7 +58,9 @@ class PurchasedSummarySpreadsheetExport
         }
 
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
+            throw new InvalidArgumentException(
+                'Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.'
+            );
         }
 
         $filename = sys_get_temp_dir() . '/purchased_items.' . $filetype;
@@ -110,7 +115,11 @@ class PurchasedSummarySpreadsheetExport
             ],
         ]);
 
-        $dateFormatter = new IntlDateFormatter($this->translator->getLocale(), IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+        $dateFormatter = new IntlDateFormatter(
+            $this->translator->getLocale(),
+            IntlDateFormatter::SHORT,
+            IntlDateFormatter::NONE
+        );
 
         $worksheet->setCellValue('A1', $this->translator->trans('Beneficiary ID'));
         $worksheet->setCellValue('B1', $this->translator->trans('Beneficiary Type'));
@@ -146,7 +155,10 @@ class PurchasedSummarySpreadsheetExport
 
             $i++;
             $worksheet->setCellValue('A' . $i, $beneficiary->getId());
-            $worksheet->setCellValue('B' . $i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
+            $worksheet->setCellValue(
+                'B' . $i,
+                $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual')
+            );
             $worksheet->setCellValue('C' . $i, $beneficiary->getLocalGivenName());
             $worksheet->setCellValue('D' . $i, $beneficiary->getLocalFamilyName());
             $worksheet->setCellValue('E' . $i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
@@ -157,16 +169,25 @@ class PurchasedSummarySpreadsheetExport
             $worksheet->setCellValue('J' . $i, $fullLocation[1]);
             $worksheet->setCellValue('K' . $i, $fullLocation[2]);
             $worksheet->setCellValue('L' . $i, $fullLocation[3]);
-            $worksheet->setCellValue('M' . $i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue(
+                'M' . $i,
+                $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A')
+            );
             $worksheet->setCellValue('N' . $i, $purchasedItem->getModalityType());
             $worksheet->setCellValue('O' . $i, $purchasedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('P' . $i, $purchasedItem->getProduct()->getName());
             $worksheet->setCellValue('Q' . $i, $commodity->getUnit());
             $worksheet->setCellValue('R' . $i, $purchasedItem->getValue());
             $worksheet->setCellValue('S' . $i, $purchasedItem->getCurrency());
-            $worksheet->setCellValue('T' . $i, $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue(
+                'T' . $i,
+                $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A')
+            );
             $worksheet->setCellValue('U' . $i, $purchasedItem->getVendor()->getId());
-            $worksheet->setCellValue('V' . $i, $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue(
+                'V' . $i,
+                $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A')
+            );
             $worksheet->setCellValue('W' . $i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
         }
     }

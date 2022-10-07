@@ -35,7 +35,9 @@ class BookletOfflineAppMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Booklet::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Booklet::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -74,12 +76,14 @@ class BookletOfflineAppMapper implements MapperInterface
 
     public function getBeneficiaryId(): ?int
     {
-        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getBeneficiary()->getId() : null;
+        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getBeneficiary(
+        )->getId() : null;
     }
 
     public function getAssistanceId(): ?int
     {
-        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getAssistance()->getId() : null;
+        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getAssistance(
+        )->getId() : null;
     }
 
     public function getDeletable(): bool

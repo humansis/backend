@@ -45,8 +45,11 @@ class ProductCategoryController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, ProductCategoryFilterInputType $filter, ProductCategoryOrderInputType $sort): JsonResponse
-    {
+    public function list(
+        Request $request,
+        ProductCategoryFilterInputType $filter,
+        ProductCategoryOrderInputType $sort
+    ): JsonResponse {
         $data = $this->getDoctrine()->getRepository(ProductCategory::class)
             ->findByFilter($filter, $sort);
 
@@ -95,7 +98,9 @@ class ProductCategoryController extends AbstractController
      */
     public function delete(ProductCategory $productCategory): JsonResponse
     {
-        $productCount = $this->getDoctrine()->getManager()->getRepository(Product::class)->count(['productCategory' => $productCategory]);
+        $productCount = $this->getDoctrine()->getManager()->getRepository(Product::class)->count(
+            ['productCategory' => $productCategory]
+        );
         if ($productCount > 0) {
             throw new BadRequestHttpException("You can't delete category with products");
         }

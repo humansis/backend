@@ -427,7 +427,12 @@ class HouseholdRepository extends EntityRepository
                 ->leftJoin("hl.campAddress", "ca")
                 ->leftJoin("ca.camp", "c")
                 ->leftJoin("hl.address", "ad")
-                ->leftJoin(Location::class, "l", Join::WITH, "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))");
+                ->leftJoin(
+                    Location::class,
+                    "l",
+                    Join::WITH,
+                    "l.id = COALESCE(IDENTITY(c.location, 'id'), IDENTITY(ad.location, 'id'))"
+                );
         }
     }
 }

@@ -138,20 +138,30 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getSingleResult();
         } catch (NoResultException $e) {
-            $this->markTestSkipped('There needs to be at least one beneficiary assigned to an assistance to complete this test');
+            $this->markTestSkipped(
+                'There needs to be at least one beneficiary assigned to an assistance to complete this test'
+            );
 
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/beneficiaries/' . $result['beneficiaryId'] . '/booklets/' . $booklet->getCode());
+        $this->request(
+            'PUT',
+            '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/beneficiaries/' . $result['beneficiaryId'] . '/booklets/' . $booklet->getCode(
+            )
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
             'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
-        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
+        $this->assertEquals(
+            Booklet::DISTRIBUTED,
+            $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus()
+        );
     }
 
     public function testAssignToCommunity()
@@ -169,20 +179,30 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getSingleResult();
         } catch (NoResultException $e) {
-            $this->markTestSkipped('There needs to be at least one community assigned to an assistance to complete this test');
+            $this->markTestSkipped(
+                'There needs to be at least one community assigned to an assistance to complete this test'
+            );
 
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/communities/' . $result['communityId'] . '/booklets/' . $booklet->getCode());
+        $this->request(
+            'PUT',
+            '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/communities/' . $result['communityId'] . '/booklets/' . $booklet->getCode(
+            )
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
             'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
-        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
+        $this->assertEquals(
+            Booklet::DISTRIBUTED,
+            $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus()
+        );
     }
 
     public function testAssignToInstitution()
@@ -200,19 +220,29 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getSingleResult();
         } catch (NoResultException $e) {
-            $this->markTestSkipped('There needs to be at least one institution assigned to an assistance to complete this test');
+            $this->markTestSkipped(
+                'There needs to be at least one institution assigned to an assistance to complete this test'
+            );
 
             return;
         }
 
-        $booklet = $doctrine->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/institutions/' . $result['institutionId'] . '/booklets/' . $booklet->getCode());
+        $this->request(
+            'PUT',
+            '/api/basic/web-app/v1/assistances/' . $result['assistanceId'] . '/institutions/' . $result['institutionId'] . '/booklets/' . $booklet->getCode(
+            )
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isEmpty(),
             'Request failed: ' . $this->client->getResponse()->getStatusCode()
         );
-        $this->assertEquals(Booklet::DISTRIBUTED, $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus());
+        $this->assertEquals(
+            Booklet::DISTRIBUTED,
+            $doctrine->getRepository(Booklet::class)->find(['id' => $booklet->getId()])->getStatus()
+        );
     }
 }

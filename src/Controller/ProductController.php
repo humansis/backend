@@ -77,8 +77,12 @@ class ProductController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, ProductFilterInputType $filter, Pagination $pagination, ProductOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        ProductFilterInputType $filter,
+        Pagination $pagination,
+        ProductOrderInputType $orderBy
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }

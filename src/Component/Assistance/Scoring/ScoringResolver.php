@@ -58,7 +58,12 @@ final class ScoringResolver
                     $score = $this->customComputation($household, $rule);
                     break;
                 case ScoringRuleType::COUNTRY_SPECIFIC:
-                    $score = $this->countrySpecifics($household, $rule->getFieldName(), $rule->getOptions(), $countryCode);
+                    $score = $this->countrySpecifics(
+                        $household,
+                        $rule->getFieldName(),
+                        $rule->getOptions(),
+                        $countryCode
+                    );
                     break;
                 case ScoringRuleType::ENUM:
                     $score = $this->computeEnum($household, $rule);
@@ -105,8 +110,12 @@ final class ScoringResolver
      *
      * @return int
      */
-    private function countrySpecifics(Household $household, string $countrySpecificName, array $scoringOptions, string $countryCode): int
-    {
+    private function countrySpecifics(
+        Household $household,
+        string $countrySpecificName,
+        array $scoringOptions,
+        string $countryCode
+    ): int {
         /** @var CountrySpecific $countrySpecific */
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
             'fieldString' => $countrySpecificName,

@@ -135,7 +135,9 @@ class IdentitySubscriber implements EventSubscriberInterface
         // dont commit this
         $suspicious = $this->identityChecker->getSuspiciousItems($import);
         foreach ($suspicious as $susp) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Import has duplicity suspicious item #' . $susp->getId(), '0'));
+            $guardEvent->addTransitionBlocker(
+                new TransitionBlocker('Import has duplicity suspicious item #' . $susp->getId(), '0')
+            );
         }
     }
 
@@ -147,7 +149,9 @@ class IdentitySubscriber implements EventSubscriberInterface
         $isComplete = (0 === $this->queueRepository->countItemsToIdentityCheck($import));
 
         if (!$isComplete) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Identity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
+            $guardEvent->addTransitionBlocker(
+                new TransitionBlocker('Identity check was not completed', static::GUARD_CODE_NOT_COMPLETE)
+            );
         }
     }
 }

@@ -8,8 +8,12 @@ use InvalidArgumentException;
 
 trait EnumTrait
 {
-    public static function validateValue(string $attributeName, string $enumClass, $value, bool $isNullValid = false): void
-    {
+    public static function validateValue(
+        string $attributeName,
+        string $enumClass,
+        $value,
+        bool $isNullValid = false
+    ): void {
         if (!in_array(\Enum\EnumTrait::class, class_uses($enumClass))) {
             throw new InvalidArgumentException("Wrong enum class");
         }

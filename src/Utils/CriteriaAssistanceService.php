@@ -79,8 +79,16 @@ class CriteriaAssistanceService
      * @throws ORMException
      * @deprecated replace by new method with type control of incoming criteria objects and country code
      */
-    public function load(iterable $criteriaGroups, Project $project, string $targetType, string $sector, ?string $subsector, ?int $threshold, bool $isCount, int $scoringBlueprintId = null)
-    {
+    public function load(
+        iterable $criteriaGroups,
+        Project $project,
+        string $targetType,
+        string $sector,
+        ?string $subsector,
+        ?int $threshold,
+        bool $isCount,
+        int $scoringBlueprintId = null
+    ) {
         if (
             !in_array($targetType, [
                 AssistanceTargetType::INDIVIDUAL,
@@ -91,7 +99,10 @@ class CriteriaAssistanceService
         }
 
         $reachedBeneficiaries = [];
-        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($scoringBlueprintId, $project->getCountryIso3());
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive(
+            $scoringBlueprintId,
+            $project->getCountryIso3()
+        );
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($criteriaGroups as $group) {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
@@ -102,7 +113,11 @@ class CriteriaAssistanceService
                 $beneficiary = $this->em->getReference(Beneficiary::class, $bnf['id']);
 
                 if (!isset($scoring)) {
-                    $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $project->getCountryIso3(), $sector);
+                    $protocol = $this->oldResolver->compute(
+                        $beneficiary->getHousehold(),
+                        $project->getCountryIso3(),
+                        $sector
+                    );
                 } else {
                     $protocol = $this->resolver->compute(
                         $beneficiary->getHousehold(),

@@ -37,7 +37,9 @@ class HouseholdMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Household::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Household::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -165,7 +167,9 @@ class HouseholdMapper implements MapperInterface
 
     public function getSupportDateReceived(): ?string
     {
-        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(DateTime::ISO8601) : null;
+        return $this->object->getSupportDateReceived() ? $this->object->getSupportDateReceived()->format(
+            DateTime::ISO8601
+        ) : null;
     }
 
     /**

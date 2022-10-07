@@ -124,11 +124,15 @@ class ReliefPackage
         }
 
         if (!is_numeric($amountToDistribute)) {
-            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
+            throw new InvalidArgumentException(
+                "amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'"
+            );
         }
 
         if (!is_numeric($amountDistributed)) {
-            throw new InvalidArgumentException("amountDistributed has to bee numeric. Provided value: '$amountDistributed'");
+            throw new InvalidArgumentException(
+                "amountDistributed has to bee numeric. Provided value: '$amountDistributed'"
+            );
         }
 
         $this->assistanceBeneficiary = $assistanceBeneficiary;
@@ -196,7 +200,9 @@ class ReliefPackage
     public function setAmountToDistribute($amountToDistribute): void
     {
         if (!is_numeric($amountToDistribute)) {
-            throw new InvalidArgumentException("amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'");
+            throw new InvalidArgumentException(
+                "amountToDistribute has to bee numeric. Provided value: '$amountToDistribute'"
+            );
         }
 
         $this->amountToDistribute = $amountToDistribute;

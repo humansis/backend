@@ -36,7 +36,11 @@ class SynchronizationBatchMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SynchronizationBatch::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . SynchronizationBatch::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -93,6 +97,8 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidatedAt(): ?string
     {
-        return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(DateTimeInterface::ISO8601) : null;
+        return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(
+            DateTimeInterface::ISO8601
+        ) : null;
     }
 }

@@ -296,7 +296,10 @@ class CommunityControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no Community to be tested');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/communities');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/communities'
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -155,8 +155,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $manager->flush();
     }
 
-    private function createHousehold(ObjectManager $manager, Location $location, Project $project, string $typeName, array $members)
-    {
+    private function createHousehold(
+        ObjectManager $manager,
+        Location $location,
+        Project $project,
+        string $typeName,
+        array $members
+    ) {
         $household = new Household();
 
         $household->setLongitude($this->householdTemplate['longitude']);

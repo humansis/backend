@@ -53,8 +53,12 @@ class CommunityController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, CommunityOrderInputType $communityOrderInputType, CommunityFilterType $communityFilterType, Pagination $pagination): JsonResponse
-    {
+    public function list(
+        Request $request,
+        CommunityOrderInputType $communityOrderInputType,
+        CommunityFilterType $communityFilterType,
+        Pagination $pagination
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
@@ -62,7 +66,12 @@ class CommunityController extends AbstractController
         /** @var CommunityRepository $communityRepository */
         $communityRepository = $this->getDoctrine()->getRepository(Community::class);
 
-        $communitiesPerCountry = $communityRepository->findByParams($request->headers->get('country'), $communityOrderInputType, $communityFilterType, $pagination);
+        $communitiesPerCountry = $communityRepository->findByParams(
+            $request->headers->get('country'),
+            $communityOrderInputType,
+            $communityFilterType,
+            $pagination
+        );
 
         return $this->json($communitiesPerCountry);
     }

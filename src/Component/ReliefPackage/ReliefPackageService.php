@@ -30,8 +30,11 @@ class ReliefPackageService
      */
     private $smartcardDepositRepository;
 
-    public function __construct(Registry $registry, LoggerInterface $logger, SmartcardDepositRepository $smartcardDepositRepository)
-    {
+    public function __construct(
+        Registry $registry,
+        LoggerInterface $logger,
+        SmartcardDepositRepository $smartcardDepositRepository
+    ) {
         $this->workflowRegistry = $registry;
         $this->logger = $logger;
         $this->smartcardDepositRepository = $smartcardDepositRepository;

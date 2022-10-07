@@ -81,7 +81,9 @@ class CSVToArrayMapper
             }
             $admLocation = $this->getAdmByLocation($location, $i);
             if (!$admLocation instanceof Location) {
-                throw new Exception('The Adm ' . $i . ' ' . $location['adm' . $i] . ' was not found in ' . $lastLocationName);
+                throw new Exception(
+                    'The Adm ' . $i . ' ' . $location['adm' . $i] . ' was not found in ' . $lastLocationName
+                );
             } else {
                 $formattedHouseholdArray['location']['adm' . $i] = $admLocation->getId();
                 $lastLocationName = $admLocation->getName();

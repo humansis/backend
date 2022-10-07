@@ -32,7 +32,11 @@ class PreliminaryInvoiceMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . PreliminaryInvoice::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . PreliminaryInvoice::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getProjectId(): ?int

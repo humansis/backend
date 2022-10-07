@@ -117,7 +117,10 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
     public function testGetAnswer()
     {
         /** @var CountrySpecificAnswer $answer */
-        $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy([], ['id' => 'asc'])[0];
+        $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy(
+            [],
+            ['id' => 'asc']
+        )[0];
 
         $this->request('GET', '/api/basic/web-app/v1/country-specifics/answers/' . $answer->getId());
 

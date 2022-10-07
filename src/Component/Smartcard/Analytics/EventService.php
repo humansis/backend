@@ -56,7 +56,12 @@ class EventService
         foreach ($beneficiary->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             $assistance = $assistanceBeneficiary->getAssistance();
 
-            $this->collectAssistanceEvents($collector, $assistance, $assistanceBeneficiary, $assistanceBeneficiary->getReliefPackages()->toArray());
+            $this->collectAssistanceEvents(
+                $collector,
+                $assistance,
+                $assistanceBeneficiary,
+                $assistanceBeneficiary->getReliefPackages()->toArray()
+            );
 
             foreach ($assistanceBeneficiary->getSmartcardDeposits() as $deposit) {
                 $this->collectDepositEvents($collector, $deposit, $assistance, $deposit->getSmartcard());
@@ -139,8 +144,11 @@ class EventService
      * @param SmartcardPurchase $purchase
      * @param bool $extractInvoices
      */
-    protected function collectPurchaseEvents(EventCollector $collector, SmartcardPurchase $purchase, bool $extractInvoices): void
-    {
+    protected function collectPurchaseEvents(
+        EventCollector $collector,
+        SmartcardPurchase $purchase,
+        bool $extractInvoices
+    ): void {
         $collector->add(
             new Event('purchase', 'made', $purchase->getCreatedAt(), [
                 $purchase->getAssistance(),
@@ -167,8 +175,12 @@ class EventService
      * @param                $sync
      * @param Vendor $vendor
      */
-    protected function collectSynchronizationBatchEvents(string $syncType, EventCollector $collector, $sync, Vendor $vendor): void
-    {
+    protected function collectSynchronizationBatchEvents(
+        string $syncType,
+        EventCollector $collector,
+        $sync,
+        Vendor $vendor
+    ): void {
         $collector->add(
             new Event($syncType, 'sync uploaded', $sync->getCreatedAt(), [$vendor], [
                 'syncId' => $sync->getId(),
@@ -228,8 +240,12 @@ class EventService
      * @param Assistance $assistance
      * @param Smartcard $smartcard
      */
-    private function collectDepositEvents(EventCollector $collector, SmartcardDeposit $deposit, Assistance $assistance, Smartcard $smartcard): void
-    {
+    private function collectDepositEvents(
+        EventCollector $collector,
+        SmartcardDeposit $deposit,
+        Assistance $assistance,
+        Smartcard $smartcard
+    ): void {
         $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [$deposit], []));
 
         $collector->add(

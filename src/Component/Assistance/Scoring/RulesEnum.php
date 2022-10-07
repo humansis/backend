@@ -14,7 +14,9 @@ class RulesEnum
     public function getScore(Household $household, ScoringRule $rule): int
     {
         if (!in_array($rule->getFieldName(), ScoringSupportedEnumsEnum::values())) {
-            throw new InvalidArgumentException("Scoring rule {$rule->getTitle()} has unsupported enum {$rule->getFieldName()}.");
+            throw new InvalidArgumentException(
+                "Scoring rule {$rule->getTitle()} has unsupported enum {$rule->getFieldName()}."
+            );
         }
 
         switch ($rule->getFieldName()) {

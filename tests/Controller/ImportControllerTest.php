@@ -195,9 +195,13 @@ class ImportControllerTest extends BMSServiceTestCase
      */
     public function testPatch(string $parameter, $value, int $id)
     {
-        $this->request('PATCH', '/api/basic/web-app/v1/imports/' . $id . '?' . ImportController::DISABLE_CRON . '=true', [
-            $parameter => $value,
-        ]);
+        $this->request(
+            'PATCH',
+            '/api/basic/web-app/v1/imports/' . $id . '?' . ImportController::DISABLE_CRON . '=true',
+            [
+                $parameter => $value,
+            ]
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -523,7 +527,10 @@ class ImportControllerTest extends BMSServiceTestCase
 
     public function testListFailedQueue()
     {
-        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy(['state' => ImportQueueState::ERROR], ['id' => 'asc']);
+        $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy(
+            ['state' => ImportQueueState::ERROR],
+            ['id' => 'asc']
+        );
         if (!$importQueue) {
             /** @var ImportQueue|null $importQueue */
             $importQueue = $this->em->getRepository(ImportQueue::class)->findOneBy([], ['id' => 'asc']);
@@ -532,7 +539,9 @@ class ImportControllerTest extends BMSServiceTestCase
                 $this->markTestSkipped('There needs to be at least one import with items in queue in system.');
             }
 
-            $importQueue->setUnexpectedError(UnexpectedError::create('finishing', new InvalidArgumentException('Some error')));
+            $importQueue->setUnexpectedError(
+                UnexpectedError::create('finishing', new InvalidArgumentException('Some error'))
+            );
             $importQueue->setState(ImportQueueState::ERROR);
             $this->em->persist($importQueue);
             $this->em->flush();

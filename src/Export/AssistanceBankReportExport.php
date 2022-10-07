@@ -29,8 +29,11 @@ class AssistanceBankReportExport
     /** @var CountrySpecificRepository */
     private $countrySpecificRepository;
 
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, CountrySpecificRepository $countrySpecificRepository, TranslatorInterface $translator)
-    {
+    public function __construct(
+        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        CountrySpecificRepository $countrySpecificRepository,
+        TranslatorInterface $translator
+    ) {
         $this->translator = $translator;
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
         $this->countrySpecificRepository = $countrySpecificRepository;
@@ -39,14 +42,33 @@ class AssistanceBankReportExport
     public function export(Assistance $assistance, string $filetype): string
     {
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
+            throw new InvalidArgumentException(
+                'Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.'
+            );
         }
         $filename = sys_get_temp_dir() . '/bank-report.' . $filetype;
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $countrySpecific1 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE, 'countryIso3' => $assistance->getProject()->getCountryIso3()]);
-        $countrySpecific2 = $this->countrySpecificRepository->findOneBy(['fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER, 'countryIso3' => $assistance->getProject()->getCountryIso3()]);
-        $this->build($worksheet, $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific1, $countrySpecific2));
+        $countrySpecific1 = $this->countrySpecificRepository->findOneBy(
+            [
+                'fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE,
+                'countryIso3' => $assistance->getProject()->getCountryIso3(),
+            ]
+        );
+        $countrySpecific2 = $this->countrySpecificRepository->findOneBy(
+            [
+                'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
+                'countryIso3' => $assistance->getProject()->getCountryIso3(),
+            ]
+        );
+        $this->build(
+            $worksheet,
+            $this->assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation(
+                $assistance,
+                $countrySpecific1,
+                $countrySpecific2
+            )
+        );
         $writer = IOFactory::createWriter($spreadsheet, ucfirst($filetype));
         $writer->save($filename);
 

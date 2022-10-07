@@ -26,8 +26,10 @@ class AssistanceCommodityController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function commodities(CommodityFilterInputType $filter, CommodityRepository $commodityRepository): JsonResponse
-    {
+    public function commodities(
+        CommodityFilterInputType $filter,
+        CommodityRepository $commodityRepository
+    ): JsonResponse {
         $projects = $commodityRepository->findByParams($filter);
 
         return $this->json($projects);

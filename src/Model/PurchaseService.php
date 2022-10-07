@@ -79,7 +79,11 @@ class PurchaseService
      */
     public function purchaseSmartcard(Smartcard $smartcard, $input): SmartcardPurchase
     {
-        $hash = $this->hashPurchase($smartcard->getBeneficiary(), $this->getVendor($input->getVendorId()), $input->getCreatedAt());
+        $hash = $this->hashPurchase(
+            $smartcard->getBeneficiary(),
+            $this->getVendor($input->getVendorId()),
+            $input->getCreatedAt()
+        );
         $purchaseRepository = $this->em->getRepository(SmartcardPurchase::class);
 
         /** @var SmartcardPurchase $purchase */
@@ -102,7 +106,12 @@ class PurchaseService
             }
         }
 
-        $purchase = SmartcardPurchase::create($smartcard, $this->getVendor($input->getVendorId()), $input->getCreatedAt(), $assistance);
+        $purchase = SmartcardPurchase::create(
+            $smartcard,
+            $this->getVendor($input->getVendorId()),
+            $input->getCreatedAt(),
+            $assistance
+        );
         $purchase->setHash($hash);
 
         if ($input instanceof SmartcardPurchaseInput) {

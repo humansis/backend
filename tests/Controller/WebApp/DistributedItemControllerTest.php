@@ -113,11 +113,20 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($assistance, "There must be some testing assistances with modality $modalityType for /web-app/v1/distributed-items");
+        $this->assertNotNull(
+            $assistance,
+            "There must be some testing assistances with modality $modalityType for /web-app/v1/distributed-items"
+        );
 
-        $this->request('GET', "/api/basic/web-app/v1/distributed-items?filter[assistances][]=" . $assistance->getId(), [], [], [
-            'HTTP_COUNTRY' => $assistance->getProject()->getCountryIso3(),
-        ]);
+        $this->request(
+            'GET',
+            "/api/basic/web-app/v1/distributed-items?filter[assistances][]=" . $assistance->getId(),
+            [],
+            [],
+            [
+                'HTTP_COUNTRY' => $assistance->getProject()->getCountryIso3(),
+            ]
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

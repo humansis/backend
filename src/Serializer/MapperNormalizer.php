@@ -31,7 +31,9 @@ class MapperNormalizer extends ObjectNormalizer
             return parent::normalize($mapper, $format, $context);
         }
 
-        throw new NotNormalizableValueException('Unable to normalize instance of ' . get_class($object) . '. No related Mapper found.');
+        throw new NotNormalizableValueException(
+            'Unable to normalize instance of ' . get_class($object) . '. No related Mapper found.'
+        );
     }
 
     /**

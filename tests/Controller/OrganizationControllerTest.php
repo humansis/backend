@@ -33,7 +33,10 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([], ['id' => 'asc'])[0];
+        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+            [],
+            ['id' => 'asc']
+        )[0];
 
         if (null === $organization) {
             $this->markTestSkipped('There needs to be at least one organization in system to complete this test');
@@ -61,7 +64,10 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdate()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy([], ['id' => 'asc'])[0];
+        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+            [],
+            ['id' => 'asc']
+        )[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/organizations/' . $organization->getId(), [
             'logo' => 'http://www.example.org/image.jpg',
@@ -115,13 +121,19 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testListServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([], ['id' => 'asc']);
+        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+            [],
+            ['id' => 'asc']
+        );
 
         if (empty($services)) {
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/organizations/' . $services[0]->getOrganization()->getId() . '/services');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/organizations/' . $services[0]->getOrganization()->getId() . '/services'
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -141,7 +153,10 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdateServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy([], ['id' => 'asc']);
+        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+            [],
+            ['id' => 'asc']
+        );
 
         if (empty($services)) {
             $this->markTestSkipped('There needs to be at least one service in system to complete this test');
@@ -151,7 +166,11 @@ class OrganizationControllerTest extends BMSServiceTestCase
             'enabled' => true,
         ];
 
-        $this->request('PATCH', '/api/basic/web-app/v1/organizations/services/' . $services[0]->getOrganization()->getId(), $data);
+        $this->request(
+            'PATCH',
+            '/api/basic/web-app/v1/organizations/services/' . $services[0]->getOrganization()->getId(),
+            $data
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

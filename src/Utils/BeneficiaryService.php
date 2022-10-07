@@ -147,7 +147,9 @@ class BeneficiaryService
         $beneficiary->getVulnerabilityCriteria()->clear();
         foreach ($inputType->getVulnerabilityCriteria() as $vulnerabilityCriterionName) {
             /** @var VulnerabilityCriterion $criterion */
-            $criterion = $this->vulnerabilityCriterionRepository->findOneBy(['fieldString' => $vulnerabilityCriterionName]);
+            $criterion = $this->vulnerabilityCriterionRepository->findOneBy(
+                ['fieldString' => $vulnerabilityCriterionName]
+            );
             $beneficiary->addVulnerabilityCriterion($criterion);
         }
 
@@ -239,7 +241,9 @@ class BeneficiaryService
     public function getVulnerabilityCriterion($vulnerabilityCriterionId): VulnerabilityCriterion
     {
         /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->findOneBy(['fieldString' => $vulnerabilityCriterionId]);
+        $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->findOneBy(
+            ['fieldString' => $vulnerabilityCriterionId]
+        );
 
         if (!$vulnerabilityCriterion) {
             $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->find($vulnerabilityCriterionId);
@@ -307,11 +311,15 @@ class BeneficiaryService
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException(
+                "Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT
+            );
         }
         if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException(
+                "Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
+            );
         }
 
         if ($households) {
@@ -325,12 +333,16 @@ class BeneficiaryService
         if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException(
+                "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT
+            );
         }
         if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException(
+                "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
+            );
         }
 
         try {
@@ -362,11 +374,15 @@ class BeneficiaryService
 
         if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException(
+                "Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT
+            );
         }
         if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
             $count = count($households);
-            throw new BadRequestHttpException("Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException(
+                "Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
+            );
         }
 
         $exportableTable = [];
@@ -381,12 +397,16 @@ class BeneficiaryService
         if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT);
+            throw new BadRequestHttpException(
+                "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT
+            );
         }
         if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
             $BNFcount = count($exportableTable);
             $HHcount = count($households);
-            throw new BadRequestHttpException("Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV);
+            throw new BadRequestHttpException(
+                "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
+            );
         }
 
         try {
@@ -398,7 +418,10 @@ class BeneficiaryService
 
     public function patch(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType): Beneficiary
     {
-        if (($inputType->getReferralType() || $inputType->getReferralComment()) && null == $beneficiary->getPerson()->getReferral()) {
+        if (
+            ($inputType->getReferralType() || $inputType->getReferralComment()) && null == $beneficiary->getPerson(
+            )->getReferral()
+        ) {
             $beneficiary->getPerson()->setReferral(new Referral());
         }
 

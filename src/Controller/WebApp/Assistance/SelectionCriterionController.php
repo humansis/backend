@@ -51,8 +51,11 @@ class SelectionCriterionController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function fields(Request $request, string $targetCode, SelectionCriterionService $selectionCriterionService): JsonResponse
-    {
+    public function fields(
+        Request $request,
+        string $targetCode,
+        SelectionCriterionService $selectionCriterionService
+    ): JsonResponse {
         if (!in_array($targetCode, SelectionCriteriaTarget::values())) {
             throw $this->createNotFoundException();
         }
@@ -76,8 +79,12 @@ class SelectionCriterionController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function conditions(Request $request, string $targetCode, string $fieldCode, SelectionCriterionService $selectionCriterionService): JsonResponse
-    {
+    public function conditions(
+        Request $request,
+        string $targetCode,
+        string $fieldCode,
+        SelectionCriterionService $selectionCriterionService
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');

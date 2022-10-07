@@ -73,13 +73,22 @@ class VendorController extends AbstractController
      * @return JsonResponse
      * @throws EnumValueNoFoundException
      */
-    public function list(Request $request, VendorFilterInputType $filter, Pagination $pagination, VendorOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        VendorFilterInputType $filter,
+        Pagination $pagination,
+        VendorOrderInputType $orderBy
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->vendorRepository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
+        $data = $this->vendorRepository->findByParams(
+            $request->headers->get('country'),
+            $filter,
+            $orderBy,
+            $pagination
+        );
 
         return $this->json($data);
     }

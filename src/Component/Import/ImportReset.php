@@ -68,7 +68,9 @@ class ImportReset
     public function resetOtherImports(Import $import)
     {
         if ($import->getState() !== ImportState::FINISHED) {
-            throw new BadMethodCallException("Cannot reset import #{$import->getId()} which is at state {$import->getState()}. Only imports at state Finished are allowed.");
+            throw new BadMethodCallException(
+                "Cannot reset import #{$import->getId()} which is at state {$import->getState()}. Only imports at state Finished are allowed."
+            );
         }
 
         $importConflicts = $this->importRepository->getConflictingImports($import);
@@ -79,7 +81,11 @@ class ImportReset
                 $this->reset($conflictImport);
                 $this->importStateMachine->apply($conflictImport, ImportTransitions::RESET);
             } else {
-                $this->logImportTransitionConstraints($this->importStateMachine, $conflictImport, ImportTransitions::RESET);
+                $this->logImportTransitionConstraints(
+                    $this->importStateMachine,
+                    $conflictImport,
+                    ImportTransitions::RESET
+                );
             }
         }
         $this->em->flush();
@@ -99,7 +105,9 @@ class ImportReset
         $this->em->flush();
         $this->logImportInfo(
             $conflictImport,
-            "Duplicity checks of " . count($conflictQueue) . " queue items reset because finish Import#{$conflictImport->getId()} ({$conflictImport->getTitle()})"
+            "Duplicity checks of " . count(
+                $conflictQueue
+            ) . " queue items reset because finish Import#{$conflictImport->getId()} ({$conflictImport->getTitle()})"
         );
     }
 

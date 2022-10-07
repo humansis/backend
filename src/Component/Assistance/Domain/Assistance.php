@@ -88,9 +88,14 @@ class Assistance
 
         return $this->cache->get($key, function (ItemInterface $item) use ($countryIso3) {
             try {
-                $statistics = $this->assistanceStatisticRepository->findByAssistance($this->assistanceRoot, $countryIso3);
+                $statistics = $this->assistanceStatisticRepository->findByAssistance(
+                    $this->assistanceRoot,
+                    $countryIso3
+                );
             } catch (NoResultException $noResultException) {
-                throw new NotFoundHttpException("Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3");
+                throw new NotFoundHttpException(
+                    "Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3"
+                );
             }
 
             // TODO probably better way could be normalize (or store whole) dto
@@ -222,37 +227,48 @@ class Assistance
             }
             switch ($commodity->getDivision()) {
                 case CommodityDivision::PER_HOUSEHOLD_MEMBER:
-                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
-                        /** @var Household $household */
-                        $household = $target->getBeneficiary();
+                    $commodityBuilder->addCommodityCallback(
+                        $modality,
+                        $unit,
+                        function (AssistanceBeneficiary $target) use ($commodity) {
+                            /** @var Household $household */
+                            $household = $target->getBeneficiary();
 
-                        // fallback for HH assistances directed to HHHs
-                        if ($household instanceof Beneficiary) {
-                            $household = $household->getHousehold();
+                            // fallback for HH assistances directed to HHHs
+                            if ($household instanceof Beneficiary) {
+                                $household = $household->getHousehold();
+                            }
+
+                            return $commodity->getValue() * count($household->getBeneficiaries());
                         }
-
-                        return $commodity->getValue() * count($household->getBeneficiaries());
-                    });
+                    );
                     break;
                 case CommodityDivision::PER_HOUSEHOLD_MEMBERS:
-                    $commodityBuilder->addCommodityCallback($modality, $unit, function (AssistanceBeneficiary $target) use ($commodity) {
-                        /** @var Household $household */
-                        $household = $target->getBeneficiary();
+                    $commodityBuilder->addCommodityCallback(
+                        $modality,
+                        $unit,
+                        function (AssistanceBeneficiary $target) use ($commodity) {
+                            /** @var Household $household */
+                            $household = $target->getBeneficiary();
 
-                        // fallback for HH assistances directed to HHHs
-                        if ($household instanceof Beneficiary) {
-                            $household = $household->getHousehold();
-                        }
-
-                        $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
-                        foreach ($commodity->getDivisionGroups() as $divisionGroup) {
-                            if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))) {
-                                return (float) $divisionGroup->getValue();
+                            // fallback for HH assistances directed to HHHs
+                            if ($household instanceof Beneficiary) {
+                                $household = $household->getHousehold();
                             }
-                        }
 
-                        throw new LogicException("Division Group was not found.");
-                    });
+                            $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                            foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                                if (
+                                    ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
+                                    && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
+                                ) {
+                                    return (float) $divisionGroup->getValue();
+                                }
+                            }
+
+                            throw new LogicException("Division Group was not found.");
+                        }
+                    );
                     break;
                 case CommodityDivision::PER_HOUSEHOLD:
                 default:
@@ -329,13 +345,20 @@ class Assistance
      *
      * @return Assistance
      */
-    public function addBeneficiary(AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null): self
-    {
+    public function addBeneficiary(
+        AbstractBeneficiary $beneficiary,
+        ?string $justification = null,
+        ?ScoringProtocol $vulnerabilityScore = null
+    ): self {
         if ($this->assistanceRoot->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
+            throw new ManipulationOverValidatedAssistanceException(
+                "It is not possible to add a beneficiary to validated and locked assistance"
+            );
         }
 
-        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
+        $target = $this->targetRepository->findOneBy(
+            ['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]
+        );
         if (null === $target) {
             $target = (new AssistanceBeneficiary())
                 ->setAssistance($this->assistanceRoot)
@@ -368,11 +391,15 @@ class Assistance
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
         if ($this->assistanceRoot->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
+            throw new ManipulationOverValidatedAssistanceException(
+                'It is not possible to remove a beneficiary from validated and locked assistance'
+            );
         }
 
         /** @var AssistanceBeneficiary $target */
-        $target = $this->targetRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]);
+        $target = $this->targetRepository->findOneBy(
+            ['beneficiary' => $beneficiary, 'assistance' => $this->assistanceRoot]
+        );
         if ($target === null) {
             return $this;
         }
@@ -417,7 +444,9 @@ class Assistance
                 if (!isset($commodities[$package->getModalityType()][$package->getUnit()])) {
                     $commodities[$package->getModalityType()][$package->getUnit()] = 0;
                 }
-                $commodities[$package->getModalityType()][$package->getUnit()] += floatval($package->getAmountToDistribute());
+                $commodities[$package->getModalityType()][$package->getUnit()] += floatval(
+                    $package->getAmountToDistribute()
+                );
             }
         }
         $summaries = [];

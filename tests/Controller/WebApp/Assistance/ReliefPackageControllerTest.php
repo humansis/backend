@@ -79,7 +79,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
 
-        $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=" . $reliefPackage->getId());
+        $this->request(
+            'GET',
+            "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages?filter[id][]=" . $reliefPackage->getId(
+            )
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

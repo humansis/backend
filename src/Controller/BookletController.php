@@ -129,8 +129,12 @@ class BookletController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, BookletFilterInputType $filter, Pagination $pagination, BookletOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        BookletFilterInputType $filter,
+        Pagination $pagination,
+        BookletOrderInputType $orderBy
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
@@ -186,8 +190,11 @@ class BookletController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function assignToBeneficiary(Assistance $assistance, Beneficiary $beneficiary, Booklet $booklet): JsonResponse
-    {
+    public function assignToBeneficiary(
+        Assistance $assistance,
+        Beneficiary $beneficiary,
+        Booklet $booklet
+    ): JsonResponse {
         $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
@@ -224,8 +231,11 @@ class BookletController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function assignToInstitution(Assistance $assistance, Institution $institution, Booklet $booklet): JsonResponse
-    {
+    public function assignToInstitution(
+        Assistance $assistance,
+        Institution $institution,
+        Booklet $booklet
+    ): JsonResponse {
         $this->get('voucher.booklet_service')->assign($booklet, $assistance, $institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);

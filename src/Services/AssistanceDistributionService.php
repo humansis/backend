@@ -83,7 +83,8 @@ class AssistanceDistributionService
             try {
                 /** @var ReliefPackage $reliefPackage */
                 $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
-                $amountToDistribute = $packageUpdate->getAmountDistributed() === null ? $reliefPackage->getCurrentUndistributedAmount() : $packageUpdate->getAmountDistributed();
+                $amountToDistribute = $packageUpdate->getAmountDistributed(
+                ) === null ? $reliefPackage->getCurrentUndistributedAmount() : $packageUpdate->getAmountDistributed();
 
                 $result = $this->distributeSinglePackage(
                     $distributeReliefPackageOutputType,
@@ -201,7 +202,11 @@ class AssistanceDistributionService
     ) {
         $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : null;
         if ($reliefPackage->isFullyDistributed()) {
-            $output = $distributeReliefPackageOutputType->addAlreadyDistributed($reliefPackage->getId(), $beneficiaryId, $idNumber);
+            $output = $distributeReliefPackageOutputType->addAlreadyDistributed(
+                $reliefPackage->getId(),
+                $beneficiaryId,
+                $idNumber
+            );
 
             return ['amount' => 0, 'output' => $output];
         }

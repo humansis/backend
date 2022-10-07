@@ -52,7 +52,11 @@ class ScoringBlueprintController extends AbstractController
      */
     public function list(Request $request, ScoringBlueprintFilterInputType $scoringFilterInputType): JsonResponse
     {
-        $scoringBlueprints = $this->scoringBlueprintRepository->findByParams($this->getCountryCode($request), null, $scoringFilterInputType);
+        $scoringBlueprints = $this->scoringBlueprintRepository->findByParams(
+            $this->getCountryCode($request),
+            null,
+            $scoringFilterInputType
+        );
 
         return $this->json($scoringBlueprints);
     }

@@ -59,7 +59,9 @@ class VoucherService
     {
         $vouchers = [];
         try {
-            $currentId = array_key_exists('lastId', $vouchersData) ? $vouchersData['lastId'] + 1 : $this->getLastId() + 1;
+            $currentId = array_key_exists('lastId', $vouchersData)
+                ? $vouchersData['lastId'] + 1
+                : $this->getLastId() + 1;
             for ($x = 0; $x < $vouchersData['number_vouchers']; $x++) {
                 $voucherData = $vouchersData;
                 $voucherData['value'] = $vouchersData['values'][$x];
@@ -174,8 +176,11 @@ class VoucherService
         return $check;
     }
 
-    public function redeemBatch(Vendor $vendor, VoucherRedemptionBatch $batch, User $redeemedBy): \Entity\VoucherRedemptionBatch
-    {
+    public function redeemBatch(
+        Vendor $vendor,
+        VoucherRedemptionBatch $batch,
+        User $redeemedBy
+    ): \Entity\VoucherRedemptionBatch {
         $check = $this->checkBatch($batch);
 
         if ($check->hasInvalidVouchers()) {
@@ -185,7 +190,12 @@ class VoucherService
         $repository = $this->em->getRepository(Voucher::class);
 
         $voucherBatchValue = $repository->countVoucherValue($check->getValidVouchers());
-        $redemptionBatch = new \Entity\VoucherRedemptionBatch($vendor, $redeemedBy, $check->getValidVouchers(), $voucherBatchValue);
+        $redemptionBatch = new \Entity\VoucherRedemptionBatch(
+            $vendor,
+            $redeemedBy,
+            $check->getValidVouchers(),
+            $voucherBatchValue
+        );
 
         $this->em->persist($redemptionBatch);
 
@@ -260,7 +270,10 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                    new Country($countryIso3),
+                    $dataTableFilter
+                )[1];
             } else {
                 $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
             }
@@ -285,7 +298,9 @@ class VoucherService
             return $this->csvExport($exportableTable);
         }
 
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
+            Voucher::class
+        )->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new Exception(
@@ -294,7 +309,11 @@ class VoucherService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable->getResult(), 'bookletCodes', $type);
+        return $this->container->get('export_csv_service')->export(
+            $exportableTable->getResult(),
+            'bookletCodes',
+            $type
+        );
     }
 
     /**
@@ -316,7 +335,10 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(new Country($countryIso3), $dataTableFilter)[1];
+                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                    new Country($countryIso3),
+                    $dataTableFilter
+                )[1];
             } else {
                 $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
             }
@@ -326,7 +348,9 @@ class VoucherService
             $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
         }
 
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
+        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
+            Voucher::class
+        )->countByBooklets($booklets);
         if ($total > ExportController::EXPORT_LIMIT) {
             $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new Exception(

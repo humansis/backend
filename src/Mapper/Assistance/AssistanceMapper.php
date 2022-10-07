@@ -63,7 +63,11 @@ class AssistanceMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -83,7 +87,9 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(DateTimeInterface::ISO8601) : null;
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
+            DateTimeInterface::ISO8601
+        ) : null;
     }
 
     public function getProjectId(): int

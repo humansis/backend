@@ -10,6 +10,7 @@ use InputType\Beneficiary\BeneficiaryInputType;
 use InputType\Beneficiary\NationalIdCardInputType;
 use InputType\Beneficiary\PhoneInputType;
 use Component\Import;
+use Component\Import\Integrity\ImportLine;
 use InputType\Helper\EnumsBuilder;
 
 class BeneficiaryDecoratorBuilder
@@ -36,7 +37,9 @@ class BeneficiaryDecoratorBuilder
         }
 
         if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
+            $beneficiary->addNationalIdCard(
+                $this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber)
+            );
         }
 
         if (!is_null($beneficiaryLine->numberPhone1)) { //TODO check, that phone is filled completely in import
@@ -61,15 +64,17 @@ class BeneficiaryDecoratorBuilder
     }
 
     /**
-     * @param Import\Integrity\ImportLine $beneficiaryLine
+     * @param ImportLine $beneficiaryLine
      *
      * @return BeneficiaryInputType
      */
-    public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
+    public function buildBeneficiaryIdentityInputType(ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
         if (!is_null($beneficiaryLine->idType)) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber));
+            $beneficiary->addNationalIdCard(
+                $this->buildIdentityType($beneficiaryLine->idType, (string) $beneficiaryLine->idNumber)
+            );
         }
 
         return $beneficiary;

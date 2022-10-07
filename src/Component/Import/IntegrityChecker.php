@@ -154,7 +154,10 @@ class IntegrityChecker
             $index++;
             if ($item->hasViolations($index)) {
                 if (
-                    !$item->hasColumnViolation($index, HouseholdExportCSVService::ID_NUMBER) && !$item->hasColumnViolation(
+                    !$item->hasColumnViolation(
+                        $index,
+                        HouseholdExportCSVService::ID_NUMBER
+                    ) && !$item->hasColumnViolation(
                         $index,
                         HouseholdExportCSVService::ID_TYPE
                     )
@@ -177,7 +180,11 @@ class IntegrityChecker
         if (!$item->hasViolations()) { // don't do complex checking if there are simple errors
             try {
                 $household = $this->householdDecoratorBuilder->buildHouseholdInputType($item);
-                $violations = $this->validator->validate($household, null, ["Default", "HouseholdCreateInputType", "Strict"]);
+                $violations = $this->validator->validate(
+                    $household,
+                    null,
+                    ["Default", "HouseholdCreateInputType", "Strict"]
+                );
                 foreach ($violations as $violation) {
                     $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
                 }
@@ -213,8 +220,10 @@ class IntegrityChecker
         return $queueSize == 0;
     }
 
-    private function buildErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
-    {
+    private function buildErrorMessage(
+        ConstraintViolationInterface $violation,
+        int $lineIndex
+    ): Integrity\QueueViolation {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
         static $mapping;
@@ -227,14 +236,26 @@ class IntegrityChecker
         }
         $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
 
-        return Integrity\QueueViolation::create($lineIndex, $column, $violation->getMessage(), $violation->getInvalidValue());
+        return Integrity\QueueViolation::create(
+            $lineIndex,
+            $column,
+            $violation->getMessage(),
+            $violation->getInvalidValue()
+        );
     }
 
-    private function buildNormalizedErrorMessage(ConstraintViolationInterface $violation, int $lineIndex): Integrity\QueueViolation
-    {
+    private function buildNormalizedErrorMessage(
+        ConstraintViolationInterface $violation,
+        int $lineIndex
+    ): Integrity\QueueViolation {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
-        return Integrity\QueueViolation::create($lineIndex, $property, $violation->getMessage(), $violation->getInvalidValue());
+        return Integrity\QueueViolation::create(
+            $lineIndex,
+            $property,
+            $violation->getMessage(),
+            $violation->getInvalidValue()
+        );
     }
 
     /**
@@ -257,8 +278,11 @@ class IntegrityChecker
      *
      * @return void
      */
-    private function checkFileDuplicity(ImportQueue $importQueue, int $index, BeneficiaryInputType $beneficiaryInputType): void
-    {
+    private function checkFileDuplicity(
+        ImportQueue $importQueue,
+        int $index,
+        BeneficiaryInputType $beneficiaryInputType
+    ): void {
         $cards = $beneficiaryInputType->getNationalIdCards();
         if (count($cards) > 0) {
             $idCard = $cards[0];

@@ -32,7 +32,11 @@ class PurchaseItemControllerTest extends BMSServiceTestCase
             ->getQuery()
             ->setMaxResults(1)
             ->getSingleScalarResult();
-        $this->assertGreaterThan(0, $itemCount, "There must be some testing data for /web-app/v1/smartcard-purchased-items");
+        $this->assertGreaterThan(
+            0,
+            $itemCount,
+            "There must be some testing data for /web-app/v1/smartcard-purchased-items"
+        );
 
         $size = min($itemCount, 5);
 

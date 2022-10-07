@@ -31,7 +31,9 @@ trait CrowdinRequestTrait
         $headers = $response->getHeaders(false);
 
         if ($statusCode >= 400) {
-            $this->output->writeln('<error>' . $method . ' ' . $url . "\n" . $statusCode . ': ' . $content . '</error>');
+            $this->output->writeln(
+                '<error>' . $method . ' ' . $url . "\n" . $statusCode . ': ' . $content . '</error>'
+            );
             throw new RuntimeException('Request failed with status code ' . $statusCode);
         }
 

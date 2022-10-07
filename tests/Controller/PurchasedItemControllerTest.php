@@ -87,7 +87,10 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
 
     public function testFindByParams()
     {
-        $this->request('GET', '/api/basic/web-app/v1/purchased-items?filter[fulltext]=a&filter[projects][]=1&filter[beneficiaryTypes][]=Beneficiary&sort[]=value.asc&sort[]=datePurchase.desc');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/purchased-items?filter[fulltext]=a&filter[projects][]=1&filter[beneficiaryTypes][]=Beneficiary&sort[]=value.asc&sort[]=datePurchase.desc'
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

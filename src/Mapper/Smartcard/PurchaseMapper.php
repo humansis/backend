@@ -34,7 +34,11 @@ class PurchaseMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SmartcardPurchase::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . SmartcardPurchase::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -58,7 +62,8 @@ class PurchaseMapper implements MapperInterface
 
     public function getBeneficiaryId(): ?int
     {
-        return $this->object->getSmartcard()->getBeneficiary() ? $this->object->getSmartcard()->getBeneficiary()->getId() : null;
+        return $this->object->getSmartcard()->getBeneficiary() ? $this->object->getSmartcard()->getBeneficiary()->getId(
+        ) : null;
     }
 
     public function getDateOfPurchase(): string

@@ -29,7 +29,13 @@ class ExportControllerTest extends BMSServiceTestCase
     {
         $allTypes = ['csv', 'pdf', 'xlsx', 'ods'];
         $exceptPdf = ['csv', 'xlsx', 'ods'];
-        $emptyFilter = ['filter' => [], 'sort' => [''], 'pageIndex' => 0, 'pageSize' => -1, 'sort' => ['sort' => null, 'direction' => null]];
+        $emptyFilter = [
+            'filter' => [],
+            'sort' => [''],
+            'pageIndex' => 0,
+            'pageSize' => -1,
+            'sort' => ['sort' => null, 'direction' => null],
+        ];
         $availableExports = [
             'Assistance' => [$allTypes, 'distributions=2'],
             'Assistance2' => [$allTypes, 'officialDistributions=2'],
@@ -74,6 +80,9 @@ class ExportControllerTest extends BMSServiceTestCase
         $url = "/api/basic/export?type=$type&" . $otherQuery;
         $crawler = $this->request('POST', $url, $body);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request $url failed: " . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            "Request $url failed: " . $this->client->getResponse()->getContent()
+        );
     }
 }

@@ -52,8 +52,12 @@ class ImportBeneficiaryDuplicity
      */
     private $reasons;
 
-    public function __construct(ImportHouseholdDuplicity $householdDuplicity, ImportQueue $ours, int $memberIndex, Beneficiary $theirs)
-    {
+    public function __construct(
+        ImportHouseholdDuplicity $householdDuplicity,
+        ImportQueue $ours,
+        int $memberIndex,
+        Beneficiary $theirs
+    ) {
         $this->queue = $ours;
         $this->beneficiary = $theirs;
         $this->reasons = [];

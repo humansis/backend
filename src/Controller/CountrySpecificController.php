@@ -105,7 +105,10 @@ class CountrySpecificController extends AbstractController
             $this->getDoctrine()->getManager()->persist($countrySpecific);
             $this->getDoctrine()->getManager()->flush();
         } catch (UniqueConstraintViolationException $e) {
-            return new JsonResponse("Country specific option with the same name already exists, please choose another name.", 400);
+            return new JsonResponse(
+                "Country specific option with the same name already exists, please choose another name.",
+                400
+            );
         }
 
         return $this->json($countrySpecific);
@@ -129,7 +132,10 @@ class CountrySpecificController extends AbstractController
             $this->getDoctrine()->getManager()->persist($countrySpecific);
             $this->getDoctrine()->getManager()->flush();
         } catch (UniqueConstraintViolationException $e) {
-            return new JsonResponse("Country specific option with the same name already exists, please choose another name.", 400);
+            return new JsonResponse(
+                "Country specific option with the same name already exists, please choose another name.",
+                400
+            );
         }
 
         return $this->json($countrySpecific);

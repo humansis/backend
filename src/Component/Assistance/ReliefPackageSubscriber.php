@@ -52,7 +52,9 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
         /** @var Entity\Assistance\ReliefPackage $reliefPackage */
         $reliefPackage = $event->getSubject();
         try {
-            $this->cache->delete(CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId()));
+            $this->cache->delete(
+                CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
+            );
         } catch (InvalidArgumentException $e) {
         }
     }

@@ -25,7 +25,10 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy([], ['id' => 'asc']);
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
+            [],
+            ['id' => 'asc']
+        );
 
         if (!$item) {
             $this->markTestIncomplete('Missing test data: GRI');
@@ -41,7 +44,9 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
             '{
             "id": ' . $item->getId() . ',
             "distributed": ' . (null === $item->getDistributedAt() ? 'false' : 'true') . ',
-            "dateOfDistribution": ' . (null === $item->getDistributedAt() ? 'null' : '"' . $item->getDistributedAt()->format(DateTime::ISO8601) . '"') . ',
+            "dateOfDistribution": ' . (null === $item->getDistributedAt()
+                ? 'null'
+                : '"' . $item->getDistributedAt()->format(DateTime::ISO8601) . '"') . ',
             "note": ' . (null === $item->getNotes() ? 'null' : '"' . $item->getNotes() . '"') . '
         }',
             $this->client->getResponse()->getContent()
@@ -66,7 +71,10 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(['distributedAt' => null], ['id' => 'asc']);
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
+            ['distributedAt' => null],
+            ['id' => 'asc']
+        );
 
         if (!$item) {
             $this->markTestIncomplete('Missing test data: GRI');
@@ -99,7 +107,10 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch2()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(['distributedAt' => new DateTime('2020-01-01T10:10:00+00')], ['id' => 'asc'])[0];
+        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(
+            ['distributedAt' => new DateTime('2020-01-01T10:10:00+00')],
+            ['id' => 'asc']
+        )[0];
 
         $this->request('PATCH', '/api/basic/web-app/v2/general-relief-items/' . $item->getId(), [
             'distributed' => false,

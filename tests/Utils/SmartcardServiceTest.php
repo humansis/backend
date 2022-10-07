@@ -206,7 +206,11 @@ class SmartcardServiceTest extends KernelTestCase
                     /** @var Assistance $assistance */
                     $assistance = $this->em->getRepository(Assistance::class)->find($assistanceId);
                     $beneficiary = $assistance->getDistributionBeneficiaries()->get(0)->getBeneficiary();
-                    $registerInputType = SmartcardRegisterInputType::create($this->smartcardNumber, $beneficiaryId, $date->format(DateTimeInterface::ATOM));
+                    $registerInputType = SmartcardRegisterInputType::create(
+                        $this->smartcardNumber,
+                        $beneficiaryId,
+                        $date->format(DateTimeInterface::ATOM)
+                    );
                     try {
                         $this->smartcardService->register($registerInputType);
                     } catch (SmartcardDoubledRegistrationException $e) {
@@ -274,7 +278,15 @@ class SmartcardServiceTest extends KernelTestCase
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $this->assertContainsEquals([$preliminaryInvoice->getValue(), $preliminaryInvoice->getCurrency(), $preliminaryInvoice->getProject()->getId()], $expectedResults, "Result was unexpected");
+            $this->assertContainsEquals(
+                [
+                    $preliminaryInvoice->getValue(),
+                    $preliminaryInvoice->getCurrency(),
+                    $preliminaryInvoice->getProject()->getId(),
+                ],
+                $expectedResults,
+                "Result was unexpected"
+            );
 
             foreach ($preliminaryInvoice->getPurchaseIds() as $purchaseId) {
                 /** @var SmartcardPurchase $purchase */
@@ -293,10 +305,26 @@ class SmartcardServiceTest extends KernelTestCase
             foreach ($batch->getPurchases() as $purchase) {
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
             }
-            $this->assertEquals($preliminaryInvoice->getValue(), $batch->getValue(), "Redemption value of batch is different");
-            $this->assertEquals($preliminaryInvoice->getCurrency(), $batch->getCurrency(), "Redemption currency of batch is different");
-            $this->assertEquals($preliminaryInvoice->getProject()->getId(), $batch->getProject()->getId(), "Redemption project of batch is different");
-            $this->assertEquals($preliminaryInvoice->getPurchaseCount(), $batch->getPurchases()->count(), "Redemption purchase count of batch is different");
+            $this->assertEquals(
+                $preliminaryInvoice->getValue(),
+                $batch->getValue(),
+                "Redemption value of batch is different"
+            );
+            $this->assertEquals(
+                $preliminaryInvoice->getCurrency(),
+                $batch->getCurrency(),
+                "Redemption currency of batch is different"
+            );
+            $this->assertEquals(
+                $preliminaryInvoice->getProject()->getId(),
+                $batch->getProject()->getId(),
+                "Redemption project of batch is different"
+            );
+            $this->assertEquals(
+                $preliminaryInvoice->getPurchaseCount(),
+                $batch->getPurchases()->count(),
+                "Redemption purchase count of batch is different"
+            );
         }
     }
 
@@ -471,8 +499,11 @@ class SmartcardServiceTest extends KernelTestCase
      * @throws OptimisticLockException
      * @throws InvalidArgumentException
      */
-    public function testSmartcardReuseFlows(array $actions, array $expectedBeneficiaryResults, array $expectedVendorResults): void
-    {
+    public function testSmartcardReuseFlows(
+        array $actions,
+        array $expectedBeneficiaryResults,
+        array $expectedVendorResults
+    ): void {
         $admin = $this->user;
         $projectA = 3;
         $assistanceId = 51; // USD
@@ -488,19 +519,31 @@ class SmartcardServiceTest extends KernelTestCase
         $packages = $this->em->getRepository(ReliefPackage::class)->findBy([
             'assistanceBeneficiary' => $targets,
         ]);
-        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage' => $packages], ['id' => 'asc']);
+        $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(
+            ['reliefPackage' => $packages],
+            ['id' => 'asc']
+        );
         foreach ($packages as $package) {
             $this->em->remove($package);
         }
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary' => $allTestingBeneficiaries], ['id' => 'asc']);
-        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard' => $smartcards], ['id' => 'asc']);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+            ['beneficiary' => $allTestingBeneficiaries],
+            ['id' => 'asc']
+        );
+        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(
+            ['smartcard' => $smartcards],
+            ['id' => 'asc']
+        );
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
-        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['vendor' => $allTestingVendors], ['id' => 'asc']);
+        $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(
+            ['vendor' => $allTestingVendors],
+            ['id' => 'asc']
+        );
         foreach ($purchases as $purchase) {
             $this->em->remove($purchase);
         }
@@ -512,7 +555,11 @@ class SmartcardServiceTest extends KernelTestCase
                 switch ($action) {
                     case 'register':
                         $createdAt = DateTime::createFromFormat('Y-m-d', $dateOfEvent);
-                        $registerInputType = SmartcardRegisterInputType::create($serialNumber, $beneficiaryId, $createdAt->format(DateTimeInterface::ATOM));
+                        $registerInputType = SmartcardRegisterInputType::create(
+                            $serialNumber,
+                            $beneficiaryId,
+                            $createdAt->format(DateTimeInterface::ATOM)
+                        );
                         try {
                             $this->smartcardService->register($registerInputType);
                         } catch (SmartcardDoubledRegistrationException $e) {
@@ -586,16 +633,28 @@ class SmartcardServiceTest extends KernelTestCase
                 'beneficiary' => $beneficiaryId,
                 'assistance' => $assistanceId,
             ]);
-            $package = $this->em->getRepository(ReliefPackage::class)->findBy(['assistanceBeneficiary' => $target], ['id' => 'asc']);
-            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(['reliefPackage' => $package], ['id' => 'asc']);
+            $package = $this->em->getRepository(ReliefPackage::class)->findBy(
+                ['assistanceBeneficiary' => $target],
+                ['id' => 'asc']
+            );
+            $deposits = $this->em->getRepository(SmartcardDeposit::class)->findBy(
+                ['reliefPackage' => $package],
+                ['id' => 'asc']
+            );
             $distributed = 0;
             foreach ($deposits as $deposit) {
                 $distributed += $deposit->getValue();
             }
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
-            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['beneficiary' => $beneficiaryId], ['id' => 'asc']);
-            $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(['smartcard' => $smartcards], ['id' => 'asc']);
+            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+                ['beneficiary' => $beneficiaryId],
+                ['id' => 'asc']
+            );
+            $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(
+                ['smartcard' => $smartcards],
+                ['id' => 'asc']
+            );
             $purchased = 0;
             foreach ($purchases as $purchase) {
                 $purchased += $purchase->getRecordsValue();
@@ -610,7 +669,11 @@ class SmartcardServiceTest extends KernelTestCase
                 $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
                 /** @var PreliminaryInvoice $invoice */
                 $invoice = $preliminaryInvoice[0];
-                $this->assertEquals($values['purchases'], $invoice->getPurchaseCount(), "Wrong redeemable purchases count");
+                $this->assertEquals(
+                    $values['purchases'],
+                    $invoice->getPurchaseCount(),
+                    "Wrong redeemable purchases count"
+                );
                 $this->assertEquals($values['value'], $invoice->getValue(), "Wrong redeemable value");
                 $this->assertEquals($projectA, $invoice->getProject()->getId(), "Wrong redeemable project");
             } elseif (null === $values) {
@@ -624,7 +687,10 @@ class SmartcardServiceTest extends KernelTestCase
     private function createTempVendor(EntityManagerInterface $em): void
     {
         $id = substr(md5(uniqid()), 0, 5) . "_";
-        $adm2 = $this->em->getRepository(Location::class)->findOneBy(['countryIso3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
+        $adm2 = $this->em->getRepository(Location::class)->findOneBy(
+            ['countryIso3' => 'SYR', 'lvl' => 2],
+            ['id' => 'asc']
+        );
 
         $this->user = new User();
         $this->user->injectObjectManager($em);

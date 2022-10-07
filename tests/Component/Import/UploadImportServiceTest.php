@@ -48,7 +48,11 @@ class UploadImportServiceTest extends KernelTestCase
 
     public function testUpload()
     {
-        $project = $this->entityManager->getRepository(Project::class)->findBy(['archived' => false], ['id' => 'asc'], 1)[0];
+        $project = $this->entityManager->getRepository(Project::class)->findBy(
+            ['archived' => false],
+            ['id' => 'asc'],
+            1
+        )[0];
         $user = $this->entityManager->getRepository(User::class)->findBy([], ['id' => 'asc'], 1)[0];
 
         $import = new Import('KHM', 'test', null, [$project], $user);
@@ -64,7 +68,8 @@ class UploadImportServiceTest extends KernelTestCase
 
         $this->uploadService->uploadFile($import, $file, $user);
 
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)
+            ->findBy(['import' => $import], ['id' => 'asc']);
 
         $this->assertCount(2, $queue);
         $this->assertSame(ImportQueueState::NEW, $queue[0]->getState());

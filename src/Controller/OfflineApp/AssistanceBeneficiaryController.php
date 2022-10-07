@@ -89,9 +89,20 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         }
 
         $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
-            ->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findBeneficiariesByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
-        $response = $this->json($assistanceBeneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => true, 'expanded' => true]);
+        $response = $this->json(
+            $assistanceBeneficiaries,
+            Response::HTTP_OK,
+            [],
+            [MapperInterface::OFFLINE_APP => true, 'expanded' => true]
+        );
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
@@ -122,9 +133,20 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         }
 
         $assistanceInstitutions = $this->assistanceBeneficiaryRepository
-            ->findInstitutionsByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findInstitutionsByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
-        $response = $this->json($assistanceInstitutions, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
+        $response = $this->json(
+            $assistanceInstitutions,
+            Response::HTTP_OK,
+            [],
+            [MapperInterface::OFFLINE_APP => false]
+        );
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
@@ -155,7 +177,13 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         }
 
         $assistanceCommunities = $this->assistanceBeneficiaryRepository
-            ->findCommunitiesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findCommunitiesByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
         $response = $this->json($assistanceCommunities, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));

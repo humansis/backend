@@ -56,7 +56,9 @@ class BookletGenerator
             $this->em->rollback();
             throw $exception;
         } finally {
-            $this->em->getConnection()->executeQuery('ALTER TABLE `voucher` ADD UNIQUE INDEX UNIQ_1392A5D877153098 (code)');
+            $this->em->getConnection()->executeQuery(
+                'ALTER TABLE `voucher` ADD UNIQUE INDEX UNIQ_1392A5D877153098 (code)'
+            );
         }
     }
 
@@ -173,6 +175,8 @@ class BookletGenerator
                 array_merge($values, [$bookletId])
             );
 
-        $this->em->getConnection()->executeQuery('UPDATE voucher SET code=REPLACE(code, "ID_PLACEHOLDER", id) WHERE id >= LAST_INSERT_ID()');
+        $this->em->getConnection()->executeQuery(
+            'UPDATE voucher SET code=REPLACE(code, "ID_PLACEHOLDER", id) WHERE id >= LAST_INSERT_ID()'
+        );
     }
 }

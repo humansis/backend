@@ -110,7 +110,11 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.purchased_summary.spreadsheet')->export($request->headers->get('country'), $request->get('type'), $filter);
+        $filename = $this->get('export.purchased_summary.spreadsheet')->export(
+            $request->headers->get('country'),
+            $request->get('type'),
+            $filter
+        );
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
@@ -140,7 +144,12 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $purchasedItemRepository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
+        $data = $purchasedItemRepository->findByParams(
+            $request->headers->get('country'),
+            $filterInputType,
+            $order,
+            $pagination
+        );
 
         return $this->json($data);
     }
@@ -159,7 +168,11 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->smartcardPurchasedItemSpreadsheet->export($request->headers->get('country'), $request->get('type'), $filter);
+        $filename = $this->smartcardPurchasedItemSpreadsheet->export(
+            $request->headers->get('country'),
+            $request->get('type'),
+            $filter
+        );
 
         $response = new BinaryFileResponse($filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));

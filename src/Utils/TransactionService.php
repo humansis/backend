@@ -60,8 +60,12 @@ class TransactionService
      * @param CacheInterface $cache
      * @param Environment $twig
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, CacheInterface $cache, Environment $twig)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ContainerInterface $container,
+        CacheInterface $cache,
+        Environment $twig
+    ) {
         $this->em = $entityManager;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');

@@ -29,7 +29,10 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
     public function generate(?string $countryIso3)
     {
         yield from $this->getStaticFields();
-        foreach ($this->countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']) as $countrySpecific) {
+        foreach (
+            $this->countrySpecificRepository
+                ->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']) as $countrySpecific
+        ) {
             $type = $this->transformCountrySpecificType($countrySpecific->getType());
 
             switch ($type) {
@@ -55,7 +58,13 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
                     break;
             }
 
-            yield new Field($countrySpecific->getFieldString(), $countrySpecific->getFieldString(), $conditionList, $type, $validator);
+            yield new Field(
+                $countrySpecific->getFieldString(),
+                $countrySpecific->getFieldString(),
+                $conditionList,
+                $type,
+                $validator
+            );
         }
     }
 

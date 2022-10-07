@@ -158,9 +158,14 @@ class AssistanceFactory
         $assistanceRoot->setName(self::generateName($assistanceRoot));
 
         if (!is_null($inputType->getScoringBlueprintId())) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findActive($inputType->getScoringBlueprintId(), $location->getCountryIso3());
+            $scoringBlueprint = $this->scoringBlueprintRepository->findActive(
+                $inputType->getScoringBlueprintId(),
+                $location->getCountryIso3()
+            );
             if (!$scoringBlueprint) {
-                throw new EntityNotFoundException('Scoring blueprint #' . $inputType->getScoringBlueprintId() . ' does not exists.');
+                throw new EntityNotFoundException(
+                    'Scoring blueprint #' . $inputType->getScoringBlueprintId() . ' does not exists.'
+                );
             }
             $assistanceRoot->setScoringBlueprint($scoringBlueprint);
         }
@@ -219,10 +224,13 @@ class AssistanceFactory
 
     private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
     {
-        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution() : $inputType->getDateExpiration();
+        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution(
+        ) : $inputType->getDateExpiration();
 
         if ($dateToCheck > $project->getEndDate()) {
-            throw new BadRequestHttpException('Expiration / Distribution date of assistance must be earlier than the end of project');
+            throw new BadRequestHttpException(
+                'Expiration / Distribution date of assistance must be earlier than the end of project'
+            );
         }
     }
 

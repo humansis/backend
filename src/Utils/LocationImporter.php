@@ -154,8 +154,13 @@ class LocationImporter
         $this->em->getConnection()->executeQuery("CALL recalculateLocationNestedSet;");
     }
 
-    private function buildLocation(string $name, string $code, string $iso3, int $level, ?Location $parentLocation = null): Location
-    {
+    private function buildLocation(
+        string $name,
+        string $code,
+        string $iso3,
+        int $level,
+        ?Location $parentLocation = null
+    ): Location {
         $locations = $this->locationRepository->findLocationsByCode($code, $iso3);
 
         if (count($locations) > 1) {

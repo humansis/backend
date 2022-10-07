@@ -31,8 +31,10 @@ class SmartcardController extends AbstractOfflineAppController
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function register(SmartcardRegisterInputType $registerInputType, SmartcardService $smartcardService): Response
-    {
+    public function register(
+        SmartcardRegisterInputType $registerInputType,
+        SmartcardService $smartcardService
+    ): Response {
         try {
             $smartcardService->register($registerInputType);
 

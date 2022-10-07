@@ -48,7 +48,11 @@ class SelectionCriteriaMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . SelectionCriteria::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . SelectionCriteria::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     private function isGenderCriterium(): bool

@@ -854,7 +854,9 @@ class Assistance implements ExportableInterface
         $valuescommodities = [];
 
         foreach ($this->getCommodities() as $commodity) {
-            $stringCommodity = $commodity->getModalityType() . " " . $commodity->getValue() . " " . $commodity->getUnit();
+            $stringCommodity = $commodity->getModalityType()
+                . " " . $commodity->getValue()
+                . " " . $commodity->getUnit();
             array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
@@ -920,8 +922,10 @@ class Assistance implements ExportableInterface
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary(Commodity $commodity, AssistanceBeneficiary $assistanceBeneficiary): int
-    {
+    public function getCommoditySentAmountFromBeneficiary(
+        Commodity $commodity,
+        AssistanceBeneficiary $assistanceBeneficiary
+    ): int {
         $sent = 0;
         foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
             if ($package->getModalityType() == $commodity->getModalityType()) {

@@ -46,7 +46,6 @@ class CodeListService
             $data[] = new CodeItem(
                 $subSector->getSubSectorName(),
                 $this->translator->trans('label_sector_' . $subSector->getSubSectorName())
-                //SubSectorEnum::translate($subSector->getSubSectorName())
             );
         }
 

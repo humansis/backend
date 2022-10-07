@@ -66,8 +66,11 @@ class DonorController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Pagination $pagination, DonorOrderInputType $orderBy, DonorFilterInputType $filter): JsonResponse
-    {
+    public function list(
+        Pagination $pagination,
+        DonorOrderInputType $orderBy,
+        DonorFilterInputType $filter
+    ): JsonResponse {
         $countrySpecifics = $this->getDoctrine()->getRepository(Donor::class)
             ->findByParams($orderBy, $pagination, $filter);
 

@@ -59,7 +59,8 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
             $bookletGenerator = $this->bookletGenerator($manager, $project->getCountryIso3());
 
             foreach ($voucherAssistances as $assistance) {
-                echo $project->getName() . " - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";
+                echo $project->getName()
+                    . " - {$assistance->getId()}# {$assistance->getName()}: ({$assistance->getDistributionBeneficiaries()->count()} {$assistance->getTargetType()})";
                 foreach ($assistance->getDistributionBeneficiaries() as $distributionBeneficiary) {
                     $booklet = $bookletGenerator->current();
                     if (null === $booklet) {
@@ -71,10 +72,18 @@ class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterfac
                         $distributionBeneficiary->getBeneficiary() instanceof Household
                         && null !== $distributionBeneficiary->getBeneficiary()->getHouseholdHead()
                     ) {
-                        $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary()->getHouseholdHead());
+                        $this->bookletService->assign(
+                            $booklet,
+                            $distributionBeneficiary->getAssistance(),
+                            $distributionBeneficiary->getBeneficiary()->getHouseholdHead()
+                        );
                     }
                     if ($distributionBeneficiary->getBeneficiary() instanceof Beneficiary) {
-                        $this->bookletService->assign($booklet, $distributionBeneficiary->getAssistance(), $distributionBeneficiary->getBeneficiary());
+                        $this->bookletService->assign(
+                            $booklet,
+                            $distributionBeneficiary->getAssistance(),
+                            $distributionBeneficiary->getBeneficiary()
+                        );
                     }
 
                     $bookletGenerator->next();

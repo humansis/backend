@@ -33,8 +33,11 @@ trait ImportLoggerTrait
         $this->logger->error("[Import#{$import->getId()}] ({$import->getTitle()}|{$import->getState()}) $message");
     }
 
-    protected function logImportTransitionConstraints(WorkflowInterface $workflow, Import $import, string $transition): void
-    {
+    protected function logImportTransitionConstraints(
+        WorkflowInterface $workflow,
+        Import $import,
+        string $transition
+    ): void {
         foreach ($workflow->buildTransitionBlockerList($import, $transition) as $block) {
             $this->logImportDebug($import, " can't go to '$transition' because " . $block->getMessage());
         }

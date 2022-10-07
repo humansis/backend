@@ -45,7 +45,11 @@ class BeneficiaryCompareMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . BeneficiaryCompare::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . BeneficiaryCompare::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getHouseholdId(): ?array
@@ -123,8 +127,12 @@ class BeneficiaryCompareMapper implements MapperInterface
             $databasePhones[] = trim($phone->getPrefix() . $phone->getNumber());
         }
         $importPhones = [];
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone1 . $this->object->getImportLine()->numberPhone1);
-        $importPhones[] = trim($this->object->getImportLine()->prefixPhone2 . $this->object->getImportLine()->numberPhone2);
+        $importPhones[] = trim(
+            $this->object->getImportLine()->prefixPhone1 . $this->object->getImportLine()->numberPhone1
+        );
+        $importPhones[] = trim(
+            $this->object->getImportLine()->prefixPhone2 . $this->object->getImportLine()->numberPhone2
+        );
         $importPhones = array_filter($importPhones, function ($number) {
             return !empty($number);
         });
@@ -141,7 +149,9 @@ class BeneficiaryCompareMapper implements MapperInterface
         }
         $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
-        $importedVulnerabilities = $enumBuilder->buildInputValues($this->object->getImportLine()->vulnerabilityCriteria);
+        $importedVulnerabilities = $enumBuilder->buildInputValues(
+            $this->object->getImportLine()->vulnerabilityCriteria
+        );
 
         return $this->compareLists($databaseVulnerabilities, $importedVulnerabilities);
     }

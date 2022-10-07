@@ -94,7 +94,12 @@ final class InvalidCell
 
     private function preventFormulaError(): void
     {
-        if ($this->cellDataType === DataType::TYPE_FORMULA && $this->cellErrors && array_key_exists(CellParameters::ERRORS, $this->cellErrors)) {
+        if (
+            $this->cellDataType === DataType::TYPE_FORMULA && $this->cellErrors && array_key_exists(
+                CellParameters::ERRORS,
+                $this->cellErrors
+            )
+        ) {
             $this->cellDataType = DataType::TYPE_STRING;
             $this->cellValue = self::FORMULA_ERROR_CELL_VALUE;
         }

@@ -57,7 +57,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     public function getToken(Assistance $assistance)
     {
-        $organizationWINGCashTransfer = $this->em->getRepository(OrganizationServices::class)->findOneByService("WING Cash Transfer");
+        $organizationWINGCashTransfer = $this->em->getRepository(OrganizationServices::class)->findOneByService(
+            "WING Cash Transfer"
+        );
 
         if (!$organizationWINGCashTransfer->getEnabled()) {
             $this->logger->error("Missing enabled configuration for Wing money service in DB", [$assistance]);
@@ -66,7 +68,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
         $this->password = $organizationWINGCashTransfer->getParameterValue('password');
         $this->username = $organizationWINGCashTransfer->getParameterValue('username');
-        $this->production = $organizationWINGCashTransfer->getParameterValue('production') ? $organizationWINGCashTransfer->getParameterValue('production') : false;
+        $this->production = $organizationWINGCashTransfer->getParameterValue(
+            'production'
+        ) ? $organizationWINGCashTransfer->getParameterValue('production') : false;
 
         if (!$this->password || !$this->username) {
             $this->logger->error("Missing credentials for Wing money service in DB", [$assistance]);
@@ -179,7 +183,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $requestUnique = uniqid();
         $requestID = "Request#$requestUnique: ";
 
-        $this->logger->error($requestID . "started for Assistance#" . $assistance->getId() . " of type $type to route $route");
+        $this->logger->error(
+            $requestID . "started for Assistance#" . $assistance->getId() . " of type $type to route $route"
+        );
 
         $curl = curl_init();
 
@@ -199,7 +205,11 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             ) {
                 $this->getToken($assistance);
             }
-            array_push($headers, "Authorization: Bearer " . $this->token->access_token, "Content-type: application/json");
+            array_push(
+                $headers,
+                "Authorization: Bearer " . $this->token->access_token,
+                "Content-type: application/json"
+            );
             $body = json_encode((object) $body);
         } else { // Authentication request
             $body = http_build_query($body); // Pass body as url-encoded string
@@ -241,7 +251,9 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             }
         }
 
-        $this->logger->error($requestID . "Route: " . ($this->production ? $this->url_prod : $this->url) . $route . "[port" . ($this->production ? "8443" : "9443") . "]");
+        $this->logger->error(
+            $requestID . "Route: " . ($this->production ? $this->url_prod : $this->url) . $route . "[port" . ($this->production ? "8443" : "9443") . "]"
+        );
 
         $err = null;
         try {
@@ -296,7 +308,15 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             $bodyString = $body;
         }
 
-        $data = [$this->from, (new DateTime())->format('d-m-Y h:i:s'), $info['url'], $info['http_code'], $response, $err, $bodyString];
+        $data = [
+            $this->from,
+            (new DateTime())->format('d-m-Y h:i:s'),
+            $info['url'],
+            $info['http_code'],
+            $response,
+            $err,
+            $bodyString,
+        ];
         $this->recordTransaction($assistance, $data);
 
         $this->logger->error($requestID . "record logged into var/logs/record_{$assistance->getId()}.csv");

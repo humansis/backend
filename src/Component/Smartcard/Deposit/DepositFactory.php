@@ -92,8 +92,11 @@ class DepositFactory
      * @throws OptimisticLockException
      * @throws InvalidArgumentException
      */
-    public function create(string $smartcardSerialNumber, DepositInputType $depositInputType, User $user): SmartcardDeposit
-    {
+    public function create(
+        string $smartcardSerialNumber,
+        DepositInputType $depositInputType,
+        User $user
+    ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
         $hash = SmartcardDepositService::generateDepositHash(
             $smartcardSerialNumber,
@@ -110,7 +113,9 @@ class DepositFactory
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
         $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
-        $this->cache->delete(CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId()));
+        $this->cache->delete(
+            CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
+        );
 
         return $deposit;
     }
@@ -163,7 +168,9 @@ class DepositFactory
         $deposit = $this->smartcardDepositRepository->findByHash($hash);
 
         if ($deposit) {
-            $this->logger->info("Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}");
+            $this->logger->info(
+                "Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}"
+            );
             throw new DoubledDepositException($deposit);
         }
     }

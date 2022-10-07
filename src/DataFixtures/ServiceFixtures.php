@@ -118,7 +118,9 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
                 $manager->flush();
             }
 
-            $organizationService = $manager->getRepository(OrganizationServices::class)->findOneByService($datum["name"]);
+            $organizationService = $manager->getRepository(OrganizationServices::class)->findOneByService(
+                $datum["name"]
+            );
             $organization = $manager->getRepository(Organization::class)->find(1);
             if ((!$organizationService instanceof OrganizationServices) && ($organization instanceof Organization)) {
                 $organizationService = new OrganizationServices();

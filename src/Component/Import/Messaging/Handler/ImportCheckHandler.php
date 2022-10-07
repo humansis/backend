@@ -119,7 +119,13 @@ class ImportCheckHandler implements MessageHandlerInterface
      */
     private function checkIntegrity(Import $import)
     {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_INTEGRITY, IntegritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+        if (
+            $this->isBlockedByNotCompleted(
+                $import,
+                ImportTransitions::COMPLETE_INTEGRITY,
+                IntegritySubscriber::GUARD_CODE_NOT_COMPLETE
+            )
+        ) {
             $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
@@ -136,7 +142,13 @@ class ImportCheckHandler implements MessageHandlerInterface
      */
     private function checkIdentity(Import $import)
     {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_IDENTITY, IdentitySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+        if (
+            $this->isBlockedByNotCompleted(
+                $import,
+                ImportTransitions::COMPLETE_IDENTITY,
+                IdentitySubscriber::GUARD_CODE_NOT_COMPLETE
+            )
+        ) {
             $this->messageBus->dispatch(ImportCheck::checkIdentityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
@@ -153,7 +165,13 @@ class ImportCheckHandler implements MessageHandlerInterface
      */
     private function checkSimilarity(Import $import)
     {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::COMPLETE_SIMILARITY, SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE)) {
+        if (
+            $this->isBlockedByNotCompleted(
+                $import,
+                ImportTransitions::COMPLETE_SIMILARITY,
+                SimilaritySubscriber::GUARD_CODE_NOT_COMPLETE
+            )
+        ) {
             $this->messageBus->dispatch(ImportCheck::checkSimilarityComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [
@@ -170,7 +188,13 @@ class ImportCheckHandler implements MessageHandlerInterface
      */
     private function checkImport(Import $import)
     {
-        if ($this->isBlockedByNotCompleted($import, ImportTransitions::FINISH, FinishSubscriber::GUARD_CODE_NOT_COMPLETE)) {
+        if (
+            $this->isBlockedByNotCompleted(
+                $import,
+                ImportTransitions::FINISH,
+                FinishSubscriber::GUARD_CODE_NOT_COMPLETE
+            )
+        ) {
             $this->messageBus->dispatch(ImportCheck::checkImportingComplete($import), [new DelayStamp(5000)]);
         } else {
             $this->tryTransitions($import, [

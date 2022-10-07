@@ -91,8 +91,10 @@ class BeneficiaryController extends AbstractController
      * @return JsonResponse
      * @throws EntityNotFoundException
      */
-    public function precalculateBeneficiaries(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
-    {
+    public function precalculateBeneficiaries(
+        AssistanceCreateInputType $inputType,
+        Pagination $pagination
+    ): JsonResponse {
         $beneficiaries = $this->assistanceService->findByCriteria($inputType, $pagination);
 
         return $this->json($beneficiaries);
@@ -125,13 +127,18 @@ class BeneficiaryController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function vulnerabilityScores(VulnerabilityScoreInputType $vulnerabilityScoreInputType, Request $request): JsonResponse
-    {
+    public function vulnerabilityScores(
+        VulnerabilityScoreInputType $vulnerabilityScoreInputType,
+        Request $request
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $scoring = $this->scoringService->computeTotalScore($vulnerabilityScoreInputType, $request->headers->get('country'));
+        $scoring = $this->scoringService->computeTotalScore(
+            $vulnerabilityScoreInputType,
+            $request->headers->get('country')
+        );
 
         return $this->json(new Paginator($scoring));
     }
@@ -205,7 +212,10 @@ class BeneficiaryController extends AbstractController
 
             return $response;
         } catch (Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(
+                $exception->getMessage(),
+                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
+            );
         }
     }
 
@@ -219,7 +229,10 @@ class BeneficiaryController extends AbstractController
      */
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
-        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv($assistance, $request->query->get('type'));
+        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv(
+            $assistance,
+            $request->query->get('type')
+        );
 
         $response = new BinaryFileResponse(getcwd() . '/' . $file);
 
@@ -355,14 +368,20 @@ class BeneficiaryController extends AbstractController
         AssistanceRepository $assistanceRepository
     ): JsonResponse {
         if (!in_array($target, AssistanceTargetType::values())) {
-            throw $this->createNotFoundException('Invalid target. Allowed are ' . implode(', ', AssistanceTargetType::values()));
+            throw $this->createNotFoundException(
+                'Invalid target. Allowed are ' . implode(', ', AssistanceTargetType::values())
+            );
         }
 
         if ($filter->hasExcludeAssistance()) {
             $assistanceId = $filter->getExcludeAssistance();
             /** @var Assistance $excludedAssistance */
             $excludedAssistance = $assistanceRepository->find($assistanceId);
-            $beneficiaries = $beneficiaryRepository->getNotSelectedBeneficiariesOfProject($project, $target, $excludedAssistance);
+            $beneficiaries = $beneficiaryRepository->getNotSelectedBeneficiariesOfProject(
+                $project,
+                $target,
+                $excludedAssistance
+            );
         } else {
             $beneficiaries = $beneficiaryRepository->getAllOfProject($project, $target);
         }

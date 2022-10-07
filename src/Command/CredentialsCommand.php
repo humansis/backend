@@ -109,7 +109,9 @@ class CredentialsCommand extends Command
 
             return 0;
         } catch (Throwable $e) {
-            $output->writeln("<error>Error during creating user. Original exeption message: {$e->getMessage()}</error>");
+            $output->writeln(
+                "<error>Error during creating user. Original exeption message: {$e->getMessage()}</error>"
+            );
 
             return 1;
         }

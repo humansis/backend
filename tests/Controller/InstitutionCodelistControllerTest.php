@@ -30,7 +30,10 @@ class InstitutionCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

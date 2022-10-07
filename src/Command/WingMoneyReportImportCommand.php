@@ -33,8 +33,12 @@ class WingMoneyReportImportCommand extends Command
      */
     private $importService;
 
-    public function __construct(EntityManagerInterface $em, ReportParser $reportParser, ImportService $importService, string $name = null)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        ReportParser $reportParser,
+        ImportService $importService,
+        string $name = null
+    ) {
         parent::__construct($name);
 
         $this->em = $em;
@@ -46,7 +50,11 @@ class WingMoneyReportImportCommand extends Command
     {
         $this->setName('app:wing-money:import')
             ->addArgument('reportFile', InputArgument::REQUIRED, 'Report file in xlsx format')
-            ->addArgument('assistance', InputArgument::REQUIRED, 'ID of an assistance in which the transactions will be imported')
+            ->addArgument(
+                'assistance',
+                InputArgument::REQUIRED,
+                'ID of an assistance in which the transactions will be imported'
+            )
             ->addArgument('user', InputArgument::REQUIRED, 'ID of an user. Will be saved as sendBy for transactions.')
             ->addOption('check');
     }
@@ -104,7 +112,9 @@ class WingMoneyReportImportCommand extends Command
     {
         $filepath = $input->getArgument('reportFile');
         if (!file_exists($filepath)) {
-            throw new InvalidArgumentException('Unable to find source file with Wing Money report for import: ' . $filepath);
+            throw new InvalidArgumentException(
+                'Unable to find source file with Wing Money report for import: ' . $filepath
+            );
         }
 
         return $filepath;

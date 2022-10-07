@@ -44,8 +44,12 @@ class InstitutionController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, Pagination $pagination, InstitutionFilterInputType $filter, InstitutionOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        Pagination $pagination,
+        InstitutionFilterInputType $filter,
+        InstitutionOrderInputType $orderBy
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }

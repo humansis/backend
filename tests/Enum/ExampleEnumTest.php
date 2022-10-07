@@ -17,13 +17,19 @@ class ExampleEnumTest extends TestCase
 
     public function apiValues(): iterable
     {
-        yield 'case insensitivity for unicode ' . ExampleEnum::HORSE => [ExampleEnum::HORSE, 'PŘÍLIŠ ŽLUŤOUČKÝ KŮŇ PĚL ĎÁBELSKÉ ÓDY'];
+        yield 'case insensitivity for unicode ' . ExampleEnum::HORSE => [
+            ExampleEnum::HORSE,
+            'PŘÍLIŠ ŽLUŤOUČKÝ KŮŇ PĚL ĎÁBELSKÉ ÓDY',
+        ];
 
         yield 'case insensitivity ' . ExampleEnum::AAA => [ExampleEnum::AAA, 'aAa'];
 
         yield 'omit slashes chars ' . ExampleEnum::YES => [ExampleEnum::YES, 'Y/E/S'];
         yield 'omit non-letter chars ' . ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, 'ABCDE'];
-        yield 'omit non-letter chars an case insensitivity' . ExampleEnum::OBFUSCATE => [ExampleEnum::OBFUSCATE, 'abcde'];
+        yield 'omit non-letter chars an case insensitivity' . ExampleEnum::OBFUSCATE => [
+            ExampleEnum::OBFUSCATE,
+            'abcde',
+        ];
         yield 'omit spaces chars ' . ExampleEnum::AAA => [ExampleEnum::AAA, 'a a a'];
         yield 'omit dots chars ' . ExampleEnum::AAA => [ExampleEnum::AAA, 'a.a.a'];
 

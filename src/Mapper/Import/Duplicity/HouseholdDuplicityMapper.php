@@ -51,7 +51,11 @@ class HouseholdDuplicityMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportHouseholdDuplicity::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . ImportHouseholdDuplicity::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -96,8 +100,10 @@ class HouseholdDuplicityMapper implements MapperInterface
                 'id' => $missingBeneficiary->getId(),
                 'name' => sprintf(
                     '%s %s',
-                    $missingBeneficiary->getPerson()->getLocalGivenName() ?: $missingBeneficiary->getPerson()->getEnGivenName(),
-                    $missingBeneficiary->getPerson()->getLocalFamilyName() ?: $missingBeneficiary->getPerson()->getEnFamilyName()
+                    $missingBeneficiary->getPerson()->getLocalGivenName() ?: $missingBeneficiary->getPerson(
+                    )->getEnGivenName(),
+                    $missingBeneficiary->getPerson()->getLocalFamilyName() ?: $missingBeneficiary->getPerson(
+                    )->getEnFamilyName()
                 ),
             ];
         }

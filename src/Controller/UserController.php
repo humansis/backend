@@ -59,8 +59,11 @@ class UserController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(UserOrderInputType $userOderInputType, UserFilterInputType $userFilterInputType, Pagination $pagination): JsonResponse
-    {
+    public function list(
+        UserOrderInputType $userOderInputType,
+        UserFilterInputType $userFilterInputType,
+        Pagination $pagination
+    ): JsonResponse {
         /** @var UserRepository $userRepository */
         $userRepository = $this->getDoctrine()->getRepository(User::class);
 
@@ -146,7 +149,14 @@ class UserController extends AbstractController
         if ($request->request->has('2fa')) {
             if (!$user->getPhoneNumber() && $request->request->getBoolean('2fa')) {
                 throw new ConstraintViolationException(
-                    new ConstraintViolation('Unable to enable 2FA. There is no phone number.', null, [], '2fa', '2fa', true)
+                    new ConstraintViolation(
+                        'Unable to enable 2FA. There is no phone number.',
+                        null,
+                        [],
+                        '2fa',
+                        '2fa',
+                        true
+                    )
                 );
             }
 

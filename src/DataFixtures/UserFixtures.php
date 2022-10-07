@@ -39,8 +39,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
      */
     private $userService;
 
-    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory, Kernel $kernel, UserService $userService)
-    {
+    public function __construct(
+        UserManager $manager,
+        EncoderFactoryInterface $encoderFactory,
+        Kernel $kernel,
+        UserService $userService
+    ) {
         $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;
         $this->kernel = $kernel;

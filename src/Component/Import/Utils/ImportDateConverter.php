@@ -24,7 +24,9 @@ class ImportDateConverter
             $datetime = DateTime::createFromFormat(self::STRING_DATE_FORMAT, $value);
 
             if (!$datetime) {
-                throw new InvalidArgument("Provided value '$value' is not valid import date format. Date has to be in this format: '" . self::STRING_DATE_FORMAT . "'");
+                throw new InvalidArgument(
+                    "Provided value '$value' is not valid import date format. Date has to be in this format: '" . self::STRING_DATE_FORMAT . "'"
+                );
             }
 
             return $datetime;
@@ -34,7 +36,11 @@ class ImportDateConverter
             return Date::excelToDateTimeObject($value);
         }
 
-        throw new InvalidArgument("Provided value '$value' should be of type string, float or integer. Type of provided value: " . gettype($value));
+        throw new InvalidArgument(
+            "Provided value '$value' should be of type string, float or integer. Type of provided value: " . gettype(
+                $value
+            )
+        );
     }
 
     public static function toIso(?DateTimeInterface $dateTime): ?string

@@ -66,7 +66,12 @@ class RulesComputationTest extends KernelTestCase
 
         foreach ($customComputationReflection->getMethods() as $method) {
             if (in_array($method->getName(), $supportedNotImplementedCalculations)) {
-                unset($supportedNotImplementedCalculations[array_search($method->getName(), $supportedNotImplementedCalculations)]);
+                unset(
+                    $supportedNotImplementedCalculations[array_search(
+                        $method->getName(),
+                        $supportedNotImplementedCalculations
+                    )]
+                );
             }
         }
 
@@ -99,7 +104,9 @@ class RulesComputationTest extends KernelTestCase
         $child->getPerson()->setDateOfBirth((new DateTime())->modify('-18 year')->modify('+1 day')); //almost 18 years
 
         $almostElder = new Beneficiary();
-        $almostElder->getPerson()->setDateOfBirth((new DateTime())->modify('-60 year')->modify('+1 day')); //almost 60 years
+        $almostElder->getPerson()->setDateOfBirth(
+            (new DateTime())->modify('-60 year')->modify('+1 day')
+        ); //almost 60 years
 
         $elder = new Beneficiary();
         $elder->getPerson()->setDateOfBirth((new DateTime())->modify('-60 year')->modify('-1 day'));
@@ -122,7 +129,11 @@ class RulesComputationTest extends KernelTestCase
         $householdHigh->addBeneficiary($child);
         $householdHigh->addBeneficiary($elder);
 
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR, 'Test');
+        $scoringRule = new ScoringRule(
+            ScoringRuleType::CALCULATION,
+            ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_UKR,
+            'Test'
+        );
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID, 1));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_HIGH, 2));
 

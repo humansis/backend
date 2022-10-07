@@ -39,7 +39,9 @@ class Country
             throw new InvalidArgumentException("Invalid argument 5. It must contains attribute 'adms'.");
         }
         if (4 !== count($data['adms'])) {
-            throw new InvalidArgumentException("Invalid argument 6. Attribute 'adms' does not contains complete list of names.");
+            throw new InvalidArgumentException(
+                "Invalid argument 6. Attribute 'adms' does not contains complete list of names."
+            );
         }
         if (!isset($data['archived'])) {
             throw new InvalidArgumentException("Invalid argument 7. It must contains attribute 'archived'.");

@@ -33,7 +33,11 @@ class ImportInvalidFileMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ImportInvalidFile::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . ImportInvalidFile::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getId(): int

@@ -83,8 +83,11 @@ class InvoiceController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function create(Vendor $vendor, SmartcardRedemptionBatchCreateInputType $inputType, SmartcardService $smartcardService): JsonResponse
-    {
+    public function create(
+        Vendor $vendor,
+        SmartcardRedemptionBatchCreateInputType $inputType,
+        SmartcardService $smartcardService
+    ): JsonResponse {
         //backward compatibility
         $newInvoice = new SmartcardInvoice();
         $newInvoice->setPurchases($inputType->getPurchaseIds());

@@ -37,7 +37,9 @@ class SmartcardMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Smartcard::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Smartcard::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): ?int
