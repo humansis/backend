@@ -38,8 +38,11 @@ class HouseholdController extends AbstractController
      * @param HouseholdService $householdService
      * @param HouseholdRepository $householdRepository
      */
-    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository, BeneficiaryService $beneficiaryService)
-    {
+    public function __construct(
+        HouseholdService $householdService,
+        HouseholdRepository $householdRepository,
+        BeneficiaryService $beneficiaryService
+    ) {
         $this->householdService = $householdService;
         $this->householdRepository = $householdRepository;
         $this->beneficiaryService = $beneficiaryService;

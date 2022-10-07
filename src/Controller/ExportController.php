@@ -5,6 +5,7 @@ namespace Controller;
 use Entity\Organization;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
+use Exception;
 use Repository\AssistanceRepository;
 use Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,6 +21,7 @@ use Utils\HouseholdExportCSVService;
 
 /**
  * Class ExportController
+ *
  * @package Controller
  *
  * @SWG\Parameter(
@@ -32,8 +34,8 @@ use Utils\HouseholdExportCSVService;
 class ExportController extends Controller
 {
     /** @var int maximum count of exported entities */
-    const EXPORT_LIMIT = 10000;
-    const EXPORT_LIMIT_CSV = 20000;
+    public const EXPORT_LIMIT = 10000;
+    public const EXPORT_LIMIT_CSV = 20000;
 
     /**
      * @var AssistanceRepository
@@ -50,9 +52,11 @@ class ExportController extends Controller
      */
     private $householdExportCSVService;
 
-
-    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService, HouseholdExportCSVService $householdExportCSVService)
-    {
+    public function __construct(
+        AssistanceRepository $assistanceRepository,
+        AssistanceService $assistanceService,
+        HouseholdExportCSVService $householdExportCSVService
+    ) {
         $this->assistanceRepository = $assistanceRepository;
         $this->assistanceService = $assistanceService;
         $this->householdExportCSVService = $householdExportCSVService;
@@ -102,7 +106,12 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvDeprecated($type, $countryIso3, $filters, $ids);
+                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvDeprecated(
+                    $type,
+                    $countryIso3,
+                    $filters,
+                    $ids
+                );
             } elseif ($request->query->get('users')) {
                 $filename = $this->get('user.user_service')->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
@@ -115,15 +124,20 @@ class ExportController extends Controller
                 $filename = $this->get('project.project_service')->exportToCsv($country, $type);
             } elseif ($request->query->get('distributionSample')) {
                 $arrayObjectBeneficiary = $request->request->get('sample');
-                $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv($arrayObjectBeneficiary, $type);
+                $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv(
+                    $arrayObjectBeneficiary,
+                    $type
+                );
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('transactionDistribution') ||
-                      $request->query->get('smartcardDistribution') ||
-                      $request->query->get('voucherDistribution') ||
-                      $request->query->get('generalreliefDistribution') ||
-                      $request->query->get('beneficiariesInDistribution')) {
+            } elseif (
+                $request->query->get('transactionDistribution') ||
+                $request->query->get('smartcardDistribution') ||
+                $request->query->get('voucherDistribution') ||
+                $request->query->get('generalreliefDistribution') ||
+                $request->query->get('beneficiariesInDistribution')
+            ) {
                 $idDistribution = $request->query->get('transactionDistribution') ??
                     $request->query->get('smartcardDistribution') ??
                     $request->query->get('voucherDistribution') ??
@@ -137,7 +151,12 @@ class ExportController extends Controller
                 }
                 $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
                 // raw export for legacy purpose
-                if ($type === 'xlsx' && in_array($distribution->getTargetType(), [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL])) { // hack to enable raw export, will be forgotten with FE switch
+                if (
+                    $type === 'xlsx' && in_array(
+                        $distribution->getTargetType(),
+                        [AssistanceTargetType::HOUSEHOLD, AssistanceTargetType::INDIVIDUAL]
+                    )
+                ) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
                         $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
                     }
@@ -148,10 +167,16 @@ class ExportController extends Controller
                         $filename = $this->assistanceService->exportVouchersDistributionToCsv($distribution, $type);
                     }
                     if ($request->query->has('generalreliefDistribution')) {
-                        $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv($distribution, 'xlsx');
+                        $filename = $this->assistanceService->exportGeneralReliefDistributionToCsv(
+                            $distribution,
+                            'xlsx'
+                        );
                     }
                     if ($request->query->has('beneficiariesInDistribution')) {
-                        $filename = $this->assistanceService->exportToCsvBeneficiariesInDistribution($distribution, $type);
+                        $filename = $this->assistanceService->exportToCsvBeneficiariesInDistribution(
+                            $distribution,
+                            $type
+                        );
                     }
                 }
             } elseif ($request->query->get('bookletCodes')) {
@@ -190,8 +215,11 @@ class ExportController extends Controller
             $response->deleteFileAfterSend(true);
 
             return $response;
-        } catch (\Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+        } catch (Exception $exception) {
+            return new JsonResponse(
+                $exception->getMessage(),
+                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
+            );
         }
     }
 

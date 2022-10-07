@@ -89,7 +89,7 @@ class CommunityService
         }
 
         if (!is_null($inputType->getNationalIdCard())) {
-            $nationalIdCard =  NationalId::fromNationalIdInputType($inputType->getNationalIdCard());
+            $nationalIdCard = NationalId::fromNationalIdInputType($inputType->getNationalIdCard());
 
             $community->setNationalId($nationalIdCard);
         }

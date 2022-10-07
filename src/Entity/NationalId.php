@@ -160,6 +160,7 @@ class NationalId
         $nationalId->setIdType($inputType->getType());
         $nationalId->setIdNumber($inputType->getNumber());
         $nationalId->setPriority($inputType->getPriority());
+
         return $nationalId;
     }
 }

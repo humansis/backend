@@ -101,5 +101,4 @@ class NationalIdCardInputType implements InputTypeInterface
     {
         $this->priority = $priority;
     }
-
 }
