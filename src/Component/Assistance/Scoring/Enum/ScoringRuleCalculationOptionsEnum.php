@@ -38,6 +38,15 @@ final class ScoringRuleCalculationOptionsEnum
     public const DEPENDENCY_RATIO_SYR_NES_5 = '4< DR <= 5';
     public const DEPENDENCY_RATIO_SYR_NES_INF = '5 < DR';
 
+    public const INCOME_SPENT_ON_FOOD_0 = '0';
+    public const INCOME_SPENT_ON_FOOD_INCOME_0 = 'Income (core) = 0';
+    public const INCOME_SPENT_ON_FOOD_25 = '<0.25';
+    public const INCOME_SPENT_ON_FOOD_50 = '0,26-0,50';
+    public const INCOME_SPENT_ON_FOOD_65 = '0,51-0,65';
+    public const INCOME_SPENT_ON_FOOD_80 = '0,66-0,80';
+    public const INCOME_SPENT_ON_FOOD_95 = '0,81-0,95';
+    public const INCOME_SPENT_ON_FOOD_INF = '>0,95';
+
     public const SUPPORTED = [
         ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
             self::VULNERABILITY_SOLO_PARENT,
@@ -83,6 +92,17 @@ final class ScoringRuleCalculationOptionsEnum
             self::DEPENDENCY_RATIO_SYR_NES_4,
             self::DEPENDENCY_RATIO_SYR_NES_5,
             self::DEPENDENCY_RATIO_SYR_NES_INF,
+        ],
+
+        ScoringRulesCalculationsEnum::INCOME_SPENT_ON_FOOD => [
+            self::INCOME_SPENT_ON_FOOD_0,
+            self::INCOME_SPENT_ON_FOOD_INCOME_0,
+            self::INCOME_SPENT_ON_FOOD_25,
+            self::INCOME_SPENT_ON_FOOD_50,
+            self::INCOME_SPENT_ON_FOOD_65,
+            self::INCOME_SPENT_ON_FOOD_80,
+            self::INCOME_SPENT_ON_FOOD_95,
+            self::INCOME_SPENT_ON_FOOD_INF,
         ],
     ];
 }

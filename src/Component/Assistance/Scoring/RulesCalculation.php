@@ -264,6 +264,52 @@ final class RulesCalculation
         return 0;
     }
 
+    public function incomeSpentOnFood(Household $household, ScoringRule $rule): float
+    {
+        $totalExpenditure = null;
+
+        /** @var CountrySpecificAnswer $countrySpecificAnswer */
+        foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
+            if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'Total expenditure') {
+                $totalExpenditure = (float) $countrySpecificAnswer->getAnswer();
+            }
+        }
+
+
+        //CSO Total expenditure not found (either in system or in household)
+        if ($totalExpenditure === null) {
+            return 0;
+        }
+
+        if ($household->getIncome() === null) {
+            return 0;
+        }
+
+        if ($household->getIncome() === 0) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INCOME_0)->getScore();
+        }
+
+        $incomeSpentOnFood = $totalExpenditure / $household->getIncome();
+
+        if (Floats::compare(0, $incomeSpentOnFood)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_0)->getScore();
+        } elseif ($incomeSpentOnFood < .25 || Floats::compare($incomeSpentOnFood, .25)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_25)->getScore();
+        } elseif ($incomeSpentOnFood < .50 || Floats::compare($incomeSpentOnFood, .50)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_50)->getScore();
+        } elseif ($incomeSpentOnFood < .65 || Floats::compare($incomeSpentOnFood, .65)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_65)->getScore();
+        } elseif ($incomeSpentOnFood < .80 || Floats::compare($incomeSpentOnFood, .80)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_80)->getScore();
+        } elseif ($incomeSpentOnFood < .95 || Floats::compare($incomeSpentOnFood, .95)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95)->getScore();
+        } else {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF)->getScore();
+        }
+
+    }
+}
+
     //could be easily done with enums calculation, once all enums are refactored
     public function genderOfHeadOfHousehold(Household $household, ScoringRule $rule): float
     {

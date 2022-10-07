@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Component\Assistance\Scoring;
 
 use Entity\Beneficiary;
+use Entity\CountrySpecific;
+use Entity\CountrySpecificAnswer;
 use Entity\Household;
 use DateTime;
 use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
@@ -252,5 +254,48 @@ class RulesComputationTest extends KernelTestCase
 
         $score = $this->rulesCalculation->genderOfHeadOfHousehold($household, $scoringRule);
         $this->assertEquals(1, $score);
+    }
+
+    public function testIncomeSpentOnFood()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::INCOME_SPENT_ON_FOOD, 'Income spent on food');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_0, 0));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INCOME_0, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF, 99));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95, 95));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_80, 80));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_65, 65));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_50, 50));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_25, 25));
+
+        $cso = new CountrySpecific('Total expenditure', 'number', 'SYR');
+
+        $csa = new CountrySpecificAnswer();
+        $csa->setAnswer('1');
+        $csa->setCountrySpecific($cso);
+
+        $household = new Household();
+        $household->setIncome(2);
+        $household->addCountrySpecificAnswer($csa);
+
+        $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
+        $this->assertEquals(50, $score);
+
+        $household->setIncome(0);
+        $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $household->setIncome(99);
+        $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
+        $this->assertEquals(25, $score);
+
+        $household->setIncome(100);
+        $csa->setAnswer('51');
+        $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
+        $this->assertEquals(65, $score);
+
+        $household->setIncome(null);
+        $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
+        $this->assertEquals(0, $score);
     }
 }
