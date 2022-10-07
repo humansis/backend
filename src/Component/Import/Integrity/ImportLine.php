@@ -642,6 +642,7 @@ class ImportLine
         if (null === $this->secondaryIdType) {
             return true;
         }
+
         return $this->primaryIdType !== $this->secondaryIdType;
     }
 
@@ -677,6 +678,7 @@ class ImportLine
         if (null === $this->tertiaryIdType) {
             return true;
         }
+
         return $this->primaryIdType !== $this->tertiaryIdType && $this->secondaryIdType !== $this->tertiaryIdType;
     }
 
@@ -743,7 +745,6 @@ class ImportLine
         return ImportDateConverter::toDatetime($this->supportDateReceived);
     }
 
-
     /**
      * @return bool
      */
@@ -780,6 +781,7 @@ class ImportLine
         if ($index >= count($ids)) {
             return false;
         }
+
         return isset($id['type']) && isset($id['number']);
     }
 
@@ -800,7 +802,7 @@ class ImportLine
             [
                 'type' => $this->tertiaryIdType,
                 'number' => $this->tertiaryIdNumber,
-            ]
+            ],
         ];
     }
 
@@ -816,6 +818,7 @@ class ImportLine
                 $filledIds[] = $ids[$i];
             }
         }
+
         return $filledIds;
     }
 }

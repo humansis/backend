@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Finishing;
 
@@ -12,7 +14,6 @@ use InputType\Helper\EnumsBuilder;
 
 class BeneficiaryDecoratorBuilder
 {
-
     public function buildBeneficiaryInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = $this->buildBeneficiaryIdentityInputType($beneficiaryLine);
@@ -33,8 +34,6 @@ class BeneficiaryDecoratorBuilder
             $importedVulnerabilities = $enumBuilder->buildInputValues($beneficiaryLine->vulnerabilityCriteria);
             $beneficiary->setVulnerabilityCriteria($importedVulnerabilities);
         }
-
-
 
         if (!is_null($beneficiaryLine->numberPhone1)) { //TODO check, that phone is filled completely in import
             $phone1 = new PhoneInputType();
@@ -66,7 +65,9 @@ class BeneficiaryDecoratorBuilder
     {
         $beneficiary = new BeneficiaryInputType();
         foreach ($beneficiaryLine->getFilledIds() as $index => $id) {
-            $beneficiary->addNationalIdCard($this->buildIdentityType((string) $id['type'], (string) $id['number'], $index + 1));
+            $beneficiary->addNationalIdCard(
+                $this->buildIdentityType((string) $id['type'], (string) $id['number'], $index + 1)
+            );
         }
 
         return $beneficiary;

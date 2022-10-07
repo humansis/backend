@@ -1,7 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import;
 
+use BadMethodCallException;
+use DateTime;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +14,7 @@ use Component\Import\Integrity;
 use Component\Import\Integrity\ImportLineFactory;
 use Entity\Import;
 use Entity\ImportQueue;
+use Enum\EnumValueNoFoundException;
 use Enum\ImportQueueState;
 use Enum\ImportState;
 use Enum\NationalIdType;
@@ -38,10 +43,10 @@ class IdentityChecker
     private $importQueueStateMachine;
 
     public function __construct(
-        EntityManagerInterface      $entityManager,
-        LoggerInterface             $logger,
-        WorkflowInterface           $importStateMachine,
-        WorkflowInterface           $importQueueStateMachine,
+        EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
+        WorkflowInterface $importStateMachine,
+        WorkflowInterface $importQueueStateMachine,
         Integrity\ImportLineFactory $importLineFactory
     ) {
         $this->entityManager = $entityManager;
@@ -53,15 +58,15 @@ class IdentityChecker
     }
 
     /**
-     * @param Import   $import
+     * @param Import $import
      * @param int|null $batchSize if null => all
      *
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     public function check(Import $import, ?int $batchSize = null)
     {
         if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+            throw new BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
         $items = $this->queueRepository->getItemsToIdentityCheck($import, $batchSize);
@@ -69,15 +74,15 @@ class IdentityChecker
     }
 
     /**
-     * @param Import   $import
+     * @param Import $import
      * @param ImportQueue[] $batch
      *
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     public function checkBatch(Import $import, iterable $items)
     {
         if (ImportState::IDENTITY_CHECKING !== $import->getState()) {
-            throw new \BadMethodCallException('Unable to execute checker. Import is not ready to check.');
+            throw new BadMethodCallException('Unable to execute checker. Import is not ready to check.');
         }
 
         $IDsToFind = new NationalIdHashSet();
@@ -93,11 +98,20 @@ class IdentityChecker
         /** @var Beneficiary $candidate */
         foreach ($bnfDuplicityCandidates as $candidate) {
             foreach ($candidate->getPerson()->getNationalIds() as $currentNationalId) {
-                $IDsToFind->forItems($currentNationalId, function (ImportQueue $item, int $index, NationalId $nationalId) use ($import, $candidate) {
-                    $item->addDuplicity($index, $candidate, [['ID Type'=>$nationalId->getIdType(), 'ID Number'=>$nationalId->getIdNumber()]]);
-                    $this->logImportInfo($import,
-                        "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$candidate->getId()}");
-                });
+                $IDsToFind->forItems(
+                    $currentNationalId,
+                    function (ImportQueue $item, int $index, NationalId $nationalId) use ($import, $candidate) {
+                        $item->addDuplicity(
+                            $index,
+                            $candidate,
+                            [['ID Type' => $nationalId->getIdType(), 'ID Number' => $nationalId->getIdNumber()]]
+                        );
+                        $this->logImportInfo(
+                            $import,
+                            "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$candidate->getId()}"
+                        );
+                    }
+                );
             }
         }
         /** @var ImportQueue $item */
@@ -111,10 +125,10 @@ class IdentityChecker
 
                 //skip similarity check
                 $this->importQueueStateMachine->apply($item, ImportQueueTransitions::TO_CREATE);
-                $item->setSimilarityCheckedAt(new \DateTime());
+                $item->setSimilarityCheckedAt(new DateTime());
             }
 
-            $item->setIdentityCheckedAt(new \DateTime());
+            $item->setIdentityCheckedAt(new DateTime());
             $this->queueRepository->save($item);
         }
     }
@@ -138,11 +152,11 @@ class IdentityChecker
     }
 
     /**
-     * @param ImportQueue       $item
+     * @param ImportQueue $item
      * @param NationalIdHashSet $hashSet
      *
      * @return void
-     * @throws \Enum\EnumValueNoFoundException
+     * @throws EnumValueNoFoundException
      */
     private function extractItemIDs(ImportQueue $item, NationalIdHashSet $hashSet): void
     {
@@ -173,16 +187,20 @@ class IdentityChecker
             }
         }
 
-        $item->setIdentityCheckedAt(new \DateTime());
+        $item->setIdentityCheckedAt(new DateTime());
         $this->entityManager->persist($item);
 
         return $bnfDuplicities;
     }
 
-    private function validateItemIdDuplicity(ImportQueue $item, $index, $idType, $idNumber) {
+    private function validateItemIdDuplicity(ImportQueue $item, $index, $idType, $idNumber)
+    {
         if (empty($idType) || empty($idNumber)) {
-            $this->logImportDebug($item->getImport(),
-                "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information");
+            $this->logImportDebug(
+                $item->getImport(),
+                "[Queue#{$item->getId()}|line#$index] Duplicity checking omitted because of missing ID information"
+            );
+
             return;
         }
 
@@ -193,16 +211,21 @@ class IdentityChecker
         );
 
         if (count($bnfDuplicities) > 0) {
-            $this->logImportInfo($item->getImport(), "Found ".count($bnfDuplicities)." duplicities for $idType $idNumber");
+            $this->logImportInfo(
+                $item->getImport(),
+                "Found " . count($bnfDuplicities) . " duplicities for $idType $idNumber"
+            );
         } else {
             $this->logImportDebug($item->getImport(), "Found no duplicities");
         }
 
         foreach ($bnfDuplicities as $bnf) {
-            $item->addDuplicity($index, $bnf, [['ID Type'=>$idType, 'ID Number'=>$idNumber]]);
+            $item->addDuplicity($index, $bnf, [['ID Type' => $idType, 'ID Number' => $idNumber]]);
 
-            $this->logImportInfo($item->getImport(),
-                "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}");
+            $this->logImportInfo(
+                $item->getImport(),
+                "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$bnf->getId()}"
+            );
         }
     }
 
@@ -218,15 +241,18 @@ class IdentityChecker
 
         /** @var ImportQueue $item */
         foreach ($queue as $item) {
-            if (!$item->hasResolvedDuplicities()) return true;
+            if (!$item->hasResolvedDuplicities()) {
+                return true;
+            }
         }
+
         return false;
     }
 
     public function getSuspiciousItems(Import $import): iterable
     {
         return $this->entityManager->getRepository(ImportQueue::class)
-            ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id'=>'asc']);
+            ->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
     }
 
     public function isImportQueueSuspicious(Import $import): bool
@@ -248,7 +274,10 @@ class IdentityChecker
 
         foreach ($current->getContent() as $c) {
             /** @var ImportQueue[] $items */
-            $items = $this->entityManager->getRepository(ImportQueue::class)->findInContent($current->getImport(), (string) $c['ID Number']);
+            $items = $this->entityManager->getRepository(ImportQueue::class)->findInContent(
+                $current->getImport(),
+                (string) $c['ID Number']
+            );
             foreach ($items as $item) {
                 if ($item->getId() <= $current->getId()) {
                     continue;

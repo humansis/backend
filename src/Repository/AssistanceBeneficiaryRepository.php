@@ -68,16 +68,15 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
-            ->leftJoin("db.beneficiary", "beneficiary")
-        ;
+            ->leftJoin("db.beneficiary", "beneficiary");
 
         switch ($assistance->getTargetType()) {
             case AssistanceTargetType::INDIVIDUAL:
             case AssistanceTargetType::HOUSEHOLD:
                 $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class));
                 break;
-                // $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Household::class));
-                // break;
+            // $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Household::class));
+            // break;
             case AssistanceTargetType::COMMUNITY:
                 $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class));
                 break;
@@ -90,11 +89,11 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance                      $assistance
+     * @param Assistance $assistance
      * @param BeneficiaryFilterInputType|null $filter
-     * @param BeneficiaryOrderInputType|null  $orderBy
-     * @param Pagination|null                 $pagination
-     * @param array|null                      $context
+     * @param BeneficiaryOrderInputType|null $orderBy
+     * @param Pagination|null $pagination
+     * @param array|null $context
      *
      * context values [
      *      notRemoved = show only not removed assistance-bnf
@@ -103,11 +102,11 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      * @return Paginator
      */
     public function findBeneficiariesByAssistance(
-        Assistance                  $assistance,
+        Assistance $assistance,
         ?BeneficiaryFilterInputType $filter = null,
-        ?BeneficiaryOrderInputType  $orderBy = null,
-        ?Pagination                 $pagination = null,
-        ?array                      $context = null
+        ?BeneficiaryOrderInputType $orderBy = null,
+        ?Pagination $pagination = null,
+        ?array $context = null
     ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
@@ -132,14 +131,16 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('b.person', 'p');
 
-                $qb->andWhere('(p.localGivenName LIKE :fulltext OR 
+                $qb->andWhere(
+                    '(p.localGivenName LIKE :fulltext OR
                                 p.localFamilyName LIKE :fulltext OR
                                 p.localParentsName LIKE :fulltext OR
                                 p.enGivenName LIKE :fulltext OR
                                 p.enFamilyName LIKE :fulltext OR
                                 p.enParentsName LIKE :fulltext OR
-                                p.enParentsName LIKE :fulltext)')
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                                p.enParentsName LIKE :fulltext)'
+                )
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
         }
 
@@ -171,12 +172,22 @@ class AssistanceBeneficiaryRepository extends EntityRepository
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_DISTRIBUTION_DATE:
                         $qb
-                            ->leftJoin(ReliefPackage::class, 'reliefPackage', 'WITH', 'reliefPackage.assistanceBeneficiary = db.id')
-                            ->leftJoin(SmartcardDeposit::class, 'smartcardDeposit', 'WITH', 'smartcardDeposit.reliefPackage = reliefPackage.id')
+                            ->leftJoin(
+                                ReliefPackage::class,
+                                'reliefPackage',
+                                'WITH',
+                                'reliefPackage.assistanceBeneficiary = db.id'
+                            )
+                            ->leftJoin(
+                                SmartcardDeposit::class,
+                                'smartcardDeposit',
+                                'WITH',
+                                'smartcardDeposit.reliefPackage = reliefPackage.id'
+                            )
                             ->orderBy('smartcardDeposit.distributedAt', $direction);
                         break;
                     default:
-                        throw new \InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }
@@ -185,20 +196,20 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance                      $assistance
+     * @param Assistance $assistance
      * @param InstitutionFilterInputType|null $filter
-     * @param InstitutionOrderInputType|null  $orderBy
-     * @param Pagination|null                 $pagination
-     * @param array|null                      $context
+     * @param InstitutionOrderInputType|null $orderBy
+     * @param Pagination|null $pagination
+     * @param array|null $context
      *
      * @return Paginator
      */
     public function findInstitutionsByAssistance(
-        Assistance                  $assistance,
+        Assistance $assistance,
         ?InstitutionFilterInputType $filter = null,
-        ?InstitutionOrderInputType  $orderBy = null,
-        ?Pagination                 $pagination = null,
-        ?array                      $context = null
+        ?InstitutionOrderInputType $orderBy = null,
+        ?Pagination $pagination = null,
+        ?array $context = null
     ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
@@ -223,21 +234,23 @@ class AssistanceBeneficiaryRepository extends EntityRepository
 
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('i.contact', 'c');
-                $qb->andWhere('(
+                $qb->andWhere(
+                    '(
                     i.id LIKE :fulltextId OR
                     i.name LIKE :fulltext OR
                     i.latitude LIKE :fulltext OR
                     i.longitude LIKE :fulltext OR
-                    c.localGivenName LIKE :fulltext OR 
+                    c.localGivenName LIKE :fulltext OR
                     c.localFamilyName LIKE :fulltext OR
                     c.localParentsName LIKE :fulltext OR
                     c.enGivenName LIKE :fulltext OR
                     c.enFamilyName LIKE :fulltext OR
                     c.enParentsName LIKE :fulltext OR
                     c.enParentsName LIKE :fulltext
-                )');
+                )'
+                );
                 $qb->setParameter('fulltextId', $filter->getFulltext());
-                $qb->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                $qb->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
         }
 
@@ -277,7 +290,7 @@ class AssistanceBeneficiaryRepository extends EntityRepository
                         $qb->orderBy('i.type', $direction);
                         break;
                     default:
-                        throw new InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }
@@ -286,20 +299,20 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance                   $assistance
-     * @param CommunityFilterType|null     $filter
+     * @param Assistance $assistance
+     * @param CommunityFilterType|null $filter
      * @param CommunityOrderInputType|null $orderBy
-     * @param Pagination|null              $pagination
-     * @param array|null                   $context
+     * @param Pagination|null $pagination
+     * @param array|null $context
      *
      * @return Paginator
      */
     public function findCommunitiesByAssistance(
-        Assistance               $assistance,
-        ?CommunityFilterType     $filter = null,
+        Assistance $assistance,
+        ?CommunityFilterType $filter = null,
         ?CommunityOrderInputType $orderBy = null,
-        ?Pagination              $pagination = null,
-        ?array                   $context = null
+        ?Pagination $pagination = null,
+        ?array $context = null
     ): Paginator {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
@@ -319,19 +332,21 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             if ($filter->hasFulltext()) {
                 $qb->leftJoin('c.contact', 'per');
 
-                $qb->andWhere('(c.id LIKE :fulltextId OR
+                $qb->andWhere(
+                    '(c.id LIKE :fulltextId OR
                                 c.name LIKE :fulltext OR
                                 c.latitude LIKE :fulltext OR
                                 c.longitude LIKE :fulltext OR
-                                per.localGivenName LIKE :fulltext OR 
+                                per.localGivenName LIKE :fulltext OR
                                 per.localFamilyName LIKE :fulltext OR
                                 per.localParentsName LIKE :fulltext OR
                                 per.enGivenName LIKE :fulltext OR
                                 per.enFamilyName LIKE :fulltext OR
                                 per.enParentsName LIKE :fulltext OR
-                                per.enParentsName LIKE :fulltext)')
+                                per.enParentsName LIKE :fulltext)'
+                )
                     ->setParameter('fulltextId', $filter->getFulltext())
-                    ->setParameter('fulltext', '%'.$filter->getFulltext().'%');
+                    ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
 
             if ($filter->hasProjects()) {
@@ -375,7 +390,7 @@ class AssistanceBeneficiaryRepository extends EntityRepository
                         $qb->orderBy('per.enFamilyName', $direction);
                         break;
                     default:
-                        throw new InvalidArgumentException('Invalid order by directive '.$name);
+                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
                 }
             }
         }
@@ -384,25 +399,26 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance           $assistance
+     * @param Assistance $assistance
      * @param CountrySpecific|null $countrySpecific
      *
      * @return float|int|mixed|string
      */
-    public function getBeneficiaryReliefCompilation(Assistance $assistance) {
+    public function getBeneficiaryReliefCompilation(Assistance $assistance)
+    {
         $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts($assistance);
         $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
-        foreach($beneficiaryReliefData as  $id => $relief) {
+        foreach ($beneficiaryReliefData as $id => $relief) {
             $personId = $relief['personId'];
-            $beneficiaryInfo = key_exists($personId, $beneficiariesInfo) ?  $beneficiariesInfo[$personId] : [
+            $beneficiaryInfo = key_exists($personId, $beneficiariesInfo) ? $beneficiariesInfo[$personId] : [
                 'idNumber' => null,
                 'idType' => null,
                 'phoneNumber' => null,
             ];
-            $beneficiaryReliefData[$id] = array_merge($relief,$beneficiaryInfo);
+            $beneficiaryReliefData[$id] = array_merge($relief, $beneficiaryInfo);
         }
-        return $beneficiaryReliefData;
 
+        return $beneficiaryReliefData;
     }
 
     /**
@@ -410,7 +426,8 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *
      * @return array
      */
-    private function getAssistanceBeneficiaryInformation(Assistance $assistance) {
+    private function getAssistanceBeneficiaryInformation(Assistance $assistance)
+    {
         $qb = $this->createQueryBuilder('db')
             ->select("person.id as personId")
             ->addSelect("ANY_VALUE(COALESCE(national.idNumber, other.idNumber)) as idNumber")
@@ -422,7 +439,12 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             ->leftJoin('bnf.person', 'person')
             ->leftJoin('person.nationalIds', 'tax', Join::WITH, 'tax.idType = :taxType')
             ->leftJoin('person.nationalIds', 'national', Join::WITH, 'national.idType = :nationalType')
-            ->leftJoin('person.nationalIds', 'other', Join::WITH, 'other.idType != :taxType AND other.idType != :nationalType')
+            ->leftJoin(
+                'person.nationalIds',
+                'other',
+                Join::WITH,
+                'other.idType != :taxType AND other.idType != :nationalType'
+            )
             ->leftJoin('person.phones', 'phone')
             ->leftJoin('db.reliefPackages', 'relief')
             ->andWhere('db.assistance = :assistance')
@@ -437,16 +459,18 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         foreach ($result as $row) {
             $personInfo[$row['personId']] = $row;
         }
+
         return $personInfo;
     }
 
     /**
-     * @param Assistance           $assistance
+     * @param Assistance $assistance
      * @param CountrySpecific|null $countrySpecific
      *
      * @return float|int|mixed|string
      */
-    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance) {
+    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance)
+    {
         $qb = $this->createQueryBuilder('db')
             ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
             ->addSelect("person.id as personId")
@@ -468,7 +492,7 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             ->setParameter('assistance', $assistance)
             ->setParameter('removed', false)
             ->setParameter('modalityType', 'Cash');
+
         return $qb->getQuery()->getResult();
     }
-
 }

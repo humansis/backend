@@ -313,7 +313,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyNationalIdCard' => [
                 'number' => '022-33-1547',
                 'type' => NationalIdType::NATIONAL_ID,
-                'priority' => 1
+                'priority' => 1,
             ],
             'proxyPhone' => [
                 'prefix' => '420',

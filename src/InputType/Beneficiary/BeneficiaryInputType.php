@@ -423,6 +423,7 @@ class BeneficiaryInputType implements InputTypeInterface
         if (count($this->nationalIdCards) < 2) {
             return true;
         }
+
         return $this->nationalIdCards[0]->getType() !== $this->nationalIdCards[1]->getType();
     }
 
@@ -434,6 +435,7 @@ class BeneficiaryInputType implements InputTypeInterface
         if (count($this->nationalIdCards) < 3) {
             return true;
         }
+
         return $this->nationalIdCards[0]->getType() !== $this->nationalIdCards[2]->getType() &&
             $this->nationalIdCards[1]->getType() !== $this->nationalIdCards[2]->getType();
     }
