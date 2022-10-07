@@ -39,9 +39,10 @@ class CriteriaConfigurationLoader
                 $this->configuration[$key][self::VALUE_TRANSFORMER_KEY] ?? CriteriaValueTransformerEnum::CONVERT_TO_STRING,
             );
         } else {
-            throw new BadRequestHttpException("Cannot recreate selection criteria because '${key}' criteria key was not found and it is probably deprecated.");
+            throw new BadRequestHttpException(
+                "Cannot recreate selection criteria because '${key}' criteria key was not found and it is probably deprecated."
+            );
         }
-
     }
 
     public function guessReturnType(string $value): string
