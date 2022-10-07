@@ -19,7 +19,6 @@ dh_auditor:
                 Entity\Import:
                 Entity\Assistance\ReliefPackage:
                 Entity\Assistance:
-                Entity\Community:
                 Entity\Household:
                 Entity\Beneficiary:
                 Entity\Person:

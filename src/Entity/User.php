@@ -135,7 +135,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * @return ObjectManager
      */
-    private function getObjectManager(): ?ObjectManager
+    private function getObjectManager(): ObjectManager
     {
         if (!$this->em instanceof ObjectManager) {
             throw new RuntimeException('You need to call injectObjectManager() first to use entity manager inside entity.');

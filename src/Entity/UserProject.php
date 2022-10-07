@@ -67,7 +67,7 @@ class UserProject
      *
      * @return UserProject
      */
-    public function setUser(User $user = null): UserProject
+    public function setUser(?User $user = null): UserProject
     {
         $this->user = $user;
 
@@ -91,7 +91,7 @@ class UserProject
      *
      * @return UserProject
      */
-    public function setProject(Project $project = null): UserProject
+    public function setProject(?Project $project = null): UserProject
     {
         $this->project = $project;
 
