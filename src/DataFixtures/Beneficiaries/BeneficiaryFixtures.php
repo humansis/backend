@@ -376,7 +376,9 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $inputType->setLivelihood($householdData['livelihood']);
         $inputType->setShelterStatus(ValueGenerator::fromEnum(HouseholdShelterStatus::class));
         $inputType->setAssets([ValueGenerator::fromArray(HouseholdAssetsEnum::all())]);
-        $inputType->setSupportReceivedTypes([ValueGenerator::fromArray(array_keys(HouseholdSupportReceivedTypeEnum::databaseMap()))]);
+        $inputType->setSupportReceivedTypes(
+            [ValueGenerator::fromArray(array_keys(HouseholdSupportReceivedTypeEnum::databaseMap()))]
+        );
         $inputType->setProjectIds($this->projectRepository->findAll());
         $inputType->setNotes(
             ValueGenerator::fromArray([

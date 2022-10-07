@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Component\Import\Helper;
 
+use DateTime;
 use Entity\Address;
 use Entity\Beneficiary;
 use Entity\Household;
@@ -13,6 +16,7 @@ use Enum\NationalIdType;
 use Enum\PersonGender;
 use InputType\Import;
 use Entity\Project;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Entity\User;
@@ -29,7 +33,7 @@ trait DefaultDataTrait
         $hh->setDebtLevel(0);
         $hh->setFoodConsumptionScore(0);
         $hh->setIncome(0);
-        $hh->setNotes('default HH in '.__CLASS__);
+        $hh->setNotes('default HH in ' . __CLASS__);
         $hh->setCountryIso3($project->getCountryIso3());
 
         $householdLocation = new HouseholdLocation();
@@ -41,21 +45,25 @@ trait DefaultDataTrait
         ]);
 
         if ($location === null) {
-            throw new \RuntimeException("Cannot create household. There is no location in {$project->getCountryIso3()}");
+            throw new RuntimeException(
+                "Cannot create household. There is no location in {$project->getCountryIso3()}"
+            );
         }
 
-        $householdLocation->setAddress(Address::create(
-            'Fake st',
-            '1234',
-            '420 00',
-            $location
-        ));
+        $householdLocation->setAddress(
+            Address::create(
+                'Fake st',
+                '1234',
+                '420 00',
+                $location
+            )
+        );
 
         $hh->addHouseholdLocation($householdLocation);
 
         $hhh = new Beneficiary();
         $hhh->setHousehold($hh);
-        $birthDate = new \DateTime();
+        $birthDate = new DateTime();
         $birthDate->modify("-30 year");
         $hhh->getPerson()->setDateOfBirth($birthDate);
         $hhh->getPerson()->setEnFamilyName('empty');
@@ -79,6 +87,7 @@ trait DefaultDataTrait
         $this->entityManager->persist($hh);
         $this->entityManager->persist($hhh);
         $this->entityManager->flush();
+
         return $hh;
     }
 
@@ -110,11 +119,12 @@ trait DefaultDataTrait
         $project = new Project();
         $project->setName(uniqid());
         $project->setNotes(implode("\n", $notes));
-        $project->setStartDate(new \DateTime());
-        $project->setEndDate(new \DateTime());
+        $project->setStartDate(new DateTime());
+        $project->setEndDate(new DateTime());
         $project->setCountryIso3($country);
         $this->entityManager->persist($project);
         $this->entityManager->flush();
+
         return $project;
     }
 
@@ -123,10 +133,9 @@ trait DefaultDataTrait
         $uploadedFilePath = tempnam(sys_get_temp_dir(), 'import');
 
         $fs = new Filesystem();
-        $fs->copy(__DIR__.'/../../../Resources/'.$filename, $uploadedFilePath, true);
+        $fs->copy(__DIR__ . '/../../../Resources/' . $filename, $uploadedFilePath, true);
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
         $this->uploadService->uploadFile($import, $file, $this->getUser());
     }
-
 }
