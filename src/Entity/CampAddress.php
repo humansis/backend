@@ -22,7 +22,7 @@ class CampAddress
      */
     private $tentNumber;
 
-     /**
+    /**
      * @ORM\ManyToOne(targetEntity="Entity\Camp", cascade={"persist"})
      */
     private $camp;
@@ -54,11 +54,11 @@ class CampAddress
     /**
      * Set camp.
      *
-     * @param \Entity\Camp|null $camp
+     * @param Camp|null $camp
      *
      * @return CampAddress
      */
-    public function setCamp(\Entity\Camp $camp = null)
+    public function setCamp(Camp $camp = null)
     {
         $this->camp = $camp;
 
@@ -68,7 +68,7 @@ class CampAddress
     /**
      * Get camp.
      *
-     * @return \Entity\Camp|null
+     * @return Camp|null
      */
     public function getCamp()
     {

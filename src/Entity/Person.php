@@ -3,12 +3,12 @@
 namespace Entity;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 use Exception;
-
 use DBAL\PersonGenderEnum;
 use Entity\Helper\EnumTrait;
 use Enum\PersonGender;
@@ -123,7 +123,6 @@ class Person
         $this->phones = new ArrayCollection();
         $this->nationalIds = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
-
         //TODO check if updatedOn everytime
     }
 
@@ -225,11 +224,12 @@ class Person
 
     /**
      * Set gender.
-     * @see PersonGender::values()
      *
      * @param string|null $gender
      *
      * @return self
+     * @see PersonGender::values()
+     *
      */
     public function setGender(?string $gender)
     {
@@ -241,9 +241,10 @@ class Person
 
     /**
      * Get gender.
-     * @see PersonGender::values()
      *
      * @return string|null
+     * @see PersonGender::values()
+     *
      */
     public function getGender(): ?string
     {
@@ -253,11 +254,11 @@ class Person
     /**
      * Set dateOfBirth.
      *
-     * @param \DateTimeInterface|null $dateOfBirth
+     * @param DateTimeInterface|null $dateOfBirth
      *
      * @return self
      */
-    public function setDateOfBirth(?\DateTimeInterface $dateOfBirth)
+    public function setDateOfBirth(?DateTimeInterface $dateOfBirth)
     {
         $this->dateOfBirth = $dateOfBirth;
 
@@ -269,7 +270,7 @@ class Person
      *
      * @return DateTime|null
      */
-    public function getDateOfBirth(): ?\DateTimeInterface
+    public function getDateOfBirth(): ?DateTimeInterface
     {
         return $this->dateOfBirth;
     }
@@ -277,11 +278,11 @@ class Person
     /**
      * Set updatedOn.
      *
-     * @param \DateTimeInterface|null $updatedOn
+     * @param DateTimeInterface|null $updatedOn
      *
      * @return self
      */
-    public function setUpdatedOn(?\DateTimeInterface $updatedOn = null)
+    public function setUpdatedOn(?DateTimeInterface $updatedOn = null)
     {
         $this->updatedOn = $updatedOn;
 
@@ -293,12 +294,10 @@ class Person
      *
      * @return DateTime|null
      */
-    public function getUpdatedOn(): ?\DateTimeInterface
+    public function getUpdatedOn(): ?DateTimeInterface
     {
         return $this->updatedOn;
     }
-
-
 
     /**
      * Add phone.
@@ -319,7 +318,7 @@ class Person
      *
      * @param Phone $phone
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removePhone(Phone $phone)
     {
@@ -383,7 +382,7 @@ class Person
      *
      * @param NationalId $nationalId
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeNationalId(NationalId $nationalId)
     {
@@ -450,6 +449,7 @@ class Person
 
     /**
      * Returns age of self in years
+     *
      * @return int|null
      */
     public function getAge(): ?int
@@ -485,7 +485,6 @@ class Person
         return $this->localParentsName;
     }
 
-
     /**
      * @param string|null $enParentsName
      *
@@ -498,7 +497,6 @@ class Person
         return $this;
     }
 
-
     /**
      * @return string|null
      */
@@ -506,5 +504,4 @@ class Person
     {
         return $this->enParentsName;
     }
-
 }

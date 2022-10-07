@@ -164,6 +164,7 @@ class Donor implements ExportableInterface
     {
         return $this->notes;
     }
+
     /**
      * Constructor
      */
@@ -210,6 +211,7 @@ class Donor implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
+     *
      * @return array
      */
     public function getMappedValueForExport(): array

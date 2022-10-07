@@ -23,7 +23,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-
     /**
      * @var string
      *

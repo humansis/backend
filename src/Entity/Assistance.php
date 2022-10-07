@@ -2,7 +2,10 @@
 
 namespace Entity;
 
+use DateTime;
+use DateTimeInterface;
 use Entity\Helper\StandardizedPrimaryKey;
+use Enum\Livelihood;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
@@ -43,14 +46,14 @@ class Assistance implements ExportableInterface
     private $name;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="UpdatedOn", type="datetime")
      */
     private $updatedOn;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
      *
@@ -59,7 +62,7 @@ class Assistance implements ExportableInterface
     private $dateDistribution;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      *
      * @ORM\Column(name="date_expiration", type="datetime", nullable=true)
      *
@@ -92,7 +95,7 @@ class Assistance implements ExportableInterface
     private $assistanceSelection;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
@@ -133,7 +136,7 @@ class Assistance implements ExportableInterface
     private $distributionBeneficiaries;
 
     /**
-     * @var boolean
+     * @var bool
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
@@ -250,16 +253,15 @@ class Assistance implements ExportableInterface
      */
     private $note;
 
-
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->distributionBeneficiaries = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->commodities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->distributionBeneficiaries = new ArrayCollection();
+        $this->commodities = new ArrayCollection();
         $this->assistanceSelection = new AssistanceSelection();
-        $this->setUpdatedOn(new \DateTime());
+        $this->setUpdatedOn(new DateTime());
         $this->allowedProductCategoryTypes = [];
         $this->smartcardPurchases = new ArrayCollection();
     }
@@ -311,11 +313,11 @@ class Assistance implements ExportableInterface
     /**
      * Set updatedOn.
      *
-     * @param \DateTimeInterface $updatedOn
+     * @param DateTimeInterface $updatedOn
      *
      * @return Assistance
      */
-    public function setUpdatedOn(\DateTimeInterface $updatedOn)
+    public function setUpdatedOn(DateTimeInterface $updatedOn)
     {
         $this->updatedOn = $updatedOn;
 
@@ -333,7 +335,7 @@ class Assistance implements ExportableInterface
         return $this->updatedOn->format('Y-m-d H:i:s');
     }
 
-    public function getUpdatedOnDateTime(): \DateTime
+    public function getUpdatedOnDateTime(): DateTime
     {
         return $this->updatedOn;
     }
@@ -420,8 +422,10 @@ class Assistance implements ExportableInterface
     public function setTargetType(string $targetType): Assistance
     {
         if (!in_array($targetType, AssistanceTargetType::values())) {
-            throw new \InvalidArgumentException("Wrong assistance target type: $targetType, allowed are: "
-                .implode(', ', AssistanceTargetType::values()));
+            throw new InvalidArgumentException(
+                "Wrong assistance target type: $targetType, allowed are: "
+                . implode(', ', AssistanceTargetType::values())
+            );
         }
         $this->targetType = $targetType;
 
@@ -441,11 +445,11 @@ class Assistance implements ExportableInterface
     /**
      * Set location.
      *
-     * @param \Entity\Location|null $location
+     * @param Location|null $location
      *
      * @return Assistance
      */
-    public function setLocation(\Entity\Location $location = null)
+    public function setLocation(Location $location = null)
     {
         $this->location = $location;
 
@@ -455,7 +459,7 @@ class Assistance implements ExportableInterface
     /**
      * Get location.
      *
-     * @return \Entity\Location|null
+     * @return Location|null
      */
     public function getLocation()
     {
@@ -465,11 +469,11 @@ class Assistance implements ExportableInterface
     /**
      * Set project.
      *
-     * @param \Entity\Project|null $project
+     * @param Project|null $project
      *
      * @return Assistance
      */
-    public function setProject(\Entity\Project $project = null)
+    public function setProject(Project $project = null)
     {
         $this->project = $project;
 
@@ -479,7 +483,7 @@ class Assistance implements ExportableInterface
     /**
      * Get project.
      *
-     * @return \Entity\Project|null
+     * @return Project|null
      */
     public function getProject()
     {
@@ -506,7 +510,7 @@ class Assistance implements ExportableInterface
      *
      * @param SelectionCriteria $selectionCriterion
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeSelectionCriterion(SelectionCriteria $selectionCriterion)
     {
@@ -518,7 +522,7 @@ class Assistance implements ExportableInterface
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
-     * @return \Doctrine\Common\Collections\Collection|SelectionCriteria[]
+     * @return Collection|SelectionCriteria[]
      */
     public function getSelectionCriteria()
     {
@@ -533,11 +537,11 @@ class Assistance implements ExportableInterface
     /**
      * Add commodity.
      *
-     * @param \Entity\Commodity $commodity
+     * @param Commodity $commodity
      *
      * @return Assistance
      */
-    public function addCommodity(\Entity\Commodity $commodity)
+    public function addCommodity(Commodity $commodity)
     {
         $commodity->setAssistance($this);
         $this->commodities[] = $commodity;
@@ -548,11 +552,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove commodity.
      *
-     * @param \Entity\Commodity $commodity
+     * @param Commodity $commodity
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeCommodity(\Entity\Commodity $commodity)
+    public function removeCommodity(Commodity $commodity)
     {
         return $this->commodities->removeElement($commodity);
     }
@@ -560,7 +564,7 @@ class Assistance implements ExportableInterface
     /**
      * Get commodities.
      *
-     * @return \Doctrine\Common\Collections\Collection|Commodity[]
+     * @return Collection|Commodity[]
      */
     public function getCommodities()
     {
@@ -570,11 +574,11 @@ class Assistance implements ExportableInterface
     /**
      * Add assistanceBeneficiary.
      *
-     * @param \Entity\AssistanceBeneficiary $assistanceBeneficiary
+     * @param AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return Assistance
      */
-    public function addAssistanceBeneficiary(\Entity\AssistanceBeneficiary $assistanceBeneficiary)
+    public function addAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
         if (null === $this->distributionBeneficiaries) {
             $this->distributionBeneficiaries = new ArrayCollection();
@@ -587,11 +591,11 @@ class Assistance implements ExportableInterface
     /**
      * Remove assistanceBeneficiary.
      *
-     * @param \Entity\AssistanceBeneficiary $assistanceBeneficiary
+     * @param AssistanceBeneficiary $assistanceBeneficiary
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeAssistanceBeneficiary(\Entity\AssistanceBeneficiary $assistanceBeneficiary)
+    public function removeAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary)
     {
         return $this->distributionBeneficiaries->removeElement($assistanceBeneficiary);
     }
@@ -599,7 +603,7 @@ class Assistance implements ExportableInterface
     /**
      * Get distributionBeneficiaries.
      *
-     * @return \Doctrine\Common\Collections\Collection|AssistanceBeneficiary[]
+     * @return Collection|AssistanceBeneficiary[]
      */
     public function getDistributionBeneficiaries()
     {
@@ -609,11 +613,11 @@ class Assistance implements ExportableInterface
     /**
      * Set dateDistribution.
      *
-     * @param \DateTimeInterface $dateDistribution
+     * @param DateTimeInterface $dateDistribution
      *
      * @return Assistance
      */
-    public function setDateDistribution(\DateTimeInterface $dateDistribution)
+    public function setDateDistribution(DateTimeInterface $dateDistribution)
     {
         $this->dateDistribution = $dateDistribution;
 
@@ -623,25 +627,25 @@ class Assistance implements ExportableInterface
     /**
      * Get dateDistribution.
      *
-     * @return \DateTimeInterface
+     * @return DateTimeInterface
      */
-    public function getDateDistribution(): \DateTimeInterface
+    public function getDateDistribution(): DateTimeInterface
     {
         return $this->dateDistribution;
     }
 
     /**
-     * @return \DateTimeInterface|null
+     * @return DateTimeInterface|null
      */
-    public function getDateExpiration(): ?\DateTimeInterface
+    public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpiration;
     }
 
     /**
-     * @param \DateTimeInterface|null $dateExpiration
+     * @param DateTimeInterface|null $dateExpiration
      */
-    public function setDateExpiration(?\DateTimeInterface $dateExpiration): void
+    public function setDateExpiration(?DateTimeInterface $dateExpiration): void
     {
         $this->dateExpiration = $dateExpiration;
     }
@@ -693,7 +697,6 @@ class Assistance implements ExportableInterface
 
         return $this;
     }
-
 
     /**
      * @param string|null $description
@@ -794,19 +797,19 @@ class Assistance implements ExportableInterface
 
             // Then we make the string coherent
             if ($field === 'livelihood') {
-                $value = \Enum\Livelihood::translate($value);
+                $value = Livelihood::translate($value);
             } elseif ($field === 'camp Name') {
                 $field = 'camp Id';
             }
 
             if ($field === 'gender' || $field === 'head Of Household Gender') {
-                $stringCriterion = $field." ".$condition.($value === '0' ? ' Female' : ' Male');
+                $stringCriterion = $field . " " . $condition . ($value === '0' ? ' Female' : ' Male');
             } elseif ($condition === 'true') {
                 $stringCriterion = $field;
             } elseif ($condition === 'false') {
-                $stringCriterion = 'not '.$field;
+                $stringCriterion = 'not ' . $field;
             } else {
-                $stringCriterion = $field." ".$condition." ".$value;
+                $stringCriterion = $field . " " . $condition . " " . $value;
             }
             array_push($valueselectioncriteria, $stringCriterion);
         }
@@ -817,7 +820,8 @@ class Assistance implements ExportableInterface
         $valuescommodities = [];
 
         foreach ($this->getCommodities() as $commodity) {
-            $stringCommodity = $commodity->getModalityType()." ".$commodity->getValue()." ".$commodity->getUnit();
+            $stringCommodity = $commodity->getModalityType() . " " . $commodity->getValue() . " " . $commodity->getUnit(
+            );
             array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
@@ -834,9 +838,9 @@ class Assistance implements ExportableInterface
         foreach ($this->getCommodities() as $index => $commodity) {
             $percentage .= $index !== 0 ? ', ' : '';
             if ($this->isValidated()) {
-                $percentage .= $this->getPercentageValue($commodity).'% '.$commodity->getModalityType();
+                $percentage .= $this->getPercentageValue($commodity) . '% ' . $commodity->getModalityType();
             } else {
-                $percentage .= '0% '.$commodity->getModalityType();
+                $percentage .= '0% ' . $commodity->getModalityType();
             }
         }
 
@@ -883,14 +887,17 @@ class Assistance implements ExportableInterface
         return round($percentage * 100) / 100;
     }
 
-    public function getCommoditySentAmountFromBeneficiary(Commodity $commodity, AssistanceBeneficiary $assistanceBeneficiary): int
-    {
+    public function getCommoditySentAmountFromBeneficiary(
+        Commodity $commodity,
+        AssistanceBeneficiary $assistanceBeneficiary
+    ): int {
         $sent = 0;
         foreach ($assistanceBeneficiary->getReliefPackages() as $package) {
             if ($package->getModalityType() == $commodity->getModalityType()) {
                 $sent += floatval($package->getAmountDistributed());
             }
         }
+
         return floor($sent);
     }
 
@@ -925,10 +932,12 @@ class Assistance implements ExportableInterface
     {
         if (gettype($foodLimit) === 'integer' || gettype($foodLimit) === 'double') {
             $this->foodLimit = number_format($foodLimit, 2, '.', '');
-        } else if ( (gettype($foodLimit) === 'string' && is_numeric($foodLimit)) || null === $foodLimit) {
-            $this->foodLimit = $foodLimit;
         } else {
-            throw new InvalidArgumentException("'$foodLimit' is not valid numeric format.");
+            if ((gettype($foodLimit) === 'string' && is_numeric($foodLimit)) || null === $foodLimit) {
+                $this->foodLimit = $foodLimit;
+            } else {
+                throw new InvalidArgumentException("'$foodLimit' is not valid numeric format.");
+            }
         }
     }
 
@@ -947,10 +956,12 @@ class Assistance implements ExportableInterface
     {
         if (gettype($nonFoodLimit) === 'integer' || gettype($nonFoodLimit) === 'double') {
             $this->nonFoodLimit = number_format($nonFoodLimit, 2, '.', '');
-        } else if ( (gettype($nonFoodLimit) === 'string' && is_numeric($nonFoodLimit)) || null === $nonFoodLimit) {
-            $this->nonFoodLimit = $nonFoodLimit;
         } else {
-            throw new InvalidArgumentException("'$nonFoodLimit' is not valid numeric format.");
+            if ((gettype($nonFoodLimit) === 'string' && is_numeric($nonFoodLimit)) || null === $nonFoodLimit) {
+                $this->nonFoodLimit = $nonFoodLimit;
+            } else {
+                throw new InvalidArgumentException("'$nonFoodLimit' is not valid numeric format.");
+            }
         }
     }
 
@@ -969,10 +980,12 @@ class Assistance implements ExportableInterface
     {
         if (gettype($cashbackLimit) === 'integer' || gettype($cashbackLimit) === 'double') {
             $this->cashbackLimit = number_format($cashbackLimit, 2, '.', '');
-        } else if ( (gettype($cashbackLimit) === 'string' && is_numeric($cashbackLimit)) || null === $cashbackLimit) {
-            $this->cashbackLimit = $cashbackLimit;
         } else {
-            throw new InvalidArgumentException("'$cashbackLimit' is not valid numeric format.");
+            if ((gettype($cashbackLimit) === 'string' && is_numeric($cashbackLimit)) || null === $cashbackLimit) {
+                $this->cashbackLimit = $cashbackLimit;
+            } else {
+                throw new InvalidArgumentException("'$cashbackLimit' is not valid numeric format.");
+            }
         }
     }
 
@@ -1031,12 +1044,13 @@ class Assistance implements ExportableInterface
      *
      * @return bool
      */
-    public function hasModalityTypeCommodity(string $modalityType): bool {
+    public function hasModalityTypeCommodity(string $modalityType): bool
+    {
         $hasModalityTypeCommodity = false;
         foreach ($this->commodities as $commodity) {
             $hasModalityTypeCommodity = $hasModalityTypeCommodity || $commodity->getModalityType() === $modalityType;
         }
+
         return $hasModalityTypeCommodity;
     }
-
 }

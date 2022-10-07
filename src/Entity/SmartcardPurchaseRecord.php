@@ -4,8 +4,8 @@ namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
+use LogicException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-
 
 /**
  * Smartcard purchase record.
@@ -61,8 +61,13 @@ class SmartcardPurchaseRecord
      */
     private $quantity;
 
-    public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value, ?string $currency): SmartcardPurchaseRecord
-    {
+    public static function create(
+        SmartcardPurchase $purchase,
+        Product $product,
+        $quantity,
+        $value,
+        ?string $currency
+    ): SmartcardPurchaseRecord {
         $entity = new self();
         $entity->smartcardPurchase = $purchase;
         $entity->product = $product;
@@ -103,7 +108,7 @@ class SmartcardPurchaseRecord
     public function setCurrency(string $currency): void
     {
         if (null !== $this->currency) {
-            throw new \LogicException('Unable to change currency in purchase record #'.$this->id);
+            throw new LogicException('Unable to change currency in purchase record #' . $this->id);
         }
 
         $this->currency = $currency;

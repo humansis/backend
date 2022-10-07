@@ -4,6 +4,7 @@ namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
+use JsonSerializable;
 
 /**
  * OrganizationServices
@@ -11,7 +12,7 @@ use Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="organization_service")
  * @ORM\Entity(repositoryClass="Repository\OrganizationServicesRepository")
  */
-class OrganizationServices implements \JsonSerializable
+class OrganizationServices implements JsonSerializable
 {
     use StandardizedPrimaryKey;
 
@@ -42,7 +43,6 @@ class OrganizationServices implements \JsonSerializable
      * @ORM\ManyToOne(targetEntity="Entity\Service", inversedBy="organizationServices")
      */
     private $service;
-
 
     /**
      * Set enabled.

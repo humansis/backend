@@ -2,8 +2,11 @@
 
 namespace Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
+use JsonSerializable;
 
 /**
  * Service
@@ -11,7 +14,7 @@ use Entity\Helper\StandardizedPrimaryKey;
  * @ORM\Table(name="service")
  * @ORM\Entity(repositoryClass="Repository\ServiceRepository")
  */
-class Service implements \JsonSerializable
+class Service implements JsonSerializable
 {
     use StandardizedPrimaryKey;
 
@@ -118,14 +121,14 @@ class Service implements \JsonSerializable
     /**
      * Add OrganizationServices.
      *
-     * @param \Entity\OrganizationServices $organizationServices
+     * @param OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
-    public function addOrganizationServices(\Entity\OrganizationServices $organizationServices)
+    public function addOrganizationServices(OrganizationServices $organizationServices)
     {
         if (null === $this->organizationServices) {
-            $this->organizationServices = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->organizationServices = new ArrayCollection();
         }
         $this->organizationServices[] = $organizationServices;
 
@@ -135,11 +138,11 @@ class Service implements \JsonSerializable
     /**
      * Remove OrganizationServices.
      *
-     * @param \Entity\OrganizationServices $organizationServices
+     * @param OrganizationServices $organizationServices
      *
-     * @return boolean TRUE if this collection contained the specified element, FALSE otherwise.
+     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeOrganizationServices(\Entity\OrganizationServices $organizationServices)
+    public function removeOrganizationServices(OrganizationServices $organizationServices)
     {
         return $this->organizationServices->removeElement($organizationServices);
     }
@@ -147,7 +150,7 @@ class Service implements \JsonSerializable
     /**
      * Get OrganizationServices.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection
      */
     public function getOrganizationServices()
     {

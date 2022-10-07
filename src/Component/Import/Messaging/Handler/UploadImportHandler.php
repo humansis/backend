@@ -1,6 +1,9 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
+
 use Component\Auditor\AuditorService;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\ImportQueueLoggerTrait;
@@ -11,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Repository\ImportFileRepository;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 
 class UploadImportHandler implements MessageHandlerInterface
 {
@@ -32,18 +36,18 @@ class UploadImportHandler implements MessageHandlerInterface
     private $auditorService;
 
     /**
-     * @param LoggerInterface      $importLogger
+     * @param LoggerInterface $importLogger
      * @param ImportFileRepository $importFileRepository
-     * @param UploadImportService  $uploadImportService
-     * @param MessageBusInterface  $messageBus
-     * @param AuditorService       $auditorService
+     * @param UploadImportService $uploadImportService
+     * @param MessageBusInterface $messageBus
+     * @param AuditorService $auditorService
      */
     public function __construct(
-        LoggerInterface            $importLogger,
-        ImportFileRepository       $importFileRepository,
-        UploadImportService        $uploadImportService,
-        MessageBusInterface        $messageBus,
-        AuditorService             $auditorService
+        LoggerInterface $importLogger,
+        ImportFileRepository $importFileRepository,
+        UploadImportService $uploadImportService,
+        MessageBusInterface $messageBus,
+        AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
         $this->importFileRepository = $importFileRepository;
@@ -64,13 +68,15 @@ class UploadImportHandler implements MessageHandlerInterface
         if ($importFile !== null) {
             try {
                 $this->uploadImportService->load($importFile);
-            } catch (\Throwable $ex) {
+            } catch (Throwable $ex) {
                 $this->logImportWarning($importFile->getImport(), $ex->getMessage());
             } finally {
                 $this->messageBus->dispatch(ImportCheck::checkUploadingComplete($importFile->getImport()));
             }
         } else {
-            $this->logger->warning("Import file {$uploadFile->getImportFileId()} upload was not finished because import file entity is not in database");
+            $this->logger->warning(
+                "Import file {$uploadFile->getImportFileId()} upload was not finished because import file entity is not in database"
+            );
         }
     }
 }

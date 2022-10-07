@@ -142,6 +142,7 @@ class UserService
 
     /**
      * Export all users in a CSV file
+     *
      * @param string $type
      * @return mixed
      */

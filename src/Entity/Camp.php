@@ -51,15 +51,14 @@ class Camp
         return $this->name;
     }
 
-
-     /**
+    /**
      * Set location.
      *
-     * @param \Entity\Location|null $location
+     * @param Location|null $location
      *
      * @return Camp
      */
-    public function setLocation(\Entity\Location $location = null)
+    public function setLocation(Location $location = null)
     {
         $this->location = $location;
 
@@ -69,11 +68,10 @@ class Camp
     /**
      * Get location.
      *
-     * @return \Entity\Location|null
+     * @return Location|null
      */
     public function getLocation()
     {
         return $this->location;
     }
-
 }
