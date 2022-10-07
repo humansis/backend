@@ -6,6 +6,7 @@ namespace OutputType\Assistance;
 
 use Entity\Beneficiary;
 use Request\InputTypeInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
@@ -33,16 +34,20 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
      */
     private $failed = [];
 
+    /** @var TranslatorInterface */
+    private $translator;
+
     /**
      * @param array|null $documentNumbers
      * @param string|null $documentType
      */
-    public function __construct(array $documentNumbers = [], string $documentType = null)
+    public function __construct(TranslatorInterface $translator, array $documentNumbers = [], string $documentType = null)
     {
         $this->documentNumbers = array_map(function ($number) {
             return strtolower($number);
         }, $documentNumbers);
         $this->documentType = $documentType;
+        $this->translator = $translator;
     }
 
     /**
@@ -66,7 +71,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         $this->notFound[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
-            'message' => "BNF with {$this->documentType} '{$number}' was found but he is not in assistance.",
+            'message' => $this->translator->trans('Beneficiary')
+                . " ({$this->documentType} '{$number}') "
+                . $this->translator->trans('was not found in the assistance.'),
         ];
 
         return $this;

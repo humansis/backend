@@ -27,6 +27,7 @@ use Psr\Cache\InvalidArgumentException;
 use Repository\AssistanceBeneficiaryRepository;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Workflow\ReliefPackageTransitions;
@@ -44,19 +45,25 @@ class AssistanceBeneficiaryService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
     /**
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      * @param CacheInterface $cache
      * @param Registry $workflowRegistry
+     * @param TranslatorInterface $translator
      */
     public function __construct(
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
         CacheInterface $cache,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
+        TranslatorInterface $translator
     ) {
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
         $this->cache = $cache;
         $this->workflowRegistry = $workflowRegistry;
+        $this->translator = $translator;
     }
 
     /**
@@ -71,7 +78,7 @@ class AssistanceBeneficiaryService
         array $documentNumbers,
         string $documentType
     ): AssistanceBeneficiaryOperationOutputType {
-        $output = new AssistanceBeneficiaryOperationOutputType($documentNumbers, $documentType);
+        $output = new AssistanceBeneficiaryOperationOutputType($this->translator, $documentNumbers, $documentType);
         $beneficiaryDocuments = [];
         foreach ($beneficiaries as $beneficiary) {
             foreach ($beneficiary->getNationalIds() as $document) {
@@ -95,7 +102,7 @@ class AssistanceBeneficiaryService
         array $beneficiaries,
         array $beneficiaryIds
     ): AssistanceBeneficiaryOperationOutputType {
-        $output = new AssistanceBeneficiaryOperationOutputType();
+        $output = new AssistanceBeneficiaryOperationOutputType($this->translator);
         $foundBeneficiaries = array_map(function (Beneficiary $beneficiary) {
             return $beneficiary->getId();
         }, $beneficiaries);
