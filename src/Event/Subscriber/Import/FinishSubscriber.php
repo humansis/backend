@@ -134,7 +134,10 @@ class FinishSubscriber implements EventSubscriberInterface
         $entriesReadyForImport = $this->queueRepository->getTotalReadyForSave($import);
         if ($entriesReadyForImport > 0) {
             $event->addTransitionBlocker(
-                new TransitionBlocker('Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import', self::GUARD_CODE_NOT_COMPLETE)
+                new TransitionBlocker(
+                    'Import can\'t be finished because there are still ' . $entriesReadyForImport . ' entries ready for import',
+                    self::GUARD_CODE_NOT_COMPLETE
+                )
             );
         }
     }
@@ -178,7 +181,9 @@ class FinishSubscriber implements EventSubscriberInterface
         $entryToSave += $this->queueRepository->getTotalByImportAndStatus($import, ImportQueueState::INVALID_EXPORTED);
 
         if ($this->queueRepository->countByImport($import) != $entryToSave) {
-            $event->addTransitionBlocker(new TransitionBlocker("One or more item of import #{$import->getId()} are not ready for import.", '0'));
+            $event->addTransitionBlocker(
+                new TransitionBlocker("One or more item of import #{$import->getId()} are not ready for import.", '0')
+            );
         }
     }
 }

@@ -27,7 +27,8 @@ class TargetMapper extends AbstractTargetMapper
 
     public function getLastSmartcardDepositId(): ?int
     {
-        return $this->object->getSmartcardDeposits()->last() ? $this->object->getSmartcardDeposits()->last()->getId() : null;
+        return $this->object->getSmartcardDeposits()->last() ? $this->object->getSmartcardDeposits()->last()->getId(
+        ) : null;
     }
 
     public function getBookletIds(): array

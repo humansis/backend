@@ -91,7 +91,9 @@ class SimilaritySubscriber implements EventSubscriberInterface
         $isComplete = (0 === $this->queueRepository->countItemsToSimilarityCheck($import));
 
         if (!$isComplete) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Similarity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
+            $guardEvent->addTransitionBlocker(
+                new TransitionBlocker('Similarity check was not completed', static::GUARD_CODE_NOT_COMPLETE)
+            );
         }
     }
 

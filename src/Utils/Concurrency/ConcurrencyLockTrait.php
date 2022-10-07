@@ -50,7 +50,10 @@ trait ConcurrencyLockTrait
     {
         if (null !== $this->lockedAt || null !== $this->lockedBy) {
             throw new RuntimeException(
-                'Item #' . $this->getId() . ' is already locked by someone else. Locked at: "' . $this->lockedAt->format('Y-m-d H:i:s O e') . '" Locked by: "' . $this->lockedBy . '".'
+                'Item #' . $this->getId(
+                ) . ' is already locked by someone else. Locked at: "' . $this->lockedAt->format(
+                    'Y-m-d H:i:s O e'
+                ) . '" Locked by: "' . $this->lockedBy . '".'
             );
         }
 

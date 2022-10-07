@@ -61,16 +61,30 @@ class CommonController extends AbstractController
         foreach ($request->query->get('code', []) as $code) {
             switch ($code) {
                 case 'total_registrations':
-                    $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAll($countryIso3)];
+                    $result[] = [
+                        'code' => $code,
+                        'value' => $this->get('beneficiary.beneficiary_service')->countAll($countryIso3),
+                    ];
                     break;
                 case 'active_projects':
-                    $result[] = ['code' => $code, 'value' => $this->get('project.project_service')->countActive($countryIso3)];
+                    $result[] = [
+                        'code' => $code,
+                        'value' => $this->get('project.project_service')->countActive($countryIso3),
+                    ];
                     break;
                 case 'enrolled_beneficiaries':
-                    $result[] = ['code' => $code, 'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountry($countryIso3)];
+                    $result[] = [
+                        'code' => $code,
+                        'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountry(
+                            $countryIso3
+                        ),
+                    ];
                     break;
                 case 'served_beneficiaries':
-                    $result[] = ['code' => $code, 'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3)];
+                    $result[] = [
+                        'code' => $code,
+                        'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3),
+                    ];
                     break;
                 case 'completed_assistances':
                     $result[] = ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)];

@@ -35,7 +35,10 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -52,7 +55,10 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -67,7 +73,10 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/households/support-received-types');
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertJsonFragment(
             '{
             "totalCount": ' . count(HouseholdSupportReceivedType::values()) . ',
@@ -86,7 +95,10 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -103,7 +115,10 @@ class HouseholdCodelistControllerTest extends BMSServiceTestCase
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

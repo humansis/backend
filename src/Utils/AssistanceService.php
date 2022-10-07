@@ -347,20 +347,82 @@ class AssistanceService
             $residents = $this->beneficiaryRepository->countByResidencyStatus($assistance, "resident");
             $maleHHH = $this->beneficiaryRepository->countHouseholdHeadsByGender($assistance, PersonGender::MALE);
             $femaleHHH = $this->beneficiaryRepository->countHouseholdHeadsByGender($assistance, PersonGender::FEMALE);
-            $maleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 0, 2, $assistance->getDateDistribution());
-            $femaleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 0, 2, $assistance->getDateDistribution());
-            $maleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 2, 6, $assistance->getDateDistribution());
-            $femaleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 2, 6, $assistance->getDateDistribution());
-            $maleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 6, 18, $assistance->getDateDistribution());
-            $femaleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 6, 18, $assistance->getDateDistribution());
-            $maleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 18, 60, $assistance->getDateDistribution());
-            $femaleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 18, 60, $assistance->getDateDistribution());
-            $maleOver60years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 1, 60, 200, $assistance->getDateDistribution());
-            $femaleOver60years = $this->beneficiaryRepository->countByAgeAndByGender($assistance, 0, 60, 200, $assistance->getDateDistribution());
+            $maleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                1,
+                0,
+                2,
+                $assistance->getDateDistribution()
+            );
+            $femaleChildrenUnder23month = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                0,
+                0,
+                2,
+                $assistance->getDateDistribution()
+            );
+            $maleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                1,
+                2,
+                6,
+                $assistance->getDateDistribution()
+            );
+            $femaleChildrenUnder5years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                0,
+                2,
+                6,
+                $assistance->getDateDistribution()
+            );
+            $maleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                1,
+                6,
+                18,
+                $assistance->getDateDistribution()
+            );
+            $femaleUnder17years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                0,
+                6,
+                18,
+                $assistance->getDateDistribution()
+            );
+            $maleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                1,
+                18,
+                60,
+                $assistance->getDateDistribution()
+            );
+            $femaleUnder59years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                0,
+                18,
+                60,
+                $assistance->getDateDistribution()
+            );
+            $maleOver60years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                1,
+                60,
+                200,
+                $assistance->getDateDistribution()
+            );
+            $femaleOver60years = $this->beneficiaryRepository->countByAgeAndByGender(
+                $assistance,
+                0,
+                60,
+                200,
+                $assistance->getDateDistribution()
+            );
             $maleTotal = $maleChildrenUnder23month + $maleChildrenUnder5years + $maleUnder17years + $maleUnder59years + $maleOver60years;
             $femaleTotal = $femaleChildrenUnder23month + $femaleChildrenUnder5years + $femaleUnder17years + $femaleUnder59years + $femaleOver60years;
-            $noFamilies = $assistance->getTargetType() === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
-            $familySize = $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
+            $noFamilies = $assistance->getTargetType(
+            ) === AssistanceTargetType::INDIVIDUAL ? ($maleTotal + $femaleTotal) : ($maleHHH + $femaleHHH);
+            $familySize = $assistance->getTargetType(
+            ) === AssistanceTargetType::HOUSEHOLD && $noFamilies ? ($maleTotal + $femaleTotal) / $noFamilies : null;
             $modalityType = $assistance->getCommodities()[0]->getModalityType();
             $beneficiaryServed = $this->assistanceRepository->getNoServed($assistance->getId(), $modalityType);
 
@@ -406,10 +468,13 @@ class AssistanceService
                 $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
                 $this->translator->trans("DISTR. NO.") => $assistance->getId(),
                 $this->translator->trans("Distributed by") => " ",
-                $this->translator->trans("Round") => ($assistance->getRound() === null ? $this->translator->trans("N/A") : $assistance->getRound()),
+                $this->translator->trans("Round") => ($assistance->getRound() === null ? $this->translator->trans(
+                    "N/A"
+                ) : $assistance->getRound()),
                 $this->translator->trans("Donor") => $donors,
                 $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
-                $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn() : " - ",
+                $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn(
+                ) : " - ",
                 $this->translator->trans("Governorate") => $assistance->getLocation()->getAdm1Name(),
                 $this->translator->trans("District") => $assistance->getLocation()->getAdm2Name(),
                 $this->translator->trans("Sub-District") => $assistance->getLocation()->getAdm3Name(),
@@ -557,7 +622,9 @@ class AssistanceService
      */
     public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type): string
     {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance($assistance);
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance(
+            $assistance
+        );
 
         /** @var ReliefPackage[] $packages */
         $packages = [];
@@ -583,7 +650,8 @@ class AssistanceService
                 $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
                 $this->translator->trans("Notes Distribution") => $relief->getNotes(),
                 $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary()->getJustification(),
+                $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary(
+                )->getJustification(),
             ]);
         }
 
@@ -640,11 +708,15 @@ class AssistanceService
             $exportableTable[] = array_merge($commonFields, [
                 $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
                 $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                $this->translator->trans("Value") => $transactionBooklet ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency() : null,
+                $this->translator->trans("Value") => $transactionBooklet
+                    ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency()
+                    : null,
                 $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
                 $this->translator->trans("Purchased items") => $products,
                 $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary->getJustification(),
+                $this->translator->trans(
+                    "Justification for adding/removing"
+                ) => $assistanceBeneficiary->getJustification(),
             ]);
         }
 

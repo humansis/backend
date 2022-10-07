@@ -296,8 +296,12 @@ class LocationController extends AbstractController
         return $this->json($locations);
     }
 
-    private function getAdmList(Request $request, LocationFilterInputType $inputType, int $level, $parent = null): OrmPaginator
-    {
+    private function getAdmList(
+        Request $request,
+        LocationFilterInputType $inputType,
+        int $level,
+        $parent = null
+    ): OrmPaginator {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');

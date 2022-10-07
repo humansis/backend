@@ -96,11 +96,15 @@ class ItemBatchHandler implements MessageHandlerInterface
                 }
                 break;
             case ImportState::SIMILARITY_CHECKING:
-                $this->foreach($batch, ImportQueueState::UNIQUE_CANDIDATE, function (Import $import, ImportQueue $item) {
-                    $this->logQueueInfo($item, "Similarity check");
-                    $this->similarityChecker->checkOne($item);
-                    $this->queueRepository->save($item);
-                });
+                $this->foreach(
+                    $batch,
+                    ImportQueueState::UNIQUE_CANDIDATE,
+                    function (Import $import, ImportQueue $item) {
+                        $this->logQueueInfo($item, "Similarity check");
+                        $this->similarityChecker->checkOne($item);
+                        $this->queueRepository->save($item);
+                    }
+                );
                 break;
             case ImportState::IMPORTING:
                 $this->foreach($batch, ImportQueueState::TO_CREATE, function (Import $import, ImportQueue $item) {

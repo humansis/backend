@@ -45,14 +45,18 @@ class VendorControllerTest extends BMSServiceTestCase
         $adm1Results = $this->em->getRepository(Location::class)->findBy(['lvl' => 1]);
 
         if (empty($adm1Results)) {
-            $this->markTestSkipped('To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.');
+            $this->markTestSkipped(
+                'To perform VendorController CRUD tests, you need to have at least one Adm1 record in database.'
+            );
         }
 
         /** @var User[] $users */
         $users = $this->em->getRepository(User::class)->findBy(['vendor' => null], ['id' => 'asc']);
 
         if (empty($users)) {
-            $this->markTestSkipped('There needs to be at least one user in system which is not assigned to any vendor to complete this test');
+            $this->markTestSkipped(
+                'There needs to be at least one user in system which is not assigned to any vendor to complete this test'
+            );
         }
 
         $this->request(
@@ -79,7 +83,8 @@ class VendorControllerTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed (status code ' . $this->client->getResponse()->getStatusCode() . '): ' . $this->client->getResponse()->getContent()
+            'Request failed (status code ' . $this->client->getResponse()->getStatusCode(
+            ) . '): ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertIsArray($result);
@@ -226,7 +231,10 @@ class VendorControllerTest extends BMSServiceTestCase
     public function testList()
     {
         $toRedeemInvoicingState = VendorInvoicingState::TO_REDEEM;
-        $this->request('GET', "/api/basic/web-app/v1/vendors?filter[id][]=1&filter[invoicing]=$toRedeemInvoicingState&sort[]=name.asc");
+        $this->request(
+            'GET',
+            "/api/basic/web-app/v1/vendors?filter[id][]=1&filter[invoicing]=$toRedeemInvoicingState&sort[]=name.asc"
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

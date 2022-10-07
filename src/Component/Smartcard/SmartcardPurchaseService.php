@@ -21,8 +21,10 @@ class SmartcardPurchaseService
      * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      */
-    public function __construct(SmartcardPurchaseRepository $smartcardPurchaseRepository, PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
-    {
+    public function __construct(
+        SmartcardPurchaseRepository $smartcardPurchaseRepository,
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
+    ) {
         $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
         $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
     }

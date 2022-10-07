@@ -89,55 +89,103 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePackages($manager, $ab, 'KHR');
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePackages($manager, $ab, 'USD');
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePackages($manager, $ab, 'SYP');
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePackages($manager, $ab, 'USD');
         }
 
         $manager->flush();
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
         $manager->flush();
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_KHR
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_SYP
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach ($this->getReference(AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD)->getDistributionBeneficiaries() as $ab) {
+        foreach (
+            $this->getReference(
+                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+            )->getDistributionBeneficiaries() as $ab
+        ) {
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
@@ -188,7 +236,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generatePurchases(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $smartcard = $this->smartcardRepository->findActiveBySerialNumber($ab->getBeneficiary()->getSmartcardSerialNumber());
+        $smartcard = $this->smartcardRepository->findActiveBySerialNumber(
+            $ab->getBeneficiary()->getSmartcardSerialNumber()
+        );
         for ($j = 0; $j < rand(0, 50); ++$j) {
             $this->generatePurchase($j, $smartcard, $vendor, $j > 3 ? $ab->getAssistance() : null, $manager);
         }
@@ -208,8 +258,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         return Smartcard::states()[$i];
     }
 
-    private function generatePurchase($seed, Smartcard $smartcard, Vendor $vendor, ?Assistance $assistance, ObjectManager $manager): SmartcardPurchase
-    {
+    private function generatePurchase(
+        $seed,
+        Smartcard $smartcard,
+        Vendor $vendor,
+        ?Assistance $assistance,
+        ObjectManager $manager
+    ): SmartcardPurchase {
         $date = new DateTimeImmutable('now');
         $purchase = SmartcardPurchase::create($smartcard, $vendor, $date, $assistance);
         $purchase->setHash($this->purchaseService->hashPurchase($smartcard->getBeneficiary(), $vendor, $date));
@@ -217,7 +272,12 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         for ($j = 0; $j < rand(1, 3); ++$j) {
             $quantity = rand(1, 10000);
             $value = rand(1, 10000);
-            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value, $smartcard->getCurrency());
+            $purchase->addRecord(
+                $this->randomEntity(Product::class, $manager),
+                $quantity,
+                $value,
+                $smartcard->getCurrency()
+            );
         }
 
         return $purchase;

@@ -24,7 +24,9 @@ class ConstraintViolationException extends RuntimeException
         } elseif ($value instanceof ConstraintViolationInterface) {
             $this->list = new ConstraintViolationList([$value]);
         } else {
-            throw new InvalidArgumentException('Argument 1 must be instance of ' . ConstraintViolationListInterface::class . ' or ' . ConstraintViolationInterface::class);
+            throw new InvalidArgumentException(
+                'Argument 1 must be instance of ' . ConstraintViolationListInterface::class . ' or ' . ConstraintViolationInterface::class
+            );
         }
 
         parent::__construct((string) $this->list);

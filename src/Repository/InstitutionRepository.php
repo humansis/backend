@@ -35,8 +35,12 @@ class InstitutionRepository extends EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    public function findByParams(?string $iso3, ?InstitutionFilterInputType $filter, ?InstitutionOrderInputType $orderBy = null, ?Pagination $pagination = null)
-    {
+    public function findByParams(
+        ?string $iso3,
+        ?InstitutionFilterInputType $filter,
+        ?InstitutionOrderInputType $orderBy = null,
+        ?Pagination $pagination = null
+    ) {
         $qb = $this->createQueryBuilder('i')
             ->andWhere('i.archived = 0');
 

@@ -50,7 +50,10 @@ class CodeLists
 
         /** @var Sector $subSector */
         foreach ($subSectors as $subSector) {
-            $data[] = new CodeItem($subSector->getSubSectorName(), SubSectorEnum::translate($subSector->getSubSectorName()));
+            $data[] = new CodeItem(
+                $subSector->getSubSectorName(),
+                SubSectorEnum::translate($subSector->getSubSectorName())
+            );
         }
 
         return $data;

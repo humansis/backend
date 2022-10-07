@@ -38,8 +38,12 @@ class UploadService implements ContainerAwareInterface
      * @param $aws_access_key_id
      * @param $aws_secret_access_key
      */
-    public function __construct($aws_access_key_id, $aws_secret_access_key, $aws_s3_region, ContainerInterface $container)
-    {
+    public function __construct(
+        $aws_access_key_id,
+        $aws_secret_access_key,
+        $aws_s3_region,
+        ContainerInterface $container
+    ) {
         $this->container = $container;
 
         $credentials = new Credentials(

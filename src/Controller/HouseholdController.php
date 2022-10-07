@@ -50,8 +50,12 @@ class HouseholdController extends AbstractController
      *
      * @return Response
      */
-    public function exports(Request $request, HouseholdFilterInputType $filter, Pagination $pagination, HouseholdOrderInputType $order): Response
-    {
+    public function exports(
+        Request $request,
+        HouseholdFilterInputType $filter,
+        Pagination $pagination,
+        HouseholdOrderInputType $order
+    ): Response {
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
@@ -118,13 +122,22 @@ class HouseholdController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, HouseholdFilterInputType $filter, Pagination $pagination, HouseholdOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        HouseholdFilterInputType $filter,
+        Pagination $pagination,
+        HouseholdOrderInputType $orderBy
+    ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->householdRepository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
+        $data = $this->householdRepository->findByParams(
+            $request->headers->get('country'),
+            $filter,
+            $orderBy,
+            $pagination
+        );
 
         return $this->json($data);
     }

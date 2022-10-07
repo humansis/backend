@@ -29,7 +29,10 @@ class AssistanceCommodityController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $commodities = $this->getDoctrine()->getRepository(Commodity::class)->findOfflineByParams($countryIso3, $filter);
+        $commodities = $this->getDoctrine()->getRepository(Commodity::class)->findOfflineByParams(
+            $countryIso3,
+            $filter
+        );
 
         $response = $this->json($commodities->getQuery()->getResult());
         $response->setEtag(md5($response->getContent()));

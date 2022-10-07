@@ -30,7 +30,10 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(['type' => ProductCategoryType::FOOD], ['id' => 'asc']);
+        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+            ['type' => ProductCategoryType::FOOD],
+            ['id' => 'asc']
+        );
 
         if (!$productCategory instanceof ProductCategory) {
             $this->markTestSkipped('There needs to be at least one product category in system to complete this test');
@@ -156,13 +159,25 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
     public function testListFilteredByVendor(bool $canSellFood, bool $canSellNonFood, bool $canSellCashback)
     {
         /** @var Vendor $vendor */
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['name' => VendorFixtures::VENDOR_KHM_NAME], ['id' => 'asc']);
+        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(
+            ['name' => VendorFixtures::VENDOR_KHM_NAME],
+            ['id' => 'asc']
+        );
         if (!$vendor) {
             $this->fail('Vendor from SYR missing');
         }
-        $foods = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::FOOD], ['id' => 'asc']);
-        $nonfoods = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::NONFOOD], ['id' => 'asc']);
-        $cashbacks = $this->em->getRepository(ProductCategory::class)->findBy(['type' => ProductCategoryType::CASHBACK], ['id' => 'asc']);
+        $foods = $this->em->getRepository(ProductCategory::class)->findBy(
+            ['type' => ProductCategoryType::FOOD],
+            ['id' => 'asc']
+        );
+        $nonfoods = $this->em->getRepository(ProductCategory::class)->findBy(
+            ['type' => ProductCategoryType::NONFOOD],
+            ['id' => 'asc']
+        );
+        $cashbacks = $this->em->getRepository(ProductCategory::class)->findBy(
+            ['type' => ProductCategoryType::CASHBACK],
+            ['id' => 'asc']
+        );
         if (empty($foods) || empty($nonfoods) || empty($cashbacks)) {
             $this->fail('There are missing categories');
         }
@@ -184,7 +199,10 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             $expectedFilteredCategories += count($cashbacks);
         }
 
-        $this->request('GET', '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=' . $vendor->getId());
+        $this->request(
+            'GET',
+            '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=' . $vendor->getId()
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 

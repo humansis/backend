@@ -69,7 +69,12 @@ class ResponseListener
             preg_match('/.*\/vouchers\/scanned/', $url) ||
             preg_match('/.*\/deactivate-booklets/', $url);
 
-        if ($idUser && $method != 'GET' && explode('\\', $controller)[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')) {
+        if (
+            $idUser && $method != 'GET' && explode(
+                '\\',
+                $controller
+            )[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')
+        ) {
             $log = new Logs();
 
             $log->setUrl($url)
@@ -99,7 +104,9 @@ class ResponseListener
     protected function getUser()
     {
         if (!$this->container->has('security.token_storage')) {
-            throw new LogicException('The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".');
+            throw new LogicException(
+                'The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".'
+            );
         }
 
         if (null === $token = $this->container->get('security.token_storage')->getToken()) {

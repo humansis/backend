@@ -36,7 +36,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+            ['serialNumber' => $serialNumber],
+            ['id' => 'asc']
+        );
         foreach ($smartcards as $smartcard) {
             $this->em->remove($smartcard);
         }
@@ -62,7 +65,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $smartcard = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertArrayHasKey('id', $smartcard);
         $this->assertArrayHasKey('serialNumber', $smartcard);
         $this->assertArrayHasKey('state', $smartcard);
@@ -85,7 +91,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             'createdAt' => $uniqueDate,
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
     }
 
@@ -107,7 +116,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             'createdAt' => $date->format(DateTimeInterface::ATOM),
         ]);
 
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Request failed: ' . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
         $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
     }
 
@@ -154,7 +166,9 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
         $assistanceBeneficiary = new AssistanceBeneficiary();
         $assistanceBeneficiary->setAssistance($this->someSmartcardAssistance());
-        $assistanceBeneficiary->setBeneficiary($this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']));
+        $assistanceBeneficiary->setBeneficiary(
+            $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc'])
+        );
 
         $this->em->persist($assistanceBeneficiary);
 
@@ -164,7 +178,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
     {
         /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(['serialNumber' => $serialNumber], ['id' => 'asc']);
+        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+            ['serialNumber' => $serialNumber],
+            ['id' => 'asc']
+        );
 
         foreach ($smartcards as $smartcard) {
             if ($smartcard->getState() === SmartcardStates::ACTIVE) {

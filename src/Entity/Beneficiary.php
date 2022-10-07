@@ -735,7 +735,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "Shelter Status" => $shelterStatus,
             "Debt Level" => $this->getHousehold()->getDebtLevel(),
             "Support Received Types" => implode(', ', $supportReceivedTypes),
-            "Support Date Received" => $this->getHousehold()->getSupportDateReceived() ? $this->getHousehold()->getSupportDateReceived()->format('d-m-Y') : null,
+            "Support Date Received" => $this->getHousehold()->getSupportDateReceived() ? $this->getHousehold(
+            )->getSupportDateReceived()->format('d-m-Y') : null,
         ];
 
         foreach ($valueCountrySpecific as $key => $value) {
@@ -856,7 +857,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
             "Referral Comment" => $referral_comment,
         ];
 
-        return array_merge($this->getCommonHouseholdExportFields(), $this->getCommonBeneficiaryExportFields(), $referralInfo);
+        return array_merge(
+            $this->getCommonHouseholdExportFields(),
+            $this->getCommonBeneficiaryExportFields(),
+            $referralInfo
+        );
     }
 
     /**

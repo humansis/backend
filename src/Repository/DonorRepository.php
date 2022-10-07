@@ -25,8 +25,11 @@ class DonorRepository extends EntityRepository
      *
      * @return Paginator|Donor[]
      */
-    public function findByParams(DonorOrderInputType $orderBy = null, ?Pagination $pagination = null, ?DonorFilterInputType $filter = null): Paginator
-    {
+    public function findByParams(
+        DonorOrderInputType $orderBy = null,
+        ?Pagination $pagination = null,
+        ?DonorFilterInputType $filter = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('d');
 
         if ($pagination) {

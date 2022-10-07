@@ -45,8 +45,10 @@ class TargetExpandedMapper implements MapperInterface
         $beneficiaryMapped['localFamilyName'] = $beneficiary->getPerson()->getLocalFamilyName();
         $beneficiaryMapped['localGivenName'] = $beneficiary->getPerson()->getLocalGivenName();
 
-        $beneficiaryMapped['referralType'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson()->getReferral()->getType() : null;
-        $beneficiaryMapped['referralComment'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson()->getReferral()->getComment() : null;
+        $beneficiaryMapped['referralType'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson(
+        )->getReferral()->getType() : null;
+        $beneficiaryMapped['referralComment'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson(
+        )->getReferral()->getComment() : null;
 
         $beneficiaryMapped['nationalCardId'] = $this->getNationalId();
 
@@ -67,7 +69,9 @@ class TargetExpandedMapper implements MapperInterface
 
     public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ISO8601) : null;
+        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(
+            DateTimeInterface::ISO8601
+        ) : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
@@ -107,6 +111,10 @@ class TargetExpandedMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 }

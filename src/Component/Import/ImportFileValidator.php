@@ -29,8 +29,11 @@ class ImportFileValidator
     /** @var EntityManagerInterface */
     private $em;
 
-    public function __construct(string $uploadDirectory, ImportTemplate $importTemplate, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        string $uploadDirectory,
+        ImportTemplate $importTemplate,
+        EntityManagerInterface $entityManager
+    ) {
         $this->importParser = new ImportParser();
         $this->importTemplate = $importTemplate;
         $this->uploadDirectory = $uploadDirectory;
@@ -47,7 +50,9 @@ class ImportFileValidator
         try {
             $fileHeaders = $this->importParser->parseHeadersOnly($file);
         } catch (Exception $e) {
-            $violation = new ImportFileViolation('Unable to read provided file. File is malformed or it has unsupported format.');
+            $violation = new ImportFileViolation(
+                'Unable to read provided file. File is malformed or it has unsupported format.'
+            );
 
             $importFile->setStructureViolations([$violation]);
 
@@ -123,7 +128,10 @@ class ImportFileValidator
         }
 
         if (!($hasCamp || $hasAddress)) {
-            return new ImportFileViolation('Missing columns for address or camp', array_merge($addressColumns, $campColumns));
+            return new ImportFileViolation(
+                'Missing columns for address or camp',
+                array_merge($addressColumns, $campColumns)
+            );
         }
 
         return null;

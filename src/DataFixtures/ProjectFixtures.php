@@ -83,7 +83,16 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
             );
             $this->createProjectFromData(
                 $manager,
-                [$projectName, 1, 0, 'notes', $country, "$country eng address", "$country local address", [ProductCategoryType::FOOD]]
+                [
+                    $projectName,
+                    1,
+                    0,
+                    'notes',
+                    $country,
+                    "$country eng address",
+                    "$country local address",
+                    [ProductCategoryType::FOOD],
+                ]
             );
         }
         $manager->flush();

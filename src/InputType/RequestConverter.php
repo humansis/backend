@@ -87,6 +87,7 @@ class RequestConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return null !== $configuration->getClass() && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
+        return null !== $configuration->getClass()
+            && in_array(InputTypeInterface::class, class_implements($configuration->getClass()));
     }
 }

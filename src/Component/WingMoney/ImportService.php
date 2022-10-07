@@ -32,8 +32,11 @@ class ImportService
      */
     private $em;
 
-    public function __construct(TransactionRepository $transactionRepository, PhoneRepository $phoneRepository, EntityManagerInterface $em)
-    {
+    public function __construct(
+        TransactionRepository $transactionRepository,
+        PhoneRepository $phoneRepository,
+        EntityManagerInterface $em
+    ) {
         $this->transactionRepository = $transactionRepository;
         $this->phoneRepository = $phoneRepository;
         $this->em = $em;
@@ -68,8 +71,10 @@ class ImportService
         });
     }
 
-    private function findAssistanceBeneficiaryByPhoneNumber(ReportEntry $entry, Assistance $assistance): ?AssistanceBeneficiary
-    {
+    private function findAssistanceBeneficiaryByPhoneNumber(
+        ReportEntry $entry,
+        Assistance $assistance
+    ): ?AssistanceBeneficiary {
         $number = substr($entry->getPhoneNumber(), 1);
 
         $phone = $this->phoneRepository->findOneBy(['number' => $number]);
@@ -90,7 +95,10 @@ class ImportService
         $assistanceBeneficiaries = $beneficiary->getDistributionBeneficiaries();
 
         foreach ($assistanceBeneficiaries as $assistanceBeneficiary) {
-            if (!$assistanceBeneficiary->getRemoved() && $assistanceBeneficiary->getAssistance()->getId() === $assistance->getId()) {
+            if (
+                !$assistanceBeneficiary->getRemoved() && $assistanceBeneficiary->getAssistance()->getId(
+                ) === $assistance->getId()
+            ) {
                 $commodities = $assistance->getCommodities();
 
                 if (empty($commodities)) {

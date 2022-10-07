@@ -78,12 +78,19 @@ final class ScoringService
     {
         $scores = [];
 
-        $scoringBlueprint = $this->scoringBlueprintRepository->findActive($input->getScoringBlueprintId(), $countryCode);
+        $scoringBlueprint = $this->scoringBlueprintRepository->findActive(
+            $input->getScoringBlueprintId(),
+            $countryCode
+        );
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
             if (!isset($scoring)) {
-                $protocol = $this->oldResolver->compute($beneficiary->getHousehold(), $countryCode, $input->getSector());
+                $protocol = $this->oldResolver->compute(
+                    $beneficiary->getHousehold(),
+                    $countryCode,
+                    $input->getSector()
+                );
             } else {
                 $protocol = $this->resolver->compute(
                     $beneficiary->getHousehold(),

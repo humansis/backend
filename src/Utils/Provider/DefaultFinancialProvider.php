@@ -131,7 +131,10 @@ abstract class DefaultFinancialProvider
             $beneficiary = $assistanceBeneficiary->getBeneficiary();
 
             if ($beneficiary->getArchived() == true) {
-                $this->logger->debug("Money sending: Recipient omitted - archived", [$beneficiary, $assistanceBeneficiary]);
+                $this->logger->debug(
+                    "Money sending: Recipient omitted - archived",
+                    [$beneficiary, $assistanceBeneficiary]
+                );
                 array_push($response['failure'], $assistanceBeneficiary);
                 continue;
             }
@@ -158,7 +161,10 @@ abstract class DefaultFinancialProvider
             if ($phoneNumber) {
                 // if a successful transaction already exists
                 if (!$transactions->isEmpty()) {
-                    $this->logger->debug("Money sending: Recipient omitted - already sent", [$beneficiary, $assistanceBeneficiary]);
+                    $this->logger->debug(
+                        "Money sending: Recipient omitted - already sent",
+                        [$beneficiary, $assistanceBeneficiary]
+                    );
                     array_push($response['already_sent'], $assistanceBeneficiary);
                 } else {
                     $amountSent = 0;
@@ -168,8 +174,16 @@ abstract class DefaultFinancialProvider
                     // if the limit hasn't been reached
                     if (empty($amountSent) || $amountSent + $amount <= 100000) {
                         try {
-                            $this->logger->debug("Money sending: Recipient sending start", [$beneficiary, $assistanceBeneficiary]);
-                            $transaction = $this->sendMoneyToOne($phoneNumber, $assistanceBeneficiary, $amount, $currency);
+                            $this->logger->debug(
+                                "Money sending: Recipient sending start",
+                                [$beneficiary, $assistanceBeneficiary]
+                            );
+                            $transaction = $this->sendMoneyToOne(
+                                $phoneNumber,
+                                $assistanceBeneficiary,
+                                $amount,
+                                $currency
+                            );
                             if ($transaction->getTransactionStatus() === 0) {
                                 array_push($response['failure'], $assistanceBeneficiary);
                             } else {
@@ -178,19 +192,42 @@ abstract class DefaultFinancialProvider
                                 array_push($response['sent'], $assistanceBeneficiary);
                             }
                         } catch (Exception $e) {
-                            $this->logger->warning("Money sending: Recipient error: " . $e->getMessage(), [$beneficiary, $assistanceBeneficiary]);
-                            $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 2, $e->getMessage());
+                            $this->logger->warning(
+                                "Money sending: Recipient error: " . $e->getMessage(),
+                                [$beneficiary, $assistanceBeneficiary]
+                            );
+                            $this->createTransaction(
+                                $assistanceBeneficiary,
+                                '',
+                                new DateTime(),
+                                0,
+                                2,
+                                $e->getMessage()
+                            );
                             array_push($response['failure'], $assistanceBeneficiary);
                         } finally {
                             $requestCount++;
                         }
                     } else {
-                        $this->logger->warning("Money sending: Recipient omitted - money limit", [$beneficiary, $assistanceBeneficiary]);
-                        $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 0, "The maximum amount that can be sent per distribution (USD 10000) has been reached");
+                        $this->logger->warning(
+                            "Money sending: Recipient omitted - money limit",
+                            [$beneficiary, $assistanceBeneficiary]
+                        );
+                        $this->createTransaction(
+                            $assistanceBeneficiary,
+                            '',
+                            new DateTime(),
+                            0,
+                            0,
+                            "The maximum amount that can be sent per distribution (USD 10000) has been reached"
+                        );
                     }
                 }
             } else {
-                $this->logger->debug("Money sending: Recipient omitted - no mobile", [$beneficiary, $assistanceBeneficiary]);
+                $this->logger->debug(
+                    "Money sending: Recipient omitted - no mobile",
+                    [$beneficiary, $assistanceBeneficiary]
+                );
                 $this->createTransaction($assistanceBeneficiary, '', new DateTime(), 0, 2, "No Phone");
                 array_push($response['no_mobile'], $assistanceBeneficiary);
             }

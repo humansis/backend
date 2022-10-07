@@ -90,11 +90,15 @@ class TranslationsDownloadCommand extends Command
         $jwt = $this->login();
 
         //download translations
-        $response = $this->client->request('GET', $this->envConfig[$this->env]['url'] . '/web-app/v1/translations-xml', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $jwt,
-            ],
-        ]);
+        $response = $this->client->request(
+            'GET',
+            $this->envConfig[$this->env]['url'] . '/web-app/v1/translations-xml',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $jwt,
+                ],
+            ]
+        );
 
         $statusCode = $response->getStatusCode();
         if ($statusCode >= 400) {

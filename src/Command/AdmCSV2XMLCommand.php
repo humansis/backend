@@ -218,8 +218,12 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         return $question;
     }
 
-    private function createTargetFileIfNeeded(string $targetFilepath, string $admLevel, InputInterface $input, OutputInterface $output): void
-    {
+    private function createTargetFileIfNeeded(
+        string $targetFilepath,
+        string $admLevel,
+        InputInterface $input,
+        OutputInterface $output
+    ): void {
         if (!file_exists($targetFilepath)) {
             if ($admLevel === 'adm1') {
                 $countryName = $this->getHelper('question')->ask($input, $output, $this->createCountryNameQuestion());

@@ -27,13 +27,19 @@ class SmartcardController extends AbstractVendorAppController
     public function beneficiaries(Request $request): Response
     {
         /** @var SmartcardPurchaseInputType $data */
-        $data = $this->get('serializer')->deserialize($request->getContent(), SmartcardPurchaseInputType::class, 'json');
+        $data = $this->get('serializer')->deserialize(
+            $request->getContent(),
+            SmartcardPurchaseInputType::class,
+            'json'
+        );
 
         $errors = $this->get('validator')->validate($data);
 
         //TODO remove after syncs for purchases will be implemented
         if (count($errors) > 0) {
-            $this->container->get('logger')->error('validation errors: ' . ((string) $errors) . ' data: ' . json_encode($request->request->all()));
+            $this->container->get('logger')->error(
+                'validation errors: ' . ((string) $errors) . ' data: ' . json_encode($request->request->all())
+            );
 
             $this->writeData(
                 'purchaseV3',
@@ -57,7 +63,11 @@ class SmartcardController extends AbstractVendorAppController
             throw $exception;
         }
 
-        $json = $this->get('serializer')->serialize($purchase->getSmartcard(), 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->get('serializer')->serialize(
+            $purchase->getSmartcard(),
+            'json',
+            ['groups' => ['SmartcardOverview']]
+        );
 
         return new Response($json);
     }

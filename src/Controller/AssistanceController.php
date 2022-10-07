@@ -81,8 +81,11 @@ class AssistanceController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function statistics(Request $request, AssistanceStatisticsFilterInputType $filter, AssistanceQuery $assistanceQuery): JsonResponse
-    {
+    public function statistics(
+        Request $request,
+        AssistanceStatisticsFilterInputType $filter,
+        AssistanceQuery $assistanceQuery
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');
@@ -96,7 +99,10 @@ class AssistanceController extends AbstractController
         } else {
             // TODO if we search only assistance IDs we can check if statistic is in cache
 
-            $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams($countryIso3, $filter);
+            $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams(
+                $countryIso3,
+                $filter
+            );
         }
 
         return $this->json(new Paginator($statistics));
@@ -139,7 +145,12 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams($countryIso3, $filter, $orderBy, $pagination);
+        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(
+            $countryIso3,
+            $filter,
+            $orderBy,
+            $pagination
+        );
 
         return $this->json($assistances);
     }
@@ -158,8 +169,11 @@ class AssistanceController extends AbstractController
      * @throws NonUniqueResultException
      * @throws ORMException
      */
-    public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory, AssistanceRepository $repository): JsonResponse
-    {
+    public function create(
+        AssistanceCreateInputType $inputType,
+        AssistanceFactory $factory,
+        AssistanceRepository $repository
+    ): JsonResponse {
         $assistance = $factory->create($inputType);
         $repository->save($assistance);
 
@@ -236,7 +250,9 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Bank export is allowed only for Distribution type of assistance.');
         }
         if ($assistance->getSubSector() !== SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE) {
-            throw new BadRequestHttpException('Bank export is allowed only for subsector Multi purpose cash assistance.');
+            throw new BadRequestHttpException(
+                'Bank export is allowed only for subsector Multi purpose cash assistance.'
+            );
         }
         if (!$assistance->hasModalityTypeCommodity(ModalityType::CASH)) {
             throw new BadRequestHttpException('Bank export is allowed only for assistance with Cash commodity.');
@@ -249,7 +265,10 @@ class AssistanceController extends AbstractController
 
             return $response;
         } catch (\Exception $exception) {
-            return new JsonResponse($exception->getMessage(), $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(
+                $exception->getMessage(),
+                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
+            );
         }
     }
 
@@ -279,8 +298,11 @@ class AssistanceController extends AbstractController
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function vulnerabilityScoresExports(Assistance $assistance, Request $request, AssistanceFactory $factory): Response
-    {
+    public function vulnerabilityScoresExports(
+        Assistance $assistance,
+        Request $request,
+        AssistanceFactory $factory
+    ): Response {
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
@@ -298,8 +320,11 @@ class AssistanceController extends AbstractController
      * @throws NoResultException
      * @throws EntityNotFoundException
      */
-    public function vulnerabilityScoresPreExport(AssistanceCreateInputType $inputType, AssistanceFactory $factory, Request $request): Response
-    {
+    public function vulnerabilityScoresPreExport(
+        AssistanceCreateInputType $inputType,
+        AssistanceFactory $factory,
+        Request $request
+    ): Response {
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }

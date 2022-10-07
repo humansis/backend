@@ -192,11 +192,19 @@ class BookletService
         return $booklet;
     }
 
-    public function updateVoucherCode(Voucher $voucher, ?string $password = '', ?string $value = '', ?string $currency = '')
-    {
+    public function updateVoucherCode(
+        Voucher $voucher,
+        ?string $password = '',
+        ?string $value = '',
+        ?string $currency = ''
+    ) {
         $qrCode = $voucher->getCode();
         // To know if we need to add a new password or replace an existant one
-        preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i', $qrCode, $matches);
+        preg_match(
+            '/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+(-[\dA-Z=+-\/]+)$/i',
+            $qrCode,
+            $matches
+        );
 
         if ($matches === null || count($matches) < 3) {
             preg_match('/^([A-Z]+)(\d+)\*[^_]+_[^_]+_[^_]+_((batch)|(booklet))[\d]+-[\d]+$/i', $qrCode, $matches);
@@ -254,7 +262,10 @@ class BookletService
      */
     public function assign(Booklet $booklet, Assistance $assistance, AbstractBeneficiary $abstractBeneficiary)
     {
-        if ($booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus() === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED) {
+        if (
+            $booklet->getStatus() === Booklet::DEACTIVATED || $booklet->getStatus(
+            ) === Booklet::USED || $booklet->getStatus() === Booklet::DISTRIBUTED
+        ) {
             throw new Exception("This booklet has already been distributed, used or is actually deactivated");
         }
 
@@ -264,7 +275,10 @@ class BookletService
         );
 
         if (!$assistanceBeneficiary instanceof AssistanceBeneficiary) {
-            throw new InvalidArgumentException('Beneficiary with id ' . $abstractBeneficiary->getId() . ' does not belong to assistance with id ' . $assistance->getId());
+            throw new InvalidArgumentException(
+                'Beneficiary with id ' . $abstractBeneficiary->getId(
+                ) . ' does not belong to assistance with id ' . $assistance->getId()
+            );
         }
 
         $booklet->setAssistanceBeneficiary($assistanceBeneficiary)
@@ -406,7 +420,13 @@ class BookletService
     {
         $limitMinimum = $filter->pageIndex * $filter->pageSize;
 
-        $booklets = $this->em->getRepository(Booklet::class)->getAllBy($countryISO3->getIso3(), $limitMinimum, $filter->pageSize, $filter->getSort(), $filter->getFilter());
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy(
+            $countryISO3->getIso3(),
+            $limitMinimum,
+            $filter->pageSize,
+            $filter->getSort(),
+            $filter->getFilter()
+        );
         $length = $booklets[0];
         $booklets = $booklets[1];
 

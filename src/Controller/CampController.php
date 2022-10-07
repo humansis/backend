@@ -28,7 +28,10 @@ class CampController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry($countryIso3, $filterInputType);
+        $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry(
+            $countryIso3,
+            $filterInputType
+        );
 
         return $this->json(new Paginator($beneficiaries));
     }

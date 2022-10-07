@@ -269,7 +269,10 @@ class ImportParser
                     $value = $calculatedValue;
                 }
             } catch (Exception $exception) {
-                throw new InvalidFormulaException($cell->getValue(), "Bad formula at cell {$cell->getColumn()}{$cell->getRow()}");
+                throw new InvalidFormulaException(
+                    $cell->getValue(),
+                    "Bad formula at cell {$cell->getColumn()}{$cell->getRow()}"
+                );
             }
 
             return $value;

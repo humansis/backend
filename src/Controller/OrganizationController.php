@@ -56,8 +56,11 @@ class OrganizationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function update(Organization $organization, OrganizationUpdateInputType $inputType, OrganizationService $organizationService): JsonResponse
-    {
+    public function update(
+        Organization $organization,
+        OrganizationUpdateInputType $inputType,
+        OrganizationService $organizationService
+    ): JsonResponse {
         $organizationService->update($organization, $inputType);
 
         return $this->json($organization);
@@ -106,8 +109,11 @@ class OrganizationController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function updateService(Request $request, OrganizationServices $organizationServices, OrganizationService $organizationService): JsonResponse
-    {
+    public function updateService(
+        Request $request,
+        OrganizationServices $organizationServices,
+        OrganizationService $organizationService
+    ): JsonResponse {
         if ($request->request->has('enabled')) {
             $organizationService->setEnable($organizationServices, $request->request->getBoolean('enabled'));
         }
@@ -130,8 +136,11 @@ class OrganizationController extends AbstractController
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function uploadImage(Organization $organization, Request $request, OrganizationRepository $organizationRepository): JsonResponse
-    {
+    public function uploadImage(
+        Organization $organization,
+        Request $request,
+        OrganizationRepository $organizationRepository
+    ): JsonResponse {
         if (!($file = $request->files->get('file'))) {
             throw new BadRequestHttpException('File missing.');
         }

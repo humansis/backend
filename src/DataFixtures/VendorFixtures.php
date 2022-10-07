@@ -76,7 +76,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
 
-        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryIso3' => 'SYR', 'lvl' => 2], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(
+            ['countryIso3' => 'SYR', 'lvl' => 2],
+            ['id' => 'asc']
+        );
 
         $vendor = new Vendor();
         $vendor
@@ -98,7 +101,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_KHM);
 
-        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryIso3' => 'KHM', 'lvl' => 2], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(
+            ['countryIso3' => 'KHM', 'lvl' => 2],
+            ['id' => 'asc']
+        );
 
         $vendor = new Vendor();
         $vendor
@@ -120,7 +126,10 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
     {
         $user = $this->makeGenericUser($manager, $country);
 
-        $adm2 = $manager->getRepository(Location::class)->findOneBy(['countryIso3' => $country, 'lvl' => 2], ['id' => 'asc']);
+        $adm2 = $manager->getRepository(Location::class)->findOneBy(
+            ['countryIso3' => $country, 'lvl' => 2],
+            ['id' => 'asc']
+        );
 
         $vendor = new Vendor();
         $vendor

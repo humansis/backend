@@ -33,7 +33,11 @@ class CommodityControllerTest extends BMSServiceTestCase
         $commodity1 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[0];
         $commodity2 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[1];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/commodities?filter[id][]=' . $commodity1->getId() . '&filter[id][]=' . $commodity2->getId());
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/assistances/commodities?filter[id][]=' . $commodity1->getId(
+            ) . '&filter[id][]=' . $commodity2->getId()
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -169,7 +169,9 @@ class IntegritySubscriber implements EventSubscriberInterface
         $isComplete = (0 === $this->queueRepository->countItemsToIntegrityCheck($import));
 
         if (!$isComplete) {
-            $guardEvent->addTransitionBlocker(new TransitionBlocker('Integrity check was not completed', static::GUARD_CODE_NOT_COMPLETE));
+            $guardEvent->addTransitionBlocker(
+                new TransitionBlocker('Integrity check was not completed', static::GUARD_CODE_NOT_COMPLETE)
+            );
         }
     }
 

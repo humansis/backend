@@ -53,13 +53,23 @@ class ProductService
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
-            $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
+            $productCategory = $this->em->getRepository(ProductCategory::class)->find(
+                $productData->getProductCategoryId()
+            );
 
             if (!$productCategory instanceof ProductCategory) {
-                throw new EntityNotFoundException('ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found');
+                throw new EntityNotFoundException(
+                    'ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found'
+                );
             }
 
-            if (ProductCategoryType::CASHBACK === $productCategory->getType() && (empty($product->getUnitPrice()) || empty($product->getCurrency()))) {
+            if (
+                ProductCategoryType::CASHBACK === $productCategory->getType()
+                && (
+                    empty($product->getUnitPrice())
+                    || empty($product->getCurrency())
+                )
+            ) {
                 throw new BadRequestHttpException("Cashback must have unitPrice and currency");
             }
 
@@ -93,10 +103,14 @@ class ProductService
 
         if (null !== $productData->getProductCategoryId()) {
             /** @var ProductCategory|null $productCategory */
-            $productCategory = $this->em->getRepository(ProductCategory::class)->find($productData->getProductCategoryId());
+            $productCategory = $this->em->getRepository(ProductCategory::class)->find(
+                $productData->getProductCategoryId()
+            );
 
             if (!$productCategory instanceof ProductCategory) {
-                throw new EntityNotFoundException('ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found');
+                throw new EntityNotFoundException(
+                    'ProductCategory with ID ' . $productData->getProductCategoryId() . ' not found'
+                );
             }
 
             $product->setProductCategory($productCategory);
@@ -135,7 +149,9 @@ class ProductService
      */
     public function exportToCsv(string $type, string $countryIso3)
     {
-        $exportableTable = $this->em->getRepository(Product::class)->findBy(['archived' => false, 'countryIso3' => $countryIso3]);
+        $exportableTable = $this->em->getRepository(Product::class)->findBy(
+            ['archived' => false, 'countryIso3' => $countryIso3]
+        );
 
         return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
     }

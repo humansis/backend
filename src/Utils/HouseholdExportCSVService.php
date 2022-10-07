@@ -320,7 +320,8 @@ class HouseholdExportCSVService
      */
     private function getCountrySpecifics($countryIso3)
     {
-        return $this->em->getRepository(CountrySpecific::class)->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
+        return $this->em->getRepository(CountrySpecific::class)
+            ->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
     }
 
     /**
@@ -362,6 +363,11 @@ class HouseholdExportCSVService
      */
     public function exportToCsv(string $type, string $countryISO3)
     {
-        return $this->exportService->export($this->getHeaders($countryISO3), 'pattern_household_' . $countryISO3, $type, true);
+        return $this->exportService->export(
+            $this->getHeaders($countryISO3),
+            'pattern_household_' . $countryISO3,
+            $type,
+            true
+        );
     }
 }

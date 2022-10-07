@@ -66,7 +66,9 @@ class ProductRepository extends EntityRepository
                     ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
             if ($filter->hasVendors()) {
-                $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(['id' => $filter->getVendors()]);
+                $vendor = $this->getEntityManager()->getRepository(Vendor::class)->findOneBy(
+                    ['id' => $filter->getVendors()]
+                );
                 $sellableCategoryTypes = [];
                 if ($vendor->canSellFood()) {
                     $sellableCategoryTypes[] = ProductCategoryType::FOOD;

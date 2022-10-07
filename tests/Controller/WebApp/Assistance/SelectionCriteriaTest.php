@@ -175,7 +175,17 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
         yield 'all in one' => [
             $this->assistanceWithCriteria(
-                [$femaleHead, $bornBefore2020, $hasAnyIncomeInt, $location, $CSOEquityCard, $CSOFloatGtInt, $CSOFloatLtFloat, $CSOFloatGteFloat, $workForGovernment]
+                [
+                    $femaleHead,
+                    $bornBefore2020,
+                    $hasAnyIncomeInt,
+                    $location,
+                    $CSOEquityCard,
+                    $CSOFloatGtInt,
+                    $CSOFloatLtFloat,
+                    $CSOFloatGteFloat,
+                    $workForGovernment,
+                ]
             ),
         ];
     }

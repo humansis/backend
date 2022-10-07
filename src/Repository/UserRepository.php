@@ -33,8 +33,11 @@ class UserRepository extends EntityRepository
         $builder->getQuery()->execute();
     }
 
-    public function findByParams(?UserOrderInputType $orderBy, ?UserFilterInputType $filter, ?Pagination $pagination): Paginator
-    {
+    public function findByParams(
+        ?UserOrderInputType $orderBy,
+        ?UserFilterInputType $filter,
+        ?Pagination $pagination
+    ): Paginator {
         $qb = $this->createQueryBuilder("u")
             ->where('u.enabled = :userEnabled')
             ->setParameter('userEnabled', true);

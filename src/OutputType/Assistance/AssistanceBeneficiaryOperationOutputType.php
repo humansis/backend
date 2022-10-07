@@ -153,8 +153,10 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addBeneficiaryFailed(Beneficiary $beneficiary, string $message): AssistanceBeneficiaryOperationOutputType
-    {
+    public function addBeneficiaryFailed(
+        Beneficiary $beneficiary,
+        string $message
+    ): AssistanceBeneficiaryOperationOutputType {
         $documentNumber = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
         $this->failed[] = [
             'documentNumber' => $documentNumber,

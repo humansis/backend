@@ -208,7 +208,10 @@ class InstitutionControllerTest extends BMSServiceTestCase
      */
     public function testList()
     {
-        $this->request('GET', '/api/basic/web-app/v1/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a'
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -266,7 +269,10 @@ class InstitutionControllerTest extends BMSServiceTestCase
             $this->markTestSkipped('There is no institution to be tested');
         }
 
-        $this->request('GET', '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/institutions');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/projects/' . $institution->getProjects()[0]->getId() . '/institutions'
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

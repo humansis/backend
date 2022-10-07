@@ -40,7 +40,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testGetItem()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
+            ->findBy([], ['id' => 'asc'])[0];
         $commodityIds = array_map(function (Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
@@ -396,7 +397,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
-            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
+            $this->markTestSkipped(
+                'There needs to be at least one project and location in system for completing this test'
+            );
         }
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
@@ -481,7 +484,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
-            $this->markTestSkipped('There needs to be at least one project and location in system for completing this test');
+            $this->markTestSkipped(
+                'There needs to be at least one project and location in system for completing this test'
+            );
         }
 
         $smartcardModalityType = ModalityType::SMART_CARD;
@@ -953,9 +958,16 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
 
-        $commodityData = ['value' => 1, 'unit' => 'USD', 'modality_type' => ModalityType::CASH, 'description' => 'Note'];
+        $commodityData = [
+            'value' => 1,
+            'unit' => 'USD',
+            'modality_type' => ModalityType::CASH,
+            'description' => 'Note',
+        ];
         /** @var Assistance $assistance */
-        $assistance = $assistanceRepository->matching(Criteria::create()->where(Criteria::expr()->neq('validatedBy', null)))->first();
+        $assistance = $assistanceRepository->matching(
+            Criteria::create()->where(Criteria::expr()->neq('validatedBy', null))
+        )->first();
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));

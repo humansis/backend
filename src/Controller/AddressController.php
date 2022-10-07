@@ -22,7 +22,9 @@ class AddressController extends AbstractController
      */
     public function camps(CampAddressFilterInputType $filter): JsonResponse
     {
-        $campAddresses = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findCampAddressesByParams($filter);
+        $campAddresses = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findCampAddressesByParams(
+            $filter
+        );
 
         return $this->json($campAddresses);
     }
@@ -82,7 +84,9 @@ class AddressController extends AbstractController
      */
     public function temporarySettlements(TemporarySettlementAddressFilterInputType $filter): JsonResponse
     {
-        $temporarySettlements = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findTemporarySettlementsByParams($filter);
+        $temporarySettlements = $this->getDoctrine()->getRepository(
+            HouseholdLocation::class
+        )->findTemporarySettlementsByParams($filter);
 
         return $this->json($temporarySettlements);
     }

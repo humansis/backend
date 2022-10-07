@@ -126,7 +126,10 @@ class CrowdinPullCommand extends Command
         $filesystem = new Filesystem();
         $filesystem->mkdir($this->translationsDir . '/crowdin');
 
-        file_put_contents($this->translationsDir . '/crowdin/translations.zip', file_get_contents($response['data']['url']));
+        file_put_contents(
+            $this->translationsDir . '/crowdin/translations.zip',
+            file_get_contents($response['data']['url'])
+        );
 
         //unzip translations
         $this->output->write('unzipping');

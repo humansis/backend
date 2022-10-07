@@ -76,7 +76,8 @@ final class RulesCalculation
         /** @var VulnerabilityCriterion $headVulnerability */
         foreach ($household->getHouseholdHead()->getVulnerabilityCriteria() as $headVulnerability) {
             if ($headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_SOLO_PARENT) {
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore();
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore(
+                );
             }
         }
 
@@ -96,8 +97,14 @@ final class RulesCalculation
         foreach ($household->getBeneficiaries() as $beneficiary) {
             /** @var VulnerabilityCriterion $headVulnerability */
             foreach ($beneficiary->getVulnerabilityCriteria() as $headVulnerability) {
-                if ($headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_PREGNANT || $headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_LACTATING) {
-                    $totalScore += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_PREGNANT_OR_LACTATING)->getScore();
+                if (
+                    $headVulnerability->getFieldString(
+                    ) === VulnerabilityCriterion::CRITERION_PREGNANT || $headVulnerability->getFieldString(
+                    ) === VulnerabilityCriterion::CRITERION_LACTATING
+                ) {
+                    $totalScore += $rule->getOptionByValue(
+                        ScoringRuleCalculationOptionsEnum::VULNERABILITY_PREGNANT_OR_LACTATING
+                    )->getScore();
                     continue 2;
                 }
             }
@@ -121,7 +128,9 @@ final class RulesCalculation
                     return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_ONE)->getScore();
                 } else {
                     if ((int) $countrySpecificAnswer->getAnswer() > 1) {
-                        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE)->getScore();
+                        return $rule->getOptionByValue(
+                            ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE
+                        )->getScore();
                     }
                 }
             }

@@ -76,7 +76,10 @@ class TransactionController extends AbstractController
         if (!$validatedTransaction) {
             $logger->warning('Code: did not match');
 
-            return new Response("The supplied code did not match. The transaction cannot be executed", Response::HTTP_BAD_REQUEST);
+            return new Response(
+                "The supplied code did not match. The transaction cannot be executed",
+                Response::HTTP_BAD_REQUEST
+            );
         } else {
             $logger->error('Code: verified');
         }

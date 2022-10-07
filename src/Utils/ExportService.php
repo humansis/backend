@@ -166,7 +166,9 @@ class ExportService
             } elseif (is_array($value)) {
                 $normalizedTable[] = $value;
             } else {
-                throw new InvalidArgumentException("The table to export contains a not allowed content ($value). Allowed content: array, " . ExportableInterface::class);
+                throw new InvalidArgumentException(
+                    "The table to export contains a not allowed content ($value). Allowed content: array, " . ExportableInterface::class
+                );
             }
         }
 

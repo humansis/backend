@@ -70,7 +70,9 @@ class VendorService
         }
 
         if (null !== $user->getVendor()) {
-            throw new InvalidArgumentException('User with ID #' . $inputType->getUserId() . ' is already defined as vendor.');
+            throw new InvalidArgumentException(
+                'User with ID #' . $inputType->getUserId() . ' is already defined as vendor.'
+            );
         }
 
         $vendor = new Vendor();
@@ -159,7 +161,9 @@ class VendorService
     {
         $vendor = $this->em->getRepository(Vendor::class)->findOneByUser($user);
         if (!$vendor) {
-            throw new NotFoundHttpException("Vendor bind to user (Username: {$user->getUsername()}, ID: {$user->getId()}) does not exists.");
+            throw new NotFoundHttpException(
+                "Vendor bind to user (Username: {$user->getUsername()}, ID: {$user->getId()}) does not exists."
+            );
         }
 
         return $vendor;

@@ -96,7 +96,10 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => false,
-                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED, VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL],
+                    'vulnerabilityCriteria' => [
+                        VulnerabilityCriterion::CRITERION_DISABLED,
+                        VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL,
+                    ],
                 ],
             ],
             'incomeLevel' => 0,
@@ -194,7 +197,9 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(VulnerabilityCriterion::class)->findBy([], ['id' => 'asc'])[0];
+        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(
+            VulnerabilityCriterion::class
+        )->findBy([], ['id' => 'asc'])[0];
         $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
         $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([], ['id' => 'asc'])[0];
 

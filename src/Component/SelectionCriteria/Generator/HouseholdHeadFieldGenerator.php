@@ -19,8 +19,19 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
     public function generate(?string $countryIso3)
     {
         yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
-        yield new Field('headOfHouseholdDateOfBirth', 'Date of Birth', ['=', '<', '>', '<=', '>='], 'date', [self::class, 'validateDate']);
-        yield new Field('disabledHeadOfHousehold', VulnerabilityCriterion::all()[VulnerabilityCriterion::CRITERION_DISABLED], ['='], 'boolean');
+        yield new Field(
+            'headOfHouseholdDateOfBirth',
+            'Date of Birth',
+            ['=', '<', '>', '<=', '>='],
+            'date',
+            [self::class, 'validateDate']
+        );
+        yield new Field(
+            'disabledHeadOfHousehold',
+            VulnerabilityCriterion::all()[VulnerabilityCriterion::CRITERION_DISABLED],
+            ['='],
+            'boolean'
+        );
         yield new Field('hasValidSmartcard', 'Has valid card', ['='], 'boolean');
     }
 

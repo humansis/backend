@@ -140,7 +140,10 @@ class SmartcardService
                 $smartcard->setDisabledAt($updateSmartcardInputType->getCreatedAt());
             }
             if ($smartcard->isSuspicious() !== $updateSmartcardInputType->isSuspicious()) {
-                $smartcard->setSuspicious($updateSmartcardInputType->isSuspicious(), $updateSmartcardInputType->getSuspiciousReason());
+                $smartcard->setSuspicious(
+                    $updateSmartcardInputType->isSuspicious(),
+                    $updateSmartcardInputType->getSuspiciousReason()
+                );
             }
             $smartcard->setState($updateSmartcardInputType->getState());
             $smartcard->setChangedAt($updateSmartcardInputType->getCreatedAt());
@@ -162,7 +165,11 @@ class SmartcardService
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getActualSmartcardOrCreateNew($registerInputType->getSerialNumber(), $beneficiary, $registerInputType->getCreatedAt());
+        $smartcard = $this->getActualSmartcardOrCreateNew(
+            $registerInputType->getSerialNumber(),
+            $beneficiary,
+            $registerInputType->getCreatedAt()
+        );
         $this->checkSmartcardRegistrationDuplicity($smartcard, $registerInputType->getCreatedAt());
         $smartcard->setSuspicious(false, null);
         $smartcard->setRegisteredAt($registerInputType->getCreatedAt());
@@ -185,8 +192,10 @@ class SmartcardService
      * @return void
      * @throws SmartcardDoubledRegistrationException
      */
-    private function checkSmartcardRegistrationDuplicity(Smartcard $smartcard, DateTimeInterface $registrationDateTime): void
-    {
+    private function checkSmartcardRegistrationDuplicity(
+        Smartcard $smartcard,
+        DateTimeInterface $registrationDateTime
+    ): void {
         if (is_null($smartcard->getRegisteredAt())) {
             return;
         }
@@ -206,7 +215,9 @@ class SmartcardService
     public function purchase(string $serialNumber, $data): SmartcardPurchase
     {
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
-            throw new InvalidArgumentException('Argument 2 must be of type ' . SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class);
+            throw new InvalidArgumentException(
+                'Argument 2 must be of type ' . SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class
+            );
         }
         $beneficiary = $this->beneficiaryRepository->findOneBy([
             'id' => $data->getBeneficiaryId(),
@@ -221,8 +232,11 @@ class SmartcardService
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
-    public function getActualSmartcardOrCreateNew(string $serialNumber, ?Beneficiary $beneficiary, DateTimeInterface $dateOfEvent): Smartcard
-    {
+    public function getActualSmartcardOrCreateNew(
+        string $serialNumber,
+        ?Beneficiary $beneficiary,
+        DateTimeInterface $dateOfEvent
+    ): Smartcard {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
 
         if (
@@ -285,13 +299,19 @@ class SmartcardService
                 throw new InvalidArgumentException("Inconsistent vendor and purchase' #{$purchase->getId()} vendor");
             }
             if (null !== $purchase->getRedeemedAt()) {
-                throw new InvalidArgumentException("Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format('Y-m-d H:i:s'));
+                throw new InvalidArgumentException(
+                    "Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format(
+                        'Y-m-d H:i:s'
+                    )
+                );
             }
             if (null === $currency) {
                 $currency = $purchase->getCurrency();
             }
             if ($purchase->getCurrency() != $currency) {
-                throw new InvalidArgumentException("Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}");
+                throw new InvalidArgumentException(
+                    "Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}"
+                );
             }
             $extractedProjectId = $this->extractPurchaseProjectId($purchase);
             if (null === $extractedProjectId) {
@@ -349,7 +369,8 @@ class SmartcardService
             return null;
         }
 
-        return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId();
+        return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId(
+        );
     }
 
     /**
@@ -384,7 +405,9 @@ class SmartcardService
             }
         }
 
-        throw new LogicException('Unable to find currency for AssistanceBeneficiary #' . $assistanceBeneficiary->getId());
+        throw new LogicException(
+            'Unable to find currency for AssistanceBeneficiary #' . $assistanceBeneficiary->getId()
+        );
     }
 
     /**

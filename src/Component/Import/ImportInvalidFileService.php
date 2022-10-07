@@ -143,7 +143,9 @@ class ImportInvalidFileService
         /** @var ImportQueue $entry */
         foreach ($entries as $entry) {
             if ($entry->getState() !== ImportQueueState::INVALID) {
-                throw new InvalidArgumentException("Wrong ImportQueue state for export invalid items: " . $entry->getState());
+                throw new InvalidArgumentException(
+                    "Wrong ImportQueue state for export invalid items: " . $entry->getState()
+                );
             }
 
             $messages = $this->decodeMessages($entry->getMessage());
@@ -236,7 +238,10 @@ class ImportInvalidFileService
             if (isset($row[$column])) {
                 $cellValue = $row[$column][CellParameters::VALUE];
                 $dataType = $row[$column][CellParameters::DATA_TYPE];
-                $cellErrors = array_key_exists(CellParameters::ERRORS, $row[$column]) ? $row[$column][CellParameters::ERRORS] : null;
+                $cellErrors = array_key_exists(
+                    CellParameters::ERRORS,
+                    $row[$column]
+                ) ? $row[$column][CellParameters::ERRORS] : null;
                 $invalidCell = new InvalidCell($column, $cellValue, $dataType, $cellErrors);
                 $cell->setValueExplicit($invalidCell->getCellValue(), $invalidCell->getCellDataType());
                 $cell->getStyle()->getNumberFormat()->setFormatCode($row[$column][CellParameters::NUMBER_FORMAT]);

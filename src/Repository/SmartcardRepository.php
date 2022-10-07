@@ -42,8 +42,11 @@ class SmartcardRepository extends EntityRepository
         }
     }
 
-    public function disableBySerialNumber(string $serialNumber, string $state = SmartcardStates::REUSED, ?DateTimeInterface $timeOfEvent = null): void
-    {
+    public function disableBySerialNumber(
+        string $serialNumber,
+        string $state = SmartcardStates::REUSED,
+        ?DateTimeInterface $timeOfEvent = null
+    ): void {
         $this->createQueryBuilder('s')
             ->update()
             ->set('s.state', ':disableState')
@@ -75,7 +78,10 @@ class SmartcardRepository extends EntityRepository
             ->andWhere('s.state IN (:smartcardBlockedStates)')
             ->orderBy('s.id', 'desc')
             ->setParameter('countryCode', $countryCode)
-            ->setParameter('smartcardBlockedStates', [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]);
+            ->setParameter(
+                'smartcardBlockedStates',
+                [SmartcardStates::UNASSIGNED, SmartcardStates::INACTIVE, SmartcardStates::CANCELLED]
+            );
 
         return $qb->getQuery()->getResult('plain_values_hydrator');
     }

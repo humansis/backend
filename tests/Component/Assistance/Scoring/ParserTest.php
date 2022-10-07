@@ -44,7 +44,10 @@ class ParserTest extends KernelTestCase
             $this->assertContains($rule->getFieldName(), ScoringRulesCalculationsEnum::values());
 
             foreach ($rule->getOptions() as $option) {
-                $this->assertContains($option->getValue(), ScoringRuleCalculationOptionsEnum::SUPPORTED[$rule->getFieldName()]);
+                $this->assertContains(
+                    $option->getValue(),
+                    ScoringRuleCalculationOptionsEnum::SUPPORTED[$rule->getFieldName()]
+                );
             }
         }
     }

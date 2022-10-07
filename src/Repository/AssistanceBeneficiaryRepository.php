@@ -172,8 +172,18 @@ class AssistanceBeneficiaryRepository extends EntityRepository
                         break;
                     case BeneficiaryOrderInputType::SORT_BY_DISTRIBUTION_DATE:
                         $qb
-                            ->leftJoin(ReliefPackage::class, 'reliefPackage', 'WITH', 'reliefPackage.assistanceBeneficiary = db.id')
-                            ->leftJoin(SmartcardDeposit::class, 'smartcardDeposit', 'WITH', 'smartcardDeposit.reliefPackage = reliefPackage.id')
+                            ->leftJoin(
+                                ReliefPackage::class,
+                                'reliefPackage',
+                                'WITH',
+                                'reliefPackage.assistanceBeneficiary = db.id'
+                            )
+                            ->leftJoin(
+                                SmartcardDeposit::class,
+                                'smartcardDeposit',
+                                'WITH',
+                                'smartcardDeposit.reliefPackage = reliefPackage.id'
+                            )
                             ->orderBy('smartcardDeposit.distributedAt', $direction);
                         break;
                     default:
@@ -394,9 +404,16 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    public function getBeneficiaryReliefCompilation(Assistance $assistance, ?CountrySpecific $countrySpecific1, ?CountrySpecific $countrySpecific2)
-    {
-        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts($assistance, $countrySpecific1, $countrySpecific2);
+    public function getBeneficiaryReliefCompilation(
+        Assistance $assistance,
+        ?CountrySpecific $countrySpecific1,
+        ?CountrySpecific $countrySpecific2
+    ) {
+        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts(
+            $assistance,
+            $countrySpecific1,
+            $countrySpecific2
+        );
         $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
         foreach ($beneficiaryReliefData as $id => $relief) {
             $personId = $relief['personId'];
@@ -450,8 +467,11 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance, ?CountrySpecific $countrySpecific1, ?CountrySpecific $countrySpecific2)
-    {
+    private function getAssistanceBeneficiaryReliefAmounts(
+        Assistance $assistance,
+        ?CountrySpecific $countrySpecific1,
+        ?CountrySpecific $countrySpecific2
+    ) {
         $qb = $this->createQueryBuilder('db')
             ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
             ->addSelect("person.id as personId")
@@ -467,8 +487,18 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             ->leftJoin('bnf.person', 'person')
             ->leftJoin('db.reliefPackages', 'relief')
             ->leftJoin('bnf.household', 'household')
-            ->leftJoin('household.countrySpecificAnswers', 'countrySpecificAnswer1', Join::WITH, 'IDENTITY(countrySpecificAnswer1.countrySpecific) = :countrySpecificId1')
-            ->leftJoin('household.countrySpecificAnswers', 'countrySpecificAnswer2', Join::WITH, 'IDENTITY(countrySpecificAnswer2.countrySpecific) = :countrySpecificId2')
+            ->leftJoin(
+                'household.countrySpecificAnswers',
+                'countrySpecificAnswer1',
+                Join::WITH,
+                'IDENTITY(countrySpecificAnswer1.countrySpecific) = :countrySpecificId1'
+            )
+            ->leftJoin(
+                'household.countrySpecificAnswers',
+                'countrySpecificAnswer2',
+                Join::WITH,
+                'IDENTITY(countrySpecificAnswer2.countrySpecific) = :countrySpecificId2'
+            )
             ->andWhere('db.assistance = :assistance')
             ->andWhere('db.removed = :removed')
             ->andWhere('relief.modalityType = :modalityType')

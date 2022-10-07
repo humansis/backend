@@ -118,7 +118,10 @@ class ImportDuplicityTest extends KernelTestCase
         );
 
         // resolve all as duplicity on second import to update and continue
-        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE], ['id' => 'asc']);
+        $queue = $this->entityManager->getRepository(ImportQueue::class)->findBy(
+            ['import' => $import, 'state' => ImportQueueState::IDENTITY_CANDIDATE],
+            ['id' => 'asc']
+        );
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);
         $this->checkDuplicityEndpoint($import);

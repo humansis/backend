@@ -67,13 +67,20 @@ class HouseholdCompareMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . HouseholdCompare::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . HouseholdCompare::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     // livelihood
     public function getLivelihood(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getLivelihood(), $this->object->getImported()->getLivelihood());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getLivelihood(),
+            $this->object->getImported()->getLivelihood()
+        );
     }
 
     // assets
@@ -85,25 +92,37 @@ class HouseholdCompareMapper implements MapperInterface
     // shelterStatus
     public function getShelterStatus(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getShelterStatus(), $this->object->getImported()->getShelterStatus());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getShelterStatus(),
+            $this->object->getImported()->getShelterStatus()
+        );
     }
 
     // notes
     public function getNotes(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getNotes(), $this->object->getImported()->getNotes());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getNotes(),
+            $this->object->getImported()->getNotes()
+        );
     }
 
     // latitude
     public function getLatitude(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getLatitude(), $this->object->getImported()->getLatitude());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getLatitude(),
+            $this->object->getImported()->getLatitude()
+        );
     }
 
     // longitude
     public function getLongitude(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getLongitude(), $this->object->getImported()->getLongitude());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getLongitude(),
+            $this->object->getImported()->getLongitude()
+        );
     }
 
     // countrySpecificAnswers
@@ -112,7 +131,8 @@ class HouseholdCompareMapper implements MapperInterface
         $currentAnswers = [];
         /** @var CountrySpecificAnswer $specificAnswer */
         foreach ($this->object->getCurrent()->getCountrySpecificAnswers() as $specificAnswer) {
-            $currentAnswers[] = $specificAnswer->getCountrySpecific()->getFieldString() . ": " . $specificAnswer->getAnswer();
+            $currentAnswers[] = $specificAnswer->getCountrySpecific()
+                    ->getFieldString() . ": " . $specificAnswer->getAnswer();
         }
         $importedAnswers = [];
         foreach ($this->object->getImported()->getCountrySpecificAnswers() as $specificAnswer) {
@@ -126,19 +146,28 @@ class HouseholdCompareMapper implements MapperInterface
     // income
     public function getIncome(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getIncome(), $this->object->getImported()->getIncome());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getIncome(),
+            $this->object->getImported()->getIncome()
+        );
     }
 
     // foodConsumptionScore
     public function getFoodConsumptionScore(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getFoodConsumptionScore(), $this->object->getImported()->getFoodConsumptionScore());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getFoodConsumptionScore(),
+            $this->object->getImported()->getFoodConsumptionScore()
+        );
     }
 
     // copingStrategiesIndex
     public function getCopingStrategiesIndex(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getCopingStrategiesIndex(), $this->object->getImported()->getCopingStrategiesIndex());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getCopingStrategiesIndex(),
+            $this->object->getImported()->getCopingStrategiesIndex()
+        );
     }
 
     // householdLocations
@@ -151,7 +180,9 @@ class HouseholdCompareMapper implements MapperInterface
         }
         $importLocations = [];
         if ($this->object->getImported()->getTemporarySettlementAddress()) {
-            $locationName = $this->locationRepository->find($this->object->getImported()->getTemporarySettlementAddress()->getLocationId());
+            $locationName = $this->locationRepository->find(
+                $this->object->getImported()->getTemporarySettlementAddress()->getLocationId()
+            );
             $importLocations[] = HouseholdLocation::LOCATION_TYPE_SETTLEMENT . ": " .
                 implode(' ', [
                     $this->object->getImported()->getTemporarySettlementAddress()->getStreet(),
@@ -161,7 +192,9 @@ class HouseholdCompareMapper implements MapperInterface
                 ]);
         }
         if ($this->object->getImported()->getCampAddress()) {
-            $locationName = $this->locationRepository->find($this->object->getImported()->getCampAddress()->getCamp()->getLocationId());
+            $locationName = $this->locationRepository->find(
+                $this->object->getImported()->getCampAddress()->getCamp()->getLocationId()
+            );
             $importLocations[] = HouseholdLocation::LOCATION_TYPE_CAMP . ": " . implode(' ', [
                     $this->object->getImported()->getCampAddress()->getCamp()->getName(),
                     $this->object->getImported()->getCampAddress()->getTentNumber(),
@@ -191,42 +224,63 @@ class HouseholdCompareMapper implements MapperInterface
     // debtLevel
     public function getDebtLevel(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getDebtLevel(), $this->object->getImported()->getDebtLevel());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getDebtLevel(),
+            $this->object->getImported()->getDebtLevel()
+        );
     }
 
     // supportReceivedTypes
     public function getSupportReceivedTypes(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getSupportReceivedTypes(), $this->object->getImported()->getSupportReceivedTypes());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getSupportReceivedTypes(),
+            $this->object->getImported()->getSupportReceivedTypes()
+        );
     }
 
     // supportOrganizationName
     public function getSupportOrganizationName(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getSupportOrganizationName(), $this->object->getImported()->getSupportOrganizationName());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getSupportOrganizationName(),
+            $this->object->getImported()->getSupportOrganizationName()
+        );
     }
 
     // supportDateReceived
     public function getSupportDateReceived(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getSupportDateReceived(), $this->object->getImported()->getSupportDateReceived());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getSupportDateReceived(),
+            $this->object->getImported()->getSupportDateReceived()
+        );
     }
 
     // incomeSpentOnFood
     public function getIncomeSpentOnFood(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getIncomeSpentOnFood(), $this->object->getImported()->getIncomeSpentOnFood());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getIncomeSpentOnFood(),
+            $this->object->getImported()->getIncomeSpentOnFood()
+        );
     }
 
     // householdIncome
     public function getHouseholdIncome(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getHouseholdIncome(), $this->object->getImported()->getHouseIncome());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getHouseholdIncome(),
+            $this->object->getImported()->getHouseIncome()
+        );
     }
 
     // enumeratorName
     public function getEnumeratorName(): ?array
     {
-        return $this->compareScalarValue($this->object->getCurrent()->getEnumeratorName(), $this->object->getImported()->getEnumeratorName());
+        return $this->compareScalarValue(
+            $this->object->getCurrent()->getEnumeratorName(),
+            $this->object->getImported()->getEnumeratorName()
+        );
     }
 }

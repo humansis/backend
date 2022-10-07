@@ -653,7 +653,8 @@ class Project implements ExportableInterface
         $em = $args->getEntityManager();
         $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($project);
         if ($lastModifiedBnf) {
-            $totalLastModified = $lastModifiedBnf > $project->getLastModifiedAt() ? $lastModifiedBnf : $project->getLastModifiedAt();
+            $totalLastModified = $lastModifiedBnf > $project->getLastModifiedAt(
+            ) ? $lastModifiedBnf : $project->getLastModifiedAt();
         } else {
             $totalLastModified = $project->getLastModifiedAt();
         }
@@ -715,7 +716,12 @@ class Project implements ExportableInterface
     {
         foreach ($allowedProductCategoryTypes as $categoryType) {
             if (!in_array($categoryType, ProductCategoryType::values())) {
-                throw new InvalidArgumentException("$categoryType is not valid category type value. Allowed values: [" . implode(',', ProductCategoryType::values()) . ']');
+                throw new InvalidArgumentException(
+                    "$categoryType is not valid category type value. Allowed values: [" . implode(
+                        ',',
+                        ProductCategoryType::values()
+                    ) . ']'
+                );
             }
         }
 
@@ -735,8 +741,9 @@ class Project implements ExportableInterface
     /**
      * @param DateTimeInterface $lastModifiedAtIncludingBeneficiaries
      */
-    public function setLastModifiedAtIncludingBeneficiaries(DateTimeInterface $lastModifiedAtIncludingBeneficiaries): void
-    {
+    public function setLastModifiedAtIncludingBeneficiaries(
+        DateTimeInterface $lastModifiedAtIncludingBeneficiaries
+    ): void {
         $this->lastModifiedAtIncludingBeneficiaries = $lastModifiedAtIncludingBeneficiaries;
     }
 }

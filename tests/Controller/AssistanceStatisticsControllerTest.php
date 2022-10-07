@@ -56,7 +56,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
+            ->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
 
@@ -81,9 +82,16 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(['archived' => false], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(
+            ['archived' => false],
+            ['id' => 'asc']
+        )[0];
 
-        $this->request('GET', '/api/basic/web-app/v1/assistances/statistics?filter[id][]=' . $assistance->getId(), ['country' => 'KHM']);
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/assistances/statistics?filter[id][]=' . $assistance->getId(),
+            ['country' => 'KHM']
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -118,10 +126,13 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             ReliefPackageState::DISTRIBUTED,
             ReliefPackageState::EXPIRED,
         ]);
-        $expectedDistributed = $this->reliefPackageRepository->sumDistributedReliefPackagesAmountByAssistance($assistanceRoot, [
-            ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
-            ReliefPackageState::DISTRIBUTED,
-        ]);
+        $expectedDistributed = $this->reliefPackageRepository->sumDistributedReliefPackagesAmountByAssistance(
+            $assistanceRoot,
+            [
+                ReliefPackageState::DISTRIBUTION_IN_PROGRESS,
+                ReliefPackageState::DISTRIBUTED,
+            ]
+        );
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistanceRoot->getId() . '/statistics');
         $this->assertTrue(
@@ -161,7 +172,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         // remove BNF from assistance
         $this->request(
             'PUT',
-            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId() . '/assistances-beneficiaries',
+            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(
+            ) . '/assistances-beneficiaries',
             [
                 'beneficiaryIds' => [$reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getId()],
                 'justification' => 'test remove',
@@ -181,7 +193,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         // check statistics
         $this->request(
             'GET',
-            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId() . '/statistics'
+            '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(
+            ) . '/statistics'
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

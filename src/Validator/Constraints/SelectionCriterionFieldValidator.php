@@ -66,8 +66,11 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
             ->addViolation();
     }
 
-    private function validateCondition(SelectionCriterionField $constraint, Field $field, SelectionCriterionInputType $value)
-    {
+    private function validateCondition(
+        SelectionCriterionField $constraint,
+        Field $field,
+        SelectionCriterionInputType $value
+    ) {
         if (in_array($value->getCondition(), $field->getConditions(), true)) {
             return;
         }
@@ -80,8 +83,11 @@ class SelectionCriterionFieldValidator extends ConstraintValidator
             ->addViolation();
     }
 
-    private function validateValue(SelectionCriterionField $constraint, Field $field, SelectionCriterionInputType $value)
-    {
+    private function validateValue(
+        SelectionCriterionField $constraint,
+        Field $field,
+        SelectionCriterionInputType $value
+    ) {
         if ($field->isValid($value->getValue())) {
             return;
         }

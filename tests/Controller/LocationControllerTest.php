@@ -52,7 +52,10 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetUserCountriesAdmin()
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER)->getId() . '/countries');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER)->getId() . '/countries'
+        );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
@@ -75,7 +78,10 @@ class LocationControllerTest extends BMSServiceTestCase
 
     public function testGetUserCountriesNoAdmin(): void
     {
-        $this->request('GET', '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER_VENDOR)->getId() . '/countries');
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER_VENDOR)->getId() . '/countries'
+        );
         $result = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertTrue(

@@ -107,8 +107,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addPartiallyDistributed($partiallyDistributedId, $beneficiaryId = null, $idNumber = null): DistributeReliefPackagesOutputType
-    {
+    public function addPartiallyDistributed(
+        $partiallyDistributedId,
+        $beneficiaryId = null,
+        $idNumber = null
+    ): DistributeReliefPackagesOutputType {
         $this->partiallyDistributed[] = [
             'reliefPackageId' => $partiallyDistributedId,
             'beneficiaryId' => $beneficiaryId,
@@ -140,8 +143,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
      *
      * @return $this
      */
-    public function addAlreadyDistributed($alreadyDistributedId, $beneficiaryId = null, $idNumber = null): DistributeReliefPackagesOutputType
-    {
+    public function addAlreadyDistributed(
+        $alreadyDistributedId,
+        $beneficiaryId = null,
+        $idNumber = null
+    ): DistributeReliefPackagesOutputType {
         $this->alreadyDistributed[] = [
             'reliefPackageId' => $alreadyDistributedId,
             'beneficiaryId' => $beneficiaryId,

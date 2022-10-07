@@ -86,8 +86,12 @@ class SmartcardDepositService
      *
      * @return string
      */
-    public static function generateDepositHash(string $smartcardSerialNumber, int $timestamp, $value, ReliefPackage $reliefPackage): string
-    {
+    public static function generateDepositHash(
+        string $smartcardSerialNumber,
+        int $timestamp,
+        $value,
+        ReliefPackage $reliefPackage
+    ): string {
         return md5(
             $smartcardSerialNumber .
             '-' .
@@ -142,7 +146,10 @@ class SmartcardDepositService
                     $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
                     if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList(
+                            $reliefPackage,
+                            ReliefPackageTransitions::DISTRIBUTE
+                        );
 
                         $tbMessages = [];
                         /** @var TransitionBlocker $item */
@@ -218,7 +225,9 @@ class SmartcardDepositService
                 $user
             );
         } catch (DoubledDepositException $e) {
-            $this->logger->info("Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}");
+            $this->logger->info(
+                "Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}"
+            );
         }
     }
 

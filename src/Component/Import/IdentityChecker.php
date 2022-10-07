@@ -98,13 +98,20 @@ class IdentityChecker
         /** @var Beneficiary $candidate */
         foreach ($bnfDuplicityCandidates as $candidate) {
             foreach ($candidate->getPerson()->getNationalIds() as $currentNationalId) {
-                $IDsToFind->forItems($currentNationalId, function (ImportQueue $item, int $index, NationalId $nationalId) use ($import, $candidate) {
-                    $item->addDuplicity($index, $candidate, [['ID Type' => $nationalId->getIdType(), 'ID Number' => $nationalId->getIdNumber()]]);
-                    $this->logImportInfo(
-                        $import,
-                        "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$candidate->getId()}"
-                    );
-                });
+                $IDsToFind->forItems(
+                    $currentNationalId,
+                    function (ImportQueue $item, int $index, NationalId $nationalId) use ($import, $candidate) {
+                        $item->addDuplicity(
+                            $index,
+                            $candidate,
+                            [['ID Type' => $nationalId->getIdType(), 'ID Number' => $nationalId->getIdNumber()]]
+                        );
+                        $this->logImportInfo(
+                            $import,
+                            "Found duplicity with existing records: Queue#{$item->getId()} <=> Beneficiary#{$candidate->getId()}"
+                        );
+                    }
+                );
             }
         }
         /** @var ImportQueue $item */
@@ -192,7 +199,10 @@ class IdentityChecker
             );
 
             if (count($bnfDuplicities) > 0) {
-                $this->logImportInfo($item->getImport(), "Found " . count($bnfDuplicities) . " duplicities for $IDType $IDNumber");
+                $this->logImportInfo(
+                    $item->getImport(),
+                    "Found " . count($bnfDuplicities) . " duplicities for $IDType $IDNumber"
+                );
             } else {
                 $this->logImportDebug($item->getImport(), "Found no duplicities");
             }
@@ -258,7 +268,10 @@ class IdentityChecker
 
         foreach ($current->getContent() as $c) {
             /** @var ImportQueue[] $items */
-            $items = $this->entityManager->getRepository(ImportQueue::class)->findInContent($current->getImport(), (string) $c['ID Number']);
+            $items = $this->entityManager->getRepository(ImportQueue::class)->findInContent(
+                $current->getImport(),
+                (string) $c['ID Number']
+            );
             foreach ($items as $item) {
                 if ($item->getId() <= $current->getId()) {
                     continue;

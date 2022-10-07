@@ -36,8 +36,12 @@ class CustomValidatorTest extends KernelTestCase
     /**
      * @dataProvider data
      */
-    public function testValidate(?string $isoDate, ?string $importDate, ?string $countryISO, int $validationErrorExpectation)
-    {
+    public function testValidate(
+        ?string $isoDate,
+        ?string $importDate,
+        ?string $countryISO,
+        int $validationErrorExpectation
+    ) {
         $object = new TestDummyObject($isoDate, $importDate, $countryISO);
         $violations = $this->validator->validate($object);
         $this->assertCount($validationErrorExpectation, $violations);
@@ -61,8 +65,13 @@ class CustomValidatorTest extends KernelTestCase
     /**
      * @dataProvider dataWithGroups
      */
-    public function testValidateByGroup(string $groupName, ?string $isoDate, ?string $importDate, ?string $countryISO, int $validationErrorExpectation)
-    {
+    public function testValidateByGroup(
+        string $groupName,
+        ?string $isoDate,
+        ?string $importDate,
+        ?string $countryISO,
+        int $validationErrorExpectation
+    ) {
         $object = new TestGroupedObject($isoDate, $importDate, $countryISO);
         $violations = $this->validator->validate($object, null, $groupName);
         $this->assertCount($validationErrorExpectation, $violations);

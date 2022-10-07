@@ -43,7 +43,9 @@ class AuthController extends AbstractVendorAppController
         try {
             $vendor = $this->vendorService->getVendorByUser($user);
         } catch (NotFoundHttpException $ex) {
-            throw new AccessDeniedHttpException('User does not have assigned vendor. You cannot log-in into vendor app.');
+            throw new AccessDeniedHttpException(
+                'User does not have assigned vendor. You cannot log-in into vendor app.'
+            );
         }
 
         return $this->json($vendor, Response::HTTP_OK, [], ['login' => true]);

@@ -17,8 +17,13 @@ class SmartcardNotAllowedStateTransition extends SmartcardException
      */
     private $newState;
 
-    public function __construct(Smartcard $smartcard, string $newState, $message = "", $code = 0, Throwable $previous = null)
-    {
+    public function __construct(
+        Smartcard $smartcard,
+        string $newState,
+        $message = "",
+        $code = 0,
+        Throwable $previous = null
+    ) {
         parent::__construct($smartcard, $message, $code, $previous);
         $this->newState = $newState;
     }

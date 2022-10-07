@@ -30,8 +30,12 @@ class BookletController extends AbstractOfflineAppController
      *
      * @return JsonResponse
      */
-    public function list(Request $request, BookletFilterInputType $filter, Pagination $pagination, BookletOrderInputType $orderBy): JsonResponse
-    {
+    public function list(
+        Request $request,
+        BookletFilterInputType $filter,
+        Pagination $pagination,
+        BookletOrderInputType $orderBy
+    ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
             throw new BadRequestHttpException('Missing country header');

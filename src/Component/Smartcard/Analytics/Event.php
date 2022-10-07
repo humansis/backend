@@ -39,8 +39,13 @@ class Event implements JsonSerializable
      * @param array $additionalData
      * @param object $linkedObjects
      */
-    public function __construct(string $subject, string $action, DateTimeInterface $when, array $linkedObjects = [], array $additionalData = [])
-    {
+    public function __construct(
+        string $subject,
+        string $action,
+        DateTimeInterface $when,
+        array $linkedObjects = [],
+        array $additionalData = []
+    ) {
         $this->subject = $subject;
         $this->action = $action;
         $this->when = $when;

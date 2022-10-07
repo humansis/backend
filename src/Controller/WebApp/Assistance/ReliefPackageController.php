@@ -41,9 +41,15 @@ class ReliefPackageController extends AbstractWebAppController
      *
      * @return JsonResponse
      */
-    public function packages(Assistance $assistance, Request $request, ReliefPackageFilterInputType $filter): JsonResponse
-    {
-        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->findByAssistance($assistance, $filter);
+    public function packages(
+        Assistance $assistance,
+        Request $request,
+        ReliefPackageFilterInputType $filter
+    ): JsonResponse {
+        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->findByAssistance(
+            $assistance,
+            $filter
+        );
 
         $response = $this->json($reliefPackages);
         $response->setEtag(md5($response->getContent()));
@@ -101,7 +107,11 @@ class ReliefPackageController extends AbstractWebAppController
         Assistance $assistance,
         array $packages
     ): JsonResponse {
-        $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId($packages, $assistance, $this->getUser());
+        $result = $this->assistanceDistributionService->distributeByBeneficiaryIdAndAssistanceId(
+            $packages,
+            $assistance,
+            $this->getUser()
+        );
 
         return $this->json($result);
     }

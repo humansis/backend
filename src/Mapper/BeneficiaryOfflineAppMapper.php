@@ -38,7 +38,9 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -72,6 +74,7 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
 
     public function getReferralComment(): ?string
     {
-        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getComment() : null;
+        return $this->object->getPerson()->getReferral() ? $this->object->getPerson()->getReferral()->getComment(
+        ) : null;
     }
 }

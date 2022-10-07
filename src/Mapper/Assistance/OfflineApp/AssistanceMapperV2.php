@@ -34,7 +34,9 @@ class AssistanceMapperV2 implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -54,7 +56,9 @@ class AssistanceMapperV2 implements MapperInterface
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(DateTimeInterface::ATOM) : null;
+        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
+            DateTimeInterface::ATOM
+        ) : null;
     }
 
     public function getTargetType(): string

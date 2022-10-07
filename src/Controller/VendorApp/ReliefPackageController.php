@@ -23,7 +23,9 @@ class ReliefPackageController extends AbstractVendorAppController
     public function beneficiaries(Vendor $vendor, Request $request): JsonResponse
     {
         if (!$vendor->canDoRemoteDistributions()) {
-            throw $this->createAccessDeniedException("Vendor #{$vendor->getId()} is not allowed for remote distributions.");
+            throw $this->createAccessDeniedException(
+                "Vendor #{$vendor->getId()} is not allowed for remote distributions."
+            );
         }
 
         $reliefPackages = $this->getDoctrine()

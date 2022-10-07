@@ -31,7 +31,11 @@ class PaginationTest extends TestCase
     {
         $actual = (new Pagination($page, $size))->getOffset();
 
-        $this->assertSame($expected, $actual, sprintf('Offset should be %d for page %d and size %d', $expected, $page, $size));
+        $this->assertSame(
+            $expected,
+            $actual,
+            sprintf('Offset should be %d for page %d and size %d', $expected, $page, $size)
+        );
     }
 
     public function offsetCalculationProvider()

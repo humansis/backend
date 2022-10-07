@@ -36,7 +36,9 @@ class ReliefPackageMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -76,7 +78,12 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getFoodLimit(): ?string
     {
-        if (!in_array(ProductCategoryType::FOOD, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+        if (
+            !in_array(
+                ProductCategoryType::FOOD,
+                $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes()
+            )
+        ) {
             return '0.00';
         }
 
@@ -85,7 +92,12 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getNonfoodLimit(): ?string
     {
-        if (!in_array(ProductCategoryType::NONFOOD, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+        if (
+            !in_array(
+                ProductCategoryType::NONFOOD,
+                $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes()
+            )
+        ) {
             return '0.00';
         }
 
@@ -94,7 +106,12 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getCashbackLimit(): ?string
     {
-        if (!in_array(ProductCategoryType::CASHBACK, $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes())) {
+        if (
+            !in_array(
+                ProductCategoryType::CASHBACK,
+                $this->object->getAssistanceBeneficiary()->getAssistance()->getAllowedProductCategoryTypes()
+            )
+        ) {
             return '0.00';
         }
 

@@ -28,7 +28,9 @@ final class PathConstructor
         preg_match_all('/<<(.*?)>>/', $path, $matches);
 
         if (!empty($matches[1])) {
-            throw new InvalidArgumentException('Not all parameters for path were provided. Missing parameters: [' . join($matches[1], ' , ') . ']');
+            throw new InvalidArgumentException(
+                'Not all parameters for path were provided. Missing parameters: [' . join($matches[1], ' , ') . ']'
+            );
         }
 
         return $path;

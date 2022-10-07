@@ -64,9 +64,21 @@ class AssistanceBeneficiaryController extends AbstractController
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
         try {
-            $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
-            $output = $this->assistanceBeneficiaryService->prepareOutput($beneficiaries, $inputType->getDocumentNumbers(), $inputType->getDocumentType());
-            $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance($output, $assistance, $beneficiaries, $inputType->getJustification());
+            $beneficiaries = $this->beneficiaryRepository->findByIdentities(
+                $inputType->getDocumentNumbers(),
+                $inputType->getDocumentType()
+            );
+            $output = $this->assistanceBeneficiaryService->prepareOutput(
+                $beneficiaries,
+                $inputType->getDocumentNumbers(),
+                $inputType->getDocumentType()
+            );
+            $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance(
+                $output,
+                $assistance,
+                $beneficiaries,
+                $inputType->getJustification()
+            );
         } catch (ManipulationOverValidatedAssistanceException $e) {
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -90,9 +102,21 @@ class AssistanceBeneficiaryController extends AbstractController
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
         try {
-            $beneficiaries = $this->beneficiaryRepository->findByIdentities($inputType->getDocumentNumbers(), $inputType->getDocumentType());
-            $output = $this->assistanceBeneficiaryService->prepareOutput($beneficiaries, $inputType->getDocumentNumbers(), $inputType->getDocumentType());
-            $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance($output, $assistance, $beneficiaries, $inputType->getJustification());
+            $beneficiaries = $this->beneficiaryRepository->findByIdentities(
+                $inputType->getDocumentNumbers(),
+                $inputType->getDocumentType()
+            );
+            $output = $this->assistanceBeneficiaryService->prepareOutput(
+                $beneficiaries,
+                $inputType->getDocumentNumbers(),
+                $inputType->getDocumentType()
+            );
+            $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance(
+                $output,
+                $assistance,
+                $beneficiaries,
+                $inputType->getJustification()
+            );
         } catch (ManipulationOverValidatedAssistanceException $e) {
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -136,7 +160,9 @@ class AssistanceBeneficiaryController extends AbstractController
     {
         $operations = count($inputType->getDocumentNumbers());
         if ($operations >= self::MAX_ALLOWED_OPERATIONS) {
-            throw new BadRequestHttpException("This endpoint allows only to execute " . self::MAX_ALLOWED_OPERATIONS . " operations. You try to execute {$operations} operations.");
+            throw new BadRequestHttpException(
+                "This endpoint allows only to execute " . self::MAX_ALLOWED_OPERATIONS . " operations. You try to execute {$operations} operations."
+            );
         }
     }
 }

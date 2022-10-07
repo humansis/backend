@@ -41,7 +41,9 @@ class SelectionCriterionFieldMapper implements MapperInterface
             return;
         }
 
-        throw new InvalidArgumentException('Invalid argument. It should be instance of ' . Field::class . ', ' . get_class($object) . ' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Field::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getCode(): string

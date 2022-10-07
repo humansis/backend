@@ -90,8 +90,12 @@ class SmartcardPurchase
         $this->records = new ArrayCollection();
     }
 
-    public static function create(Smartcard $smartcard, Vendor $vendor, DateTimeInterface $createdAt, ?Assistance $assistance = null): SmartcardPurchase
-    {
+    public static function create(
+        Smartcard $smartcard,
+        Vendor $vendor,
+        DateTimeInterface $createdAt,
+        ?Assistance $assistance = null
+    ): SmartcardPurchase {
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;

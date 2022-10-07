@@ -28,7 +28,9 @@ abstract class AbstractEnum extends Type
     {
         if (null !== $value && !in_array($value, $this::all())) {
             $values = implode(', ', $this::all());
-            throw new InvalidArgumentException("Invalid '" . $this->getName() . "' value. Value '$value' is not in [$values]");
+            throw new InvalidArgumentException(
+                "Invalid '" . $this->getName() . "' value. Value '$value' is not in [$values]"
+            );
         }
 
         return $value;

@@ -63,7 +63,9 @@ class UploadImportHandler implements MessageHandlerInterface
                 $this->messageBus->dispatch(ImportCheck::checkUploadingComplete($importFile->getImport()));
             }
         } else {
-            $this->logger->warning("Import file {$uploadFile->getImportFileId()} upload was not finished because import file entity is not in database");
+            $this->logger->warning(
+                "Import file {$uploadFile->getImportFileId()} upload was not finished because import file entity is not in database"
+            );
         }
     }
 }

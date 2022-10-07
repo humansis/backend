@@ -52,7 +52,9 @@ class AuthControllerTest extends BMSServiceTestCase
             $user->setEmail('test-no-vendor@test.org');
             $user->setEmailCanonical('test-no-vendor@test.org');
             $user->setSalt('fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9');
-            $user->setPassword('WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw==');
+            $user->setPassword(
+                'WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw=='
+            );
             $user->setEnabled(true);
             $this->em->persist($user);
             $this->em->flush();
@@ -84,7 +86,10 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body));
 
         $responseBody = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertTrue($this->client->getResponse()->isSuccessful(), "Request failed: " . $this->client->getResponse()->getContent());
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            "Request failed: " . $this->client->getResponse()->getContent()
+        );
         $this->assertTrue(gettype($responseBody) == 'array');
         $this->assertArrayHasKey('id', $responseBody);
         $this->assertArrayHasKey('username', $responseBody);

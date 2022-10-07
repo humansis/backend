@@ -30,7 +30,11 @@ class CommonControllerTest extends BMSServiceTestCase
      */
     public function testGetSummaries()
     {
-        $this->request('GET', '/api/basic/web-app/v1/summaries?code[]=total_registrations&code[]=active_projects', ['country' => 'KHM']);
+        $this->request(
+            'GET',
+            '/api/basic/web-app/v1/summaries?code[]=total_registrations&code[]=active_projects',
+            ['country' => 'KHM']
+        );
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -130,8 +130,14 @@ class DivisionInputType implements InputTypeNullableDenormalizer
                 }
 
                 if (
-                    (($quantitySub->getRangeFrom() <= $quantity->getRangeFrom()) && ($quantity->getRangeFrom() <= $quantitySub->getRangeTo())) ||
-                    (($quantitySub->getRangeFrom() <= $quantity->getRangeTo()) && ($quantity->getRangeTo() <= $quantitySub->getRangeTo()))
+                    (
+                        ($quantitySub->getRangeFrom() <= $quantity->getRangeFrom())
+                        && ($quantity->getRangeFrom() <= $quantitySub->getRangeTo())
+                    )
+                    || (
+                        ($quantitySub->getRangeFrom() <= $quantity->getRangeTo())
+                        && ($quantity->getRangeTo() <= $quantitySub->getRangeTo())
+                    )
                 ) {
                     return false;
                 }

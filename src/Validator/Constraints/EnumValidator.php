@@ -25,17 +25,27 @@ class EnumValidator extends ConstraintValidator
         }
 
         if (!is_string($constraint->enumClass)) {
-            throw new InvalidArgumentException('Provided value for parameter "enumClass" has to be type string. Got ' . gettype($constraint->enumClass) . ' instead.');
+            throw new InvalidArgumentException(
+                'Provided value for parameter "enumClass" has to be type string. Got ' . gettype(
+                    $constraint->enumClass
+                ) . ' instead.'
+            );
         }
 
         if (!is_bool($constraint->includeAPIAlternatives)) {
-            throw new InvalidArgumentException('Provided value for parameter "includeAPIAlternatives" has to be type bool. Got ' . gettype($constraint->includeAPIAlternatives) . ' instead.');
+            throw new InvalidArgumentException(
+                'Provided value for parameter "includeAPIAlternatives" has to be type bool. Got ' . gettype(
+                    $constraint->includeAPIAlternatives
+                ) . ' instead.'
+            );
         }
 
         $hasEnumTrait = Reflection::hasTrait($constraint->enumClass, EnumTrait::class);
 
         if (!$hasEnumTrait) {
-            throw new InvalidArgumentException("Provided enum class '{$constraint->enumClass}' has to use '" . EnumTrait::class . "' trait.");
+            throw new InvalidArgumentException(
+                "Provided enum class '{$constraint->enumClass}' has to use '" . EnumTrait::class . "' trait."
+            );
         }
 
         $allowedValues = $constraint->enumClass::values();

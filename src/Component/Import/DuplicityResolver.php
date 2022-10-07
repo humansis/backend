@@ -81,7 +81,9 @@ class DuplicityResolver
                 ImportState::SIMILARITY_CHECK_FAILED,
             ])
         ) {
-            throw new BadMethodCallException('Unable to execute duplicity resolver. Import is not ready to duplicity resolve.');
+            throw new BadMethodCallException(
+                'Unable to execute duplicity resolver. Import is not ready to duplicity resolve.'
+            );
         }
 
         /** @var ImportHouseholdDuplicity[] $duplicities */
@@ -119,7 +121,10 @@ class DuplicityResolver
                 "Duplicity suspect(s) [" . implode(', ', $updates) . "] was resolved as more current duplicity"
             );
         } else {
-            $this->logQueueDebug($importQueue, "[Queue #{$importQueue->getId()}] Nothing was resolved as more current duplicity");
+            $this->logQueueDebug(
+                $importQueue,
+                "[Queue #{$importQueue->getId()}] Nothing was resolved as more current duplicity"
+            );
         }
         if (!empty($links)) {
             $this->logQueueInfo(

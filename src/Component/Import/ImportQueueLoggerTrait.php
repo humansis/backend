@@ -38,8 +38,11 @@ trait ImportQueueLoggerTrait
         $this->logger->error("[Import#{$import->getId()}][Queue#{$importQueue->getId()}] $message");
     }
 
-    protected function logQueueTransitionConstraints(WorkflowInterface $workflow, ImportQueue $importQueue, string $transition): void
-    {
+    protected function logQueueTransitionConstraints(
+        WorkflowInterface $workflow,
+        ImportQueue $importQueue,
+        string $transition
+    ): void {
         foreach ($workflow->buildTransitionBlockerList($importQueue, $transition) as $block) {
             $this->logQueueDebug($importQueue, " can't go to '$transition' because " . $block->getMessage());
         }

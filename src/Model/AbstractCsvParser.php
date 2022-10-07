@@ -74,7 +74,10 @@ abstract class AbstractCsvParser
         }
 
         if (!empty($missingColumns)) {
-            throw new CsvParserException($pathToCsv, 'CSV file has wrong structure (missing columns ' . implode(', ', $missingColumns) . ' )');
+            throw new CsvParserException(
+                $pathToCsv,
+                'CSV file has wrong structure (missing columns ' . implode(', ', $missingColumns) . ' )'
+            );
         }
     }
 

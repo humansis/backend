@@ -16,8 +16,12 @@ use Entity\Project;
 
 class ImportRepository extends EntityRepository
 {
-    public function findByParams(?string $countryIso3, ?Pagination $pagination = null, ?FilterInputType $filter = null, ?OrderInputType $orderBy = null): Paginator
-    {
+    public function findByParams(
+        ?string $countryIso3,
+        ?Pagination $pagination = null,
+        ?FilterInputType $filter = null,
+        ?OrderInputType $orderBy = null
+    ): Paginator {
         $qb = $this->createQueryBuilder('i');
         $qb->leftJoin('i.projects', 'p');
 

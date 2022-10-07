@@ -65,8 +65,11 @@ class AssistanceBeneficiaryService
      *
      * @return AssistanceBeneficiaryOperationOutputType
      */
-    public function prepareOutput(array $beneficiaries, array $documentNumbers, string $documentType): AssistanceBeneficiaryOperationOutputType
-    {
+    public function prepareOutput(
+        array $beneficiaries,
+        array $documentNumbers,
+        string $documentType
+    ): AssistanceBeneficiaryOperationOutputType {
         $output = new AssistanceBeneficiaryOperationOutputType($documentNumbers, $documentType);
         $beneficiaryIds = [];
         foreach ($beneficiaries as $beneficiary) {
@@ -102,13 +105,20 @@ class AssistanceBeneficiaryService
         ?ScoringProtocol $vulnerabilityScore = null
     ): AssistanceBeneficiaryOperationOutputType {
         if ($assistance->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException("It is not possible to add a beneficiary to validated and locked assistance");
+            throw new ManipulationOverValidatedAssistanceException(
+                "It is not possible to add a beneficiary to validated and locked assistance"
+            );
         }
 
         $assistanceBeneficiaries = [];
         foreach ($beneficiaries as $beneficiary) {
             try {
-                $assistanceBeneficiaries[] = $this->addAssistanceBeneficiary($assistance, $beneficiary, $justification, $vulnerabilityScore);
+                $assistanceBeneficiaries[] = $this->addAssistanceBeneficiary(
+                    $assistance,
+                    $beneficiary,
+                    $justification,
+                    $vulnerabilityScore
+                );
                 $output->addBeneficiarySuccess($beneficiary);
             } catch (Throwable $ex) {
                 $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
@@ -131,9 +141,15 @@ class AssistanceBeneficiaryService
      * @return AssistanceBeneficiary|object|null
      * @throws JsonException
      */
-    private function addAssistanceBeneficiary(Assistance $assistance, AbstractBeneficiary $beneficiary, ?string $justification = null, ?ScoringProtocol $vulnerabilityScore = null)
-    {
-        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+    private function addAssistanceBeneficiary(
+        Assistance $assistance,
+        AbstractBeneficiary $beneficiary,
+        ?string $justification = null,
+        ?ScoringProtocol $vulnerabilityScore = null
+    ) {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(
+            ['beneficiary' => $beneficiary, 'assistance' => $assistance]
+        );
         if (null === $assistanceBeneficiary) {
             $assistanceBeneficiary = (new AssistanceBeneficiary())
                 ->setAssistance($assistance)
@@ -188,7 +204,9 @@ class AssistanceBeneficiaryService
         string $justification
     ): AssistanceBeneficiaryOperationOutputType {
         if ($assistance->isValidated()) {
-            throw new ManipulationOverValidatedAssistanceException('It is not possible to remove a beneficiary from validated and locked assistance');
+            throw new ManipulationOverValidatedAssistanceException(
+                'It is not possible to remove a beneficiary from validated and locked assistance'
+            );
         }
 
         $targets = [];
@@ -222,9 +240,14 @@ class AssistanceBeneficiaryService
      *
      * @return AssistanceBeneficiary|null
      */
-    private function removeAssistanceBeneficiary(Assistance $assistance, Beneficiary $beneficiary, string $justification): ?AssistanceBeneficiary
-    {
-        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(['beneficiary' => $beneficiary, 'assistance' => $assistance]);
+    private function removeAssistanceBeneficiary(
+        Assistance $assistance,
+        Beneficiary $beneficiary,
+        string $justification
+    ): ?AssistanceBeneficiary {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(
+            ['beneficiary' => $beneficiary, 'assistance' => $assistance]
+        );
         if ($assistanceBeneficiary !== null) {
             if ($assistanceBeneficiary->getRemoved()) {
                 throw new BeneficiaryAlreadyRemovedException();
@@ -246,8 +269,12 @@ class AssistanceBeneficiaryService
      * @param string $justification
      *
      */
-    public function removeBeneficiaryFromAssistance(AssistanceBeneficiaryOperationOutputType $output, Assistance $assistance, AbstractBeneficiary $beneficiary, string $justification): void
-    {
+    public function removeBeneficiaryFromAssistance(
+        AssistanceBeneficiaryOperationOutputType $output,
+        Assistance $assistance,
+        AbstractBeneficiary $beneficiary,
+        string $justification
+    ): void {
         $this->removeBeneficiariesFromAssistance($output, $assistance, [$beneficiary], $justification);
     }
 
@@ -323,8 +350,10 @@ class AssistanceBeneficiaryService
      *
      * @return CommodityAssignBuilder
      */
-    private function addCommodityCallback(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
-    {
+    private function addCommodityCallback(
+        Commodity $commodity,
+        CommodityAssignBuilder $commodityBuilder
+    ): CommodityAssignBuilder {
         switch ($commodity->getDivision()) {
             case CommodityDivision::PER_HOUSEHOLD_MEMBER:
                 $commodityBuilder = $this->addCommodityCallbackPerHouseholdMember($commodity, $commodityBuilder);
@@ -334,7 +363,11 @@ class AssistanceBeneficiaryService
                 break;
             case CommodityDivision::PER_HOUSEHOLD:
             default:
-                $commodityBuilder->addCommodityValue($commodity->getModalityType(), $commodity->getUnit(), $commodity->getValue());
+                $commodityBuilder->addCommodityValue(
+                    $commodity->getModalityType(),
+                    $commodity->getUnit(),
+                    $commodity->getValue()
+                );
                 break;
         }
 
@@ -347,19 +380,25 @@ class AssistanceBeneficiaryService
      *
      * @return CommodityAssignBuilder
      */
-    private function addCommodityCallbackPerHouseholdMember(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
-    {
-        $commodityBuilder->addCommodityCallback($commodity->getModalityType(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
-            /** @var Household $household */
-            $household = $target->getBeneficiary();
+    private function addCommodityCallbackPerHouseholdMember(
+        Commodity $commodity,
+        CommodityAssignBuilder $commodityBuilder
+    ): CommodityAssignBuilder {
+        $commodityBuilder->addCommodityCallback(
+            $commodity->getModalityType(),
+            $commodity->getUnit(),
+            function (AssistanceBeneficiary $target) use ($commodity) {
+                /** @var Household $household */
+                $household = $target->getBeneficiary();
 
-            // fallback for HH assistances directed to HHHs
-            if ($household instanceof Beneficiary) {
-                $household = $household->getHousehold();
+                // fallback for HH assistances directed to HHHs
+                if ($household instanceof Beneficiary) {
+                    $household = $household->getHousehold();
+                }
+
+                return $commodity->getValue() * count($household->getBeneficiaries());
             }
-
-            return $commodity->getValue() * count($household->getBeneficiaries());
-        });
+        );
 
         return $commodityBuilder;
     }
@@ -370,26 +409,35 @@ class AssistanceBeneficiaryService
      *
      * @return CommodityAssignBuilder
      */
-    private function addCommodityCallbackPerHouseholdMembers(Commodity $commodity, CommodityAssignBuilder $commodityBuilder): CommodityAssignBuilder
-    {
-        $commodityBuilder->addCommodityCallback($commodity->getModalityType(), $commodity->getUnit(), function (AssistanceBeneficiary $target) use ($commodity) {
-            /** @var Household $household */
-            $household = $target->getBeneficiary();
+    private function addCommodityCallbackPerHouseholdMembers(
+        Commodity $commodity,
+        CommodityAssignBuilder $commodityBuilder
+    ): CommodityAssignBuilder {
+        $commodityBuilder->addCommodityCallback(
+            $commodity->getModalityType(),
+            $commodity->getUnit(),
+            function (AssistanceBeneficiary $target) use ($commodity) {
+                /** @var Household $household */
+                $household = $target->getBeneficiary();
 
-            // fallback for HH assistances directed to HHHs
-            if ($household instanceof Beneficiary) {
-                $household = $household->getHousehold();
-            }
-
-            $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
-            foreach ($commodity->getDivisionGroups() as $divisionGroup) {
-                if (($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))) {
-                    return (float) $divisionGroup->getValue();
+                // fallback for HH assistances directed to HHHs
+                if ($household instanceof Beneficiary) {
+                    $household = $household->getHousehold();
                 }
-            }
 
-            throw new LogicException("Division Group was not found.");
-        });
+                $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                    if (
+                        ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
+                        && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
+                    ) {
+                        return (float) $divisionGroup->getValue();
+                    }
+                }
+
+                throw new LogicException("Division Group was not found.");
+            }
+        );
 
         return $commodityBuilder;
     }

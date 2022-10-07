@@ -130,7 +130,10 @@ class FixAdmsCommand extends ContainerAwareCommand
                 $conn->executeQuery("UPDATE {$adm} SET name=? WHERE code=?", [$name, $code]);
             }
             if ($data['codePrev'] !== $codePrev) {
-                $conn->executeQuery("UPDATE {$adm} SET {$admPrev}_id=(SELECT id FROM {$admPrev} WHERE code=?) WHERE code=?", [$codePrev, $code]);
+                $conn->executeQuery(
+                    "UPDATE {$adm} SET {$admPrev}_id=(SELECT id FROM {$admPrev} WHERE code=?) WHERE code=?",
+                    [$codePrev, $code]
+                );
             }
         }
     }

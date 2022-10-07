@@ -150,7 +150,10 @@ class VendorRepository extends EntityRepository
                         throw new NotFoundHttpException("Location $locationId was not found");
                     }
                     $locations = array_unique(
-                        array_merge($locations, iterator_to_array($this->getChildrenLocationIdListByLocation($location))),
+                        array_merge(
+                            $locations,
+                            iterator_to_array($this->getChildrenLocationIdListByLocation($location))
+                        ),
                         SORT_REGULAR
                     );
                 }

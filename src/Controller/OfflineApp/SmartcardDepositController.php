@@ -109,7 +109,10 @@ class SmartcardDepositController extends AbstractOfflineAppController
         $beneficiaryId = $request->request->getInt('beneficiaryId');
 
         try {
-            $assistanceBeneficiary = $assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($assistanceId, $beneficiaryId);
+            $assistanceBeneficiary = $assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary(
+                $assistanceId,
+                $beneficiaryId
+            );
             if (null == $assistanceBeneficiary) {
                 throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
             }
@@ -127,7 +130,9 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 );
             }
             if (!$reliefPackage) {  // try to find any relief package for distribution
-                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary($assistanceBeneficiary);
+                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
+                    $assistanceBeneficiary
+                );
             }
 
             if (!$reliefPackage) {
@@ -179,8 +184,12 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function deposit(Request $request, string $serialNumber, DepositInputType $depositInputType, DepositFactory $depositFactory): Response
-    {
+    public function deposit(
+        Request $request,
+        string $serialNumber,
+        DepositInputType $depositInputType,
+        DepositFactory $depositFactory
+    ): Response {
         try {
             $depositFactory->create($serialNumber, $depositInputType, $this->getUser());
         } catch (NotFoundHttpException $e) {

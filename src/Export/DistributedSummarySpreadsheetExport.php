@@ -33,8 +33,11 @@ class DistributedSummarySpreadsheetExport
     /** @var DistributedItemRepository */
     private $repository;
 
-    public function __construct(TranslatorInterface $translator, Countries $countries, DistributedItemRepository $repository)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        Countries $countries,
+        DistributedItemRepository $repository
+    ) {
         $this->translator = $translator;
         $this->countries = $countries;
         $this->repository = $repository;
@@ -48,7 +51,9 @@ class DistributedSummarySpreadsheetExport
         }
 
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
-            throw new InvalidArgumentException('Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.');
+            throw new InvalidArgumentException(
+                'Invalid file type. Expected one of ods, xlsx, csv. ' . $filetype . ' given.'
+            );
         }
 
         $filename = sys_get_temp_dir() . '/summary.' . $filetype;
@@ -99,7 +104,11 @@ class DistributedSummarySpreadsheetExport
             ],
         ]);
 
-        $dateFormatter = new IntlDateFormatter($this->translator->getLocale(), IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+        $dateFormatter = new IntlDateFormatter(
+            $this->translator->getLocale(),
+            IntlDateFormatter::SHORT,
+            IntlDateFormatter::NONE
+        );
 
         $worksheet->setCellValue('A1', $this->translator->trans('Beneficiary ID'));
         $worksheet->setCellValue('B1', $this->translator->trans('Beneficiary Type'));
@@ -127,12 +136,16 @@ class DistributedSummarySpreadsheetExport
             $assistance = $distributedItem->getAssistance();
             $commodity = $distributedItem->getCommodity();
             $datetime = $distributedItem->getDateDistribution();
-            $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail() : null;
+            $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail(
+            ) : null;
             $fullLocation = self::adms($assistance);
 
             $i++;
             $worksheet->setCellValue('A' . $i, $beneficiary->getId());
-            $worksheet->setCellValue('B' . $i, $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual'));
+            $worksheet->setCellValue(
+                'B' . $i,
+                $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual')
+            );
             $worksheet->setCellValue('C' . $i, $beneficiary->getLocalGivenName());
             $worksheet->setCellValue('D' . $i, $beneficiary->getLocalFamilyName());
             $worksheet->setCellValue('E' . $i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
@@ -143,7 +156,10 @@ class DistributedSummarySpreadsheetExport
             $worksheet->setCellValue('J' . $i, $fullLocation[1]);
             $worksheet->setCellValue('K' . $i, $fullLocation[2]);
             $worksheet->setCellValue('L' . $i, $fullLocation[3]);
-            $worksheet->setCellValue('M' . $i, $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A'));
+            $worksheet->setCellValue(
+                'M' . $i,
+                $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A')
+            );
             $worksheet->setCellValue('N' . $i, $distributedItem->getModalityType());
             $worksheet->setCellValue('O' . $i, $distributedItem->getCarrierNumber() ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('P' . $i, $commodity->getValue());
