@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Controller\OfflineApp;
@@ -34,11 +35,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
      *
-     * @param Request                    $request
-     * @param Assistance                 $assistance
+     * @param Request $request
+     * @param Assistance $assistance
      * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param BeneficiaryOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -48,8 +49,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         BeneficiaryFilterInputType $filter,
         BeneficiaryOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -84,8 +84,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         BeneficiaryFilterInputType $filter,
         BeneficiaryOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if (!in_array($version, ['v3', 'v4'])) {
             throw $this->createNotFoundException("Endpoint in version $version is not supported");
         }
@@ -95,9 +94,20 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         }
 
         $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
-            ->findBeneficiariesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findBeneficiariesByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
-        $response = $this->json($assistanceBeneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => true, 'expanded' => true, 'version' => $version]);
+        $response = $this->json(
+            $assistanceBeneficiaries,
+            Response::HTTP_OK,
+            [],
+            [MapperInterface::OFFLINE_APP => true, 'expanded' => true, 'version' => $version]
+        );
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);
@@ -108,11 +118,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-institutions")
      *
-     * @param Request                    $request
-     * @param Assistance                 $assistance
+     * @param Request $request
+     * @param Assistance $assistance
      * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType  $orderBy
-     * @param Pagination                 $pagination
+     * @param InstitutionOrderInputType $orderBy
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -122,14 +132,19 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         InstitutionFilterInputType $filter,
         InstitutionOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
 
         $assistanceInstitutions = $this->assistanceBeneficiaryRepository
-            ->findInstitutionsByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findInstitutionsByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
         $response = $this->json($assistanceInstitutions, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
@@ -142,11 +157,11 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-communities")
      *
-     * @param Request                 $request
-     * @param Assistance              $assistance
-     * @param CommunityFilterType     $filter
+     * @param Request $request
+     * @param Assistance $assistance
+     * @param CommunityFilterType $filter
      * @param CommunityOrderInputType $orderBy
-     * @param Pagination              $pagination
+     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -156,14 +171,19 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         CommunityFilterType $filter,
         CommunityOrderInputType $orderBy,
         Pagination $pagination
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
 
         $assistanceCommunities = $this->assistanceBeneficiaryRepository
-            ->findCommunitiesByAssistance($assistance, $filter, $orderBy, $pagination, [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]);
+            ->findCommunitiesByAssistance(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+            );
 
         $response = $this->json($assistanceCommunities, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
@@ -172,5 +192,4 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
 
         return $response;
     }
-
 }
