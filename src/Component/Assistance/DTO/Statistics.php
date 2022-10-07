@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Component\Assistance\DTO;
 
@@ -45,9 +47,9 @@ class Statistics
     private $beneficiariesDeleted;
 
     /**
-     * @param int        $id
-     * @param int        $beneficiariesTotal
-     * @param int        $beneficiariesDeleted
+     * @param int $id
+     * @param int $beneficiariesTotal
+     * @param int $beneficiariesDeleted
      * @param float|null $amountDistributed
      * @param float|null $amountPickedUp
      * @param float|null $amountSent
@@ -55,9 +57,9 @@ class Statistics
      * @param float|null $amountUsed
      */
     public function __construct(
-        int    $id,
-        int    $beneficiariesTotal,
-        int    $beneficiariesDeleted,
+        int $id,
+        int $beneficiariesTotal,
+        int $beneficiariesDeleted,
         ?float $amountDistributed = null,
         ?float $amountPickedUp = null,
         ?float $amountSent = null,
@@ -201,5 +203,4 @@ class Statistics
     {
         $this->amountUsed = $amountUsed;
     }
-
 }

@@ -65,8 +65,9 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertJsonFragment('{
-            "id": '.$assistance->getId().',
+        $this->assertJsonFragment(
+            '{
+            "id": ' . $assistance->getId() . ',
             "beneficiariesTotal": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
@@ -74,7 +75,9 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             "amountSent": "*",
             "amountPickedUp": "*",
             "beneficiariesDeleted": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
 
     public function testList()

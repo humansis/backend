@@ -1,20 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
 use Component\Assistance\DTO\Statistics;
+use InvalidArgumentException;
 use Serializer\MapperInterface;
 
 class AssistanceStatisticsMapper implements MapperInterface
 {
-
     /** @var Statistics */
     private $object;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
         return $object instanceof Statistics && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
-
     }
 
     public function populate(object $object)
@@ -25,7 +26,9 @@ class AssistanceStatisticsMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.Statistics::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . Statistics::class . ', ' . get_class($object) . ' given.'
+        );
     }
 
     public function getId(): int
@@ -67,5 +70,4 @@ class AssistanceStatisticsMapper implements MapperInterface
     {
         return $this->object->getBeneficiariesDeleted();
     }
-
 }
