@@ -70,19 +70,19 @@ class AssistanceController extends AbstractController
      *
      * @param Request $request
      * @param AssistanceStatisticsFilterInputType $filter
-     * @param AssistanceQuery                     $assistanceQuery
-     * @param AssistanceRepository                $assistanceRepository
-     * @param AssistanceFactory                   $assistanceFactory
+     * @param AssistanceQuery $assistanceQuery
+     * @param AssistanceRepository $assistanceRepository
+     * @param AssistanceFactory $assistanceFactory
      *
      * @return JsonResponse
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function statistics(
-        Request                             $request,
+        Request $request,
         AssistanceStatisticsFilterInputType $filter,
-        AssistanceQuery                     $assistanceQuery,
-        AssistanceRepository                $assistanceRepository,
-        AssistanceFactory                   $assistanceFactory
+        AssistanceQuery $assistanceQuery,
+        AssistanceRepository $assistanceRepository,
+        AssistanceFactory $assistanceFactory
     ): JsonResponse {
         $countryIso3 = $request->headers->get('country', false);
         if (!$countryIso3) {
@@ -96,7 +96,7 @@ class AssistanceController extends AbstractController
             }
         } else {
             $assistanceInCountry = $assistanceRepository->findByCountryIso3($countryIso3);
-            foreach($assistanceInCountry as $assistance) {
+            foreach ($assistanceInCountry as $assistance) {
                 $assistanceDomain = $assistanceFactory->hydrate($assistance);
                 $statistics[] = $assistanceDomain->getStatistics($countryIso3);
             }
