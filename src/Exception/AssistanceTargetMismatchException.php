@@ -2,7 +2,8 @@
 
 namespace Exception;
 
-class AssistanceTargetMismatchException extends \InvalidArgumentException
-{
+use InvalidArgumentException;
 
+class AssistanceTargetMismatchException extends InvalidArgumentException
+{
 }

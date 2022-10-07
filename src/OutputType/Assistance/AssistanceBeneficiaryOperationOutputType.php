@@ -41,8 +41,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
      * @param array|null $documentNumbers
      * @param string|null $documentType
      */
-    public function __construct(TranslatorInterface $translator, array $documentNumbers = [], string $documentType = null)
-    {
+    public function __construct(
+        TranslatorInterface $translator,
+        array $documentNumbers = [],
+        string $documentType = null
+    ) {
         $this->documentNumbers = array_map(function ($number) {
             return strtolower($number);
         }, $documentNumbers);

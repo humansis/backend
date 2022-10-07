@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace InputType\Assistance;
@@ -12,13 +13,11 @@ use Validator\Constraints\Enum;
  */
 class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
 {
-
     /**
      * @Assert\Type("string")
      * @Assert\NotBlank
      */
     protected $justification;
-
 
     /**
      * @Assert\Type("array")
@@ -66,6 +65,7 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
         if (empty($this->documentNumbers)) {
             return true;
         }
+
         return $this->documentType !== null;
     }
 
@@ -150,5 +150,4 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     {
         return !empty($this->documentNumbers);
     }
-
 }

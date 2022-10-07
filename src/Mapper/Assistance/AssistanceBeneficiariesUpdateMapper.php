@@ -2,6 +2,7 @@
 
 namespace Mapper\Assistance;
 
+use InvalidArgumentException;
 use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
 use Serializer\MapperInterface;
 
@@ -23,7 +24,11 @@ class AssistanceBeneficiariesUpdateMapper implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.AssistanceBeneficiaryOperationOutputType::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiaryOperationOutputType::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 
     public function getNotFound(): array
