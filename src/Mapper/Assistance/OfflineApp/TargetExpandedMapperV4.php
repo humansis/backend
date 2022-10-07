@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mapper\Assistance\OfflineApp;
 
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\AssistanceBeneficiary;
+use InvalidArgumentException;
 use Mapper\MapperContextTrait;
 use Serializer\MapperInterface;
 use Entity\Voucher;
@@ -24,8 +27,7 @@ class TargetExpandedMapperV4 implements MapperInterface
             $this->isOfflineApp($context) &&
             isset($context['expanded']) &&
             true === $context['expanded'] &&
-            isset($context['version']) && $context['version'] === 'v4'
-            ;
+            isset($context['version']) && $context['version'] === 'v4';
     }
 
     public function getId(): int
@@ -43,8 +45,12 @@ class TargetExpandedMapperV4 implements MapperInterface
         $beneficiaryMapped['localFamilyName'] = $beneficiary->getPerson()->getLocalFamilyName();
         $beneficiaryMapped['localGivenName'] = $beneficiary->getPerson()->getLocalGivenName();
 
-        $beneficiaryMapped['referralType'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson()->getReferral()->getType() : null;
-        $beneficiaryMapped['referralComment'] = $beneficiary->getPerson()->getReferral() ? $beneficiary->getPerson()->getReferral()->getComment() : null;
+        $beneficiaryMapped['referralType'] = $beneficiary->getPerson()->getReferral()
+            ? $beneficiary->getPerson()->getReferral()->getType()
+            : null;
+        $beneficiaryMapped['referralComment'] = $beneficiary->getPerson()->getReferral()
+            ? $beneficiary->getPerson()->getReferral()->getComment()
+            : null;
 
         $beneficiaryMapped['nationalCardIds'] = $this->getNationalIds();
 
@@ -70,7 +76,9 @@ class TargetExpandedMapperV4 implements MapperInterface
 
     public function getDistributedAt(): ?string
     {
-        return $this->object->getSmartcardDistributedAt() ? $this->object->getSmartcardDistributedAt()->format(\DateTimeInterface::ATOM) : null;
+        return $this->object->getSmartcardDistributedAt()
+            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ATOM)
+            : null;
     }
 
     public function getCurrentSmartcardSerialNumber(): ?string
@@ -95,7 +103,7 @@ class TargetExpandedMapperV4 implements MapperInterface
                 'status' => $booklet->getStatus(),
                 'voucherValues' => $booklet->getVouchers()->map(function (Voucher $voucher) {
                     return $voucher->getValue();
-                })
+                }),
             ];
         }
 
@@ -110,6 +118,10 @@ class TargetExpandedMapperV4 implements MapperInterface
             return;
         }
 
-        throw new \InvalidArgumentException('Invalid argument. It should be instance of '.AssistanceBeneficiary::class.', '.get_class($object).' given.');
+        throw new InvalidArgumentException(
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class(
+                $object
+            ) . ' given.'
+        );
     }
 }
