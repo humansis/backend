@@ -14,6 +14,7 @@ use Entity\AssistanceBeneficiary;
 use Entity\User;
 use Enum\AssistanceTargetType;
 use Entity\DivisionGroup;
+use JsonException;
 use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
@@ -449,15 +450,20 @@ class Assistance
 
     /**
      * @param ReliefPackage $reliefPackage
-     * @param string        $transition
+     * @param string $transition
      *
      * @return void
      */
     private function applyReliefPackageTransition(ReliefPackage $reliefPackage, string $transition): void
     {
         if (!in_array($transition, ReliefPackageTransitions::getAll())) {
-            throw new \LogicException(sprintf('Transition %s is not defined in Relief Package transitions list. Allowed transitions are (%s).',
-                $transition, implode(',', ReliefPackageTransitions::getAll())));
+            throw new LogicException(
+                sprintf(
+                    'Transition %s is not defined in Relief Package transitions list. Allowed transitions are (%s).',
+                    $transition,
+                    implode(',', ReliefPackageTransitions::getAll())
+                )
+            );
         }
 
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
@@ -465,5 +471,4 @@ class Assistance
             $reliefPackageWorkflow->apply($reliefPackage, $transition);
         }
     }
-
 }
