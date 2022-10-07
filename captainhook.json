@@ -1,7 +1,7 @@
 {
   "config": {
     "run-mode": "docker",
-    "run-exec": "docker-compose -f $PWD/docker-compose.yml exec php"
+    "run-exec": "docker-compose -f $PWD/docker-compose.yml exec -T php"
   },
   "pre-commit": {
     "enabled": true,
