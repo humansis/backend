@@ -28,7 +28,7 @@ class LocationFilterInputType extends AbstractFilterInputType
      * @Assert\Type(type="integer")
      */
     protected $parent;
-    
+
     /**
      * @var string
      * @Assert\Type(type="string")
@@ -59,11 +59,9 @@ class LocationFilterInputType extends AbstractFilterInputType
     {
         return $this->has('enumNormalizedName');
     }
-    
+
     public function getEnumNormalizedName(): string
     {
         return $this->enumNormalizedName;
     }
-    
-    
 }

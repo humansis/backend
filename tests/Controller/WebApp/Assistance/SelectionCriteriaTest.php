@@ -11,6 +11,7 @@ use Entity\Assistance;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
 use Enum\ModalityType;
+use Enum\SelectionCriteriaTarget;
 use Repository\AssistanceRepository;
 use Exception;
 use Component\Assistance\Enum\CommodityDivision;
@@ -76,7 +77,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         $group = 0;
         $bornBefore2020 = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::BENEFICIARY,
+            'target' => SelectionCriteriaTarget::BENEFICIARY,
             'field' => 'dateOfBirth',
             'condition' => '<',
             'weight' => 1,
@@ -84,7 +85,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $femaleHead = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
             'field' => 'gender',
             'condition' => '=',
             'weight' => 1,
@@ -92,7 +93,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $femaleHeadLongString = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD_HEAD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD_HEAD,
             'field' => 'gender',
             'condition' => '=',
             'weight' => 1,
@@ -100,7 +101,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $hasAnyIncomeString = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'income',
             'condition' => '>',
             'weight' => 1,
@@ -108,7 +109,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $hasAnyIncomeInt = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'income',
             'condition' => '>',
             'weight' => 1,
@@ -116,7 +117,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $location = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'location',
             'condition' => '=',
             'weight' => 1,
@@ -124,7 +125,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $CSOEquityCard = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'equityCardNo',
             'condition' => '=',
             'weight' => 1,
@@ -132,7 +133,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $CSOFloatGtInt = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'CSO float property',
             'condition' => '>',
             'weight' => 1,
@@ -140,7 +141,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $CSOFloatLtFloat = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'CSO float property',
             'condition' => '<',
             'weight' => 1,
@@ -148,7 +149,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $CSOFloatGteFloat = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'CSO float property',
             'condition' => '>=',
             'weight' => 1,
@@ -156,7 +157,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         ];
         $workForGovernment = [
             'group' => $group++,
-            'target' => \Enum\SelectionCriteriaTarget::HOUSEHOLD,
+            'target' => SelectionCriteriaTarget::HOUSEHOLD,
             'field' => 'livelihood',
             'condition' => '=',
             'weight' => 1,
@@ -173,7 +174,21 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'CSO float property lower float value' => [$this->assistanceWithCriteria([$CSOFloatLtFloat])];
         yield 'CSO float property greater or equal float value' => [$this->assistanceWithCriteria([$CSOFloatGteFloat])];
         yield 'Livelihood for government' => [$this->assistanceWithCriteria([$workForGovernment])];
-        yield 'all in one' => [$this->assistanceWithCriteria([$location, $femaleHead, $bornBefore2020, $hasAnyIncomeInt, $CSOEquityCard, $CSOFloatGtInt, $CSOFloatLtFloat, $CSOFloatGteFloat, $workForGovernment])];
+        yield 'all in one' => [
+            $this->assistanceWithCriteria(
+                [
+                    $location,
+                    $femaleHead,
+                    $bornBefore2020,
+                    $hasAnyIncomeInt,
+                    $CSOEquityCard,
+                    $CSOFloatGtInt,
+                    $CSOFloatLtFloat,
+                    $CSOFloatGteFloat,
+                    $workForGovernment,
+                ]
+            ),
+        ];
     }
 
     /**
@@ -185,7 +200,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $this->assertJsonFragment(
@@ -198,7 +213,8 @@ class SelectionCriteriaTest extends BMSServiceTestCase
                 "value": "*"
                 }
              ]
-        }', $this->client->getResponse()->getContent(),
+        }',
+            $this->client->getResponse()->getContent(),
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         foreach ($contentArray['data'] as $summary) {
@@ -217,7 +233,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertGreaterThan(0, $contentArray['totalCount']);
@@ -232,7 +248,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
     }
 
@@ -245,10 +261,11 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $this->assertJsonFragment('{
+        $this->assertJsonFragment(
+            '{
             "id": "*",
             "name": "*",
             "dateDistribution": "*",
@@ -268,7 +285,8 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             "cashbackLimit": 1024,
             "allowedProductCategoryTypes": ["*"],
             "remoteDistributionAllowed": "*"
-        }', $this->client->getResponse()->getContent());
+        }',
+            $this->client->getResponse()->getContent()
+        );
     }
-
 }
