@@ -14,6 +14,7 @@ use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Component\Assistance\Scoring\RulesCalculation;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\RulesEnum;
+use Entity\VulnerabilityCriterion;
 use Enum\HouseholdShelterStatus;
 use Enum\PersonGender;
 use ReflectionClass;
@@ -168,13 +169,67 @@ class RulesComputationTest extends KernelTestCase
 
     public function testDependencyRatioSyr()
     {
-        $scoringRUle = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR, 'Dep. ratio syr');
-        //todo
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR, 'Dep. ratio syr');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH, 3));
+
+        $household = new Household();
+
+        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $workingAdult = new Beneficiary();
+        $workingAdult->getPerson()->setDateOfBirth((new DateTime())->modify('-30 years'));
+        $household->addBeneficiary($workingAdult);
+
+        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $this->assertEquals(2, $score);
+
+        $household->addBeneficiary(clone($workingAdult));
+
+        $child = new Beneficiary();
+        $child->getPerson()->setDateOfBirth((new DateTime())->modify('-15 years'));
+        $household->addBeneficiary($child);
+        $household->addBeneficiary(clone($child));
+        $household->addBeneficiary(clone($child));
+
+        // 2 adults, 3 children
+        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $this->assertEquals(2, $score);
+
+        // 2 adults, 4 children
+        $household->addBeneficiary(clone($child));
+        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $this->assertEquals(3, $score);
     }
 
     public function testVulnerabilityOfHeadOfHousehold()
     {
-        //todo
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD, 'Vulnerability of head of household');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INFANT, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::ELDERLY, 3));
+
+        $head = new Beneficiary();
+        $head->setHead();
+
+        $household = new Household();
+        $household->addBeneficiary($head);
+
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $this->assertEquals(0, $score);
+
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $head->getPerson()->setDateOfBirth((new DateTime())->modify('-15 year'));
+
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $this->assertEquals(3, $score);
     }
 
     public function testGenderOfHouseholdHead()

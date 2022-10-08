@@ -25,8 +25,6 @@ final class ScoringRuleCalculationOptionsEnum
     public const CHRONICALLY_ILL_OR_DISABLED = 'Chronically ill or Person with disability';
     public const INFANT = 'Infant';
     public const ELDERLY = 'Elderly';
-    public const NO_VULNERABILITY = 'No vulnerability';
-    public const OTHER = 'Other';
 
     public const DEPENDENCY_RATIO_SYR_ZERO_DIVISION = 'division by zero';
     public const DEPENDENCY_RATIO_SYR_LOW = '<=1.5';
@@ -63,8 +61,6 @@ final class ScoringRuleCalculationOptionsEnum
             self::CHRONICALLY_ILL_OR_DISABLED,
             self::INFANT,
             self::ELDERLY,
-            self::NO_VULNERABILITY,
-            self::OTHER,
         ],
 
         ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR => [
