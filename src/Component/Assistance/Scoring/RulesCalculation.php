@@ -137,10 +137,6 @@ final class RulesCalculation
     {
         $head = $household->getHouseholdHead();
 
-        if ($head->getVulnerabilityCriteria()->isEmpty()) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NO_VULNERABILITY)->getScore();
-        }
-
         $result = 0;
 
         if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
@@ -170,8 +166,7 @@ final class RulesCalculation
         $elders = 0;
         $adultsInWorkingAge = 0;
 
-        $adultsWithDisabilities = 0;
-        $adultsChronicallyIll = 0;
+        $adultsWithDisabilitiesOrChronicallyIll = 0;
 
         foreach ($household->getBeneficiaries() as $member) {
             if (is_null($member->getAge())) {
@@ -185,23 +180,21 @@ final class RulesCalculation
             } else { //the member is adult (in working age)
                 $adultsInWorkingAge++;
 
-                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
-                    $adultsWithDisabilities++;
-                }
-
-                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
-                    $adultsChronicallyIll++;
+                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+                    ) {
+                    $adultsWithDisabilitiesOrChronicallyIll++;
                 }
             }
         }
 
-        $denominator = $adultsInWorkingAge - $adultsWithDisabilities - $adultsChronicallyIll;
+        $denominator = $adultsInWorkingAge - $adultsWithDisabilitiesOrChronicallyIll;
 
         if ($denominator === 0) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
         }
 
-        $depRatio = ( $children + $elders + $adultsWithDisabilities + $adultsChronicallyIll ) / $denominator;
+        $depRatio = ( $children + $elders + $adultsWithDisabilitiesOrChronicallyIll) / $denominator;
 
         if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW)->getScore();
