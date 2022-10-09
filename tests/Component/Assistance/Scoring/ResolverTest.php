@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
 
+use Entity\CountrySpecific;
+use Entity\CountrySpecificAnswer;
 use Entity\Household;
 use Doctrine\Persistence\ObjectManager;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
-use Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
@@ -22,9 +23,6 @@ class ResolverTest extends KernelTestCase
     /** @var ObjectManager */
     private $objectManager;
 
-    /** @var ScoringFactory */
-    private $scoringFactory;
-
     public function __construct()
     {
         parent::__construct();
@@ -33,7 +31,6 @@ class ResolverTest extends KernelTestCase
 
         $this->resolver = $kernel->getContainer()->get(ScoringResolver::class);
         $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
-        $this->scoringFactory = $kernel->getContainer()->get(ScoringFactory::class);
     }
 
     public function testSimpleCountrySpecific(): void
@@ -54,5 +51,49 @@ class ResolverTest extends KernelTestCase
 
         $this->assertEquals(5, $protocol->getTotalScore());
         $this->assertEquals(5, $protocol->getScore('Test Rule'));
+    }
+
+    public function testCountrySpecificWithExpressionEvaluation()
+    {
+        /** @var Household $household */
+        $household = $this->objectManager->getRepository(Household::class)->findOneBy([]);
+
+        $CSO = new CountrySpecific('Test cso', 'number', 'SYR');
+        $CSO->setCountryIso3('SYR');
+
+        $countrySpecificAnswer = new CountrySpecificAnswer();
+        $countrySpecificAnswer->setCountrySpecific($CSO);
+        $countrySpecificAnswer->setHousehold($household);
+        $countrySpecificAnswer->setAnswer('5');
+
+        $this->objectManager->persist($CSO);
+        $this->objectManager->persist($countrySpecificAnswer);
+        $this->objectManager->flush();
+
+        $scoringRule = new ScoringRule(ScoringRuleType::COUNTRY_SPECIFIC, 'Test cso', 'Test Rule');
+        $scoringRule->addOption(new ScoringRuleOption('5', 1));
+        $scoringRule->addOption(new ScoringRuleOption('x < 5', 2));
+        $scoringRule->addOption(new ScoringRuleOption('x > 5', 3));
+
+        $scoring = new Scoring('Test scoring', [$scoringRule]);
+
+        $protocol = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(1, $protocol->getTotalScore());
+
+        $countrySpecificAnswer->setAnswer('4');
+        $this->objectManager->flush();
+
+        $protocol = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(2, $protocol->getTotalScore());
+
+        $countrySpecificAnswer->setAnswer('6');
+        $this->objectManager->flush();
+
+        $protocol = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(3, $protocol->getTotalScore());
+
+        $this->objectManager->remove($countrySpecificAnswer);
+        $this->objectManager->remove($CSO);
+        $this->objectManager->flush();
     }
 }

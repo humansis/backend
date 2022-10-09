@@ -15,6 +15,7 @@ use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class ScoringResolver
 {
@@ -138,9 +139,31 @@ final class ScoringResolver
             return 0;
         }
 
+        $expressionLanguage = new ExpressionLanguage();
+
         foreach ($scoringOptions as $option) {
-            if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
-                return $option->getScore();
+            if ($countrySpecific->getType() === 'number') { //evaluate option as expression
+                if (str_contains($option->getValue(), 'x')) {
+
+                    //Symfony\Component\ExpressionLanguage\SyntaxError
+                    $result = $expressionLanguage->evaluate($option->getValue(), [
+                        'x' => (int) $countrySpecificAnswer->getAnswer(),
+                    ]);
+
+                    if (is_bool($result) && $result) {
+                        return $option->getScore();
+                    }
+                } else {
+                    $result = $expressionLanguage->evaluate($option->getValue());
+
+                    if ((int) $countrySpecificAnswer->getAnswer() === $result) {
+                        return $option->getScore();
+                    }
+                }
+            } else {
+                if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
+                    return $option->getScore();
+                }
             }
         }
 
