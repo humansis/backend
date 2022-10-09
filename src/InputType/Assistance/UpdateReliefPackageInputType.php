@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateReliefPackageInputType implements InputTypeInterface
 {
-
     /**
      * @Enum(enumClass="Enum\ReliefPackageState")
      * @var string
@@ -21,7 +20,7 @@ class UpdateReliefPackageInputType implements InputTypeInterface
     private $amountDistributed;
 
     /**
-     *@Assert\Type(type="string")
+     * @Assert\Type(type="string")
      */
     private $notes;
 
@@ -72,7 +71,4 @@ class UpdateReliefPackageInputType implements InputTypeInterface
     {
         $this->notes = $notes;
     }
-
-
-
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Workflow;
 
-
 final class ReliefPackageTransitions
 {
     public const START_PARTIAL_DISTRIBUTION = 'Start partial distribution';
