@@ -22,6 +22,3 @@ calculation,dependencyRatioSyr,Dependency ratio,division by zero,"1
 "
 ,,,<=1.5,2
 ,,,>1.5,3
-calculation,numberOfOrphans,"Number of orphans
-",zero,1
-,,,one and more,2
