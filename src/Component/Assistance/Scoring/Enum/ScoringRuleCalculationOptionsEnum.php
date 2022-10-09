@@ -30,9 +30,6 @@ final class ScoringRuleCalculationOptionsEnum
     public const DEPENDENCY_RATIO_SYR_LOW = '<=1.5';
     public const DEPENDENCY_RATIO_SYR_HIGH = '>1.5';
 
-    public const NUMBER_OF_ORPHANS_ZERO = 'zero';
-    public const NUMBER_OF_ORPHANS_ONE_OR_MORE = 'one and more';
-
     public const SUPPORTED = [
         ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
             self::VULNERABILITY_SOLO_PARENT,
@@ -67,11 +64,6 @@ final class ScoringRuleCalculationOptionsEnum
             self::DEPENDENCY_RATIO_SYR_ZERO_DIVISION,
             self::DEPENDENCY_RATIO_SYR_LOW,
             self::DEPENDENCY_RATIO_SYR_HIGH,
-        ],
-
-        ScoringRulesCalculationsEnum::NUMBER_OF_ORPHANS => [
-            self::NUMBER_OF_ORPHANS_ZERO,
-            self::NUMBER_OF_ORPHANS_ONE_OR_MORE,
         ],
     ];
 }

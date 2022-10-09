@@ -203,24 +203,4 @@ final class RulesCalculation
 
         return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH)->getScore();
     }
-
-    public function numberOfOrphans(Household $household, ScoringRule $rule): float
-    {
-        /** @var CountrySpecificAnswer $countrySpecificAnswer */
-        foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
-            if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'Number of orphans') {
-                if ((int)$countrySpecificAnswer->getAnswer() === 0) {
-                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NUMBER_OF_ORPHANS_ZERO)->getScore();
-                } else {
-                    if ((int)$countrySpecificAnswer->getAnswer() > 0) {
-                        return $rule->getOptionByValue(
-                            ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE
-                        )->getScore();
-                    }
-                }
-            }
-        }
-
-        return 0;
-    }
 }

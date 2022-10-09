@@ -16,7 +16,6 @@ final class ScoringRulesCalculationsEnum
     public const GENDER_OF_HEAD_OF_HOUSEHOLD = 'genderOfHeadOfHousehold';
     public const VULNERABILITY_HEAD_OF_HOUSEHOLD = 'vulnerabilityHeadOfHousehold';
     public const DEPENDENCY_RATIO_SYR = 'dependencyRatioSyr';
-    public const NUMBER_OF_ORPHANS = 'numberOfOrphans';
 
     public static function values(): array
     {
@@ -28,7 +27,6 @@ final class ScoringRulesCalculationsEnum
             self::GENDER_OF_HEAD_OF_HOUSEHOLD,
             self::VULNERABILITY_HEAD_OF_HOUSEHOLD,
             self::DEPENDENCY_RATIO_SYR,
-            self::NUMBER_OF_ORPHANS,
         ];
     }
 }
