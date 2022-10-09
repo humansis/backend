@@ -139,8 +139,10 @@ final class RulesCalculation
 
         $result = 0;
 
-        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+        if (
+            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+        ) {
             $result += $rule->getOptionByValue(
                 ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
             )->getScore();
@@ -180,9 +182,10 @@ final class RulesCalculation
             } else { //the member is adult (in working age)
                 $adultsInWorkingAge++;
 
-                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+                if (
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
                     $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
-                    ) {
+                ) {
                     $adultsWithDisabilitiesOrChronicallyIll++;
                 }
             }
