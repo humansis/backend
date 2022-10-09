@@ -144,8 +144,6 @@ final class ScoringResolver
         foreach ($scoringOptions as $option) {
             if ($countrySpecific->getType() === 'number') { //evaluate option as expression
                 if (str_contains($option->getValue(), 'x')) {
-
-                    //Symfony\Component\ExpressionLanguage\SyntaxError
                     $result = $expressionLanguage->evaluate($option->getValue(), [
                         'x' => (int) $countrySpecificAnswer->getAnswer(),
                     ]);

@@ -20,7 +20,6 @@ use Utils\Floats;
  */
 final class RulesCalculation
 {
-
     public function dependencyRatioUkr(Household $household, ScoringRule $rule): float
     {
         $childAgeLimit = 17;
