@@ -25,13 +25,13 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testBeneficiaryAnalytics()
     {
-        $beneficiaryId = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $beneficiaryId = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/beneficiaries/'.$beneficiaryId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/beneficiaries/' . $beneficiaryId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
         $result = json_decode($this->client->getResponse()->getContent(), true);
@@ -42,13 +42,13 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardAnalytics()
     {
-        $smartcardId = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $smartcardId = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcard/'.$smartcardId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcard/' . $smartcardId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($result);
@@ -58,13 +58,13 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardsAnalytics()
     {
-        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id'=>'asc'])->getSerialNumber();
+        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getSerialNumber();
 
-        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcards/'.$smartcardSerialNumber);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcards/' . $smartcardSerialNumber);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($result);
@@ -74,13 +74,13 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testVendorAnalytics()
     {
-        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id'=>'asc'])->getId();
+        $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/vendors/'.$vendorId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/vendors/' . $vendorId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: '.$this->client->getResponse()->getContent()
+            'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $result = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertIsArray($result);
