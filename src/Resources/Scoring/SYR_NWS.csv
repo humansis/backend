@@ -14,8 +14,7 @@ calculation,dependencyRatioSyr,Dependency ratio,division by zero,1
 enum,HouseholdShelterStatus,Shelter type,Tent,1
 ,,,Makeshift Shelter,1
 ,,,Transitional Shelter,1
-,,,House/Apartment - Severely Damaged,"1
-"
+,,,House/Apartment - Severely Damaged,1
 ,,,House/Apartment - Moderately Damaged,1
 ,,,House/Apartment - Not Damaged,0
 ,,,Room or Space in Public Building,1
