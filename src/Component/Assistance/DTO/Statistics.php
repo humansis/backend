@@ -19,22 +19,7 @@ class Statistics
     /**
      * @var float|null
      */
-    private $amountPickedUp;
-
-    /**
-     * @var float|null
-     */
-    private $amountSent;
-
-    /**
-     * @var float|null
-     */
     private $amountTotal;
-
-    /**
-     * @var float|null
-     */
-    private $amountUsed;
 
     /**
      * @var int
@@ -47,33 +32,32 @@ class Statistics
     private $beneficiariesDeleted;
 
     /**
+     * @var int
+     */
+    private $beneficiariesReached;
+
+    /**
      * @param int $id
      * @param int $beneficiariesTotal
      * @param int $beneficiariesDeleted
+     * @param int $beneficiariesReached
      * @param float|null $amountDistributed
-     * @param float|null $amountPickedUp
-     * @param float|null $amountSent
      * @param float|null $amountTotal
-     * @param float|null $amountUsed
      */
     public function __construct(
         int $id,
         int $beneficiariesTotal,
         int $beneficiariesDeleted,
+        int $beneficiariesReached,
         ?float $amountDistributed = null,
-        ?float $amountPickedUp = null,
-        ?float $amountSent = null,
-        ?float $amountTotal = null,
-        ?float $amountUsed = null
+        ?float $amountTotal = null
     ) {
         $this->id = $id;
         $this->beneficiariesTotal = $beneficiariesTotal;
         $this->beneficiariesDeleted = $beneficiariesDeleted;
         $this->amountDistributed = $amountDistributed;
-        $this->amountPickedUp = $amountPickedUp;
-        $this->amountSent = $amountSent;
         $this->amountTotal = $amountTotal;
-        $this->amountUsed = $amountUsed;
+        $this->beneficiariesReached = $beneficiariesReached;
     }
 
     /**
@@ -106,38 +90,6 @@ class Statistics
     public function setAmountDistributed(?float $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getAmountPickedUp(): ?float
-    {
-        return $this->amountPickedUp;
-    }
-
-    /**
-     * @param float|null $amountPickedUp
-     */
-    public function setAmountPickedUp(?float $amountPickedUp): void
-    {
-        $this->amountPickedUp = $amountPickedUp;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getAmountSent(): ?float
-    {
-        return $this->amountSent;
-    }
-
-    /**
-     * @param float|null $amountSent
-     */
-    public function setAmountSent(?float $amountSent): void
-    {
-        $this->amountSent = $amountSent;
     }
 
     /**
@@ -189,18 +141,18 @@ class Statistics
     }
 
     /**
-     * @return float|null
+     * @return int
      */
-    public function getAmountUsed(): ?float
+    public function getBeneficiariesReached(): int
     {
-        return $this->amountUsed;
+        return $this->beneficiariesReached;
     }
 
     /**
-     * @param float|null $amountUsed
+     * @param int $beneficiariesReached
      */
-    public function setAmountUsed(?float $amountUsed): void
+    public function setBeneficiariesReached(int $beneficiariesReached): void
     {
-        $this->amountUsed = $amountUsed;
+        $this->beneficiariesReached = $beneficiariesReached;
     }
 }

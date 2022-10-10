@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Entity;
 
-use Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -61,6 +60,11 @@ class AssistanceStatistics
      */
     private $amountDeleted;
 
+    /**
+     * @ORM\Column(name="beneficiaries_reached", type="integer")
+     */
+    private $beneficiariesReached;
+
     public function getId(): int
     {
         return $this->id;
@@ -81,23 +85,13 @@ class AssistanceStatistics
         return null === $this->amountDistributed ? null : (float) $this->amountDistributed;
     }
 
-    public function getAmountUsed(): ?float
-    {
-        return null === $this->amountUsed ? null : (float) $this->amountUsed;
-    }
-
-    public function getAmountSent(): ?float
-    {
-        return null === $this->amountSent ? null : (float) $this->amountSent;
-    }
-
-    public function getAmountPickedUp(): ?float
-    {
-        return null === $this->amountPickedUp ? null : (float) $this->amountPickedUp;
-    }
-
     public function getAmountDeleted(): int
     {
         return $this->amountDeleted;
+    }
+
+    public function getBeneficiariesReached(): int
+    {
+        return $this->beneficiariesReached;
     }
 }

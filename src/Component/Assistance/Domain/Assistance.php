@@ -84,14 +84,13 @@ class Assistance
                 );
             }
 
-            return Statistics::create(
+            return new Statistics(
                 $statistics->getId(),
-                $statistics->getAmountDistributed(),
-                $statistics->getAmountPickedUp(),
-                $statistics->getAmountSent(),
-                $statistics->getAmountTotal(),
                 $statistics->getNumberOfBeneficiaries(),
-                $statistics->getAmountDeleted()
+                $statistics->getAmountDeleted(),
+                $statistics->getBeneficiariesReached(),
+                $statistics->getAmountDistributed(),
+                $statistics->getAmountTotal(),
             );
         });
     }
