@@ -1,12 +1,13 @@
 <?php
 
-namespace Controller\SupportApp;
+namespace Controller\SupportApp\Smartcard;
 
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Controller\AbstractController;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Entity\Smartcard;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
 use Repository\SmartcardRepository;
@@ -97,9 +98,9 @@ class SmartcardController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/{serialNumber}")
+     * @Rest\Patch("/{id}")
      *
-     * @param string $serialNumber
+     * @param Smartcard $smartcard
      * @param UpdateSmartcardInputType $updateSmartcardInputType
      * @param SmartcardService $smartcardService
      *
@@ -110,14 +111,14 @@ class SmartcardController extends AbstractController
      * @throws OptimisticLockException
      */
     public function update(
-        string $serialNumber,
+        Smartcard $smartcard,
         UpdateSmartcardInputType $updateSmartcardInputType,
         SmartcardService $smartcardService
     ): JsonResponse {
         $user = $this->tokenStorage->getToken()->getUser();
 
         if ($user->hasRole('ROLE_ADMIN')) {
-            $smartcard = $this->smartcardService->getSmartcardByCode($serialNumber);
+            $smartcard = $this->smartcardRepository->find($smartcard);
             $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
 
             return $this->json($smartcard);

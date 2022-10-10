@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Controller\WebApp\Smartcards;
+namespace Tests\Controller\SupportApp\Smartcard;
 
 use Entity\Beneficiary;
 use Exception;
@@ -27,7 +27,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
     {
         $beneficiaryId = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/web-app/v1/smartcard/analytics/beneficiary/' . $beneficiaryId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/beneficiaries/' . $beneficiaryId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -44,7 +44,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
     {
         $smartcardId = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/web-app/v1/smartcard/analytics/smartcard/' . $smartcardId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcard/' . $smartcardId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -58,11 +58,9 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardsAnalytics()
     {
-        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)
-            ->findOneBy([], ['id' => 'asc'])
-            ->getSerialNumber();
+        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getSerialNumber();
 
-        $this->request('GET', '/api/basic/web-app/v1/smartcard/analytics/smartcards/' . $smartcardSerialNumber);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcards/' . $smartcardSerialNumber);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -78,7 +76,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
     {
         $vendorId = $this->em->getRepository(Vendor::class)->findOneBy([], ['id' => 'asc'])->getId();
 
-        $this->request('GET', '/api/basic/web-app/v1/smartcard/analytics/vendor/' . $vendorId);
+        $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/vendors/' . $vendorId);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
