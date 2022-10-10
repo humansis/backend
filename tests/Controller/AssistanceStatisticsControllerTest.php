@@ -71,10 +71,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             "beneficiariesTotal": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
-            "amountUsed": "*",
-            "amountSent": "*",
-            "amountPickedUp": "*",
-            "beneficiariesDeleted": "*"
+            "beneficiariesDeleted": "*",
+            "beneficiariesReached": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -148,6 +146,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('beneficiariesTotal', $result);
         $this->assertArrayHasKey('beneficiariesDeleted', $result);
+        $this->assertArrayHasKey('beneficiariesReached', $result);
         $this->assertEquals((float) $expectedTotalSum, (float) $result['amountTotal']);
         $this->assertEquals((float) $expectedDistributed, (float) $result['amountDistributed']);
     }

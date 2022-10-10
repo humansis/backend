@@ -19,7 +19,6 @@ use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use Component\Assistance\CommodityAssignBuilder;
 use Component\Assistance\DTO\CommoditySummary;
@@ -109,11 +108,9 @@ class Assistance
                 $statistics->getId(),
                 $statistics->getNumberOfBeneficiaries(),
                 $statistics->getAmountDeleted(),
+                $statistics->getBeneficiariesReached(),
                 $statistics->getAmountDistributed(),
-                $statistics->getAmountPickedUp(),
-                $statistics->getAmountSent(),
                 $statistics->getAmountTotal(),
-                $statistics->getAmountUsed()
             );
         });
     }

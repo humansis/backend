@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Entity;
 
-use Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -47,28 +46,16 @@ class AssistanceStatistics
     private $amountDistributed;
 
     /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private $amountUsed;
-
-    /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private $amountSent;
-
-    /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private $amountPickedUp;
-
-    /**
      * @var int
      * @ORM\Column(name="amount_deleted", type="integer")
      */
     private $amountDeleted;
+
+    /**
+     * @var int
+     * @ORM\Column(name="beneficiaries_reached", type="integer")
+     */
+    private $beneficiariesReached;
 
     /**
      * @return int
@@ -103,34 +90,18 @@ class AssistanceStatistics
     }
 
     /**
-     * @return float|null
-     */
-    public function getAmountUsed(): ?float
-    {
-        return null === $this->amountUsed ? null : (float) $this->amountUsed;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getAmountSent(): ?float
-    {
-        return null === $this->amountSent ? null : (float) $this->amountSent;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getAmountPickedUp(): ?float
-    {
-        return null === $this->amountPickedUp ? null : (float) $this->amountPickedUp;
-    }
-
-    /**
      * @return int
      */
     public function getAmountDeleted(): int
     {
         return $this->amountDeleted;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBeneficiariesReached(): int
+    {
+        return $this->beneficiariesReached;
     }
 }
