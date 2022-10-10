@@ -622,9 +622,8 @@ class AssistanceService
      */
     public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type): string
     {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance(
-            $assistance
-        );
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
+            ->findByAssistance($assistance);
 
         /** @var ReliefPackage[] $packages */
         $packages = [];
@@ -644,17 +643,19 @@ class AssistanceService
             $commonFields = $beneficiary->getCommonExportFields();
 
             $exportableTable[] = array_merge($commonFields, [
-                    $this->translator->trans("Commodity") => $commodityNames,
-                    $this->translator->trans("Value") => $relief->getAmountToDistribute(),
-                    $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
-                    $this->translator->trans("Unit") => $relief->getUnit(),
-                    $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
-                    $this->translator->trans("Notes Distribution") => $relief->getNotes(),
-                    $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved(
-                    ) ? 'Yes' : 'No',
-                    $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary(
-                    )->getJustification(),
-                ]);
+                $this->translator->trans("Commodity") => $commodityNames,
+                $this->translator->trans("To distribute") => $relief->getAmountToDistribute(),
+                $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
+                $this->translator->trans("Unit") => $relief->getUnit(),
+                $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
+                $this->translator->trans("Notes Distribution") => $relief->getNotes(),
+                $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved()
+                    ? 'Yes'
+                    : 'No',
+                $this->translator->trans("Justification for adding/removing") => $relief
+                    ->getAssistanceBeneficiary()
+                    ->getJustification(),
+            ]);
         }
 
         return $this->exportService->export($exportableTable, 'relief', $type);
@@ -708,18 +709,17 @@ class AssistanceService
             $products = implode(', ', array_unique($products));
 
             $exportableTable[] = array_merge($commonFields, [
-                    $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
-                    $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
-                    $this->translator->trans("Value") => $transactionBooklet ? $transactionBooklet->getTotalValue(
-                    ) . ' ' . $transactionBooklet->getCurrency() : null,
-                    $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt(
-                    ) : null,
-                    $this->translator->trans("Purchased items") => $products,
-                    $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                    $this->translator->trans(
-                        "Justification for adding/removing"
-                    ) => $assistanceBeneficiary->getJustification(),
-                ]);
+                $this->translator->trans("Booklet") => $transactionBooklet ? $transactionBooklet->getCode() : null,
+                $this->translator->trans("Status") => $transactionBooklet ? $transactionBooklet->getStatus() : null,
+                $this->translator->trans("Value") => $transactionBooklet
+                    ? $transactionBooklet->getTotalValue() . ' ' . $transactionBooklet->getCurrency()
+                    : null,
+                $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
+                $this->translator->trans("Purchased items") => $products,
+                $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
+                $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary
+                    ->getJustification(),
+            ]);
         }
 
         return $this->exportService->export($exportableTable, 'qrVouchers', $type);
