@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils;
 
@@ -11,16 +13,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 interface ExportTableServiceInterface
 {
-
     /**
      * return spreadsheet as StreamedResponse
      *
      * @param        $exportableTable
      * @param string $name
      * @param string $format
-     * @param bool   $headerDown
-     * @param bool   $headerBold
-     * @param bool   $headerFontItalic
+     * @param bool $headerDown
+     * @param bool $headerBold
+     * @param bool $headerFontItalic
      *
      * @return StreamedResponse
      */
@@ -30,5 +31,6 @@ interface ExportTableServiceInterface
         string $format,
         bool $headerDown = false,
         bool $headerBold = false,
-        bool $headerFontItalic = false): StreamedResponse;
+        bool $headerFontItalic = false
+    ): StreamedResponse;
 }
