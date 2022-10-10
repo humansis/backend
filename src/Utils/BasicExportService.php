@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils;
 
@@ -7,11 +9,9 @@ use OpenSpout\Common\Entity\Style\Style;
 
 class BasicExportService
 {
-    const FORMAT_CSV = 'csv';
-    const FORMAT_XLSX = 'xlsx';
-    const FORMAT_ODS = 'ods';
-
-
+    public const FORMAT_CSV = 'csv';
+    public const FORMAT_XLSX = 'xlsx';
+    public const FORMAT_ODS = 'ods';
 
     /**
      * Return list of header names.
@@ -54,8 +54,7 @@ class BasicExportService
         if ($isItalic) {
             $style->setFontItalic();
         }
+
         return $style;
     }
-
-
 }
