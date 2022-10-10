@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Utils;
 
@@ -10,7 +12,6 @@ use Enum\PersonGender;
 
 class BeneficiaryTransformData
 {
-
     /**
      * Returns an array representation of beneficiaries in order to prepare the export
      *
@@ -89,10 +90,12 @@ class BeneficiaryTransformData
                 $finalArray = array_merge(
                     ["household ID" => $beneficiary->getHousehold()->getId()],
                     $householdFields,
-                    ["adm1" => $adm1,
+                    [
+                        "adm1" => $adm1,
                         "adm2" => $adm2,
                         "adm3" => $adm3,
-                        "adm4" => $adm4]
+                        "adm4" => $adm4,
+                    ]
                 );
             } else {
                 $finalArray = [
@@ -128,7 +131,8 @@ class BeneficiaryTransformData
 
             $shelterStatus = '';
             if ($beneficiary->getHousehold()->getShelterStatus()) {
-                $shelterStatus = $beneficiary->getHousehold()->getShelterStatus() ? $beneficiary->getHousehold()->getShelterStatus() : '';
+                $shelterStatus = $beneficiary->getHousehold()->getShelterStatus() ? $beneficiary->getHousehold(
+                )->getShelterStatus() : '';
             }
 
             $tempBenef = [
@@ -156,7 +160,8 @@ class BeneficiaryTransformData
                 "Shelter Status" => $shelterStatus,
                 "Debt Level" => $beneficiary->getHousehold()->getDebtLevel(),
                 "Support Received Types" => implode(', ', $supportReceivedTypes),
-                "Support Date Received" => $beneficiary->getHousehold()->getSupportDateReceived() ? $beneficiary->getHousehold()->getSupportDateReceived()->format('d-m-Y') : null,
+                "Support Date Received" => $beneficiary->getHousehold()->getSupportDateReceived(
+                ) ? $beneficiary->getHousehold()->getSupportDateReceived()->format('d-m-Y') : null,
             ];
 
             foreach ($valueCountrySpecific as $key => $value) {
@@ -171,5 +176,4 @@ class BeneficiaryTransformData
 
         return $exportableTable;
     }
-
 }
