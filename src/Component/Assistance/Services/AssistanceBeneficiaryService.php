@@ -255,6 +255,8 @@ class AssistanceBeneficiaryService
                 } else {
                     $output->addBeneficiaryNotFound($beneficiary);
                 }
+            } catch (AssistanceTargetMismatchException $ex) {
+                $output->addBeneficiaryMismatch($beneficiary);
             } catch (BeneficiaryAlreadyRemovedException $ex) {
                 $output->addBeneficiaryAlreadyRemoved($beneficiary);
             } catch (Throwable $ex) {
@@ -281,6 +283,12 @@ class AssistanceBeneficiaryService
         Beneficiary $beneficiary,
         string $justification
     ): ?AssistanceBeneficiary {
+        if (
+            $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD
+            && !$beneficiary->isHead()
+        ) {
+            throw new AssistanceTargetMismatchException();
+        }
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(
             ['beneficiary' => $beneficiary, 'assistance' => $assistance]
         );

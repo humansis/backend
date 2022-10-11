@@ -5330,6 +5330,10 @@ the donation of the below specified items from People in Need.</target>
         <source>was not found in the assistance.</source>
         <target>was not found in the assistance.</target>
       </trans-unit>
+      <trans-unit id="LYBptc1" resname="cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.">
+        <source>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
+        <target>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
