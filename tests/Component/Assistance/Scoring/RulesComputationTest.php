@@ -169,23 +169,23 @@ class RulesComputationTest extends KernelTestCase
         $this->assertEquals(0, $result);
     }
 
-    public function testDependencyRatioSyr()
+    public function testDependencyRatioSyrNWS()
     {
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR, 'Dep. ratio syr');
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR_NWS, 'Dep. ratio syr');
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION, 1));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW, 2));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH, 3));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_LOW, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_HIGH, 3));
 
         $household = new Household();
 
-        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $score = $this->rulesCalculation->dependencyRatioSyrNWS($household, $scoringRule);
         $this->assertEquals(1, $score);
 
         $workingAdult = new Beneficiary();
         $workingAdult->getPerson()->setDateOfBirth((new DateTime())->modify('-30 years'));
         $household->addBeneficiary($workingAdult);
 
-        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $score = $this->rulesCalculation->dependencyRatioSyrNWS($household, $scoringRule);
         $this->assertEquals(2, $score);
 
         $household->addBeneficiary(clone($workingAdult));
@@ -197,12 +197,12 @@ class RulesComputationTest extends KernelTestCase
         $household->addBeneficiary(clone($child));
 
         // 2 adults, 3 children
-        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $score = $this->rulesCalculation->dependencyRatioSyrNWS($household, $scoringRule);
         $this->assertEquals(2, $score);
 
         // 2 adults, 4 children
         $household->addBeneficiary(clone($child));
-        $score = $this->rulesCalculation->dependencyRatioSyr($household, $scoringRule);
+        $score = $this->rulesCalculation->dependencyRatioSyrNWS($household, $scoringRule);
         $this->assertEquals(3, $score);
     }
 

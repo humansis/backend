@@ -7,7 +7,7 @@ calculation,vulnerabilityHeadOfHousehold,Vulnerability Head of Household,Chronic
 ,,,Infant,1
 ,,,Elderly,4
 ,,,,
-calculation,dependencyRatioSyr,Dependency ratio,division by zero,1
+calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1
 ,,,<=1.5,0
 ,,,>1.5,1
 ,,,,

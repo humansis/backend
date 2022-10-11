@@ -96,6 +96,9 @@ final class RulesCalculation
         return $totalScore;
     }
 
+    /**
+     * @deprecated This functionality could be easily replaced with CSO interval functionality
+     */
     public function noOfChronicallyIll(Household $household, ScoringRule $rule): float
     {
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
@@ -131,34 +134,6 @@ final class RulesCalculation
             default:
                 return 0;
         }
-    }
-
-    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): float
-    {
-        $head = $household->getHouseholdHead();
-
-        if ($head->getVulnerabilityCriteria()->isEmpty()) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NO_VULNERABILITY)->getScore();
-        }
-
-        $result = 0;
-
-        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
-            $result += $rule->getOptionByValue(
-                ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
-            )->getScore();
-        }
-
-        if ($head->getAge() !== null && $head->getAge() < 18) {
-            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
-        }
-
-        if ($head->getAge() !== null && $head->getAge() > 59) {
-            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
-        }
-
-        return $result;
     }
 
     public function dependencyRatioSyrNWS(Household $household, ScoringRule $rule): float
@@ -210,8 +185,7 @@ final class RulesCalculation
         $elders = 0;
         $adultsInWorkingAge = 0;
 
-        $adultsWithDisabilities = 0;
-        $adultsChronicallyIll = 0;
+        $adultsWithDisabilitiesOrChronicallyIll = 0;
 
         foreach ($household->getBeneficiaries() as $member) {
             if (is_null($member->getAge())) {
@@ -225,43 +199,22 @@ final class RulesCalculation
             } else { //the member is adult (in working age)
                 $adultsInWorkingAge++;
 
-                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
-                    $adultsWithDisabilities++;
-                }
-
-                if ($member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
-                    $adultsChronicallyIll++;
+                if (
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+                ) {
+                    $adultsWithDisabilitiesOrChronicallyIll++;
                 }
             }
         }
 
-        $denominator = $adultsInWorkingAge - $adultsWithDisabilities - $adultsChronicallyIll;
+        $denominator = $adultsInWorkingAge - $adultsWithDisabilitiesOrChronicallyIll;
 
         if ($denominator === 0) {
             return null;
         }
 
-        return ( $children + $elders + $adultsWithDisabilities + $adultsChronicallyIll ) / $denominator;
-    }
-
-    public function numberOfOrphans(Household $household, ScoringRule $rule): float
-    {
-        /** @var CountrySpecificAnswer $countrySpecificAnswer */
-        foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
-            if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'Number of orphans') {
-                if ((int)$countrySpecificAnswer->getAnswer() === 0) {
-                    return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::NUMBER_OF_ORPHANS_ZERO)->getScore();
-                } else {
-                    if ((int)$countrySpecificAnswer->getAnswer() > 0) {
-                        return $rule->getOptionByValue(
-                            ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_TWO_OR_MORE
-                        )->getScore();
-                    }
-                }
-            }
-        }
-
-        return 0;
+        return ( $children + $elders + $adultsWithDisabilitiesOrChronicallyIll ) / $denominator;
     }
 
     public function incomeSpentOnFood(Household $household, ScoringRule $rule): float
@@ -305,25 +258,6 @@ final class RulesCalculation
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95)->getScore();
         } else {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF)->getScore();
-        }
-
-    }
-}
-
-    //could be easily done with enums calculation, once all enums are refactored
-    public function genderOfHeadOfHousehold(Household $household, ScoringRule $rule): float
-    {
-        $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
-
-        switch ($hhhGender) {
-            case PersonGender::FEMALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore();
-
-            case PersonGender::MALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore();
-
-            default:
-                return 0;
         }
     }
 

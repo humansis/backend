@@ -6,6 +6,7 @@ namespace Tests\Component\Assistance\Scoring;
 
 use Component\Assistance\Scoring\Enum\ScoringSupportedHouseholdCoreFieldsEnum;
 use Component\Assistance\Scoring\Exception\ScoreValidationException;
+use Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
@@ -26,6 +27,9 @@ class ResolverTest extends KernelTestCase
     /** @var ObjectManager */
     private $objectManager;
 
+    /** @var ScoringFactory */
+    private $scoringFactory;
+
     public function __construct()
     {
         parent::__construct();
@@ -34,6 +38,7 @@ class ResolverTest extends KernelTestCase
 
         $this->resolver = $kernel->getContainer()->get(ScoringResolver::class);
         $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->scoringFactory = $kernel->getContainer()->get(ScoringFactory::class);
     }
 
     public function testSimpleCountrySpecific(): void
@@ -94,6 +99,12 @@ class ResolverTest extends KernelTestCase
 
         $protocol = $this->resolver->compute($household, $scoring, 'SYR');
         $this->assertEquals(3, $protocol->getTotalScore());
+
+        $this->objectManager->remove($countrySpecificAnswer);
+        $this->objectManager->remove($CSO);
+        $this->objectManager->flush();
+    }
+
     public function testCoreHouseholdFail()
     {
         $this->expectException(ScoreValidationException::class);
@@ -142,10 +153,4 @@ class ResolverTest extends KernelTestCase
         $this->assertEquals(-2.5, $score->getTotalScore());
     }
 
-}
-
-        $this->objectManager->remove($countrySpecificAnswer);
-        $this->objectManager->remove($CSO);
-        $this->objectManager->flush();
-    }
 }
