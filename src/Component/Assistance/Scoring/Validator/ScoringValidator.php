@@ -41,10 +41,10 @@ final class ScoringValidator extends ConstraintValidator
             if ($rule->getType() === ScoringRuleType::CORE_HOUSEHOLD) {
                 if (!in_array($rule->getFieldName(), ScoringSupportedHouseholdCoreFieldsEnum::values())) {
                     $this->context->buildViolation(
-                        "Field name {$rule->getFieldName()} is not supported for rule coreHousehold. Supported values are: [".implode(
+                        "Field name {$rule->getFieldName()} is not supported for rule coreHousehold. Supported values are: [" . implode(
                             ', ',
                             ScoringSupportedHouseholdCoreFieldsEnum::values()
-                        ).']'
+                        ) . ']'
                     )
                         ->addViolation();
                 }

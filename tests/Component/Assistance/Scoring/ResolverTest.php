@@ -113,7 +113,7 @@ class ResolverTest extends KernelTestCase
         $rule = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, 'blablablablabla', 'blabla');
         $rule->addOption(new ScoringRuleOption('test', 0));
 
-        $this->scoringFactory->createScoring('test',[$rule]);
+        $this->scoringFactory->createScoring('test', [$rule]);
     }
 
     public function testCorrectCoreHousehold()
@@ -124,7 +124,7 @@ class ResolverTest extends KernelTestCase
         $ruleNotes = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::NOTES, 'Notes');
         $ruleNotes->addOption(new ScoringRuleOption('test', 2));
 
-        $scoring = $this->scoringFactory->createScoring('test',[$ruleDebtLevel, $ruleNotes]);
+        $scoring = $this->scoringFactory->createScoring('test', [$ruleDebtLevel, $ruleNotes]);
 
         $household = new Household();
 
@@ -147,10 +147,9 @@ class ResolverTest extends KernelTestCase
         $household = new Household();
         $household->setAssets([HouseholdAssets::AC, HouseholdAssets::CAR]);
 
-        $scoring = $this->scoringFactory->createScoring('test',[$rule]);
+        $scoring = $this->scoringFactory->createScoring('test', [$rule]);
 
         $score = $this->resolver->compute($household, $scoring, 'SYR');
         $this->assertEquals(-2.5, $score->getTotalScore());
     }
-
 }
