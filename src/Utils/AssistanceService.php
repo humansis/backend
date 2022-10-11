@@ -644,7 +644,7 @@ class AssistanceService
 
             $exportableTable[] = array_merge($commonFields, [
                 $this->translator->trans("Commodity") => $commodityNames,
-                $this->translator->trans("To distribute") => $relief->getAmountToDistribute(),
+                $this->translator->trans("To Distribute") => $relief->getAmountToDistribute(),
                 $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
                 $this->translator->trans("Unit") => $relief->getUnit(),
                 $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
