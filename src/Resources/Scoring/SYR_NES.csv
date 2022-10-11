@@ -14,3 +14,12 @@ calculation,vulnerabilityOfHouseholdMembers,Vulnerability of Household Members,C
 ,,,Pregnant or lactating female,2
 ,,,NO: Pregnant or lactating female,1
 ,,,,
+calculation,dependencyRatioSyrNES,Dependency ratio,division by zero,6
+,,,0,0
+,,,0< DR <= 1,1
+,,,1< DR <= 2,2
+,,,2< DR <= 3,3
+,,,3< DR <= 4,4
+,,,4< DR <= 5,5
+,,,5 < DR,5
+,,,,

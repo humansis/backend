@@ -358,4 +358,47 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->vulnerabilityOfHouseholdMembers($household, $scoringRule);
         $this->assertEquals(4, $score);
     }
+
+    public function testDependencyRatioSyrNES()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR_NES, 'Dep. ratio syr nes');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_0, 0));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_1, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_2, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_3, 3));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_4, 4));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_5, 5));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_INF, 99));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION, 10));
+
+        $household = new Household();
+
+        $child = new Beneficiary();
+        $child->getPerson()->setDateOfBirth((new DateTime())->modify('-10 years'));
+        $household->addBeneficiary($child);
+
+        $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
+        $this->assertEquals(10, $score);
+
+        $adult = new Beneficiary();
+        $adult->getPerson()->setDateOfBirth((new DateTime())->modify('-30 years'));
+        $household->addBeneficiary($adult);
+
+        $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $household->addBeneficiary(clone($child));
+        $household->addBeneficiary(clone($child));
+        $household->addBeneficiary(clone($child));
+
+        $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
+        $this->assertEquals(4, $score);
+
+        $household->addBeneficiary(clone($child));
+        $household->addBeneficiary(clone($child));
+        $household->addBeneficiary(clone($child));
+
+        $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
+        $this->assertEquals(99, $score);
+    }
 }
