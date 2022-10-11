@@ -26,6 +26,10 @@ final class ScoringRuleCalculationOptionsEnum
     public const INFANT = 'Infant';
     public const ELDERLY = 'Elderly';
 
+    public const CHRONICALLY_ILL = 'Chronically ill';
+    public const PERSON_WITH_DISABILITY = 'Person with disability';
+    public const PREGNANT_OR_LACTATING_FEMALE = 'Pregnant or lactating female';
+
     public const DEPENDENCY_RATIO_SYR_ZERO_DIVISION = 'division by zero';
     public const DEPENDENCY_RATIO_SYR_NWS_LOW = '<=1.5';
     public const DEPENDENCY_RATIO_SYR_NWS_HIGH = '>1.5';
@@ -71,10 +75,18 @@ final class ScoringRuleCalculationOptionsEnum
             self::GENDER_MALE,
         ],
 
-        ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD => [
+        ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD_NWS => [
             self::CHRONICALLY_ILL_OR_DISABLED,
             self::INFANT,
             self::ELDERLY,
+        ],
+
+        ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD_NES => [
+            self::CHRONICALLY_ILL,
+            self::PERSON_WITH_DISABILITY,
+            self::INFANT,
+            self::ELDERLY,
+            self::PREGNANT_OR_LACTATING_FEMALE,
         ],
 
         ScoringRulesCalculationsEnum::DEPENDENCY_RATIO_SYR_NWS => [

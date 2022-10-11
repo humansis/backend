@@ -206,9 +206,9 @@ class RulesComputationTest extends KernelTestCase
         $this->assertEquals(3, $score);
     }
 
-    public function testVulnerabilityOfHeadOfHousehold()
+    public function testVulnerabilityOfHeadOfHouseholdNWS()
     {
-        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD, 'Vulnerability of head of household');
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD_NWS, 'Vulnerability of head of household nws');
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED, 1));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INFANT, 2));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::ELDERLY, 3));
@@ -219,19 +219,47 @@ class RulesComputationTest extends KernelTestCase
         $household = new Household();
         $household->addBeneficiary($head);
 
-        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNWS($household, $scoringRule);
         $this->assertEquals(0, $score);
 
         $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
         $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
 
-        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNWS($household, $scoringRule);
         $this->assertEquals(1, $score);
 
         $head->getPerson()->setDateOfBirth((new DateTime())->modify('-15 year'));
 
-        $score = $this->rulesCalculation->vulnerabilityHeadOfHousehold($household, $scoringRule);
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNWS($household, $scoringRule);
         $this->assertEquals(3, $score);
+    }
+
+    public function testVulnerabilityOfHeadOfHouseholdNES()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_HEAD_OF_HOUSEHOLD_NES, 'Vulnerability of head of household nes');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::PERSON_WITH_DISABILITY, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INFANT, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::ELDERLY, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::PREGNANT_OR_LACTATING_FEMALE, 1));
+
+        $head = new Beneficiary();
+        $head->setHead();
+
+        $household = new Household();
+        $household->addBeneficiary($head);
+
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNES($household, $scoringRule);
+        $this->assertEquals(0, $score);
+
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_PREGNANT));
+        $head->getPerson()->setDateOfBirth((new DateTime())->modify('-15 year'));
+        $head->getPerson()->setGender(PersonGender::FEMALE);
+
+        $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNES($household, $scoringRule);
+        $this->assertEquals(4, $score);
     }
 
     public function testGenderOfHouseholdHead()

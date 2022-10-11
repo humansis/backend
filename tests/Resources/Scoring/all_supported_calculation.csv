@@ -11,7 +11,7 @@ calculation,noOfChronicallyIll,Chronical ilnesses and health issues,one,1
 ,,,two and more,1
 calculation,genderOfHeadOfHousehold,Gender of Household head,Female,1
 ,,,Male,1
-calculation,vulnerabilityHeadOfHousehold,Vulnerability of head of household,Chronically ill or Person with disability,1
+calculation,vulnerabilityHeadOfHouseholdNWS,Vulnerability of head of household,Chronically ill or Person with disability,1
 ,,,Infant,2
 ,,,Elderly,3
 calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1

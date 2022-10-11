@@ -261,7 +261,7 @@ final class RulesCalculation
         }
     }
 
-    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): float
+    public function vulnerabilityHeadOfHouseholdNWS(Household $household, ScoringRule $rule): float
     {
         $head = $household->getHouseholdHead();
 
@@ -282,6 +282,40 @@ final class RulesCalculation
 
         if ($head->getAge() !== null && $head->getAge() > 59) {
             $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
+        }
+
+        return $result;
+    }
+
+    public function vulnerabilityHeadOfHouseholdNES(Household $household, ScoringRule $rule): float
+    {
+        $head = $household->getHouseholdHead();
+
+        $result = 0;
+
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL)->getScore();
+        }
+
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PERSON_WITH_DISABILITY)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() < 18) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() > 59) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
+        }
+
+        if ($head->getPerson()->getGender() === PersonGender::FEMALE) {
+            if (
+                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
+                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+            ) {
+                $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PREGNANT_OR_LACTATING_FEMALE)->getScore();
+            }
         }
 
         return $result;

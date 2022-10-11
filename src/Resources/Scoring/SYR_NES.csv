@@ -1,0 +1,13 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,1
+,,,Male,0
+,,,,
+calculation,vulnerabilityHeadOfHouseholdNES,Vulnerability Head of Household,Chronically ill,5
+,,,Person with disability,5
+,,,Infant,6
+,,,Elderly,4
+,,,Pregnant or lactating female,4
+,,,,
+
+
