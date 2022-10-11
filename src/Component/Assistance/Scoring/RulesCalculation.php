@@ -321,6 +321,51 @@ final class RulesCalculation
         return $result;
     }
 
+    public function vulnerabilityOfHouseholdMembers(Household $household, ScoringRule $rule): float
+    {
+        $chronicallyIllOrDisabled = false;
+        $lactatingOrPregnant = false;
+
+        foreach ($household->getBeneficiaries() as $householdMember) {
+            if ($householdMember->isHead()) {
+                continue;
+            }
+
+            if  (
+                ($householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+                $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL) &&
+                $householdMember->getAge() && $householdMember->getAge() < 60)
+            ) {
+                $chronicallyIllOrDisabled = true;
+            }
+
+            if ($householdMember->getPerson()->getGender() === PersonGender::FEMALE) {
+                if (
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+                ) {
+                    $lactatingOrPregnant = true;
+                }
+            }
+        }
+
+        $result = 0;
+
+        if ($chronicallyIllOrDisabled) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_ILL)->getScore();
+        } else {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_ILL)->getScore();
+        }
+
+        if ($lactatingOrPregnant) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_PREGNANT)->getScore();
+        } else {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_PREGNANT)->getScore();
+        }
+
+        return $result;
+    }
+
     public function dependencyRatioSyr(Household $household, ScoringRule $rule): float
     {
         $childAgeLimit = 17;

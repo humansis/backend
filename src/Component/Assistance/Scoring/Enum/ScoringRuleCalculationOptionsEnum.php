@@ -51,6 +51,11 @@ final class ScoringRuleCalculationOptionsEnum
     public const INCOME_SPENT_ON_FOOD_95 = '0,81-0,95';
     public const INCOME_SPENT_ON_FOOD_INF = '>0,95';
 
+    public const VULNERABILITY_HHM_ILL = 'Chronically ill or Person with disability & age < 60';
+    public const VULNERABILITY_HHM_NO_ILL = 'NO: Chronically ill or Person with disability & age < 60';
+    public const VULNERABILITY_HHM_PREGNANT = 'Pregnant or lactating female';
+    public const VULNERABILITY_HHM_NO_PREGNANT = 'NO: Pregnant or lactating female';
+
     public const SUPPORTED = [
         ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
             self::VULNERABILITY_SOLO_PARENT,
@@ -115,6 +120,13 @@ final class ScoringRuleCalculationOptionsEnum
             self::INCOME_SPENT_ON_FOOD_80,
             self::INCOME_SPENT_ON_FOOD_95,
             self::INCOME_SPENT_ON_FOOD_INF,
+        ],
+
+        ScoringRulesCalculationsEnum::VULNERABILITY_OF_HOUSEHOLD_MEMBERS => [
+            self::VULNERABILITY_HHM_ILL,
+            self::VULNERABILITY_HHM_NO_ILL,
+            self::VULNERABILITY_HHM_PREGNANT,
+            self::VULNERABILITY_HHM_NO_PREGNANT,
         ],
     ];
 }

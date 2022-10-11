@@ -33,3 +33,15 @@ calculation,incomeSpentOnFood,Income spent on food,0,0
 ,,,"0,66-0,80",5
 ,,,"0,81-0,95",6
 ,,,">0,95",7
+,,,,
+calculation,vulnerabilityHeadOfHouseholdNES,Vulnerability Head of Household,Chronically ill,5
+,,,Person with disability,5
+,,,Infant,6
+,,,Elderly,4
+,,,Pregnant or lactating female,4
+,,,,
+calculation,vulnerabilityOfHouseholdMembers,Vulnerability of Household Members,Chronically ill or Person with disability & age < 60,2
+,,,NO: Chronically ill or Person with disability& age < 60,1
+,,,Pregnant or lactating female,2
+,,,NO: Pregnant or lactating female,1
+,,,,

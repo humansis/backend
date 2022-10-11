@@ -326,4 +326,36 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
         $this->assertEquals(0, $score);
     }
+
+    public function testVulnerabilityOfHouseholdMembers()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_OF_HOUSEHOLD_MEMBERS, 'Vulnerability of household members');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_ILL, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_ILL, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_PREGNANT, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_PREGNANT, 1));
+
+        $household = new Household();
+
+        $head = new Beneficiary();
+        $head->setHead();
+        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_PREGNANT));
+        $head->getPerson()->setGender(PersonGender::FEMALE);
+
+        $household->addBeneficiary($head);
+
+        $score = $this->rulesCalculation->vulnerabilityOfHouseholdMembers($household, $scoringRule);
+        $this->assertEquals(2, $score);
+
+        $member = new Beneficiary();
+        $member->setHead(false);
+        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_LACTATING));
+        $member->getPerson()->setGender(PersonGender::FEMALE);
+
+        $household->addBeneficiary($member);
+
+        $score = $this->rulesCalculation->vulnerabilityOfHouseholdMembers($household, $scoringRule);
+        $this->assertEquals(4, $score);
+    }
 }
