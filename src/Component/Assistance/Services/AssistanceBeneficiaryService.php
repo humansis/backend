@@ -88,10 +88,10 @@ class AssistanceBeneficiaryService
                 }
             }
         }
-        foreach ($documentNumbers as $id) {
-            $key = strtolower($id);
+        foreach ($documentNumbers as $documentNumber) {
+            $key = strtolower($documentNumber);
             if (!key_exists($key, $beneficiaryDocuments)) {
-                $output->addNotFound(['documentNumber' => $id]);
+                $output->addDocumentNotFound($documentNumber);
             }
         }
 

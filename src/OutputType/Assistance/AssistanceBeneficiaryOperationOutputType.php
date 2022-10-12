@@ -68,6 +68,17 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
+    public function addDocumentNotFound(string $number): AssistanceBeneficiaryOperationOutputType
+    {
+        $this->notFound[] = [
+            'documentNumber' => $number,
+            'message' => $this->translator->trans('Beneficiary')
+                . " ({$this->documentType} '{$number}') "
+                . $this->translator->trans('was not found in the assistance.'),
+        ];
+        return $this;
+    }
+
     public function addBeneficiaryNotFound(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
         $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
