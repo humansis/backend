@@ -15,6 +15,7 @@ use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class ScoringResolver
 {
@@ -78,7 +79,7 @@ final class ScoringResolver
         return $protocol;
     }
 
-    private function computeEnum(Household $household, ScoringRule $rule): int
+    private function computeEnum(Household $household, ScoringRule $rule): float
     {
         //todo temporary solution until enums are refactored to be used same style as customComputation
         return $this->enumResolver->getScore($household, $rule);
@@ -88,9 +89,9 @@ final class ScoringResolver
      * @param Household $household
      * @param ScoringRule $rule
      *
-     * @return int
+     * @return float
      */
-    private function customComputation(Household $household, ScoringRule $rule): int
+    private function customComputation(Household $household, ScoringRule $rule): float
     {
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
@@ -108,14 +109,14 @@ final class ScoringResolver
      * @param ScoringRuleOption[] $scoringOptions
      * @param string $countryCode
      *
-     * @return int
+     * @return float
      */
     private function countrySpecifics(
         Household $household,
         string $countrySpecificName,
         array $scoringOptions,
         string $countryCode
-    ): int {
+    ): float {
         /** @var CountrySpecific $countrySpecific */
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
             'fieldString' => $countrySpecificName,
@@ -138,9 +139,29 @@ final class ScoringResolver
             return 0;
         }
 
+        $expressionLanguage = new ExpressionLanguage();
+
         foreach ($scoringOptions as $option) {
-            if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
-                return $option->getScore();
+            if ($countrySpecific->getType() === 'number') { //evaluate option as expression
+                if (str_contains($option->getValue(), 'x')) {
+                    $result = $expressionLanguage->evaluate($option->getValue(), [
+                        'x' => (int) $countrySpecificAnswer->getAnswer(),
+                    ]);
+
+                    if (is_bool($result) && $result) {
+                        return $option->getScore();
+                    }
+                } else {
+                    $result = $expressionLanguage->evaluate($option->getValue());
+
+                    if ((int) $countrySpecificAnswer->getAnswer() === $result) {
+                        return $option->getScore();
+                    }
+                }
+            } else {
+                if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
+                    return $option->getScore();
+                }
             }
         }
 

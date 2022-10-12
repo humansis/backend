@@ -12,28 +12,22 @@ final class ScoringRuleOption
     private $value;
 
     /**
-     * @var int
+     * @var float
      */
     private $score;
 
-    public function __construct(string $value, int $score)
+    public function __construct(string $value, float $score)
     {
         $this->value = $value;
         $this->score = $score;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * @return int
-     */
-    public function getScore(): int
+    public function getScore(): float
     {
         return $this->score;
     }

@@ -9,15 +9,15 @@ use Serializable;
 
 final class ScoringProtocol implements Serializable
 {
-    /** @var int[] */
+    /** @var float[] */
     private $score = [];
 
     /**
-     * @var int|null
+     * @var float|null
      */
     private $totalScore = null;
 
-    public function addScore(string $ruleTitle, int $score)
+    public function addScore(string $ruleTitle, float $score)
     {
         if (isset($this->score[$ruleTitle])) {
             $this->score[$ruleTitle] += $score;
@@ -28,20 +28,20 @@ final class ScoringProtocol implements Serializable
         $this->totalScore = null;
     }
 
-    public function getScore(string $ruleTitle): ?int
+    public function getScore(string $ruleTitle): ?float
     {
         return $this->score[$ruleTitle] ?? null;
     }
 
     /**
-     * @return int[] in format ['rule name' => <score_value> ]
+     * @return float[] in format ['rule name' => <score_value> ]
      */
     public function getAllScores(): array
     {
         return $this->score;
     }
 
-    public function getTotalScore(): int
+    public function getTotalScore(): float
     {
         if (is_null($this->totalScore)) {
             $this->calculateTotalScore();

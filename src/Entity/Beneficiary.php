@@ -512,7 +512,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->status;
     }
 
-    public function setHead(bool $isHead): self
+    public function setHead(bool $isHead = true): self
     {
         return $this->setStatus($isHead);
     }
