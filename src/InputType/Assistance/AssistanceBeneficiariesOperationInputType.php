@@ -6,6 +6,7 @@ namespace InputType\Assistance;
 
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Enum;
 
 /**
  * @Assert\GroupSequence({"AssistanceBeneficiariesOperationInputType", "Strict"})
@@ -30,10 +31,55 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     protected $documentNumbers = [];
 
     /**
-     * @Assert\NotNull
      * @Enum(enumClass="Enum\NationalIdType")
      */
     protected $documentType;
+
+    /**
+     * @Assert\Type("array")
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Type("int", groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    protected $beneficiaryIds = [];
+
+    /**
+     * @Assert\IsTrue(groups="Strict", message="Only one array can have values.")
+     * @return bool
+     */
+    public function isOneOfArraysNotEmpty(): bool
+    {
+        return (empty($this->beneficiaryIds) && !empty($this->documentNumbers))
+            || (!empty($this->beneficiaryIds) && empty($this->documentNumbers));
+    }
+
+    /**
+     * @Assert\IsTrue(groups="Strict", message="You must choose type of ID when using document numbers")
+     * @return bool
+     */
+    public function hasDocumentTypeWithPresentDocumentNumbers(): bool
+    {
+        if (empty($this->documentNumbers)) {
+            return true;
+        }
+
+        return $this->documentType !== null;
+    }
+
+    public function setBeneficiaryIds($beneficiaryIds): AssistanceBeneficiariesOperationInputType
+    {
+        $this->beneficiaryIds = $beneficiaryIds;
+
+        return $this;
+    }
+
+    public function getBeneficiaryIds()
+    {
+        return $this->beneficiaryIds;
+    }
 
     /**
      * @return mixed
@@ -88,10 +134,20 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
      *
      * @return AssistanceBeneficiariesOperationInputType
      */
-    public function setDocumentType($documentType)
+    public function setDocumentType($documentType): AssistanceBeneficiariesOperationInputType
     {
         $this->documentType = $documentType;
 
         return $this;
+    }
+
+    public function hasBeneficiaryIds(): bool
+    {
+        return !empty($this->beneficiaryIds);
+    }
+
+    public function hasDocumentNumbers(): bool
+    {
+        return !empty($this->documentNumbers);
     }
 }

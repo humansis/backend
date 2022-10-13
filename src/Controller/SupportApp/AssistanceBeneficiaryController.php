@@ -68,7 +68,7 @@ class AssistanceBeneficiaryController extends AbstractController
                 $inputType->getDocumentNumbers(),
                 $inputType->getDocumentType()
             );
-            $output = $this->assistanceBeneficiaryService->prepareOutput(
+            $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
                 $inputType->getDocumentNumbers(),
                 $inputType->getDocumentType()
@@ -106,7 +106,7 @@ class AssistanceBeneficiaryController extends AbstractController
                 $inputType->getDocumentNumbers(),
                 $inputType->getDocumentType()
             );
-            $output = $this->assistanceBeneficiaryService->prepareOutput(
+            $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
                 $inputType->getDocumentNumbers(),
                 $inputType->getDocumentType()

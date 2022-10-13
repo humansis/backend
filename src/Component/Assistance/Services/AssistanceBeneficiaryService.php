@@ -17,6 +17,7 @@ use Entity\Commodity;
 use Entity\Household;
 use Enum\AssistanceTargetType;
 use Enum\CacheTarget;
+use Exception\AssistanceTargetMismatchException;
 use Exception\ManipulationOverValidatedAssistanceException;
 use Exception\BeneficiaryAlreadyRemovedException;
 use JsonException;
@@ -26,6 +27,7 @@ use Psr\Cache\InvalidArgumentException;
 use Repository\AssistanceBeneficiaryRepository;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Workflow\ReliefPackageTransitions;
@@ -43,19 +45,25 @@ class AssistanceBeneficiaryService
     /** @var Registry $workflowRegistry */
     private $workflowRegistry;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
     /**
      * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      * @param CacheInterface $cache
      * @param Registry $workflowRegistry
+     * @param TranslatorInterface $translator
      */
     public function __construct(
         AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
         CacheInterface $cache,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
+        TranslatorInterface $translator
     ) {
         $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
         $this->cache = $cache;
         $this->workflowRegistry = $workflowRegistry;
+        $this->translator = $translator;
     }
 
     /**
@@ -65,24 +73,43 @@ class AssistanceBeneficiaryService
      *
      * @return AssistanceBeneficiaryOperationOutputType
      */
-    public function prepareOutput(
+    public function prepareOutputForDocumentNumbers(
         array $beneficiaries,
         array $documentNumbers,
         string $documentType
     ): AssistanceBeneficiaryOperationOutputType {
-        $output = new AssistanceBeneficiaryOperationOutputType($documentNumbers, $documentType);
-        $beneficiaryIds = [];
+        $output = new AssistanceBeneficiaryOperationOutputType($this->translator, $documentNumbers, $documentType);
+        $beneficiaryDocuments = [];
         foreach ($beneficiaries as $beneficiary) {
             foreach ($beneficiary->getNationalIds() as $document) {
                 if ($document->getIdType() === $documentType) {
-                    $beneficiaryIds[$document->getIdNumber()] = $document->getIdNumber();
+                    $key = strtolower($document->getIdNumber());
+                    $beneficiaryDocuments[$key] = $document->getIdNumber();
                 }
             }
         }
-        foreach ($documentNumbers as $id) {
-            if (!key_exists($id, $beneficiaryIds)) {
-                $output->addNotFound(['documentNumber' => $id]);
+        foreach ($documentNumbers as $documentNumber) {
+            $key = strtolower($documentNumber);
+            if (!key_exists($key, $beneficiaryDocuments)) {
+                $output->addDocumentNotFound($documentNumber);
             }
+        }
+
+        return $output;
+    }
+
+    public function prepareOutputForBeneficiaryIds(
+        array $beneficiaries,
+        array $beneficiaryIds
+    ): AssistanceBeneficiaryOperationOutputType {
+        $output = new AssistanceBeneficiaryOperationOutputType($this->translator);
+        $foundBeneficiaries = array_map(function (Beneficiary $beneficiary) {
+            return $beneficiary->getId();
+        }, $beneficiaries);
+
+        $notFoundBeneficiaries = array_diff($beneficiaryIds, $foundBeneficiaries);
+        foreach ($notFoundBeneficiaries as $notFoundBeneficiaryId) {
+            $output->addNotFound(['beneficiaryId' => $notFoundBeneficiaryId]);
         }
 
         return $output;
@@ -147,6 +174,15 @@ class AssistanceBeneficiaryService
         ?string $justification = null,
         ?ScoringProtocol $vulnerabilityScore = null
     ) {
+        if (
+            $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD
+            && !$beneficiary->isHead()
+        ) {
+            throw new AssistanceTargetMismatchException(
+                'Beneficiary id ' . $beneficiary->getId() . ' is not head of household'
+            );
+        }
+
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(
             ['beneficiary' => $beneficiary, 'assistance' => $assistance]
         );
@@ -219,6 +255,8 @@ class AssistanceBeneficiaryService
                 } else {
                     $output->addBeneficiaryNotFound($beneficiary);
                 }
+            } catch (AssistanceTargetMismatchException $ex) {
+                $output->addBeneficiaryMismatch($beneficiary);
             } catch (BeneficiaryAlreadyRemovedException $ex) {
                 $output->addBeneficiaryAlreadyRemoved($beneficiary);
             } catch (Throwable $ex) {
@@ -245,6 +283,12 @@ class AssistanceBeneficiaryService
         Beneficiary $beneficiary,
         string $justification
     ): ?AssistanceBeneficiary {
+        if (
+            $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD
+            && !$beneficiary->isHead()
+        ) {
+            throw new AssistanceTargetMismatchException();
+        }
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findOneBy(
             ['beneficiary' => $beneficiary, 'assistance' => $assistance]
         );
@@ -428,8 +472,9 @@ class AssistanceBeneficiaryService
                 $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
                 foreach ($commodity->getDivisionGroups() as $divisionGroup) {
                     if (
-                        ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
-                        && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
+                        ($divisionGroup->getRangeFrom(
+                        ) <= $countOfBeneficiariesInHousehold) && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo(
+                        ) ?? 1000))
                     ) {
                         return (float) $divisionGroup->getValue();
                     }

@@ -56,8 +56,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
-            ->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
 
@@ -171,7 +170,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 
         // remove BNF from assistance
         $this->request(
-            'PUT',
+            'DELETE',
             '/api/basic/web-app/v1/assistances/' . $reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId(
             ) . '/assistances-beneficiaries',
             [

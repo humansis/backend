@@ -5323,8 +5323,16 @@ Size</source>
       <trans-unit id="EUHpzYl" resname="The below listed person confirm by their signature of this Distribution List that they obtained and accepted&#10;the donation of the below specified items from People in Need.">
         <source>The below listed person confirm by their signature of this Distribution List that they obtained and accepted
 the donation of the below specified items from People in Need.</source>
-        <target>__The below listed person confirm by their signature of this Distribution List that they obtained and accepted
+        <target>The below listed person confirm by their signature of this Distribution List that they obtained and accepted
 the donation of the below specified items from People in Need.</target>
+      </trans-unit>
+      <trans-unit id="a_C29Lz" resname="was not found in the assistance.">
+        <source>was not found in the assistance.</source>
+        <target>was not found in the assistance.</target>
+      </trans-unit>
+      <trans-unit id="LYBptc1" resname="cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.">
+        <source>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
+        <target>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
       </trans-unit>
     </body>
   </file>

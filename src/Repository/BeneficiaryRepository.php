@@ -346,6 +346,26 @@ class BeneficiaryRepository extends EntityRepository
             ->getResult();
     }
 
+    /**
+     * @param int[] $ids
+     *
+     * @return float|int|mixed|string
+     */
+    public function findByIds(array $ids)
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->join('b.person', 'p')
+            ->join('b.household', 'hh')
+            ->leftJoin('p.nationalIds', 'id')
+            ->andWhere('b.id IN (:id)')
+            ->andWhere('b.archived = 0')
+            ->andWhere('hh.archived = 0')
+            ->setParameter('id', $ids);
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
     public function findIdentitiesByNationalIds(string $iso3, NationalIdHashSet $ids)
     {
         $qb = $this->createQueryBuilder('b')

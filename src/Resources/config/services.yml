@@ -73,7 +73,7 @@ services:
         resource: '../../Command'
         public: true
         tags: [ 'console.command' ]
-    
+
     Command\Crowdin\CrowdinPullCommand:
       arguments:
         - '%crowdin_api_key%'
@@ -239,7 +239,7 @@ services:
             - '@Component\File\UploadService'
 
     Controller\AssistanceCodelistController:
-        arguments: 
+        arguments:
             - '@project.sector_service'
             - '@Services\CodeListService'
 
@@ -271,7 +271,7 @@ services:
         public: true
         arguments:
             - '@Services\CodeListService'
-              
+
     Controller\HouseholdCodelistController:
         arguments:
             - '@Services\CodeListService'
@@ -1352,3 +1352,4 @@ services:
              - '@doctrine.orm.entity_manager'
              - "@service_container"
              - '@Twig\Environment'
+             - '@translator'
