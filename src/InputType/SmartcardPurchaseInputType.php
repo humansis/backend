@@ -50,6 +50,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     /**
      * @var int|null
      *
+     * @Assert\NotNull
      * @Assert\Type("integer")
      * @Assert\GreaterThan(0)
      */

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Entity\Assistance;
+use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
 
@@ -30,6 +33,28 @@ class SmartcardDepositRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @param Assistance $assistance
+     * @return Assistance\ReliefPackage|null
+     * @throws NonUniqueResultException
+     */
+    public function getByBeneficiaryAndAssistance(
+        Beneficiary $beneficiary,
+        Assistance $assistance
+    ): ?Assistance\ReliefPackage {
+        $qb = $this->createQueryBuilder('sd');
+        $qb
+            ->leftJoin('sd.reliefPackage', 'rp')
+            ->leftJoin('rp.assistanceBeneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistanceId')
+            ->setParameter('assistanceId', $assistance->getId())
+            ->andWhere('ab.beneficiary = :beneficiaryId')
+            ->setParameter('beneficiaryId', $beneficiary->getId());
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
     /**

@@ -7,8 +7,8 @@ namespace DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Entity\SmartcardPurchase;
 use InputType\SmartcardInvoice;
+use Repository\SmartcardPurchaseRepository;
 use Utils\SmartcardService;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
@@ -20,13 +20,23 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     private $smartcardService;
 
     /**
+     * @var SmartcardPurchaseRepository
+     */
+    private $smartcardPurchaseRepository;
+
+    /**
      * @param string $environment
      * @param SmartcardService $smartcardService
+     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      */
-    public function __construct(string $environment, SmartcardService $smartcardService)
-    {
+    public function __construct(
+        string $environment,
+        SmartcardService $smartcardService,
+        SmartcardPurchaseRepository $smartcardPurchaseRepository
+    ) {
         $this->environment = $environment;
         $this->smartcardService = $smartcardService;
+        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
     }
 
     /**
@@ -44,13 +54,13 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
 
         $adminUser = $this->getReference('user_admin');
 
-        $purchases = $manager->getRepository(SmartcardPurchase::class)->findBy([
+        $purchases = $this->smartcardPurchaseRepository->findBy([
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_KHM),
             'redemptionBatch' => null,
         ], ['id' => 'asc']);
         $purchaseIds = [];
         foreach ($purchases as $purchase) {
-            $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();
+            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
         }
 
         foreach ($purchaseIds as $projectId => $ids) {
@@ -63,13 +73,13 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
             );
         }
 
-        $purchases = $manager->getRepository(SmartcardPurchase::class)->findBy([
+        $purchases = $this->smartcardPurchaseRepository->findBy([
             'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_SYR),
             'redemptionBatch' => null,
         ], ['id' => 'asc']);
         $purchaseIds = [];
         foreach ($purchases as $purchase) {
-            $purchaseIds[$this->smartcardService->extractPurchaseProjectId($purchase)][] = $purchase->getId();
+            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
         }
 
         foreach ($purchaseIds as $projectId => $ids) {
