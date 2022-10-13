@@ -55,8 +55,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'target' => AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'CZK', 'value' => 2000],
                 ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
                 ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
                 ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
@@ -204,7 +202,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertJsonFragment(
             '{
-            "totalCount": 4,
+            "totalCount": 3,
             "data": [
                 {
                 "modalityType": "*",

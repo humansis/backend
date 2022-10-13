@@ -4640,6 +4640,10 @@ Size</source>
         <source>To distribute</source>
         <target>To distribute</target>
       </trans-unit>
+      <trans-unit id="n6z21qS" resname="To Distribute">
+        <source>To Distribute</source>
+        <target>To Distribute</target>
+      </trans-unit>
       <trans-unit id="MIW92c5" resname="Distribution in progress">
         <source>Distribution in progress</source>
         <target>Distribution in progress</target>

@@ -204,15 +204,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($smartcard);
         $manager->flush();
 
-        foreach (range(1, rand(2, 4)) as $i) {
-            $reliefPackage = new ReliefPackage(
-                $ab,
-                ModalityType::SMART_CARD,
-                $ab->getAssistance()->getCommodities()[0]->getValue(),
-                $ab->getAssistance()->getCommodities()[0]->getUnit(),
-            );
-            $manager->persist($reliefPackage);
-        }
+        $reliefPackage = new ReliefPackage(
+            $ab,
+            ModalityType::SMART_CARD,
+            $ab->getAssistance()->getCommodities()[0]->getValue(),
+            $ab->getAssistance()->getCommodities()[0]->getUnit(),
+        );
+        $manager->persist($reliefPackage);
     }
 
     private function generateDeposits(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
@@ -239,8 +237,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $smartcard = $this->smartcardRepository->findActiveBySerialNumber(
             $ab->getBeneficiary()->getSmartcardSerialNumber()
         );
-        for ($j = 0; $j < rand(0, 50); ++$j) {
-            $this->generatePurchase($j, $smartcard, $vendor, $j > 3 ? $ab->getAssistance() : null, $manager);
+        $max = $smartcard->getDeposites()[0]->getReliefPackage()->getAmountDistributed();
+        $purchasesCount = $this->generateRandomNumbers($max, rand(1, 10));
+
+        foreach ($purchasesCount as $index => $purchaseMax) {
+            if ($purchaseMax === 0) {
+                continue;
+            }
+            $this->generatePurchase($index, $smartcard, $vendor, $ab->getAssistance(), $manager, $purchaseMax);
         }
     }
 
@@ -262,22 +266,25 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $seed,
         Smartcard $smartcard,
         Vendor $vendor,
-        ?Assistance $assistance,
-        ObjectManager $manager
+        Assistance $assistance,
+        ObjectManager $manager,
+        int $max
     ): SmartcardPurchase {
         $date = new DateTimeImmutable('now');
         $purchase = SmartcardPurchase::create($smartcard, $vendor, $date, $assistance);
         $purchase->setHash($this->purchaseService->hashPurchase($smartcard->getBeneficiary(), $vendor, $date));
 
-        for ($j = 0; $j < rand(1, 3); ++$j) {
+        $currency = $smartcard->getDeposites()[0]->getReliefPackage()->getUnit();
+        $spent = 0;
+
+        for ($j = 0; $j < rand(1, 5); ++$j) {
             $quantity = rand(1, 10000);
-            $value = rand(1, 10000);
-            $purchase->addRecord(
-                $this->randomEntity(Product::class, $manager),
-                $quantity,
-                $value,
-                $smartcard->getCurrency()
-            );
+            $value = rand(1, $max);
+            $spent += $value;
+            if ($spent > $max) {
+                break;
+            }
+            $purchase->addRecord($this->randomEntity(Product::class, $manager), $quantity, $value, $currency);
         }
 
         return $purchase;
@@ -303,5 +310,23 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             AssistanceFixtures::class,
             ProductFixtures::class,
         ];
+    }
+
+    //helper to randomly divide amount_distributed of relief_package
+    public function generateRandomNumbers($max, $count): array
+    {
+        $numbers = [];
+
+        for ($i = 1; $i < $count; $i++) {
+            $random = rand(1, $max / ($count - $i));
+            $numbers[] = $random;
+            $max -= $random;
+        }
+
+        $numbers[] = $max;
+
+        shuffle($numbers);
+
+        return $numbers;
     }
 }

@@ -622,9 +622,8 @@ class AssistanceService
      */
     public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type): string
     {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)->findByAssistance(
-            $assistance
-        );
+        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
+            ->findByAssistance($assistance);
 
         /** @var ReliefPackage[] $packages */
         $packages = [];
@@ -633,25 +632,29 @@ class AssistanceService
             $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($db);
 
             if ($relief) {
-                array_push($packages, $relief);
+                $packages[] = $relief;
             }
         }
 
         foreach ($packages as $relief) {
             $beneficiary = $relief->getAssistanceBeneficiary()->getBeneficiary();
             $commodityNames = $relief->getModalityType();
-            $commodityValues = $relief->getAmountToDistribute() . ' ' . $relief->getUnit();
 
             $commonFields = $beneficiary->getCommonExportFields();
 
             $exportableTable[] = array_merge($commonFields, [
                 $this->translator->trans("Commodity") => $commodityNames,
-                $this->translator->trans("Value") => $commodityValues,
+                $this->translator->trans("To Distribute") => $relief->getAmountToDistribute(),
+                $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
+                $this->translator->trans("Unit") => $relief->getUnit(),
                 $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
                 $this->translator->trans("Notes Distribution") => $relief->getNotes(),
-                $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved() ? 'Yes' : 'No',
-                $this->translator->trans("Justification for adding/removing") => $relief->getAssistanceBeneficiary(
-                )->getJustification(),
+                $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved()
+                    ? 'Yes'
+                    : 'No',
+                $this->translator->trans("Justification for adding/removing") => $relief
+                    ->getAssistanceBeneficiary()
+                    ->getJustification(),
             ]);
         }
 
@@ -714,9 +717,8 @@ class AssistanceService
                 $this->translator->trans("Used At") => $transactionBooklet ? $transactionBooklet->getUsedAt() : null,
                 $this->translator->trans("Purchased items") => $products,
                 $this->translator->trans("Removed") => $assistanceBeneficiary->getRemoved() ? 'Yes' : 'No',
-                $this->translator->trans(
-                    "Justification for adding/removing"
-                ) => $assistanceBeneficiary->getJustification(),
+                $this->translator->trans("Justification for adding/removing") => $assistanceBeneficiary
+                    ->getJustification(),
             ]);
         }
 

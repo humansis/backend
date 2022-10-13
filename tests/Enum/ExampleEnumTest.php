@@ -2,8 +2,8 @@
 
 namespace Tests\Enum;
 
-use NewApiBundle\Enum\EnumApiValueNoFoundException;
-use NewApiBundle\Enum\EnumValueNoFoundException;
+use Enum\EnumApiValueNoFoundException;
+use Enum\EnumValueNoFoundException;
 use PHPUnit\Framework\TestCase;
 
 class ExampleEnumTest extends TestCase

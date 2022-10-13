@@ -68,6 +68,15 @@ class ReliefPackage
     /**
      * @var string
      *
+     * controlled by database triggers on smartcard_payment_record table
+     *
+     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2)
+     */
+    private $amountSpent;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="unit", type="string", nullable=false)
      */
     private $unit;
@@ -269,6 +278,14 @@ class ReliefPackage
     public function isFullyDistributed(): bool
     {
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAmountSpent(): ?string
+    {
+        return $this->amountSpent;
     }
 
     /**

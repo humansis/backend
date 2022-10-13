@@ -79,6 +79,15 @@ class DistributedItem
     private $amount;
 
     /**
+     * @var float|null
+     *
+     * controlled by database triggers on smartcard_payment_record table
+     *
+     * @ORM\Column(type="decimal", precision=10, scale=2)
+     */
+    private $spent;
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string")
@@ -168,6 +177,16 @@ class DistributedItem
     public function getAmount(): float
     {
         return (float) $this->amount;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getSpent(): ?float
+    {
+        return $this->spent !== null
+            ? (float) $this->spent
+            : null;
     }
 
     /**

@@ -6,7 +6,6 @@ namespace Listener;
 
 use GuzzleHttp\Psr7\Response;
 use Exception\ConstraintViolationException;
-use Exception\HandledException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -76,7 +75,7 @@ class ErrorResponseListener
             ];
         }
 
-        $flattenException = FlattenException::create($exception);
+        $flattenException = FlattenException::createFromThrowable($exception);
 
         if ($this->debug) {
             $data['debug'] = $flattenException->toArray();

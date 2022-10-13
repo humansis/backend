@@ -40,8 +40,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testGetItem()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)
-            ->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
         $commodityIds = array_map(function (Commodity $commodity) {
             return $commodity->getId();
         }, $assistance->getCommodities()->toArray());
@@ -504,8 +503,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => AssistanceTargetType::HOUSEHOLD,
             'threshold' => 1,
             'commodities' => [
-                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 1000],
-                ['modalityType' => $smartcardModalityType, 'unit' => 'CZK', 'value' => 2000],
                 ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
                 ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 100],
                 ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 200],
@@ -535,7 +532,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertJsonFragment(
             '{
-            "totalCount": 4,
+            "totalCount": 3,
             "data": [
                 {
                 "modalityType": "*",
