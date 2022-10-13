@@ -56,9 +56,9 @@ class AssistanceStatistics
     private ?float $amountPickedUp = null;
 
     /**
-     * @ORM\Column(name="amount_deleted", type="integer")
+     * @ORM\Column(name="beneficiaries_deleted", type="integer")
      */
-    private $amountDeleted;
+    private $beneficiariesDeleted;
 
     /**
      * @ORM\Column(name="beneficiaries_reached", type="integer")
@@ -85,9 +85,9 @@ class AssistanceStatistics
         return null === $this->amountDistributed ? null : (float) $this->amountDistributed;
     }
 
-    public function getAmountDeleted(): int
+    public function getBeneficiariesDeleted(): int
     {
-        return $this->amountDeleted;
+        return $this->beneficiariesDeleted;
     }
 
     public function getBeneficiariesReached(): int

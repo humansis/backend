@@ -87,7 +87,7 @@ class Assistance
             return new Statistics(
                 $statistics->getId(),
                 $statistics->getNumberOfBeneficiaries(),
-                $statistics->getAmountDeleted(),
+                $statistics->getBeneficiariesDeleted(),
                 $statistics->getBeneficiariesReached(),
                 $statistics->getAmountDistributed(),
                 $statistics->getAmountTotal(),
