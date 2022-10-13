@@ -47,9 +47,9 @@ class AssistanceStatistics
 
     /**
      * @var int
-     * @ORM\Column(name="amount_deleted", type="integer")
+     * @ORM\Column(name="beneficiaries_deleted", type="integer")
      */
-    private $amountDeleted;
+    private $beneficiariesDeleted;
 
     /**
      * @var int
@@ -92,9 +92,9 @@ class AssistanceStatistics
     /**
      * @return int
      */
-    public function getAmountDeleted(): int
+    public function getBeneficiariesDeleted(): int
     {
-        return $this->amountDeleted;
+        return $this->beneficiariesDeleted;
     }
 
     /**
