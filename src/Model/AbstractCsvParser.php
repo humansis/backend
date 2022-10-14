@@ -84,7 +84,7 @@ abstract class AbstractCsvParser
     protected function rowEmpty(array $row): bool
     {
         foreach ($row as $cell) {
-            if (!empty($cell)) {
+            if (strlen($cell) !== 0) {
                 return false;
             }
         }
