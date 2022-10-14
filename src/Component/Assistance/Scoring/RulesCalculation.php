@@ -331,7 +331,7 @@ final class RulesCalculation
                 continue;
             }
 
-            if  (
+            if (
                 ($householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
                 $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL) &&
                 $householdMember->getAge() && $householdMember->getAge() < 60)
