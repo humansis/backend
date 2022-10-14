@@ -6,6 +6,7 @@ use Entity\Logs;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use mysql_xdevapi\Exception;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
@@ -39,12 +40,12 @@ class ResponseListener
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
-        $user = $this->getUser();
+//        $user = $this->getUser();
 
         //Uid
-        $idUser = $user['id'];
+//        $idUser = $user['id'];
         //Umail
-        $mailUser = $user['email'];
+//        $mailUser = $user['email'];
         //Controller
         $controller = $request->attributes->get('_controller');
         //url
@@ -77,55 +78,55 @@ class ResponseListener
             preg_match('/.*\/vouchers\/scanned/', $url) ||
             preg_match('/.*\/deactivate-booklets/', $url);
 
-        if (
-            $idUser && $method != 'GET' && explode(
-                '\\',
-                $controller
-            )[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')
-        ) {
+//        if (
+//            $idUser && $method != 'GET' && explode(
+//                '\\',
+//                $controller
+//            )[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')
+//        ) {
             $log = new Logs();
 
             $log->setUrl($url)
-                ->setIdUser($idUser)
-                ->setMailUser($mailUser)
+                ->setIdUser('3')
+                ->setMailUser('yo')
                 ->setMethod($method)
                 ->setDate($date)
                 ->setHttpStatus($httpStatus)
                 ->setController($controller)
                 ->setRequest(json_encode($requestAll));
 
-            if (!$this->em->isOpen()) {
-                $this->em = $this->em->create(
-                    $this->em->getConnection(),
-                    $this->em->getConfiguration()
-                );
-            }
+        if (!$this->em->isOpen()) {
+            $this->em = $this->em->create(
+                $this->em->getConnection(),
+                $this->em->getConfiguration()
+            );
+        }
 
             $this->em->persist($log);
             $this->em->flush();
-        }
     }
+//    }
 
     /**
      * Get the user
      */
-    protected function getUser()
-    {
-        if (!$this->container->has('security.token_storage')) {
-            throw new LogicException(
-                'The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".'
-            );
-        }
-
-        if (null === $token = $this->tokenStorage->getToken()) {
-            return;
-        }
-
-        if (!is_object($user = $token->getUser())) {
-            // e.g. anonymous authentication
-            return;
-        }
-
-        return ['id' => $user->getId(), 'email' => $user->getEmail()];
-    }
+//    protected function getUser()
+//    {
+//        if (!$this->container->has('security.token_storage')) {
+//            throw new LogicException(
+//                'The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".'
+//            );
+//        }
+//
+//        if (null === $token = $this->tokenStorage->getToken()) {
+//            return;
+//        }
+//
+//        if (!is_object($user = $token->getUser())) {
+//            // e.g. anonymous authentication
+//            return;
+//        }
+//
+//        return ['id' => $user->getId(), 'email' => $user->getEmail()];
+//    }
 }

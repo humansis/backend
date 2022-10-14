@@ -186,7 +186,7 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         mappings:
-            FOSUserBundle: ~
+#            FOSUserBundle: ~
             App:
                 type: annotation
                 dir: "%kernel.root_dir%/../src/Entity"
@@ -231,16 +231,6 @@ doctrine_migrations:
     organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
     custom_template:      ~ # Version >= 1.2, path to your custom migrations template
 #    all_or_nothing:       true # we have too old doctrine version
-
-fos_user:
-    db_driver: orm
-    firewall_name: main
-    user_class: Entity\User
-    from_email:
-        address: "%email%"
-        sender_name: "BMS Support"
-    service:
-        mailer: fos_user.mailer.twig_swift
 
 fos_rest:
     param_fetcher_listener: true

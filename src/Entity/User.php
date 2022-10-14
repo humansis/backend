@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -41,6 +40,7 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
 
     /**
      * @var string
+     * @ORM\Column(name="username", type="string")
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
      *      min = 2,
@@ -606,6 +606,17 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
 //            //$this->emailCanonical
 //        ] = $data;
 //    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
     public function getPassword(): ?string
     {
         return $this->password;
@@ -619,5 +630,12 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     public function eraseCredentials(): void
     {
         $this->password = null;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 }

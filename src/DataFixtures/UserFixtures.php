@@ -5,7 +5,6 @@ namespace DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Exception;
-use FOS\UserBundle\Doctrine\UserManager;
 use Enum\RoleType;
 use Entity\Project;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
@@ -28,8 +27,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     /** @var Kernel $kernel */
     private $kernel;
 
-    /** @var UserManager $manager */
-    private $manager;
+//    /** @var UserManager $manager */
+//    private $manager;
 
     /** @var EncoderFactoryInterface $encoderFactory */
     private $encoderFactory;
@@ -40,12 +39,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     private $userService;
 
     public function __construct(
-        UserManager $manager,
+        //        UserManager $manager,
         EncoderFactoryInterface $encoderFactory,
         Kernel $kernel,
         UserService $userService
     ) {
-        $this->manager = $manager;
+//        $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;
         $this->kernel = $kernel;
         $this->userService = $userService;
@@ -164,7 +163,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         if ($instance instanceof User) {
             echo "User {$instance->getUsername()} already exists. Ommit creation.\n";
         } else {
-            $instance = $this->saveDataAsUser($userData, $manager);
+            //$instance = $this->saveDataAsUser($userData, $manager);
+            throw new Exception('instance is not user');
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
@@ -179,26 +179,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         } elseif (self::REF_VENDOR_SYR === $instance->getUsername()) {
             $this->setReference(self::REF_VENDOR_SYR, $instance);
         }
-
-        return $instance;
-    }
-
-    private function saveDataAsUser(array $userData, ObjectManager $manager): User
-    {
-        /** @var User $instance */
-        $instance = $this->manager->createUser();
-
-        $instance->injectObjectManager($manager);
-
-        $instance->setEnabled(1)
-            ->setEmail($userData['email'])
-            ->setEmailCanonical($userData['email'])
-            ->setUsername($userData['email'])
-            ->setUsernameCanonical($userData['email'])
-            ->setSalt($userData['salt'])
-            ->setRoles([$userData['roles']])
-            ->setChangePassword(0);
-        $instance->setPassword($userData['passwd']);
 
         return $instance;
     }

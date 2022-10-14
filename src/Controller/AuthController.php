@@ -21,7 +21,7 @@ class AuthController extends AbstractController
     public function getTokenUser(JWTTokenManagerInterface $JWTManager, ?Profiler $profiler)
     {
         if (null !== $profiler) {
-            $profiler->disable();
+            //$profiler->disable();
         }
 
         /** @var User $user */

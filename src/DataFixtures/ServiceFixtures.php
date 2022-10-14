@@ -9,20 +9,19 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var UserManager $manager */
-    private $manager;
+//    /** @var UserManager $manager */
+//    private $manager;
 
     /** @var EncoderFactoryInterface $encoderFactory */
     private $encoderFactory;
 
-    public function __construct(UserManager $manager, EncoderFactoryInterface $encoderFactory)
+    public function __construct(EncoderFactoryInterface $encoderFactory)
     {
-        $this->manager = $manager;
+//        $this->manager = $manager;
         $this->encoderFactory = $encoderFactory;
     }
 

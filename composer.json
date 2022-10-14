@@ -39,7 +39,6 @@
 		"doctrine/orm": "2.7.5",
 		"dompdf/dompdf": "v0.8.6",
 		"friendsofsymfony/rest-bundle": "3.0.5",
-		"friendsofsymfony/user-bundle": "v2.1.2",
 		"google/apiclient": "v2.9.1",
 		"graylog2/gelf-php": "1.7.0",
 		"happyr/entity-exists-validation-constraint": "1.0.0",

@@ -1,6 +1,6 @@
 security:
     encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
+        Entity\User: sha512
 
     providers:
         our_db_provider:
