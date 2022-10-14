@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace InputType\Assistance\Scoring;
 
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
+use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Exception\CsvParserException;
-use Model\Vulnerability\Resolver as OldResolver;
 use Repository\BeneficiaryRepository;
 use DTO\VulnerabilityScore;
 use Component\Assistance\Scoring\Exception\ScoreValidationException;
@@ -16,6 +14,7 @@ use Component\Assistance\Scoring\ScoringCsvParser;
 use Component\Assistance\Scoring\ScoringResolver;
 use InputType\VulnerabilityScoreInputType;
 use Repository\ScoringBlueprintRepository;
+use Utils\Floats;
 
 final class ScoringService
 {
@@ -23,11 +22,6 @@ final class ScoringService
      * @var ScoringResolver
      */
     private $resolver;
-
-    /**
-     * @var OldResolver
-     */
-    private $oldResolver;
 
     /**
      * @var ScoringFactory
@@ -51,13 +45,11 @@ final class ScoringService
 
     public function __construct(
         ScoringResolver $resolver,
-        OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
         BeneficiaryRepository $beneficiaryRepository,
         ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
         $this->resolver = $resolver;
-        $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
         $this->beneficiaryRepository = $beneficiaryRepository;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
@@ -71,8 +63,6 @@ final class ScoringService
      * @return VulnerabilityScore[]
      *
      * @throws CsvParserException
-     * @throws NoResultException
-     * @throws NonUniqueResultException
      */
     public function computeTotalScore(VulnerabilityScoreInputType $input, string $countryCode): iterable
     {
@@ -82,15 +72,17 @@ final class ScoringService
             $input->getScoringBlueprintId(),
             $countryCode
         );
+
+        if (is_null($scoringBlueprint)) {
+            $scoringBlueprint = $this->scoringBlueprintRepository->findFirstInCountry($countryCode);
+        }
+
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
             if (!isset($scoring)) {
-                $protocol = $this->oldResolver->compute(
-                    $beneficiary->getHousehold(),
-                    $countryCode,
-                    $input->getSector()
-                );
+                $protocol = new ScoringProtocol();
+                $protocol->addScore('test', 99);
             } else {
                 $protocol = $this->resolver->compute(
                     $beneficiary->getHousehold(),

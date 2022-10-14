@@ -56,7 +56,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'scoringType' => 'Default',
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::HOUSEHOLD,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
                 ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],

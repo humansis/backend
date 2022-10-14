@@ -690,17 +690,6 @@ services:
             - "@export_csv_service"
         public: true
 
-    beneficiary.vulnerability_resolver:
-        class: Model\Vulnerability\Resolver
-        arguments:
-            - "%vulnerability_weightingFile%"
-            - "%vulnerability_scoringFileTemplate%"
-            - "@beneficiary.repository"
-        public: true
-
-    Model\Vulnerability\Resolver:
-        alias: beneficiary.vulnerability_resolver
-
     #######################################################################################
     ##                                        CSV                                        ##
     #######################################################################################
