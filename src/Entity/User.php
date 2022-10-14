@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use Symfony\Component\Security\Core\User\UserInterface;
 use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +22,11 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User extends BaseUser implements ExportableInterface, ObjectManagerAware
+class User implements ExportableInterface, ObjectManagerAware, UserInterface
 {
+    public const ROLE_DEFAULT = 'ROLE_USER';
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
     /** @var ObjectManager|null */
     private $em;
 
@@ -49,8 +53,17 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
+     * @ORM\Column(name="password", type="string")
      */
     protected $password;
+
+    /**
+     * The salt to use for hashing.
+     *
+     * @var string|null
+     * @ORM\Column(name="salt", type="string", nullable=true)
+     */
+    protected $salt;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
@@ -64,9 +77,16 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
+     * @ORM\Column(name="email", type="string")
      * @Assert\NotBlank(message="Email can't be empty")
      */
     protected $email;
+
+    /**
+     * @var bool
+     * @ORM\Column(name="enabled", type="boolean")
+     */
+    protected $enabled;
 
     /**
      * @var Collection|Role[]
@@ -76,7 +96,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var Transaction
-     *
      * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="sentBy")
      */
     private $transactions;
@@ -121,7 +140,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     public function __construct()
     {
-        parent::__construct();
+        $this->enabled = false;
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
@@ -379,6 +398,38 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return $this->phoneNumber;
     }
 
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($boolean): self
+    {
+        $this->enabled = (bool) $boolean;
+
+        return $this;
+    }
+
+    /**
+     * Returns the password used to authenticate the user.
+     *
+     * This should be the encoded password. On authentication, a plain-text
+     * password will be salted, encoded, and then compared to this value.
+     *
+     * @return string|null The encoded password if any
+     */
+    public function getSalt(): ?string
+    {
+        return $this->salt;
+    }
+
+    public function setSalt(string $salt = null): self
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
     /**
      * Get changePassword.
      *
@@ -508,5 +559,65 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
                 return $role->getCode();
             }, $this->roles->toArray())
         );
+    }
+
+//    /**
+//     * {@inheritdoc}
+//     */
+//    public function serialize(): string
+//    {
+//        return serialize(array(
+//            $this->password,
+//            //$this->salt,
+//            //$this->usernameCanonical,
+//            $this->username,
+//            $this->enabled,
+//            $this->id,
+//            $this->email,
+//            //$this->emailCanonical,
+//        ));
+//    }
+//
+//    /**
+//     * {@inheritdoc}
+//     */
+//    public function unserialize($serialized): void
+//    {
+//        $data = unserialize($serialized);
+//
+//        if (13 === count($data)) {
+//            // Unserializing a User object from 1.3.x
+//            unset($data[4], $data[5], $data[6], $data[9], $data[10]);
+//            $data = array_values($data);
+//        } elseif (11 === count($data)) {
+//            // Unserializing a User from a dev version somewhere between 2.0-alpha3 and 2.0-beta1
+//            unset($data[4], $data[7], $data[8]);
+//            $data = array_values($data);
+//        }
+//
+//        [
+//            $this->password,
+//            //$this->salt,
+//            //$this->usernameCanonical,
+//            $this->username,
+//            $this->enabled,
+//            $this->id,
+//            $this->email,
+//            //$this->emailCanonical
+//        ] = $data;
+//    }
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function eraseCredentials(): void
+    {
+        $this->password = null;
     }
 }
