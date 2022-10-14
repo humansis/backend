@@ -6,6 +6,7 @@ use Entity\Logs;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
+use mysql_xdevapi\Exception;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
@@ -37,6 +38,13 @@ class ResponseListener
 
     public function onKernelResponse(ResponseEvent $event)
     {
+        //$this->em->getUnitOfWork()->computeChangeSets();
+        //var_dump(get_class(current($this->em->getUnitOfWork()->getScheduledEntityUpdates())));
+        //die();
+
+        //$this->em->flush();
+        //die();
+
         $response = $event->getResponse();
         $request = $event->getRequest();
         $user = $this->getUser();
@@ -86,8 +94,8 @@ class ResponseListener
             $log = new Logs();
 
             $log->setUrl($url)
-                ->setIdUser($idUser)
-                ->setMailUser($mailUser)
+                ->setIdUser('5')
+                ->setMailUser('yo')
                 ->setMethod($method)
                 ->setDate($date)
                 ->setHttpStatus($httpStatus)

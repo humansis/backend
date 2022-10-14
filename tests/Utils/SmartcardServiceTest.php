@@ -716,9 +716,7 @@ class SmartcardServiceTest extends KernelTestCase
         $this->user->injectObjectManager($em);
         $this->user->setEnabled(1)
             ->setEmail($id . self::VENDOR_USERNAME)
-            ->setEmailCanonical($id . self::VENDOR_USERNAME)
             ->setUsername($id . self::VENDOR_USERNAME)
-            ->setUsernameCanonical($id . self::VENDOR_USERNAME)
             ->setSalt('')
             ->setRoles(['ROLE_ADMIN'])
             ->setChangePassword(0)

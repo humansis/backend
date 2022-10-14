@@ -48,9 +48,7 @@ class AuthControllerTest extends BMSServiceTestCase
         if (is_null($user)) {
             $user = new User();
             $user->setUsername('test-no-vendor@test.org');
-            $user->setUsernameCanonical('test-no-vendor@test.org');
             $user->setEmail('test-no-vendor@test.org');
-            $user->setEmailCanonical('test-no-vendor@test.org');
             $user->setSalt('fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9');
             $user->setPassword(
                 'WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw=='

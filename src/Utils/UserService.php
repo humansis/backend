@@ -29,9 +29,6 @@ class UserService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
     /** @var ExportService */
     private $exportService;
 
@@ -47,20 +44,17 @@ class UserService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
      * @param ExportService $exportService
      * @param RoleHierarchyInterface $roleHierarchy
      * @param Security $security
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
         ExportService $exportService,
         RoleHierarchyInterface $roleHierarchy,
         Security $security
     ) {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->exportService = $exportService;
         $this->roleHierarchy = $roleHierarchy;
         $this->security = $security;
@@ -68,11 +62,11 @@ class UserService
 
     /**
      * @param UserInitializeInputType $inputType
-     *
+     * @param string|null $userDefinedSalt
      * @return array
      * @throws Exception
      */
-    public function initialize(UserInitializeInputType $inputType): array
+    public function initialize(UserInitializeInputType $inputType, ?string $userDefinedSalt = null): array
     {
         $user = $this->em->getRepository(User::class)
             ->findBy(['email' => $inputType->getUsername()]);
@@ -81,16 +75,14 @@ class UserService
             throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
         }
 
-        $salt = $this->generateSalt();
+        $salt = $userDefinedSalt ?: $this->generateSalt();
 
         $user = new User();
 
         $user->injectObjectManager($this->em);
 
         $user->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEmail($inputType->getUsername())
-            ->setEmailCanonical($inputType->getUsername())
             ->setEnabled(false)
             ->setSalt($salt)
             ->setPassword('');
@@ -177,14 +169,13 @@ class UserService
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
 
-        if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
+        /*if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
             throw new InvalidArgumentException(
                 'The user with email ' . $inputType->getEmail() . ' has already been added'
             );
-        }
+        }*/
 
         $initializedUser->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
             ->setLanguage($inputType->getLanguage())
@@ -249,9 +240,7 @@ class UserService
         }
 
         $user->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
