@@ -160,9 +160,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
         $instance->setEnabled(1)
             ->setEmail($email)
-            ->setEmailCanonical($email)
             ->setUsername($email)
-            ->setUsernameCanonical($email)
             ->setSalt('no salt')
             ->setRoles(['ROLE_VENDOR'])
             ->setChangePassword(0);

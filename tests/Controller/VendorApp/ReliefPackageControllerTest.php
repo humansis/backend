@@ -62,9 +62,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $user = new User();
         $username = __METHOD__ . random_int(100, 10000);
         $user->setUsername($username)
-            ->setUsernameCanonical($username)
             ->setEmail($username)
-            ->setEmailCanonical($username)
             ->setEnabled(true)
             ->setSalt('')
             ->setPassword('');

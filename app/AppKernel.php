@@ -73,18 +73,18 @@ class AppKernel extends Kernel
 
         $containerBuilder->addCompilerPass(new MapperCompilerPass());
 
-        $mappings = [
-            realpath(__DIR__ . '/../src/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',
-        ];
+//        $mappings = [
+//            realpath(__DIR__ . '/../src/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',
+//        ];
 
         //Compiler pass added for overriding user-bundle User entity mapping of roles.
-        $containerBuilder->addCompilerPass(
-            DoctrineOrmMappingsPass::createXmlMappingDriver(
-                $mappings,
-                ['fos_user.model_manager_name'],
-                false
-            )
-        );
+//        $containerBuilder->addCompilerPass(
+//            DoctrineOrmMappingsPass::createXmlMappingDriver(
+//                $mappings,
+//                ['fos_user.model_manager_name'],
+//                false
+//            )
+//        );
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)

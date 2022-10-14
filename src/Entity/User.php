@@ -2,17 +2,16 @@
 
 namespace Entity;
 
+use Symfony\Component\Security\Core\User\UserInterface;
 use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
@@ -21,8 +20,11 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User extends BaseUser implements ExportableInterface, ObjectManagerAware
+class User implements ExportableInterface, ObjectManagerAware, UserInterface
 {
+    public const ROLE_DEFAULT = 'ROLE_USER';
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
     /** @var ObjectManager|null */
     private $em;
 
@@ -37,6 +39,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
+     * @ORM\Column(name="username", type="string")
      * @Assert\NotBlank(message="Username can't be empty")
      * @Assert\Length(
      *      min = 2,
@@ -49,8 +52,17 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
+     * @ORM\Column(name="password", type="string", nullable=false)
      */
     protected $password;
+
+    /**
+     * The salt to use for hashing.
+     *
+     * @var string|null
+     * @ORM\Column(name="salt", type="string", nullable=true)
+     */
+    protected $salt;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
@@ -64,9 +76,16 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
+     * @ORM\Column(name="email", type="string")
      * @Assert\NotBlank(message="Email can't be empty")
      */
     protected $email;
+
+    /**
+     * @var bool
+     * @ORM\Column(name="enabled", type="boolean")
+     */
+    protected $enabled;
 
     /**
      * @var Collection|Role[]
@@ -76,7 +95,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var Transaction
-     *
      * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="sentBy")
      */
     private $transactions;
@@ -121,7 +139,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     public function __construct()
     {
-        parent::__construct();
+        $this->enabled = false;
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
@@ -379,6 +397,38 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return $this->phoneNumber;
     }
 
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($boolean): self
+    {
+        $this->enabled = (bool) $boolean;
+
+        return $this;
+    }
+
+    /**
+     * Returns the password used to authenticate the user.
+     *
+     * This should be the encoded password. On authentication, a plain-text
+     * password will be salted, encoded, and then compared to this value.
+     *
+     * @return string|null The encoded password if any
+     */
+    public function getSalt(): ?string
+    {
+        return $this->salt;
+    }
+
+    public function setSalt(string $salt = null): self
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
     /**
      * Get changePassword.
      *
@@ -508,5 +558,76 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
                 return $role->getCode();
             }, $this->roles->toArray())
         );
+    }
+
+
+    public function __serialize(): string
+    {
+        return serialize([
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ]);
+    }
+
+    public function __unserialize($serialized): void
+    {
+        $data = unserialize($serialized);
+
+        [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ] = $data;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user (like a password in plaintext), clear it here
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 }

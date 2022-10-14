@@ -29,9 +29,6 @@ class UserService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
     /** @var ExportService */
     private $exportService;
 
@@ -47,20 +44,17 @@ class UserService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
      * @param ExportService $exportService
      * @param RoleHierarchyInterface $roleHierarchy
      * @param Security $security
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
         ExportService $exportService,
         RoleHierarchyInterface $roleHierarchy,
         Security $security
     ) {
         $this->em = $entityManager;
-        $this->validator = $validator;
         $this->exportService = $exportService;
         $this->roleHierarchy = $roleHierarchy;
         $this->security = $security;
@@ -68,11 +62,11 @@ class UserService
 
     /**
      * @param UserInitializeInputType $inputType
-     *
+     * @param string|null $userDefinedSalt
      * @return array
      * @throws Exception
      */
-    public function initialize(UserInitializeInputType $inputType): array
+    public function initialize(UserInitializeInputType $inputType, ?string $userDefinedSalt = null): array
     {
         $user = $this->em->getRepository(User::class)
             ->findBy(['email' => $inputType->getUsername()]);
@@ -81,16 +75,14 @@ class UserService
             throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
         }
 
-        $salt = $this->generateSalt();
+        $salt = $userDefinedSalt ?: $this->generateSalt();
 
         $user = new User();
 
         $user->injectObjectManager($this->em);
 
         $user->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEmail($inputType->getUsername())
-            ->setEmailCanonical($inputType->getUsername())
             ->setEnabled(false)
             ->setSalt($salt)
             ->setPassword('');
@@ -141,88 +133,6 @@ class UserService
     }
 
     /**
-     * @param array $userData
-     * @return mixed
-     * @throws Exception
-     * @deprecated Remove in 3.0
-     *
-     */
-    public function createFromArray(array $userData)
-    {
-        $roles = $userData['roles'];
-
-        if (!isset($roles) || empty($roles)) {
-            throw new Exception("Rights can not be empty");
-        }
-
-        $user = $this->em->getRepository(User::class)->findOneByUsername($userData['username']);
-
-        if (!$user instanceof User) {
-            throw new Exception(
-                "The user with username " . $userData['username'] . " has been not preconfigured. You need to ask
-            the salt for this username beforehand."
-            );
-        } elseif ($user->isEnabled()) {
-            throw new Exception("The user with username " . $userData['username'] . " has already been added");
-        }
-
-        $user->setSalt($userData['salt'])
-            ->setEmail($user->getUsername())
-            ->setEmailCanonical($user->getUsername())
-            ->setUsername($user->getUsername())
-            ->setUsernameCanonical($user->getUsername())
-            ->setEnabled(1)
-            ->setRoles($roles)
-            ->setChangePassword($userData['change_password']);
-
-        $user->setPhonePrefix($userData['phone_prefix'])
-            ->setPhoneNumber($userData['phone_number'])
-            ->setTwoFactorAuthentication($userData['two_factor_authentication']);
-
-        $user->setPassword($userData['password']);
-
-        $this->em->persist($user);
-
-        if (key_exists('projects', $userData)) {
-            foreach ($userData['projects'] as $project) {
-                $project = $this->em->getRepository(Project::class)->findOneById($project);
-
-                if ($project instanceof Project) {
-                    $userProject = new UserProject();
-                    $userProject->setRights($roles[0])
-                        ->setUser($user)
-                        ->setProject($project);
-                    $this->em->persist($userProject);
-                }
-            }
-        }
-
-        if (key_exists('countries', $userData)) {
-            foreach ($userData['countries'] as $country) {
-                $userCountry = new UserCountry();
-                $userCountry->setUser($user)
-                    ->setCountryIso3($country)
-                    ->setRights($roles[0]);
-                $this->em->persist($userCountry);
-            }
-        }
-
-        $errors = $this->validator->validate($user);
-        if (count($errors) > 0) {
-            $errorsArray = [];
-            foreach ($errors as $error) {
-                $errorsArray[] = $error->getMessage();
-            }
-
-            return $errorsArray;
-        }
-
-        $this->em->flush();
-
-        return $user;
-    }
-
-    /**
      * Export all users in a CSV file
      *
      * @param string $type
@@ -259,14 +169,13 @@ class UserService
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
 
-        if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
+        /*if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
             throw new InvalidArgumentException(
                 'The user with email ' . $inputType->getEmail() . ' has already been added'
             );
-        }
+        }*/
 
         $initializedUser->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setEnabled(true)
             ->setRoles($inputType->getRoles())
             ->setLanguage($inputType->getLanguage())
@@ -331,9 +240,7 @@ class UserService
         }
 
         $user->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())

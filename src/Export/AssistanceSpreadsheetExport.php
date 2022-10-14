@@ -336,7 +336,7 @@ class AssistanceSpreadsheetExport
 
         $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->getCell('D10')->setValue(
-            $assistance->isValidated() ? $assistance->getValidatedBy()->getUsernameCanonical() : ""
+            $assistance->isValidated() ? $assistance->getValidatedBy()->getUsername() : ""
         );
         $worksheet->mergeCells('D10:F11');
 
