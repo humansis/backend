@@ -781,7 +781,7 @@ services:
 
     user.user_service:
         class: Utils\UserService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@export_csv_service', '@security.role_hierarchy','@security.helper']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service', '@security.role_hierarchy','@security.helper']
         public: true
 
     Utils\UserService: '@user.user_service'
@@ -1013,10 +1013,10 @@ services:
     DataFixtures\UserFixtures:
         public: true
         arguments:
-            - "@fos_user.user_manager"
-            - "@security.encoder_factory"
             - "@kernel"
             - "@user.user_service"
+            - "@validator"
+            - '@Repository\UserRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1133,7 +1133,7 @@ services:
     DataFixtures\ServiceFixtures:
         public: true
         arguments:
-            - "@fos_user.user_manager"
+            #- "@fos_user.user_manager"
             - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }

@@ -126,9 +126,6 @@ class CredentialsCommand extends Command
     {
         $user = new User();
         $user->setUsername($this->account)
-            ->setUsernameCanonical($this->account)
-            ->setEmail($this->account)
-            ->setEmailCanonical($this->account)
             ->setEnabled(true)
             ->setSalt($this->salt)
             ->setPassword($this->encodedPassword);
