@@ -6,6 +6,7 @@ namespace Repository\Smartcard;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Entity\Smartcard\PreliminaryInvoice;
 use InvalidArgumentException;
 use Enum\VendorInvoicingState;
 use Entity\Vendor;
@@ -16,7 +17,7 @@ class PreliminaryInvoiceRepository extends EntityRepository
      * @param Vendor $vendor
      * @param string|null $invoicingState
      *
-     * @return Vendor[]
+     * @return PreliminaryInvoice[]
      */
     public function findByVendorAndState(Vendor $vendor, ?string $invoicingState = null): array
     {

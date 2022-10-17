@@ -109,7 +109,7 @@ class SmartcardRedemptionBatchControllerTest extends BMSServiceTestCase
             '{
             "totalCount": "*",
             "data": [
-                {"purchaseIds": "*", "projectId": "*", "value": "*", "currency": "*"}
+                {"purchaseIds": "*", "projectId": "*", "value": "*", "currency": "*", "canRedeem": "*"}
             ]
         }',
             $this->client->getResponse()->getContent()

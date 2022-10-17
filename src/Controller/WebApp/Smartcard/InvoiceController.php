@@ -6,6 +6,7 @@ namespace Controller\WebApp\Smartcard;
 
 use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
 use Component\Smartcard\Invoice\InvoiceFactory;
+use Component\Smartcard\Invoice\PreliminaryInvoiceDto;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use InputType\SmartcardInvoice;
@@ -15,6 +16,7 @@ use Controller\WebApp\AbstractWebAppController;
 use Enum\VendorInvoicingState;
 use InputType\SmartcardRedemptionBatchCreateInputType;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
+use Repository\SmartcardInvoiceRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,13 +56,12 @@ class InvoiceController extends AbstractWebAppController
      *
      * @param Vendor $vendor
      * @param Pagination $pagination
-     *
+     * @param SmartcardInvoiceRepository $smartcardInvoiceRepository
      * @return JsonResponse
      */
-    public function invoices(Vendor $vendor, Pagination $pagination): JsonResponse
+    public function invoices(Vendor $vendor, Pagination $pagination, SmartcardInvoiceRepository $smartcardInvoiceRepository): JsonResponse
     {
-        $invoices = $this->getDoctrine()->getRepository(Invoice::class)
-            ->findByVendor($vendor, $pagination);
+        $invoices = $smartcardInvoiceRepository->findByVendor($vendor, $pagination);
 
         return $this->json($invoices);
     }
@@ -111,14 +112,33 @@ class InvoiceController extends AbstractWebAppController
      *
      * @param Vendor $vendor
      * @param PreliminaryInvoiceRepository $invoiceRepository
-     *
+     * @param InvoiceFactory $invoiceFactory
      * @return JsonResponse
      */
-    public function preliminaryInvoices(Vendor $vendor, PreliminaryInvoiceRepository $invoiceRepository): JsonResponse
-    {
-        $invoices = $invoiceRepository->findByVendorAndState($vendor);
+    public function preliminaryInvoices(
+        Vendor $vendor,
+        PreliminaryInvoiceRepository $invoiceRepository,
+        InvoiceFactory $invoiceFactory
+    ): JsonResponse {
+        $preliminaryInvoices = $invoiceRepository->findByVendorAndState($vendor);
 
-        return $this->json(new Paginator($invoices));
+        $preliminaryInvoicesDto = [];
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            try {
+                $invoiceFactory->checkIfPurchasesCouldBeInvoiced(
+                    $vendor,
+                    $preliminaryInvoice->getPurchaseIds()
+                );
+                $canRedeem = true;
+                $message = null;
+            } catch (SmartcardPurchaseException $e) {
+                $canRedeem = false;
+                $message = $e->getMessage();
+            }
+            $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem, $message);
+        }
+
+        return $this->json(new Paginator($preliminaryInvoicesDto));
     }
 
     /**

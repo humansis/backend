@@ -78,15 +78,7 @@ class InvoiceFactory
      */
     public function create(Vendor $vendor, SmartcardInvoice $invoiceInputType, User $redeemedBy): Invoice
     {
-        $this->vendor = $vendor;
-        $this->purchases = $this->getPurchases($invoiceInputType->getPurchases());
-        if (count($this->purchases) === 0) {
-            throw new SmartcardPurchaseException('There is no purchase to redeem.');
-        }
-        $this->currency = $this->purchases[0]->getCurrency();
-        $assistance = $this->purchases[0]->getAssistance();
-        $this->project = $assistance ? $assistance->getProject() : null;
-
+        $this->initialize($vendor, $invoiceInputType->getPurchases());
         $this->checkPurchases();
 
         $invoice = new Invoice(
@@ -107,6 +99,43 @@ class InvoiceFactory
         $this->smartcardInvoiceRepository->save($invoice);
 
         return $invoice;
+    }
+
+    /**
+     * @param Vendor $vendor
+     * @param int[] $purchaseIds
+     * @return bool
+     * @throws AlreadyRedeemedPurchaseException
+     * @throws SmartcardPurchaseException
+     */
+    public function checkIfPurchasesCouldBeInvoiced(Vendor $vendor, array $purchaseIds): bool
+    {
+        $this->initialize($vendor, $purchaseIds);
+        $this->checkPurchases();
+
+        return true;
+    }
+
+    /**
+     * @param Vendor $vendor
+     * @param int[] $purchaseIds
+     * @return void
+     * @throws SmartcardPurchaseException
+     */
+    private function initialize(Vendor $vendor, array $purchaseIds): void
+    {
+        $this->purchases = $this->loadPurchases($purchaseIds);
+        if (count($this->purchases) === 0) {
+            throw new SmartcardPurchaseException('There is no purchase to redeem.');
+        }
+
+        $this->vendor = $vendor;
+        $this->currency = $this->purchases [0]->getCurrency();
+        $assistance = $this->purchases[0]->getAssistance();
+        $this->project = $assistance ? $assistance->getProject() : null;
+        if (!$this->project) {
+            throw new SmartcardPurchaseException("Purchase #{$this->purchases[0]->getId()} has no project.");
+        }
     }
 
     /**
@@ -209,7 +238,7 @@ class InvoiceFactory
      * @param int[] $purchaseIds
      * @return SmartcardPurchase[]
      */
-    private function getPurchases(array $purchaseIds): array
+    private function loadPurchases(array $purchaseIds): array
     {
         return $this->smartcardPurchaseRepository->findBy([
             'id' => $purchaseIds,
