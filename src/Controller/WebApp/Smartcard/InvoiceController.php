@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use InputType\SmartcardInvoice;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -17,6 +20,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Controller\VendorApp\SmartcardController;
 use Entity\Invoice;
 use Entity\Vendor;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Utils\Exception\SmartcardPurchase\AlreadyRedeemedPurchaseException;
+use Utils\Exception\SmartcardPurchase\SmartcardPurchaseException;
+use Utils\Exception\SmartcardPurchase\SmartcardPurchaseInconsistentValueException;
 use Utils\SmartcardService;
 
 class InvoiceController extends AbstractWebAppController
@@ -82,6 +89,9 @@ class InvoiceController extends AbstractWebAppController
      * @param SmartcardService $smartcardService
      *
      * @return JsonResponse
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function create(
         Vendor $vendor,
@@ -92,7 +102,11 @@ class InvoiceController extends AbstractWebAppController
         $newInvoice = new SmartcardInvoice();
         $newInvoice->setPurchases($inputType->getPurchaseIds());
 
-        $invoice = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
+        try {
+            $invoice = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
+        } catch (SmartcardPurchaseException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
 
         return $this->json($invoice);
     }
