@@ -130,12 +130,10 @@ class InvoiceController extends AbstractWebAppController
                     $preliminaryInvoice->getPurchaseIds()
                 );
                 $canRedeem = true;
-                $message = null;
             } catch (SmartcardPurchaseException $e) {
                 $canRedeem = false;
-                $message = $e->getMessage();
             }
-            $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem, $message);
+            $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem);
         }
 
         return $this->json(new Paginator($preliminaryInvoicesDto));
