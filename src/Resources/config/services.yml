@@ -1124,7 +1124,6 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "@smartcard_service"
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1296,6 +1295,8 @@ services:
     smartcard_service:
         class: Utils\SmartcardService
         autowire: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
         public: true
 
     Mapper\VoucherRedemptionBatchMapper:
@@ -1375,6 +1376,10 @@ services:
         arguments: [ '@pdf_service', '@Twig\Environment' ]
         public: true
 
+    Repository\SmartcardInvoiceRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Invoice
 
     Repository\CommodityRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
