@@ -1414,3 +1414,4 @@ services:
              - '@translator'
 
     Component\Smartcard\Invoice\InvoiceFactory:
+        public: true
