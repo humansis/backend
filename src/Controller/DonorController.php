@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\DonorCreateInputType;
@@ -14,20 +13,26 @@ use InputType\DonorUpdateInputType;
 use Request\Pagination;
 use Entity\Donor;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Utils\DonorService;
 
 class DonorController extends AbstractController
 {
     /** @var UploadService */
     private $uploadService;
 
-    public function __construct(UploadService $uploadService)
+    /**
+     * @var DonorService
+     */
+    private $donorService;
+
+    public function __construct(UploadService $uploadService, DonorService $donorService)
     {
         $this->uploadService = $uploadService;
+        $this->donorService = $donorService;
     }
 
     /**
@@ -35,9 +40,9 @@ class DonorController extends AbstractController
      *
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return Response
      */
-    public function exports(Request $request): BinaryFileResponse
+    public function exports(Request $request): Response
     {
         $request->query->add(['donors' => true]);
 
@@ -86,7 +91,7 @@ class DonorController extends AbstractController
      */
     public function create(DonorCreateInputType $inputType): JsonResponse
     {
-        $donor = $this->get('project.donor_service')->create($inputType);
+        $donor = $this->donorService->create($inputType);
 
         return $this->json($donor);
     }
@@ -101,7 +106,7 @@ class DonorController extends AbstractController
      */
     public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
     {
-        $this->get('project.donor_service')->update($donor, $inputType);
+        $this->donorService->update($donor, $inputType);
 
         return $this->json($donor);
     }
@@ -115,7 +120,7 @@ class DonorController extends AbstractController
      */
     public function delete(Donor $object): JsonResponse
     {
-        $this->get('project.donor_service')->delete($object);
+        $this->donorService->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

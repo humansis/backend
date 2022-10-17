@@ -43,7 +43,7 @@ class Donor implements ExportableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="shortname", type="string", length=255, nullable=true)
+     * @ORM\Column(name="shortname", type="string", length=255)
      *
      */
     private $shortname;
@@ -78,12 +78,20 @@ class Donor implements ExportableInterface
     private $logo;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+    }
+
+    /**
      * Set id.
      *
      * @param $id
      * @return $this
      */
-    public function setId($id)
+    public function setId($id): Donor
     {
         $this->id = $id;
 
@@ -95,7 +103,7 @@ class Donor implements ExportableInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -107,7 +115,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setFullname($fullname)
+    public function setFullname(string $fullname): Donor
     {
         $this->fullname = $fullname;
 
@@ -119,7 +127,7 @@ class Donor implements ExportableInterface
      *
      * @return string
      */
-    public function getFullname()
+    public function getFullname(): string
     {
         return $this->fullname;
     }
@@ -131,7 +139,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setShortname($shortname)
+    public function setShortname(string $shortname): Donor
     {
         $this->shortname = $shortname;
 
@@ -143,7 +151,7 @@ class Donor implements ExportableInterface
      *
      * @return string
      */
-    public function getShortname()
+    public function getShortname(): string
     {
         return $this->shortname;
     }
@@ -155,7 +163,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function setDateAdded($dateAdded)
+    public function setDateAdded(DateTime $dateAdded): Donor
     {
         $this->dateAdded = $dateAdded;
 
@@ -167,7 +175,7 @@ class Donor implements ExportableInterface
      *
      * @return DateTime
      */
-    public function getDateAdded()
+    public function getDateAdded(): DateTime
     {
         return $this->dateAdded;
     }
@@ -175,11 +183,11 @@ class Donor implements ExportableInterface
     /**
      * Set notes.
      *
-     * @param string $notes
+     * @param string|null $notes
      *
      * @return Donor
      */
-    public function setNotes($notes)
+    public function setNotes(?string $notes): Donor
     {
         $this->notes = $notes;
 
@@ -189,19 +197,11 @@ class Donor implements ExportableInterface
     /**
      * Get notes.
      *
-     * @return string
+     * @return string|null
      */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
     }
 
     /**
@@ -211,7 +211,7 @@ class Donor implements ExportableInterface
      *
      * @return Donor
      */
-    public function addProject(Project $project)
+    public function addProject(Project $project): Donor
     {
         $this->projects[] = $project;
 
@@ -225,7 +225,7 @@ class Donor implements ExportableInterface
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeProject(Project $project)
+    public function removeProject(Project $project): bool
     {
         return $this->projects->removeElement($project);
     }

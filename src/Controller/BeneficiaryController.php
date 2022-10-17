@@ -8,9 +8,10 @@ use Entity\Phone;
 use Exception;
 use Exception\CsvParserException;
 use Repository\BeneficiaryRepository;
+use Repository\NationalIdRepository;
+use Repository\OrganizationRepository;
+use Repository\PhoneRepository;
 use Utils\BeneficiaryService;
-use Controller\ExportController;
-use Entity\Organization;
 use Pagination\Paginator;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
@@ -148,30 +149,34 @@ class BeneficiaryController extends AbstractController
      *
      * @param Request $request
      * @param BeneficiaryExportFilterInputType $inputType
+     * @param BeneficiaryRepository $beneficiaryRepository
      *
      * @return Response
      * @throws EntityNotFoundException
      * @throws EnumApiValueNoFoundException
      */
-    public function exports(Request $request, BeneficiaryExportFilterInputType $inputType): Response
-    {
+    public function exports(
+        Request $request,
+        BeneficiaryExportFilterInputType $inputType,
+        BeneficiaryRepository $beneficiaryRepository
+    ): Response {
         $sample = [];
         if ($inputType->hasIds()) {
             foreach ($inputType->getIds() as $id) {
-                $bnf = $this->getDoctrine()->getRepository(Beneficiary::class)->find($id);
+                $bnf = $beneficiaryRepository->find($id);
                 if (!$bnf) {
                     throw new EntityNotFoundException('Beneficiary with ID #' . $id . ' does not exists.');
                 }
 
                 $sample[] = [
-                    'gender' => PersonGender::valueToAPI($bnf->getGender()),
-                    'en_given_name' => $bnf->getEnGivenName(),
-                    'en_family_name' => $bnf->getEnFamilyName(),
-                    'local_given_name' => $bnf->getLocalGivenName(),
-                    'local_family_name' => $bnf->getLocalFamilyName(),
-                    'status' => (string) $bnf->getStatus(),
+                    'gender' => PersonGender::valueToAPI($bnf->getPerson()->getGender()),
+                    'en_given_name' => $bnf->getPerson()->getEnGivenName(),
+                    'en_family_name' => $bnf->getPerson()->getEnFamilyName(),
+                    'local_given_name' => $bnf->getPerson()->getLocalGivenName(),
+                    'local_family_name' => $bnf->getPerson()->getLocalFamilyName(),
+                    'status' => (string) $bnf->isHead(),
                     'residency_status' => $bnf->getResidencyStatus(),
-                    'date_of_birth' => $bnf->getDateOfBirth(),
+                    'date_of_birth' => $bnf->getPerson()->getDateOfBirth(),
                 ];
             }
         }
@@ -187,12 +192,16 @@ class BeneficiaryController extends AbstractController
      *
      * @param Assistance $assistance
      * @param Request $request
+     * @param OrganizationRepository $organizationRepository
      *
      * @return Response
      */
-    public function exportsByAssistance(Assistance $assistance, Request $request): Response
-    {
-        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+    public function exportsByAssistance(
+        Assistance $assistance,
+        Request $request,
+        OrganizationRepository $organizationRepository
+    ): Response {
+        $organization = $organizationRepository->findOneBy([]);
         $type = $request->query->get('type');
 
         $filename = $this->assistanceSpreadsheetExport->export($assistance, $organization, $type);
@@ -252,12 +261,15 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids")
      *
      * @param NationalIdFilterInputType $filter
+     * @param NationalIdRepository $nationalIdRepository
      *
      * @return JsonResponse
      */
-    public function nationalIds(NationalIdFilterInputType $filter): JsonResponse
-    {
-        $nationalIds = $this->getDoctrine()->getRepository(NationalId::class)->findByParams($filter);
+    public function nationalIds(
+        NationalIdFilterInputType $filter,
+        NationalIdRepository $nationalIdRepository
+    ): JsonResponse {
+        $nationalIds = $nationalIdRepository->findByParams($filter);
 
         return $this->json($nationalIds);
     }
@@ -278,12 +290,13 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries/phones")
      *
      * @param PhoneFilterInputType $filter
+     * @param PhoneRepository $phoneRepository
      *
      * @return JsonResponse
      */
-    public function phones(PhoneFilterInputType $filter): JsonResponse
+    public function phones(PhoneFilterInputType $filter, PhoneRepository $phoneRepository): JsonResponse
     {
-        $params = $this->getDoctrine()->getRepository(Phone::class)->findByParams($filter);
+        $params = $phoneRepository->findByParams($filter);
 
         return $this->json($params);
     }
@@ -339,12 +352,15 @@ class BeneficiaryController extends AbstractController
      * @Rest\Get("/web-app/v1/beneficiaries")
      *
      * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryRepository $beneficiaryRepository
      *
      * @return JsonResponse
      */
-    public function beneficiaryies(BeneficiaryFilterInputType $filter): JsonResponse
-    {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+    public function beneficiaries(
+        BeneficiaryFilterInputType $filter,
+        BeneficiaryRepository $beneficiaryRepository
+    ): JsonResponse {
+        $beneficiaries = $beneficiaryRepository->findByParams($filter);
 
         return $this->json($beneficiaries);
     }

@@ -13,13 +13,13 @@ class DonorUpdateInputType implements InputTypeInterface
      * @Assert\Type("string")
      * @Assert\Length(max="255")
      * @Assert\NotBlank()
-     * @Assert\NotNull()
      */
     private $fullname;
 
     /**
      * @Assert\Type("string")
      * @Assert\Length(max="255")
+     * @Assert\NotBlank()
      */
     private $shortname;
 
@@ -38,7 +38,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @return string
      */
-    public function getFullname()
+    public function getFullname(): string
     {
         return $this->fullname;
     }
@@ -46,7 +46,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @param string $fullname
      */
-    public function setFullname($fullname)
+    public function setFullname(string $fullname)
     {
         $this->fullname = $fullname;
     }
@@ -54,7 +54,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getShortname()
+    public function getShortname(): ?string
     {
         return $this->shortname;
     }
@@ -62,7 +62,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $shortname
      */
-    public function setShortname($shortname)
+    public function setShortname(?string $shortname)
     {
         $this->shortname = $shortname;
     }
@@ -70,7 +70,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
@@ -78,7 +78,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $notes
      */
-    public function setNotes($notes)
+    public function setNotes(?string $notes)
     {
         $this->notes = $notes;
     }
@@ -86,7 +86,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getLogo()
+    public function getLogo(): ?string
     {
         return $this->logo;
     }
@@ -94,7 +94,7 @@ class DonorUpdateInputType implements InputTypeInterface
     /**
      * @param string|null $logo
      */
-    public function setLogo($logo)
+    public function setLogo(?string $logo)
     {
         $this->logo = $logo;
     }

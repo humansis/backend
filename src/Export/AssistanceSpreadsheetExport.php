@@ -65,7 +65,7 @@ class AssistanceSpreadsheetExport
         $this->logger = $logger;
     }
 
-    public function export(Assistance $assistance, Organization $organization, string $filetype)
+    public function export(Assistance $assistance, Organization $organization, string $filetype): string
     {
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
             throw new InvalidArgumentException(
@@ -211,7 +211,7 @@ class AssistanceSpreadsheetExport
             }
 
             try {
-                $resource = Image::getImageResource($organization->getLogo());
+                $resource = Image::getImageResource($donor->getLogo());
                 $drawing = new MemoryDrawing();
                 $drawing->setCoordinates('J2');
                 $drawing->setImageResource($resource);
