@@ -149,6 +149,10 @@
         <source>Booklet</source>
         <target>Booklet</target>
       </trans-unit>
+      <trans-unit id="zO.NkUB" resname="camp">
+        <source>camp</source>
+        <target>camp</target>
+      </trans-unit>
       <trans-unit id="MBZTmBO" resname="Camp">
         <source>Camp</source>
         <target>Camp</target>
@@ -425,6 +429,10 @@
         <source>Export random sample</source>
         <target>Export random sample</target>
       </trans-unit>
+      <trans-unit id="ekrKpIu" resname="Export Random Sample">
+        <source>Export Random Sample</source>
+        <target>Export Random Sample</target>
+      </trans-unit>
       <trans-unit id="jJLuydq" resname="Ext">
         <source>Ext</source>
         <target>Ext</target>
@@ -433,9 +441,17 @@
         <source>External support</source>
         <target>External support</target>
       </trans-unit>
+      <trans-unit id="rirfJiQ" resname="External Support">
+        <source>External Support</source>
+        <target>External Support</target>
+      </trans-unit>
       <trans-unit id="yAqjpgv" resname="External support received type">
         <source>External support received type</source>
         <target>External support received type</target>
+      </trans-unit>
+      <trans-unit id="MzYT14o" resname="External Support Received Type">
+        <source>External Support Received Type</source>
+        <target>External Support Received Type</target>
       </trans-unit>
       <trans-unit id="VN7kL_t" resname="Family Name">
         <source>Family Name</source>
@@ -4330,8 +4346,8 @@ Size</source>
         <source>IDP Score</source>
         <target>IDP Score</target>
       </trans-unit>
-      <trans-unit id="AWMfq1R" resname="Import&amp;Compare">
-        <source>Import&amp;Compare</source>
+      <trans-unit id="ZoJ4wec" resname="Import &amp; Compare">
+        <source>Import &amp; Compare</source>
         <target><![CDATA[Import&Compare]]></target>
       </trans-unit>
       <trans-unit id="0SdtRVL" resname="incomeLevel">
@@ -5235,6 +5251,10 @@ Size</source>
       <trans-unit id="r40tAgY" resname="Number of beneficiaries">
         <source>Number of beneficiaries</source>
         <target>Number of beneficiaries</target>
+      </trans-unit>
+      <trans-unit id="0Yu_6W3" resname="Number of Beneficiaries">
+        <source>Number of Beneficiaries</source>
+        <target>Number of Beneficiaries</target>
       </trans-unit>
       <trans-unit id="1k09mXC" resname="Individuals">
         <source>Individuals</source>

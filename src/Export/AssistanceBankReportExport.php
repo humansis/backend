@@ -115,7 +115,7 @@ class AssistanceBankReportExport
         $worksheet->setCellValue('A1', $this->translator->trans('Ordinal number'));
         $worksheet->setCellValue('B1', $this->translator->trans('Recipient’s surname (Local family name)'));
         $worksheet->setCellValue('C1', $this->translator->trans('Recipient’s name (Local given name)'));
-        $worksheet->setCellValue('D1', $this->translator->trans('Recipient’s patronymic (Local parent\'s name)'));
+        $worksheet->setCellValue('D1', $this->translator->trans("Recipient’s patronymic (Local parent's name)"));
         $worksheet->setCellValue('E1', $this->translator->trans('Recipient’s RNTRC (Tax Number)'));
         $worksheet->setCellValue('F1', $this->translator->trans('Document type'));
         $worksheet->setCellValue('G1', $this->translator->trans('Document number'));
