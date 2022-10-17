@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance;
+use Entity\Assistance\ReliefPackage;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
@@ -38,13 +38,12 @@ class SmartcardDepositRepository extends EntityRepository
     /**
      * @param Beneficiary $beneficiary
      * @param Assistance $assistance
-     * @return Assistance\ReliefPackage|null
-     * @throws NonUniqueResultException
+     * @return ReliefPackage[]
      */
-    public function getByBeneficiaryAndAssistance(
+    public function getDepositsByBeneficiaryAndAssistance(
         Beneficiary $beneficiary,
         Assistance $assistance
-    ): ?Assistance\ReliefPackage {
+    ): array {
         $qb = $this->createQueryBuilder('sd');
         $qb
             ->leftJoin('sd.reliefPackage', 'rp')
@@ -54,7 +53,7 @@ class SmartcardDepositRepository extends EntityRepository
             ->andWhere('ab.beneficiary = :beneficiaryId')
             ->setParameter('beneficiaryId', $beneficiary->getId());
 
-        return $qb->getQuery()->getOneOrNullResult();
+        return $qb->getQuery()->getResult();
     }
 
     /**

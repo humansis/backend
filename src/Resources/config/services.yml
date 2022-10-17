@@ -1296,11 +1296,6 @@ services:
     smartcard_service:
         class: Utils\SmartcardService
         autowire: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
-            - '@voucher.purchase_service'
-            - '@Repository\SmartcardRepository'
-            - '@smartcard_purchase.repository'
         public: true
 
     Mapper\VoucherRedemptionBatchMapper:
@@ -1412,3 +1407,5 @@ services:
              - "@service_container"
              - '@Twig\Environment'
              - '@translator'
+
+    Component\Smartcard\Invoice\InvoiceFactory:

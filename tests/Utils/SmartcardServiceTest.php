@@ -2,6 +2,10 @@
 
 namespace Tests\Utils;
 
+use Component\Smartcard\Deposit\Exception\DoubledDepositException;
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedPurchaseException;
+use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
@@ -51,6 +55,11 @@ class SmartcardServiceTest extends KernelTestCase
     private $depositFactory;
 
     /**
+     * @var InvoiceFactory
+     */
+    private $invoiceFactory;
+
+    /**
      * @var User
      */
     private $user;
@@ -66,6 +75,7 @@ class SmartcardServiceTest extends KernelTestCase
 
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
         $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
+        $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -188,9 +198,12 @@ class SmartcardServiceTest extends KernelTestCase
      * @param array $expectedResults
      *
      * @throws EntityNotFoundException
+     * @throws InvalidArgumentException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws InvalidArgumentException
+     * @throws DoubledDepositException
+     * @throws AlreadyRedeemedPurchaseException
+     * @throws SmartcardPurchaseException
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
@@ -300,7 +313,7 @@ class SmartcardServiceTest extends KernelTestCase
             $batchRequest = new SmartcardInvoice();
             $batchRequest->setPurchases($preliminaryInvoice->getPurchaseIds());
 
-            $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
+            $batch = $this->invoiceFactory->create($this->vendor, $batchRequest, $admin);
 
             foreach ($batch->getPurchases() as $purchase) {
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");

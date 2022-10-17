@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Utils;
 
-use DateTime;
 use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
@@ -18,34 +16,23 @@ use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Entity\Assistance\ReliefPackage;
 use Entity\Commodity;
-use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardPurchaseInputType;
-use Entity\Project;
 use InputType\Smartcard\UpdateSmartcardInputType;
 use InvalidArgumentException;
 use LogicException;
 use Repository\BeneficiaryRepository;
-use Repository\ProjectRepository;
-use Repository\SmartcardDepositRepository;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Entity\User;
 use Entity\Smartcard;
-use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
-use Entity\Invoice;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 use InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use Model\PurchaseService;
-use Repository\SmartcardPurchaseRepository;
-use InputType\SmartcardInvoice as RedemptionBatchInput;
 use Repository\SmartcardRepository;
-use Utils\Exception\SmartcardPurchase\AlreadyRedeemedPurchaseException;
-use Utils\Exception\SmartcardPurchase\SmartcardPurchaseInconsistentValueException;
-use Utils\Exception\SmartcardPurchase\SmartcardPurchaseException;
 
 class SmartcardService
 {
@@ -61,41 +48,27 @@ class SmartcardService
     private $smartcardRepository;
 
     /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
      * @var BeneficiaryRepository
      */
     private $beneficiaryRepository;
 
     /**
-     * @var ProjectRepository
+     * @var PreliminaryInvoiceRepository
      */
-    private $projectRepository;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
+    private $preliminaryInvoiceRepository;
 
     public function __construct(
         EntityManager $em,
         PurchaseService $purchaseService,
         SmartcardRepository $smartcardRepository,
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
         BeneficiaryRepository $beneficiaryRepository,
-        ProjectRepository $projectRepository,
-        SmartcardDepositRepository $smartcardDepositRepository
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
         $this->smartcardRepository = $smartcardRepository;
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->projectRepository = $projectRepository;
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
+        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
     }
 
     /**
@@ -133,7 +106,6 @@ class SmartcardService
      * @param UpdateSmartcardInputType $updateSmartcardInputType
      *
      * @return Smartcard
-     * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
      * @throws OptimisticLockException
@@ -284,107 +256,7 @@ class SmartcardService
 
     public function getRedemptionCandidates(Vendor $vendor): array
     {
-        return $this->em->getRepository(PreliminaryInvoice::class)->findBy(['vendor' => $vendor]);
-    }
-
-    /**
-     * @param Vendor $vendor
-     * @param RedemptionBatchInput $inputBatch
-     * @param User $redeemedBy
-     *
-     * @return Invoice
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws SmartcardPurchaseException
-     * @throws SmartcardPurchaseInconsistentValueException
-     * @throws NonUniqueResultException
-     */
-    public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
-    {
-        $purchases = $this->smartcardPurchaseRepository->findBy([
-            'id' => $inputBatch->getPurchases(),
-        ], ['id' => 'asc']);
-
-        if (count($purchases) === 0) {
-            throw new SmartcardPurchaseException('There is no purchase to redeem.');
-        }
-
-        // purchases validation
-        $currency = null;
-        $projectId = null;
-        foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                throw new SmartcardPurchaseInconsistentValueException(
-                    "Inconsistent vendor and purchase' #{$purchase->getId()} vendor"
-                );
-            }
-
-            if (null !== $purchase->getRedeemedAt()) {
-                throw new AlreadyRedeemedPurchaseException($purchase);
-            }
-
-            //currency check
-            if (null === $currency) {
-                $currency = $purchase->getCurrency();
-            } else {
-                if ($purchase->getCurrency() != $currency) {
-                    throw new SmartcardPurchaseInconsistentValueException(
-                        "Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}"
-                    );
-                }
-            }
-
-            //project check
-            $project = $purchase->getAssistance()->getProject();
-            if (null === $project) {
-                throw new SmartcardPurchaseException("Purchase #{$purchase->getId()} has no project.");
-            }
-            if (null === $projectId) {
-                $projectId = $project->getId();
-            } else {
-                if ($project->getId() !== $projectId) {
-                    throw new SmartcardPurchaseInconsistentValueException(
-                        "Project #{$project->getId()} in Purchase #{$purchase->getId()} is different than project of others: {$projectId}"
-                    );
-                }
-            }
-
-            //deposit check
-            $deposit = $this->smartcardDepositRepository->getByBeneficiaryAndAssistance(
-                $purchase->getSmartcard()->getBeneficiary(),
-                $purchase->getAssistance()
-            );
-            if (null === $deposit) {
-                throw new SmartcardPurchaseException(
-                    "There is no connected deposit with purchase #{$purchase->getId()}"
-                );
-            }
-        }
-
-        /** @var Project|null $project */
-        $project = $this->projectRepository->find($projectId);
-
-        $redemptionBath = new Invoice(
-            $vendor,
-            $project,
-            new DateTime(),
-            $redeemedBy,
-            $this->smartcardPurchaseRepository->countPurchasesValue($purchases),
-            $currency,
-            $vendor->getContractNo(),
-            $vendor->getVendorNo(),
-            $purchases
-        );
-
-        foreach ($purchases as $purchase) {
-            $purchase->setRedemptionBatch($redemptionBath);
-        }
-
-        $this->em->persist($redemptionBath);
-        $this->em->flush();
-
-        return $redemptionBath;
+        return $this->preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
     }
 
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string

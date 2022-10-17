@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
-use Doctrine\ORM\NonUniqueResultException;
+use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use InputType\SmartcardInvoice;
@@ -21,10 +22,6 @@ use Controller\VendorApp\SmartcardController;
 use Entity\Invoice;
 use Entity\Vendor;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Utils\Exception\SmartcardPurchase\AlreadyRedeemedPurchaseException;
-use Utils\Exception\SmartcardPurchase\SmartcardPurchaseException;
-use Utils\Exception\SmartcardPurchase\SmartcardPurchaseInconsistentValueException;
-use Utils\SmartcardService;
 
 class InvoiceController extends AbstractWebAppController
 {
@@ -86,24 +83,22 @@ class InvoiceController extends AbstractWebAppController
      *
      * @param Vendor $vendor
      * @param SmartcardRedemptionBatchCreateInputType $inputType
-     * @param SmartcardService $smartcardService
-     *
+     * @param InvoiceFactory $invoiceFactory
      * @return JsonResponse
-     * @throws NonUniqueResultException
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function create(
         Vendor $vendor,
         SmartcardRedemptionBatchCreateInputType $inputType,
-        SmartcardService $smartcardService
+        InvoiceFactory $invoiceFactory
     ): JsonResponse {
         //backward compatibility
         $newInvoice = new SmartcardInvoice();
         $newInvoice->setPurchases($inputType->getPurchaseIds());
 
         try {
-            $invoice = $smartcardService->redeem($vendor, $newInvoice, $this->getUser());
+            $invoice = $invoiceFactory->create($vendor, $newInvoice, $this->getUser());
         } catch (SmartcardPurchaseException $e) {
             throw new BadRequestHttpException($e->getMessage(), $e);
         }

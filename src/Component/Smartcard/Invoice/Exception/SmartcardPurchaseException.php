@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Utils\Exception\SmartcardPurchase;
+namespace Component\Smartcard\Invoice\Exception;
 
 use Exception;
 

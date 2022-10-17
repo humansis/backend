@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace DataFixtures;
 
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedPurchaseException;
+use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectManager;
+use Entity\User;
+use Entity\Vendor;
 use InputType\SmartcardInvoice;
 use Repository\SmartcardPurchaseRepository;
-use Utils\SmartcardService;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
 {
     /** @var string */
     private $environment;
-
-    /** @var SmartcardService */
-    private $smartcardService;
 
     /**
      * @var SmartcardPurchaseRepository
@@ -25,22 +28,31 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     private $smartcardPurchaseRepository;
 
     /**
+     * @var InvoiceFactory
+     */
+    private $invoiceFactory;
+
+    /**
      * @param string $environment
-     * @param SmartcardService $smartcardService
      * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
+     * @param InvoiceFactory $invoiceFactory
      */
     public function __construct(
         string $environment,
-        SmartcardService $smartcardService,
-        SmartcardPurchaseRepository $smartcardPurchaseRepository
+        SmartcardPurchaseRepository $smartcardPurchaseRepository,
+        InvoiceFactory $invoiceFactory
     ) {
         $this->environment = $environment;
-        $this->smartcardService = $smartcardService;
         $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
+        $this->invoiceFactory = $invoiceFactory;
     }
 
     /**
      * @param ObjectManager $manager
+     * @throws AlreadyRedeemedPurchaseException
+     * @throws SmartcardPurchaseException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function load(ObjectManager $manager)
     {
@@ -52,45 +64,23 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
         // set up seed will make random values will be same for each run of fixtures
         srand(42);
 
+        /**
+         * @var User $adminUser
+         */
         $adminUser = $this->getReference('user_admin');
 
-        $purchases = $this->smartcardPurchaseRepository->findBy([
-            'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_KHM),
-            'redemptionBatch' => null,
-        ], ['id' => 'asc']);
-        $purchaseIds = [];
-        foreach ($purchases as $purchase) {
-            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
-        }
+        /**
+         * @var Vendor $khmVendor
+         */
+        $khmVendor = $this->getReference(VendorFixtures::REF_VENDOR_KHM);
 
-        foreach ($purchaseIds as $projectId => $ids) {
-            $invoice = new SmartcardInvoice();
-            $invoice->setPurchases(array_slice($ids, 1, 5));
-            $this->smartcardService->redeem(
-                $this->getReference(VendorFixtures::REF_VENDOR_KHM),
-                $invoice,
-                $adminUser
-            );
-        }
+        /**
+         * @var Vendor $syrVendor
+         */
+        $syrVendor = $this->getReference(VendorFixtures::REF_VENDOR_SYR);
 
-        $purchases = $this->smartcardPurchaseRepository->findBy([
-            'vendor' => $this->getReference(VendorFixtures::REF_VENDOR_SYR),
-            'redemptionBatch' => null,
-        ], ['id' => 'asc']);
-        $purchaseIds = [];
-        foreach ($purchases as $purchase) {
-            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
-        }
-
-        foreach ($purchaseIds as $projectId => $ids) {
-            $invoice = new SmartcardInvoice();
-            $invoice->setPurchases(array_slice($ids, 1, 5));
-            $this->smartcardService->redeem(
-                $this->getReference(VendorFixtures::REF_VENDOR_SYR),
-                $invoice,
-                $adminUser
-            );
-        }
+        $this->createInvoices($khmVendor, $adminUser);
+        $this->createInvoices($syrVendor, $adminUser);
     }
 
     public function getDependencies(): array
@@ -100,5 +90,36 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
             VendorFixtures::class,
             UserFixtures::class,
         ];
+    }
+
+    /**
+     * @param Vendor $vendor
+     * @param User $user
+     * @return void
+     * @throws AlreadyRedeemedPurchaseException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws SmartcardPurchaseException
+     */
+    private function createInvoices(Vendor $vendor, User $user): void
+    {
+        $purchases = $this->smartcardPurchaseRepository->findBy([
+            'vendor' => $vendor,
+            'redemptionBatch' => null,
+        ], ['id' => 'asc']);
+        $purchaseIds = [];
+        foreach ($purchases as $purchase) {
+            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
+        }
+
+        foreach ($purchaseIds as $projectId => $ids) {
+            $invoice = new SmartcardInvoice();
+            $invoice->setPurchases(array_slice($ids, 1, 5));
+            $this->invoiceFactory->create(
+                $vendor,
+                $invoice,
+                $user
+            );
+        }
     }
 }
