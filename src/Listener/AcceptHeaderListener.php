@@ -3,9 +3,9 @@
 namespace Listener;
 
 use Exception;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AcceptHeaderListener
 {
@@ -22,11 +22,11 @@ class AcceptHeaderListener
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      *
      * @throws Exception
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         if (HttpKernelInterface::SUB_REQUEST === $event->getRequestType()) {
             return;

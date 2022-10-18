@@ -7,9 +7,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
-use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 use function is_object;
 
@@ -27,7 +25,7 @@ class ResponseListener
         $this->container = $container;
     }
 
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         $response = $event->getResponse();
         $request = $event->getRequest();
