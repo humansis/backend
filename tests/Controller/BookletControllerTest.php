@@ -125,6 +125,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToBeneficiary()
     {
+        $doctrine = self::$container->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -144,7 +145,8 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1)[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request(
             'PUT',
@@ -164,6 +166,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToCommunity()
     {
+        $doctrine = self::$container->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -183,7 +186,8 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1)[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request(
             'PUT',
@@ -203,6 +207,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToInstitution()
     {
+        $doctrine = self::$container->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -222,7 +227,8 @@ class BookletControllerTest extends BMSServiceTestCase
             return;
         }
 
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1)[0];
+        $booklet = $doctrine->getRepository(Booklet::class)
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
 
         $this->request(
             'PUT',
