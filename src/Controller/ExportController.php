@@ -8,7 +8,7 @@ use Enum\AssistanceTargetType;
 use Exception;
 use Repository\AssistanceRepository;
 use Utils\AssistanceService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
