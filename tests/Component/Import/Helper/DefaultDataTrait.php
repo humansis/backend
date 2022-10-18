@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Tests\Component\Import\Helper;
 
 use DateTime;
+use Entity\Address;
 use Entity\Beneficiary;
 use Entity\Household;
+use Entity\HouseholdLocation;
 use Entity\NationalId;
 use Entity;
-use Entity\ImportQueue;
 use Enum\ImportState;
 use Enum\NationalIdType;
 use Enum\PersonGender;
 use InputType\Import;
 use Entity\Project;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Entity\User;
@@ -33,6 +35,31 @@ trait DefaultDataTrait
         $hh->setIncome(0);
         $hh->setNotes('default HH in ' . __CLASS__);
         $hh->setCountryIso3($project->getCountryIso3());
+
+        $householdLocation = new HouseholdLocation();
+        $householdLocation->setLocationGroup(HouseholdLocation::LOCATION_GROUP_CURRENT);
+        $householdLocation->setType(HouseholdLocation::LOCATION_TYPE_RESIDENCE);
+
+        $location = $this->entityManager->getRepository(Entity\Location::class)->findOneBy([
+            'countryIso3' => $project->getCountryIso3(),
+        ]);
+
+        if ($location === null) {
+            throw new RuntimeException(
+                "Cannot create household. There is no location in {$project->getCountryIso3()}"
+            );
+        }
+
+        $householdLocation->setAddress(
+            Address::create(
+                'Fake st',
+                '1234',
+                '420 00',
+                $location
+            )
+        );
+
+        $hh->addHouseholdLocation($householdLocation);
 
         $hhh = new Beneficiary();
         $hhh->setHousehold($hh);
