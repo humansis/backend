@@ -82,7 +82,6 @@ final class ScoringService
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
             if (!isset($scoring)) {
                 $protocol = new ScoringProtocol();
-                $protocol->addScore('test', 99);
             } else {
                 $protocol = $this->resolver->compute(
                     $beneficiary->getHousehold(),

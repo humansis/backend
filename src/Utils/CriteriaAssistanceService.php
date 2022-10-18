@@ -113,7 +113,6 @@ class CriteriaAssistanceService
 
                 if (!isset($scoring)) {
                     $protocol = new ScoringProtocol();
-                    $protocol->addScore('defalut', 0);
                 } else {
                     $protocol = $this->resolver->compute(
                         $beneficiary->getHousehold(),
