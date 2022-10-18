@@ -405,7 +405,11 @@ class Assistance
         }
 
         if ($target->hasDistributionStarted()) {
-            throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
+            if ($target->getBeneficiary() instanceof Beneficiary) {
+                throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
+            } else {
+                throw new \InvalidArgumentException("this Beneficiary  can\'t be removed from assistance. He has already received a relief.");
+            }
         }
         $target->setRemoved(true)
             ->setJustification($justification);
