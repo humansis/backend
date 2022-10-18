@@ -146,7 +146,7 @@ class BookletControllerTest extends BMSServiceTestCase
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)
-            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1);
 
         $this->request(
             'PUT',
@@ -187,7 +187,7 @@ class BookletControllerTest extends BMSServiceTestCase
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)
-            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1);
 
         $this->request(
             'PUT',
@@ -228,7 +228,7 @@ class BookletControllerTest extends BMSServiceTestCase
         }
 
         $booklet = $doctrine->getRepository(Booklet::class)
-            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'])[0];
+            ->findBy(['status' => Booklet::UNASSIGNED], ['id' => 'asc'], 1);
 
         $this->request(
             'PUT',
