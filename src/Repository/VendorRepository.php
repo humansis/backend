@@ -4,7 +4,7 @@ namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Entity\Location;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Entity\Vendor;
 use Enum\EnumValueNoFoundException;
 use Enum\VendorInvoicingState;
 use Generator;
@@ -83,15 +83,14 @@ class VendorRepository extends EntityRepository
      * @param VendorOrderInputType|null $orderBy
      * @param Pagination|null $pagination
      *
-     * @return Paginator
-     * @throws EnumValueNoFoundException
+     * @return Vendor[]
      */
     public function findByParams(
         ?string $iso3,
         ?VendorFilterInputType $filter = null,
         ?VendorOrderInputType $orderBy = null,
         ?Pagination $pagination = null
-    ): Paginator {
+    ): array {
         $qb = $this->createQueryBuilder('v')
             ->andWhere('v.archived = 0')
             ->leftJoin('v.location', 'l')
@@ -120,24 +119,6 @@ class VendorRepository extends EntityRepository
                 )
                     ->setParameter('fulltextId', $filter->getFulltext())
                     ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
-            }
-
-            if ($filter->hasInvoicing()) {
-                $preliminaryInvoiceQb = $this->preliminaryInvoiceRepository->provideQueryBuilder('pi')
-                    ->select('IDENTITY(pi.vendor)');
-                switch ($filter->getInvoicing()) {
-                    case VendorInvoicingState::INVOICED:
-                        $qb->andWhere("v.id NOT IN  ({$preliminaryInvoiceQb->getDQL()})");
-                        break;
-                    case VendorInvoicingState::SYNC_REQUIRED:
-                        $preliminaryInvoiceQb->andWhere('pi.project IS NULL');
-                        $qb->andWhere("v.id IN ({$preliminaryInvoiceQb->getDQL()})");
-                        break;
-                    case VendorInvoicingState::TO_REDEEM:
-                        $preliminaryInvoiceQb->andWhere('pi.project IS NOT NULL');
-                        $qb->andWhere("v.id IN ({$preliminaryInvoiceQb->getDQL()})");
-                        break;
-                }
             }
 
             $locations = [];
@@ -208,7 +189,7 @@ class VendorRepository extends EntityRepository
             }
         }
 
-        return new Paginator($qb);
+        return $qb->getQuery()->getResult();
     }
 
     /**

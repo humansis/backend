@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
-use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
 use Component\Smartcard\Invoice\PreliminaryInvoiceDto;
+use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use InputType\SmartcardInvoice;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
-use Enum\VendorInvoicingState;
-use InputType\SmartcardRedemptionBatchCreateInputType;
+use InputType\SmartcardInvoiceCreateInputType;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Repository\SmartcardInvoiceRepository;
 use Request\Pagination;
@@ -83,7 +82,7 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Post("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
      * @param Vendor $vendor
-     * @param SmartcardRedemptionBatchCreateInputType $inputType
+     * @param SmartcardInvoiceCreateInputType $inputType
      * @param InvoiceFactory $invoiceFactory
      * @return JsonResponse
      * @throws ORMException
@@ -91,16 +90,12 @@ class InvoiceController extends AbstractWebAppController
      */
     public function create(
         Vendor $vendor,
-        SmartcardRedemptionBatchCreateInputType $inputType,
+        SmartcardInvoiceCreateInputType $inputType,
         InvoiceFactory $invoiceFactory
     ): JsonResponse {
-        //backward compatibility
-        $newInvoice = new SmartcardInvoice();
-        $newInvoice->setPurchases($inputType->getPurchaseIds());
-
         try {
-            $invoice = $invoiceFactory->create($vendor, $newInvoice, $this->getUser());
-        } catch (SmartcardPurchaseException $e) {
+            $invoice = $invoiceFactory->create($vendor, $inputType, $this->getUser());
+        } catch (NotRedeemableInvoiceException $e) {
             throw new BadRequestHttpException($e->getMessage(), $e);
         }
 
@@ -111,26 +106,26 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
-     * @param PreliminaryInvoiceRepository $invoiceRepository
+     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      * @param InvoiceFactory $invoiceFactory
      * @return JsonResponse
      */
     public function preliminaryInvoices(
         Vendor $vendor,
-        PreliminaryInvoiceRepository $invoiceRepository,
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository,
         InvoiceFactory $invoiceFactory
     ): JsonResponse {
-        $preliminaryInvoices = $invoiceRepository->findByVendorAndState($vendor);
+        $preliminaryInvoices = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
 
         $preliminaryInvoicesDto = [];
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
             try {
-                $invoiceFactory->checkIfPurchasesCouldBeInvoiced(
+                $invoiceFactory->checkIfPurchasesCanBeInvoiced(
                     $vendor,
                     $preliminaryInvoice->getPurchaseIds()
                 );
                 $canRedeem = true;
-            } catch (SmartcardPurchaseException $e) {
+            } catch (NotRedeemableInvoiceException $e) {
                 $canRedeem = false;
             }
             $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem);
@@ -156,14 +151,13 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
-     * @param PreliminaryInvoiceRepository $invoiceRepository
-     *
+     * @param PreliminaryInvoiceService $preliminaryInvoiceService
      * @return JsonResponse
      */
-    public function preliminariesForVendorApp(Vendor $vendor, PreliminaryInvoiceRepository $invoiceRepository): Response
+    public function preliminariesForVendorApp(Vendor $vendor, PreliminaryInvoiceService $preliminaryInvoiceService): Response
     {
-        $invoices = $invoiceRepository->findByVendorAndState($vendor, VendorInvoicingState::TO_REDEEM);
+        $preliminaryInvoices = $preliminaryInvoiceService->getRedeemablePreliminaryInvoicesByVendor($vendor);
 
-        return $this->json($invoices, 200, [], ['version' => 3]);
+        return $this->json($preliminaryInvoices, 200, [], ['version' => 3]);
     }
 }

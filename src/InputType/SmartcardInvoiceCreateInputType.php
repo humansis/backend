@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Assert\GroupSequence({"SmartcardRedemptionBatchCreateInputType", "Strict"})
  */
-class SmartcardRedemptionBatchCreateInputType implements InputTypeInterface
+class SmartcardInvoiceCreateInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("array")

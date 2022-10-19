@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DataFixtures;
 
-use Component\Smartcard\Invoice\Exception\AlreadyRedeemedPurchaseException;
-use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
+use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -14,7 +14,7 @@ use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectManager;
 use Entity\User;
 use Entity\Vendor;
-use InputType\SmartcardInvoice;
+use InputType\SmartcardInvoiceCreateInputType;
 use Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
@@ -49,8 +49,9 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
 
     /**
      * @param ObjectManager $manager
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws SmartcardPurchaseException
+     *
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -95,11 +96,12 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     /**
      * @param Vendor $vendor
      * @param User $user
+     *
      * @return void
-     * @throws AlreadyRedeemedPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function createInvoices(Vendor $vendor, User $user): void
     {
@@ -113,8 +115,8 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
         }
 
         foreach ($purchaseIds as $projectId => $ids) {
-            $invoice = new SmartcardInvoice();
-            $invoice->setPurchases(array_slice($ids, 1, 5));
+            $invoice = new SmartcardInvoiceCreateInputType();
+            $invoice->setPurchaseIds(array_slice($ids, 1, 5));
             $this->invoiceFactory->create(
                 $vendor,
                 $invoice,

@@ -6,7 +6,7 @@ namespace Component\Smartcard\Invoice\Exception;
 
 use Entity\SmartcardPurchase;
 
-class AlreadyRedeemedPurchaseException extends SmartcardPurchaseException
+class AlreadyRedeemedInvoiceException extends NotRedeemableInvoiceException
 {
     public function __construct(SmartcardPurchase $smartcardPurchase)
     {

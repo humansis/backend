@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Invoice;
 
-use Component\Smartcard\Invoice\Exception\AlreadyRedeemedPurchaseException;
-use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
+use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Invoice;
 use Entity\Project;
+use Entity\Smartcard\PreliminaryInvoice;
 use Entity\SmartcardPurchase;
 use Entity\User;
 use Entity\Vendor;
-use InputType\SmartcardInvoice;
+use InputType\SmartcardInvoiceCreateInputType;
 use Repository\SmartcardDepositRepository;
 use Repository\SmartcardInvoiceRepository;
 use Repository\SmartcardPurchaseRepository;
@@ -68,17 +69,17 @@ class InvoiceFactory
 
     /**
      * @param Vendor $vendor
-     * @param SmartcardInvoice $invoiceInputType
+     * @param SmartcardInvoiceCreateInputType $invoiceInputType
      * @param User $redeemedBy
      * @return Invoice
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws SmartcardPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function create(Vendor $vendor, SmartcardInvoice $invoiceInputType, User $redeemedBy): Invoice
+    public function create(Vendor $vendor, SmartcardInvoiceCreateInputType $invoiceInputType, User $redeemedBy): Invoice
     {
-        $this->initialize($vendor, $invoiceInputType->getPurchases());
+        $this->initialize($vendor, $invoiceInputType->getPurchaseIds());
         $this->checkPurchases();
 
         $invoice = new Invoice(
@@ -105,10 +106,10 @@ class InvoiceFactory
      * @param Vendor $vendor
      * @param int[] $purchaseIds
      * @return bool
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws SmartcardPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      */
-    public function checkIfPurchasesCouldBeInvoiced(Vendor $vendor, array $purchaseIds): bool
+    public function checkIfPurchasesCanBeInvoiced(Vendor $vendor, array $purchaseIds): bool
     {
         $this->initialize($vendor, $purchaseIds);
         $this->checkPurchases();
@@ -120,13 +121,13 @@ class InvoiceFactory
      * @param Vendor $vendor
      * @param int[] $purchaseIds
      * @return void
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function initialize(Vendor $vendor, array $purchaseIds): void
     {
         $this->purchases = $this->loadPurchases($purchaseIds);
         if (count($this->purchases) === 0) {
-            throw new SmartcardPurchaseException('There is no purchase to redeem.');
+            throw new NotRedeemableInvoiceException('There is no purchase to redeem.');
         }
 
         $this->vendor = $vendor;
@@ -134,14 +135,14 @@ class InvoiceFactory
         $assistance = $this->purchases[0]->getAssistance();
         $this->project = $assistance ? $assistance->getProject() : null;
         if (!$this->project) {
-            throw new SmartcardPurchaseException("Purchase #{$this->purchases[0]->getId()} has no project.");
+            throw new NotRedeemableInvoiceException("Purchase #{$this->purchases[0]->getId()} has no project.");
         }
     }
 
     /**
      * @return void
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws SmartcardPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      */
     private function checkPurchases()
     {
@@ -157,7 +158,7 @@ class InvoiceFactory
     /**
      * @param SmartcardPurchase $smartcardPurchase
      * @return void
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function checkDeposits(SmartcardPurchase $smartcardPurchase): void
     {
@@ -166,7 +167,7 @@ class InvoiceFactory
             $smartcardPurchase->getAssistance()
         );
         if (count($deposits) === 0) {
-            throw new SmartcardPurchaseException(
+            throw new NotRedeemableInvoiceException(
                 "There is no connected deposit with purchase #{$smartcardPurchase->getId()}"
             );
         }
@@ -175,7 +176,7 @@ class InvoiceFactory
     /**
      * @param SmartcardPurchase $smartcardPurchase
      * @return void
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function checkProjectConsistency(SmartcardPurchase $smartcardPurchase): void
     {
@@ -185,10 +186,10 @@ class InvoiceFactory
             $project = $assistance->getProject();
         }
         if (!$project) {
-            throw new SmartcardPurchaseException("Purchase #{$smartcardPurchase->getId()} has no project.");
+            throw new NotRedeemableInvoiceException("Purchase #{$smartcardPurchase->getId()} has no project.");
         }
         if ($project->getId() !== $this->project->getId()) {
-            throw new SmartcardPurchaseException(
+            throw new NotRedeemableInvoiceException(
                 "Purchases have inconsistent projects. {$project->getId()} in {$smartcardPurchase->getId()} is different than {$this->project->getId()}"
             );
         }
@@ -197,12 +198,12 @@ class InvoiceFactory
     /**
      * @param SmartcardPurchase $smartcardPurchase
      * @return void
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function checkCurrencyConsistency(SmartcardPurchase $smartcardPurchase): void
     {
         if ($smartcardPurchase->getCurrency() !== $this->currency) {
-            throw new SmartcardPurchaseException(
+            throw new NotRedeemableInvoiceException(
                 "Purchases have inconsistent currencies. {$smartcardPurchase->getCurrency()} in {$smartcardPurchase->getId()} is different than $this->currency"
             );
         }
@@ -211,24 +212,24 @@ class InvoiceFactory
     /**
      * @param SmartcardPurchase $smartcardPurchase
      * @return void
-     * @throws AlreadyRedeemedPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
      */
     private function checkIfPurchaseWasNotRedeemed(SmartcardPurchase $smartcardPurchase): void
     {
         if ($smartcardPurchase->getRedeemedAt()) {
-            throw new AlreadyRedeemedPurchaseException($smartcardPurchase);
+            throw new AlreadyRedeemedInvoiceException($smartcardPurchase);
         }
     }
 
     /**
      * @param SmartcardPurchase $smartcardPurchase
      * @return void
-     * @throws SmartcardPurchaseException
+     * @throws NotRedeemableInvoiceException
      */
     private function checkVendorConsistency(SmartcardPurchase $smartcardPurchase): void
     {
         if ($smartcardPurchase->getVendor()->getId() !== $this->vendor->getId()) {
-            throw new SmartcardPurchaseException(
+            throw new NotRedeemableInvoiceException(
                 "Inconsistent vendor and purchase in purchase #{$smartcardPurchase->getId()}. Vendor should be {$this->vendor->getId()}"
             );
         }

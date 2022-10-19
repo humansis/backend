@@ -1415,3 +1415,5 @@ services:
 
     Component\Smartcard\Invoice\InvoiceFactory:
         public: true
+
+    Component\Smartcard\Invoice\PreliminaryInvoiceService:

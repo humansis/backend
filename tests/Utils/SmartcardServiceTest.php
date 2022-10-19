@@ -3,8 +3,8 @@
 namespace Tests\Utils;
 
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Component\Smartcard\Invoice\Exception\AlreadyRedeemedPurchaseException;
-use Component\Smartcard\Invoice\Exception\SmartcardPurchaseException;
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
+use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
 use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -24,6 +24,7 @@ use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
@@ -32,7 +33,6 @@ use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\Vendor;
 use InputType\SmartcardPurchase;
-use InputType\SmartcardInvoice;
 use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
@@ -202,8 +202,8 @@ class SmartcardServiceTest extends KernelTestCase
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws DoubledDepositException
-     * @throws AlreadyRedeemedPurchaseException
-     * @throws SmartcardPurchaseException
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
@@ -310,8 +310,8 @@ class SmartcardServiceTest extends KernelTestCase
         }
         // redeem test
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $batchRequest = new SmartcardInvoice();
-            $batchRequest->setPurchases($preliminaryInvoice->getPurchaseIds());
+            $batchRequest = new SmartcardInvoiceCreateInputType();
+            $batchRequest->setPurchaseIds($preliminaryInvoice->getPurchaseIds());
 
             $batch = $this->invoiceFactory->create($this->vendor, $batchRequest, $admin);
 
