@@ -5,12 +5,31 @@ declare(strict_types=1);
 namespace Controller\VendorApp;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Symfony\Component\Serializer\SerializerInterface;
+use Utils\BookletService;
 
 class BookletController extends AbstractVendorAppController
 {
+    /** @var BookletService */
+    private $bookletService;
+
+    /** @var SerializerInterface */
+    private $serializer;
+
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(BookletService $bookletService, SerializerInterface $serializer, LoggerInterface $logger)
+    {
+        $this->bookletService = $bookletService;
+        $this->serializer = $serializer;
+        $this->logger = $logger;
+    }
+
     /**
      * Get booklets that have been deactivated
      *
@@ -22,12 +41,12 @@ class BookletController extends AbstractVendorAppController
     public function vendorGetDeactivatedAction(Request $request)
     {
         try {
-            $booklets = $this->get('voucher.booklet_service')->findDeactivated();
+            $booklets = $this->bookletService->findDeactivated();
         } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($booklets, 'json', ['groups' => ['FullBooklet']]);
 
         return new Response($json);
     }
@@ -43,7 +62,7 @@ class BookletController extends AbstractVendorAppController
     public function vendorGetProtectedAction(Request $request)
     {
         try {
-            $booklets = $this->get('voucher.booklet_service')->findProtected();
+            $booklets = $this->bookletService->findProtected();
         } catch (Exception $exception) {
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -56,7 +75,7 @@ class BookletController extends AbstractVendorAppController
             ];
         }
 
-        $json = $this->get('serializer')->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
+        $json = $this->serializer->serialize($bookletPasswords, 'json', ['groups' => ['FullBooklet']]);
 
         return new Response($json);
     }
@@ -73,9 +92,9 @@ class BookletController extends AbstractVendorAppController
         try {
             $data = $request->request->all();
             $bookletCodes = $data['bookletCodes'];
-            $this->get('voucher.booklet_service')->deactivateMany($bookletCodes);
+            $this->bookletService->deactivateMany($bookletCodes);
         } catch (Exception $exception) {
-            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            $this->logger->error('exception', [$exception->getMessage()]);
 
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

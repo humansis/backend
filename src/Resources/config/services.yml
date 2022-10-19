@@ -1249,6 +1249,9 @@ services:
         arguments: ['%aws_access_key_id%', '%aws_secret_access_key%', '%aws_s3_region%', '@service_container' ]
         public: true
 
+    Model\PurchaseService:
+        alias: voucher.purchase_service
+
     voucher.purchase_service:
         class: Model\PurchaseService
         public: true
