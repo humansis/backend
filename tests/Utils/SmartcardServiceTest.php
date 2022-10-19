@@ -26,6 +26,7 @@ use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
@@ -64,6 +65,11 @@ class SmartcardServiceTest extends KernelTestCase
      */
     private $user;
 
+    /**
+     * @var PreliminaryInvoiceRepository
+     */
+    private $preliminaryInvoiceRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -76,6 +82,7 @@ class SmartcardServiceTest extends KernelTestCase
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
         $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
         $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
+        $this->preliminaryInvoiceRepository = static::$kernel->getContainer()->get(PreliminaryInvoiceRepository::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -287,7 +294,7 @@ class SmartcardServiceTest extends KernelTestCase
             $date->modify('+1 day');
         }
         /** @var PreliminaryInvoice[] $preliminaryInvoices */
-        $preliminaryInvoices = $this->smartcardService->getRedemptionCandidates($this->vendor);
+        $preliminaryInvoices = $this->preliminaryInvoiceRepository->findBy(['vendor' => $this->vendor]);
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
@@ -677,7 +684,7 @@ class SmartcardServiceTest extends KernelTestCase
 
         foreach ($expectedVendorResults as $vendorId => $values) {
             $vendor = $this->em->getRepository(Vendor::class)->find($vendorId);
-            $preliminaryInvoice = $this->smartcardService->getRedemptionCandidates($vendor);
+            $preliminaryInvoice = $this->preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
             if (is_array($values)) {
                 $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
                 /** @var PreliminaryInvoice $invoice */

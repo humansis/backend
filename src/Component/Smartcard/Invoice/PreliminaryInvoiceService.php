@@ -33,6 +33,30 @@ class PreliminaryInvoiceService
 
     /**
      * @param Vendor $vendor
+     * @return PreliminaryInvoiceDto[]
+     */
+    public function getArrayOfPreliminaryInvoicesDtoByVendor(Vendor $vendor): array
+    {
+        $preliminaryInvoices = $this->getPreliminaryInvoicesByVendor($vendor);
+        $preliminaryInvoicesDto = [];
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            try {
+                $this->invoiceFactory->checkIfPurchasesCanBeInvoiced(
+                    $vendor,
+                    $preliminaryInvoice->getPurchaseIds()
+                );
+                $canRedeem = true;
+            } catch (NotRedeemableInvoiceException $e) {
+                $canRedeem = false;
+            }
+            $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem);
+        }
+
+        return $preliminaryInvoicesDto;
+    }
+
+    /**
+     * @param Vendor $vendor
      * @return PreliminaryInvoice[]
      */
     public function getRedeemablePreliminaryInvoicesByVendor(Vendor $vendor): array
@@ -62,7 +86,7 @@ class PreliminaryInvoiceService
             /**
              * @var PreliminaryInvoice[]|null $preliminaryInvoices
              */
-            $preliminaryInvoices = $this->preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
+            $preliminaryInvoices = $this->getPreliminaryInvoicesByVendor($vendor);
             switch ($invoicingState) {
                 case VendorInvoicingState::INVOICED:
                     if ($this->isVendorInInvoicedState($preliminaryInvoices)) {

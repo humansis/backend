@@ -254,11 +254,6 @@ class SmartcardService
         return $smartcard;
     }
 
-    public function getRedemptionCandidates(Vendor $vendor): array
-    {
-        return $this->preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
-    }
-
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
     {
         foreach ($assistanceBeneficiary->getAssistance()->getCommodities() as $commodity) {

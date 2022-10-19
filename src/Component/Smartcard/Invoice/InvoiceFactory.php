@@ -11,7 +11,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Invoice;
 use Entity\Project;
-use Entity\Smartcard\PreliminaryInvoice;
 use Entity\SmartcardPurchase;
 use Entity\User;
 use Entity\Vendor;

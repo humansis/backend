@@ -6,7 +6,6 @@ namespace Controller\WebApp\Smartcard;
 
 use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
-use Component\Smartcard\Invoice\PreliminaryInvoiceDto;
 use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -14,7 +13,6 @@ use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
 use InputType\SmartcardInvoiceCreateInputType;
-use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Repository\SmartcardInvoiceRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -106,32 +104,14 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
-     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
-     * @param InvoiceFactory $invoiceFactory
+     * @param PreliminaryInvoiceService $preliminaryInvoiceService
      * @return JsonResponse
      */
     public function preliminaryInvoices(
         Vendor $vendor,
-        PreliminaryInvoiceRepository $preliminaryInvoiceRepository,
-        InvoiceFactory $invoiceFactory
+        PreliminaryInvoiceService $preliminaryInvoiceService
     ): JsonResponse {
-        $preliminaryInvoices = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
-
-        $preliminaryInvoicesDto = [];
-        foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            try {
-                $invoiceFactory->checkIfPurchasesCanBeInvoiced(
-                    $vendor,
-                    $preliminaryInvoice->getPurchaseIds()
-                );
-                $canRedeem = true;
-            } catch (NotRedeemableInvoiceException $e) {
-                $canRedeem = false;
-            }
-            $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem);
-        }
-
-        return $this->json(new Paginator($preliminaryInvoicesDto));
+        return $this->json(new Paginator($preliminaryInvoiceService->getArrayOfPreliminaryInvoicesDtoByVendor($vendor)));
     }
 
     /**

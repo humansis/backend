@@ -8,7 +8,7 @@ use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"SmartcardRedemptionBatchCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"SmartcardInvoiceCreateInputType", "Strict"})
  */
 class SmartcardInvoiceCreateInputType implements InputTypeInterface
 {
