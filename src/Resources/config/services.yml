@@ -192,6 +192,7 @@ services:
             - Entity\ImportQueue
 
     Repository\Smartcard\PreliminaryInvoiceRepository:
+        public: true
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Smartcard\PreliminaryInvoice
