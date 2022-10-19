@@ -2,11 +2,9 @@
 
 namespace Utils;
 
-use Entity\CountrySpecific;
-use Utils\ExportService;
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\ImportTemplate;
-use Enum\NationalIdType;
+use Doctrine\ORM\EntityManagerInterface;
+use Entity\CountrySpecific;
 
 class HouseholdExportCSVService
 {
@@ -15,8 +13,8 @@ class HouseholdExportCSVService
         PRIMARY_ID_NUMBER = 'ID Number',
         SECONDARY_ID_TYPE = 'Secondary ID Type',
         SECONDARY_ID_NUMBER = 'Secondary ID Number',
-        TERNARY_ID_TYPE = 'Ternary ID Type',
-        TERNARY_ID_NUMBER = 'Ternary ID Number',
+        TERTIARY_ID_TYPE = 'Tertiary ID Type',
+        TERTIARY_ID_NUMBER = 'Tertiary ID Number',
         HEAD = 'Head';
 
     /** @var EntityManagerInterface */
@@ -68,8 +66,8 @@ class HouseholdExportCSVService
         self::PRIMARY_ID_NUMBER => '',
         self::SECONDARY_ID_TYPE => '',
         self::SECONDARY_ID_NUMBER => '',
-        self::TERNARY_ID_TYPE => '',
-        self::TERNARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -130,8 +128,8 @@ class HouseholdExportCSVService
         self::PRIMARY_ID_NUMBER => '',
         self::SECONDARY_ID_TYPE => '',
         self::SECONDARY_ID_NUMBER => '',
-        self::TERNARY_ID_TYPE => '',
-        self::TERNARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -192,8 +190,8 @@ class HouseholdExportCSVService
         self::PRIMARY_ID_NUMBER => '',
         self::SECONDARY_ID_TYPE => '',
         self::SECONDARY_ID_NUMBER => '',
-        self::TERNARY_ID_TYPE => '',
-        self::TERNARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -254,8 +252,8 @@ class HouseholdExportCSVService
         self::PRIMARY_ID_NUMBER => 'String',
         self::SECONDARY_ID_TYPE => 'String',
         self::SECONDARY_ID_NUMBER => 'String',
-        self::TERNARY_ID_TYPE => 'String',
-        self::TERNARY_ID_NUMBER => 'String',
+        self::TERTIARY_ID_TYPE => 'String',
+        self::TERTIARY_ID_NUMBER => 'String',
         'Shelter status' => 'String',
         'Assets' => 'Comma separated strings',
         'Debt Level' => 'Number',
@@ -316,8 +314,8 @@ class HouseholdExportCSVService
         self::PRIMARY_ID_NUMBER => 'primaryIdNumber',
         self::SECONDARY_ID_TYPE => 'secondaryIdType',
         self::SECONDARY_ID_NUMBER => 'secondaryIdNumber',
-        self::TERNARY_ID_TYPE => 'tertiaryIdType',
-        self::TERNARY_ID_NUMBER => 'tertiaryIdNumber',
+        self::TERTIARY_ID_TYPE => 'tertiaryIdType',
+        self::TERTIARY_ID_NUMBER => 'tertiaryIdNumber',
         'Shelter status' => 'shelterStatus',
         'Assets' => 'assets',
         'Debt Level' => 'debtLevel',

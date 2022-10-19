@@ -603,11 +603,11 @@ class ImportLine
      */
     public function isPrimaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->primaryIdNumber) {
+        if (empty($this->primaryIdNumber)) {
             return true;
         }
 
-        return (null !== $this->primaryIdType);
+        return !empty($this->primaryIdType);
     }
 
     /**
@@ -615,11 +615,11 @@ class ImportLine
      */
     public function isIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->primaryIdType) {
+        if (empty($this->primaryIdType)) {
             return true;
         }
 
-        return (null !== $this->primaryIdNumber);
+        return !empty($this->primaryIdNumber);
     }
 
     /**
@@ -627,11 +627,11 @@ class ImportLine
      */
     public function isSecondaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->secondaryIdNumber) {
+        if (empty($this->secondaryIdNumber)) {
             return true;
         }
 
-        return (null !== $this->secondaryIdType);
+        return !empty($this->secondaryIdType);
     }
 
     /**
@@ -639,7 +639,7 @@ class ImportLine
      */
     public function isSecondaryIdTypeDuplicity(): bool
     {
-        if (null === $this->secondaryIdType) {
+        if (empty($this->secondaryIdType)) {
             return true;
         }
 
@@ -651,23 +651,34 @@ class ImportLine
      */
     public function isSecondaryIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->secondaryIdType) {
+        if (empty($this->secondaryIdType)) {
             return true;
         }
 
-        return (null !== $this->secondaryIdNumber);
+        return !empty($this->secondaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Primary ID has to be filled before Secondary ID.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isPrimaryIdFilledWithSecondaryId(): bool
+    {
+        if (empty($this->secondaryIdNumber)) {
+            return true;
+        }
+        return !empty($this->primaryIdNumber);
     }
 
     /**
      * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="tertiaryIdType"}, groups={"household", "member"})
      */
-    public function isTernaryIdTypeCorrectlyFilled(): bool
+    public function isTertiaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->tertiaryIdNumber) {
+        if (empty($this->tertiaryIdNumber)) {
             return true;
         }
 
-        return (null !== $this->tertiaryIdType);
+        return !empty($this->tertiaryIdType);
     }
 
     /**
@@ -675,7 +686,7 @@ class ImportLine
      */
     public function isTertiaryIdTypeDuplicity(): bool
     {
-        if (null === $this->tertiaryIdType) {
+        if (empty($this->tertiaryIdType)) {
             return true;
         }
 
@@ -685,13 +696,24 @@ class ImportLine
     /**
      * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="tertiaryIdNumber"}, groups={"household", "member"})
      */
-    public function isTernaryIdNumberCorrectlyFilled(): bool
+    public function isTertiaryIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->tertiaryIdType) {
+        if (empty($this->tertiaryIdType)) {
             return true;
         }
 
-        return (null !== $this->tertiaryIdNumber);
+        return !empty($this->tertiaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Secondary ID has to be filled before Tertiary ID.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdFilledWithTertiaryId(): bool
+    {
+        if (empty($this->tertiaryIdNumber)) {
+            return true;
+        }
+        return !empty($this->secondaryIdNumber);
     }
 
     /**
@@ -764,7 +786,7 @@ class ImportLine
     /**
      * @return bool
      */
-    public function hasTernaryId(): bool
+    public function hasTertiaryId(): bool
     {
         return $this->hasId(2);
     }
