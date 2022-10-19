@@ -7,7 +7,6 @@ namespace Controller;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
-use Controller\ExportController;
 use Exception;
 use Pagination\Paginator;
 use Entity\Assistance;
@@ -26,14 +25,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Booklet;
+use Utils\BookletService;
 
 class BookletController extends AbstractController
 {
+    /** @var BookletService */
+    private $bookletService;
+
     /** @var CodeListService */
     private $codeListService;
 
-    public function __construct(CodeListService $codeListService)
-    {
+    public function __construct(
+        BookletService $bookletService,
+        CodeListService $codeListService
+    ) {
+        $this->bookletService = $bookletService;
         $this->codeListService = $codeListService;
     }
 
@@ -84,7 +90,7 @@ class BookletController extends AbstractController
     {
         $booklets = $this->getDoctrine()->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
 
-        return $this->get('voucher.booklet_service')->generatePdf($booklets);
+        return $this->bookletService->generatePdf($booklets);
     }
 
     /**
@@ -109,7 +115,7 @@ class BookletController extends AbstractController
      */
     public function update(Booklet $object, BookletUpdateInputType $inputType): JsonResponse
     {
-        $this->get('voucher.booklet_service')->update($object, [
+        $this->bookletService->update($object, [
             'currency' => $inputType->getCurrency(),
             'number_vouchers' => $inputType->getQuantityOfVouchers(),
             'password' => $inputType->getPassword(),
@@ -155,7 +161,7 @@ class BookletController extends AbstractController
      */
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
-        $this->get('voucher.booklet_service')->createBooklets($inputType);
+        $this->bookletService->createBooklets($inputType);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -170,7 +176,7 @@ class BookletController extends AbstractController
     public function delete(Booklet $object): JsonResponse
     {
         try {
-            $deleted = $this->get('voucher.booklet_service')->deleteBookletFromDatabase($object);
+            $deleted = $this->bookletService->deleteBookletFromDatabase($object);
         } catch (Exception $exception) {
             $deleted = false;
         }
@@ -195,7 +201,7 @@ class BookletController extends AbstractController
         Beneficiary $beneficiary,
         Booklet $booklet
     ): JsonResponse {
-        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+        $this->bookletService->assign($booklet, $assistance, $beneficiary);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -214,7 +220,7 @@ class BookletController extends AbstractController
      */
     public function assignToCommunity(Assistance $assistance, Community $community, Booklet $booklet): JsonResponse
     {
-        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $community);
+        $this->bookletService->assign($booklet, $assistance, $community);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -236,7 +242,7 @@ class BookletController extends AbstractController
         Institution $institution,
         Booklet $booklet
     ): JsonResponse {
-        $this->get('voucher.booklet_service')->assign($booklet, $assistance, $institution);
+        $this->bookletService->assign($booklet, $assistance, $institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

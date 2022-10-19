@@ -6,7 +6,10 @@ use Entity\Organization;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
 use Exception;
+use Export\AssistancePdfExport;
+use Export\AssistanceSpreadsheetExport;
 use Repository\AssistanceRepository;
+use Utils\AssistanceBeneficiaryService;
 use Utils\AssistanceService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -17,6 +20,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
+use Utils\BeneficiaryService;
+use Utils\CountrySpecificService;
+use Utils\DonorService;
+use Utils\HouseholdExportCSVService;
+use Utils\ProductService;
+use Utils\ProjectService;
+use Utils\TransactionService;
+use Utils\UserService;
+use Utils\VendorService;
+use Utils\VoucherService;
 
 /**
  * Class ExportController
@@ -46,10 +59,77 @@ class ExportController extends Controller
      */
     private $assistanceService;
 
-    public function __construct(AssistanceRepository $assistanceRepository, AssistanceService $assistanceService)
-    {
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
+    /** @var UserService */
+    private $userService;
+
+    /** @var CountrySpecificService */
+    private $countrySpecificService;
+
+    /** @var DonorService */
+    private $donorService;
+
+    /** @var ProjectService */
+    private $projectService;
+
+    /** @var AssistanceBeneficiaryService */
+    private $assistanceBeneficiaryService;
+
+    /** @var HouseholdExportCSVService */
+    private $householdExportCSVService;
+
+    /** @var AssistancePdfExport */
+    private $assistancePdfExport;
+
+    /** @var AssistanceSpreadsheetExport */
+    private $assistanceSpreadsheetExport;
+
+    /** @var TransactionService */
+    private $transactionService;
+
+    /** @var VoucherService */
+    private $voucherService;
+
+    /** @var ProductService */
+    private $productService;
+
+    /** @var VendorService */
+    private $vendorService;
+
+    public function __construct(
+        AssistanceRepository $assistanceRepository,
+        AssistanceService $assistanceService,
+        BeneficiaryService $beneficiaryService,
+        UserService $userService,
+        CountrySpecificService $countrySpecificService,
+        DonorService $donorService,
+        ProjectService $projectService,
+        AssistanceBeneficiaryService $assistanceBeneficiaryService,
+        HouseholdExportCSVService $HouseholdExportCSVService,
+        AssistancePdfExport $assistancePdfExport,
+        AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
+        TransactionService $transactionService,
+        VoucherService $voucherService,
+        ProductService $productService,
+        VendorService $vendorService
+    ) {
         $this->assistanceRepository = $assistanceRepository;
         $this->assistanceService = $assistanceService;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->userService = $userService;
+        $this->countrySpecificService = $countrySpecificService;
+        $this->donorService = $donorService;
+        $this->projectService = $projectService;
+        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
+        $this->householdExportCSVService = $HouseholdExportCSVService;
+        $this->assistancePdfExport = $assistancePdfExport;
+        $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
+        $this->transactionService = $transactionService;
+        $this->voucherService = $voucherService;
+        $this->productService = $productService;
+        $this->vendorService = $vendorService;
     }
 
     /**
@@ -96,31 +176,31 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 $ids = $request->request->get('ids');
-                $filename = $this->get('beneficiary.beneficiary_service')->exportToCsvDeprecated(
+                $filename = $this->beneficiaryService->exportToCsvDeprecated(
                     $type,
                     $countryIso3,
                     $filters,
                     $ids
                 );
             } elseif ($request->query->get('users')) {
-                $filename = $this->get('user.user_service')->exportToCsv($type);
+                $filename = $this->userService->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.country_specific_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->countrySpecificService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('donors')) {
-                $filename = $this->get('project.donor_service')->exportToCsv($type);
+                $filename = $this->donorService->exportToCsv($type);
             } elseif ($request->query->get('projects')) {
                 $country = $request->query->get('projects');
-                $filename = $this->get('project.project_service')->exportToCsv($country, $type);
+                $filename = $this->projectService->exportToCsv($country, $type);
             } elseif ($request->query->get('distributionSample')) {
                 $arrayObjectBeneficiary = $request->request->get('sample');
-                $filename = $this->get('distribution.assistance_beneficiary_service')->exportToCsv(
+                $filename = $this->assistanceBeneficiaryService->exportToCsv(
                     $arrayObjectBeneficiary,
                     $type
                 );
             } elseif ($request->query->get('householdsTemplate')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('beneficiary.household_export_csv_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
             } elseif (
                 $request->query->get('transactionDistribution') ||
                 $request->query->get('smartcardDistribution') ||
@@ -137,9 +217,9 @@ class ExportController extends Controller
                 // todo find organisation by relation to distribution
                 $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {
-                    return $this->get('export.pdf')->export($distribution, $organization);
+                    return $this->assistancePdfExport->export($distribution, $organization);
                 }
-                $filename = $this->get('export.spreadsheet')->export($distribution, $organization, $type);
+                $filename = $this->assistanceSpreadsheetExport->export($distribution, $organization, $type);
                 // raw export for legacy purpose
                 if (
                     $type === 'xlsx' && in_array(
@@ -148,7 +228,7 @@ class ExportController extends Controller
                     )
                 ) { // hack to enable raw export, will be forgotten with FE switch
                     if ($request->query->has('transactionDistribution')) {
-                        $filename = $this->get('transaction.transaction_service')->exportToCsv($distribution, 'xlsx');
+                        $filename = $this->transactionService->exportToCsv($distribution, 'xlsx');
                     }
                     if ($request->query->has('smartcardDistribution')) {
                         // no change
@@ -174,20 +254,21 @@ class ExportController extends Controller
                 $countryIso3 = $request->request->get("__country");
                 $filters = $request->request->get('filters');
                 if ($type === 'pdf') {
-                    return $this->get('voucher.voucher_service')->exportToPdf($ids, $countryIso3, $filters);
+                    return $this->voucherService->exportToPdf($ids, $countryIso3, $filters);
                 }
                 if ($type === 'csv') {
-                    return $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
+                    return $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
                 }
-                $filename = $this->get('voucher.voucher_service')->exportToCsv($type, $countryIso3, $ids, $filters);
+                $filename = $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
-                $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
+                // The service does not exist
+                // $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('voucher.product_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->productService->exportToCsv($type, $countryIso3);
             } elseif ($request->query->get('vendors')) {
                 $countryIso3 = $request->request->get("__country");
-                $filename = $this->get('voucher.vendor_service')->exportToCsv($type, $countryIso3);
+                $filename = $this->vendorService->exportToCsv($type, $countryIso3);
             } else {
                 return new JsonResponse('No export selected', Response::HTTP_BAD_REQUEST);
             }
@@ -271,6 +352,6 @@ class ExportController extends Controller
 
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        return $this->get('export.pdf')->export($distribution, $organization);
+        return $this->assistancePdfExport->export($distribution, $organization);
     }
 }
