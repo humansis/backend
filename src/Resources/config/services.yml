@@ -1222,6 +1222,9 @@ services:
 
     Utils\VendorService: '@voucher.vendor_service'
 
+    Utils\BookletService:
+        alias: voucher.booklet_service
+
     voucher.booklet_service:
         class: Utils\BookletService
         arguments:

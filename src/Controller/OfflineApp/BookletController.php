@@ -10,6 +10,7 @@ use Entity\Assistance;
 use Entity\Beneficiary;
 use InputType\BookletFilterInputType;
 use InputType\BookletOrderInputType;
+use Psr\Log\LoggerInterface;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,9 +18,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Booklet;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Utils\BookletService;
 
 class BookletController extends AbstractOfflineAppController
 {
+    /** @var BookletService */
+    private $bookletService;
+
+    /** @var LoggerInterface */
+    private $logger;
+
+    public function __construct(BookletService $bookletService, LoggerInterface $logger)
+    {
+        $this->bookletService = $bookletService;
+        $this->logger = $logger;
+    }
+
     /**
      * @Rest\Get("/offline-app/v1/booklets")
      *
@@ -69,11 +83,11 @@ class BookletController extends AbstractOfflineAppController
     public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');
-        $booklet = $this->get('voucher.booklet_service')->getOne($code);
+        $booklet = $this->bookletService->getOne($code);
         try {
-            $return = $this->get('voucher.booklet_service')->assign($booklet, $assistance, $beneficiary);
+            $return = $this->bookletService->assign($booklet, $assistance, $beneficiary);
         } catch (Exception $exception) {
-            $this->container->get('logger')->error('exception', [$exception->getMessage()]);
+            $this->logger->error('exception', [$exception->getMessage()]);
 
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

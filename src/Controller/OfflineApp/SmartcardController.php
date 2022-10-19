@@ -16,11 +16,20 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Smartcard;
 use Repository\SmartcardRepository;
+use Symfony\Component\Serializer\SerializerInterface;
 use Utils\SmartcardService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class SmartcardController extends AbstractOfflineAppController
 {
+    /** @var SerializerInterface */
+    private $serializer;
+
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
     /**
      * @Rest\Post("/offline-app/v1/smartcards")
      *
@@ -87,7 +96,7 @@ class SmartcardController extends AbstractOfflineAppController
      */
     public function info(Smartcard $smartcard, Request $request): Response
     {
-        $json = $this->get('serializer')->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }
