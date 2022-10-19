@@ -263,6 +263,7 @@ class ExportController extends Controller
             } elseif ($request->query->get('reporting')) {
                 // The service does not exist
                 // $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);
+                $filename = "";
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->productService->exportToCsv($type, $countryIso3);

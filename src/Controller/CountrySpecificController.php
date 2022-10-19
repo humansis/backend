@@ -159,7 +159,7 @@ class CountrySpecificController extends AbstractController
      */
     public function delete(CountrySpecific $object): JsonResponse
     {
-        $this->CountrySpecificService->delete($object);
+        $this->countrySpecificService->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
