@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Controller;
 
 use Entity\Organization;
+use Export\SmartcardInvoiceLegacyExport;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,14 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 
 class SmartcardController extends AbstractController
 {
+    /** @var SmartcardInvoiceLegacyExport */
+    private $smartcardInvoiceLegacyExport;
+
+    public function __construct(SmartcardInvoiceLegacyExport $smartcardInvoiceLegacyExport)
+    {
+        $this->smartcardInvoiceLegacyExport = $smartcardInvoiceLegacyExport;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/smartcards/batch/{id}/legacy-export")
      *
@@ -28,7 +37,7 @@ class SmartcardController extends AbstractController
         // todo find organisation by relation to smartcard
         $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
 
-        $filename = $this->get('distribution.export_legacy.smartcard_invoice')->export(
+        $filename = $this->smartcardInvoiceLegacyExport->export(
             $invoice,
             $organization,
             $this->getUser()

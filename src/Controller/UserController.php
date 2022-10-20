@@ -24,6 +24,14 @@ use Utils\UserService;
 
 class UserController extends AbstractController
 {
+    /** @var UserService */
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/users/exports")
      *
@@ -82,7 +90,7 @@ class UserController extends AbstractController
      */
     public function initialize(UserInitializeInputType $inputType): JsonResponse
     {
-        $initializedUser = $this->get('user.user_service')->initialize($inputType);
+        $initializedUser = $this->userService->initialize($inputType);
 
         return $this->json($initializedUser);
     }
@@ -97,10 +105,8 @@ class UserController extends AbstractController
      */
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
-        /** @var UserService $userService */
-        $userService = $this->get('user.user_service');
 
-        $user = $userService->create($user, $inputType);
+        $user = $this->userService->create($user, $inputType);
 
         return $this->json($user);
     }
@@ -115,10 +121,8 @@ class UserController extends AbstractController
      */
     public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
-        /** @var UserService $userService */
-        $userService = $this->get('user.user_service');
 
-        $updatedUser = $userService->update($user, $inputType);
+        $updatedUser = $this->userService->update($user, $inputType);
 
         return $this->json($updatedUser);
     }
@@ -178,7 +182,7 @@ class UserController extends AbstractController
      */
     public function delete(User $user): JsonResponse
     {
-        $this->get('user.user_service')->remove($user);
+        $this->userService->remove($user);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -192,7 +196,7 @@ class UserController extends AbstractController
      */
     public function getSalt(string $username): JsonResponse
     {
-        $salt = $this->get('user.user_service')->getSalt($username);
+        $salt = $this->userService->getSalt($username);
 
         return $this->json($salt);
     }

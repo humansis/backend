@@ -15,9 +15,18 @@ use Entity\Project;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Utils\InstitutionService;
 
 class InstitutionController extends AbstractController
 {
+    /** @var InstitutionService */
+    private $institutionService;
+
+    public function __construct(InstitutionService $institutionService)
+    {
+        $this->institutionService = $institutionService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/institutions/{id}")
      *
@@ -69,7 +78,7 @@ class InstitutionController extends AbstractController
      */
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
-        $institution = $this->get('beneficiary.institution_service')->create($inputType);
+        $institution = $this->institutionService->create($inputType);
 
         return $this->json($institution);
     }
@@ -84,7 +93,7 @@ class InstitutionController extends AbstractController
      */
     public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
     {
-        $institution = $this->get('beneficiary.institution_service')->update($institution, $inputType);
+        $institution = $this->institutionService->update($institution, $inputType);
 
         return $this->json($institution);
     }
@@ -98,7 +107,7 @@ class InstitutionController extends AbstractController
      */
     public function delete(Institution $institution)
     {
-        $this->get('beneficiary.institution_service')->remove($institution);
+        $this->institutionService->remove($institution);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

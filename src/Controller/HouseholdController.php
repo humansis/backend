@@ -13,6 +13,7 @@ use InputType\HouseholdUpdateInputType;
 use Repository\HouseholdRepository;
 use Request\Pagination;
 use Entity\Project;
+use Utils\BeneficiaryService;
 use Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Utils\ProjectService;
 
 class HouseholdController extends AbstractController
 {
@@ -30,14 +32,28 @@ class HouseholdController extends AbstractController
     /** @var HouseholdRepository */
     private $householdRepository;
 
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
+    /** @var ProjectService */
+    private $projectService;
+
     /**
      * @param HouseholdService $householdService
      * @param HouseholdRepository $householdRepository
+     * @param BeneficiaryService $beneficiaryService
+     * @param ProjectService $projectService
      */
-    public function __construct(HouseholdService $householdService, HouseholdRepository $householdRepository)
-    {
+    public function __construct(
+        HouseholdService $householdService,
+        HouseholdRepository $householdRepository,
+        BeneficiaryService $beneficiaryService,
+        ProjectService $projectService
+    ) {
         $this->householdService = $householdService;
         $this->householdRepository = $householdRepository;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -64,7 +80,7 @@ class HouseholdController extends AbstractController
         }
 
         try {
-            $filename = $this->get('beneficiary.beneficiary_service')->exportToCsv(
+            $filename = $this->beneficiaryService->exportToCsv(
                 $request->query->get('type'),
                 $request->headers->get('country'),
                 $filter,
@@ -202,7 +218,7 @@ class HouseholdController extends AbstractController
      */
     public function addHouseholdsToProject(Project $project, AddHouseholdsToProjectInputType $inputType): JsonResponse
     {
-        $this->get('project.project_service')->addHouseholds($project, $inputType);
+        $this->projectService->addHouseholds($project, $inputType);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

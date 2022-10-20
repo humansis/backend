@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\User;
+use Utils\ProjectService;
 
 class ProjectController extends AbstractController
 {
@@ -31,9 +32,15 @@ class ProjectController extends AbstractController
      */
     private $projectRepository;
 
-    public function __construct(ProjectRepository $projectRepository)
-    {
+    /** @var ProjectService */
+    private $projectService;
+
+    public function __construct(
+        ProjectRepository $projectRepository,
+        ProjectService $projectService
+    ) {
         $this->projectRepository = $projectRepository;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -138,7 +145,7 @@ class ProjectController extends AbstractController
      */
     public function create(ProjectCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('project.project_service')->create($inputType, $this->getUser());
+        $object = $this->projectService->create($inputType, $this->getUser());
 
         return $this->json($object);
     }
@@ -157,7 +164,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Unable to update archived project.');
         }
 
-        $object = $this->get('project.project_service')->update($project, $inputType);
+        $object = $this->projectService->update($project, $inputType);
 
         return $this->json($object);
     }
@@ -171,7 +178,7 @@ class ProjectController extends AbstractController
      */
     public function delete(Project $project): JsonResponse
     {
-        $this->get('project.project_service')->delete($project);
+        $this->projectService->delete($project);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
