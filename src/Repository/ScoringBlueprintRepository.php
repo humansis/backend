@@ -56,9 +56,4 @@ class ScoringBlueprintRepository extends EntityRepository
     {
         return $this->findOneBy(['id' => $id, 'archived' => false, 'countryIso3' => $iso3]);
     }
-
-    public function findFirstInCountry(string $iso3): ?ScoringBlueprint
-    {
-        return $this->findOneBy(['archived' => false, 'countryIso3' => $iso3]);
-    }
 }

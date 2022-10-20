@@ -98,10 +98,6 @@ class CriteriaAssistanceService
             $project->getCountryIso3()
         );
 
-        if (is_null($scoringBlueprint)) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findFirstInCountry($project->getCountryIso3());
-        }
-
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($criteriaGroups as $group) {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)

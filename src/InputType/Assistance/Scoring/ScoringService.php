@@ -14,7 +14,6 @@ use Component\Assistance\Scoring\ScoringCsvParser;
 use Component\Assistance\Scoring\ScoringResolver;
 use InputType\VulnerabilityScoreInputType;
 use Repository\ScoringBlueprintRepository;
-use Utils\Floats;
 
 final class ScoringService
 {
@@ -72,10 +71,6 @@ final class ScoringService
             $input->getScoringBlueprintId(),
             $countryCode
         );
-
-        if (is_null($scoringBlueprint)) {
-            $scoringBlueprint = $this->scoringBlueprintRepository->findFirstInCountry($countryCode);
-        }
 
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
