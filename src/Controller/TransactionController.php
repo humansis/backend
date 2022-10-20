@@ -37,12 +37,12 @@ class TransactionController extends AbstractController
 
     public function __construct(
         CodeListService $codeListService,
-        LoggerInterface $logger,
+        LoggerInterface $mobileLogger,
         TransactionService $transactionService,
         SerializerInterface $serializer
     ) {
         $this->codeListService = $codeListService;
-        $this->logger = $logger;
+        $this->logger = $mobileLogger;
         $this->transactionService = $transactionService;
         $this->serializer = $serializer;
     }
