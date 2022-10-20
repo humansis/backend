@@ -333,7 +333,7 @@ class BMSServiceTestCase extends KernelTestCase
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    protected function getTestUser(string $username)
+    protected function getTestUser(string $username = self::USER_TESTER)
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 

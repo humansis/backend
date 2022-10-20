@@ -115,19 +115,6 @@ class InvoiceController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-candidates")
-     * @param Vendor $vendor
-     *
-     * @return JsonResponse
-     * @deprecated use $this->candidatesForVendorApp()
-     *
-     */
-    public function preliminariesForVendorAppDeprecated(Vendor $vendor): Response
-    {
-        return $this->forward(self::class . '::preliminaryInvoices', ['vendor' => $vendor]);
-    }
-
-    /**
      * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
