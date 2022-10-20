@@ -49,7 +49,7 @@ final class RulesCalculation
 
         $dependencyRatio = ($children + $elders) / $adultsInWorkingAge;
 
-        if (Floats::compare($dependencyRatio, 1.0)) {
+        if (Floats::equals($dependencyRatio, 1.0)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
         }
 
@@ -144,7 +144,7 @@ final class RulesCalculation
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
         }
 
-        if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
+        if (Floats::equals($depRatio, 1.5) || $depRatio < 1.5) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_LOW)->getScore();
         }
 
@@ -159,17 +159,17 @@ final class RulesCalculation
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
         }
 
-        if (Floats::compare($depRatio, 0)) {
+        if (Floats::equals($depRatio, 0)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_0)->getScore();
-        } elseif (Floats::compare($depRatio, 1) || $depRatio < 1) {
+        } elseif (Floats::equals($depRatio, 1) || $depRatio < 1) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_1)->getScore();
-        } elseif (Floats::compare($depRatio, 2) || $depRatio < 2) {
+        } elseif (Floats::equals($depRatio, 2) || $depRatio < 2) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_2)->getScore();
-        } elseif (Floats::compare($depRatio, 3) || $depRatio < 3) {
+        } elseif (Floats::equals($depRatio, 3) || $depRatio < 3) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_3)->getScore();
-        } elseif (Floats::compare($depRatio, 4) || $depRatio < 4) {
+        } elseif (Floats::equals($depRatio, 4) || $depRatio < 4) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_4)->getScore();
-        } elseif (Floats::compare($depRatio, 5) || $depRatio < 5) {
+        } elseif (Floats::equals($depRatio, 5) || $depRatio < 5) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_5)->getScore();
         } else {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_INF)->getScore();
@@ -244,17 +244,17 @@ final class RulesCalculation
 
         $incomeSpentOnFood = $totalExpenditure / $household->getIncome();
 
-        if (Floats::compare(0, $incomeSpentOnFood)) {
+        if (Floats::equals(0, $incomeSpentOnFood)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_0)->getScore();
-        } elseif ($incomeSpentOnFood < .25 || Floats::compare($incomeSpentOnFood, .25)) {
+        } elseif ($incomeSpentOnFood < .25 || Floats::equals($incomeSpentOnFood, .25)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_25)->getScore();
-        } elseif ($incomeSpentOnFood < .50 || Floats::compare($incomeSpentOnFood, .50)) {
+        } elseif ($incomeSpentOnFood < .50 || Floats::equals($incomeSpentOnFood, .50)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_50)->getScore();
-        } elseif ($incomeSpentOnFood < .65 || Floats::compare($incomeSpentOnFood, .65)) {
+        } elseif ($incomeSpentOnFood < .65 || Floats::equals($incomeSpentOnFood, .65)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_65)->getScore();
-        } elseif ($incomeSpentOnFood < .80 || Floats::compare($incomeSpentOnFood, .80)) {
+        } elseif ($incomeSpentOnFood < .80 || Floats::equals($incomeSpentOnFood, .80)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_80)->getScore();
-        } elseif ($incomeSpentOnFood < .95 || Floats::compare($incomeSpentOnFood, .95)) {
+        } elseif ($incomeSpentOnFood < .95 || Floats::equals($incomeSpentOnFood, .95)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95)->getScore();
         } else {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF)->getScore();

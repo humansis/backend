@@ -117,7 +117,7 @@ class CriteriaAssistanceService
                     );
                 }
 
-                if (is_null($threshold) || $protocol->getTotalScore() > $threshold || Floats::compare($protocol->getTotalScore(), $threshold)) {
+                if (is_null($threshold) || $protocol->getTotalScore() > $threshold || Floats::equals($protocol->getTotalScore(), $threshold)) {
                     if (AssistanceTargetType::INDIVIDUAL === $targetType) {
                         $BNFId = $beneficiary->getId();
                         $reachedBeneficiaries[$BNFId] = $protocol;
