@@ -153,7 +153,7 @@ class Assistance implements ExportableInterface
      *
      * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $completed = 0;
+    private $completed = false;
 
     /**
      * @var string
