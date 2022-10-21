@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
+use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
 use Entity;
@@ -12,6 +13,7 @@ use Component\Assistance\Domain;
 use InvalidArgumentException;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssistanceMapper implements MapperInterface
 {
@@ -19,7 +21,7 @@ class AssistanceMapper implements MapperInterface
 
     private ?\Component\Assistance\Domain\Assistance $domainObject = null;
 
-    public function __construct(private readonly AssistanceFactory $factory)
+    public function __construct(private readonly AssistanceFactory $factory, private readonly TranslatorInterface $translator)
     {
     }
 
@@ -162,7 +164,15 @@ class AssistanceMapper implements MapperInterface
 
     public function getCompleted(): bool
     {
-        return (bool) $this->object->getCompleted();
+        return $this->object->getCompleted();
+    }
+
+    public function getState(): CodeItem
+    {
+        return new CodeItem(
+            $this->object->getState(),
+            $this->translator->trans($this->object->getState())
+        );
     }
 
     public function getDistributionStarted(): bool

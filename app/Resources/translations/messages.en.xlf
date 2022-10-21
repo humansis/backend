@@ -185,6 +185,10 @@
         <source>Close</source>
         <target>Close</target>
       </trans-unit>
+      <trans-unit id="w_77WNf" resname="closed">
+        <source>closed</source>
+        <target>Closed</target>
+      </trans-unit>
       <trans-unit id="NA9GMDP" resname="Code">
         <source>Code</source>
         <target>Code</target>
@@ -741,6 +745,10 @@
       </trans-unit>
       <trans-unit id="GP3VSbL" resname="New">
         <source>New</source>
+        <target>New</target>
+      </trans-unit>
+      <trans-unit id="EVB6Di9" resname="new">
+        <source>new</source>
         <target>New</target>
       </trans-unit>
       <trans-unit id="zlooCeG" resname="New Assistance">
@@ -4767,6 +4775,10 @@ Size</source>
       <trans-unit id="9RYiBjG" resname="Valid">
         <source>Valid</source>
         <target>Valid</target>
+      </trans-unit>
+      <trans-unit id="4_Suw3N" resname="validated">
+        <source>validated</source>
+        <target>Validated</target>
       </trans-unit>
       <trans-unit id="lsNKBxn" resname="Invalid">
         <source>Invalid</source>
