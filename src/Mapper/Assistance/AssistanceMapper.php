@@ -8,9 +8,11 @@ use Component\Assistance\DTO\Statistics;
 use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Entity;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain;
+use Entity\Commodity;
 use Entity\Location;
 use InvalidArgumentException;
 use Entity\ScoringBlueprint;
@@ -139,9 +141,9 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getScoringBlueprint();
     }
 
-    public function getCommodityIds(): array
+    public function getCommodities(): Collection
     {
-        return $this->domainObject->getCommodityIds();
+        return $this->object->getCommodities();
     }
 
     public function getDescription(): ?string
