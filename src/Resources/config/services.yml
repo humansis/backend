@@ -879,7 +879,10 @@ services:
         alias: distribution.export_legacy.smartcard_invoice
 
     distribution.export_legacy.smartcard_invoice:
-        class: Export\SmartcardInvoiceLegacyExport
+        alias: Export\SmartcardInvoiceLegacyExport
+        public: true
+
+    Export\SmartcardInvoiceLegacyExport:
         arguments:
             - '@translator'
             - '@MapperDeprecated\LocationMapper'
