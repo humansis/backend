@@ -10,6 +10,7 @@ use DateTimeInterface;
 use Entity;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain;
+use Entity\Location;
 use InvalidArgumentException;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
@@ -97,29 +98,29 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceType();
     }
 
-    public function getLocationId(): int
+    public function getLocationId(): Location
     {
-        return $this->object->getLocation()->getId();
+        return $this->object->getLocation();
     }
 
-    public function getAdm1Id(): ?int
+    public function getAdm1(): ?Location
     {
-        return $this->object->getLocation()->getAdm1Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(1) ?: null;
     }
 
-    public function getAdm2Id(): ?int
+    public function getAdm2(): ?Location
     {
-        return $this->object->getLocation()->getAdm2Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(2) ?: null;
     }
 
-    public function getAdm3Id(): ?int
+    public function getAdm3(): ?Location
     {
-        return $this->object->getLocation()->getAdm3Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(3) ?: null;
     }
 
-    public function getAdm4Id(): ?int
+    public function getAdm4(): ?Location
     {
-        return $this->object->getLocation()->getAdm4Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(4) ?: null;
     }
 
     public function getSector(): string
