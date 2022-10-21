@@ -895,6 +895,10 @@
         <source>Profile</source>
         <target>Profile</target>
       </trans-unit>
+      <trans-unit id="tfkKlua" resname="progress">
+        <source>progress</source>
+        <target>Progress</target>
+      </trans-unit>
       <trans-unit id="mFlZeFM" resname="Project">
         <source>Project</source>
         <target>Project</target>
@@ -950,6 +954,10 @@
       <trans-unit id="rK7E7lg" resname="Re-Enter New Password">
         <source>Re-Enter New Password</source>
         <target>Re-Enter New Password</target>
+      </trans-unit>
+      <trans-unit id="UndGN4I" resname="reached">
+        <source>reached</source>
+        <target>Reached</target>
       </trans-unit>
       <trans-unit id="rrewBDM" resname="Referral">
         <source>Referral</source>

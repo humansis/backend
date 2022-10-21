@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
+use Component\Assistance\DTO\Statistics;
 use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
@@ -174,6 +175,22 @@ class AssistanceMapper implements MapperInterface
             $this->object->getState(),
             $this->translator->trans($this->object->getState())
         );
+    }
+
+    public function getProgress(): float
+    {
+        $stats = $this->domainObject->getStatistics();
+        return round($stats->getBeneficiariesReached() / $stats->getBeneficiariesTotal(), 2);
+    }
+
+    public function getTotal(): int
+    {
+        return $this->domainObject->getStatistics()->getBeneficiariesTotal();
+    }
+
+    public function getReached(): int
+    {
+        return $this->domainObject->getStatistics()->getBeneficiariesReached();
     }
 
     public function getDistributionStarted(): bool
