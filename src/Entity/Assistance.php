@@ -127,7 +127,7 @@ class Assistance implements ExportableInterface
      *
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
-    private int|bool $completed = 0;
+    private bool $completed = false;
 
     /**
      *
