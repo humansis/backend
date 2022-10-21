@@ -18,6 +18,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
     final public const SORT_BY_TARGET = 'target';
     final public const SORT_BY_NUMBER_OF_BENEFICIARIES = 'bnfCount';
     final public const SORT_BY_ROUND = 'round';
+    final public const SORT_BY_STATE = 'state';
     final public const SORT_BY_VALUE = 'value';
     final public const SORT_BY_UNIT = 'unit';
     final public const SORT_BY_TYPE = 'type';
@@ -35,6 +36,7 @@ class AssistanceOrderInputType extends AbstractSortInputType
             self::SORT_BY_TARGET,
             self::SORT_BY_NUMBER_OF_BENEFICIARIES,
             self::SORT_BY_ROUND,
+            self::SORT_BY_STATE,
             self::SORT_BY_VALUE,
             self::SORT_BY_UNIT,
             self::SORT_BY_TYPE,
