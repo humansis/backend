@@ -3,14 +3,13 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Entity\Beneficiary;
 use Entity\Location;
+use Enum\AssistanceState;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use DateTime;
 use Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use DBAL\PersonGenderEnum;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use InputType\AssistanceByProjectOfflineAppFilterInputType;
@@ -111,6 +110,23 @@ class AssistanceRepository extends EntityRepository
                 )
                     ->setParameter('id', $filter->getFulltext())
                     ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
+            }
+
+            if ($filter->hasStates()) {
+                $qbString = [];
+                foreach ($filter->getStates() as $state) {
+                    switch ($state) {
+                        case AssistanceState::NEW:
+                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NULL)';
+                            break;
+                        case AssistanceState::VALIDATED:
+                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NOT NULL)';
+                            break;
+                        case AssistanceState::CLOSED:
+                            $qbString[] = '(dd.completed = 1)';
+                    }
+                }
+                $qb->andWhere(implode(' OR ', $qbString));
             }
         }
 
