@@ -4,6 +4,7 @@ namespace Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Enum\AssistanceState;
 use Enum\Livelihood;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
@@ -730,6 +731,19 @@ class Assistance implements ExportableInterface
         $this->scoringBlueprint = $scoringBlueprint;
 
         return $this;
+    }
+
+    public function getState()
+    {
+        if ($this->getCompleted()) {
+            return AssistanceState::CLOSED;
+        }
+
+        if ($this->isValidated()) {
+            return AssistanceState::VALIDATED;
+        }
+
+        return AssistanceState::NEW;
     }
 
     /**

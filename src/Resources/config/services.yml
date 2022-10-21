@@ -118,6 +118,9 @@ services:
         tags: [ 'validator.constraint_validator' ]
 
     Mapper\Assistance\AssistanceMapper:
+        arguments:
+            - '@Component\Assistance\AssistanceFactory'
+            - '@translator'
         tags: [ 'app.mapper' ]
 
     Mapper\Assistance\WebApp\DistributeReliefPackagesMapper:
