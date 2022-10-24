@@ -20,6 +20,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use UnexpectedValueException;
+use Utils\BeneficiaryService;
+use Utils\ProjectService;
 use ZipArchive;
 
 class CommonController extends AbstractController
@@ -33,14 +35,24 @@ class CommonController extends AbstractController
     /** @var TranslatorInterface */
     private $translator;
 
+    /** @var BeneficiaryService */
+    private $beneficiaryService;
+
+    /** @var ProjectService */
+    private $projectService;
+
     public function __construct(
         Countries $countries,
         string $translationsDir,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        BeneficiaryService $beneficiaryService,
+        ProjectService $projectService
     ) {
         $this->countries = $countries;
         $this->translationsDir = $translationsDir;
         $this->translator = $translator;
+        $this->beneficiaryService = $beneficiaryService;
+        $this->projectService = $projectService;
     }
 
     /**
@@ -63,13 +75,13 @@ class CommonController extends AbstractController
                 case 'total_registrations':
                     $result[] = [
                         'code' => $code,
-                        'value' => $this->get('beneficiary.beneficiary_service')->countAll($countryIso3),
+                        'value' => $this->beneficiaryService->countAll($countryIso3),
                     ];
                     break;
                 case 'active_projects':
                     $result[] = [
                         'code' => $code,
-                        'value' => $this->get('project.project_service')->countActive($countryIso3),
+                        'value' => $this->projectService->countActive($countryIso3),
                     ];
                     break;
                 case 'enrolled_beneficiaries':
@@ -83,7 +95,7 @@ class CommonController extends AbstractController
                 case 'served_beneficiaries':
                     $result[] = [
                         'code' => $code,
-                        'value' => $this->get('beneficiary.beneficiary_service')->countAllServed($countryIso3),
+                        'value' => $this->beneficiaryService->countAllServed($countryIso3),
                     ];
                     break;
                 case 'completed_assistances':

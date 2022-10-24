@@ -586,6 +586,9 @@ services:
             - "@doctrine.orm.entity_manager"
         public: true
 
+    Utils\CommunityService:
+        alias: beneficiary.community_service
+
     beneficiary.community_service:
         class: Utils\CommunityService
         arguments:
@@ -672,6 +675,9 @@ services:
 
     Utils\BeneficiaryService:
         alias: beneficiary.beneficiary_service
+
+    Utils\CountrySpecificService:
+        alias: beneficiary.country_specific_service
 
     beneficiary.country_specific_service:
         class: Utils\CountrySpecificService
@@ -807,6 +813,9 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@distribution.criteria_assistance_service'
             - '@Twig\Environment'
+
+    Utils\AssistanceBeneficiaryService:
+        alias: distribution.assistance_beneficiary_service
 
     distribution.assistance_beneficiary_service:
         class: Utils\AssistanceBeneficiaryService
@@ -1242,10 +1251,16 @@ services:
             - '@Twig\Environment'
         public: true
 
+    Utils\VoucherService:
+        alias: voucher.voucher_service
+
     voucher.voucher_service:
         class: Utils\VoucherService
         arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
         public: true
+
+    Utils\ProductService:
+        alias: voucher.product_service
 
     voucher.product_service:
         class: Utils\ProductService
@@ -1286,6 +1301,9 @@ services:
         arguments: [ '@doctrine.orm.entity_manager' ]
 
 #From TransactionBundle:
+    Utils\TransactionService:
+        alias: transaction.transaction_service
+
     transaction.transaction_service:
         class: Utils\TransactionService
         public: true
@@ -1307,6 +1325,9 @@ services:
         autowire: false
         autoconfigure: false
         public: true
+
+    Export\DistributedSummarySpreadsheetExport:
+        alias: export.distributed_summary.spreadsheet
 
     export.distributed_summary.spreadsheet:
         class: Export\DistributedSummarySpreadsheetExport
@@ -1331,10 +1352,14 @@ services:
 
     Export\AssistanceSpreadsheetExport: '@export.spreadsheet'
 
+    Export\AssistancePdfExport:
+        alias: export.pdf
+
     export.pdf:
         class: Export\AssistancePdfExport
-        arguments: [ '@translator', '@pdf_service', '@Twig\Environment' ]
+        arguments: [ '@pdf_service', '@Twig\Environment' ]
         public: true
+
 
     Repository\CommodityRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]

@@ -19,9 +19,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Utils\CountrySpecificService;
 
 class CountrySpecificController extends AbstractController
 {
+    /** @var CountrySpecificService */
+    private $countrySpecificService;
+
+    public function __construct(CountrySpecificService $countrySpecificService)
+    {
+        $this->countrySpecificService = $countrySpecificService;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/country-specifics/exports")
      *
@@ -150,7 +159,7 @@ class CountrySpecificController extends AbstractController
      */
     public function delete(CountrySpecific $object): JsonResponse
     {
-        $this->get('beneficiary.country_specific_service')->delete($object);
+        $this->countrySpecificService->delete($object);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

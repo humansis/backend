@@ -6,6 +6,7 @@ namespace Controller;
 
 use Entity\Beneficiary;
 use Entity\Household;
+use Export\DistributedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\DistributedItem;
 use InputType\DistributedItemFilterInputType;
@@ -22,6 +23,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class DistributedItemController extends AbstractController
 {
+    /** @var DistributedSummarySpreadsheetExport */
+    private $distributedSummarySpreadsheetExport;
+
+    public function __construct(DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport)
+    {
+        $this->distributedSummarySpreadsheetExport = $distributedSummarySpreadsheetExport;
+    }
+
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}/distributed-items")
      * @ParamConverter("beneficiary")
@@ -100,7 +109,7 @@ class DistributedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.distributed_summary.spreadsheet')->export(
+        $filename = $this->distributedSummarySpreadsheetExport->export(
             $request->headers->get('country'),
             $request->get('type'),
             $inputType
