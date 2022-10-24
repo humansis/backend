@@ -615,7 +615,7 @@ class Assistance implements ExportableInterface
         return $this;
     }
 
-    public function getState()
+    public function getState(): string
     {
         if ($this->getCompleted()) {
             return AssistanceState::CLOSED;
