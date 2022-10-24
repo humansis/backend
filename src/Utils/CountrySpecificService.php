@@ -5,20 +5,21 @@ namespace Utils;
 use Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CountrySpecificService
 {
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ExportService $exportService
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -51,6 +52,6 @@ class CountrySpecificService
             ['id' => 'asc']
         );
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'country', $type);
+        return $this->exportService->export($exportableTable, 'country', $type);
     }
 }

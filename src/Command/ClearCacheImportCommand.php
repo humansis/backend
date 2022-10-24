@@ -9,6 +9,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClearCacheImportCommand extends ContainerAwareCommand
 {
+    /** @var string */
+    private $rootDir;
+
+    public function __construct(string $rootDir)
+    {
+        $this->rootDir = $rootDir;
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -33,7 +42,7 @@ class ClearCacheImportCommand extends ContainerAwareCommand
             '',
         ]);
 
-        $dir_root = $this->getContainer()->get('kernel')->getRootDir();
+        $dir_root = $this->rootDir;
         $dir_var = $dir_root . '/../var/data';
         if (is_dir($dir_var)) {
             $this->rrmdir($dir_var);

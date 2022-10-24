@@ -11,7 +11,6 @@ use Exception;
 use InputType\BookletBatchCreateInputType;
 use Entity\Project;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\Booklet;
 use Entity\Voucher;
@@ -22,9 +21,6 @@ class BookletService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
-
     /** @var BookletGenerator */
     private $generator;
 
@@ -33,22 +29,31 @@ class BookletService
      */
     private $twig;
 
+    /** @var VoucherService */
+    private $voucherService;
+
+    /** @var PdfService */
+    private $pdfService;
+
     /**
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
      * @param BookletGenerator $generator
      * @param Environment $twig
+     * @param VoucherService $voucherService
+     * @param PdfService $pdfService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ContainerInterface $container,
         BookletGenerator $generator,
-        Environment $twig
+        Environment $twig,
+        VoucherService $voucherService,
+        PdfService $pdfService
     ) {
         $this->em = $entityManager;
-        $this->container = $container;
         $this->generator = $generator;
         $this->twig = $twig;
+        $this->voucherService = $voucherService;
+        $this->pdfService = $pdfService;
     }
 
     /**
@@ -156,7 +161,7 @@ class BookletService
                         'values' => $values,
                     ];
 
-                    $this->container->get('voucher.voucher_service')->create($voucherData);
+                    $this->voucherService->create($voucherData);
                 } catch (Exception $e) {
                     throw new Exception('Error creating vouchers');
                 }
@@ -165,7 +170,7 @@ class BookletService
                 $vouchers = $this->em->getRepository(Voucher::class)->findBy(['booklet' => $booklet->getId()]);
                 foreach ($vouchers as $voucher) {
                     if ($vouchersToRemove > 0) {
-                        $this->container->get('voucher.voucher_service')->deleteOneFromDatabase($voucher);
+                        $this->voucherService->deleteOneFromDatabase($voucher);
                         $vouchersToRemove -= 1;
                     }
                 }
@@ -315,7 +320,7 @@ class BookletService
         } elseif ($removeBooklet && $vouchers) {
             try {
                 // === if there are vouchers then delete those that are not used ===
-                $this->container->get('voucher.voucher_service')->deleteBatchVouchers($booklet);
+                $this->voucherService->deleteBatchVouchers($booklet);
                 $this->em->remove($booklet);
                 $this->em->flush();
             } catch (Exception $exception) {
@@ -344,7 +349,7 @@ class BookletService
                 }
             }
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'booklets');
+            $response = $this->pdfService->printPdf($html, 'portrait', 'booklets');
 
             return $response;
         } catch (Exception $e) {
@@ -377,7 +382,7 @@ class BookletService
                     'qrCodeLink' => 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . $bookletQrCode,
                     'numberVouchers' => $numberVouchers,
                 ],
-                $this->container->get('pdf_service')->getInformationStyle()
+                $this->pdfService->getInformationStyle()
             )
         );
 

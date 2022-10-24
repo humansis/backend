@@ -686,7 +686,7 @@ services:
         class: Utils\CountrySpecificService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@service_container"
+            - "@export_csv_service"
         public: true
 
     beneficiary.vulnerability_resolver:
@@ -737,14 +737,14 @@ services:
         public: true
 
     Utils\ProjectService:
-        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service']
 
     project.donor_service:
         alias: Utils\DonorService
         public: true
 
     Utils\DonorService:
-        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service']
 
     project.sector_service:
         alias: Utils\SectorService
@@ -791,7 +791,7 @@ services:
 
     user.user_service:
         class: Utils\UserService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@service_container', '@security.role_hierarchy']
+        arguments: ['@doctrine.orm.entity_manager', '@validator', '@export_csv_service', '@security.role_hierarchy','@security.helper']
         public: true
 
     Utils\UserService: '@user.user_service'
@@ -825,7 +825,7 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@service_container'
+            - '@export_csv_service'
 
     distribution.criteria_assistance_service:
         alias: Utils\CriteriaAssistanceService
@@ -924,6 +924,8 @@ services:
         public: true
         tags:
             - { name: 'console.command' }
+        arguments:
+            - '%kernel.root_dir%'
 
     logger:
         alias: monolog.logger
@@ -973,6 +975,7 @@ services:
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@service_container"
+            - "@security.token_storage"
         tags:
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
@@ -1240,7 +1243,7 @@ services:
 
     voucher.vendor_service:
         class: Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
+        arguments: ['@doctrine.orm.entity_manager', '@pdf_service', '@Twig\Environment','@export_csv_service']
         public: true
 
     Utils\VendorService: '@voucher.vendor_service'
@@ -1252,9 +1255,10 @@ services:
         class: Utils\BookletService
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@service_container'
             - '@Utils\BookletGenerator'
             - '@Twig\Environment'
+            - '@voucher.voucher_service'
+            - '@pdf_service'
         public: true
 
     Utils\VoucherService:
@@ -1262,7 +1266,7 @@ services:
 
     voucher.voucher_service:
         class: Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@Twig\Environment']
+        arguments: ['@doctrine.orm.entity_manager','@service_container', '@export_csv_service', '@Twig\Environment','@pdf_service']
         public: true
 
     Utils\ProductService:
@@ -1270,7 +1274,7 @@ services:
 
     voucher.product_service:
         class: Utils\ProductService
-        arguments: ['@doctrine.orm.entity_manager', '@service_container']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service']
         public: true
 
     common.upload_service:
@@ -1316,6 +1320,11 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@cache.app'
+            - '@Twig\Environment'
+            - '@monolog.logger'
+            - '@swiftmailer.mailer.default'
+            - '@export_csv_service'
 
     transaction.default_financial_provider:
         class: Utils\Provider\DefaultFinancialProvider
@@ -1323,7 +1332,9 @@ services:
         abstract: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@service_container'
+            - '@monolog.logger'
+            - '@security.token_storage'
+            - '%kernel.root_dir%'
 
     transaction.khm_financial_provider:
         class: Utils\Provider\KHMFinancialProvider

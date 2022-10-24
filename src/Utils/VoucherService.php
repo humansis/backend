@@ -32,18 +32,33 @@ class VoucherService
      */
     private $twig;
 
+    /** @var ExportService */
+    private $exportService;
+
+    /**@var PdfService */
+    private $pdfService;
+
     /**
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param ContainerInterface $container
+     * @param ExportService $exportService
      * @param Environment $twig
+     * @param PdfService $pdfService
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container, Environment $twig)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ContainerInterface $container,
+        ExportService $exportService,
+        Environment $twig,
+        PdfService $pdfService
+    ) {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->exportService = $exportService;
         $this->twig = $twig;
+        $this->pdfService = $pdfService;
     }
 
     /**
@@ -309,7 +324,7 @@ class VoucherService
             );
         }
 
-        return $this->container->get('export_csv_service')->export(
+        return $this->exportService->export(
             $exportableTable->getResult(),
             'bookletCodes',
             $type
@@ -364,11 +379,11 @@ class VoucherService
                 '@Voucher/Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],
-                    $this->container->get('pdf_service')->getInformationStyle()
+                    $this->pdfService->getInformationStyle()
                 )
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'bookletCodes');
+            $response = $this->pdfService->printPdf($html, 'portrait', 'bookletCodes');
 
             return $response;
         } catch (Exception $e) {
