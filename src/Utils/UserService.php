@@ -9,7 +9,6 @@ use InputType\UserCreateInputType;
 use InputType\UserUpdateInputType;
 use InputType\UserInitializeInputType;
 use Entity\Project;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
@@ -33,8 +32,8 @@ class UserService
     /** @var ValidatorInterface $validator */
     private $validator;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
     /**
      * @var RoleHierarchyInterface
@@ -49,20 +48,20 @@ class UserService
      *
      * @param EntityManagerInterface $entityManager
      * @param ValidatorInterface $validator
-     * @param ContainerInterface $container
+     * @param ExportService $exportService
      * @param RoleHierarchyInterface $roleHierarchy
      * @param Security $security
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        ContainerInterface $container,
+        ExportService $exportService,
         RoleHierarchyInterface $roleHierarchy,
         Security $security
     ) {
         $this->em = $entityManager;
         $this->validator = $validator;
-        $this->container = $container;
+        $this->exportService = $exportService;
         $this->roleHierarchy = $roleHierarchy;
         $this->security = $security;
     }
@@ -233,7 +232,7 @@ class UserService
     {
         $exportableTable = $this->em->getRepository(User::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'users', $type);
+        return $this->exportService->export($exportableTable, 'users', $type);
     }
 
     public function getCountries(User $user): array

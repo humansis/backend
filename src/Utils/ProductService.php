@@ -10,26 +10,27 @@ use InputType\ProductCreateInputType;
 use InputType\ProductUpdateInputType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Product;
-use Psr\Container\ContainerInterface;
 
 class ProductService
 {
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
     /**
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param ExportService $exportService
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ExportService $exportService
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -153,6 +154,6 @@ class ProductService
             ['archived' => false, 'countryIso3' => $countryIso3]
         );
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'products', $type);
+        return $this->exportService->export($exportableTable, 'products', $type);
     }
 }

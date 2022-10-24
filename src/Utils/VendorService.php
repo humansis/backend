@@ -11,7 +11,6 @@ use Exception\NotUniqueException;
 use InputType\VendorCreateInputType;
 use InputType\VendorUpdateInputType;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
@@ -24,29 +23,35 @@ class VendorService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var PdfService */
+    private $pdfService;
 
     /**
      * @var Environment
      */
     private $twig;
 
+    /** @var ExportService */
+    private $exportService;
+
     /**
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param PdfService $pdfService
      * @param Environment $twig
+     * @param ExportService $exportService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        Environment $twig
+        PdfService $pdfService,
+        Environment $twig,
+        ExportService $exportService
     ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->pdfService = $pdfService;
         $this->twig = $twig;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -217,11 +222,11 @@ class VendorService
                         'voucherPurchases' => $voucherPurchases,
                         'totalValue' => $totalValue,
                     ],
-                    $this->container->get('pdf_service')->getInformationStyle()
+                    $this->pdfService->getInformationStyle()
                 )
             );
 
-            $response = $this->container->get('pdf_service')->printPdf($html, 'portrait', 'invoice');
+            $response = $this->pdfService->printPdf($html, 'portrait', 'invoice');
 
             return $response;
         } catch (Exception $e) {
@@ -242,6 +247,6 @@ class VendorService
     {
         $exportableTable = $this->em->getRepository(Vendor::class)->findByCountry($countryISO3);
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'vendors', $type);
+        return $this->exportService->export($exportableTable, 'vendors', $type);
     }
 }

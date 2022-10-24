@@ -16,7 +16,6 @@ use InputType\ProjectCreateInputType;
 use InputType\ProjectUpdateInputType;
 use Entity\Donor;
 use Entity\Project;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Entity\User;
 use Entity\UserProject;
@@ -33,19 +32,21 @@ class ProjectService
      */
     protected $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
     /**
      * ProjectService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param ExportService $exportService
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ExportService $exportService
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -292,6 +293,6 @@ class ProjectService
     {
         $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'projects', $type);
+        return $this->exportService->export($exportableTable, 'projects', $type);
     }
 }

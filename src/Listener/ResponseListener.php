@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 use function is_object;
 
@@ -19,10 +22,17 @@ class ResponseListener
     /** @var ContainerInterface $container */
     private $container;
 
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    /** @var TokenStorageInterface */
+    private $tokenStorage;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ContainerInterface $container,
+        TokenStorageInterface $tokenStorage
+    ) {
         $this->em = $entityManager;
         $this->container = $container;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function onKernelResponse(ResponseEvent $event)
@@ -107,7 +117,7 @@ class ResponseListener
             );
         }
 
-        if (null === $token = $this->container->get('security.token_storage')->getToken()) {
+        if (null === $token = $this->tokenStorage->getToken()) {
             return;
         }
 

@@ -12,6 +12,8 @@ use Entity\AssistanceBeneficiary;
 use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class DefaultFinancialProvider
@@ -28,8 +30,11 @@ abstract class DefaultFinancialProvider
     /** @var EntityManagerInterface $em */
     protected $em;
 
-    /** @var ContainerInterface $container */
-    protected $container;
+    /** @var TokenStorageInterface */
+    private $tokenStorage;
+
+    /** @var KernelInterface */
+    protected $kernel;
 
     /** @var string $url */
     protected $url;
@@ -45,11 +50,16 @@ abstract class DefaultFinancialProvider
      *
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LoggerInterface $mobileLogger,
+        TokenStorageInterface $tokenStorage,
+        KernelInterface $kernel
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
-        $this->logger = $container->get('monolog.logger.mobile');
+        $this->logger = $mobileLogger;
+        $this->tokenStorage = $tokenStorage;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -263,7 +273,7 @@ abstract class DefaultFinancialProvider
         int $transactionStatus,
         string $message = null
     ) {
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $user = $this->tokenStorage->getToken()->getUser();
 
         $transaction = new Transaction();
         $transaction->setAssistanceBeneficiary($assistanceBeneficiary);
@@ -294,7 +304,7 @@ abstract class DefaultFinancialProvider
      */
     public function recordTransaction(Assistance $assistance, array $data)
     {
-        $dir_root = $this->container->get('kernel')->getRootDir();
+        $dir_root = $this->kernel->getRootDir();
         $dir_var = $dir_root . '/../var/logs';
         if (!is_dir($dir_var)) {
             mkdir($dir_var);

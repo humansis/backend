@@ -8,7 +8,6 @@ use Exception;
 use InputType\DonorCreateInputType;
 use InputType\DonorUpdateInputType;
 use Entity\Donor;
-use Psr\Container\ContainerInterface;
 
 /**
  * Class DonorService
@@ -20,19 +19,21 @@ class DonorService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
     /**
      * DonorService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param ExportService $exportService
      */
-    public function __construct(EntityManagerInterface $entityManager, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ExportService $exportService
+    ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->exportService = $exportService;
     }
 
     public function create(DonorCreateInputType $inputType): Donor
@@ -88,6 +89,6 @@ class DonorService
     {
         $exportableTable = $this->em->getRepository(Donor::class)->findAll();
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'donors', $type);
+        return $this->exportService->export($exportableTable, 'donors', $type);
     }
 }

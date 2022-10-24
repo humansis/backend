@@ -18,7 +18,6 @@ use Enum\CacheTarget;
 use Workflow\ReliefPackageTransitions;
 use Entity\Project;
 use Psr\Cache\InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface as Serializer;
@@ -36,21 +35,21 @@ class AssistanceBeneficiaryService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var ContainerInterface $container */
-    private $container;
+    /** @var ExportService */
+    private $exportService;
 
     /**
      * AssistanceBeneficiaryService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
+     * @param ExportService $exportService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ContainerInterface $container
+        ExportService $exportService
     ) {
         $this->em = $entityManager;
-        $this->container = $container;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -82,6 +81,6 @@ class AssistanceBeneficiaryService
             ]);
         }
 
-        return $this->container->get('export_csv_service')->export($beneficiaries, 'distributions', $type);
+        return $this->exportService->export($beneficiaries, 'distributions', $type);
     }
 }

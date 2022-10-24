@@ -14,6 +14,15 @@ use XMLReader;
 
 class FixAdmsCommand extends ContainerAwareCommand
 {
+    /**@var Connection  */
+    private $connection;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+        parent::__construct();
+    }
+
     protected function configure()
     {
         $this
@@ -35,7 +44,7 @@ class FixAdmsCommand extends ContainerAwareCommand
         $filepath = $this->getFilepath($input);
         $count = $this->getCount($filepath);
 
-        $conn = $this->getContainer()->get('database_connection');
+        $conn = $this->connection;
 
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();

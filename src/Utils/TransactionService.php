@@ -11,6 +11,7 @@ use Exception;
 use Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
+use Swift_Mailer;
 use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -52,6 +53,12 @@ class TransactionService
      */
     private $twig;
 
+    /** @var Swift_Mailer */
+    private $mailer;
+
+    /** @var ExportService */
+    private $exportService;
+
     /**
      * TransactionService constructor.
      *
@@ -59,13 +66,18 @@ class TransactionService
      * @param ContainerInterface $container
      * @param CacheInterface $cache
      * @param Environment $twig
+     * @param LoggerInterface $mobileLogger
+     * @param Swift_Mailer $mailer
+     * @param ExportService $exportService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ContainerInterface $container,
         CacheInterface $cache,
         Environment $twig,
-        LoggerInterface $mobileLogger
+        LoggerInterface $mobileLogger,
+        Swift_Mailer $mailer,
+        ExportService $exportService
     ) {
         $this->em = $entityManager;
         $this->container = $container;
@@ -73,6 +85,8 @@ class TransactionService
         $this->logger = $mobileLogger;
         $this->cache = $cache;
         $this->twig = $twig;
+        $this->mailer = $mailer;
+        $this->exportService = $exportService;
     }
 
     /**
@@ -167,7 +181,7 @@ class TransactionService
                 'text/html'
             );
 
-        $this->container->get('mailer')->send($message);
+        $this->mailer->send($message);
         $this->logger->error("Code for verify assistance was sent to " . $user->getEmail(), [$assistance]);
     }
 
@@ -275,6 +289,6 @@ class TransactionService
             );
         }
 
-        return $this->container->get('export_csv_service')->export($exportableTable, 'transaction', $type);
+        return $this->exportService->export($exportableTable, 'transaction', $type);
     }
 }
