@@ -19,15 +19,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Product;
 use Repository\ProductRepository;
+use Utils\ProductService;
 
 class ProductController extends AbstractController
 {
     /** @var UploadService */
     private $uploadService;
 
-    public function __construct(UploadService $uploadService)
-    {
+    /** @var ProductService */
+    private $productService;
+
+    public function __construct(
+        UploadService $uploadService,
+        ProductService $productService
+    ) {
         $this->uploadService = $uploadService;
+        $this->productService = $productService;
     }
 
     /**
@@ -103,7 +110,7 @@ class ProductController extends AbstractController
      */
     public function create(ProductCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('voucher.product_service')->create($inputType);
+        $object = $this->productService->create($inputType);
 
         return $this->json($object);
     }
@@ -118,7 +125,7 @@ class ProductController extends AbstractController
      */
     public function update(Product $product, ProductUpdateInputType $inputType): JsonResponse
     {
-        $object = $this->get('voucher.product_service')->update($product, $inputType);
+        $object = $this->productService->update($product, $inputType);
 
         return $this->json($object);
     }
@@ -154,7 +161,7 @@ class ProductController extends AbstractController
      */
     public function delete(Product $product): JsonResponse
     {
-        $this->get('voucher.product_service')->archive($product);
+        $this->productService->archive($product);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

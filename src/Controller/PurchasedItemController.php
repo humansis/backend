@@ -6,6 +6,7 @@ namespace Controller;
 
 use Entity\Beneficiary;
 use Entity\Household;
+use Export\PurchasedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\SmartcardPurchasedItem;
 use Export\SmartcardPurchasedItemSpreadsheet;
@@ -28,9 +29,15 @@ class PurchasedItemController extends AbstractController
     /** @var SmartcardPurchasedItemSpreadsheet */
     private $smartcardPurchasedItemSpreadsheet;
 
-    public function __construct(SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet)
-    {
+    /** @var PurchasedSummarySpreadsheetExport */
+    private $purchasedSummarySpreadsheetExport;
+
+    public function __construct(
+        SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet,
+        PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport
+    ) {
         $this->smartcardPurchasedItemSpreadsheet = $smartcardPurchasedItemSpreadsheet;
+        $this->purchasedSummarySpreadsheetExport = $purchasedSummarySpreadsheetExport;
     }
 
     /**
@@ -110,7 +117,7 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->get('export.purchased_summary.spreadsheet')->export(
+        $filename = $this->purchasedSummarySpreadsheetExport->export(
             $request->headers->get('country'),
             $request->get('type'),
             $filter

@@ -580,6 +580,9 @@ services:
             - "@beneficiary.beneficiary_service"
         public: true
 
+    Utils\InstitutionService:
+        alias: beneficiary.institution_service
+
     beneficiary.institution_service:
         class: Utils\InstitutionService
         arguments:
@@ -870,6 +873,9 @@ services:
     #######################################################################################
     ##                                       CSV                                         ##
     #######################################################################################
+
+    Export\SmartcardInvoiceLegacyExport:
+        alias: distribution.export_legacy.smartcard_invoice
 
     distribution.export_legacy.smartcard_invoice:
         class: Export\SmartcardInvoiceLegacyExport
@@ -1336,6 +1342,9 @@ services:
             - '@Component\Country\Countries'
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\DistributedItem")'
         public: true
+
+    Export\PurchasedSummarySpreadsheetExport:
+        alias: export.purchased_summary.spreadsheet
 
     export.purchased_summary.spreadsheet:
         class: Export\PurchasedSummarySpreadsheetExport

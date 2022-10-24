@@ -18,15 +18,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Transaction;
 use Repository\TransactionRepository;
+use Symfony\Component\Serializer\SerializerInterface;
+use Utils\TransactionService;
 
 class TransactionController extends AbstractController
 {
     /** @var CodeListService */
     private $codeListService;
 
-    public function __construct(CodeListService $codeListService)
-    {
+    /** @var LoggerInterface */
+    private $logger;
+
+    /** @var TransactionService */
+    private $transactionService;
+
+    /** @var SerializerInterface */
+    private $serializer;
+
+    public function __construct(
+        CodeListService $codeListService,
+        LoggerInterface $mobileLogger,
+        TransactionService $transactionService,
+        SerializerInterface $serializer
+    ) {
         $this->codeListService = $codeListService;
+        $this->logger = $mobileLogger;
+        $this->transactionService = $transactionService;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -66,34 +84,31 @@ class TransactionController extends AbstractController
         $code = $request->request->get('code');
         $user = $this->getUser();
 
-        /** @var LoggerInterface $logger */
-        $logger = $this->get('monolog.logger.mobile');
-        $logger->error('Sending money requested', [$countryISO3, $user, $assistance]);
+        $this->logger->error('Sending money requested', [$countryISO3, $user, $assistance]);
 
         $code = (int) trim(preg_replace('/\s+/', ' ', $code));
 
-        $validatedTransaction = $this->get('transaction.transaction_service')->verifyCode($code, $user, $assistance);
+        $validatedTransaction = $this->transactionService->verifyCode($code, $user, $assistance);
         if (!$validatedTransaction) {
-            $logger->warning('Code: did not match');
+            $this->logger->warning('Code: did not match');
 
             return new Response(
                 "The supplied code did not match. The transaction cannot be executed",
                 Response::HTTP_BAD_REQUEST
             );
         } else {
-            $logger->error('Code: verified');
+            $this->logger->error('Code: verified');
         }
 
         try {
-            $response = $this->get('transaction.transaction_service')->sendMoney($countryISO3, $assistance, $user);
+            $response = $this->transactionService->sendMoney($countryISO3, $assistance, $user);
         } catch (Exception $exception) {
-            $logger->error('Sending money failed: ' . $exception->getMessage());
+            $this->logger->error('Sending money failed: ' . $exception->getMessage());
 
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->get('serializer')
-            ->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
+        $json = $this->serializer->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
 
         return new Response($json);
     }
@@ -108,7 +123,7 @@ class TransactionController extends AbstractController
      */
     public function sendEmail(Assistance $assistance): JsonResponse
     {
-        $this->get('transaction.transaction_service')->sendVerifyEmail($this->getUser(), $assistance);
+        $this->transactionService->sendVerifyEmail($this->getUser(), $assistance);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

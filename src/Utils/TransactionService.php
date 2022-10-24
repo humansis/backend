@@ -64,12 +64,13 @@ class TransactionService
         EntityManagerInterface $entityManager,
         ContainerInterface $container,
         CacheInterface $cache,
-        Environment $twig
+        Environment $twig,
+        LoggerInterface $mobileLogger
     ) {
         $this->em = $entityManager;
         $this->container = $container;
         $this->email = $this->container->getParameter('email');
-        $this->logger = $container->get('monolog.logger.mobile');
+        $this->logger = $mobileLogger;
         $this->cache = $cache;
         $this->twig = $twig;
     }

@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Repository\VendorRepository;
+use Utils\VendorService;
 
 class VendorController extends AbstractController
 {
@@ -26,9 +27,15 @@ class VendorController extends AbstractController
      */
     private $vendorRepository;
 
-    public function __construct(VendorRepository $vendorRepository)
-    {
+    /** @var VendorService */
+    private $vendorService;
+
+    public function __construct(
+        VendorRepository $vendorRepository,
+        VendorService $vendorService
+    ) {
         $this->vendorRepository = $vendorRepository;
+        $this->vendorService = $vendorService;
     }
 
     /**
@@ -104,7 +111,7 @@ class VendorController extends AbstractController
      */
     public function create(VendorCreateInputType $inputType): JsonResponse
     {
-        $object = $this->get('voucher.vendor_service')->create($inputType);
+        $object = $this->vendorService->create($inputType);
 
         return $this->json($object);
     }
@@ -123,7 +130,7 @@ class VendorController extends AbstractController
             throw new BadRequestHttpException('Unable to update archived vendor.');
         }
 
-        $object = $this->get('voucher.vendor_service')->update($vendor, $inputType);
+        $object = $this->vendorService->update($vendor, $inputType);
 
         return $this->json($object);
     }
@@ -139,7 +146,7 @@ class VendorController extends AbstractController
      */
     public function delete(Vendor $vendor): JsonResponse
     {
-        $this->get('voucher.vendor_service')->archiveVendor($vendor, true);
+        $this->vendorService->archiveVendor($vendor, true);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -155,7 +162,7 @@ class VendorController extends AbstractController
      */
     public function invoice(Vendor $vendor): Response
     {
-        return $this->get('voucher.vendor_service')->printInvoice($vendor);
+        return $this->vendorService->printInvoice($vendor);
     }
 
     /**
