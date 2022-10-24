@@ -12,7 +12,6 @@ use Entity\AssistanceBeneficiary;
 use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -33,8 +32,8 @@ abstract class DefaultFinancialProvider
     /** @var TokenStorageInterface */
     private $tokenStorage;
 
-    /** @var KernelInterface */
-    protected $kernel;
+    /** @var string */
+    protected $rootDir;
 
     /** @var string $url */
     protected $url;
@@ -54,12 +53,12 @@ abstract class DefaultFinancialProvider
         EntityManagerInterface $entityManager,
         LoggerInterface $mobileLogger,
         TokenStorageInterface $tokenStorage,
-        KernelInterface $kernel
+        string $rootDir
     ) {
         $this->em = $entityManager;
         $this->logger = $mobileLogger;
         $this->tokenStorage = $tokenStorage;
-        $this->kernel = $kernel;
+        $this->rootDir = $rootDir;
     }
 
     /**
@@ -304,7 +303,7 @@ abstract class DefaultFinancialProvider
      */
     public function recordTransaction(Assistance $assistance, array $data)
     {
-        $dir_root = $this->kernel->getRootDir();
+        $dir_root = $this->rootDir;
         $dir_var = $dir_root . '/../var/logs';
         if (!is_dir($dir_var)) {
             mkdir($dir_var);

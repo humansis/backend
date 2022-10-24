@@ -217,7 +217,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
 
         $this->logger->error($requestID . "Body built");
 
-        $dir_root = $this->kernel->getRootDir();
+        $dir_root = $this->rootDir;
         $curlLog = $dir_root . "/../var/logs/curl_$requestUnique.log";
 
         $this->logger->error($requestID . "curl log in " . $curlLog);

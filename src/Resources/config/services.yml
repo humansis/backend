@@ -924,6 +924,8 @@ services:
         public: true
         tags:
             - { name: 'console.command' }
+        arguments:
+            - '%kernel.root_dir%'
 
     logger:
         alias: monolog.logger
@@ -1332,7 +1334,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@monolog.logger'
             - '@security.token_storage'
-            - '@kernel'
+            - '%kernel.root_dir%'
 
     transaction.khm_financial_provider:
         class: Utils\Provider\KHMFinancialProvider
