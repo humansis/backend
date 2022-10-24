@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Smartcard;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Utils\SmartcardService;
@@ -31,21 +30,21 @@ class SmartcardController extends AbstractVendorAppController
     /** @var SmartcardService */
     private $smartcardService;
 
-    /** @var KernelInterface */
-    private $kernel;
+    /** @var string */
+    private $logsDir;
 
     public function __construct(
         SerializerInterface $serializer,
         ValidatorInterface $validator,
         LoggerInterface $logger,
         SmartcardService $smartcardService,
-        KernelInterface $kernel
+        string $logsDir
     ) {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->logger = $logger;
         $this->smartcardService = $smartcardService;
-        $this->kernel = $kernel;
+        $this->logsDir = $logsDir;
     }
     /** @var  */
     /**
@@ -108,7 +107,7 @@ class SmartcardController extends AbstractVendorAppController
 
     private function writeData(string $type, string $user, string $smartcard, $data): void
     {
-        $filename = $this->kernel->getLogDir() . '/';
+        $filename = $this->logsDir . '/';
         $filename .= implode('_', ['SC-invalidData', $type, 'vendor-' . $user, 'sc-' . $smartcard . '.json']);
         $logFile = fopen($filename, "a+");
         fwrite($logFile, $data);
