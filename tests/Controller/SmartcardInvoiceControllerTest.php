@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Controller;
 
 use Component\Assistance\Domain\Assistance as AssistanceDomain;
@@ -111,9 +113,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testPurchaseIsNotRedeemableBeforeSync(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -167,9 +172,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testRedeemablePurchaseAfterSync(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -180,9 +188,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
          */
         $assistanceBeneficiary = $assistanceDomain->getBeneficiaries()[0];
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if ($reliefPackages->count() > 1) {
-            $this->fail('There should not be more Relief Packages');
-        }
+
+        $this->assertEquals(1, $reliefPackages->count(), 'There should not be more Relief Packages');
 
         $purchase = $this->createPurchase(
             $smartcardNumber,
@@ -238,9 +245,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testPurchaseCanNotBeInvoicedBeforeSync(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -276,9 +286,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testCanBeInvoicedAfterSync(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -289,9 +302,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
          */
         $assistanceBeneficiary = $assistanceDomain->getBeneficiaries()[0];
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if ($reliefPackages->count() > 1) {
-            $this->fail('There should not be more Relief Packages');
-        }
+
+        $this->assertEquals(1, $reliefPackages->count(), 'There should be one Relief Package');
 
         $purchase = $this->createPurchase(
             $smartcardNumber,
@@ -343,9 +355,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testInvoicesByVendor(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -356,9 +371,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
          */
         $assistanceBeneficiary = $assistanceDomain->getBeneficiaries()[0];
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if ($reliefPackages->count() > 1) {
-            $this->fail('There should not be more Relief Packages');
-        }
+
+        $this->assertEquals(1, $reliefPackages->count(), 'There should be one Relief Package');
 
         $purchase = $this->createPurchase(
             $smartcardNumber,
@@ -420,9 +434,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testPurchaseIsRedeemableForVendorApp(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -433,9 +450,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
          */
         $assistanceBeneficiary = $assistanceDomain->getBeneficiaries()[0];
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if ($reliefPackages->count() > 1) {
-            $this->fail('There should not be more Relief Packages');
-        }
+
+        $this->assertEquals(1, $reliefPackages->count(), 'There should be one Relief Package');
 
         $this->createPurchase(
             $smartcardNumber,
@@ -482,9 +498,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     public function testPurchaseIsNotRedeemableForVendorApp(): void
     {
         $assistanceDomain = $this->createSmartcardAssistance();
-        if ($assistanceDomain->getBeneficiaries()->count() === 0) {
-            $this->fail('There is no Beneficiary in Assistance.');
-        }
+
+        $this->assertGreaterThan(
+            0,
+            $assistanceDomain->getBeneficiaries()->count(),
+            'There is no Beneficiary in Assistance.'
+        );
 
         $purchaseValue = 60;
         $purchaseCurrency = 'USD';
@@ -495,9 +514,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
          */
         $assistanceBeneficiary = $assistanceDomain->getBeneficiaries()[0];
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if ($reliefPackages->count() > 1) {
-            $this->fail('There should not be more Relief Packages');
-        }
+
+        $this->assertEquals(1, $reliefPackages->count(), 'There should be one Relief Package');
 
         $this->createPurchase(
             $smartcardNumber,

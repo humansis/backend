@@ -1418,3 +1418,5 @@ services:
         public: true
 
     Component\Smartcard\Invoice\PreliminaryInvoiceService:
+
+    Component\Smartcard\Invoice\InvoiceChecker:

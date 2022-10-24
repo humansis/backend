@@ -2,7 +2,6 @@
 
 namespace Controller;
 
-use Component\Smartcard\Invoice\Exception\WrongInvocingStateException;
 use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -102,11 +101,7 @@ class VendorController extends AbstractController
             $pagination
         );
         if ($filter->hasInvoicing()) {
-            try {
-                $vendors = $preliminaryInvoiceService->filterVendorsByInvoicing($vendors, $filter->getInvoicing());
-            } catch (WrongInvocingStateException $e) {
-                throw new BadRequestHttpException($e->getMessage(), $e);
-            }
+            $vendors = $preliminaryInvoiceService->filterVendorsByInvoicing($vendors, $filter->getInvoicing());
         }
 
         return $this->json(new Paginator($vendors));

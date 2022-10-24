@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller\WebApp\Smartcard;
 
-use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
 use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
@@ -20,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Controller\VendorApp\SmartcardController;
 use Entity\Invoice;
 use Entity\Vendor;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class InvoiceController extends AbstractWebAppController
 {
@@ -91,11 +89,7 @@ class InvoiceController extends AbstractWebAppController
         SmartcardInvoiceCreateInputType $inputType,
         InvoiceFactory $invoiceFactory
     ): JsonResponse {
-        try {
-            $invoice = $invoiceFactory->create($vendor, $inputType, $this->getUser());
-        } catch (NotRedeemableInvoiceException $e) {
-            throw new BadRequestHttpException($e->getMessage(), $e);
-        }
+        $invoice = $invoiceFactory->create($vendor, $inputType, $this->getUser());
 
         return $this->json($invoice);
     }

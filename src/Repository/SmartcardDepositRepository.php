@@ -38,7 +38,7 @@ class SmartcardDepositRepository extends EntityRepository
     /**
      * @param Beneficiary $beneficiary
      * @param Assistance $assistance
-     * @return ReliefPackage[]
+     * @return SmartcardDeposit[]
      */
     public function getDepositsByBeneficiaryAndAssistance(
         Beneficiary $beneficiary,
