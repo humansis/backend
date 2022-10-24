@@ -428,6 +428,14 @@ services:
         arguments:
             - '%kernel.logs_dir%'
 
+    Controller\VendorApp\SmartcardController:
+        arguments:
+            - '@serializer'
+            - '@validator'
+            - '@monolog.logger'
+            - '@smartcard_service'
+            - '%kernel.logs_dir%'
+
     Component\Product\ProductCategoryService:
 
     Component\Import\ImportFileValidator:
