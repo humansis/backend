@@ -34,6 +34,22 @@ class InvoiceChecker
 
     /**
      * @param Vendor $vendor
+     * @param array $purchaseIds
+     * @return bool
+     */
+    public function isInvoiceable(Vendor $vendor, array $purchaseIds): bool
+    {
+        try {
+            $this->checkIfPurchasesCanBeInvoiced($vendor, $purchaseIds);
+
+            return true;
+        } catch (AlreadyRedeemedInvoiceException | NotRedeemableInvoiceException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @param Vendor $vendor
      * @param int[] $purchaseIds
      * @return void
      * @throws AlreadyRedeemedInvoiceException

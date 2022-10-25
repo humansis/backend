@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Invoice;
 
-use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\Exception\WrongInvoicingStateHttpException;
 use Entity\Smartcard\PreliminaryInvoice;
 use Entity\Vendor;
@@ -40,15 +39,7 @@ class PreliminaryInvoiceService
         $preliminaryInvoices = $this->getPreliminaryInvoicesByVendor($vendor);
         $preliminaryInvoicesDto = [];
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            try {
-                $this->invoiceChecker->checkIfPurchasesCanBeInvoiced(
-                    $vendor,
-                    $preliminaryInvoice->getPurchaseIds()
-                );
-                $canRedeem = true;
-            } catch (NotRedeemableInvoiceException $e) {
-                $canRedeem = false;
-            }
+            $canRedeem = $this->invoiceChecker->isInvoiceable($vendor, $preliminaryInvoice->getPurchaseIds());
             $preliminaryInvoicesDto[] = new PreliminaryInvoiceDto($preliminaryInvoice, $canRedeem);
         }
 
@@ -63,11 +54,8 @@ class PreliminaryInvoiceService
     {
         $redeemablePreliminaryInvoices = [];
         foreach ($this->getPreliminaryInvoicesByVendor($vendor) as $preliminaryInvoice) {
-            try {
-                $this->invoiceChecker->checkIfPurchasesCanBeInvoiced($vendor, $preliminaryInvoice->getPurchaseIds());
+            if ($this->invoiceChecker->isInvoiceable($vendor, $preliminaryInvoice->getPurchaseIds())) {
                 $redeemablePreliminaryInvoices[] = $preliminaryInvoice;
-            } catch (NotRedeemableInvoiceException $e) {
-                // this preliminary invoice is not redeemable
             }
         }
 
@@ -135,12 +123,7 @@ class PreliminaryInvoiceService
     {
         if (count($preliminaryInvoices) > 0) {
             foreach ($preliminaryInvoices as $preliminaryInvoice) {
-                try {
-                    $this->invoiceChecker->checkIfPurchasesCanBeInvoiced(
-                        $vendor,
-                        $preliminaryInvoice->getPurchaseIds()
-                    );
-                } catch (NotRedeemableInvoiceException $e) {
+                if (!$this->invoiceChecker->isInvoiceable($vendor, $preliminaryInvoice->getPurchaseIds())) {
                     return true;
                 }
             }
@@ -158,15 +141,8 @@ class PreliminaryInvoiceService
     {
         if (count($preliminaryInvoices) > 0) {
             foreach ($preliminaryInvoices as $preliminaryInvoice) {
-                try {
-                    $this->invoiceChecker->checkIfPurchasesCanBeInvoiced(
-                        $vendor,
-                        $preliminaryInvoice->getPurchaseIds()
-                    );
-
+                if ($this->invoiceChecker->isInvoiceable($vendor, $preliminaryInvoice->getPurchaseIds())) {
                     return true;
-                } catch (NotRedeemableInvoiceException $e) {
-                    // vendor is not in to redeem state for this preliminary invoice
                 }
             }
         }
