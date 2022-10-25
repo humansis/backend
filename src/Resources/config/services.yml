@@ -875,9 +875,6 @@ services:
     ##                                       CSV                                         ##
     #######################################################################################
 
-    Export\SmartcardInvoiceLegacyExport:
-        alias: distribution.export_legacy.smartcard_invoice
-
     distribution.export_legacy.smartcard_invoice:
         alias: Export\SmartcardInvoiceLegacyExport
         public: true
