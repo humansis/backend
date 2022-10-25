@@ -36,7 +36,7 @@ countrySpecific,Residence Ownership,Residence Ownership,Owned,1
 ,,,Hosted,4
 ,,,Informally Occupied (Without Owner's Permission),6
 ,,,,
-countrySpecific,Displacement status,Residence Ownership,Resident,1
+countrySpecific,Displacement status,Displacement status,Resident,1
 ,,,Resident Hosting Refugees/IDPs,3
 ,,,Refugees,4
 ,,,Old IDPs,4
