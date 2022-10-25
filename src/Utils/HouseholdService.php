@@ -2,6 +2,7 @@
 
 namespace Utils;
 
+use Component\Auditor\AuditorService;
 use Entity\Address;
 use Entity\Beneficiary;
 use Entity\Camp;
@@ -51,20 +52,28 @@ class HouseholdService
     private $locationRepository;
 
     /**
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
      * HouseholdService constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param BeneficiaryService $beneficiaryService
      * @param LocationRepository $locationRepository
+     * @param AuditorService $auditorService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         BeneficiaryService $beneficiaryService,
-        LocationRepository $locationRepository
+        LocationRepository $locationRepository,
+        AuditorService $auditorService
     ) {
         $this->em = $entityManager;
         $this->beneficiaryService = $beneficiaryService;
         $this->locationRepository = $locationRepository;
+        $this->auditorService = $auditorService;
     }
 
     /**
@@ -76,6 +85,8 @@ class HouseholdService
      */
     public function create(HouseholdCreateInputType $inputType, string $countryCode): Household
     {
+        $this->auditorService->disableAuditing();
+
         $headCount = $inputType->getBeneficiaryHeadCount();
         if ($headCount < 1) {
             throw new InvalidArgumentException('Household has less than one Head');
