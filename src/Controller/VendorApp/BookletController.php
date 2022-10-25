@@ -23,8 +23,11 @@ class BookletController extends AbstractVendorAppController
     /** @var LoggerInterface */
     private $logger;
 
-    public function __construct(BookletService $bookletService, SerializerInterface $serializer, LoggerInterface $logger)
-    {
+    public function __construct(
+        BookletService $bookletService,
+        SerializerInterface $serializer,
+        LoggerInterface $logger
+    ) {
         $this->bookletService = $bookletService;
         $this->serializer = $serializer;
         $this->logger = $logger;

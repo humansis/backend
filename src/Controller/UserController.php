@@ -105,7 +105,6 @@ class UserController extends AbstractController
      */
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
-
         $user = $this->userService->create($user, $inputType);
 
         return $this->json($user);
@@ -121,7 +120,6 @@ class UserController extends AbstractController
      */
     public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
-
         $updatedUser = $this->userService->update($user, $inputType);
 
         return $this->json($updatedUser);

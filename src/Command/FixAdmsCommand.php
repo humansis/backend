@@ -14,7 +14,7 @@ use XMLReader;
 
 class FixAdmsCommand extends ContainerAwareCommand
 {
-    /**@var Connection  */
+    /**@var Connection */
     private $connection;
 
     public function __construct(Connection $connection)

@@ -78,7 +78,7 @@ class UserService
             ->findBy(['email' => $inputType->getUsername()]);
 
         if ($user instanceof User) {
-            throw new InvalidArgumentException('User with username '. $inputType->getUsername());
+            throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
         }
 
         $salt = $this->generateSalt();

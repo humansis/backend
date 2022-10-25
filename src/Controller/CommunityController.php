@@ -93,7 +93,6 @@ class CommunityController extends AbstractController
      */
     public function create(CommunityCreateInputType $inputType): JsonResponse
     {
-
         $community = $this->communityService->create($inputType);
 
         return $this->json($community);

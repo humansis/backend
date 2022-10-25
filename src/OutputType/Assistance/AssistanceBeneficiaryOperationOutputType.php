@@ -76,6 +76,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
                 . " ({$this->documentType} '{$number}') "
                 . $this->translator->trans('was not found in the assistance.'),
         ];
+
         return $this;
     }
 
