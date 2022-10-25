@@ -12,6 +12,7 @@ dh_auditor:
                 - 'createdAt'
                 - 'createdBy'
                 - 'lastModifiedAt'
+                - 'updatedOn'
             entities:
                 Entity\User:
                     ignored_columns:
@@ -19,6 +20,7 @@ dh_auditor:
                 Entity\Import:
                 Entity\Assistance\ReliefPackage:
                 Entity\Assistance:
+                Entity\AssistanceBeneficiary:
                 Entity\Household:
                 Entity\Beneficiary:
                 Entity\Person:
