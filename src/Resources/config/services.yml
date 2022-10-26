@@ -1230,6 +1230,10 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\ProjectTransformData:
+        class: Utils\ProjectTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
