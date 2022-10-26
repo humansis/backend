@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20221005093304 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -28,9 +30,10 @@ final class Version20221005093304 extends AbstractMigration
         $this->addSql('CREATE TABLE national_id_audit (id INT UNSIGNED AUTO_INCREMENT NOT NULL, type VARCHAR(10) NOT NULL, object_id VARCHAR(255) NOT NULL, discriminator VARCHAR(255) DEFAULT NULL, transaction_hash VARCHAR(40) DEFAULT NULL, diffs LONGTEXT DEFAULT NULL, blame_id VARCHAR(255) DEFAULT NULL, blame_user VARCHAR(255) DEFAULT NULL, blame_user_fqdn VARCHAR(255) DEFAULT NULL, blame_user_firewall VARCHAR(100) DEFAULT NULL, ip VARCHAR(45) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX type_9364d157970333fcbd8adbd9d8834ab0_idx (type), INDEX object_id_9364d157970333fcbd8adbd9d8834ab0_idx (object_id), INDEX discriminator_9364d157970333fcbd8adbd9d8834ab0_idx (discriminator), INDEX transaction_hash_9364d157970333fcbd8adbd9d8834ab0_idx (transaction_hash), INDEX blame_id_9364d157970333fcbd8adbd9d8834ab0_idx (blame_id), INDEX created_at_9364d157970333fcbd8adbd9d8834ab0_idx (created_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE smartcard_purchase_record_audit (id INT UNSIGNED AUTO_INCREMENT NOT NULL, type VARCHAR(10) NOT NULL, object_id VARCHAR(255) NOT NULL, discriminator VARCHAR(255) DEFAULT NULL, transaction_hash VARCHAR(40) DEFAULT NULL, diffs LONGTEXT DEFAULT NULL, blame_id VARCHAR(255) DEFAULT NULL, blame_user VARCHAR(255) DEFAULT NULL, blame_user_fqdn VARCHAR(255) DEFAULT NULL, blame_user_firewall VARCHAR(100) DEFAULT NULL, ip VARCHAR(45) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX type_cafd1ab89eba12f8659edae7fd604ed4_idx (type), INDEX object_id_cafd1ab89eba12f8659edae7fd604ed4_idx (object_id), INDEX discriminator_cafd1ab89eba12f8659edae7fd604ed4_idx (discriminator), INDEX transaction_hash_cafd1ab89eba12f8659edae7fd604ed4_idx (transaction_hash), INDEX blame_id_cafd1ab89eba12f8659edae7fd604ed4_idx (blame_id), INDEX created_at_cafd1ab89eba12f8659edae7fd604ed4_idx (created_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE vendor_audit (id INT UNSIGNED AUTO_INCREMENT NOT NULL, type VARCHAR(10) NOT NULL, object_id VARCHAR(255) NOT NULL, discriminator VARCHAR(255) DEFAULT NULL, transaction_hash VARCHAR(40) DEFAULT NULL, diffs LONGTEXT DEFAULT NULL, blame_id VARCHAR(255) DEFAULT NULL, blame_user VARCHAR(255) DEFAULT NULL, blame_user_fqdn VARCHAR(255) DEFAULT NULL, blame_user_firewall VARCHAR(100) DEFAULT NULL, ip VARCHAR(45) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX type_15479fb5e5135195f2fd56c351cfb2b8_idx (type), INDEX object_id_15479fb5e5135195f2fd56c351cfb2b8_idx (object_id), INDEX discriminator_15479fb5e5135195f2fd56c351cfb2b8_idx (discriminator), INDEX transaction_hash_15479fb5e5135195f2fd56c351cfb2b8_idx (transaction_hash), INDEX blame_id_15479fb5e5135195f2fd56c351cfb2b8_idx (blame_id), INDEX created_at_15479fb5e5135195f2fd56c351cfb2b8_idx (created_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE distribution_beneficiary_audit (id INT UNSIGNED AUTO_INCREMENT NOT NULL, type VARCHAR(10) NOT NULL, object_id VARCHAR(255) NOT NULL, discriminator VARCHAR(255) DEFAULT NULL, transaction_hash VARCHAR(40) DEFAULT NULL, diffs LONGTEXT DEFAULT NULL, blame_id VARCHAR(255) DEFAULT NULL, blame_user VARCHAR(255) DEFAULT NULL, blame_user_fqdn VARCHAR(255) DEFAULT NULL, blame_user_firewall VARCHAR(100) DEFAULT NULL, ip VARCHAR(45) DEFAULT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX type_fd0ddfad4d3a877e79adc34b0eac51e7_idx (type), INDEX object_id_fd0ddfad4d3a877e79adc34b0eac51e7_idx (object_id), INDEX discriminator_fd0ddfad4d3a877e79adc34b0eac51e7_idx (discriminator), INDEX transaction_hash_fd0ddfad4d3a877e79adc34b0eac51e7_idx (transaction_hash), INDEX blame_id_fd0ddfad4d3a877e79adc34b0eac51e7_idx (blame_id), INDEX created_at_fd0ddfad4d3a877e79adc34b0eac51e7_idx (created_at), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -48,5 +51,6 @@ final class Version20221005093304 extends AbstractMigration
         $this->addSql('DROP TABLE national_id_audit');
         $this->addSql('DROP TABLE smartcard_purchase_record_audit');
         $this->addSql('DROP TABLE vendor_audit');
+        $this->addSql('DROP TABLE distribution_beneficiary_audit');
     }
 }
