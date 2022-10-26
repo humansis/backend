@@ -207,6 +207,12 @@ services:
         arguments:
             - '@Export\VulnerabilityScoreExport'
             - '@distribution.assistance_service'
+            - '@Export\AssistanceBankReportExport'
+            - '@serializer'
+            - '@Repository\ProjectRepository'
+            - '@Repository\AssistanceRepository'
+            - '@Utils\ProjectAssistancesTransformData'
+            - '@Utils\ExportTableServiceInterface'
 
 
     Controller\CommonController:
@@ -1228,6 +1234,10 @@ services:
 
     Utils\VendorTransformData:
         class: Utils\VendorTransformData
+        public: true
+
+    Utils\ProjectAssistancesTransformData:
+        class: Utils\ProjectAssistancesTransformData
         public: true
 
 #From VoucherBundle:
