@@ -534,7 +534,7 @@ class AssistanceSpreadsheetExport
             $distributionBeneficiary->getRemoved() ? '' : self::getDistributedItems($distributionBeneficiary)
         );
         $worksheet->getStyle('B' . $rowNumber . ':K' . $rowNumber)->applyFromArray($rowStyle);
-        $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00);
+        $worksheet->getRowDimension($rowNumber)->setRowHeight(42.00 * max($person->getNationalIds()->count(), 1));
 
         if ($shouldContainDate) {
             $worksheet->setCellValue('K' . $rowNumber, $this->getDistributionDateTime($distributionBeneficiary));
@@ -558,7 +558,7 @@ class AssistanceSpreadsheetExport
     {
         $ids = [];
         foreach ($person->getNationalIds() as $nationalId) {
-            $ids[] = $nationalId->getIdNumber();
+            $ids[] = "{$nationalId->getIdNumber()} ({$nationalId->getIdType()})";
         }
 
         return join(PHP_EOL, $ids);
