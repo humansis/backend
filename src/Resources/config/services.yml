@@ -192,6 +192,7 @@ services:
             - Entity\ImportQueue
 
     Repository\Smartcard\PreliminaryInvoiceRepository:
+        public: true
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Smartcard\PreliminaryInvoice
@@ -1124,7 +1125,6 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - "@smartcard_service"
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1298,9 +1298,6 @@ services:
         autowire: true
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@voucher.purchase_service'
-            - '@Repository\SmartcardRepository'
-            - '@smartcard_purchase.repository'
         public: true
 
     Mapper\VoucherRedemptionBatchMapper:
@@ -1380,6 +1377,10 @@ services:
         arguments: [ '@pdf_service', '@Twig\Environment' ]
         public: true
 
+    Repository\SmartcardInvoiceRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Invoice
 
     Repository\CommodityRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
@@ -1412,3 +1413,10 @@ services:
              - "@service_container"
              - '@Twig\Environment'
              - '@translator'
+
+    Component\Smartcard\Invoice\InvoiceFactory:
+        public: true
+
+    Component\Smartcard\Invoice\PreliminaryInvoiceService:
+
+    Component\Smartcard\Invoice\InvoiceChecker:

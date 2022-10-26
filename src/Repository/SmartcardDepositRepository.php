@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Entity\Assistance;
+use Entity\Assistance\ReliefPackage;
+use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
 
@@ -30,6 +33,27 @@ class SmartcardDepositRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @param Beneficiary $beneficiary
+     * @param Assistance $assistance
+     * @return SmartcardDeposit[]
+     */
+    public function getDepositsByBeneficiaryAndAssistance(
+        Beneficiary $beneficiary,
+        Assistance $assistance
+    ): array {
+        $qb = $this->createQueryBuilder('sd');
+        $qb
+            ->leftJoin('sd.reliefPackage', 'rp')
+            ->leftJoin('rp.assistanceBeneficiary', 'ab')
+            ->andWhere('ab.assistance = :assistanceId')
+            ->setParameter('assistanceId', $assistance->getId())
+            ->andWhere('ab.beneficiary = :beneficiaryId')
+            ->setParameter('beneficiaryId', $beneficiary->getId());
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

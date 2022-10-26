@@ -2,6 +2,10 @@
 
 namespace Tests\Utils;
 
+use Component\Smartcard\Deposit\Exception\DoubledDepositException;
+use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
+use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
@@ -20,7 +24,9 @@ use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
@@ -28,7 +34,6 @@ use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\Vendor;
 use InputType\SmartcardPurchase;
-use InputType\SmartcardInvoice;
 use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
@@ -51,9 +56,19 @@ class SmartcardServiceTest extends KernelTestCase
     private $depositFactory;
 
     /**
+     * @var InvoiceFactory
+     */
+    private $invoiceFactory;
+
+    /**
      * @var User
      */
     private $user;
+
+    /**
+     * @var PreliminaryInvoiceRepository
+     */
+    private $preliminaryInvoiceRepository;
 
     protected function setUp(): void
     {
@@ -66,6 +81,8 @@ class SmartcardServiceTest extends KernelTestCase
 
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
         $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
+        $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
+        $this->preliminaryInvoiceRepository = static::$kernel->getContainer()->get(PreliminaryInvoiceRepository::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -188,9 +205,12 @@ class SmartcardServiceTest extends KernelTestCase
      * @param array $expectedResults
      *
      * @throws EntityNotFoundException
+     * @throws InvalidArgumentException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws InvalidArgumentException
+     * @throws DoubledDepositException
+     * @throws AlreadyRedeemedInvoiceException
+     * @throws NotRedeemableInvoiceException
      */
     public function testSmartcardCashflows(array $actions, array $expectedResults): void
     {
@@ -274,7 +294,7 @@ class SmartcardServiceTest extends KernelTestCase
             $date->modify('+1 day');
         }
         /** @var PreliminaryInvoice[] $preliminaryInvoices */
-        $preliminaryInvoices = $this->smartcardService->getRedemptionCandidates($this->vendor);
+        $preliminaryInvoices = $this->preliminaryInvoiceRepository->findBy(['vendor' => $this->vendor]);
         $this->assertIsArray($preliminaryInvoices, "Redemption candidates must be array");
         $this->assertCount(count($expectedResults), $preliminaryInvoices, "Wrong count of redemption candidates");
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
@@ -297,10 +317,10 @@ class SmartcardServiceTest extends KernelTestCase
         }
         // redeem test
         foreach ($preliminaryInvoices as $preliminaryInvoice) {
-            $batchRequest = new SmartcardInvoice();
-            $batchRequest->setPurchases($preliminaryInvoice->getPurchaseIds());
+            $batchRequest = new SmartcardInvoiceCreateInputType();
+            $batchRequest->setPurchaseIds($preliminaryInvoice->getPurchaseIds());
 
-            $batch = $this->smartcardService->redeem($this->vendor, $batchRequest, $admin);
+            $batch = $this->invoiceFactory->create($this->vendor, $batchRequest, $admin);
 
             foreach ($batch->getPurchases() as $purchase) {
                 $this->assertEquals(2000, $purchase->getCreatedAt()->format('Y'), "Wrong purchase year");
@@ -664,7 +684,7 @@ class SmartcardServiceTest extends KernelTestCase
 
         foreach ($expectedVendorResults as $vendorId => $values) {
             $vendor = $this->em->getRepository(Vendor::class)->find($vendorId);
-            $preliminaryInvoice = $this->smartcardService->getRedemptionCandidates($vendor);
+            $preliminaryInvoice = $this->preliminaryInvoiceRepository->findBy(['vendor' => $vendor]);
             if (is_array($values)) {
                 $this->assertCount(1, $preliminaryInvoice, "Wrong number of invoice candidates");
                 /** @var PreliminaryInvoice $invoice */

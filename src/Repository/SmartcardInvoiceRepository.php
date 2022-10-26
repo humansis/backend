@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Request\Pagination;
 use Entity\Invoice;
@@ -35,5 +37,17 @@ class SmartcardInvoiceRepository extends EntityRepository
         }
 
         return new Paginator($qbr);
+    }
+
+    /**
+     * @param Invoice $invoice
+     * @return void
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function save(Invoice $invoice)
+    {
+        $this->_em->persist($invoice);
+        $this->_em->flush();
     }
 }

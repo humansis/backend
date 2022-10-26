@@ -8,9 +8,9 @@ use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @Assert\GroupSequence({"SmartcardRedemptionBatchCreateInputType", "Strict"})
+ * @Assert\GroupSequence({"SmartcardInvoiceCreateInputType", "Strict"})
  */
-class SmartcardRedemptionBatchCreateInputType implements InputTypeInterface
+class SmartcardInvoiceCreateInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("array")
@@ -24,17 +24,17 @@ class SmartcardRedemptionBatchCreateInputType implements InputTypeInterface
     private $purchaseIds;
 
     /**
-     * @return int
+     * @return int[]
      */
-    public function getPurchaseIds()
+    public function getPurchaseIds(): array
     {
         return $this->purchaseIds;
     }
 
     /**
-     * @param int
+     * @param int[] $purchaseIds
      */
-    public function setPurchaseIds($purchaseIds)
+    public function setPurchaseIds(array $purchaseIds)
     {
         $this->purchaseIds = $purchaseIds;
     }

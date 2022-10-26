@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Utils;
 
-use DateTime;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -17,29 +16,22 @@ use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Entity\Assistance\ReliefPackage;
 use Entity\Commodity;
-use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardPurchaseInputType;
-use Entity\Project;
 use InputType\Smartcard\UpdateSmartcardInputType;
 use InvalidArgumentException;
 use LogicException;
 use Repository\BeneficiaryRepository;
-use Repository\ProjectRepository;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Entity\User;
 use Entity\Smartcard;
-use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
-use Entity\Invoice;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 use InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use Model\PurchaseService;
-use Repository\SmartcardPurchaseRepository;
-use InputType\SmartcardInvoice as RedemptionBatchInput;
 use Repository\SmartcardRepository;
 
 class SmartcardService
@@ -56,34 +48,27 @@ class SmartcardService
     private $smartcardRepository;
 
     /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
      * @var BeneficiaryRepository
      */
     private $beneficiaryRepository;
 
     /**
-     * @var ProjectRepository
+     * @var PreliminaryInvoiceRepository
      */
-    private $projectRepository;
+    private $preliminaryInvoiceRepository;
 
     public function __construct(
         EntityManager $em,
         PurchaseService $purchaseService,
         SmartcardRepository $smartcardRepository,
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
         BeneficiaryRepository $beneficiaryRepository,
-        ProjectRepository $projectRepository
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
     ) {
         $this->em = $em;
         $this->purchaseService = $purchaseService;
         $this->smartcardRepository = $smartcardRepository;
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
         $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->projectRepository = $projectRepository;
+        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
     }
 
     /**
@@ -121,7 +106,6 @@ class SmartcardService
      * @param UpdateSmartcardInputType $updateSmartcardInputType
      *
      * @return Smartcard
-     * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
      * @throws OptimisticLockException
@@ -268,132 +252,6 @@ class SmartcardService
         $this->em->persist($smartcard);
 
         return $smartcard;
-    }
-
-    public function getRedemptionCandidates(Vendor $vendor): array
-    {
-        return $this->em->getRepository(PreliminaryInvoice::class)->findBy(['vendor' => $vendor]);
-    }
-
-    /**
-     * @param Vendor $vendor
-     * @param RedemptionBatchInput $inputBatch
-     * @param User $redeemedBy
-     *
-     * @return Invoice
-     * @throws InvalidArgumentException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function redeem(Vendor $vendor, RedemptionBatchInput $inputBatch, User $redeemedBy): Invoice
-    {
-        $purchases = $this->smartcardPurchaseRepository->findBy([
-            'id' => $inputBatch->getPurchases(),
-        ], ['id' => 'asc']);
-
-        // purchases validation
-        $currency = null;
-        $projectId = null;
-        foreach ($purchases as $purchase) {
-            if ($purchase->getVendor()->getId() !== $vendor->getId()) {
-                throw new InvalidArgumentException("Inconsistent vendor and purchase' #{$purchase->getId()} vendor");
-            }
-            if (null !== $purchase->getRedeemedAt()) {
-                throw new InvalidArgumentException(
-                    "Purchase' #{$purchase->getId()} was already redeemed at " . $purchase->getRedeemedAt()->format(
-                        'Y-m-d H:i:s'
-                    )
-                );
-            }
-            if (null === $currency) {
-                $currency = $purchase->getCurrency();
-            }
-            if ($purchase->getCurrency() != $currency) {
-                throw new InvalidArgumentException(
-                    "Purchases have inconsistent currencies. {$purchase->getCurrency()} in {$purchase->getId()} is different than {$currency}"
-                );
-            }
-            $extractedProjectId = $this->extractPurchaseProjectId($purchase);
-            if (null === $extractedProjectId) {
-                throw new InvalidArgumentException("Purchase #{$purchase->getId()} has no project.");
-            }
-            if (null === $projectId) {
-                $projectId = $extractedProjectId;
-            }
-            if ($extractedProjectId !== $projectId) {
-                throw new InvalidArgumentException(
-                    "Purchases have inconsistent currencies. Project #$extractedProjectId in Purchase #{$purchase->getId()} is different than project of others: {$projectId}"
-                );
-            }
-        }
-
-        /** @var Project|null $project */
-        $project = $this->projectRepository->find($projectId);
-
-        $redemptionBath = new Invoice(
-            $vendor,
-            $project,
-            new DateTime(),
-            $redeemedBy,
-            $this->smartcardPurchaseRepository->countPurchasesValue($purchases),
-            $currency,
-            $vendor->getContractNo(),
-            $vendor->getVendorNo(),
-            $purchases
-        );
-
-        foreach ($purchases as $purchase) {
-            $purchase->setRedemptionBatch($redemptionBath);
-        }
-
-        $this->em->persist($redemptionBath);
-        $this->em->flush();
-
-        return $redemptionBath;
-    }
-
-    public function extractPurchaseProjectId(SmartcardPurchase $purchase): ?int
-    {
-        if (null === $purchase->getSmartcard() || null === $purchase->getSmartcard()->getDeposites()) {
-            return null;
-        }
-        $deposits = $purchase->getSmartcard()->getDeposites()->toArray();
-        $smartcardDeposit = $this->getDeposit($deposits, $purchase->getCreatedAt());
-
-        if (
-            null === $smartcardDeposit->getReliefPackage()
-            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()
-            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()
-            || null === $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()
-        ) {
-            return null;
-        }
-
-        return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getAssistance()->getProject()->getId(
-        );
-    }
-
-    /**
-     * @param array $deposits
-     * @param DateTimeInterface $purchaseDate
-     *
-     * @return SmartcardDeposit
-     * @deprecated it works bad, dont use it
-     */
-    private function getDeposit(array $deposits, DateTimeInterface $purchaseDate): SmartcardDeposit
-    {
-        usort($deposits, function (SmartcardDeposit $d1, SmartcardDeposit $d2) {
-            return $d2->getDistributedAt()->getTimestamp() - $d1->getDistributedAt()->getTimestamp();
-        });
-        $deposit = null;
-        /** @var SmartcardDeposit $deposit */
-        foreach ($deposits as $deposit) {
-            if ($deposit->getDistributedAt()->getTimestamp() <= $purchaseDate->getTimestamp()) {
-                return $deposit;
-            }
-        }
-
-        return $deposit;
     }
 
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
