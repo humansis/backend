@@ -11,23 +11,18 @@ use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
 use Export\SmartcardInvoiceExport;
 use Export\SmartcardInvoiceLegacyExport;
-use InputType\SmartcardInvoice;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
 use InputType\SmartcardInvoiceCreateInputType;
 use Repository\SmartcardInvoiceRepository;
-use Enum\VendorInvoicingState;
-use InputType\SmartcardRedemptionBatchCreateInputType;
 use Repository\OrganizationRepository;
-use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Invoice;
 use Entity\Vendor;
 use Utils\Response\BinaryFileResponse;
-use Utils\SmartcardService;
 
 class InvoiceController extends AbstractWebAppController
 {
