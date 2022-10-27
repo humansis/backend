@@ -102,7 +102,9 @@ class ProjectSector
      */
     public function getName(): string
     {
-        return $this->getSector() . '-' . $this->getSubSector();
+        $subSectorText = $this->getSubSector() ? '-' . $this->getSubSector() : '';
+
+        return $this->getSector() . $subSectorText;
     }
 
     /**
