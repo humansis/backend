@@ -89,7 +89,8 @@ final class ScoringService
                 );
             }
 
-            if (!is_null($scoring) &&
+            if (
+                !is_null($scoring) &&
                 !is_null($input->getThreshold()) &&
                 $protocol->getTotalScore() < $input->getThreshold()
             ) {
