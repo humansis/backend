@@ -288,7 +288,8 @@ class RulesComputationTest extends KernelTestCase
     {
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::INCOME_SPENT_ON_FOOD, 'Income spent on food');
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_0, 0));
-        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INCOME_0, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH, 2));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF, 99));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95, 95));
         $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_80, 80));
@@ -311,7 +312,7 @@ class RulesComputationTest extends KernelTestCase
 
         $household->setIncome(0);
         $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
-        $this->assertEquals(1, $score);
+        $this->assertEquals(2, $score);
 
         $household->setIncome(99);
         $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
@@ -324,7 +325,7 @@ class RulesComputationTest extends KernelTestCase
 
         $household->setIncome(null);
         $score = $this->rulesCalculation->incomeSpentOnFood($household, $scoringRule);
-        $this->assertEquals(0, $score);
+        $this->assertEquals(2, $score);
     }
 
     public function testVulnerabilityOfHouseholdMembers()

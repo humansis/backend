@@ -43,7 +43,8 @@ final class ScoringRuleCalculationOptionsEnum
     public const DEPENDENCY_RATIO_SYR_NES_INF = '5 < DR';
 
     public const INCOME_SPENT_ON_FOOD_0 = '0';
-    public const INCOME_SPENT_ON_FOOD_INCOME_0 = 'Income (core) = 0';
+    public const INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW = 'Missing value low';
+    public const INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH = 'Missing value high';
     public const INCOME_SPENT_ON_FOOD_25 = '<0.25';
     public const INCOME_SPENT_ON_FOOD_50 = '0,26-0,50';
     public const INCOME_SPENT_ON_FOOD_65 = '0,51-0,65';
@@ -112,8 +113,9 @@ final class ScoringRuleCalculationOptionsEnum
         ],
 
         ScoringRulesCalculationsEnum::INCOME_SPENT_ON_FOOD => [
+            self::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW,
+            self::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH,
             self::INCOME_SPENT_ON_FOOD_0,
-            self::INCOME_SPENT_ON_FOOD_INCOME_0,
             self::INCOME_SPENT_ON_FOOD_25,
             self::INCOME_SPENT_ON_FOOD_50,
             self::INCOME_SPENT_ON_FOOD_65,

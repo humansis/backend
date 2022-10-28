@@ -228,18 +228,20 @@ final class RulesCalculation
             }
         }
 
-
-        //CSO Total expenditure not found (either in system or in household)
-        if ($totalExpenditure === null) {
-            return 0;
-        }
-
-        if ($household->getIncome() === null) {
-            return 0;
+        if (is_null($household->getIncome())) {
+            if (is_null($totalExpenditure)) {
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW)->getScore();
+            } else {
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH)->getScore();
+            }
         }
 
         if ($household->getIncome() === 0) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INCOME_0)->getScore();
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH)->getScore();
+        }
+
+        if (is_null($totalExpenditure)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW)->getScore();
         }
 
         $incomeSpentOnFood = $totalExpenditure / $household->getIncome();

@@ -1,7 +1,7 @@
 Rule type,Field Name,Title,Options,Points
 ,,,,
-calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,1
-,,,Male,0
+calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,4
+,,,Male,1
 ,,,,
 calculation,vulnerabilityHeadOfHouseholdNES,Vulnerability Head of Household,Chronically ill,5
 ,,,Person with disability,5
@@ -59,7 +59,8 @@ coreHousehold,assets,Assets,A/C,-50
 ,,,Car,-50
 ,,,,
 calculation,incomeSpentOnFood,Income Spent on Food,0,6
-,,,Income (core) = 0,6
+,,,Missing value low,0
+,,,Missing value high,6
 ,,,">0,95",6
 ,,,"0,81-0,95",5
 ,,,"0,66-0,80",4

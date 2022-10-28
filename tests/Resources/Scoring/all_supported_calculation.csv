@@ -26,7 +26,8 @@ calculation,dependencyRatioSyrNES,Dependency ratio SYR NES,0,1
 ,,,4< DR <= 5,7
 ,,,5 < DR,8
 calculation,incomeSpentOnFood,Income spent on food,0,0
-,,,Income (core) = 0,1
+,,,Missing value low,0
+,,,Missing value high,1
 ,,,<0.25,2
 ,,,"0,26-0,50",3
 ,,,"0,51-0,65",4
