@@ -101,7 +101,6 @@ trait AssistanceHelper
         $assistanceInputType->setSector(SectorEnum::FOOD_SECURITY);
         $assistanceInputType->setSubsector(SubSectorEnum::CASH_TRANSFERS);
         $assistanceInputType->setAllowedProductCategoryTypes([ProductCategoryType::FOOD]);
-        $assistanceInputType->setThreshold(1);
         $assistanceInputType->setFoodLimit(15);
 
         if ($commodityInputTypes) {
