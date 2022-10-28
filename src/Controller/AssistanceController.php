@@ -57,19 +57,14 @@ class AssistanceController extends AbstractController
     /** @var AssistanceBankReportExport */
     private $assistanceBankReportExport;
 
-    /** @var SerializerInterface */
-    private $serializer;
-
     public function __construct(
         VulnerabilityScoreExport $vulnerabilityScoreExport,
         AssistanceService $assistanceService,
-        AssistanceBankReportExport $assistanceBankReportExport,
-        SerializerInterface $serializer
+        AssistanceBankReportExport $assistanceBankReportExport
     ) {
         $this->vulnerabilityScoreExport = $vulnerabilityScoreExport;
         $this->assistanceService = $assistanceService;
         $this->assistanceBankReportExport = $assistanceBankReportExport;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -330,11 +325,9 @@ class AssistanceController extends AbstractController
         }
 
         $type = $request->query->get('type');
-        $threshold = $inputType->getThreshold();
-        $inputType->setThreshold(0);
         $assistance = $factory->create($inputType);
 
-        return $this->scoresFromAssistance($assistance, $type, $threshold);
+        return $this->scoresFromAssistance($assistance, $type, $inputType->getThreshold());
     }
 
     /**
