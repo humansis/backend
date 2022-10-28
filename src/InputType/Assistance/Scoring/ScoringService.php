@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace InputType\Assistance\Scoring;
 
 use Component\Assistance\Scoring\Model\ScoringProtocol;
+use Entity\Beneficiary;
 use Exception\CsvParserException;
 use Repository\BeneficiaryRepository;
 use DTO\VulnerabilityScore;
@@ -73,8 +74,11 @@ final class ScoringService
         );
 
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
+
         foreach ($input->getBeneficiaryIds() as $beneficiaryId) {
+            /** @var Beneficiary $beneficiary */
             $beneficiary = $this->beneficiaryRepository->find($beneficiaryId);
+
             if (!isset($scoring)) {
                 $protocol = new ScoringProtocol();
             } else {
@@ -85,7 +89,10 @@ final class ScoringService
                 );
             }
 
-            if (!is_null($input->getThreshold()) && $protocol->getTotalScore() < $input->getThreshold()) {
+            if (!is_null($scoring) &&
+                !is_null($input->getThreshold()) &&
+                $protocol->getTotalScore() < $input->getThreshold()
+            ) {
                 continue;
             }
 
