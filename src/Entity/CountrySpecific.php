@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  * @ORM\Entity(repositoryClass="Repository\CountrySpecificRepository")
  */
-class CountrySpecific extends Criteria implements ExportableInterface
+class CountrySpecific extends Criteria
 {
     use CountryDependent;
     use StandardizedPrimaryKey;
@@ -120,14 +120,5 @@ class CountrySpecific extends Criteria implements ExportableInterface
     public function getFieldString(): string
     {
         return $this->fieldString;
-    }
-
-    public function getMappedValueForExport(): array
-    {
-        return [
-            "type" => $this->getType(),
-            "Country Iso3" => $this->getCountryIso3(),
-            "Field" => $this->getFieldString(),
-        ];
     }
 }
