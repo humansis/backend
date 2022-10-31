@@ -11,6 +11,7 @@ use NewApiBundle\Component\Smartcard\Exception\SmartcardNotAllowedStateTransitio
 use NewApiBundle\InputType\Smartcard\ChangeSmartcardInputType;
 use NewApiBundle\InputType\Smartcard\SmartcardRegisterInputType;
 use Symfony\Component\HttpFoundation\Response;
+use VoucherBundle\Enum\SmartcardStates;
 use VoucherBundle\Repository\SmartcardRepository;
 use VoucherBundle\Utils\SmartcardService;
 
@@ -57,13 +58,21 @@ class SmartcardController extends AbstractOfflineAppController
         SmartcardRepository      $smartcardRepository,
         SmartcardService         $smartcardService
     ): Response {
-        $smartcard = $smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
-        try {
-            $smartcardService->change($smartcard, $changeSmartcardInputType);
+        $smartcards = $smartcardRepository->findBy(['serialNumber' => $serialNumber, 'state' => SmartcardStates::ACTIVE]);
+        $doubledRequest = false;
 
-            return Response::create();
-        } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
+        foreach ($smartcards as $smartcard) {
+            try {
+                $smartcardService->change($smartcard, $changeSmartcardInputType);
+            } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
+                $doubledRequest = true;
+            }
+        }
+
+        if ($doubledRequest) {
             return Response::create('', Response::HTTP_ACCEPTED);
+        } else {
+            return Response::create();
         }
     }
 }
