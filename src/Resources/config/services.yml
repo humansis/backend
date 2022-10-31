@@ -882,7 +882,6 @@ services:
     Export\SmartcardInvoiceLegacyExport:
         arguments:
             - '@translator'
-            - '@MapperDeprecated\LocationMapper'
         public: true
 
     distribution.export.smartcard_invoice:
@@ -892,7 +891,6 @@ services:
     Export\SmartcardInvoiceExport:
         arguments:
             - '@translator'
-            - '@MapperDeprecated\LocationMapper'
             - '@smartcard_purchase.repository'
 
     Utils\HouseholdService: '@beneficiary.household_service'
