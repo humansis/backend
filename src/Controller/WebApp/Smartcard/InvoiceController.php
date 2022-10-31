@@ -35,7 +35,7 @@ class InvoiceController extends AbstractWebAppController
      * @param Countries $countries
      * @param SmartcardInvoiceExport $smartcardInvoiceExport
      * @param OrganizationRepository $organizationRepository
-     * @return JsonResponse
+     * @return Response
      */
     public function export(
         Invoice $invoice,
@@ -63,7 +63,7 @@ class InvoiceController extends AbstractWebAppController
      * @param Invoice $invoice
      * @param OrganizationRepository $organizationRepository
      * @param SmartcardInvoiceLegacyExport $smartcardInvoiceLegacyExport
-     * @return JsonResponse
+     * @return Response
      */
     public function legacyExport(
         Invoice $invoice,

@@ -6,12 +6,13 @@ namespace Utils\Response;
 
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
+use Symfony\Component\HttpFoundation\BinaryFileResponse as SymfonyBinaryFileResponse;
 
 trait BinaryFileResponse
 {
-    public function createBinaryFileResponse($filename): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function createBinaryFileResponse($filename): SymfonyBinaryFileResponse
     {
-        $response = new \Symfony\Component\HttpFoundation\BinaryFileResponse(getcwd() . '/' . $filename);
+        $response = new SymfonyBinaryFileResponse(getcwd() . '/' . $filename);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
         $response->deleteFileAfterSend(true);
 
