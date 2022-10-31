@@ -26,6 +26,12 @@ class NationalIdCardInputType implements InputTypeInterface
     private $type;
 
     /**
+     * @Assert\Type("integer")
+     * @Assert\NotNull
+     */
+    private $priority = 1;
+
+    /**
      * @param string $type
      * @param string $number
      *
@@ -78,5 +84,21 @@ class NationalIdCardInputType implements InputTypeInterface
     public function setType($type): void
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param mixed $priority
+     */
+    public function setPriority($priority): void
+    {
+        $this->priority = $priority;
     }
 }

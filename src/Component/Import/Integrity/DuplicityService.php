@@ -34,15 +34,15 @@ class DuplicityService
         foreach ($import->getImportQueue() as $item) {
             if (
                 !in_array($item->getState(), [
-                    ImportQueueState::NEW,
-                    ImportQueueState::VALID,
+                ImportQueueState::NEW,
+                ImportQueueState::VALID,
                 ])
             ) {
                 continue;
             } // ignore non-importing states
             foreach ($this->lineFactory->createAll($item) as $memberIndex => $line) {
-                if ($line->isIdNumberCorrectlyFilled() && !empty($line->idNumber)) {
-                    $cardSerialization = self::serializeIDCard((string) $line->idType, (string) $line->idNumber);
+                foreach ($line->getFilledIds() as $idItem) {
+                    $cardSerialization = self::serializeIDCard((string) $idItem['type'], (string) $idItem['number']);
                     $identities[$cardSerialization][$item->getId()][] = $memberIndex;
                 }
             }

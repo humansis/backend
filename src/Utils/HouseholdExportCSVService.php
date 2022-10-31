@@ -2,17 +2,19 @@
 
 namespace Utils;
 
-use Entity\CountrySpecific;
-use Utils\ExportService;
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\ImportTemplate;
-use Enum\NationalIdType;
+use Doctrine\ORM\EntityManagerInterface;
+use Entity\CountrySpecific;
 
 class HouseholdExportCSVService
 {
     public const
-        ID_TYPE = 'ID Type',
-        ID_NUMBER = 'ID Number',
+        PRIMARY_ID_TYPE = 'ID Type',
+        PRIMARY_ID_NUMBER = 'ID Number',
+        SECONDARY_ID_TYPE = 'Secondary ID Type',
+        SECONDARY_ID_NUMBER = 'Secondary ID Number',
+        TERTIARY_ID_TYPE = 'Tertiary ID Type',
+        TERTIARY_ID_NUMBER = 'Tertiary ID Number',
         HEAD = 'Head';
 
     /** @var EntityManagerInterface */
@@ -60,8 +62,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -78,6 +84,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
+
     private const LINE_2_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => '(!) Do not remove columns A-B',
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -117,8 +124,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -135,6 +146,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
+
     private const LINE_3_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => '',
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -174,8 +186,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => '',
         'Number phone 2' => '',
         'Proxy phone 2' => '',
-        self::ID_TYPE => '',
-        self::ID_NUMBER => '',
+        self::PRIMARY_ID_TYPE => '',
+        self::PRIMARY_ID_NUMBER => '',
+        self::SECONDARY_ID_TYPE => '',
+        self::SECONDARY_ID_NUMBER => '',
+        self::TERTIARY_ID_TYPE => '',
+        self::TERTIARY_ID_NUMBER => '',
         'Shelter status' => '',
         'Assets' => '',
         'Debt Level' => '',
@@ -192,6 +208,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => '',
         'M 60+' => '',
     ];
+
     private const LINE_4_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => ImportTemplate::CURRENT_TEMPLATE_VERSION,
         ImportTemplate::ROW_NAME_MESSAGES => '',
@@ -231,8 +248,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => "'+X",
         'Number phone 2' => 'Number',
         'Proxy phone 2' => 'Y / N (Proxy)',
-        self::ID_TYPE => '"TypeAsString"',
-        self::ID_NUMBER => 'String',
+        self::PRIMARY_ID_TYPE => 'String',
+        self::PRIMARY_ID_NUMBER => 'String',
+        self::SECONDARY_ID_TYPE => 'String',
+        self::SECONDARY_ID_NUMBER => 'String',
+        self::TERTIARY_ID_TYPE => 'String',
+        self::TERTIARY_ID_NUMBER => 'String',
         'Shelter status' => 'String',
         'Assets' => 'Comma separated strings',
         'Debt Level' => 'Number',
@@ -249,6 +270,7 @@ class HouseholdExportCSVService
         'M 18 - 59' => 'Number',
         'M 60+' => 'Number',
     ];
+
     public const MAPPING_PROPERTIES = [
         ImportTemplate::ROW_NAME_STATUS => 'humansisData',
         ImportTemplate::ROW_NAME_MESSAGES => 'humansisComment',
@@ -288,8 +310,12 @@ class HouseholdExportCSVService
         'Prefix phone 2' => 'prefixPhone2',
         'Number phone 2' => 'numberPhone2',
         'Proxy phone 2' => 'proxyPhone2',
-        self::ID_TYPE => 'idType',
-        self::ID_NUMBER => 'idNumber',
+        self::PRIMARY_ID_TYPE => 'primaryIdType',
+        self::PRIMARY_ID_NUMBER => 'primaryIdNumber',
+        self::SECONDARY_ID_TYPE => 'secondaryIdType',
+        self::SECONDARY_ID_NUMBER => 'secondaryIdNumber',
+        self::TERTIARY_ID_TYPE => 'tertiaryIdType',
+        self::TERTIARY_ID_NUMBER => 'tertiaryIdNumber',
         'Shelter status' => 'shelterStatus',
         'Assets' => 'assets',
         'Debt Level' => 'debtLevel',

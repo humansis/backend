@@ -156,10 +156,10 @@ class IntegrityChecker
                 if (
                     !$item->hasColumnViolation(
                         $index,
-                        HouseholdExportCSVService::ID_NUMBER
+                        HouseholdExportCSVService::PRIMARY_ID_NUMBER
                     ) && !$item->hasColumnViolation(
                         $index,
-                        HouseholdExportCSVService::ID_TYPE
+                        HouseholdExportCSVService::PRIMARY_ID_TYPE
                     )
                 ) {
                     $beneficiary = $this->beneficiaryDecoratorBuilder->buildBeneficiaryIdentityInputType($hhm);
@@ -284,14 +284,25 @@ class IntegrityChecker
         BeneficiaryInputType $beneficiaryInputType
     ): void {
         $cards = $beneficiaryInputType->getNationalIdCards();
-        if (count($cards) > 0) {
-            $idCard = $cards[0];
+        $columnTypes = [
+            0 => HouseholdExportCSVService::PRIMARY_ID_TYPE,
+            1 => HouseholdExportCSVService::SECONDARY_ID_TYPE,
+            2 => HouseholdExportCSVService::TERTIARY_ID_TYPE,
+        ];
+        $columnNumbers = [
+            0 => HouseholdExportCSVService::PRIMARY_ID_NUMBER,
+            1 => HouseholdExportCSVService::SECONDARY_ID_NUMBER,
+            2 => HouseholdExportCSVService::TERTIARY_ID_NUMBER,
+        ];
+        foreach ($cards as $cardIndex => $idCard) {
             $nationalIdCount = $this->duplicityService->getIdentityCount($importQueue->getImport(), $idCard);
             if ($nationalIdCount > 1) {
+                $columnNameType = key_exists($cardIndex, $columnTypes) ? $columnTypes[$cardIndex] : HouseholdExportCSVService::PRIMARY_ID_NUMBER;
+                $columnNameNumber = key_exists($cardIndex, $columnNumbers) ? $columnNumbers[$cardIndex] : HouseholdExportCSVService::PRIMARY_ID_TYPE;
                 $importQueue->addViolation(
                     Integrity\QueueViolation::create(
                         $index,
-                        HouseholdExportCSVService::ID_TYPE,
+                        $columnNameNumber,
                         'This line has ID duplicity!',
                         sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())
                     )
@@ -299,7 +310,7 @@ class IntegrityChecker
                 $importQueue->addViolation(
                     Integrity\QueueViolation::create(
                         $index,
-                        HouseholdExportCSVService::ID_NUMBER,
+                        $columnNameType,
                         'This line has ID duplicity!',
                         sprintf('%s: %s', $idCard->getType(), $idCard->getNumber())
                     )

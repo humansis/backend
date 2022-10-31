@@ -404,16 +404,9 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    public function getBeneficiaryReliefCompilation(
-        Assistance $assistance,
-        ?CountrySpecific $countrySpecific1,
-        ?CountrySpecific $countrySpecific2
-    ) {
-        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts(
-            $assistance,
-            $countrySpecific1,
-            $countrySpecific2
-        );
+    public function getBeneficiaryReliefCompilation(Assistance $assistance)
+    {
+        $beneficiaryReliefData = $this->getAssistanceBeneficiaryReliefAmounts($assistance);
         $beneficiariesInfo = $this->getAssistanceBeneficiaryInformation($assistance);
         foreach ($beneficiaryReliefData as $id => $relief) {
             $personId = $relief['personId'];
@@ -437,20 +430,29 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('db')
             ->select("person.id as personId")
-            ->addSelect("ANY_VALUE(national.idNumber) as idNumber")
-            ->addSelect("ANY_VALUE(national.idType) as idType")
+            ->addSelect("ANY_VALUE(COALESCE(national.idNumber, other.idNumber)) as idNumber")
+            ->addSelect("ANY_VALUE(COALESCE(national.idType, other.idType)) as idType")
+            ->addSelect("ANY_VALUE(tax.idNumber) as taxNumber")
             ->addSelect("ANY_VALUE(CONCAT(phone.prefix, phone.number)) AS phoneNumber")
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
             ->leftJoin('bnf.person', 'person')
-            ->leftJoin('person.nationalIds', 'national', Join::WITH, 'national.idType = :nationalIdType')
+            ->leftJoin('person.nationalIds', 'tax', Join::WITH, 'tax.idType = :taxType')
+            ->leftJoin('person.nationalIds', 'national', Join::WITH, 'national.idType = :nationalType')
+            ->leftJoin(
+                'person.nationalIds',
+                'other',
+                Join::WITH,
+                'other.idType != :taxType AND other.idType != :nationalType'
+            )
             ->leftJoin('person.phones', 'phone')
             ->leftJoin('db.reliefPackages', 'relief')
             ->andWhere('db.assistance = :assistance')
             ->groupBy('person.id')
             ->orderBy('person.localFamilyName')
             ->setParameter('assistance', $assistance)
-            ->setParameter('nationalIdType', NationalIdType::TAX_NUMBER);
+            ->setParameter('nationalType', NationalIdType::NATIONAL_ID)
+            ->setParameter('taxType', NationalIdType::TAX_NUMBER);
 
         $result = $qb->getQuery()->getResult();
         $personInfo = [];
@@ -467,11 +469,8 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    private function getAssistanceBeneficiaryReliefAmounts(
-        Assistance $assistance,
-        ?CountrySpecific $countrySpecific1,
-        ?CountrySpecific $countrySpecific2
-    ) {
+    private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance)
+    {
         $qb = $this->createQueryBuilder('db')
             ->select("CONCAT(IDENTITY(db.assistance),'-', bnf.id) as distributionId")
             ->addSelect("person.id as personId")
@@ -480,33 +479,17 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             ->addSelect("ANY_VALUE(relief.unit) as currency")
             ->addSelect("person.localFamilyName")
             ->addSelect("person.localParentsName")
-            ->addSelect("ANY_VALUE(countrySpecificAnswer1.answer) AS countrySpecificValue1")
-            ->addSelect("ANY_VALUE(countrySpecificAnswer2.answer) AS countrySpecificValue2")
             ->leftJoin('db.beneficiary', 'ab')
             ->innerJoin(Beneficiary::class, 'bnf', Join::WITH, 'bnf.id = ab.id')
             ->leftJoin('bnf.person', 'person')
             ->leftJoin('db.reliefPackages', 'relief')
             ->leftJoin('bnf.household', 'household')
-            ->leftJoin(
-                'household.countrySpecificAnswers',
-                'countrySpecificAnswer1',
-                Join::WITH,
-                'IDENTITY(countrySpecificAnswer1.countrySpecific) = :countrySpecificId1'
-            )
-            ->leftJoin(
-                'household.countrySpecificAnswers',
-                'countrySpecificAnswer2',
-                Join::WITH,
-                'IDENTITY(countrySpecificAnswer2.countrySpecific) = :countrySpecificId2'
-            )
             ->andWhere('db.assistance = :assistance')
             ->andWhere('db.removed = :removed')
             ->andWhere('relief.modalityType = :modalityType')
             ->groupBy('ab.id')
             ->orderBy('person.localFamilyName')
             ->setParameter('assistance', $assistance)
-            ->setParameter('countrySpecificId1', $countrySpecific1 ? $countrySpecific1->getId() : null)
-            ->setParameter('countrySpecificId2', $countrySpecific2 ? $countrySpecific2->getId() : null)
             ->setParameter('removed', false)
             ->setParameter('modalityType', 'Cash');
 

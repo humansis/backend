@@ -227,12 +227,32 @@ class ImportLine
     /**
      * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
      */
-    public $idType;
+    public $primaryIdType;
 
     /**
      * @Assert\Type("scalar", groups={"household", "member"})
      */
-    public $idNumber;
+    public $primaryIdNumber;
+
+    /**
+     * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
+     */
+    public $secondaryIdType;
+
+    /**
+     * @Assert\Type("scalar", groups={"household", "member"})
+     */
+    public $secondaryIdNumber;
+
+    /**
+     * @Enum(enumClass="Enum\NationalIdType", groups={"household", "member"})
+     */
+    public $tertiaryIdType;
+
+    /**
+     * @Assert\Type("scalar", groups={"household", "member"})
+     */
+    public $tertiaryIdNumber;
 
     /**
      * @Enum(enumClass="Enum\HouseholdShelterStatus", groups={"household", "member"})
@@ -579,27 +599,121 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled to.", payload={"propertyPath"="idType"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="primaryIdType"}, groups={"household", "member"})
      */
-    public function isIdTypeCorrectlyFilled(): bool
+    public function isPrimaryIdTypeCorrectlyFilled(): bool
     {
-        if (null === $this->idNumber) {
+        if (empty($this->primaryIdNumber)) {
             return true;
         }
 
-        return (null !== $this->idType);
+        return !empty($this->primaryIdType);
     }
 
     /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled to.", payload={"propertyPath"="idNumber"}, groups={"household", "member"})
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
      */
     public function isIdNumberCorrectlyFilled(): bool
     {
-        if (null === $this->idType) {
+        if (empty($this->primaryIdType)) {
             return true;
         }
 
-        return (null !== $this->idNumber);
+        return !empty($this->primaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdTypeCorrectlyFilled(): bool
+    {
+        if (empty($this->secondaryIdNumber)) {
+            return true;
+        }
+
+        return !empty($this->secondaryIdType);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Has to be different then Primary ID type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdTypeDuplicity(): bool
+    {
+        if (empty($this->secondaryIdType)) {
+            return true;
+        }
+
+        return $this->primaryIdType !== $this->secondaryIdType;
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdNumberCorrectlyFilled(): bool
+    {
+        if (empty($this->secondaryIdType)) {
+            return true;
+        }
+
+        return !empty($this->secondaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Primary ID has to be filled before Secondary ID.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isPrimaryIdFilledWithSecondaryId(): bool
+    {
+        if (empty($this->secondaryIdNumber)) {
+            return true;
+        }
+        return !empty($this->primaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="tertiaryIdType"}, groups={"household", "member"})
+     */
+    public function isTertiaryIdTypeCorrectlyFilled(): bool
+    {
+        if (empty($this->tertiaryIdNumber)) {
+            return true;
+        }
+
+        return !empty($this->tertiaryIdType);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Has to be different then Primary ID type or Secondary type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
+     */
+    public function isTertiaryIdTypeDuplicity(): bool
+    {
+        if (empty($this->tertiaryIdType)) {
+            return true;
+        }
+
+        return $this->primaryIdType !== $this->tertiaryIdType && $this->secondaryIdType !== $this->tertiaryIdType;
+    }
+
+    /**
+     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="tertiaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isTertiaryIdNumberCorrectlyFilled(): bool
+    {
+        if (empty($this->tertiaryIdType)) {
+            return true;
+        }
+
+        return !empty($this->tertiaryIdNumber);
+    }
+
+    /**
+     * @Assert\IsTrue(message="Secondary ID has to be filled before Tertiary ID.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
+     */
+    public function isSecondaryIdFilledWithTertiaryId(): bool
+    {
+        if (empty($this->tertiaryIdNumber)) {
+            return true;
+        }
+        return !empty($this->secondaryIdNumber);
     }
 
     /**
@@ -651,5 +765,82 @@ class ImportLine
     public function getSupportDateReceived(): DateTime
     {
         return ImportDateConverter::toDatetime($this->supportDateReceived);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasPrimaryId(): bool
+    {
+        return $this->hasId(0);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSecondaryId(): bool
+    {
+        return $this->hasId(1);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasTertiaryId(): bool
+    {
+        return $this->hasId(2);
+    }
+
+    /**
+     * @param int $index
+     *
+     * @return bool
+     */
+    public function hasId(int $index): bool
+    {
+        $ids = $this->getIds();
+        $id = $ids[$index];
+        if ($index >= count($ids)) {
+            return false;
+        }
+
+        return isset($id['type']) && isset($id['number']);
+    }
+
+    /**
+     * @return array[]
+     */
+    public function getIds(): array
+    {
+        return [
+            [
+                'type' => $this->primaryIdType,
+                'number' => $this->primaryIdNumber,
+            ],
+            [
+                'type' => $this->secondaryIdType,
+                'number' => $this->secondaryIdNumber,
+            ],
+            [
+                'type' => $this->tertiaryIdType,
+                'number' => $this->tertiaryIdNumber,
+            ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilledIds(): array
+    {
+        $ids = $this->getIds();
+        $filledIds = [];
+        for ($i = 0; $i < count($ids); $i++) {
+            if ($this->hasId($i)) {
+                $filledIds[] = $ids[$i];
+            }
+        }
+
+        return $filledIds;
     }
 }

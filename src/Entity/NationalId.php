@@ -9,6 +9,7 @@ use DBAL\NationalIdTypeEnum;
 use Entity\Helper\EnumTrait;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\NationalIdType;
+use InputType\Beneficiary\NationalIdCardInputType;
 
 /**
  * NationalId
@@ -38,11 +39,26 @@ class NationalId
     private $idType;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="priority", type="integer")
+     */
+    private $priority;
+
+    /**
      * @var Person
      *
      * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="nationalIds")
      */
     private $person;
+
+    /**
+     * @param string $idNumber
+     */
+    public function __construct()
+    {
+        $this->priority = 1;
+    }
 
     /**
      * Set idNumber.
@@ -115,5 +131,36 @@ class NationalId
     public function getPerson()
     {
         return $this->person;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
+
+    /**
+     * @param NationalIdCardInputType $inputType
+     *
+     * @return NationalId
+     */
+    public static function fromNationalIdInputType(NationalIdCardInputType $inputType): NationalId
+    {
+        $nationalId = new NationalId();
+        $nationalId->setIdType($inputType->getType());
+        $nationalId->setIdNumber($inputType->getNumber());
+        $nationalId->setPriority($inputType->getPriority());
+
+        return $nationalId;
     }
 }

@@ -12,7 +12,7 @@ use Mapper\MapperContextTrait;
 use Serializer\MapperInterface;
 use Entity\Voucher;
 
-class TargetExpandedMapper implements MapperInterface
+class TargetExpandedMapperV4 implements MapperInterface
 {
     use MapperContextTrait;
 
@@ -27,7 +27,7 @@ class TargetExpandedMapper implements MapperInterface
             $this->isOfflineApp($context) &&
             isset($context['expanded']) &&
             true === $context['expanded'] &&
-            isset($context['version']) && $context['version'] === 'v3';
+            isset($context['version']) && $context['version'] === 'v4';
     }
 
     public function getId(): int
@@ -52,27 +52,32 @@ class TargetExpandedMapper implements MapperInterface
             ? $beneficiary->getPerson()->getReferral()->getComment()
             : null;
 
-        $beneficiaryMapped['nationalCardId'] = $this->getNationalId();
+        $beneficiaryMapped['nationalCardIds'] = $this->getNationalIds();
 
         return $beneficiaryMapped;
     }
 
-    private function getNationalId(): ?string
+    private function getNationalIds(): array
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->object->getBeneficiary();
 
+        $nationalIds = [];
+
         foreach ($beneficiary->getPerson()->getNationalIds() as $nationalId) {
-            return $nationalId->getIdNumber();
+            $nationalIds[] = [
+                'type' => $nationalId->getIdType(),
+                'number' => $nationalId->getIdNumber(),
+            ];
         }
 
-        return null;
+        return $nationalIds;
     }
 
     public function getDistributedAt(): ?string
     {
         return $this->object->getSmartcardDistributedAt()
-            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ISO8601)
+            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ATOM)
             : null;
     }
 

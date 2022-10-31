@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Controller\OfflineApp;
 
 use Entity\Assistance;
-use Entity\AssistanceBeneficiary;
 use Repository\AssistanceBeneficiaryRepository;
 use InputType\BeneficiaryFilterInputType;
 use InputType\BeneficiaryOrderInputType;
@@ -67,8 +66,9 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Get("/offline-app/v3/assistances/{id}/targets/beneficiaries")
+     * @Rest\Get("/offline-app/{version}/assistances/{id}/targets/beneficiaries")
      *
+     * @param string $version
      * @param Request $request
      * @param Assistance $assistance
      * @param BeneficiaryFilterInputType $filter
@@ -78,12 +78,17 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
      * @return JsonResponse
      */
     public function beneficiaryTargetByAssistance(
+        string $version,
         Request $request,
         Assistance $assistance,
         BeneficiaryFilterInputType $filter,
         BeneficiaryOrderInputType $orderBy,
         Pagination $pagination
     ): JsonResponse {
+        if (!in_array($version, ['v3', 'v4'])) {
+            throw $this->createNotFoundException("Endpoint in version $version is not supported");
+        }
+
         if ($assistance->getArchived()) {
             throw $this->createNotFoundException();
         }
@@ -101,7 +106,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             $assistanceBeneficiaries,
             Response::HTTP_OK,
             [],
-            [MapperInterface::OFFLINE_APP => true, 'expanded' => true]
+            [MapperInterface::OFFLINE_APP => true, 'expanded' => true, 'version' => $version]
         );
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
@@ -141,12 +146,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
                 [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
             );
 
-        $response = $this->json(
-            $assistanceInstitutions,
-            Response::HTTP_OK,
-            [],
-            [MapperInterface::OFFLINE_APP => false]
-        );
+        $response = $this->json($assistanceInstitutions, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
         $response->setPublic();
         $response->isNotModified($request);

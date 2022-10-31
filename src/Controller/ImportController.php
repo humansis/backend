@@ -211,10 +211,10 @@ class ImportController extends AbstractController
     {
         if (
             !in_array($import->getState(), [
-                ImportState::NEW,
-                ImportState::INTEGRITY_CHECKING,
-                ImportState::INTEGRITY_CHECK_CORRECT,
-                ImportState::INTEGRITY_CHECK_FAILED,
+            ImportState::NEW,
+            ImportState::INTEGRITY_CHECKING,
+            ImportState::INTEGRITY_CHECK_CORRECT,
+            ImportState::INTEGRITY_CHECK_FAILED,
             ])
         ) {
             throw new InvalidArgumentException('You cannot upload file to this import.');
@@ -278,9 +278,9 @@ class ImportController extends AbstractController
     {
         if (
             !in_array($importFile->getImport()->getState(), [
-                ImportState::INTEGRITY_CHECKING,
-                ImportState::INTEGRITY_CHECK_CORRECT,
-                ImportState::INTEGRITY_CHECK_FAILED,
+            ImportState::INTEGRITY_CHECKING,
+            ImportState::INTEGRITY_CHECK_CORRECT,
+            ImportState::INTEGRITY_CHECK_FAILED,
             ])
         ) {
             throw new InvalidArgumentException('You cannot delete file from this import.');
@@ -476,8 +476,8 @@ class ImportController extends AbstractController
                     "enGivenName" => $line->englishGivenName,
                     "enParentsName" => $line->englishParentsName,
                     "primaryIdCard" => [
-                        "number" => $line->idNumber,
-                        "type" => $line->idType,
+                        "number" => $line->primaryIdNumber,
+                        "type" => $line->primaryIdType,
                     ],
                 ];
             }, $importQueues)

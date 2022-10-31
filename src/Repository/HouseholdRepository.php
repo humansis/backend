@@ -195,7 +195,9 @@ class HouseholdRepository extends EntityRepository
             ->leftJoin('hh.projects', 'p')
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
             ->leftJoin('b.person', 'per')
-            ->leftJoin('per.nationalIds', 'ni')
+            ->leftJoin('per.nationalIds', 'ni', Join::WITH, 'ni.priority = 1')
+            ->leftJoin('per.nationalIds', 'ni2', Join::WITH, 'ni2.priority = 2')
+            ->leftJoin('per.nationalIds', 'ni3', Join::WITH, 'ni3.priority = 3')
             ->leftJoin('per.referral', 'r')
             ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
             ->leftJoin('head.person', 'headper')
@@ -232,7 +234,9 @@ class HouseholdRepository extends EntityRepository
                             COALESCE(p.name, ''),
                             COALESCE(l.name, ''),
                             COALESCE(vb.fieldString, ''),
-                            COALESCE(ni.idNumber, '')
+                            COALESCE(ni.idNumber, ''),
+                            COALESCE(ni2.idNumber, ''),
+                            COALESCE(ni3.idNumber, '')
                         )",
                         ":fulltext"
                     ),
