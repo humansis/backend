@@ -3,6 +3,7 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Entity\AssistanceStatistics;
 use Entity\Location;
 use Enum\AssistanceState;
 use Enum\AssistanceTargetType;
@@ -19,6 +20,7 @@ use InputType\ProjectsAssistanceFilterInputType;
 use InvalidArgumentException;
 use Request\Pagination;
 use Entity\Project;
+use Component\Assistance\DTO\Statistics;
 
 /**
  * AssistanceRepository
@@ -159,6 +161,10 @@ class AssistanceRepository extends EntityRepository
                         break;
                     case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
                         $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_PROGRESS:
+                        $qb->join(AssistanceStatistics::class, 'asp', Join::WITH, 'dd.id = asp.assistance')
+                            ->orderBy('asp.beneficiariesReached / asp.numberOfBeneficiaries', $direction);
                         break;
                     case AssistanceOrderInputType::SORT_BY_ROUND:
                         $qb->orderBy('dd.round', $direction);
