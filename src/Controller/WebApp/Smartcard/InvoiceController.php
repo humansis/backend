@@ -8,42 +8,73 @@ use Component\Smartcard\Invoice\InvoiceFactory;
 use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Component\Country\Countries;
+use Export\SmartcardInvoiceExport;
+use Export\SmartcardInvoiceLegacyExport;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
 use InputType\SmartcardInvoiceCreateInputType;
 use Repository\SmartcardInvoiceRepository;
+use Repository\OrganizationRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Controller\VendorApp\SmartcardController;
 use Entity\Invoice;
 use Entity\Vendor;
+use Utils\Response\BinaryFileResponse;
 
 class InvoiceController extends AbstractWebAppController
 {
+    use BinaryFileResponse;
+
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
      *
      * @param Invoice $invoice
-     *
-     * @return JsonResponse
+     * @param Countries $countries
+     * @param SmartcardInvoiceExport $smartcardInvoiceExport
+     * @param OrganizationRepository $organizationRepository
+     * @return Response
      */
-    public function export(Invoice $invoice): Response
-    {
-        return $this->forward(SmartcardController::class . '::export', ['invoice' => $invoice]);
+    public function export(
+        Invoice $invoice,
+        Countries $countries,
+        SmartcardInvoiceExport $smartcardInvoiceExport,
+        OrganizationRepository $organizationRepository
+    ): Response {
+        $country = $countries->getCountry($invoice->getProject()->getCountryIso3());
+
+        // todo find organisation by relation to smartcard
+        $organization = $organizationRepository->findOneBy([]);
+        $filename = $smartcardInvoiceExport->export(
+            $invoice,
+            $organization,
+            $this->getUser(),
+            $country->getLanguage()
+        );
+
+        return $this->createBinaryFileResponse($filename);
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
      *
      * @param Invoice $invoice
-     *
-     * @return JsonResponse
+     * @param OrganizationRepository $organizationRepository
+     * @param SmartcardInvoiceLegacyExport $smartcardInvoiceLegacyExport
+     * @return Response
      */
-    public function legacyExport(Invoice $invoice): Response
-    {
-        return $this->forward(SmartcardController::class . '::exportLegacy', ['invoice' => $invoice]);
+    public function legacyExport(
+        Invoice $invoice,
+        OrganizationRepository $organizationRepository,
+        SmartcardInvoiceLegacyExport $smartcardInvoiceLegacyExport
+    ): Response {
+        // todo find organisation by relation to smartcard
+        $organization = $organizationRepository->findOneBy([]);
+        $filename = $smartcardInvoiceLegacyExport->export($invoice, $organization, $this->getUser());
+
+        return $this->createBinaryFileResponse($filename);
     }
 
     /**

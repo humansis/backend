@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Export;
 
 use Entity\Organization;
-use MapperDeprecated\LocationMapper;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Utils\FileSystem\Exception\ImageException;
 use Utils\FileSystem\Image;
@@ -19,7 +18,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\String\Slugger\AsciiSlugger;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Entity\User;
 use Entity\Invoice;
 use Entity\Vendor;
@@ -29,19 +28,14 @@ class SmartcardInvoiceLegacyExport
     /** @var TranslatorInterface */
     private $translator;
 
-    /** @var LocationMapper */
-    private $locationMapper;
-
     /**
      * SmartcardInvoiceExport constructor.
      *
      * @param TranslatorInterface $translator
-     * @param LocationMapper $locationMapper
      */
-    public function __construct(TranslatorInterface $translator, LocationMapper $locationMapper)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
-        $this->locationMapper = $locationMapper;
     }
 
     public function export(Invoice $invoice, Organization $organization, User $user)
@@ -51,7 +45,7 @@ class SmartcardInvoiceLegacyExport
 
         self::formatCells($worksheet);
 
-        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $invoice, $this->locationMapper);
+        $lastRow = self::buildHeader($worksheet, $this->translator, $organization, $invoice);
         $lastRow = self::buildBody($worksheet, $this->translator, $invoice, $lastRow + 1);
         $lastRow = self::buildFooter($worksheet, $this->translator, $organization, $user, $lastRow + 3);
         $lastRow = self::buildAnnex($worksheet, $this->translator, $invoice, $lastRow + 2);
@@ -97,12 +91,11 @@ class SmartcardInvoiceLegacyExport
         Worksheet $worksheet,
         TranslatorInterface $translator,
         Organization $organization,
-        Invoice $invoice,
-        LocationMapper $locationMapper
+        Invoice $invoice
     ): int {
         self::buildHeaderFirstLineBoxes($worksheet, $translator, $organization, $invoice);
 
-        self::buildHeaderSecondLine($worksheet, $translator, $organization, $invoice, $locationMapper);
+        self::buildHeaderSecondLine($worksheet, $translator, $organization, $invoice);
         self::buildHeaderThirdLine($worksheet, $translator, $organization, $invoice);
         self::buildHeaderFourthLine($worksheet, $translator);
 
@@ -184,8 +177,7 @@ class SmartcardInvoiceLegacyExport
         Worksheet $worksheet,
         TranslatorInterface $translator,
         Organization $organization,
-        Invoice $invoice,
-        LocationMapper $locationMapper
+        Invoice $invoice
     ): void {
         // structure
         $worksheet->mergeCells('C7:D7');
@@ -194,7 +186,7 @@ class SmartcardInvoiceLegacyExport
         // data
         $worksheet->setCellValue('B7', $translator->trans('customer'));
         $worksheet->setCellValue('C7', $organization->getName());
-        $worksheet->setCellValue('E7', $locationMapper->toName($invoice->getVendor()->getLocation()));
+        $worksheet->setCellValue('E7', $invoice->getVendor()->getLocation()->getFullPathNames());
         $worksheet->setCellValue('I7', $invoice->getInvoicedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date'));
         // style
