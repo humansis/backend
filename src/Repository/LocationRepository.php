@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Entity\Location;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InputType\LocationFilterInputType;
 
@@ -249,6 +248,10 @@ class LocationRepository extends EntityRepository
         if ($filter->hasParent()) {
             $qbr->andWhere('l.parentLocation = :parent')
                 ->setParameter('parent', $filter->getParent());
+        }
+        if ($filter->hasEnumNormalizedName()) {
+            $qbr->andWhere('l.enumNormalizedName = :enumNormalizedName')
+                ->setParameter('enumNormalizedName', $filter->getEnumNormalizedName());
         }
 
         $qbr->orderBy('l.name', 'ASC');

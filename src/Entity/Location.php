@@ -18,9 +18,13 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  *      @ORM\Index(name="search_subtree", columns={"iso3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
  *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
  *      @ORM\Index(name="search_level", columns={"iso3", "nested_tree_level"}),
+ *      @ORM\Index(name="duplicity", columns={"iso3", "nested_tree_level", "enum_normalized_name"}),
  *     })
  * @ORM\Entity(repositoryClass="Repository\LocationRepository")
  */
+// TODO add unique on normalized name X parent location:
+// uniqueConstraints={ @ORM\UniqueConstraint(name="name_parent_unique", columns={"enum_normalized_name", "parent_location_id"}) })
+// (now resolves in SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'XXX' for key 'location.name_parent_unique')
 class Location implements TreeInterface
 {
     use NestedTreeTrait;
@@ -68,9 +72,15 @@ class Location implements TreeInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false, unique=true)
+     * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false)
      */
     private $enumNormalizedName;
+
+    /** @var int
+     *
+     * @ORM\Column(name="duplicity_count", type="integer", nullable=false)
+     */
+    private $duplicityCount = 0;
 
     /**
      * @param string $countryIso3
@@ -190,6 +200,11 @@ class Location implements TreeInterface
     public function getEnumNormalizedName(): string
     {
         return $this->enumNormalizedName;
+    }
+
+    public function getDuplicityCount(): int
+    {
+        return $this->duplicityCount;
     }
 
     /**

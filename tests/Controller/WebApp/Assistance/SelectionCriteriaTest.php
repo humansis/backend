@@ -23,18 +23,21 @@ use Tests\BMSServiceTestCase;
 
 class SelectionCriteriaTest extends BMSServiceTestCase
 {
-    /**
-     * @throws Exception
-     */
-    public function setUp(): void
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
+        parent::__construct($name, $data, $dataName);
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
         $this->client = self::$container->get('test.client');
+        $this->location = $this->em->getRepository(Location::class)->findOneBy(['code' => self::LOCATION_CODE]);
     }
+
+    private $location;
+
+    private const LOCATION_CODE = 'KH01';
 
     /**
      * @param $criteria array[] will be in distinct groups
@@ -118,7 +121,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'field' => 'location',
             'condition' => '=',
             'weight' => 1,
-            'value' => 21,
+            'value' => $this->location->getId(),
         ];
         $CSOEquityCard = [
             'group' => $group++,
@@ -174,10 +177,10 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         yield 'all in one' => [
             $this->assistanceWithCriteria(
                 [
+                    $location,
                     $femaleHead,
                     $bornBefore2020,
                     $hasAnyIncomeInt,
-                    $location,
                     $CSOEquityCard,
                     $CSOFloatGtInt,
                     $CSOFloatLtFloat,
