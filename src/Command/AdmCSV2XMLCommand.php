@@ -5,7 +5,7 @@ namespace Command;
 use Exception;
 use RuntimeException;
 use SimpleXMLElement;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AdmCSV2XMLCommand extends ContainerAwareCommand
+class AdmCSV2XMLCommand extends Command
 {
     protected function configure()
     {

@@ -3,11 +3,11 @@
 namespace Command;
 
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearCacheImportCommand extends ContainerAwareCommand
+class ClearCacheImportCommand extends Command
 {
     public function __construct(private readonly string $rootDir)
     {
