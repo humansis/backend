@@ -62,8 +62,8 @@ class AssistanceController extends AbstractController
         AssistanceStatisticsFilterInputType $filter,
         AssistanceQuery $assistanceQuery
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -108,8 +108,8 @@ class AssistanceController extends AbstractController
         Pagination $pagination,
         AssistanceOrderInputType $orderBy
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
