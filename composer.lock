@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f804ee904c983d219a7181b81c64980",
+    "content-hash": "adc559902eae12abc111048df2c3fd80",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2488,57 +2488,6 @@
                 "source": "https://github.com/Incenteev/ParameterHandler/tree/v2.1.5"
             },
             "time": "2022-05-25T10:57:22+00:00"
-        },
-        {
-            "name": "jrk/levenshtein-bundle",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jr-k/JrkLevenshteinBundle.git",
-                "reference": "c5b3adbf13f9f983a587469fb1650f7598ac6436"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jr-k/JrkLevenshteinBundle/zipball/c5b3adbf13f9f983a587469fb1650f7598ac6436",
-                "reference": "c5b3adbf13f9f983a587469fb1650f7598ac6436",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "*",
-                "doctrine/orm": "*",
-                "php": ">=5.3.2",
-                "symfony/framework-bundle": "*"
-            },
-            "default-branch": true,
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "Jrk\\LevenshteinBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "JRK",
-                    "homepage": "http://github.com/jr-k"
-                }
-            ],
-            "description": "Levenshtein function bundle for symfony2 and doctrine",
-            "homepage": "http://github.com/jr-k/JrkLevenshteinBundle",
-            "keywords": [
-                "doctrine",
-                "levenshtein",
-                "search",
-                "soundex"
-            ],
-            "support": {
-                "issues": "https://github.com/jr-k/JrkLevenshteinBundle/issues",
-                "source": "https://github.com/jr-k/JrkLevenshteinBundle/tree/master"
-            },
-            "time": "2018-12-11T22:50:50+00:00"
         },
         {
             "name": "knplabs/gaufrette",
@@ -5056,44 +5005,6 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
-        },
-        {
-            "name": "relief_applications/symfony-request-validator-bundle",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/blixit/RequestValidatorBundle.git",
-                "reference": "b1de5266f17b7b8674d4f28902f1270fd6f1121a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/blixit/RequestValidatorBundle/zipball/b1de5266f17b7b8674d4f28902f1270fd6f1121a",
-                "reference": "b1de5266f17b7b8674d4f28902f1270fd6f1121a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.0",
-                "symfony/framework-bundle": ">=2.5.6"
-            },
-            "default-branch": true,
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "RA\\RequestValidatorBundle\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "keywords": [
-                "ReliefApps RA RequestValidatorBundle"
-            ],
-            "support": {
-                "issues": "https://github.com/blixit/RequestValidatorBundle/issues",
-                "source": "https://github.com/blixit/RequestValidatorBundle/tree/master"
-            },
-            "time": "2018-07-03T07:24:17+00:00"
         },
         {
             "name": "sabberworm/php-css-parser",
@@ -9809,8 +9720,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "jrk/levenshtein-bundle": 20,
-        "relief_applications/symfony-request-validator-bundle": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
