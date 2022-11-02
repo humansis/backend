@@ -226,8 +226,8 @@ class LocationController extends AbstractController
      */
     public function locations(Request $request, LocationFilterInputType $filter): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -242,8 +242,8 @@ class LocationController extends AbstractController
         int $level,
         $parent = null
     ): OrmPaginator {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
