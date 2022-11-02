@@ -10,8 +10,7 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImportParserTest extends TestCase
 {
-    /** @var File */
-    private static $file;
+    private static \Symfony\Component\HttpFoundation\File\File $file;
 
     public static function setUpBeforeClass(): void
     {

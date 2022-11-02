@@ -13,16 +13,8 @@ use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
-//    /** @var UserManager $manager */
-//    private $manager;
-
-    /** @var EncoderFactoryInterface $encoderFactory */
-    private $encoderFactory;
-
-    public function __construct(EncoderFactoryInterface $encoderFactory)
+    public function __construct(private readonly EncoderFactoryInterface $encoderFactory)
     {
-//        $this->manager = $manager;
-        $this->encoderFactory = $encoderFactory;
     }
 
     public function getDependencies(): array
@@ -32,7 +24,7 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private $data = [
+    private array $data = [
         [
             "name" => "Two-Factor Authentication",
             "parameters" => [
@@ -100,7 +92,6 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
     /**
      * Load data fixtures with the passed EntityManager
      *
-     * @param ObjectManager $manager
      * @throws Exception
      */
     public function load(ObjectManager $manager)

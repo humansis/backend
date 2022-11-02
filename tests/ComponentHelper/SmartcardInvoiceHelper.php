@@ -20,10 +20,6 @@ use Symfony\Component\DependencyInjection\Container;
 trait SmartcardInvoiceHelper
 {
     /**
-     * @param Vendor $vendor
-     * @param SmartcardInvoiceCreateInputType $invoiceCreateInputType
-     * @param User $user
-     * @return Invoice
      * @throws Exception
      */
     public function createInvoice(
@@ -36,7 +32,6 @@ trait SmartcardInvoiceHelper
 
     /**
      * @param int[] $purchaseIds
-     * @return SmartcardInvoiceCreateInputType
      */
     public static function buildInvoiceCreateInputType(array $purchaseIds): SmartcardInvoiceCreateInputType
     {

@@ -21,75 +21,51 @@ use InvalidArgumentException;
 class ProductCategory
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", nullable=false)
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="enum_product_category_type", nullable=false)
-     */
-    private $type;
-
-    /**
-     * @var string|null
-     *
      * @ORM\Column(name="image", type="text", nullable=true)
      */
-    private $image;
+    private ?string $image = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="archived", type="boolean", nullable=false)
      */
-    private $archived = false;
+    private bool $archived = false;
 
     /**
      * @var Collection|Product[]
      *
      * @ORM\OneToMany(targetEntity="Entity\Product", mappedBy="productCategory")
      */
-    private $products;
+    private \Doctrine\Common\Collections\Collection|array $products;
 
-    public function __construct(string $name, string $type)
-    {
-        $this->name = $name;
+    public function __construct(/**
+         * @ORM\Column(name="name", type="string", nullable=false)
+         */
+        private string $name, /**
+         * @ORM\Column(name="type", type="enum_product_category_type", nullable=false)
+         */
+        private string $type
+    ) {
         $this->products = new ArrayCollection();
-        $this->type = $type;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
@@ -98,22 +74,16 @@ class ProductCategory
     /**
      * @return Collection|Product[]
      */
-    public function getProducts()
+    public function getProducts(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->products;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         if (!in_array($type, ProductCategoryType::values())) {
@@ -123,33 +93,21 @@ class ProductCategory
         $this->type = $type;
     }
 
-    /**
-     * @return string|null
-     */
     public function getImage(): ?string
     {
         return $this->image;
     }
 
-    /**
-     * @param string|null $image
-     */
     public function setImage(?string $image): void
     {
         $this->image = $image;
     }
 
-    /**
-     * @return bool
-     */
     public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    /**
-     * @param bool $archived
-     */
     public function setArchived(bool $archived): void
     {
         $this->archived = $archived;

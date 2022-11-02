@@ -11,7 +11,7 @@ class ExcelColumnsGenerator
 {
     private const ALPHABET_COUNT = 26;
 
-    private $position = 0;
+    private int $position = 0;
 
     public function getNext(): string
     {
@@ -30,7 +30,7 @@ class ExcelColumnsGenerator
     /**
      * @return Generator|string[]
      */
-    private function generate()
+    private function generate(): \Generator|array
     {
         $prefix = '';
 

@@ -11,19 +11,13 @@ use JsonSerializable;
 
 class HouseholdActivityChangesCollection implements JsonSerializable, IteratorAggregate
 {
-    /** @var HouseholdActivity[] */
-    private $collection;
-
-    /** @var HouseholdChangeFactoryInterface */
-    private $factory;
+    private readonly \Model\Household\HouseholdChange\Factory\HouseholdChangeFactoryInterface $factory;
 
     /**
      * @param HouseholdActivity[] $collection list of household activities
-     * @param HouseholdChangeFactoryInterface $factory
      */
-    public function __construct($collection, HouseholdChangeFactoryInterface $factory = null)
+    public function __construct(private $collection, HouseholdChangeFactoryInterface $factory = null)
     {
-        $this->collection = $collection;
         $this->factory = $factory ?? new SimpleHouseholdChangeFactory();
     }
 

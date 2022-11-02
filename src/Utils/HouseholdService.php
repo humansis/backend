@@ -39,39 +39,15 @@ use Repository\LocationRepository;
  */
 class HouseholdService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var BeneficiaryService $beneficiaryService */
-    private $beneficiaryService;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
     /**
      * HouseholdService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param BeneficiaryService $beneficiaryService
-     * @param LocationRepository $locationRepository
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        BeneficiaryService $beneficiaryService,
-        LocationRepository $locationRepository
-    ) {
-        $this->em = $entityManager;
-        $this->beneficiaryService = $beneficiaryService;
-        $this->locationRepository = $locationRepository;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly BeneficiaryService $beneficiaryService, private readonly LocationRepository $locationRepository)
+    {
     }
 
     /**
-     * @param HouseholdCreateInputType $inputType
-     * @param string $countryCode
      *
-     * @return Household
      * @throws Exception
      */
     public function create(HouseholdCreateInputType $inputType, string $countryCode): Household
@@ -100,10 +76,7 @@ class HouseholdService
     }
 
     /**
-     * @param ResidenceAddressInputType $inputType
-     * @param string $countryCode
      *
-     * @return HouseholdLocation
      * @throws EntityNotFoundException
      */
     private function createResidenceAddress(
@@ -128,10 +101,7 @@ class HouseholdService
     }
 
     /**
-     * @param TemporarySettlementAddressInputType $inputType
-     * @param string $countryCode
      *
-     * @return HouseholdLocation
      * @throws EntityNotFoundException
      */
     private function createTemporarySettlementAddress(
@@ -156,10 +126,7 @@ class HouseholdService
     }
 
     /**
-     * @param CampAddressInputType $inputType
-     * @param string $countryCode
      *
-     * @return HouseholdLocation
      * @throws EntityNotFoundException
      */
     private function createCampAddress(CampAddressInputType $inputType, string $countryCode): HouseholdLocation
@@ -197,11 +164,6 @@ class HouseholdService
     }
 
     /**
-     * @param Household $household
-     * @param HouseholdUpdateInputType $inputType
-     * @param string $countryCode
-     *
-     * @return Household
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException
      * @throws Exception
@@ -250,10 +212,7 @@ class HouseholdService
     }
 
     /**
-     * @param Household $household
-     * @param BeneficiaryInputType $beneficiaryInputType
      *
-     * @return Beneficiary|null
      * @throws Exception
      */
     private function tryToPairBeneficiaryInHousehold(
@@ -350,9 +309,6 @@ class HouseholdService
     }
 
     /**
-     * @param HouseholdUpdateInputType $inputType
-     * @param Household $household
-     * @param string $countryCode
      *
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException

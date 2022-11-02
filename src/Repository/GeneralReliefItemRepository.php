@@ -19,8 +19,6 @@ use Request\Pagination;
 class GeneralReliefItemRepository extends EntityRepository
 {
     /**
-     * @param GeneralReliefFilterInputType $filter
-     * @param Pagination|null $pagination
      *
      * @return Paginator|GeneralReliefItem[]
      */

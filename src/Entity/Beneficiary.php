@@ -30,34 +30,26 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $person;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="status", type="boolean")
-     * @Assert\NotBlank(message="The status is required.")
      */
-    private $status;
+    #[Assert\NotBlank(message: 'The status is required.')]
+    private bool $status;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Assert\Regex("/^(refugee|IDP|resident|returnee)$/i")
      */
-    private $residencyStatus;
+    #[Assert\Regex('/^(refugee|IDP|resident|returnee)$/i')]
+    private string $residencyStatus;
 
     /**
-     * @var DateTime|null
-     *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      */
-    private $updatedOn;
+    private ?\DateTime $updatedOn;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="beneficiaries")
      */
-    private $household;
+    private ?\Entity\Household $household = null;
 
     /**
      * @var VulnerabilityCriterion
@@ -71,14 +63,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @var Collection|Smartcard[]
      */
-    private $smartcards;
+    private \Doctrine\Common\Collections\Collection|array $smartcards;
 
     /**
      * @var ImportBeneficiary[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
-    private $importBeneficiaries;
+    private array|\Doctrine\Common\Collections\Collection $importBeneficiaries;
 
     /**
      * Constructor.
@@ -104,9 +96,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->getHousehold() ? $this->getHousehold()->getId() : null;
     }
 
-    /**
-     * @return Person
-     */
     public function getPerson(): Person
     {
         return $this->person;
@@ -117,7 +106,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param string|null $enGivenName
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setEnGivenName($enGivenName): self
@@ -130,7 +118,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get enGivenName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getEnGivenName(): ?string
@@ -143,7 +130,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param string|null $enFamilyName
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setEnFamilyName($enFamilyName): self
@@ -156,7 +142,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get enFamilyName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getEnFamilyName(): ?string
@@ -169,7 +154,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param string|null $localGivenName
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setLocalGivenName($localGivenName): self
@@ -182,7 +166,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get localGivenName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getLocalGivenName(): ?string
@@ -195,7 +178,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param string|null $localFamilyName
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setLocalFamilyName($localFamilyName): self
@@ -208,7 +190,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get localFamilyName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getLocalFamilyName(): ?string
@@ -221,7 +202,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param int|null $gender one of Person::GENDER_*
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setGender($gender): self
@@ -248,7 +228,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param DateTime|null $dateOfBirth
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setDateOfBirth($dateOfBirth): self
@@ -270,7 +249,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     }
 
     /**
-     * @return string|null
      * @deprecated
      */
     public function getDateOfBirth(): ?string
@@ -329,7 +307,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Add vulnerabilityCriterion.
      *
-     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return Beneficiary
      */
@@ -345,7 +322,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Remove vulnerabilityCriterion.
      *
-     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -381,9 +357,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Add phone.
      *
-     * @param Phone $phone
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function addPhone(Phone $phone): self
@@ -396,7 +370,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Remove phone.
      *
-     * @param Phone $phone
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      * @deprecated
@@ -409,7 +382,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get phones.
      *
-     * @return Collection
      * @deprecated
      */
     public function getPhones(): Collection
@@ -422,7 +394,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param $collection
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setPhones(Collection $collection = null): self
@@ -437,7 +408,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param  $collection
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setNationalIds(Collection $collection = null): self
@@ -450,9 +420,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Add nationalId.
      *
-     * @param NationalId $nationalId
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function addNationalId(NationalId $nationalId): self
@@ -465,7 +433,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Remove nationalId.
      *
-     * @param NationalId $nationalId
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      * @deprecated
@@ -491,7 +458,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param bool $status
      *
-     * @return Beneficiary
      * @deprecated use setHead() instead
      */
     public function setStatus($status): self
@@ -504,7 +470,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get status.
      *
-     * @return bool
      * @deprecated use isHead() instead
      */
     public function getStatus(): bool
@@ -522,9 +487,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->getStatus();
     }
 
-    /**
-     * @return string
-     */
     public function getResidencyStatus(): string
     {
         return $this->residencyStatus;
@@ -532,8 +494,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * @param string $residencyStatus
-     *
-     * @return Beneficiary
      */
     public function setResidencyStatus($residencyStatus): self
     {
@@ -547,7 +507,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @param Profile|null $profile
      *
-     * @return Beneficiary
      * @deprecated
      */
     public function setProfile(Profile $profile = null): self
@@ -560,7 +519,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get profile.
      *
-     * @return Profile|null
      * @deprecated
      */
     public function getProfile(): ?Profile
@@ -586,7 +544,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get referral.
      *
-     * @return Referral|null
      * @deprecated
      */
     public function getReferral(): ?Referral
@@ -596,8 +553,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -708,7 +663,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = '';
         if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = $this->getHousehold()->getShelterStatus() ? $this->getHousehold()->getShelterStatus() : '';
+            $shelterStatus = $this->getHousehold()->getShelterStatus() ?: '';
         }
 
         $tempBenef = [
@@ -811,9 +766,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
 
         $supportReceivedTypes = array_values(
-            array_map(function ($value) {
-                return HouseholdSupportReceivedType::valueFromAPI($value);
-            }, (array) $this->getHousehold()->getSupportReceivedTypes())
+            array_map(fn($value) => HouseholdSupportReceivedType::valueFromAPI($value), (array) $this->getHousehold()->getSupportReceivedTypes())
         );
 
         $supportDateReceived = null;
@@ -866,15 +819,13 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Returns age of beneficiary in years
-     *
-     * @return int|null
      */
     public function getAge(): ?int
     {
         if ($this->getDateOfBirthObject()) {
             try {
                 return $this->getDateOfBirthObject()->diff(new DateTime('now'))->y;
-            } catch (Exception $ex) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -882,9 +833,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return null;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSmartcardSerialNumber(): ?string
     {
         foreach ($this->smartcards as $smartcard) {
@@ -899,7 +847,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get localParentsName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getLocalParentsName(): ?string
@@ -910,8 +857,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set localParentsName.
      *
-     * @param string|null $localParentsName
-     * @return Beneficiary
      * @deprecated
      */
     public function setLocalParentsName(?string $localParentsName): self
@@ -924,7 +869,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Get enParentsName.
      *
-     * @return string|null
      * @deprecated
      */
     public function getEnParentsName(): ?string
@@ -935,8 +879,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Set enParentsName.
      *
-     * @param string|null $enParentsName
-     * @return Beneficiary
      * @deprecated
      */
     public function setEnParentsName(?string $enParentsName): self
@@ -960,7 +902,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @return Collection|ImportBeneficiary[]
      */
-    public function getImportBeneficiaries()
+    public function getImportBeneficiaries(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->importBeneficiaries;
     }

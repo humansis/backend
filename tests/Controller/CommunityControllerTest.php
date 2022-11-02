@@ -69,7 +69,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -112,7 +112,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +134,6 @@ class CommunityControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreate
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -176,7 +175,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/web-app/v1/communities/' . $id, $data);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -203,7 +202,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -212,7 +210,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/communities/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -244,7 +242,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/communities?sort[]=id.asc&filter[fulltext]=test');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -258,7 +256,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -275,7 +272,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testDelete
      *
-     * @param int $id
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -294,7 +290,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped('There is no Community to be tested');
         }
 

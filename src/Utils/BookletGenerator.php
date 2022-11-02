@@ -12,12 +12,8 @@ use Exception;
 
 class BookletGenerator
 {
-    /** @var EntityManager */
-    private $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private readonly EntityManager $em)
     {
-        $this->em = $em;
     }
 
     public function generate(
@@ -65,9 +61,7 @@ class BookletGenerator
     /**
      * Find last booklet code similar to $code, if exists.
      *
-     * @param string $code
      *
-     * @return string|null
      * @throws DBALException
      */
     private function findBookletCode(string $code): ?string
@@ -82,16 +76,7 @@ class BookletGenerator
     /**
      * Generate set of booklets since $lastBatchNumber.
      *
-     * @param int $lastBatchNumber
-     * @param Project $project
-     * @param string $code
-     * @param string $countryIso3
-     * @param int $numberOfBooklets
-     * @param int $numberOfVouchers
-     * @param string $currency
-     * @param string|null $password
      *
-     * @return int
      * @throws DBALException
      */
     private function generateBooklets(
@@ -133,9 +118,6 @@ class BookletGenerator
     /**
      * Generate vouchers for booklets >= $bookletId.
      *
-     * @param array $values
-     * @param int $numberOfVouchers
-     * @param int $bookletId
      *
      * @throws DBALException
      */

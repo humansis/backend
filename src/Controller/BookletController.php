@@ -29,24 +29,12 @@ use Utils\BookletService;
 
 class BookletController extends AbstractController
 {
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(
-        BookletService $bookletService,
-        CodeListService $codeListService
-    ) {
-        $this->bookletService = $bookletService;
-        $this->codeListService = $codeListService;
+    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/booklets/statuses")
-     *
-     * @return JsonResponse
      */
     public function statuses(): JsonResponse
     {
@@ -58,10 +46,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/exports")
      *
-     * @param Request $request
-     * @param BookletExportFilterInputType $inputType
      *
-     * @return Response
      */
     public function exports(Request $request, BookletExportFilterInputType $inputType): Response
     {
@@ -82,9 +67,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/prints")
      *
-     * @param BookletPrintFilterInputType $inputType
      *
-     * @return Response
      */
     public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
@@ -96,9 +79,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
      *
-     * @return JsonResponse
      */
     public function item(Booklet $object): JsonResponse
     {
@@ -108,10 +89,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
-     * @param BookletUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Booklet $object, BookletUpdateInputType $inputType): JsonResponse
     {
@@ -128,12 +106,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets")
      *
-     * @param Request $request
-     * @param BookletFilterInputType $filter
-     * @param Pagination $pagination
-     * @param BookletOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -155,9 +128,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/booklets/batches")
      *
-     * @param BookletBatchCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
@@ -169,15 +140,13 @@ class BookletController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
      *
-     * @return JsonResponse
      */
     public function delete(Booklet $object): JsonResponse
     {
         try {
             $deleted = $this->bookletService->deleteBookletFromDatabase($object);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             $deleted = false;
         }
 
@@ -190,11 +159,7 @@ class BookletController extends AbstractController
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToBeneficiary(
         Assistance $assistance,
@@ -212,11 +177,7 @@ class BookletController extends AbstractController
      * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Community $community
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToCommunity(Assistance $assistance, Community $community, Booklet $booklet): JsonResponse
     {
@@ -231,11 +192,7 @@ class BookletController extends AbstractController
      * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Institution $institution
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToInstitution(
         Assistance $assistance,

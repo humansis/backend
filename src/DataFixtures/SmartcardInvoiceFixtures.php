@@ -19,36 +19,11 @@ use Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var string */
-    private $environment;
-
-    /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
-     * @var InvoiceFactory
-     */
-    private $invoiceFactory;
-
-    /**
-     * @param string $environment
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
-     * @param InvoiceFactory $invoiceFactory
-     */
-    public function __construct(
-        string $environment,
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
-        InvoiceFactory $invoiceFactory
-    ) {
-        $this->environment = $environment;
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
-        $this->invoiceFactory = $invoiceFactory;
+    public function __construct(private readonly string $environment, private readonly SmartcardPurchaseRepository $smartcardPurchaseRepository, private readonly InvoiceFactory $invoiceFactory)
+    {
     }
 
     /**
-     * @param ObjectManager $manager
      *
      * @throws AlreadyRedeemedInvoiceException
      * @throws NotRedeemableInvoiceException
@@ -63,7 +38,7 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         /**
          * @var User $adminUser
@@ -94,10 +69,7 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     }
 
     /**
-     * @param Vendor $vendor
-     * @param User $user
      *
-     * @return void
      * @throws AlreadyRedeemedInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException

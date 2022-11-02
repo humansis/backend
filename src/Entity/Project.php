@@ -32,68 +32,57 @@ class Project implements ExportableInterface
     use CountryDependent;
 
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string|null
      *
      * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
      *
      */
-    private $internalId;
+    private ?string $internalId = null;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(name="startDate", type="date")
      *
      */
-    private $startDate;
+    private ?\DateTime $startDate = null;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(name="endDate", type="date")
      *
      */
-    private $endDate;
+    private ?\DateTime $endDate = null;
+
+    private ?int $numberOfHouseholds = null;
 
     /**
-     * @var int
-     *
-     */
-    private $numberOfHouseholds;
-
-    /**
-     * @var float|null
      *
      * @ORM\Column(name="target", type="float", nullable=true)
      *
      */
-    private $target;
+    private ?float $target = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="notes", type="text", nullable=true)
      *
      */
-    private $notes;
+    private ?string $notes = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="Entity\Donor", inversedBy="projects")
@@ -108,11 +97,9 @@ class Project implements ExportableInterface
     private $sectors;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      */
-    private $archived = 0;
+    private int|bool $archived = 0;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\UserProject", mappedBy="project", cascade={"remove"})
@@ -130,30 +117,23 @@ class Project implements ExportableInterface
     private $distributions;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
      */
-    private $projectInvoiceAddressLocal = null;
+    private ?string $projectInvoiceAddressLocal = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
      */
-    private $projectInvoiceAddressEnglish = null;
+    private ?string $projectInvoiceAddressEnglish = null;
 
     /**
      * @var string[]
      *
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
-    private $allowedProductCategoryTypes;
+    private array $allowedProductCategoryTypes;
 
-    /**
-     * @var DateTimeInterface|null
-     */
-    private $lastModifiedAtIncludingBeneficiaries = null;
+    private ?\DateTimeInterface $lastModifiedAtIncludingBeneficiaries = null;
 
     /**
      * Constructor
@@ -171,8 +151,6 @@ class Project implements ExportableInterface
 
     /**
      * Get id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -182,9 +160,7 @@ class Project implements ExportableInterface
     /**
      * Set name.
      *
-     * @param string $name
      *
-     * @return Project
      */
     public function setName(string $name): Project
     {
@@ -195,27 +171,17 @@ class Project implements ExportableInterface
 
     /**
      * Get name.
-     *
-     * @return string
      */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getInternalId(): ?string
     {
         return $this->internalId;
     }
 
-    /**
-     * @param string|null $internalId
-     *
-     * @return Project
-     */
     public function setInternalId(?string $internalId): Project
     {
         $this->internalId = $internalId;
@@ -226,9 +192,7 @@ class Project implements ExportableInterface
     /**
      * Set startDate.
      *
-     * @param DateTime $startDate
      *
-     * @return Project
      */
     public function setStartDate(DateTime $startDate): Project
     {
@@ -239,8 +203,6 @@ class Project implements ExportableInterface
 
     /**
      * Get startDate.
-     *
-     * @return DateTime
      */
     public function getStartDate(): DateTime
     {
@@ -250,9 +212,7 @@ class Project implements ExportableInterface
     /**
      * Set endDate.
      *
-     * @param DateTime $endDate
      *
-     * @return Project
      */
     public function setEndDate(DateTime $endDate): Project
     {
@@ -263,8 +223,6 @@ class Project implements ExportableInterface
 
     /**
      * Get endDate.
-     *
-     * @return DateTime
      */
     public function getEndDate(): DateTime
     {
@@ -274,9 +232,7 @@ class Project implements ExportableInterface
     /**
      * Set numberOfHouseholds.
      *
-     * @param int $numberOfHouseholds
      *
-     * @return Project
      */
     public function setNumberOfHouseholds(int $numberOfHouseholds): Project
     {
@@ -287,8 +243,6 @@ class Project implements ExportableInterface
 
     /**
      * Get numberOfHouseholds.
-     *
-     * @return int
      */
     public function getNumberOfHouseholds(): int
     {
@@ -298,9 +252,7 @@ class Project implements ExportableInterface
     /**
      * Set target.
      *
-     * @param float|null $target
      *
-     * @return Project
      */
     public function setTarget(?float $target): Project
     {
@@ -323,8 +275,6 @@ class Project implements ExportableInterface
      * Set notes.
      *
      * @param string|null $notes
-     *
-     * @return Project
      */
     public function setNotes(string $notes = null): Project
     {
@@ -335,8 +285,6 @@ class Project implements ExportableInterface
 
     /**
      * Get notes.
-     *
-     * @return string|null
      */
     public function getNotes(): ?string
     {
@@ -346,9 +294,7 @@ class Project implements ExportableInterface
     /**
      * Set archived.
      *
-     * @param bool $archived
      *
-     * @return Project
      */
     public function setArchived(bool $archived): Project
     {
@@ -359,8 +305,6 @@ class Project implements ExportableInterface
 
     /**
      * Get archived.
-     *
-     * @return bool
      */
     public function getArchived(): bool
     {
@@ -370,9 +314,7 @@ class Project implements ExportableInterface
     /**
      * Add donor.
      *
-     * @param Donor $donor
      *
-     * @return Project
      */
     public function addDonor(Donor $donor): Project
     {
@@ -384,7 +326,6 @@ class Project implements ExportableInterface
     /**
      * Remove donor.
      *
-     * @param Donor $donor
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -395,8 +336,6 @@ class Project implements ExportableInterface
 
     /**
      * Remove donors.
-     *
-     * @return Project
      */
     public function removeDonors(): Project
     {
@@ -418,9 +357,7 @@ class Project implements ExportableInterface
     /**
      * Add sector.
      *
-     * @param string $sectorId
      *
-     * @return Project
      */
     public function addSector(string $sectorId): Project
     {
@@ -431,8 +368,6 @@ class Project implements ExportableInterface
 
     /**
      * @param Sector[] $sectorDTOs
-     *
-     * @return Project
      */
     public function setSectors(iterable $sectorIDs): self
     {
@@ -448,7 +383,6 @@ class Project implements ExportableInterface
     /**
      * Remove sector.
      *
-     * @param Sector $sector
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -459,8 +393,6 @@ class Project implements ExportableInterface
 
     /**
      * Remove sectors.
-     *
-     * @return Project
      */
     public function removeSectors(): Project
     {
@@ -482,9 +414,7 @@ class Project implements ExportableInterface
     /**
      * Add usersProject.
      *
-     * @param UserProject $usersProject
      *
-     * @return Project
      */
     public function addUsersProject(UserProject $usersProject): Project
     {
@@ -496,7 +426,6 @@ class Project implements ExportableInterface
     /**
      * Remove usersProject.
      *
-     * @param UserProject $usersProject
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -518,9 +447,7 @@ class Project implements ExportableInterface
     /**
      * Add household.
      *
-     * @param Household $household
      *
-     * @return Project
      */
     public function addHousehold(Household $household): Project
     {
@@ -535,7 +462,6 @@ class Project implements ExportableInterface
     /**
      * Remove household.
      *
-     * @param Household $household
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -557,9 +483,7 @@ class Project implements ExportableInterface
     /**
      * Add distribution.
      *
-     * @param Assistance $distribution
      *
-     * @return Project
      */
     public function addDistribution(Assistance $distribution): Project
     {
@@ -571,7 +495,6 @@ class Project implements ExportableInterface
     /**
      * Remove distribution.
      *
-     * @param Assistance $distribution
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -582,8 +505,6 @@ class Project implements ExportableInterface
 
     /**
      * Get distributions.
-     *
-     * @return Collection
      */
     public function getDistributions(): Collection
     {
@@ -592,8 +513,6 @@ class Project implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -661,19 +580,11 @@ class Project implements ExportableInterface
         $this->setLastModifiedAtIncludingBeneficiaries($totalLastModified);
     }
 
-    /**
-     * @return string|null
-     */
     public function getProjectInvoiceAddressLocal(): ?string
     {
         return $this->projectInvoiceAddressLocal;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressLocal
-     *
-     * @return Project
-     */
     public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): Project
     {
         $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
@@ -681,19 +592,11 @@ class Project implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getProjectInvoiceAddressEnglish(): ?string
     {
         return $this->projectInvoiceAddressEnglish;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressEnglish
-     *
-     * @return Project
-     */
     public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): Project
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;
@@ -738,9 +641,6 @@ class Project implements ExportableInterface
         return $this->lastModifiedAtIncludingBeneficiaries;
     }
 
-    /**
-     * @param DateTimeInterface $lastModifiedAtIncludingBeneficiaries
-     */
     public function setLastModifiedAtIncludingBeneficiaries(
         DateTimeInterface $lastModifiedAtIncludingBeneficiaries
     ): void {

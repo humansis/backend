@@ -15,20 +15,17 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class OrganizationServices implements JsonSerializable
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="enabled", type="boolean")
      */
-    private $enabled;
+    private bool $enabled;
 
     /**
      * @var json
@@ -38,18 +35,14 @@ class OrganizationServices implements JsonSerializable
     private $parametersValue;
 
     /**
-     * @var Organization
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Organization", inversedBy="organizationServices")
      */
-    private $organization;
+    private ?\Entity\Organization $organization = null;
 
     /**
-     * @var Service
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Service", inversedBy="organizationServices")
      */
-    private $service;
+    private ?\Entity\Service $service = null;
 
     /**
      * Get id.
@@ -112,7 +105,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Get the value of a specific parameter.
      *
-     * @param string $parameterName
      *
      * @return string
      */
@@ -124,7 +116,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set organization.
      *
-     * @param Organization $organization
      *
      * @return OrganizationServices
      */
@@ -148,7 +139,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set Service.
      *
-     * @param Service $service
      *
      * @return OrganizationServices
      */

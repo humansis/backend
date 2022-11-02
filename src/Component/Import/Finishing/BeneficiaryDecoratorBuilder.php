@@ -56,11 +56,6 @@ class BeneficiaryDecoratorBuilder
         return $beneficiary;
     }
 
-    /**
-     * @param Import\Integrity\ImportLine $beneficiaryLine
-     *
-     * @return BeneficiaryInputType
-     */
     public function buildBeneficiaryIdentityInputType(Import\Integrity\ImportLine $beneficiaryLine): BeneficiaryInputType
     {
         $beneficiary = new BeneficiaryInputType();
@@ -73,12 +68,6 @@ class BeneficiaryDecoratorBuilder
         return $beneficiary;
     }
 
-    /**
-     * @param string $idType
-     * @param string $idNumber
-     *
-     * @return NationalIdCardInputType
-     */
     private function buildIdentityType(string $idType, string $idNumber, int $priority): NationalIdCardInputType
     {
         $nationalId = new NationalIdCardInputType();

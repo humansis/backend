@@ -15,10 +15,6 @@ use InputType\AssistanceStatisticsFilterInputType;
 class AssistanceStatisticsRepository extends EntityRepository
 {
     /**
-     * @param Assistance $assistance
-     * @param string|null $countryIso3
-     *
-     * @return AssistanceStatistics
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -41,8 +37,6 @@ class AssistanceStatisticsRepository extends EntityRepository
     }
 
     /**
-     * @param string $countryIso3
-     * @param AssistanceStatisticsFilterInputType $filter
      *
      * @return AssistanceStatistics[]|Paginator
      */

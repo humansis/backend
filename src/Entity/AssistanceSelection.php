@@ -15,50 +15,40 @@ use Entity\Assistance\SelectionCriteria;
 class AssistanceSelection
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="threshold", type="integer", nullable=true)
      */
-    private $threshold;
+    private ?int $threshold = null;
 
     /**
      * @var Collection|SelectionCriteria[]
      *
      * @ORM\OneToMany(targetEntity="Entity\Assistance\SelectionCriteria", mappedBy="assistanceSelection", cascade={"persist"})
      */
-    private $selectionCriteria;
+    private \Doctrine\Common\Collections\Collection|array $selectionCriteria;
 
     /**
-     * @var Assistance
      * @ORM\OneToOne(targetEntity="Entity\Assistance", mappedBy="assistanceSelection", cascade={"persist", "remove"})
      */
-    private $assistance;
+    private ?\Entity\Assistance $assistance = null;
 
     public function __construct()
     {
         $this->selectionCriteria = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return int|null
-     */
     public function getThreshold(): ?int
     {
         return $this->threshold;
@@ -75,22 +65,16 @@ class AssistanceSelection
     /**
      * @return Collection|SelectionCriteria[]
      */
-    public function getSelectionCriteria()
+    public function getSelectionCriteria(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->selectionCriteria;
     }
 
-    /**
-     * @return Assistance
-     */
     public function getAssistance(): Assistance
     {
         return $this->assistance;
     }
 
-    /**
-     * @param Assistance $assistance
-     */
     public function setAssistance(Assistance $assistance): void
     {
         $this->assistance = $assistance;

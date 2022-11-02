@@ -23,7 +23,7 @@ use const E_USER_DEPRECATED;
  */
 class ImportDateValidator extends DateValidator
 {
-    public const PATTERN = '/^(\d{2})-(\d{2})-(\d{4})$/';
+    final public const PATTERN = '/^(\d{2})-(\d{2})-(\d{4})$/';
 
     /**
      * @inheritDoc

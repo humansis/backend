@@ -24,87 +24,63 @@ class SelectionCriteria
     use StandardizedPrimaryKey;
 
     /**
-     * @var AssistanceSelection
      *
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceSelection", inversedBy="selectionCriteria")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
-    private $assistanceSelection;
+    private ?\Entity\AssistanceSelection $assistanceSelection = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="table_string", type="string", length=255)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $tableString;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?string $tableString = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="target", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $target;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private string $target;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $fieldString;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private string $fieldString;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="field_id", type="integer", nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $idField;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private int $idField;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $conditionString;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?string $conditionString = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $valueString;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private string $valueString;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="weight", type="integer")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $weight;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?int $weight = null;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="group_number", type="integer", nullable=false)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $groupNumber;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?int $groupNumber = null;
+
+    private bool $deprecated = true;
 
     /**
-     * @var bool
-     *
-     */
-    private $deprecated = true;
-
-    /**
-     * @param LifecycleEventArgs $lifecycleEventArgs
-     *
-     * @return void
      * @ORM\PostLoad()
      */
     public function postLoad(LifecycleEventArgs $lifecycleEventArgs): void
@@ -124,17 +100,11 @@ class SelectionCriteria
         return $this->deprecated;
     }
 
-    /**
-     * @return int
-     */
     public function getWeight(): int
     {
         return $this->weight;
     }
 
-    /**
-     * @param int $weight
-     */
     public function setWeight(int $weight)
     {
         $this->weight = $weight;
@@ -143,7 +113,6 @@ class SelectionCriteria
     /**
      * Set tableString.
      *
-     * @param string $tableString
      *
      * @return SelectionCriteria
      */
@@ -215,9 +184,7 @@ class SelectionCriteria
     /**
      * Set conditionString.
      *
-     * @param string|null $conditionString
      *
-     * @return SelectionCriteria
      */
     public function setConditionString(?string $conditionString): self
     {
@@ -228,8 +195,6 @@ class SelectionCriteria
 
     /**
      * Get conditionString.
-     *
-     * @return string|null
      */
     public function getConditionString(): ?string
     {
@@ -286,8 +251,6 @@ class SelectionCriteria
 
     /**
      * @param int $groupNumber
-     *
-     * @return SelectionCriteria
      */
     public function setGroupNumber($groupNumber): self
     {
@@ -296,25 +259,16 @@ class SelectionCriteria
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getGroupNumber(): int
     {
         return $this->groupNumber;
     }
 
-    /**
-     * @return AssistanceSelection
-     */
     public function getAssistanceSelection(): AssistanceSelection
     {
         return $this->assistanceSelection;
     }
 
-    /**
-     * @param AssistanceSelection $assistanceSelection
-     */
     public function setAssistanceSelection(AssistanceSelection $assistanceSelection): self
     {
         $this->assistanceSelection = $assistanceSelection;

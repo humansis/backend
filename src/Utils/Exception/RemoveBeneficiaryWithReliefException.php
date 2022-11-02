@@ -10,16 +10,11 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class RemoveBeneficiaryWithReliefException extends InvalidArgumentException implements ConstraintViolationInterface
 {
-    /** @var Beneficiary */
-    protected $beneficiary;
-
     protected $atPath;
 
-    public function __construct(Beneficiary $beneficiary)
+    public function __construct(protected Beneficiary $beneficiary)
     {
         parent::__construct();
-
-        $this->beneficiary = $beneficiary;
         $this->message = strtr($this->getMessageTemplate(), $this->getParameters());
     }
 

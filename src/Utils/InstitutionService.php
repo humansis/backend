@@ -21,24 +21,15 @@ use Entity\Project;
  */
 class InstitutionService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
     /**
      * InstitutionService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(
-        EntityManagerInterface $entityManager
-    ) {
-        $this->em = $entityManager;
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
     }
 
     /**
-     * @param InstitutionCreateInputType $inputType
      *
-     * @return Institution
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException
      */

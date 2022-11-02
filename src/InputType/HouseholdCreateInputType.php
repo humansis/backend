@@ -7,9 +7,7 @@ namespace InputType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-/**
- * @Assert\GroupSequenceProvider()
- */
+#[Assert\GroupSequenceProvider]
 class HouseholdCreateInputType extends HouseholdUpdateInputType implements GroupSequenceProviderInterface
 {
     public function getGroupSequence()

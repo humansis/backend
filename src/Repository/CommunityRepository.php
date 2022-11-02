@@ -27,7 +27,6 @@ class CommunityRepository extends EntityRepository
     /**
      * Find all communitys in country
      *
-     * @param string $iso3
      *
      * @return QueryBuilder
      */
@@ -41,8 +40,6 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     *
      * @return Project[]
      */
     public function getUnarchivedByProject(Project $project): array
@@ -72,9 +69,6 @@ class CommunityRepository extends EntityRepository
     /**
      * Return communitys which a Levenshtein distance with the stringToSearch under minimumTolerance
      *
-     * @param string $iso3
-     * @param string $stringToSearch
-     * @param int $minimumTolerance
      *
      * @return mixed
      */
@@ -112,7 +106,6 @@ class CommunityRepository extends EntityRepository
      * Get all Community by country and id
      *
      * @param string $iso3
-     * @param array $ids
      *
      * @return mixed
      */
@@ -134,8 +127,6 @@ class CommunityRepository extends EntityRepository
 
     /**
      * Create sub request to get location from community
-     *
-     * @param QueryBuilder $qb
      */
     protected function getCommunityLocation(QueryBuilder &$qb)
     {
@@ -147,7 +138,6 @@ class CommunityRepository extends EntityRepository
      * Create sub request to get communitys in country.
      * The community address location must be in the country ($countryISO3).
      *
-     * @param QueryBuilder $qb
      * @param              $countryISO3
      */
     public function whereCommunityInCountry(QueryBuilder &$qb, $countryISO3)
@@ -157,14 +147,6 @@ class CommunityRepository extends EntityRepository
         $locationRepository->whereCountry($qb, $countryISO3);
     }
 
-    /**
-     * @param string $countryIso3
-     * @param CommunityOrderInputType $orderBy
-     * @param CommunityFilterType|null $filter
-     * @param Pagination|null $pagination
-     *
-     * @return Paginator
-     */
     public function findByParams(
         string $countryIso3,
         CommunityOrderInputType $orderBy,
@@ -226,10 +208,6 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param AssistanceCommunitiesFilterInputType|null $filter
-     * @param CommunityOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Assistance[]
      */
@@ -318,8 +296,6 @@ class CommunityRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     *
      * @return Paginator
      */
     public function findByProject(Project $project)

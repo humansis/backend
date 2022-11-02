@@ -32,88 +32,8 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class AssistanceFactory
 {
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var CriteriaAssistanceService */
-    private $criteriaAssistanceService;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var LocationRepository */
-    private $locationRepository;
-
-    /** @var ProjectRepository */
-    private $projectRepository;
-
-    /** @var CommunityRepository */
-    private $communityRepository;
-
-    /** @var InstitutionRepository */
-    private $institutionRepository;
-
-    /** @var BeneficiaryRepository */
-    private $beneficiaryRepository;
-
-    /** @var AssistanceStatisticsRepository */
-    private $assistanceStatisticRepository;
-
-    /** @var Registry */
-    private $workflowRegistry;
-
-    /** @var AssistanceBeneficiaryRepository */
-    private $targetRepository;
-
-    /** @var SelectionCriteriaFactory */
-    private $selectionCriteriaFactory;
-
-    /** @var ScoringBlueprintRepository */
-    private $scoringBlueprintRepository;
-
-    /**
-     * @param CacheInterface $cache
-     * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param SerializerInterface $serializer
-     * @param LocationRepository $locationRepository
-     * @param ProjectRepository $projectRepository
-     * @param CommunityRepository $communityRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param Registry $workflowRegistry
-     * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
-     */
-    public function __construct(
-        CacheInterface $cache,
-        CriteriaAssistanceService $criteriaAssistanceService,
-        SerializerInterface $serializer,
-        LocationRepository $locationRepository,
-        ProjectRepository $projectRepository,
-        CommunityRepository $communityRepository,
-        InstitutionRepository $institutionRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        Registry $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory,
-        ScoringBlueprintRepository $scoringBlueprintRepository
-    ) {
-        $this->cache = $cache;
-        $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->serializer = $serializer;
-        $this->locationRepository = $locationRepository;
-        $this->projectRepository = $projectRepository;
-        $this->communityRepository = $communityRepository;
-        $this->institutionRepository = $institutionRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->assistanceStatisticRepository = $assistanceStatisticRepository;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->targetRepository = $targetRepository;
-        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+    public function __construct(private readonly CacheInterface $cache, private readonly CriteriaAssistanceService $criteriaAssistanceService, private readonly SerializerInterface $serializer, private readonly LocationRepository $locationRepository, private readonly ProjectRepository $projectRepository, private readonly CommunityRepository $communityRepository, private readonly InstitutionRepository $institutionRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly AssistanceStatisticsRepository $assistanceStatisticRepository, private readonly Registry $workflowRegistry, private readonly AssistanceBeneficiaryRepository $targetRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory, private readonly ScoringBlueprintRepository $scoringBlueprintRepository)
+    {
     }
 
     /**
@@ -224,8 +144,8 @@ class AssistanceFactory
 
     private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
     {
-        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution(
-        ) : $inputType->getDateExpiration();
+        $dateToCheck = $inputType->getDateExpiration() ?? $inputType->getDateDistribution(
+        );
 
         if ($dateToCheck > $project->getEndDate()) {
             throw new BadRequestHttpException(

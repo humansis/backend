@@ -37,7 +37,7 @@ class SmartcardRepository extends EntityRepository
 
         try {
             return $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return null;
         }
     }
@@ -62,7 +62,6 @@ class SmartcardRepository extends EntityRepository
     /**
      * Returns list of blocked smardcards.
      *
-     * @param string $countryCode
      *
      * @return string[] list of smartcard serial numbers
      */
@@ -99,7 +98,7 @@ class SmartcardRepository extends EntityRepository
         if (empty($smartcards)) {
             return null;
         } else {
-            if (count($smartcards) > 1) {
+            if ((is_countable($smartcards) ? count($smartcards) : 0) > 1) {
                 //TODO log
                 //$this->logger->error("There is inconsistency in the database. Smartcard '$serialNumber' has " . count($smartcards) . ' active entries.');
             }
@@ -109,9 +108,7 @@ class SmartcardRepository extends EntityRepository
     }
 
     /**
-     * @param Smartcard $smartcard
      *
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */

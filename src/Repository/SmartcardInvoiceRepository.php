@@ -20,12 +20,10 @@ use Entity\Vendor;
 class SmartcardInvoiceRepository extends EntityRepository
 {
     /**
-     * @param Vendor $vendor
      * @param Pagination $pagination
-     *
      * @return Paginator|Invoice[]
      */
-    public function findByVendor(Vendor $vendor, ?Pagination $pagination = null)
+    public function findByVendor(Vendor $vendor, ?Pagination $pagination = null): \Doctrine\ORM\Tools\Pagination\Paginator|array
     {
         $qbr = $this->createQueryBuilder('srb')
             ->andWhere('srb.vendor = :vendor')
@@ -40,7 +38,6 @@ class SmartcardInvoiceRepository extends EntityRepository
     }
 
     /**
-     * @param Invoice $invoice
      * @return void
      * @throws ORMException
      * @throws OptimisticLockException

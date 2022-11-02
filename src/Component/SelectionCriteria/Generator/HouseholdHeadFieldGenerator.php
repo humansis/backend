@@ -18,13 +18,13 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
      */
     public function generate(?string $countryIso3)
     {
-        yield new Field('gender', 'Gender', ['='], 'gender', [self::class, 'validateGender']);
+        yield new Field('gender', 'Gender', ['='], 'gender', self::validateGender(...));
         yield new Field(
             'headOfHouseholdDateOfBirth',
             'Date of Birth',
             ['=', '<', '>', '<=', '>='],
             'date',
-            [self::class, 'validateDate']
+            self::validateDate(...)
         );
         yield new Field(
             'disabledHeadOfHousehold',
@@ -47,7 +47,7 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
     {
         try {
             return PersonGender::valueFromAPI($value) ? true : false;
-        } catch (EnumValueNoFoundException $e) {
+        } catch (EnumValueNoFoundException) {
             return false;
         }
     }

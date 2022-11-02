@@ -8,49 +8,25 @@ use Entity\Smartcard\PreliminaryInvoice;
 
 class PreliminaryInvoiceDto
 {
-    /**
-     * @var PreliminaryInvoice
-     */
-    private $preliminaryInvoice;
-
-    /**
-     * @var bool
-     */
-    private $canRedeem;
-
-    public function __construct(PreliminaryInvoice $preliminaryInvoice, bool $canRedeem)
+    public function __construct(private PreliminaryInvoice $preliminaryInvoice, private bool $canRedeem)
     {
-        $this->preliminaryInvoice = $preliminaryInvoice;
-        $this->canRedeem = $canRedeem;
     }
 
-    /**
-     * @return PreliminaryInvoice
-     */
     public function getPreliminaryInvoice(): PreliminaryInvoice
     {
         return $this->preliminaryInvoice;
     }
 
-    /**
-     * @param PreliminaryInvoice $preliminaryInvoice
-     */
     public function setPreliminaryInvoice(PreliminaryInvoice $preliminaryInvoice): void
     {
         $this->preliminaryInvoice = $preliminaryInvoice;
     }
 
-    /**
-     * @return bool
-     */
     public function canRedeem(): bool
     {
         return $this->canRedeem;
     }
 
-    /**
-     * @param bool $canRedeem
-     */
     public function setCanRedeem(bool $canRedeem): void
     {
         $this->canRedeem = $canRedeem;

@@ -14,19 +14,10 @@ use Entity\UserProject;
 
 class UserMapper implements MapperInterface
 {
-    /** @var User */
-    private $object;
+    private ?\Entity\User $object = null;
 
-    /** @var Countries */
-    private $countries;
-
-    /** @var ProjectRepository */
-    private $projectRepository;
-
-    public function __construct(Countries $countries, ProjectRepository $projectRepository)
+    public function __construct(private readonly Countries $countries, private readonly ProjectRepository $projectRepository)
     {
-        $this->countries = $countries;
-        $this->projectRepository = $projectRepository;
     }
 
     /**
@@ -49,7 +40,7 @@ class UserMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . User::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . User::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -81,9 +72,7 @@ class UserMapper implements MapperInterface
     public function getCountries(): array
     {
         return array_values(
-            array_map(function (UserCountry $item) {
-                return $item->getCountryIso3();
-            }, $this->object->getCountries()->toArray())
+            array_map(fn(UserCountry $item) => $item->getCountryIso3(), $this->object->getCountries()->toArray())
         );
     }
 
@@ -100,9 +89,7 @@ class UserMapper implements MapperInterface
     public function getProjectIds(): array
     {
         return array_values(
-            array_map(function (UserProject $item) {
-                return $item->getProject()->getId();
-            }, $this->object->getProjects()->toArray())
+            array_map(fn(UserProject $item) => $item->getProject()->getId(), $this->object->getProjects()->toArray())
         );
     }
 

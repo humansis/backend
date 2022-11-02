@@ -24,15 +24,9 @@ use Entity\User;
  */
 class VendorRepository extends EntityRepository
 {
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    private ?\Repository\LocationRepository $locationRepository = null;
 
-    /**
-     * @var PreliminaryInvoiceRepository
-     */
-    private $preliminaryInvoiceRepository;
+    private ?\Repository\Smartcard\PreliminaryInvoiceRepository $preliminaryInvoiceRepository = null;
 
     public function setPreliminaryInvoiceRepository(PreliminaryInvoiceRepository $preliminaryInvoiceRepository): void
     {
@@ -78,10 +72,6 @@ class VendorRepository extends EntityRepository
     }
 
     /**
-     * @param string|null $iso3
-     * @param VendorFilterInputType|null $filter
-     * @param VendorOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Vendor[]
      */
@@ -192,11 +182,6 @@ class VendorRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param Location $location
-     *
-     * @return Generator
-     */
     private function getChildrenLocationIdListByLocation(Location $location): Generator
     {
         $children = $this->locationRepository->getChildrenLocations($location);

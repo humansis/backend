@@ -20,9 +20,6 @@ use Utils\ValueGenerator\ValueGenerator;
 trait ProjectHelper
 {
     /**
-     * @param User $user
-     * @param ProjectCreateInputType|null $createInputType
-     * @return Project
      * @throws Exception
      */
     public function createProject(User $user, ?ProjectCreateInputType $createInputType = null): Project
@@ -33,10 +30,6 @@ trait ProjectHelper
         );
     }
 
-    /**
-     * @param string $iso3
-     * @return ProjectCreateInputType
-     */
     public static function getCreateInputType(string $iso3): ProjectCreateInputType
     {
         $createInputType = new ProjectCreateInputType();

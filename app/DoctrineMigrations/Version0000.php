@@ -14,8 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 final class Version0000 extends AbstractMigration implements ContainerAwareInterface
 {
-    /** @var ContainerInterface */
-    private $container;
+    private ?\Symfony\Component\DependencyInjection\ContainerInterface $container = null;
 
     /**
      * @param ContainerInterface|null $container

@@ -21,18 +21,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class HouseholdCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/households/livelihoods")
-     *
-     * @return JsonResponse
      */
     public function getLivelihoods(): JsonResponse
     {
@@ -43,8 +37,6 @@ class HouseholdCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/households/assets")
-     *
-     * @return JsonResponse
      */
     public function getAssets(): JsonResponse
     {
@@ -55,8 +47,6 @@ class HouseholdCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/households/support-received-types")
-     *
-     * @return JsonResponse
      */
     public function supportReceivedTypes(): JsonResponse
     {
@@ -67,8 +57,6 @@ class HouseholdCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/households/shelter-statuses")
-     *
-     * @return JsonResponse
      */
     public function getShelterStatuses(): JsonResponse
     {
@@ -79,8 +67,6 @@ class HouseholdCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/households/locations/types")
-     *
-     * @return JsonResponse
      */
     public function getLocationTypes(): JsonResponse
     {
@@ -91,8 +77,6 @@ class HouseholdCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/households/referrals/types")
-     *
-     * @return JsonResponse
      */
     public function referralTypes(): JsonResponse
     {

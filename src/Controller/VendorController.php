@@ -25,26 +25,13 @@ use Utils\VendorService;
 
 class VendorController extends AbstractController
 {
-    /**
-     * @var VendorRepository
-     */
-    private $vendorRepository;
-
-    /**
-     * @var VendorService
-     */
-    private $vendorService;
-
-    public function __construct(VendorRepository $vendorRepository, VendorService $vendorService)
+    public function __construct(private readonly VendorRepository $vendorRepository, private readonly VendorService $vendorService)
     {
-        $this->vendorRepository = $vendorRepository;
-        $this->vendorService = $vendorService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/vendors/exports")
      *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -59,9 +46,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
      *
-     * @return JsonResponse
      */
     public function item(Vendor $vendor): JsonResponse
     {
@@ -75,12 +60,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors")
      *
-     * @param Request $request
-     * @param VendorFilterInputType $filter
-     * @param Pagination $pagination
-     * @param VendorOrderInputType $orderBy
-     * @param PreliminaryInvoiceService $preliminaryInvoiceService
-     * @return JsonResponse
      * @throws EnumValueNoFoundException
      */
     public function list(
@@ -110,8 +89,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/vendors")
      *
-     * @param VendorCreateInputType $inputType
-     * @return JsonResponse
      *
      * @throws EntityNotFoundException
      */
@@ -125,9 +102,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
-     * @param VendorUpdateInputType $inputType
-     * @return JsonResponse
      * @throws EntityNotFoundException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): JsonResponse
@@ -144,9 +118,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
      *
-     * @return JsonResponse
      *
      * @throws Exception
      */
@@ -160,9 +132,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/invoice")
      *
-     * @param Vendor $vendor
      *
-     * @return Response
      *
      * @throws Exception
      */
@@ -174,9 +144,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/summaries")
      *
-     * @param Vendor $vendor
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
-     * @return Response
      *
      * @throws NonUniqueResultException
      */

@@ -7,11 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UserInitializeInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\Length(min=2, max=180)
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 180)]
     protected $username;
 
     /**

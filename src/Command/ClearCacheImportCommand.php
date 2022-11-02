@@ -9,12 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ClearCacheImportCommand extends ContainerAwareCommand
 {
-    /** @var string */
-    private $rootDir;
-
-    public function __construct(string $rootDir)
+    public function __construct(private readonly string $rootDir)
     {
-        $this->rootDir = $rootDir;
         parent::__construct();
     }
 
@@ -27,8 +23,6 @@ class ClearCacheImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return int|null|void
      * @throws Exception
      */

@@ -45,14 +45,11 @@ use Enum\SmartcardStates;
  */
 class BeneficiaryRepository extends EntityRepository
 {
-    public const
+    final public const
         BNF_ASSISTANCE_CONTEXT_ARCHIVED = 'archived',
         BNF_ASSISTANCE_CONTEXT_REMOVED = 'removed';
 
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    private ?\Repository\LocationRepository $locationRepository = null;
 
     public function injectLocationRepository(LocationRepository $locationRepository)
     {
@@ -62,8 +59,6 @@ class BeneficiaryRepository extends EntityRepository
     /**
      * Get all beneficiaries in a selected project.
      *
-     * @param Project $project
-     * @param string $target
      *
      * @return mixed
      */
@@ -90,9 +85,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     * @param string $target
-     * @param Assistance $excludedAssistance
      *
      * @return array|float|int|mixed|string
      */
@@ -127,11 +119,6 @@ class BeneficiaryRepository extends EntityRepository
         return $q->getQuery()->getResult();
     }
 
-    /**
-     * @param Project $project
-     *
-     * @return QueryBuilder
-     */
     public function getQbUnarchivedByProject(Project $project): QueryBuilder
     {
         $qb = $this->createQueryBuilder("bnf");
@@ -143,9 +130,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     *
-     * @return null|DateTimeInterface
      * @throws NonUniqueResultException
      */
     public function getLastModifiedByProject(Project $project): ?DateTimeInterface
@@ -158,7 +142,7 @@ class BeneficiaryRepository extends EntityRepository
 
         try {
             return $qb->getQuery()->getSingleResult(AbstractQuery::HYDRATE_ARRAY)['updatedOn'];
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return null;
         }
     }
@@ -225,9 +209,7 @@ class BeneficiaryRepository extends EntityRepository
     /**
      * Counts Household members in project.
      *
-     * @param Project $project
      *
-     * @return int
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
@@ -298,9 +280,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param string $documentNumber
-     * @param string $documentType
-     * @param Project $project
      *
      * @return float|int|mixed|string
      */
@@ -324,8 +303,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param array $documentNumbers
-     * @param string $idType
      *
      * @return float|int|mixed|string
      */
@@ -419,7 +396,6 @@ class BeneficiaryRepository extends EntityRepository
     /**
      * Get the head of household.
      *
-     * @param Household $household
      *
      * @return mixed
      */
@@ -432,9 +408,7 @@ class BeneficiaryRepository extends EntityRepository
 
         try {
             return $q->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
-            return null;
-        } catch (NonUniqueResultException $e) {
+        } catch (NoResultException | NonUniqueResultException $e) {
             return null;
         }
     }
@@ -1015,9 +989,7 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Household $household
      *
-     * @return int
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
@@ -1032,11 +1004,6 @@ class BeneficiaryRepository extends EntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
-    /**
-     * @param BeneficiaryFilterInputType $filterInputType
-     *
-     * @return Paginator
-     */
     public function findByParams(BeneficiaryFilterInputType $filterInputType): Paginator
     {
         $qbr = $this->createQueryBuilder('b')
@@ -1051,11 +1018,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param BeneficiaryFilterInputType|null $filter
-     * @param BeneficiaryOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     * @param array|null $context
      *
      * @return Paginator|Assistance[]
      */
@@ -1105,24 +1067,15 @@ class BeneficiaryRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case BeneficiaryOrderInputType::SORT_BY_ID:
-                        $qbr->orderBy('b.id', $direction);
-                        break;
-                    case BeneficiaryOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
-                        $qbr->orderBy('p.localFamilyName', $direction);
-                        break;
-                    case BeneficiaryOrderInputType::SORT_BY_LOCAL_GIVEN_NAME:
-                        $qbr->orderBy('p.localGivenName', $direction);
-                        break;
-                    case BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID:
-                        $qbr->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
-                            ->setParameter('type', NationalIdType::NATIONAL_ID)
-                            ->orderBy('n.idNumber', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    BeneficiaryOrderInputType::SORT_BY_ID => $qbr->orderBy('b.id', $direction),
+                    BeneficiaryOrderInputType::SORT_BY_LOCAL_FAMILY_NAME => $qbr->orderBy('p.localFamilyName', $direction),
+                    BeneficiaryOrderInputType::SORT_BY_LOCAL_GIVEN_NAME => $qbr->orderBy('p.localGivenName', $direction),
+                    BeneficiaryOrderInputType::SORT_BY_NATIONAL_ID => $qbr->leftJoin('p.nationalIds', 'n', 'WITH', 'n.idType = :type')
+                        ->setParameter('type', NationalIdType::NATIONAL_ID)
+                        ->orderBy('n.idNumber', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 

@@ -47,17 +47,13 @@ abstract class AbstractBeneficiary
     /**
      * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     *
-     * @var AssistanceBeneficiary $assistanceBeneficiary
      */
-    private $assistanceBeneficiary;
+    private \Entity\AssistanceBeneficiary $assistanceBeneficiary;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $archived = 0;
+    private int|bool $archived = 0;
 
     /**
      * AbstractBeneficiary constructor.
@@ -79,7 +75,6 @@ abstract class AbstractBeneficiary
     /**
      * Add project.
      *
-     * @param Project $project
      *
      * @return Household
      */
@@ -95,7 +90,6 @@ abstract class AbstractBeneficiary
     /**
      * Remove project.
      *
-     * @param Project $project
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -155,7 +149,6 @@ abstract class AbstractBeneficiary
     /**
      * Set archived.
      *
-     * @param bool $archived
      *
      * @return self
      */

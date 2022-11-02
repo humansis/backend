@@ -12,13 +12,6 @@ use Request\Pagination;
 
 class ScoringBlueprintRepository extends EntityRepository
 {
-    /**
-     * @param string|null $countryIso3
-     * @param Pagination|null $pagination
-     * @param ScoringBlueprintFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
     public function findByParams(
         ?string $countryIso3 = null,
         ?Pagination $pagination = null,
@@ -47,8 +40,6 @@ class ScoringBlueprintRepository extends EntityRepository
     }
 
     /**
-     * @param int|null $id
-     * @param string $iso3
      *
      * @return ScoringBlueprint|object|null
      */

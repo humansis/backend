@@ -8,43 +8,8 @@ use Component\Storage\StorageConfig;
 
 final class LogsStorageConfigFactory implements Factory
 {
-    /**
-     * @var string
-     */
-    private $key;
-
-    /**
-     * @var string
-     */
-    private $secret;
-
-    /**
-     * @var string
-     */
-    private $region;
-
-    /**
-     * @var string
-     */
-    private $version;
-
-    /**
-     * @var string
-     */
-    private $bucketName;
-
-    public function __construct(
-        string $key,
-        string $secret,
-        string $region,
-        string $version,
-        string $bucketName
-    ) {
-        $this->key = $key;
-        $this->secret = $secret;
-        $this->region = $region;
-        $this->version = $version;
-        $this->bucketName = $bucketName;
+    public function __construct(private readonly string $key, private readonly string $secret, private readonly string $region, private readonly string $version, private readonly string $bucketName)
+    {
     }
 
     /**

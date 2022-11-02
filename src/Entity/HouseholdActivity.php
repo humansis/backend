@@ -16,85 +16,52 @@ use Entity\User;
 class HouseholdActivity
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var Household
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Household")
-     */
-    private $household;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     */
-    private $author;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content", type="json")
-     */
-    private $content;
-
-    /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
-    private $createdAt;
+    private \DateTimeInterface $createdAt;
 
-    public function __construct(Household $household, ?User $author, string $content)
-    {
-        $this->household = $household;
-        $this->author = $author;
-        $this->content = $content;
+    public function __construct(/**
+         * @ORM\ManyToOne(targetEntity="Entity\Household")
+         */
+        private Household $household, /**
+         * @ORM\ManyToOne(targetEntity="Entity\User")
+         */
+        private ?User $author, /**
+         * @ORM\Column(name="content", type="json")
+         */
+        private string $content
+    ) {
         $this->createdAt = new DateTime('now');
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Household
-     */
     public function getHousehold(): Household
     {
         return $this->household;
     }
 
-    /**
-     * @return User|null
-     */
     public function getAuthor(): ?User
     {
         return $this->author;
     }
 
-    /**
-     * @return string
-     */
     public function getContent(): string
     {
         return $this->content;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;

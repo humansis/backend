@@ -29,7 +29,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -55,7 +55,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
 
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -77,7 +77,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/country-specifics/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

@@ -8,24 +8,16 @@ use InvalidArgumentException;
 
 class Field
 {
-    /** @var string */
-    private $code;
+    private readonly array $conditions;
 
-    /** @var string */
-    private $label;
-
-    /** @var array */
-    private $conditions;
-
-    /** @var string|array */
-    private $type;
+    private readonly string|array $type;
 
     /** @var callable|null */
     private $callback;
 
     public function __construct(
-        string $code,
-        string $label,
+        private readonly string $code,
+        private readonly string $label,
         array $conditions,
         string $type,
         ?callable $callback = null
@@ -41,20 +33,15 @@ class Field
         if (null === $callback) {
             $callback = 'boolean' === $type ? 'is_bool' : 'is_' . $type;
             if ('is_integer' === $callback || 'is_int' === $callback) {
-                $callback = function ($integerString) {
-                    return is_integer($integerString) || (
-                            is_numeric($integerString) && (string) intval($integerString) === $integerString
-                        );
-                };
+                $callback = fn($integerString) => is_integer($integerString) || (
+                        is_numeric($integerString) && (string) intval($integerString) === $integerString
+                    );
             } else {
                 if (!function_exists($callback)) {
                     throw new InvalidArgumentException('Argument 5 missing. Callback is necessary for type ' . $type);
                 }
             }
         }
-
-        $this->code = $code;
-        $this->label = $label;
         $this->conditions = $conditions;
         $this->type = $type;
         $this->callback = $callback;

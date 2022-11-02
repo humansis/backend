@@ -9,17 +9,10 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class NotUniqueException extends RuntimeException implements ConstraintViolationInterface
 {
-    protected $value;
-
-    protected $atPath;
-
-    public function __construct($nonUniqueValue, $atPath = null)
+    public function __construct(protected $value, protected $atPath = null)
     {
         parent::__construct();
-
-        $this->value = $nonUniqueValue;
-        $this->atPath = $atPath;
-        $this->message = str_replace('{{ value }}', $this->value, $this->getMessageTemplate());
+        $this->message = str_replace('{{ value }}', $this->value, (string) $this->getMessageTemplate());
     }
 
     /**

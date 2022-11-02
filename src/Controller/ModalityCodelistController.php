@@ -17,18 +17,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class ModalityCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/modalities")
-     *
-     * @return JsonResponse
      */
     public function modalities(): JsonResponse
     {
@@ -39,8 +33,6 @@ class ModalityCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/modalities/types")
-     *
-     * @return JsonResponse
      */
     public function allTypes(): JsonResponse
     {
@@ -52,9 +44,7 @@ class ModalityCodelistController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/modalities/{code}/types")
      *
-     * @param string $code
      *
-     * @return JsonResponse
      */
     public function types(string $code): JsonResponse
     {

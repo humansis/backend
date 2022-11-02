@@ -18,33 +18,8 @@ use Utils\SmartcardService;
 
 class SmartcardController extends AbstractVendorAppController
 {
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var SmartcardService */
-    private $smartcardService;
-
-    /** @var string */
-    private $logsDir;
-
-    public function __construct(
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        LoggerInterface $logger,
-        SmartcardService $smartcardService,
-        string $logsDir
-    ) {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->logger = $logger;
-        $this->smartcardService = $smartcardService;
-        $this->logsDir = $logsDir;
+    public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator, private readonly LoggerInterface $logger, private readonly SmartcardService $smartcardService, private readonly string $logsDir)
+    {
     }
     /** @var  */
     /**
@@ -52,7 +27,6 @@ class SmartcardController extends AbstractVendorAppController
      *
      * @Rest\Post("/vendor-app/v4/smartcards/{serialNumber}/purchase")
      *
-     * @param Request $request
      *
      * @return JsonResponse
      * @throws Exception
@@ -71,14 +45,14 @@ class SmartcardController extends AbstractVendorAppController
         //TODO remove after syncs for purchases will be implemented
         if (count($errors) > 0) {
             $this->logger->error(
-                'validation errors: ' . ((string) $errors) . ' data: ' . json_encode($request->request->all())
+                'validation errors: ' . ((string) $errors) . ' data: ' . json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
 
             $this->writeData(
                 'purchaseV3',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
 
             return new Response();
@@ -91,7 +65,7 @@ class SmartcardController extends AbstractVendorAppController
                 'purchaseV3',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
             throw $exception;
         }
@@ -110,7 +84,7 @@ class SmartcardController extends AbstractVendorAppController
         $filename = $this->logsDir . '/';
         $filename .= implode('_', ['SC-invalidData', $type, 'vendor-' . $user, 'sc-' . $smartcard . '.json']);
         $logFile = fopen($filename, "a+");
-        fwrite($logFile, $data);
+        fwrite($logFile, (string) $data);
         fclose($logFile);
     }
 
@@ -120,9 +94,7 @@ class SmartcardController extends AbstractVendorAppController
      *
      * @Rest\Get("/vendor-app/v1/smartcards/blocked")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function listOfBlocked(Request $request): Response
     {

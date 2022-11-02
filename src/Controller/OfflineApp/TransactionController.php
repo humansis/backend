@@ -17,10 +17,7 @@ class TransactionController extends AbstractController
     /**
      * @Rest\Get("/offline-app/v1/transactions")
      *
-     * @param Request $request
-     * @param TransactionFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
     {

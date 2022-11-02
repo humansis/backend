@@ -24,72 +24,55 @@ class Product implements ExportableInterface
     use CountryDependent;
 
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullProduct", "ValidatedAssistance", "FullVoucher"})
      */
-    private $id;
+    #[SymfonyGroups(['FullProduct', 'ValidatedAssistance', 'FullVoucher'])]
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullProduct", "ValidatedAssistance"})
      */
-    private $name;
+    #[SymfonyGroups(['FullProduct', 'ValidatedAssistance'])]
+    private ?string $name = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="unit", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullProduct"})
      */
-    private $unit;
+    #[SymfonyGroups(['FullProduct'])]
+    private ?string $unit = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="image", type="string", length=255)
-     * @SymfonyGroups({"FullProduct", "ValidatedAssistance"})
      */
-    private $image;
+    #[SymfonyGroups(['FullProduct', 'ValidatedAssistance'])]
+    private ?string $image = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="archived", type="boolean")
-     * @SymfonyGroups({"FullProduct"})
      */
-    private $archived;
+    #[SymfonyGroups(['FullProduct'])]
+    private ?bool $archived = null;
 
     /**
-     * @var ProductCategory|null
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ProductCategory", inversedBy="products")
      */
-    private $productCategory;
+    private ?\Entity\ProductCategory $productCategory = null;
 
     /**
-     * @var float|null
-     *
      * @ORM\Column(name="unit_price", type="decimal", type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $unitPrice;
+    private ?float $unitPrice = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="currency", type="string", length=3, nullable=true)
      */
-    private $currency;
+    private ?string $currency = null;
 
     /**
      * Get id.
-     *
-     * @return int
      */
     public function getId(): int
     {
@@ -99,9 +82,7 @@ class Product implements ExportableInterface
     /**
      * Set name.
      *
-     * @param string $name
      *
-     * @return Product
      */
     public function setName(string $name): Product
     {
@@ -113,9 +94,7 @@ class Product implements ExportableInterface
     /**
      * Set archived.
      *
-     * @param bool $archived
      *
-     * @return Product
      */
     public function setArchived(bool $archived): Product
     {
@@ -126,8 +105,6 @@ class Product implements ExportableInterface
 
     /**
      * Get archived.
-     *
-     * @return bool
      */
     public function getArchived(): bool
     {
@@ -136,8 +113,6 @@ class Product implements ExportableInterface
 
     /**
      * Get name.
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -147,9 +122,7 @@ class Product implements ExportableInterface
     /**
      * Set unit.
      *
-     * @param string|null $unit
      *
-     * @return Product
      */
     public function setUnit(?string $unit): Product
     {
@@ -160,8 +133,6 @@ class Product implements ExportableInterface
 
     /**
      * Get unit.
-     *
-     * @return string|null
      */
     public function getUnit(): ?string
     {
@@ -171,9 +142,7 @@ class Product implements ExportableInterface
     /**
      * Set image.
      *
-     * @param string $image
      *
-     * @return Product
      */
     public function setImage(string $image): Product
     {
@@ -184,8 +153,6 @@ class Product implements ExportableInterface
 
     /**
      * Get image.
-     *
-     * @return string
      */
     public function getImage(): string
     {
@@ -194,8 +161,6 @@ class Product implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -205,19 +170,11 @@ class Product implements ExportableInterface
         ];
     }
 
-    /**
-     * @return ProductCategory|null
-     */
     public function getProductCategory(): ?ProductCategory
     {
         return $this->productCategory;
     }
 
-    /**
-     * @param ProductCategory|null $productCategory
-     *
-     * @return Product
-     */
     public function setProductCategory(?ProductCategory $productCategory): Product
     {
         $this->productCategory = $productCategory;
@@ -225,19 +182,11 @@ class Product implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getUnitPrice(): ?float
     {
         return $this->unitPrice;
     }
 
-    /**
-     * @param float|null $unitPrice
-     *
-     * @return Product
-     */
     public function setUnitPrice(?float $unitPrice): Product
     {
         $this->unitPrice = $unitPrice;
@@ -245,19 +194,11 @@ class Product implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCurrency(): ?string
     {
         return $this->currency;
     }
 
-    /**
-     * @param string|null $currency
-     *
-     * @return Product
-     */
     public function setCurrency(?string $currency): Product
     {
         $this->currency = $currency;

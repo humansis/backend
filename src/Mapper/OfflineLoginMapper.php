@@ -12,23 +12,10 @@ use Utils\UserService;
 
 class OfflineLoginMapper implements MapperInterface
 {
-    /** @var User */
-    private $object;
+    private ?\Entity\User $object = null;
 
-    /**
-     * @var JWTTokenManagerInterface
-     */
-    private $JWTTokenManager;
-
-    /**
-     * @var UserService
-     */
-    private $userService;
-
-    public function __construct(JWTTokenManagerInterface $JWTTokenManager, UserService $userService)
+    public function __construct(private readonly JWTTokenManagerInterface $JWTTokenManager, private readonly UserService $userService)
     {
-        $this->JWTTokenManager = $JWTTokenManager;
-        $this->userService = $userService;
     }
 
     public function supports(object $object, $format = null, array $context = null): bool
@@ -47,7 +34,7 @@ class OfflineLoginMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . User::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . User::class . ', ' . $object::class . ' given.'
         );
     }
 

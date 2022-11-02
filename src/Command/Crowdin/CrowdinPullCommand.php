@@ -28,34 +28,22 @@ use ZipArchive;
  */
 class CrowdinPullCommand extends Command
 {
+    protected static $defaultName = 'crowdin:pull';
     use CrowdinRequestTrait;
     use ZipError;
 
     /** @var HttpClient $client */
     private $client;
 
-    /** @var string */
-    private $crowdinApiKey;
-
-    /** @var int */
-    private $crowdinProjectId;
-
     /** @var OutputInterface */
     private $output;
 
-    /** @var string */
-    private $translationsDir;
-
     public function __construct(
-        string $crowdinApiKey,
-        string $crowdinProjectId,
-        string $translationsDir
+        private readonly string $crowdinApiKey,
+        private readonly string $crowdinProjectId,
+        private readonly string $translationsDir
     ) {
         parent::__construct();
-
-        $this->crowdinApiKey = $crowdinApiKey;
-        $this->crowdinProjectId = $crowdinProjectId;
-        $this->translationsDir = $translationsDir;
 
         $this->client = HttpClient::create();
     }
@@ -63,9 +51,7 @@ class CrowdinPullCommand extends Command
     protected function configure(): void
     {
         parent::configure();
-        $this
-            ->setName('crowdin:pull')
-            ->setDescription('Get translations from Crowdin');
+        $this->setDescription('Get translations from Crowdin');
     }
 
     /**

@@ -29,62 +29,22 @@ class ImportService
 {
     use ImportLoggerTrait;
 
-    public const ASAP_LIMIT = 100;
-
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var HouseholdService */
-    private $householdService;
-
-    /** @var IntegrityChecker */
-    private $integrityChecker;
-
-    /** @var ImportInvalidFileService */
-    private $importInvalidFileService;
-
-    /** @var IdentityChecker */
-    private $identityChecker;
-
-    /** @var SimilarityChecker */
-    private $similarityChecker;
-
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var WorkflowInterface */
-    private $importQueueStateMachine;
-
-    /** @var DuplicityResolver */
-    private $duplicityResolver;
-
-    /** @var Integrity\DuplicityService */
-    private $integrityDuplicityService;
+    final public const ASAP_LIMIT = 100;
 
     public function __construct(
-        EntityManagerInterface $em,
-        HouseholdService $householdService,
+        private readonly EntityManagerInterface $em,
+        private readonly HouseholdService $householdService,
         LoggerInterface $importLogger,
-        IntegrityChecker $integrityChecker,
-        ImportInvalidFileService $importInvalidFileService,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        DuplicityResolver $duplicityResolver,
-        Integrity\DuplicityService $integrityDuplicityService
+        private readonly IntegrityChecker $integrityChecker,
+        private readonly ImportInvalidFileService $importInvalidFileService,
+        private readonly IdentityChecker $identityChecker,
+        private readonly SimilarityChecker $similarityChecker,
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly DuplicityResolver $duplicityResolver,
+        private readonly Integrity\DuplicityService $integrityDuplicityService
     ) {
-        $this->em = $em;
-        $this->householdService = $householdService;
         $this->logger = $importLogger;
-        $this->integrityChecker = $integrityChecker;
-        $this->importInvalidFileService = $importInvalidFileService;
-        $this->identityChecker = $identityChecker;
-        $this->similarityChecker = $similarityChecker;
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->duplicityResolver = $duplicityResolver;
-        $this->integrityDuplicityService = $integrityDuplicityService;
     }
 
     public function create(string $countryIso3, Import\CreateInputType $inputType, User $user): Entity\Import

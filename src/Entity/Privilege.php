@@ -15,60 +15,45 @@ use Doctrine\ORM\Mapping as ORM;
 class Privilege
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="code", type="string", nullable=false, unique=true)
      */
-    private $code;
+    private ?string $code = null;
 
     /**
      * @var Collection|Role[]
      *
      * @ORM\ManyToMany(targetEntity="Entity\Role", mappedBy="privileges")
      */
-    private $roles;
+    private \Doctrine\Common\Collections\Collection|array $roles;
 
     public function __construct()
     {
         $this->roles = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @param string $code
-     */
     public function setCode(string $code): void
     {
         $this->code = $code;
@@ -77,7 +62,7 @@ class Privilege
     /**
      * @return Collection|Role[]
      */
-    public function getRoles()
+    public function getRoles(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->roles;
     }

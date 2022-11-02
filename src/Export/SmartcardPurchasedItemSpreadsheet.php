@@ -24,23 +24,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class SmartcardPurchasedItemSpreadsheet
 {
-    /** @var SmartcardPurchasedItemRepository */
-    private $repository;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var Countries */
-    private $countries;
-
-    public function __construct(
-        SmartcardPurchasedItemRepository $repository,
-        TranslatorInterface $translator,
-        Countries $countries
-    ) {
-        $this->repository = $repository;
-        $this->translator = $translator;
-        $this->countries = $countries;
+    public function __construct(private readonly SmartcardPurchasedItemRepository $repository, private readonly TranslatorInterface $translator, private readonly Countries $countries)
+    {
     }
 
     public function export(string $countryIso3, string $filetype, SmartcardPurchasedItemFilterInputType $filter): string

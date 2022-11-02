@@ -9,16 +9,13 @@ use InputType\FilterFragment\ProjectFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"FilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['FilterInputType', 'Strict'])]
 class FilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
     use ProjectFilterTrait;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Enum\ImportState", "values"})
@@ -26,6 +23,7 @@ class FilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $status;
 
     public function hasStatus(): bool

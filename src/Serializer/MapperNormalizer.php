@@ -10,11 +10,8 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 class MapperNormalizer extends ObjectNormalizer
 {
     /** @var MapperInterface[] */
-    private $mappers = [];
+    private array $mappers = [];
 
-    /**
-     * @param MapperInterface $mapper
-     */
     public function registerMapper(MapperInterface $mapper)
     {
         $this->mappers[] = $mapper;
@@ -32,14 +29,14 @@ class MapperNormalizer extends ObjectNormalizer
         }
 
         throw new NotNormalizableValueException(
-            'Unable to normalize instance of ' . get_class($object) . '. No related Mapper found.'
+            'Unable to normalize instance of ' . $object::class . '. No related Mapper found.'
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, $format = null)
+    public function supportsNormalization($data, $format = null): bool
     {
         if (!is_object($data)) {
             return false;
@@ -62,7 +59,7 @@ class MapperNormalizer extends ObjectNormalizer
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $type, $format = null)
+    public function supportsDenormalization($data, $type, $format = null): bool
     {
         return false;
     }

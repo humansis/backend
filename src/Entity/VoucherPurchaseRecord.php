@@ -14,47 +14,44 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class VoucherPurchaseRecord
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $id;
+    #[SymfonyGroups(['FullVoucher'])]
+    private int $id;
 
     /**
-     * @var VoucherPurchase
      *
      * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="records")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $voucherPurchase;
+    private ?\Entity\VoucherPurchase $voucherPurchase = null;
 
     /**
-     * @var Product
      *
      * @ORM\ManyToOne(targetEntity="Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
-    private $product;
+    #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
+    private ?\Entity\Product $product = null;
 
     /**
      * @var mixed
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      */
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
     private $value;
 
     /**
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
      */
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
     private $quantity;
 
     public static function create(VoucherPurchase $purchase, Product $product, $quantity, $value)
@@ -68,17 +65,11 @@ class VoucherPurchaseRecord
         return $entity;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Product
-     */
     public function getProduct(): Product
     {
         return $this->product;

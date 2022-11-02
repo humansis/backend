@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class ProjectFixtures extends Fixture implements FixtureGroupInterface
 {
-    private $countries = ["KHM", "UKR", "SYR", "ETH", "MNG", "ARM", "ZMB"];
+    private array $countries = ["KHM", "UKR", "SYR", "ETH", "MNG", "ARM", "ZMB"];
 
     private const PROJECT_NAME = 0;
     private const PROJECT_NUMBER_OF_HOUSEHOLDS = 1;
@@ -26,7 +26,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     private const PROJECT_PROJECT_INVOICE_ADDRESS_LOCAL = 6;
     private const PROJECT_ALLOWED_PRODUCT_CATEGORY_TYPES = 7;
 
-    private $explicitTestProjects = [
+    private array $explicitTestProjects = [
         ['Dev KHM Project', 1, 1, 'notes', 'KHM', 'KHM eng address', 'KHM local address', [ProductCategoryType::FOOD]],
         ['Dev UKR Project', 1, 1, 'notes', 'UKR', 'UKR eng address', 'UKR local address', [ProductCategoryType::FOOD]],
         ['Dev SYR Project', 1, 1, 'notes', 'SYR', 'SYR eng address', 'SYR local address', [ProductCategoryType::FOOD]],
@@ -36,9 +36,9 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         ['Dev ZMB Project', 1, 1, 'notes', 'ZMB', 'ZMB eng address', 'ZMB local address', [ProductCategoryType::FOOD]],
     ];
 
-    private $countryProjectNameTemplate = "{adjective} test project";
+    private string $countryProjectNameTemplate = "{adjective} test project";
 
-    private $countryNameAdjectives = [
+    private array $countryNameAdjectives = [
         'KHM' => 'Cambodian',
         'SYR' => 'Syrian',
         'UKR' => 'Ukrainian',
@@ -48,24 +48,20 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
         'ZMB' => 'Zambian',
     ];
 
-    private $kernel;
-
-    public function __construct(Kernel $kernel)
+    public function __construct(private readonly Kernel $kernel)
     {
-        $this->kernel = $kernel;
     }
 
     /**
      * Load data fixtures with the passed EntityManager
      *
-     * @param ObjectManager $manager
      *
      * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() === "prod") {
-            echo __CLASS__ . " can't be running at production\n";
+            echo self::class . " can't be running at production\n";
 
             return;
         }
@@ -79,7 +75,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
             $projectName = str_replace(
                 '{adjective}',
                 $this->countryNameAdjectives[$country],
-                $this->countryProjectNameTemplate
+                (string) $this->countryProjectNameTemplate
             );
             $this->createProjectFromData(
                 $manager,
@@ -99,9 +95,7 @@ class ProjectFixtures extends Fixture implements FixtureGroupInterface
     }
 
     /**
-     * @param ObjectManager $manager
      * @param               $country
-     * @param array $data
      */
     private function createProjectFromData(ObjectManager $manager, array $data): void
     {

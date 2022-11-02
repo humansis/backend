@@ -16,18 +16,12 @@ use FOS\RestBundle\Controller\Annotations as Rest;
  */
 class InstitutionCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/institutions/types")
-     *
-     * @return JsonResponse
      */
     public function getInstitutionTypes(): JsonResponse
     {

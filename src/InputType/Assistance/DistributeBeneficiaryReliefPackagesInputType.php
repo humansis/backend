@@ -11,15 +11,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type(type="string")
-     * @Assert\NotBlank
-     */
+    #[Assert\Type(type: 'string')]
+    #[Assert\NotBlank]
     private $idNumber;
 
-    /**
-     * @Assert\Type(type="scalar")
-     */
+    #[Assert\Type(type: 'scalar')]
     private $amountDistributed;
 
     /**
@@ -30,12 +26,9 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
         return $this->idNumber;
     }
 
-    /**
-     * @param mixed $idNumber
-     */
-    public function setIdNumber($idNumber): void
+    public function setIdNumber(mixed $idNumber): void
     {
-        $this->idNumber = trim($idNumber);
+        $this->idNumber = trim((string) $idNumber);
     }
 
     /**
@@ -46,10 +39,7 @@ class DistributeBeneficiaryReliefPackagesInputType implements InputTypeInterface
         return $this->amountDistributed;
     }
 
-    /**
-     * @param mixed $amountDistributed
-     */
-    public function setAmountDistributed($amountDistributed): void
+    public function setAmountDistributed(mixed $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }

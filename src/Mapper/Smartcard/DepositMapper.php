@@ -12,8 +12,7 @@ use Entity\SmartcardDeposit;
 
 class DepositMapper implements MapperInterface
 {
-    /** @var SmartcardDeposit|EmptySmartcardDeposit */
-    private $object;
+    private \Entity\SmartcardDeposit|\Component\Smartcard\EmptySmartcardDeposit|null $object = null;
 
     /**
      * {@inheritdoc}
@@ -35,9 +34,7 @@ class DepositMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . SmartcardDeposit::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . SmartcardDeposit::class . ', ' . $object::class . ' given.'
         );
     }
 

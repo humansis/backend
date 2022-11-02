@@ -28,8 +28,6 @@ use Symfony\Component\DependencyInjection\Container;
 trait AssistanceHelper
 {
     /**
-     * @param AssistanceCreateInputType $assistanceCreateInputType
-     * @return Assistance
      * @throws Exception
      */
     public function createAssistance(
@@ -41,9 +39,6 @@ trait AssistanceHelper
         return $assistance;
     }
 
-    /**
-     * @return SelectionCriterionInputType
-     */
     public static function buildSelectionCriteriaInputType(): SelectionCriterionInputType
     {
         $selectionCriteriaType = new SelectionCriterionInputType();
@@ -57,12 +52,6 @@ trait AssistanceHelper
         return $selectionCriteriaType;
     }
 
-    /**
-     * @param string $currency
-     * @param string $modalityType
-     * @param float $value
-     * @return CommodityInputType
-     */
     public static function buildCommoditiesType(
         string $currency,
         string $modalityType,
@@ -77,11 +66,8 @@ trait AssistanceHelper
     }
 
     /**
-     * @param Project $project
-     * @param Location $location
      * @param CommodityInputType[]|null $commodityInputTypes
      * @param SelectionCriterionInputType[]|null $selectionCriteriaInputTypes
-     * @return AssistanceCreateInputType
      */
     public static function buildAssistanceInputType(
         Project $project,

@@ -21,59 +21,47 @@ class Organization
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullOrganization"})
      */
+    #[SymfonyGroups(['FullOrganization'])]
     private $id;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
      *
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $name;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $name;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $logo;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $logo;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="font", type="string", length=255)
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $font;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $font;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="primaryColor", type="string", length=255)
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $primaryColor;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $primaryColor;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="secondaryColor", type="string", length=255)
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $secondaryColor;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $secondaryColor;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="footerContent", type="string", length=255)
-     * @SymfonyGroups({"FullOrganization"})
      */
-    private $footerContent;
+    #[SymfonyGroups(['FullOrganization'])]
+    private string $footerContent;
 
     /**
      * @var OrganizationServices $organizationServices
@@ -252,7 +240,6 @@ class Organization
     /**
      * Add OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
@@ -269,7 +256,6 @@ class Organization
     /**
      * Remove OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */

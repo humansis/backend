@@ -17,61 +17,23 @@ use JsonSerializable;
 
 class Event implements JsonSerializable
 {
-    /** @var string what is about, assistance|purchase|vendor|... */
-    private $subject;
-
-    /** @var string what was happened, created|sync|closed|... */
-    private $action;
-
-    /** @var DateTimeInterface when was it happened */
-    private $when;
-
-    /** @var object[] */
-    private $linkedObjects;
-
-    /** @var array */
-    private $additionalData;
-
     /**
-     * @param string $subject
-     * @param string $action
-     * @param DateTimeInterface $when
-     * @param array $additionalData
-     * @param object $linkedObjects
+     * @param object[] $linkedObjects
      */
-    public function __construct(
-        string $subject,
-        string $action,
-        DateTimeInterface $when,
-        array $linkedObjects = [],
-        array $additionalData = []
-    ) {
-        $this->subject = $subject;
-        $this->action = $action;
-        $this->when = $when;
-        $this->additionalData = $additionalData;
-        $this->linkedObjects = $linkedObjects;
+    public function __construct(private readonly string $subject, private readonly string $action, private readonly DateTimeInterface $when, private readonly array $linkedObjects = [], private readonly array $additionalData = [])
+    {
     }
 
-    /**
-     * @return string
-     */
     protected function getSubject(): string
     {
         return $this->subject;
     }
 
-    /**
-     * @return string
-     */
     protected function getAction(): string
     {
         return $this->action;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getWhen(): DateTimeInterface
     {
         return $this->when;
@@ -88,7 +50,7 @@ class Event implements JsonSerializable
             if ($object == null) {
                 continue;
             }
-            switch (get_class($object)) {
+            switch ($object::class) {
                 case Assistance::class:
                     $serializedData['assistanceId'] = $object->getId();
                     $serializedData['assistanceName'] = $object->getName();

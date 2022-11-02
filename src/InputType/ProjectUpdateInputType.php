@@ -12,63 +12,49 @@ use Validator\Constraints\DateGreaterThan;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"ProjectUpdateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['ProjectUpdateInputType', 'Strict'])]
 class ProjectUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
-    private $name; // todo check unique name
-
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private $name; #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $internalId;
 
     /**
      * @Country
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $iso3;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $notes;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan(0)
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $target;
 
     /**
      * @Iso8601
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $startDate;
 
     /**
      * @Iso8601
-     * @Assert\NotBlank
-     * @Assert\NotNull
      * @DateGreaterThan(propertyPath="startDate", groups={"Strict"})
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $endDate;
 
     /**
-     * @Assert\Type("array")
-     * @Assert\Count(min=1, groups={"Strict"})
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
@@ -76,10 +62,11 @@ class ProjectUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $sectors = [];
+    #[Assert\Type('array')]
+    #[Assert\Count(min: 1, groups: ['Strict'])]
+    private array $sectors = [];
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer")
@@ -87,11 +74,10 @@ class ProjectUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $donorIds = [];
+    #[Assert\Type('array')]
+    private array $donorIds = [];
 
     /**
-     * @Assert\Type("array")
-     * @Assert\Count(min=1, groups={"Strict"})
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
@@ -99,21 +85,17 @@ class ProjectUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $allowedProductCategoryTypes = [];
+    #[Assert\Type('array')]
+    #[Assert\Count(min: 1, groups: ['Strict'])]
+    private array $allowedProductCategoryTypes = [];
 
-    /**
-     * @var string|null
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     */
-    private $projectInvoiceAddressLocal = '';
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    private ?string $projectInvoiceAddressLocal = '';
 
-    /**
-     * @var string|null
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     */
-    private $projectInvoiceAddressEnglish = '';
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    private ?string $projectInvoiceAddressEnglish = '';
 
     /**
      * @return string
@@ -264,9 +246,6 @@ class ProjectUpdateInputType implements InputTypeInterface
         return $this->projectInvoiceAddressLocal;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressLocal
-     */
     public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
     {
         $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal ?: '';
@@ -280,9 +259,6 @@ class ProjectUpdateInputType implements InputTypeInterface
         return $this->projectInvoiceAddressEnglish;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressEnglish
-     */
     public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish ?: '';

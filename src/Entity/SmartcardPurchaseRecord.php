@@ -17,54 +17,49 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class SmartcardPurchaseRecord
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var SmartcardPurchase
      *
      * @ORM\ManyToOne(targetEntity="Entity\SmartcardPurchase", inversedBy="records")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $smartcardPurchase;
+    private ?\Entity\SmartcardPurchase $smartcardPurchase = null;
 
     /**
-     * @var Product
      *
      * @ORM\ManyToOne(targetEntity="Entity\Product")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $product;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?\Entity\Product $product = null;
 
     /**
      * @var float
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2)
-     * @SymfonyGroups({"FullSmartcard"})
      */
+    #[SymfonyGroups(['FullSmartcard'])]
     private $value;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="currency", type="string", nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $currency;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?string $currency = null;
 
     /**
      * @var mixed
      *
      * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
      */
+    #[SymfonyGroups(['FullSmartcard'])]
     private $quantity;
 
     public static function create(SmartcardPurchase $purchase, Product $product, $quantity, $value, ?string $currency)
@@ -79,17 +74,11 @@ class SmartcardPurchaseRecord
         return $entity;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return Product
-     */
     public function getProduct(): Product
     {
         return $this->product;
@@ -103,17 +92,11 @@ class SmartcardPurchaseRecord
         return $this->value;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCurrency(): ?string
     {
         return $this->currency;
     }
 
-    /**
-     * @param string $currency
-     */
     public function setCurrency(string $currency): void
     {
         if (null !== $this->currency) {

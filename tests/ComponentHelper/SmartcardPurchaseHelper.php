@@ -21,9 +21,6 @@ use Utils\SmartcardService;
 trait SmartcardPurchaseHelper
 {
     /**
-     * @param string $serialNumber
-     * @param SmartcardPurchaseInputType $smartcardPurchaseInputType
-     * @return SmartcardPurchase
      * @throws Exception
      */
     public function createPurchase(
@@ -36,13 +33,6 @@ trait SmartcardPurchaseHelper
         );
     }
 
-    /**
-     * @param int $assistanceId
-     * @param int $beneficiaryId
-     * @param int $vendorId
-     * @param PurchaseProductInputType $productInputType
-     * @return SmartcardPurchaseInputType
-     */
     public static function buildSmartcardPurchaseInputType(
         int $assistanceId,
         int $beneficiaryId,

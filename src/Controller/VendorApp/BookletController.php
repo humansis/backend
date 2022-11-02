@@ -14,20 +14,8 @@ use Utils\BookletService;
 
 class BookletController extends AbstractVendorAppController
 {
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(BookletService $bookletService, SerializerInterface $serializer, LoggerInterface $logger)
+    public function __construct(private readonly BookletService $bookletService, private readonly SerializerInterface $serializer, private readonly LoggerInterface $logger)
     {
-        $this->bookletService = $bookletService;
-        $this->serializer = $serializer;
-        $this->logger = $logger;
     }
 
     /**
@@ -35,7 +23,6 @@ class BookletController extends AbstractVendorAppController
      *
      * @Rest\Get("/vendor-app/v1/deactivated-booklets")
      *
-     * @param Request $request
      * @return Response
      */
     public function vendorGetDeactivatedAction(Request $request)
@@ -56,7 +43,6 @@ class BookletController extends AbstractVendorAppController
      *
      * @Rest\Get("/vendor-app/v1/protected-booklets")
      *
-     * @param Request $request
      * @return Response
      */
     public function vendorGetProtectedAction(Request $request)

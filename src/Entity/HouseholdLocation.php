@@ -13,39 +13,34 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HouseholdLocation
 {
-    public const LOCATION_GROUP_CURRENT = 'current';
-    public const LOCATION_GROUP_RESIDENT = 'resident';
-    public const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
-    public const LOCATION_TYPE_RESIDENCE = 'residence';
-    public const LOCATION_TYPE_CAMP = 'camp';
-    public const LOCATION_TYPES = [
+    final public const LOCATION_GROUP_CURRENT = 'current';
+    final public const LOCATION_GROUP_RESIDENT = 'resident';
+    final public const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
+    final public const LOCATION_TYPE_RESIDENCE = 'residence';
+    final public const LOCATION_TYPE_CAMP = 'camp';
+    final public const LOCATION_TYPES = [
         self::LOCATION_TYPE_CAMP,
         self::LOCATION_TYPE_RESIDENCE,
         self::LOCATION_TYPE_SETTLEMENT,
     ];
 
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="location_group", type="string", length=45)
      */
-    private $locationGroup;
+    private string $locationGroup;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=45)
      */
-    private $type;
+    private string $type;
 
     /**
      * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
@@ -58,11 +53,9 @@ class HouseholdLocation
     private $campAddress;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="householdLocations")
      */
-    private $household;
+    private ?\Entity\Household $household = null;
 
     /**
      * Get id.

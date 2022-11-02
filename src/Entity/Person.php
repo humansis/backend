@@ -24,43 +24,34 @@ class Person
     use EnumTrait;
 
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
      */
-    private $enGivenName;
+    private ?string $enGivenName = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
      */
-    private $enFamilyName;
+    private ?string $enFamilyName = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="The local given name is required.")
      */
-    private $localGivenName;
+    #[Assert\NotBlank(message: 'The local given name is required.')]
+    private ?string $localGivenName = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message="The local family name is required.")
      */
-    private $localFamilyName;
+    #[Assert\NotBlank(message: 'The local family name is required.')]
+    private ?string $localFamilyName = null;
 
     /**
      * @var int|null
@@ -73,8 +64,8 @@ class Person
      * @var DateTime|null
      *
      * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
-     * @Assert\NotBlank(message="The date of birth is required.")
      */
+    #[Assert\NotBlank(message: 'The date of birth is required.')]
     private $dateOfBirth;
 
     /**
@@ -85,10 +76,9 @@ class Person
     private $updatedOn;
 
     /**
-     * @var Profile|null
      * @ORM\OneToOne(targetEntity="Entity\Profile", cascade={"persist", "remove"})
      */
-    private $profile;
+    private ?\Entity\Profile $profile = null;
 
     /**
      * @var Phone[]|Collection
@@ -103,24 +93,19 @@ class Person
     private $nationalIds;
 
     /**
-     * @var Referral|null
      * @ORM\OneToOne(targetEntity="Entity\Referral", cascade={"persist", "remove"})
      */
-    private $referral;
+    private ?\Entity\Referral $referral = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
      */
-    private $localParentsName;
+    private ?string $localParentsName = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="en_parents_name", type="string", length=255, nullable=true)
      */
-    private $enParentsName;
+    private ?string $enParentsName = null;
 
     /**
      * Constructor.
@@ -133,9 +118,6 @@ class Person
         //TODO check if updatedOn everytime
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
@@ -144,7 +126,6 @@ class Person
     /**
      * Set enGivenName.
      *
-     * @param string|null $enGivenName
      *
      * @return self
      */
@@ -157,8 +138,6 @@ class Person
 
     /**
      * Get enGivenName.
-     *
-     * @return string|null
      */
     public function getEnGivenName(): ?string
     {
@@ -168,7 +147,6 @@ class Person
     /**
      * Set enFamilyName.
      *
-     * @param string|null $enFamilyName
      *
      * @return self
      */
@@ -181,8 +159,6 @@ class Person
 
     /**
      * Get enFamilyName.
-     *
-     * @return string|null
      */
     public function getEnFamilyName(): ?string
     {
@@ -192,7 +168,6 @@ class Person
     /**
      * Set localGivenName.
      *
-     * @param string|null $localGivenName
      *
      * @return self
      */
@@ -205,8 +180,6 @@ class Person
 
     /**
      * Get localGivenName.
-     *
-     * @return string|null
      */
     public function getLocalGivenName(): ?string
     {
@@ -216,7 +189,6 @@ class Person
     /**
      * Set localFamilyName.
      *
-     * @param string|null $localFamilyName
      *
      * @return self
      */
@@ -229,8 +201,6 @@ class Person
 
     /**
      * Get localFamilyName.
-     *
-     * @return string|null
      */
     public function getLocalFamilyName(): ?string
     {
@@ -240,7 +210,6 @@ class Person
     /**
      * Set gender.
      *
-     * @param string|null $gender
      *
      * @return self
      * @see PersonGender::values()
@@ -257,7 +226,6 @@ class Person
     /**
      * Get gender.
      *
-     * @return string|null
      * @see PersonGender::values()
      *
      */
@@ -269,7 +237,6 @@ class Person
     /**
      * Set dateOfBirth.
      *
-     * @param DateTimeInterface|null $dateOfBirth
      *
      * @return self
      */
@@ -293,7 +260,6 @@ class Person
     /**
      * Set updatedOn.
      *
-     * @param DateTimeInterface|null $updatedOn
      *
      * @return self
      */
@@ -317,7 +283,6 @@ class Person
     /**
      * Add phone.
      *
-     * @param Phone $phone
      *
      * @return self
      */
@@ -331,7 +296,6 @@ class Person
     /**
      * Remove phone.
      *
-     * @param Phone $phone
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -381,7 +345,6 @@ class Person
     /**
      * Add nationalId.
      *
-     * @param NationalId $nationalId
      *
      * @return self
      */
@@ -395,7 +358,6 @@ class Person
     /**
      * Remove nationalId.
      *
-     * @param NationalId $nationalId
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -464,15 +426,13 @@ class Person
 
     /**
      * Returns age of self in years
-     *
-     * @return int|null
      */
     public function getAge(): ?int
     {
         if ($this->getDateOfBirth()) {
             try {
                 return $this->getDateOfBirth()->diff(new DateTime('now'))->y;
-            } catch (Exception $ex) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -480,11 +440,6 @@ class Person
         return null;
     }
 
-    /**
-     * @param string|null $localParentsName
-     *
-     * @return Person
-     */
     public function setLocalParentsName(?string $localParentsName): Person
     {
         $this->localParentsName = $localParentsName;
@@ -492,19 +447,11 @@ class Person
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLocalParentsName(): ?string
     {
         return $this->localParentsName;
     }
 
-    /**
-     * @param string|null $enParentsName
-     *
-     * @return Person
-     */
     public function setEnParentsName(?string $enParentsName): Person
     {
         $this->enParentsName = $enParentsName;
@@ -512,9 +459,6 @@ class Person
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEnParentsName(): ?string
     {
         return $this->enParentsName;

@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class RoleMapper implements MapperInterface
 {
-    /** @var Role */
-    private $object;
+    private ?\Entity\Role $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class RoleMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Role::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Role::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -50,9 +49,7 @@ class RoleMapper implements MapperInterface
 
     public function getPrivileges(): array
     {
-        $fn = function (Privilege $privilege) {
-            return $privilege->getCode();
-        };
+        $fn = fn(Privilege $privilege) => $privilege->getCode();
 
         return array_values(array_map($fn, $this->object->getPrivileges()->toArray()));
     }

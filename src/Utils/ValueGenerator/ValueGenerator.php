@@ -21,7 +21,7 @@ class ValueGenerator
 
     public static function int(int $min, int $max): int
     {
-        return rand($min, $max);
+        return random_int($min, $max);
     }
 
     public static function bool(): bool
@@ -45,7 +45,6 @@ class ValueGenerator
     }
 
     /**
-     * @param string $enumClass
      *
      * @return mixed
      * @throws ReflectionException

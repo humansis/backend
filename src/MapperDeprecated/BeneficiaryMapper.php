@@ -12,10 +12,8 @@ use Entity\Beneficiary;
 class BeneficiaryMapper
 {
     /**
-     * @param Beneficiary|null $beneficiary
      *
      * @return array
-     *
      * @deprecated its only for backward consistency, dont use it
      */
     public function toOldMobileArray(?Beneficiary $beneficiary): ?array
@@ -38,9 +36,7 @@ class BeneficiaryMapper
     }
 
     /**
-     * @param iterable $bnfs
      *
-     * @return iterable
      * @deprecated its only for backward consistency, dont use it
      *
      */

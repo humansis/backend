@@ -13,20 +13,17 @@ use Doctrine\ORM\Mapping as ORM;
 class CampAddress
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="tentNumber", type="string", length=45)
      */
-    private $tentNumber;
+    private string $tentNumber;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Camp", cascade={"persist"})

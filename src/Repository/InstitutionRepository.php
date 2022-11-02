@@ -99,10 +99,6 @@ class InstitutionRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param AssistanceInstitutionsFilterInputType|null $filter
-     * @param InstitutionOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Assistance[]
      */
@@ -196,8 +192,6 @@ class InstitutionRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     *
      * @return Paginator
      */
     public function findByProject(Project $project)

@@ -23,34 +23,13 @@ use Component\Import;
 
 class HouseholdDecoratorBuilder
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var Import\Integrity\ImportLine */
-    private $householdLine;
+    private ?\Component\Import\Integrity\ImportLine $householdLine = null;
 
     /** @var Import\Integrity\ImportLine[] */
     private $importLines;
 
-    /** @var Import\Integrity\ImportLineFactory */
-    private $importLineFactory;
-
-    /** @var BeneficiaryDecoratorBuilder */
-    private $beneficiaryDecoratorBuilder;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param Import\Integrity\ImportLineFactory $importLineFactory
-     * @param BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
-     */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        Import\Integrity\ImportLineFactory $importLineFactory,
-        BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder
-    ) {
-        $this->entityManager = $entityManager;
-        $this->importLineFactory = $importLineFactory;
-        $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly Import\Integrity\ImportLineFactory $importLineFactory, private readonly BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder)
+    {
     }
 
     public function buildHouseholdInputType(ImportQueue $importQueue): ?HouseholdCreateInputType
@@ -75,9 +54,6 @@ class HouseholdDecoratorBuilder
         return $household;
     }
 
-    /**
-     * @param HouseholdUpdateInputType $household
-     */
     private function fillHousehold(HouseholdUpdateInputType $household, string $countryIso3): void
     {
         $household->setProjectIds([]);
@@ -119,9 +95,7 @@ class HouseholdDecoratorBuilder
                 EnumTrait::normalizeValue($this->householdLine->adm3),
                 EnumTrait::normalizeValue($this->householdLine->adm4),
             ];
-            $locationsArray = array_filter($adms, function ($value) {
-                return !empty($value);
-            });
+            $locationsArray = array_filter($adms, fn($value) => !empty($value));
 
             $location = $locationRepository->getByNormalizedNames($countryIso3, $locationsArray);
 
@@ -205,9 +179,6 @@ class HouseholdDecoratorBuilder
         }
     }
 
-    /**
-     * @return CampAddressInputType
-     */
     private function buildCampAddress($line, string $countryIso3): CampAddressInputType
     {
         $campAddress = new CampAddressInputType();
@@ -217,9 +188,6 @@ class HouseholdDecoratorBuilder
         return $campAddress;
     }
 
-    /**
-     * @return CampInputType
-     */
     private function buildCampInputType($line, string $countryIso3): CampInputType
     {
         $campInput = new CampInputType();
@@ -235,9 +203,7 @@ class HouseholdDecoratorBuilder
             EnumTrait::normalizeValue($line->adm4),
         ];
 
-        $locationsArray = array_filter($adms, function ($value) {
-            return !empty($value);
-        });
+        $locationsArray = array_filter($adms, fn($value) => !empty($value));
 
         $location = $locationRepository->getByNormalizedNames($countryIso3, $locationsArray);
         if ($location !== null) {

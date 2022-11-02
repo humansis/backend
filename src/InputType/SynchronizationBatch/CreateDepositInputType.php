@@ -10,50 +10,36 @@ use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"CreateDepositInputType", "Strict"})
- */
+#[Assert\GroupSequence(['CreateDepositInputType', 'Strict'])]
 class CreateDepositInputType implements InputTypeInterface
 {
-    /**
-     * @var int
-     *
-     * @Assert\NotNull
-     * @Assert\Type(type="integer")
-     * @Assert\GreaterThan(value="0")
-     */
-    private $reliefPackageId;
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'integer')]
+    #[Assert\GreaterThan(value: 0)]
+    private ?int $reliefPackageId = null;
 
     /**
-     * @var string
-     *
      * @Iso8601
-     * @Assert\NotNull
-     * @Assert\NotBlank
      */
-    private $createdAt;
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    private ?string $createdAt = null;
 
-    /**
-     * @var string
-     *
-     * @Assert\Type(type="string")
-     * @Assert\Length(max="14")
-     * @Assert\Regex(pattern="/[A-Za-z0-9]+/")
-     */
-    private $smartcardSerialNumber;
+    #[Assert\Type(type: 'string')]
+    #[Assert\Length(max: 14)]
+    #[Assert\Regex(pattern: '/[A-Za-z0-9]+/')]
+    private ?string $smartcardSerialNumber = null;
 
     /**
      * @var numeric
-     *
-     * @Assert\Type(type="numeric")
      */
+    #[Assert\Type(type: 'numeric')]
     private $balanceBefore;
 
     /**
      * @var numeric
-     *
-     * @Assert\Type(type="numeric")
      */
+    #[Assert\Type(type: 'numeric')]
     private $balanceAfter;
 
     /**
@@ -88,26 +74,17 @@ class CreateDepositInputType implements InputTypeInterface
         $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return string
-     */
     public function getSmartcardSerialNumber(): string
     {
         return $this->smartcardSerialNumber;
     }
 
-    /**
-     * @param string $smartcardSerialNumber
-     */
     public function setSmartcardSerialNumber(string $smartcardSerialNumber): void
     {
         $this->smartcardSerialNumber = $smartcardSerialNumber;
     }
 
-    /**
-     * @return float|int|string
-     */
-    public function getBalanceBefore()
+    public function getBalanceBefore(): float|int|string
     {
         return $this->balanceBefore;
     }
@@ -120,18 +97,12 @@ class CreateDepositInputType implements InputTypeInterface
         $this->balanceBefore = $balanceBefore;
     }
 
-    /**
-     * @return float|int|string
-     */
-    public function getBalanceAfter()
+    public function getBalanceAfter(): float|int|string
     {
         return $this->balanceAfter;
     }
 
-    /**
-     * @param float|int|string $balanceAfter
-     */
-    public function setBalanceAfter($balanceAfter): void
+    public function setBalanceAfter(float|int|string $balanceAfter): void
     {
         $this->balanceAfter = $balanceAfter;
     }

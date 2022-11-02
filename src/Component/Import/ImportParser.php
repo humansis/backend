@@ -21,7 +21,7 @@ class ImportParser
     private const VERSION_1 = 1; //internal versions marking
     private const VERSION_1_SRC = ""; //version within source datasheet (not relevant for version 1, versioning starts from version 2)
     private const VERSION_2 = 2; //internal versions marking
-    public const VERSION_2_SRC = "v2.0"; //version within source datasheet
+    final public const VERSION_2_SRC = "v2.0"; //version within source datasheet
     private const VERSION_COLUMN = 1; //position in the source datasheet (xls, ...)
     private const VERSION_ROW = 4; //position in the source datasheet (xls, ...)
     private const HEADER_ROW = 0;
@@ -29,7 +29,7 @@ class ImportParser
     private const CONTENT_ROW = 2;
     private const CONTENT_COLUMN = 3;
 
-    private $versionCustomValues = [
+    private array $versionCustomValues = [
         self::VERSION_1 => [
             self::HEADER_ROW => 1, //header is at row #1
             self::HEADER_COLUMN => 1, //header starts at column #1
@@ -46,9 +46,7 @@ class ImportParser
     ];
 
     /**
-     * @param File $file
      *
-     * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws InvalidImportException
      * @throws InvalidFormulaException
@@ -72,7 +70,7 @@ class ImportParser
             // null => member
             try {
                 $isHead = HouseholdHead::valueFromAPI($row['Head'][CellParameters::VALUE]);
-            } catch (EnumValueNoFoundException $exception) {
+            } catch (EnumValueNoFoundException) {
                 $isHead = false;
             }
 
@@ -95,9 +93,6 @@ class ImportParser
     }
 
     /**
-     * @param File $file
-     *
-     * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception|InvalidFormulaException
      */
     public function parseHeadersOnly(File $file): array
@@ -111,9 +106,6 @@ class ImportParser
     }
 
     /**
-     * @param Worksheet $worksheet
-     *
-     * @return array
      * @throws InvalidFormulaException
      */
     private function getHeader(Worksheet $worksheet): array
@@ -189,7 +181,7 @@ class ImportParser
     private function getCellDataType(Cell $cell, $value, $cellError): string
     {
         if ($cell->getDataType() === DataType::TYPE_STRING) {
-            return strlen(trim($value)) === 0 ? DataType::TYPE_NULL : $cell->getDataType();
+            return strlen(trim((string) $value)) === 0 ? DataType::TYPE_NULL : $cell->getDataType();
         }
         if ($cell->getDataType() !== DataType::TYPE_FORMULA || $cellError) {
             return $cell->getDataType();
@@ -208,13 +200,10 @@ class ImportParser
     {
         $versionRawValue = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
 
-        switch ($versionRawValue) {
-            case self::VERSION_2_SRC:
-                $version = self::VERSION_2;
-                break;
-            default:
-                $version = self::VERSION_1;
-        }
+        $version = match ($versionRawValue) {
+            self::VERSION_2_SRC => self::VERSION_2,
+            default => self::VERSION_1,
+        };
 
         return $version;
     }
@@ -248,7 +237,6 @@ class ImportParser
     }
 
     /**
-     * @param Cell|null $cell
      *
      * @return mixed
      * @throws InvalidFormulaException
@@ -262,13 +250,13 @@ class ImportParser
                     $value = trim($calculatedValue);
 
                     // prevent bad formatted spreadsheet cell starting with apostrophe
-                    if (strpos($value, '\'') === 0) {
+                    if (str_starts_with($value, '\'')) {
                         $value = substr_replace($value, '', 0, 1);
                     }
                 } else {
                     $value = $calculatedValue;
                 }
-            } catch (Exception $exception) {
+            } catch (Exception) {
                 throw new InvalidFormulaException(
                     $cell->getValue(),
                     "Bad formula at cell {$cell->getColumn()}{$cell->getRow()}"

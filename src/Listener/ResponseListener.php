@@ -15,25 +15,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 use function is_object;
 
-class ResponseListener
+class ResponseEventSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        TokenStorageInterface $tokenStorage
-    ) {
-        $this->em = $entityManager;
-        $this->container = $container;
-        $this->tokenStorage = $tokenStorage;
+    public function __construct(private EntityManagerInterface $em, private readonly ContainerInterface $container, private readonly TokenStorageInterface $tokenStorage)
+    {
     }
 
     public function onKernelResponse(ResponseEvent $event)
@@ -88,7 +73,7 @@ class ResponseListener
         if (
             $idUser && $method != 'GET' && explode(
                 '\\',
-                $controller
+                (string) $controller
             )[0] != "ReportingBundle" && (!$isFakePost || $method !== 'POST')
         ) {
             $log = new Logs();
@@ -100,7 +85,7 @@ class ResponseListener
                 ->setDate($date)
                 ->setHttpStatus($httpStatus)
                 ->setController($controller)
-                ->setRequest(json_encode($requestAll));
+                ->setRequest(json_encode($requestAll, JSON_THROW_ON_ERROR));
 
             if (!$this->em->isOpen()) {
                 $this->em = $this->em->create(
@@ -135,5 +120,12 @@ class ResponseListener
         }
 
         return ['id' => $user->getId(), 'email' => $user->getEmail()];
+    }
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [\Symfony\Component\HttpKernel\KernelEvents::RESPONSE => 'onKernelResponse'];
     }
 }

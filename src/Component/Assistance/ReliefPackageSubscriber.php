@@ -16,14 +16,8 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class ReliefPackageSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    public function __construct(CacheInterface $cache)
+    public function __construct(private readonly CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     public static function getSubscribedEvents(): array
@@ -42,11 +36,6 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
         $reliefPackage->setDistributedAt(new DateTimeImmutable());
     }
 
-    /**
-     * @param Event $event
-     *
-     * @return void
-     */
     public function clearAssistanceStatisticCache(Event $event): void
     {
         /** @var Entity\Assistance\ReliefPackage $reliefPackage */
@@ -55,7 +44,7 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
             $this->cache->delete(
                 CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
         }
     }
 }

@@ -21,10 +21,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/beneficiaries/{id}")
      *
-     * @param Beneficiary $beneficiary
-     * @param EventService $eventService
      *
-     * @return JsonResponse
      */
     public function beneficiary(Beneficiary $beneficiary, EventService $eventService): JsonResponse
     {
@@ -34,10 +31,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/smartcard/{id}")
      *
-     * @param Smartcard $smartcard
-     * @param EventService $eventService
      *
-     * @return JsonResponse
      */
     public function smartcardById(Smartcard $smartcard, EventService $eventService): JsonResponse
     {
@@ -47,10 +41,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/smartcards/{serialNumber}")
      *
-     * @param string $serialNumber
-     * @param EventService $eventService
      *
-     * @return JsonResponse
      */
     public function smartcardBySerialNumber(string $serialNumber, EventService $eventService): JsonResponse
     {
@@ -60,10 +51,7 @@ class AnalyticsController extends AbstractSupportAppController
     /**
      * @Rest\Get("/support-app/v1/smartcard-analytics/vendors/{id}")
      *
-     * @param Vendor $vendor
-     * @param EventService $eventService
      *
-     * @return JsonResponse
      */
     public function vendor(Vendor $vendor, EventService $eventService): JsonResponse
     {

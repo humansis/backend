@@ -16,29 +16,22 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class CleanCommand extends AbstractImportQueueCommand
 {
-    /**
-     * @var ImportInvalidFileService
-     */
-    private $importInvalidFileService;
+    protected static $defaultName = 'app:import:clean';
 
     public function __construct(
         ObjectManager $manager,
         ImportService $importService,
         LoggerInterface $importLogger,
         WorkflowInterface $importStateMachine,
-        ImportInvalidFileService $importInvalidFileService
+        private readonly ImportInvalidFileService $importInvalidFileService
     ) {
         parent::__construct($manager, $importService, $importLogger, $importStateMachine);
-
-        $this->importInvalidFileService = $importInvalidFileService;
     }
 
     protected function configure()
     {
         parent::configure();
-        $this
-            ->setName('app:import:clean')
-            ->setDescription('Clean data of finished import');
+        $this->setDescription('Clean data of finished import');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

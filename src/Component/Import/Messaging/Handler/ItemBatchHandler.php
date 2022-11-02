@@ -23,48 +23,16 @@ class ItemBatchHandler implements MessageHandlerInterface
 {
     use ImportQueueLoggerTrait;
 
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportRepository */
-    private $importRepository;
-
-    /** @var IntegrityChecker */
-    private $integrityChecker;
-
-    /** @var IdentityChecker */
-    private $identityChecker;
-
-    /** @var SimilarityChecker */
-    private $similarityChecker;
-
-    /** @var ImportFinisher */
-    private $finisher;
-
-    /**
-     * @param LoggerInterface $importLogger
-     * @param ImportQueueRepository $queueRepository
-     * @param IntegrityChecker $integrityChecker
-     * @param IdentityChecker $identityChecker
-     * @param SimilarityChecker $similarityChecker
-     * @param ImportFinisher $finisher
-     */
     public function __construct(
         LoggerInterface $importLogger,
-        ImportQueueRepository $queueRepository,
-        ImportRepository $importRepository,
-        IntegrityChecker $integrityChecker,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        ImportFinisher $finisher
+        private readonly ImportQueueRepository $queueRepository,
+        private readonly ImportRepository $importRepository,
+        private readonly IntegrityChecker $integrityChecker,
+        private readonly IdentityChecker $identityChecker,
+        private readonly SimilarityChecker $similarityChecker,
+        private readonly ImportFinisher $finisher
     ) {
         $this->logger = $importLogger;
-        $this->queueRepository = $queueRepository;
-        $this->integrityChecker = $integrityChecker;
-        $this->identityChecker = $identityChecker;
-        $this->similarityChecker = $similarityChecker;
-        $this->finisher = $finisher;
-        $this->importRepository = $importRepository;
     }
 
     public function __invoke(ItemBatch $batch): void

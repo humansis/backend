@@ -14,23 +14,14 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class CommodityService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
     /**
      * CommodityService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em = $entityManager;
     }
 
     /**
-     * @param Assistance $distribution
-     * @param array $commodityArray
-     * @param bool $flush
      * @return Commodity
      *
      * @deprecated

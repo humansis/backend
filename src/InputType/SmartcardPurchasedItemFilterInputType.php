@@ -14,9 +14,7 @@ use Request\FilterInputType\AbstractFilterInputType;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"SmartcardPurchasedItemFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['SmartcardPurchasedItemFilterInputType', 'Strict'])]
 class SmartcardPurchasedItemFilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;

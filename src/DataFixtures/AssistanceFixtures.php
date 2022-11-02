@@ -45,70 +45,18 @@ use Utils\ValueGenerator\ValueGenerator;
 
 class AssistanceFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    public const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
-    public const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
-    public const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
-    public const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
+    final public const REF_SMARTCARD_ASSISTANCE_KHM_KHR = '569f131a-387d-4588-9e17-ecd94f261a85';
+    final public const REF_SMARTCARD_ASSISTANCE_KHM_USD = '9ab17087-f54f-41ee-9b8d-c91d932d8ec2';
+    final public const REF_SMARTCARD_ASSISTANCE_SYR_SYP = 'e643bdbc-df6f-449a-b424-8c842a408e47';
+    final public const REF_SMARTCARD_ASSISTANCE_SYR_USD = '223b91e8-0f05-44b4-9c74-f156cbd95d1a';
 
-    private $kernel;
-
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var InstitutionRepository
-     */
-    private $institutionRepository;
-
-    /**
-     * @var AssistanceFactory
-     */
-    private $assistanceFactory;
-
-    /**
-     * @var CommunityRepository
-     */
-    private $communityRepository;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
-
-    public function __construct(
-        Kernel $kernel,
-        Countries $countries,
-        AssistanceFactory $assistanceFactory,
-        LocationRepository $locationRepository,
-        InstitutionRepository $institutionRepository,
-        CommunityRepository $communityRepository,
-        ProjectRepository $projectRepository,
-        AssistanceRepository $assistanceRepository
-    ) {
-        $this->kernel = $kernel;
-        $this->countries = $countries;
-        $this->assistanceFactory = $assistanceFactory;
-        $this->locationRepository = $locationRepository;
-        $this->institutionRepository = $institutionRepository;
-        $this->communityRepository = $communityRepository;
-        $this->projectRepository = $projectRepository;
-        $this->assistanceRepository = $assistanceRepository;
+    public function __construct(private readonly Kernel $kernel, private readonly Countries $countries, private readonly AssistanceFactory $assistanceFactory, private readonly LocationRepository $locationRepository, private readonly InstitutionRepository $institutionRepository, private readonly CommunityRepository $communityRepository, private readonly ProjectRepository $projectRepository, private readonly AssistanceRepository $assistanceRepository)
+    {
     }
 
     /**
      * Load data fixtures with the passed EntityManager.
      *
-     * @param ObjectManager $manager
      *
      * @throws CsvParserException
      * @throws EntityNotFoundException
@@ -122,7 +70,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             return;
         }
 
-        srand(42);
+        mt_srand(42);
 
         /**
          * @var $user User
@@ -175,8 +123,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Country $country
-     * @param Project $project
      *
      * @return void
      * @throws CsvParserException
@@ -204,8 +150,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Country $country
-     * @param Project $project
      *
      * @return void
      * @throws CsvParserException
@@ -234,8 +178,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Country $country
-     * @param Project $project
      *
      * @return void
      * @throws CsvParserException
@@ -247,9 +189,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private function loadCommonInstitutionAssistance(Country $country, Project $project)
     {
         $unarchivedInstitutions = $this->institutionRepository->getUnarchivedByProject($project);
-        $institutions = array_map(function (Institution $institution) {
-            return $institution->getId();
-        }, $unarchivedInstitutions);
+        $institutions = array_map(fn(Institution $institution) => $institution->getId(), $unarchivedInstitutions);
 
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
@@ -265,8 +205,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Country $country
-     * @param Project $project
      *
      * @return void
      * @throws CsvParserException
@@ -278,9 +216,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private function loadCommonCommunityAssistance(Country $country, Project $project)
     {
         $unarchivedCommunities = $this->communityRepository->getUnarchivedByProject($project);
-        $communities = array_map(function (Community $community) {
-            return $community->getId();
-        }, $unarchivedCommunities);
+        $communities = array_map(fn(Community $community) => $community->getId(), $unarchivedCommunities);
 
         foreach (Modality::values() as $modality) {
             $assistanceInput = $this->buildAssistanceInputType($country, $project);
@@ -296,10 +232,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     }
 
     /**
-     * @param Project $project
-     * @param string|null $currency
      *
-     * @return Assistance
      * @throws CsvParserException
      * @throws EntityNotFoundException
      * @throws NoResultException
@@ -325,24 +258,12 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         return $assistance;
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param User $user
-     *
-     * @return void
-     */
     private function validateAssistance(Assistance $assistance, User $user): void
     {
         $assistance->validate($user);
         $this->assistanceRepository->save($assistance);
     }
 
-    /**
-     * @param Country $country
-     * @param Project $project
-     *
-     * @return AssistanceCreateInputType
-     */
     private function buildAssistanceInputType(Country $country, Project $project): AssistanceCreateInputType
     {
         $expirationDate = DateTimeImmutable::createFromMutable($project->getEndDate());
@@ -362,12 +283,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         return $assistanceInputType;
     }
 
-    /**
-     * @param Country $country
-     * @param string $modalityType
-     *
-     * @return CommodityInputType
-     */
     private function buildCommoditiesType(Country $country, string $modalityType): CommodityInputType
     {
         $commodityType = new CommodityInputType();
@@ -393,16 +308,11 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
     private function buildDivisionInputType(): DivisionInputType
     {
         $divisionInputType = new DivisionInputType();
-        switch (ValueGenerator::int(0, 1)) {
-            case 0:
-                $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD);
-                break;
-            case 1:
-                $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD_MEMBER);
-                break;
-        }
-
-        return $divisionInputType;
+        match (ValueGenerator::int(0, 1)) {
+            0 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD),
+            1 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD_MEMBER),
+            default => $divisionInputType,
+        };
     }
 
     private function buildSelectionCriteriaInputType(): SelectionCriterionInputType

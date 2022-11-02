@@ -63,7 +63,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             'beneficiaryId' => $bnf->getId(),
         ]);
 
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
+        $smartcard = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -95,7 +95,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     public function testDoubledDeposit(): void
@@ -120,7 +120,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
     }
 
     private function getUnusedDepositDate(): DateTimeImmutable

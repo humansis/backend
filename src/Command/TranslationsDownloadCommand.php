@@ -17,18 +17,14 @@ use ZipArchive;
 
 class TranslationsDownloadCommand extends Command
 {
+    protected static $defaultName = 'translations:download';
     use ZipError;
 
-    /** @var HttpClient $client */
-    private $client;
+    private readonly \Symfony\Component\HttpClient\HttpClient $client;
 
-    /** @var OutputInterface */
-    private $output;
+    private ?\Symfony\Component\Console\Output\OutputInterface $output = null;
 
-    /** @var string */
-    private $translationsDir;
-
-    private $envConfig = [
+    private array $envConfig = [
         'local' => [
             'url' => 'http://172.17.0.1:8087/api/jwt',
             'password' => 'pin1234',
@@ -61,23 +57,19 @@ class TranslationsDownloadCommand extends Command
         ],
     ];
 
-    private $env = 'test';
+    private string $env = 'test';
 
     public function __construct(
-        string $translationsDir
+        private readonly string $translationsDir
     ) {
         parent::__construct();
-
-        $this->translationsDir = $translationsDir;
         $this->client = HttpClient::create();
     }
 
     protected function configure(): void
     {
         parent::configure();
-        $this
-            ->setName('translations:download')
-            ->setDescription('Download translations from remote environment')
+        $this->setDescription('Download translations from remote environment')
             ->addArgument('env', InputArgument::OPTIONAL, 'which environment (default is test)?');
     }
 
@@ -140,7 +132,7 @@ class TranslationsDownloadCommand extends Command
             'body' => json_encode([
                 'password' => $this->envConfig[$this->env]['password'],
                 'username' => $this->envConfig[$this->env]['username'],
-            ]),
+            ], JSON_THROW_ON_ERROR),
         ]);
 
         $statusCode = $response->getStatusCode();

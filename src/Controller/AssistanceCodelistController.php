@@ -22,33 +22,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AssistanceCodelistController extends AbstractController
 {
     /**
-     * @var SectorService
-     */
-    private $sectorService;
-
-    /** @var CodeListService */
-    private $codeListService;
-
-    /**
      * AssistanceCodelistController constructor.
-     *
-     * @param SectorService $sectorService
-     * @param CodeListService $codeListService
      */
-    public function __construct(
-        SectorService $sectorService,
-        CodeListService $codeListService
-    ) {
-        $this->sectorService = $sectorService;
-        $this->codeListService = $codeListService;
+    public function __construct(private readonly SectorService $sectorService, private readonly CodeListService $codeListService)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/assistances/targets")
      *
-     * @param AssistanceTargetFilterInputType $targetTypeFilterType
      *
-     * @return JsonResponse
      */
     public function getTargets(AssistanceTargetFilterInputType $targetTypeFilterType): JsonResponse
     {
@@ -65,9 +48,6 @@ class AssistanceCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/assistances/types")
-     *
-     * @param AssistanceTypeFilterInputType $typeSubsectorInputType
-     * @return JsonResponse
      */
     public function getTypes(AssistanceTypeFilterInputType $typeSubsectorInputType): JsonResponse
     {
@@ -78,9 +58,7 @@ class AssistanceCodelistController extends AbstractController
             if (is_null($sector)) {
                 $data = [];
             } else {
-                $fn = function ($value) use ($sector) {
-                    return $sector->isAssistanceTypeAllowed($value);
-                };
+                $fn = fn($value) => $sector->isAssistanceTypeAllowed($value);
 
                 $data = array_filter(AssistanceType::values(), $fn);
             }
@@ -93,8 +71,6 @@ class AssistanceCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/assistances/commodity/divisions")
-     *
-     * @return JsonResponse
      */
     public function getCommodityDivision(): JsonResponse
     {

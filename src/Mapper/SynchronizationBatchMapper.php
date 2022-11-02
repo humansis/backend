@@ -14,8 +14,7 @@ use Serializer\MapperInterface;
 
 class SynchronizationBatchMapper implements MapperInterface
 {
-    /** @var SynchronizationBatch */
-    private $object;
+    private ?\Entity\SynchronizationBatch $object = null;
 
     /**
      * {@inheritdoc}
@@ -37,9 +36,7 @@ class SynchronizationBatchMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . SynchronizationBatch::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . SynchronizationBatch::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -55,7 +52,7 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidationType(): string
     {
-        switch (get_class($this->object)) {
+        switch ($this->object::class) {
             case SynchronizationBatch\Deposits::class:
                 return 'Deposit';
             case SynchronizationBatch\Purchases::class:
@@ -92,7 +89,7 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getViolations(): ?string
     {
-        return json_encode($this->object->getViolations());
+        return json_encode($this->object->getViolations(), JSON_THROW_ON_ERROR);
     }
 
     public function getValidatedAt(): ?string

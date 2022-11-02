@@ -8,11 +8,11 @@ class SmartcardStates
 {
     use EnumTrait;
 
-    public const UNASSIGNED = 'unassigned';
-    public const ACTIVE = 'active';
-    public const INACTIVE = 'inactive';
-    public const REUSED = 'reused';
-    public const CANCELLED = 'cancelled';
+    final public const UNASSIGNED = 'unassigned';
+    final public const ACTIVE = 'active';
+    final public const INACTIVE = 'inactive';
+    final public const REUSED = 'reused';
+    final public const CANCELLED = 'cancelled';
 
     protected static $values = [
         self::UNASSIGNED,

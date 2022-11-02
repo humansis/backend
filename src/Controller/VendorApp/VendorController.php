@@ -10,12 +10,8 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class VendorController extends Controller
 {
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(private readonly SerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
     }
 
     /**
@@ -23,7 +19,6 @@ class VendorController extends Controller
      *
      * @Rest\Get("/vendor-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
      *
      * @return Response
      */

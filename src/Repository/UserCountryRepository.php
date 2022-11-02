@@ -16,9 +16,7 @@ use Entity\UserCountry;
 class UserCountryRepository extends EntityRepository
 {
     /**
-     * @param UserCountry $userCountry
      *
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */

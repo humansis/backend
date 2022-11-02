@@ -9,23 +9,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CampAddressInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $tentNumber;
 
-    /**
-     * @Assert\Valid
-     */
+    #[Assert\Valid]
     private $camp;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $campId;
 
     /**

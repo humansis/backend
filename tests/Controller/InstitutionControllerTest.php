@@ -71,7 +71,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             ],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -96,7 +96,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreate
      *
-     * @param int $id
      *
      * @return int
      * @throws ORMException
@@ -141,7 +140,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/web-app/v1/institutions/' . $id, $data);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -169,7 +168,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      *
      * @return int
      * @throws ORMException
@@ -179,7 +177,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/institutions/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -215,7 +213,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
             '/api/basic/web-app/v1/institutions?sort[]=name.asc&filter[projects][]=1&filter[fulltext]=a'
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -229,7 +227,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      *
-     * @param int $id
      *
      * @return int
      * @throws ORMException
@@ -247,7 +244,6 @@ class InstitutionControllerTest extends BMSServiceTestCase
     /**
      * @depends testDelete
      *
-     * @param int $id
      *
      * @throws ORMException
      * @throws OptimisticLockException
@@ -267,7 +263,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped('There is no institution to be tested');
         }
 

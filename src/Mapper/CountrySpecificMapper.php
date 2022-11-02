@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class CountrySpecificMapper implements MapperInterface
 {
-    /** @var CountrySpecific */
-    private $object;
+    private ?\Entity\CountrySpecific $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,9 +32,7 @@ class CountrySpecificMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . CountrySpecific::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . CountrySpecific::class . ', ' . $object::class . ' given.'
         );
     }
 

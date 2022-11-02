@@ -9,50 +9,38 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class OrganizationUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $logo;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $name;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $primaryColor;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $secondaryColor;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $font;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     * @Assert\NotNull()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $footerContent;
 
     /**

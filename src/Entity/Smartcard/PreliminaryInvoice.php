@@ -17,27 +17,23 @@ use Entity\Vendor;
 class PreliminaryInvoice
 {
     /**
-     * @var string
      *
      * @ORM\Column(type="string")
      * @ORM\Id
      */
-    private $id;
+    private string $id;
 
     /**
-     * @var Project|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Project")
      *
      */
-    private $project;
+    private ?\Entity\Project $project = null;
 
     /**
-     * @var Vendor
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Vendor")
      */
-    private $vendor;
+    private \Entity\Vendor $vendor;
 
     /**
      * @ORM\Column(name="value", type="decimal")
@@ -50,62 +46,40 @@ class PreliminaryInvoice
     private $currency;
 
     /**
-     * @var array
-     *
      * @ORM\Column(name="purchase_ids", type="json")
      */
-    private $purchaseIds;
+    private array $purchaseIds;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="purchase_count", type="integer")
      */
-    private $purchaseCount;
+    private int $purchaseCount;
 
-    /**
-     * @return Project|null
-     */
     public function getProject(): ?Project
     {
         return $this->project;
     }
 
-    /**
-     * @return Vendor
-     */
     public function getVendor(): Vendor
     {
         return $this->vendor;
     }
 
-    /**
-     * @return string
-     */
     public function getValue(): string
     {
         return $this->value;
     }
 
-    /**
-     * @return string
-     */
     public function getCurrency(): string
     {
         return $this->currency;
     }
 
-    /**
-     * @return array
-     */
     public function getPurchaseIds(): array
     {
         return $this->purchaseIds;
     }
 
-    /**
-     * @return int
-     */
     public function getPurchaseCount(): int
     {
         return $this->purchaseCount;

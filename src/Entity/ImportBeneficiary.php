@@ -23,39 +23,25 @@ class ImportBeneficiary
     use CreatedBy;
     use CreatedAt;
 
-    /**
-     * @var Import
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importBeneficiaries")
-     */
-    private $import;
-
-    /**
-     * @var Beneficiary
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="importBeneficiaries", cascade={"persist"})
-     * @ORM\JoinColumn(name="beneficiary_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $beneficiary;
-
-    public function __construct(Import $import, Beneficiary $beneficiary, User $creator)
-    {
-        $this->import = $import;
-        $this->beneficiary = $beneficiary;
+    public function __construct(/**
+         * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importBeneficiaries")
+         */
+        private Import $import, /**
+         *
+         * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="importBeneficiaries", cascade={"persist"})
+         * @ORM\JoinColumn(name="beneficiary_id", referencedColumnName="id", onDelete="CASCADE")
+         */
+        private Beneficiary $beneficiary,
+        User $creator
+    ) {
         $this->createdBy = $creator;
     }
 
-    /**
-     * @return Import
-     */
     public function getImport(): Import
     {
         return $this->import;
     }
 
-    /**
-     * @return Beneficiary
-     */
     public function getBeneficiary(): Beneficiary
     {
         return $this->beneficiary;

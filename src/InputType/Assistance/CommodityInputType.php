@@ -11,42 +11,31 @@ use Validator\Constraints\Enum;
 class CommodityInputType implements InputTypeNullableDenormalizer
 {
     /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      * @Enum(enumClass="Enum\ModalityType")
      */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $modalityType;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $unit;
 
-    /**
-     * @Assert\NotBlank(allowNull=true)
-     */
+    #[Assert\NotBlank(allowNull: true)]
     private $value = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="511")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 511)]
     private $description;
 
-    /**
-     * @var DivisionInputType|null
-     * @Assert\Valid
-     * @Assert\NotBlank(allowNull=true)
-     */
-    private $division;
+    #[Assert\Valid]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?\InputType\Assistance\DivisionInputType $division = null;
 
     /**
-     * @param DivisionInputType|null $divisionInputType
-     *
      * @return void
      */
     public function setDivision(?DivisionInputType $divisionInputType)
@@ -54,9 +43,6 @@ class CommodityInputType implements InputTypeNullableDenormalizer
         $this->division = $divisionInputType;
     }
 
-    /**
-     * @return DivisionInputType|null
-     */
     public function getDivision(): ?DivisionInputType
     {
         return $this->division;

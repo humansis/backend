@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class PreliminaryInvoiceDtoMapper implements MapperInterface
 {
-    /** @var PreliminaryInvoiceDto */
-    private $object;
+    private ?\Component\Smartcard\Invoice\PreliminaryInvoiceDto $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -27,9 +26,7 @@ class PreliminaryInvoiceDtoMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . PreliminaryInvoiceDto::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . PreliminaryInvoiceDto::class . ', ' . $object::class . ' given.'
         );
     }
 

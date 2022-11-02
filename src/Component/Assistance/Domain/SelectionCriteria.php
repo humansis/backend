@@ -10,33 +10,15 @@ use Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 
 class SelectionCriteria
 {
-    /** @var SelectionCriteriaEntity */
-    private $criteriaRoot;
-
-    /** @var CriterionConfiguration */
-    private $configuration;
-
-    /**
-     * @param SelectionCriteriaEntity $criteriaRoot
-     * @param CriterionConfiguration $configuration
-     */
-    public function __construct(SelectionCriteriaEntity $criteriaRoot, CriterionConfiguration $configuration)
+    public function __construct(private readonly SelectionCriteriaEntity $criteriaRoot, private readonly CriterionConfiguration $configuration)
     {
-        $this->criteriaRoot = $criteriaRoot;
-        $this->configuration = $configuration;
     }
 
-    /**
-     * @return SelectionCriteriaEntity
-     */
     public function getCriteriaRoot(): SelectionCriteriaEntity
     {
         return $this->criteriaRoot;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         if ($this->criteriaRoot->getTableString() === 'Personnal') {
@@ -46,9 +28,6 @@ class SelectionCriteria
         return 'table_field';
     }
 
-    /**
-     * @return string|null
-     */
     public function getConditionOperator(): ?string
     {
         return $this->criteriaRoot->getConditionString();
@@ -107,15 +86,11 @@ class SelectionCriteria
 
     public function getTypedValue()
     {
-        switch ($this->configuration->getReturnType()) {
-            case CriteriaValueTransformerEnum::CONVERT_TO_INT:
-                return (int) $this->getValueString();
-            case CriteriaValueTransformerEnum::CONVERT_TO_FLOAT:
-                return (float) $this->getValueString();
-            case CriteriaValueTransformerEnum::CONVERT_TO_BOOL:
-                return (bool) $this->getValueString();
-            default:
-                return $this->getValueString();
-        }
+        return match ($this->configuration->getReturnType()) {
+            CriteriaValueTransformerEnum::CONVERT_TO_INT => (int) $this->getValueString(),
+            CriteriaValueTransformerEnum::CONVERT_TO_FLOAT => (float) $this->getValueString(),
+            CriteriaValueTransformerEnum::CONVERT_TO_BOOL => (bool) $this->getValueString(),
+            default => $this->getValueString(),
+        };
     }
 }

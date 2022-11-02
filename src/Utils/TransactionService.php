@@ -33,79 +33,27 @@ class TransactionService
     /** @var string */
     private $email;
 
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-    /** @var DefaultFinancialProvider $financialProvider */
-    private $defaultFinancialProvider;
-
-    /** @var KHMFinancialProvider $khmFinancialProvider */
-    private $khmFinancialProvider;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var MailerInterface */
-    private $mailer;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * TransactionService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
-     * @param CacheInterface $cache
-     * @param Environment $twig
-     * @param LoggerInterface $mobileLogger
-     * @param MailerInterface $mailer
-     * @param ExportService $exportService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        CacheInterface $cache,
-        Environment $twig,
-        LoggerInterface $mobileLogger,
-        MailerInterface $mailer,
-        ExportService $exportService,
-        DefaultFinancialProvider $defaultFinancialProvider,
-        KHMFinancialProvider $khmFinancialProvider
+        private readonly EntityManagerInterface $em,
+        private readonly ContainerInterface $container,
+        private readonly CacheInterface $cache,
+        private readonly Environment $twig,
+        private readonly LoggerInterface $logger,
+        private readonly MailerInterface $mailer,
+        private readonly ExportService $exportService,
+        private readonly DefaultFinancialProvider $defaultFinancialProvider,
+        private readonly KHMFinancialProvider $khmFinancialProvider
     ) {
-        $this->em = $entityManager;
-        $this->container = $container;
         $this->email = $this->container->getParameter('email');
-        $this->logger = $mobileLogger;
-        $this->cache = $cache;
-        $this->twig = $twig;
-        $this->mailer = $mailer;
-        $this->exportService = $exportService;
-        $this->defaultFinancialProvider = $defaultFinancialProvider;
-        $this->khmFinancialProvider = $khmFinancialProvider;
     }
 
     /**
      * Send money to distribution beneficiaries
      *
-     * @param string $countryISO3
-     * @param Assistance $assistance
-     * @param User $user
      *
-     * @return object
      * @throws InvalidArgumentException
      * @throws \Psr\Cache\InvalidArgumentException
      * @throws Exception
@@ -143,7 +91,7 @@ class TransactionService
             } else {
                 $provider = $this->defaultFinancialProvider;
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $provider = null;
         }
 
@@ -151,7 +99,7 @@ class TransactionService
             $this->logger->error("Country $countryISO3 has no defined financial provider");
             throw new Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
-        $this->logger->error("Financial provider for country $countryISO3: " . get_class($provider));
+        $this->logger->error("Financial provider for country $countryISO3: " . $provider::class);
 
         return $provider;
     }
@@ -159,8 +107,6 @@ class TransactionService
     /**
      * Send email to confirm transaction
      *
-     * @param User $user
-     * @param Assistance $assistance
      * @return void
      * @throws InvalidArgumentException
      */
@@ -201,9 +147,6 @@ class TransactionService
     /**
      * Verify confirmation code
      *
-     * @param int $code
-     * @param User $user
-     * @param Assistance $assistance
      * @return bool
      * @throws InvalidArgumentException
      */
@@ -227,8 +170,6 @@ class TransactionService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv(Assistance $assistance, string $type)

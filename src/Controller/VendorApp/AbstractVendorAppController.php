@@ -16,8 +16,6 @@ class AbstractVendorAppController extends AbstractController
      * @param int $status
      * @param array $headers
      * @param array $context
-     *
-     * @return JsonResponse
      */
     protected function json($data, $status = Response::HTTP_OK, $headers = [], $context = []): JsonResponse
     {

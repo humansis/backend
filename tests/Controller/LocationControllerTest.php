@@ -33,7 +33,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/countries');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -57,7 +57,7 @@ class LocationControllerTest extends BMSServiceTestCase
             '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER)->getId() . '/countries'
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -82,7 +82,7 @@ class LocationControllerTest extends BMSServiceTestCase
             'GET',
             '/api/basic/web-app/v1/users/' . $this->getTestUser(self::USER_TESTER_VENDOR)->getId() . '/countries'
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -122,7 +122,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/countries/' . $iso3);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -141,7 +141,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm1');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -172,7 +172,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/adm1?filter[id][]=' . $location->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -195,7 +195,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm1/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -215,7 +215,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm1/' . $id . '/adm2');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -246,7 +246,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/adm2?filter[id][]=' . $location->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -272,7 +272,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm2/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -295,7 +295,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm2/' . $id . '/adm3');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -326,7 +326,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/adm3?filter[id][]=' . $location->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -352,7 +352,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm3/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -375,7 +375,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm3/' . $id . '/adm4');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -406,7 +406,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/adm4?filter[id][]=' . $location->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -432,7 +432,7 @@ class LocationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/adm4/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -457,7 +457,7 @@ class LocationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/locations?filter[id][]=' . $location->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

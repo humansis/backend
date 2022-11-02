@@ -28,11 +28,7 @@ use Enum\SmartcardStates;
 class ReliefPackageRepository extends EntityRepository
 {
     /**
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param string|null $reliefPackageStatus
-     * @param DateTimeInterface|null $beforeDate
      *
-     * @return ReliefPackage|null
      * @throws NonUniqueResultException
      */
     public function findForSmartcardByAssistanceBeneficiary(
@@ -61,13 +57,6 @@ class ReliefPackageRepository extends EntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
-
-    /**
-     * @param Vendor $vendor
-     * @param string $country
-     *
-     * @return Paginator
-     */
 
     public function getForVendor(Vendor $vendor, string $country): Paginator
     {
@@ -137,12 +126,6 @@ class ReliefPackageRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param ReliefPackageFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
     public function findByAssistance(Assistance $assistance, ?ReliefPackageFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
@@ -159,9 +142,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     *
      * @return float|int|mixed|string|null
      * @throws NonUniqueResultException
      */
@@ -184,8 +164,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param array|null $reliefPackageStates
      *
      * @return float|int|mixed|string
      * @throws NoResultException
@@ -208,8 +186,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param array|null $reliefPackageStates
      *
      * @return float|int|mixed|string
      * @throws NoResultException
@@ -239,7 +215,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @return ReliefPackage|null
      * @throws NonUniqueResultException
      */
     public function findRandomWithNotValidatedAssistance(): ?ReliefPackage

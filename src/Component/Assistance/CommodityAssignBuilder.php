@@ -9,9 +9,9 @@ use Entity\Commodity;
 
 class CommodityAssignBuilder
 {
-    private $fixedValues = [];
+    private array $fixedValues = [];
 
-    private $callbacks = [];
+    private array $callbacks = [];
 
     public function addCommodityValue(string $modality, string $unit, float $value): void
     {

@@ -97,7 +97,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -139,7 +139,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertArrayHasKey('amountDistributed', $result);
@@ -200,7 +200,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertEquals($expectedTotalSumAfter, (float) $result['amountTotal']);

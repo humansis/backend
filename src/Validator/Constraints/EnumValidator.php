@@ -70,9 +70,7 @@ class EnumValidator extends ConstraintValidator
         foreach ($values as $value) {
             $valueNormalized = EnumTrait::normalizeValue($value);
 
-            $allowedValuesNormalized = array_map(function ($value) {
-                return EnumTrait::normalizeValue($value);
-            }, $allowedValues);
+            $allowedValuesNormalized = array_map(fn($value) => EnumTrait::normalizeValue($value), $allowedValues);
 
             if (!in_array($valueNormalized, $allowedValuesNormalized)) {
                 $this->context->buildViolation($constraint->message)

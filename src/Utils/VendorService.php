@@ -20,43 +20,14 @@ use Entity\VoucherPurchase;
 
 class VendorService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var PdfService */
-    private $pdfService;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param PdfService $pdfService
-     * @param Environment $twig
-     * @param ExportService $exportService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        PdfService $pdfService,
-        Environment $twig,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->pdfService = $pdfService;
-        $this->twig = $twig;
-        $this->exportService = $exportService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly PdfService $pdfService, private readonly Environment $twig, private readonly ExportService $exportService)
+    {
     }
 
     /**
-     * @param VendorCreateInputType $inputType
-     * @return Vendor
      * @throws EntityNotFoundException
      * @throws NotUniqueException
      */
@@ -103,9 +74,6 @@ class VendorService
     }
 
     /**
-     * @param Vendor $vendor
-     * @param VendorUpdateInputType $inputType
-     * @return Vendor
      * @throws EntityNotFoundException
      * @throws NotUniqueException
      */
@@ -139,8 +107,6 @@ class VendorService
     /**
      * Archives Vendor
      *
-     * @param Vendor $vendor
-     * @param bool $archiveVendor
      * @return Vendor
      * @throws Exception
      */
@@ -150,7 +116,7 @@ class VendorService
             $vendor->setArchived($archiveVendor);
             $this->em->persist($vendor);
             $this->em->flush();
-        } catch (Exception $exception) {
+        } catch (Exception) {
             throw new Exception('Error archiving Vendor');
         }
 
@@ -158,8 +124,6 @@ class VendorService
     }
 
     /**
-     * @param User $user
-     * @return Vendor
      * @throws NotFoundHttpException
      */
     public function getVendorByUser(User $user): Vendor
@@ -178,7 +142,7 @@ class VendorService
     {
         try {
             $voucherPurchases = $this->em->getRepository(VoucherPurchase::class)->findByVendor($vendor);
-            if (0 === count($voucherPurchases)) {
+            if (0 === (is_countable($voucherPurchases) ? count($voucherPurchases) : 0)) {
                 throw new Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
@@ -239,8 +203,6 @@ class VendorService
     /**
      * Export all vendors in a CSV file
      *
-     * @param string $type
-     * @param string $countryISO3
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryISO3)

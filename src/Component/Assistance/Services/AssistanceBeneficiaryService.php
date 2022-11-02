@@ -34,44 +34,13 @@ use Workflow\ReliefPackageTransitions;
 
 class AssistanceBeneficiaryService
 {
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
-    private $assistanceBeneficiaryRepository;
-
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var Registry $workflowRegistry */
-    private $workflowRegistry;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /**
-     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
-     * @param CacheInterface $cache
-     * @param Registry $workflowRegistry
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        CacheInterface $cache,
-        Registry $workflowRegistry,
-        TranslatorInterface $translator
-    ) {
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->cache = $cache;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->translator = $translator;
+    public function __construct(private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, private readonly CacheInterface $cache, private readonly Registry $workflowRegistry, private readonly TranslatorInterface $translator)
+    {
     }
 
     /**
      * @param Beneficiary[] $beneficiaries
-     * @param array $documentNumbers
-     * @param string $documentType
      *
-     * @return AssistanceBeneficiaryOperationOutputType
      */
     public function prepareOutputForDocumentNumbers(
         array $beneficiaries,
@@ -89,7 +58,7 @@ class AssistanceBeneficiaryService
             }
         }
         foreach ($documentNumbers as $documentNumber) {
-            $key = strtolower($documentNumber);
+            $key = strtolower((string) $documentNumber);
             if (!key_exists($key, $beneficiaryDocuments)) {
                 $output->addDocumentNotFound($documentNumber);
             }
@@ -103,9 +72,7 @@ class AssistanceBeneficiaryService
         array $beneficiaryIds
     ): AssistanceBeneficiaryOperationOutputType {
         $output = new AssistanceBeneficiaryOperationOutputType($this->translator);
-        $foundBeneficiaries = array_map(function (Beneficiary $beneficiary) {
-            return $beneficiary->getId();
-        }, $beneficiaries);
+        $foundBeneficiaries = array_map(fn(Beneficiary $beneficiary) => $beneficiary->getId(), $beneficiaries);
 
         $notFoundBeneficiaries = array_diff($beneficiaryIds, $foundBeneficiaries);
         foreach ($notFoundBeneficiaries as $notFoundBeneficiaryId) {
@@ -116,11 +83,7 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary[] $beneficiaries
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
      *
      * @return void
      */
@@ -160,10 +123,6 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param AbstractBeneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
      *
      * @return AssistanceBeneficiary|object|null
      * @throws JsonException
@@ -206,13 +165,8 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
      *
-     * @return void
      * @throws JsonException
      */
     public function addBeneficiaryToAssistance(
@@ -226,10 +180,7 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary[] $beneficiaries
-     * @param string $justification
      *
      * @return void
      */
@@ -271,13 +222,6 @@ class AssistanceBeneficiaryService
         return $output;
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     * @param string $justification
-     *
-     * @return AssistanceBeneficiary|null
-     */
     private function removeAssistanceBeneficiary(
         Assistance $assistance,
         Beneficiary $beneficiary,
@@ -307,10 +251,7 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
-     * @param string $justification
      *
      */
     public function removeBeneficiaryFromAssistance(
@@ -322,12 +263,6 @@ class AssistanceBeneficiaryService
         $this->removeBeneficiariesFromAssistance($output, $assistance, [$beneficiary], $justification);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param array|null $targets
-     *
-     * @return void
-     */
     private function cancelUnusedReliefPackages(Assistance $assistance, ?array $targets = null): void
     {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
@@ -388,12 +323,6 @@ class AssistanceBeneficiaryService
         }
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallback(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -418,12 +347,6 @@ class AssistanceBeneficiaryService
         return $commodityBuilder;
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallbackPerHouseholdMember(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -447,12 +370,6 @@ class AssistanceBeneficiaryService
         return $commodityBuilder;
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallbackPerHouseholdMembers(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -494,7 +411,7 @@ class AssistanceBeneficiaryService
         } // not persisted yet
         try {
             $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             // TODO: log but ignore
         }
     }

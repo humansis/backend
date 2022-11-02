@@ -11,32 +11,22 @@ use Validator\Constraints\Enum;
 
 class NationalIdCardInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $number;
 
     /**
-     * @Assert\NotNull
      * @Enum(enumClass="Enum\NationalIdType")
      */
+    #[Assert\NotNull]
     private $type;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\NotNull
-     */
-    private $priority = 1;
+    #[Assert\Type('integer')]
+    #[Assert\NotNull]
+    private int $priority = 1;
 
-    /**
-     * @param string $type
-     * @param string $number
-     *
-     * @return NationalIdCardInputType
-     */
     public static function create(string $type, string $number): NationalIdCardInputType
     {
         $self = new self();
@@ -62,9 +52,6 @@ class NationalIdCardInputType implements InputTypeInterface
         $this->number = $number;
     }
 
-    /**
-     * @return string
-     */
     public function getOriginalType(): string
     {
         return $this->type;
@@ -94,10 +81,7 @@ class NationalIdCardInputType implements InputTypeInterface
         return $this->priority;
     }
 
-    /**
-     * @param mixed $priority
-     */
-    public function setPriority($priority): void
+    public function setPriority(mixed $priority): void
     {
         $this->priority = $priority;
     }

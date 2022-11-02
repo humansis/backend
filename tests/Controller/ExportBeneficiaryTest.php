@@ -23,6 +23,7 @@ class ExportBeneficiaryTest extends BMSServiceTestCase
      */
     public function testExport()
     {
+        $array = [];
         $exportservice = new ExportService($this->em, self::$container);
         $exportableTable = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
 

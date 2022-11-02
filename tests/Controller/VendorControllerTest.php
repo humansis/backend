@@ -79,7 +79,7 @@ class VendorControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -120,7 +120,6 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreate
      *
-     * @param array $vendor
      * @return mixed
      * @throws ORMException
      * @throws OptimisticLockException
@@ -146,7 +145,7 @@ class VendorControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -187,7 +186,6 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -196,7 +194,7 @@ class VendorControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/vendors/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -236,7 +234,7 @@ class VendorControllerTest extends BMSServiceTestCase
             "/api/basic/web-app/v1/vendors?filter[id][]=1&filter[invoicing]=$toRedeemInvoicingState&sort[]=name.asc"
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -269,7 +267,6 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -286,7 +283,6 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @depends testDelete
      *
-     * @param int $id
      * @throws ORMException
      * @throws OptimisticLockException
      */

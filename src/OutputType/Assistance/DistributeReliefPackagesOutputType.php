@@ -11,49 +11,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DistributeReliefPackagesOutputType implements InputTypeInterface
 {
-    /**
-     * @var array
-     */
-    private $notFound = [];
+    private array $notFound = [];
 
-    /**
-     * @var array
-     */
-    private $conflicts = [];
+    private array $conflicts = [];
 
-    /**
-     * @var array
-     */
-    private $successfullyDistributed = [];
+    private array $successfullyDistributed = [];
 
-    /**
-     * @var array
-     */
-    private $partiallyDistributed = [];
+    private array $partiallyDistributed = [];
 
-    /**
-     * @var array
-     */
-    private $alreadyDistributed = [];
+    private array $alreadyDistributed = [];
 
-    /**
-     * @var array
-     */
-    private $failed = [];
+    private array $failed = [];
 
-    /**
-     * @return array
-     */
     public function getSuccessfullyDistributed(): array
     {
         return $this->successfullyDistributed;
     }
 
-    /**
-     * @param array $successfullyDistributed
-     *
-     * @return $this
-     */
     public function setSuccessfullyDistributed(array $successfullyDistributed): DistributeReliefPackagesOutputType
     {
         $this->successfullyDistributed = $successfullyDistributed;
@@ -64,8 +38,6 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     /**
      * @param      $successfullyDistributedId
      * @param null $beneficiaryId
-     *
-     * @return $this
      */
     public function addSuccessfullyDistributed(
         $successfullyDistributedId,
@@ -81,19 +53,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getPartiallyDistributed(): array
     {
         return $this->partiallyDistributed;
     }
 
-    /**
-     * @param array $partiallyDistributed
-     *
-     * @return $this
-     */
     public function setPartiallyDistributed(array $partiallyDistributed): DistributeReliefPackagesOutputType
     {
         $this->partiallyDistributed = $partiallyDistributed;
@@ -104,8 +68,6 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     /**
      * @param      $partiallyDistributedId
      * @param null $beneficiaryId
-     *
-     * @return $this
      */
     public function addPartiallyDistributed(
         $partiallyDistributedId,
@@ -121,17 +83,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getAlreadyDistributed(): array
     {
         return $this->alreadyDistributed;
     }
 
-    /**
-     * @param array $alreadyDistributed
-     */
     public function setAlreadyDistributed(array $alreadyDistributed): void
     {
         $this->alreadyDistributed = $alreadyDistributed;
@@ -140,8 +96,6 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     /**
      * @param      $alreadyDistributedId
      * @param null $beneficiaryId
-     *
-     * @return $this
      */
     public function addAlreadyDistributed(
         $alreadyDistributedId,
@@ -157,17 +111,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getFailed(): array
     {
         return $this->failed;
     }
 
-    /**
-     * @param array $failed
-     */
     public function setFailed(array $failed): DistributeReliefPackagesOutputType
     {
         $this->failed = $failed;
@@ -178,8 +126,6 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     /**
      * @param $failedId
      * @param $message
-     *
-     * @return $this
      */
     public function addFailed($failedId, $message = null): DistributeReliefPackagesOutputType
     {
@@ -188,17 +134,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getNotFound(): array
     {
         return $this->notFound;
     }
 
-    /**
-     * @param array $notFound
-     */
     public function setNotFound(array $notFound): DistributeReliefPackagesOutputType
     {
         $this->notFound = $notFound;
@@ -216,17 +156,11 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getConflicts(): array
     {
         return $this->conflicts;
     }
 
-    /**
-     * @param array $conflicts
-     */
     public function setConflictIds(array $conflicts): DistributeReliefPackagesOutputType
     {
         $this->conflicts = $conflicts;
@@ -237,8 +171,6 @@ class DistributeReliefPackagesOutputType implements InputTypeInterface
     /**
      * @param $idNumber
      * @param $beneficiaries
-     *
-     * @return $this
      */
     public function addConflictId($idNumber, $beneficiaries): DistributeReliefPackagesOutputType
     {

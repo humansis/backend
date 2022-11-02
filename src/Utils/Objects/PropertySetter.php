@@ -13,7 +13,6 @@ trait PropertySetter
      * Set values to properties according to array
      * If property does not exist just silently continue
      *
-     * @param iterable $properties
      *
      * @return void
      */

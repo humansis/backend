@@ -31,23 +31,8 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class PurchasedSummarySpreadsheetExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var Countries */
-    private $countries;
-
-    /** @var PurchasedItemRepository */
-    private $repository;
-
-    public function __construct(
-        TranslatorInterface $translator,
-        Countries $countries,
-        PurchasedItemRepository $repository
-    ) {
-        $this->translator = $translator;
-        $this->countries = $countries;
-        $this->repository = $repository;
+    public function __construct(private readonly TranslatorInterface $translator, private readonly Countries $countries, private readonly PurchasedItemRepository $repository)
+    {
     }
 
     public function export(string $countryIso3, string $filetype, PurchasedItemFilterInputType $filter)

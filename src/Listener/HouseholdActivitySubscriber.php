@@ -14,30 +14,11 @@ use Entity\User;
 
 class HouseholdActivitySubscriber implements EventSubscriber
 {
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
     /**
      * Constuctor.
-     *
-     * @param TokenStorageInterface $tokenStorage
-     * @param EntityManagerInterface $em
-     * @param SerializerInterface $serializer
      */
-    public function __construct(
-        TokenStorageInterface $tokenStorage,
-        EntityManagerInterface $em,
-        SerializerInterface $serializer
-    ) {
-        $this->tokenStorage = $tokenStorage;
-        $this->em = $em;
-        $this->serializer = $serializer;
+    public function __construct(private readonly TokenStorageInterface $tokenStorage, private readonly EntityManagerInterface $em, private readonly SerializerInterface $serializer)
+    {
     }
 
     public function getSubscribedEvents()

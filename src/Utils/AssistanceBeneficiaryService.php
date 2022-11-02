@@ -32,29 +32,14 @@ use Symfony\Contracts\Cache\CacheInterface;
  */
 class AssistanceBeneficiaryService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * AssistanceBeneficiaryService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    {
     }
 
     /**
-     * @param array $objectBeneficiary
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv(array $objectBeneficiary, string $type)

@@ -15,10 +15,7 @@ class ReliefPackageController extends AbstractVendorAppController
     /**
      * @Rest\Get("/vendor-app/v1/vendors/{id}/relief-packages")
      *
-     * @param Request $request
-     * @param Vendor $vendor
      *
-     * @return JsonResponse
      */
     public function beneficiaries(Vendor $vendor, Request $request): JsonResponse
     {

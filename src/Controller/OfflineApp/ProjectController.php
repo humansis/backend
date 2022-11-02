@@ -13,28 +13,14 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProjectController extends AbstractOfflineAppController
 {
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var ProjectMapper
-     */
-    private $projectMapper;
-
-    public function __construct(ProjectRepository $projectRepository, ProjectMapper $projectMapper)
+    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectMapper $projectMapper)
     {
-        $this->projectRepository = $projectRepository;
-        $this->projectMapper = $projectMapper;
     }
 
     /**
      * @Rest\Get("/offline-app/v1/projects")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function getProjects(Request $request): JsonResponse
     {
@@ -51,11 +37,8 @@ class ProjectController extends AbstractOfflineAppController
     }
 
     /**
-     * @param Request $request
      *
-     * @return JsonResponse
      * @deprecated This endpoint is not consumed by app because of different interface
-     *
      * @Rest\Get("/offline-app/v2/projects")
      *
      */

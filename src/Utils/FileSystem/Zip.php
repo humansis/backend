@@ -13,14 +13,12 @@ final class Zip
     private const TEMP_DIR_CREATION_ATTEMPTS = 1000;
 
     /**
-     * @return string
-     *
      * @throws RuntimeException
      */
     private static function createTempDir(): string
     {
         for ($i = 0; $i < self::TEMP_DIR_CREATION_ATTEMPTS; $i++) {
-            $path = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . mt_rand() . time();
+            $path = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . random_int(0, mt_getrandmax()) . time();
             if (mkdir($path)) {
                 return $path;
             }
@@ -30,8 +28,6 @@ final class Zip
     }
 
     /**
-     * @param File $file
-     *
      * @return array of extracted files in format:
      *      original path in archive => absolute path to extracted file on disc
      */

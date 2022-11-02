@@ -15,8 +15,7 @@ use Serializer\MapperInterface;
 
 class HouseholdMapper implements MapperInterface
 {
-    /** @var Household */
-    private $object;
+    private ?\Entity\Household $object = null;
 
     /**
      * {@inheritdoc}
@@ -38,7 +37,7 @@ class HouseholdMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Household::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Household::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -58,9 +57,7 @@ class HouseholdMapper implements MapperInterface
     public function getAssets(): iterable
     {
         return array_values(
-            array_map(function ($item) {
-                return (string) $item;
-            }, $this->object->getAssets())
+            array_map(fn($item) => (string) $item, $this->object->getAssets())
         );
     }
 
@@ -75,9 +72,7 @@ class HouseholdMapper implements MapperInterface
     public function getProjectIds(): iterable
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getProjects()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getProjects()->toArray())
         );
     }
 
@@ -111,9 +106,7 @@ class HouseholdMapper implements MapperInterface
     public function getCountrySpecificAnswerIds(): iterable
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getCountrySpecificAnswers()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getCountrySpecificAnswers()->toArray())
         );
     }
 
@@ -123,9 +116,7 @@ class HouseholdMapper implements MapperInterface
     public function getBeneficiaryIds(): iterable
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getBeneficiaries()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getBeneficiaries()->toArray())
         );
     }
 
@@ -136,9 +127,7 @@ class HouseholdMapper implements MapperInterface
     {
         $vulnerabilities = [];
         foreach ($this->object->getBeneficiaries() as $beneficiary) {
-            $vulnerabilityNames = array_map(function (VulnerabilityCriterion $vulnerability) {
-                return $vulnerability->getFieldString();
-            }, $beneficiary->getVulnerabilityCriteria()->toArray());
+            $vulnerabilityNames = array_map(fn(VulnerabilityCriterion $vulnerability) => $vulnerability->getFieldString(), $beneficiary->getVulnerabilityCriteria()->toArray());
             $vulnerabilities = array_merge($vulnerabilities, $vulnerabilityNames);
         }
 
@@ -178,9 +167,7 @@ class HouseholdMapper implements MapperInterface
     public function getSupportReceivedTypes(): iterable
     {
         return array_values(
-            array_map(function ($item) {
-                return (string) $item;
-            }, $this->object->getSupportReceivedTypes())
+            array_map(fn($item) => (string) $item, $this->object->getSupportReceivedTypes())
         );
     }
 

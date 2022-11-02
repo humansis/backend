@@ -9,9 +9,7 @@ use InputType\FilterFragment\PrimaryIdFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"ProjectFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['ProjectFilterInputType', 'Strict'])]
 class ProjectFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;

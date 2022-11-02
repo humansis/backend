@@ -6,10 +6,10 @@ class ResidencyStatus
 {
     use EnumTrait;
 
-    public const REFUGEE = 'refugee';
-    public const IDP = 'IDP';
-    public const RESIDENT = 'resident';
-    public const RETURNEE = 'returnee';
+    final public const REFUGEE = 'refugee';
+    final public const IDP = 'IDP';
+    final public const RESIDENT = 'resident';
+    final public const RETURNEE = 'returnee';
 
     protected static $values = [
         self::REFUGEE,

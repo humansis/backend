@@ -24,23 +24,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class DistributedSummarySpreadsheetExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var Countries */
-    private $countries;
-
-    /** @var DistributedItemRepository */
-    private $repository;
-
-    public function __construct(
-        TranslatorInterface $translator,
-        Countries $countries,
-        DistributedItemRepository $repository
-    ) {
-        $this->translator = $translator;
-        $this->countries = $countries;
-        $this->repository = $repository;
+    public function __construct(private readonly TranslatorInterface $translator, private readonly Countries $countries, private readonly DistributedItemRepository $repository)
+    {
     }
 
     public function export(string $countryIso3, string $filetype, DistributedItemFilterInputType $filter)

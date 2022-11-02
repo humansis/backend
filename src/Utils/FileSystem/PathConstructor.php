@@ -8,12 +8,6 @@ use InvalidArgumentException;
 
 final class PathConstructor
 {
-    /**
-     * @param string $pathTemplate
-     * @param array $parameters
-     *
-     * @return string
-     */
     public static function construct(string $pathTemplate, array $parameters): string
     {
         $path = $pathTemplate;

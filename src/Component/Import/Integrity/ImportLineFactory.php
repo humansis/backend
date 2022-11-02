@@ -11,20 +11,8 @@ use InvalidArgumentException;
 
 class ImportLineFactory
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param Countries $countries
-     */
-    public function __construct(EntityManagerInterface $entityManager, Countries $countries)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly Countries $countries)
     {
-        $this->entityManager = $entityManager;
-        $this->countries = $countries;
     }
 
     public function createFromData(array $data, string $countryIso): ImportLine
@@ -37,8 +25,6 @@ class ImportLineFactory
     }
 
     /**
-     * @param ImportQueue $importQueue
-     *
      * @return ImportLine[]
      */
     public function createAll(ImportQueue $importQueue): iterable
@@ -48,12 +34,6 @@ class ImportLineFactory
         }
     }
 
-    /**
-     * @param ImportQueue $importQueue
-     * @param int $beneficiaryIndex
-     *
-     * @return ImportLine
-     */
     public function create(ImportQueue $importQueue, int $beneficiaryIndex): ImportLine
     {
         return $this->createFromData(

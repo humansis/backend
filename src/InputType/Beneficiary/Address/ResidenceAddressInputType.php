@@ -9,33 +9,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ResidenceAddressInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
     private $number;
 
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private $street;
 
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
     private $postcode;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $locationId;
 
     /**

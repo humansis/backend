@@ -202,7 +202,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $this->assertEquals('ERROR', $beneficiariesData[0][ImportTemplate::ROW_NAME_STATUS]['value']);
         $this->assertGreaterThan(
             0,
-            count(explode("\n", $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value']))
+            count(explode("\n", (string) $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value']))
         );
     }
 

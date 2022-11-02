@@ -19,54 +19,19 @@ use Repository\ScoringBlueprintRepository;
 
 final class ScoringService
 {
-    /**
-     * @var ScoringResolver
-     */
-    private $resolver;
-
-    /**
-     * @var OldResolver
-     */
-    private $oldResolver;
-
-    /**
-     * @var ScoringFactory
-     */
-    private $scoringFactory;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var ScoringBlueprintRepository
-     */
-    private $scoringBlueprintRepository;
-
-    /**
-     * @var ScoringCsvParser
-     */
-    private $parser;
+    private readonly \Component\Assistance\Scoring\ScoringCsvParser $parser;
 
     public function __construct(
-        ScoringResolver $resolver,
-        OldResolver $oldResolver,
-        ScoringFactory $scoringFactory,
-        BeneficiaryRepository $beneficiaryRepository,
-        ScoringBlueprintRepository $scoringBlueprintRepository
+        private readonly ScoringResolver $resolver,
+        private readonly OldResolver $oldResolver,
+        private readonly ScoringFactory $scoringFactory,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+        private readonly ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
-        $this->resolver = $resolver;
-        $this->oldResolver = $oldResolver;
-        $this->scoringFactory = $scoringFactory;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
         $this->parser = new ScoringCsvParser();
     }
 
     /**
-     * @param VulnerabilityScoreInputType $input
-     * @param string $countryCode
      *
      * @return VulnerabilityScore[]
      *
@@ -110,10 +75,6 @@ final class ScoringService
     }
 
     /**
-     * @param string $name
-     * @param string $csv
-     *
-     * @return bool
      * @throws CsvParserException
      * @throws ScoreValidationException
      */

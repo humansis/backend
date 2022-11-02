@@ -25,35 +25,30 @@ class GeneralReliefItem
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance'])]
     private $id;
 
     /**
-     * @var DateTime|null
-     *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
-    private $distributedAt;
+    #[SymfonyGroups(['ValidatedAssistance'])]
+    private ?\DateTime $distributedAt = null;
 
     /**
-     * @var string|null
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
-    private $notes;
+    #[SymfonyGroups(['ValidatedAssistance'])]
+    private ?string $notes = null;
 
     /**
-     * @var AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", cascade={"persist"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
-    private $assistanceBeneficiary;
+    private ?\Entity\AssistanceBeneficiary $assistanceBeneficiary = null;
 
     /**
      * Get id.

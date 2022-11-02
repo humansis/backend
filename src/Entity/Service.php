@@ -17,20 +17,17 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Service implements JsonSerializable
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
      */
-    private $name;
+    private string $name;
 
     /**
      * @var json
@@ -40,11 +37,9 @@ class Service implements JsonSerializable
     private $parameters;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="country", type="string", length=255, nullable=true)
      */
-    private $country;
+    private string $country;
 
     /**
      * @var OrganizationServices $organizationServices
@@ -138,7 +133,6 @@ class Service implements JsonSerializable
     /**
      * Add OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
      *
      * @return OrganizationServices
      */
@@ -155,7 +149,6 @@ class Service implements JsonSerializable
     /**
      * Remove OrganizationServices.
      *
-     * @param OrganizationServices $organizationServices
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */

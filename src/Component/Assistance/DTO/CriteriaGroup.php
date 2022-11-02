@@ -8,25 +8,13 @@ use Component\Assistance\Domain\SelectionCriteria;
 
 class CriteriaGroup
 {
-    /** @var int */
-    private $groupNumber;
-
-    /** @var SelectionCriteria[] */
-    private $criteria;
-
     /**
-     * @param int $groupNumber
      * @param SelectionCriteria[] $criteria
      */
-    public function __construct(int $groupNumber, array $criteria)
+    public function __construct(private readonly int $groupNumber, private readonly array $criteria)
     {
-        $this->groupNumber = $groupNumber;
-        $this->criteria = $criteria;
     }
 
-    /**
-     * @return int
-     */
     public function getGroupNumber(): int
     {
         return $this->groupNumber;

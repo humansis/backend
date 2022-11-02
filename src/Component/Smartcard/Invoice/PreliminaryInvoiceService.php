@@ -12,26 +12,11 @@ use Repository\Smartcard\PreliminaryInvoiceRepository;
 
 class PreliminaryInvoiceService
 {
-    /**
-     * @var PreliminaryInvoiceRepository
-     */
-    private $preliminaryInvoiceRepository;
-
-    /**
-     * @var InvoiceChecker
-     */
-    private $invoiceChecker;
-
-    public function __construct(
-        PreliminaryInvoiceRepository $preliminaryInvoiceRepository,
-        InvoiceChecker $invoiceChecker
-    ) {
-        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
-        $this->invoiceChecker = $invoiceChecker;
+    public function __construct(private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository, private readonly InvoiceChecker $invoiceChecker)
+    {
     }
 
     /**
-     * @param Vendor $vendor
      * @return PreliminaryInvoiceDto[]
      */
     public function getArrayOfPreliminaryInvoicesDtoByVendor(Vendor $vendor): array
@@ -47,7 +32,6 @@ class PreliminaryInvoiceService
     }
 
     /**
-     * @param Vendor $vendor
      * @return PreliminaryInvoice[]
      */
     public function getRedeemablePreliminaryInvoicesByVendor(Vendor $vendor): array
@@ -64,7 +48,6 @@ class PreliminaryInvoiceService
 
     /**
      * @param Vendor[] $vendors
-     * @param string $invoicingState
      * @return Vendor[]
      * @throws WrongInvoicingStateHttpException
      */
@@ -78,7 +61,7 @@ class PreliminaryInvoiceService
             $preliminaryInvoices = $this->getPreliminaryInvoicesByVendor($vendor);
             switch ($invoicingState) {
                 case VendorInvoicingState::INVOICED:
-                    if (count($preliminaryInvoices) === 0) {
+                    if (count((array) $preliminaryInvoices) === 0) {
                         $vendorsSelection[] = $vendor;
                     }
                     break;
@@ -106,7 +89,6 @@ class PreliminaryInvoiceService
     }
 
     /**
-     * @param Vendor $vendor
      * @return PreliminaryInvoice[]
      */
     private function getPreliminaryInvoicesByVendor(Vendor $vendor): array
@@ -115,9 +97,7 @@ class PreliminaryInvoiceService
     }
 
     /**
-     * @param Vendor $vendor
      * @param PreliminaryInvoice[] $preliminaryInvoices
-     * @return bool
      */
     private function isVendorInSyncRequiredState(Vendor $vendor, array $preliminaryInvoices): bool
     {
@@ -133,9 +113,7 @@ class PreliminaryInvoiceService
     }
 
     /**
-     * @param Vendor $vendor
      * @param PreliminaryInvoice[] $preliminaryInvoices
-     * @return bool
      */
     private function isVendorInToRedeemState(Vendor $vendor, array $preliminaryInvoices): bool
     {

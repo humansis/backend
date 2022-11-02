@@ -9,36 +9,23 @@ use InvalidArgumentException;
 final class ScoringRule
 {
     /**
-     * One of Enum\ScoringRuleType
-     *
-     * @var string
-     */
-    private $type;
-
-    /**
-     * $type = countrySpecific: name of country specific option (Entity\CountrySpecific::$fieldString)
-     * $type = calculation: name of method which performs the calculation (in RulesCalculation)
-     * $type = enum: name of enum class
-     *
-     * @var string
-     */
-    private $fieldName;
-
-    /**
-     * @var string
-     */
-    private $title;
-
-    /**
      * @var ScoringRuleOption[]
      */
-    private $options = [];
+    private array $options = [];
 
-    public function __construct(string $type, string $fieldName, string $title)
-    {
-        $this->type = $type;
-        $this->fieldName = $fieldName;
-        $this->title = $title;
+    public function __construct(
+        /**
+         * One of Enum\ScoringRuleType
+         */
+        private readonly string $type,
+        /**
+         * $type = countrySpecific: name of country specific option (Entity\CountrySpecific::$fieldString)
+         * $type = calculation: name of method which performs the calculation (in RulesCalculation)
+         * $type = enum: name of enum class
+         */
+        private readonly string $fieldName,
+        private readonly string $title
+    ) {
     }
 
     public function addOption(ScoringRuleOption $option): void
@@ -46,17 +33,11 @@ final class ScoringRule
         $this->options[] = $option;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return string
-     */
     public function getFieldName(): string
     {
         return $this->fieldName;
@@ -70,11 +51,6 @@ final class ScoringRule
         return $this->options;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return ScoringRuleOption
-     */
     public function getOptionByValue(string $value): ScoringRuleOption
     {
         foreach ($this->options as $option) {
@@ -86,9 +62,6 @@ final class ScoringRule
         throw new InvalidArgumentException("Scoring rule {$this->title} does not have option with value $value.");
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;

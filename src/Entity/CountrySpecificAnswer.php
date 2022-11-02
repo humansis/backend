@@ -18,34 +18,27 @@ use Doctrine\ORM\Mapping as ORM;
 class CountrySpecificAnswer
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="answer", type="string", length=255, nullable=true)
      */
-    private $answer;
+    private string $answer;
 
     /**
-     * @var CountrySpecific
-     *
      * @ORM\ManyToOne(targetEntity="Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
      */
-    private $countrySpecific;
+    private ?\Entity\CountrySpecific $countrySpecific = null;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="countrySpecificAnswers")
      */
-    private $household;
+    private ?\Entity\Household $household = null;
 
     /**
      * Get id.

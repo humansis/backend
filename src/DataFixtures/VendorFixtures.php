@@ -13,23 +13,15 @@ use Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const REF_VENDOR_KHM = 'vendor_fixtures_khm';
-    public const REF_VENDOR_SYR = 'vendor_fixtures_syr';
-    public const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
-    public const VENDOR_KHM_NAME = 'Vendor from Cambodia';
-    public const VENDOR_SYR_NAME = 'Vendor from Syria';
-    public const VENDOR_COUNT_PER_COUNTRY = 3;
+    final public const REF_VENDOR_KHM = 'vendor_fixtures_khm';
+    final public const REF_VENDOR_SYR = 'vendor_fixtures_syr';
+    final public const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
+    final public const VENDOR_KHM_NAME = 'Vendor from Cambodia';
+    final public const VENDOR_SYR_NAME = 'Vendor from Syria';
+    final public const VENDOR_COUNT_PER_COUNTRY = 3;
 
-    /** @var Kernel */
-    private $kernel;
-
-    /** @var Countries */
-    private $countries;
-
-    public function __construct(Kernel $kernel, Countries $countries)
+    public function __construct(private readonly Kernel $kernel, private readonly Countries $countries)
     {
-        $this->kernel = $kernel;
-        $this->countries = $countries;
     }
 
     /**
@@ -41,7 +33,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
-        srand(42);
+        mt_srand(42);
 
         $vendorSyr = $this->createSyrVendor($manager);
         $vendorKhm = $this->createKhmVendor($manager);
@@ -135,9 +127,9 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $vendor
             ->setName('Generic vendor from ' . $country)
             ->setShop('generic')
-            ->setAddressNumber(rand(1, 1000))
+            ->setAddressNumber(random_int(1, 1000))
             ->setAddressStreet('Main street')
-            ->setAddressPostcode(rand(10000, 99999))
+            ->setAddressPostcode(random_int(10000, 99999))
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2)

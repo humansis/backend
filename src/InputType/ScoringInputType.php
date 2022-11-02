@@ -12,27 +12,22 @@ class ScoringInputType implements InputTypeInterface
 {
     /**
      * @var string
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
      */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private $name;
 
-    /**
-     * @Assert\Type("bool")
-     */
+    #[Assert\Type('bool')]
     private $archived = false;
 
     /**
      * @IsBase64()
-     * @Assert\Type("string")
-     * @Assert\NotBlank
      */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
     private $content;
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
@@ -50,9 +45,6 @@ class ScoringInputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isArchived(): bool
     {
         return $this->archived;
@@ -60,8 +52,6 @@ class ScoringInputType implements InputTypeInterface
 
     /**
      * @param $archived
-     *
-     * @return ScoringInputType
      */
     public function setArchived($archived): ScoringInputType
     {
@@ -75,15 +65,13 @@ class ScoringInputType implements InputTypeInterface
      */
     public function getContent()
     {
-        return base64_decode($this->content);
+        return base64_decode((string) $this->content);
     }
 
     /**
-     * @param mixed $content
-     *
      * @return ScoringInputType
      */
-    public function setContent($content)
+    public function setContent(mixed $content)
     {
         $this->content = $content;
 

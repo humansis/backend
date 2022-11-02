@@ -14,8 +14,6 @@ use Entity\Vendor;
 class PreliminaryInvoiceRepository extends EntityRepository
 {
     /**
-     * @param Vendor $vendor
-     * @param string|null $invoicingState
      *
      * @return PreliminaryInvoice[]
      */
@@ -26,31 +24,21 @@ class PreliminaryInvoiceRepository extends EntityRepository
             ->setParameter('vendor', $vendor->getId());
 
         if ($invoicingState) {
-            switch ($invoicingState) {
-                case VendorInvoicingState::SYNC_REQUIRED:
-                    $qb->andWhere('pi.project IS NULL');
-                    break;
-                case VendorInvoicingState::TO_REDEEM:
-                    $qb->andWhere('pi.project IS NOT NULL');
-                    break;
-                default:
-                    throw new InvalidArgumentException(
-                        'Invoicing state should be one of [' . implode(
-                            ',',
-                            VendorInvoicingState::notCompletedValues()
-                        ) . '], ' . $invoicingState . ' given.'
-                    );
-            }
+            match ($invoicingState) {
+                VendorInvoicingState::SYNC_REQUIRED => $qb->andWhere('pi.project IS NULL'),
+                VendorInvoicingState::TO_REDEEM => $qb->andWhere('pi.project IS NOT NULL'),
+                default => throw new InvalidArgumentException(
+                    'Invoicing state should be one of [' . implode(
+                        ',',
+                        VendorInvoicingState::notCompletedValues()
+                    ) . '], ' . $invoicingState . ' given.'
+                ),
+            };
         }
 
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param string $alias
-     *
-     * @return QueryBuilder
-     */
     public function provideQueryBuilder(string $alias = 'pi'): QueryBuilder
     {
         return $this->createQueryBuilder($alias);

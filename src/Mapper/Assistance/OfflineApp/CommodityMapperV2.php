@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class CommodityMapperV2 implements MapperInterface
 {
-    /** @var Commodity */
-    private $object;
+    private ?\Entity\Commodity $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class CommodityMapperV2 implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Commodity::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Commodity::class . ', ' . $object::class . ' given.'
         );
     }
 

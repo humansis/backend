@@ -8,9 +8,7 @@ use InputType\FilterFragment\PrimaryIdFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"CampFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['CampFilterInputType', 'Strict'])]
 class CampFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;

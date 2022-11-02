@@ -12,50 +12,25 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
     private $documentNumbers;
 
-    private $documentType;
+    private array $notFound = [];
 
-    /**
-     * @var array
-     */
-    private $notFound = [];
+    private array $success = [];
 
-    /**
-     * @var array
-     */
-    private $success = [];
+    private array $alreadyRemoved = [];
 
-    /**
-     * @var array
-     */
-    private $alreadyRemoved = [];
-
-    /**
-     * @var array
-     */
-    private $failed = [];
-
-    /** @var TranslatorInterface */
-    private $translator;
+    private array $failed = [];
 
     /**
      * @param array|null $documentNumbers
-     * @param string|null $documentType
      */
     public function __construct(
-        TranslatorInterface $translator,
+        private readonly TranslatorInterface $translator,
         array $documentNumbers = [],
-        string $documentType = null
+        private readonly ?string $documentType = null
     ) {
-        $this->documentNumbers = array_map(function ($number) {
-            return strtolower($number);
-        }, $documentNumbers);
-        $this->documentType = $documentType;
-        $this->translator = $translator;
+        $this->documentNumbers = array_map(fn($number) => strtolower((string) $number), $documentNumbers);
     }
 
-    /**
-     * @return array
-     */
     public function getNotFound(): array
     {
         return $this->notFound;
@@ -93,11 +68,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param array $notFound
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setNotFound(array $notFound): AssistanceBeneficiaryOperationOutputType
     {
         $this->notFound = $notFound;
@@ -105,19 +75,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getSuccess(): array
     {
         return $this->success;
     }
 
-    /**
-     * @param array $success
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setSuccess(array $success): AssistanceBeneficiaryOperationOutputType
     {
         $this->success = $success;
@@ -143,19 +105,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getFailed(): array
     {
         return $this->failed;
     }
 
-    /**
-     * @param array $failed
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setFailed(array $failed): AssistanceBeneficiaryOperationOutputType
     {
         $this->failed = $failed;
@@ -170,12 +124,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     * @param string $message
-     *
-     * @return $this
-     */
     public function addBeneficiaryFailed(
         Beneficiary $beneficiary,
         string $message
@@ -190,13 +138,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     * @param array|null $documentNumbers
-     * @param string|null $documentType
-     *
-     * @return string|null
-     */
     private function getInputIdNumber(Beneficiary $beneficiary, ?array $documentNumbers, ?string $documentType): ?string
     {
         if ($documentNumbers === null || $documentType === null) {
@@ -212,9 +153,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return null;
     }
 
-    /**
-     * @return array
-     */
     public function getAlreadyRemoved(): array
     {
         return $this->alreadyRemoved;
@@ -247,11 +185,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param array $alreadyRemoved
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setAlreadyRemoved(array $alreadyRemoved): AssistanceBeneficiaryOperationOutputType
     {
         $this->alreadyRemoved = $alreadyRemoved;

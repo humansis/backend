@@ -16,10 +16,7 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/camps")
      *
-     * @param Request $request
-     * @param CampFilterInputType $filterInputType
      *
-     * @return JsonResponse
      */
     public function camps(Request $request, CampFilterInputType $filterInputType): JsonResponse
     {
@@ -39,9 +36,7 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/camps/{id}")
      *
-     * @param Camp $camp
      *
-     * @return JsonResponse
      */
     public function camp(Camp $camp): JsonResponse
     {
@@ -51,9 +46,7 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations/{id}/camps")
      *
-     * @param Location $location
      *
-     * @return JsonResponse
      */
     public function campsByLocation(Location $location): JsonResponse
     {

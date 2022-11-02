@@ -19,9 +19,6 @@ trait DateIntervalFilterTrait
      */
     protected $dateTo;
 
-    /**
-     * @return string
-     */
     public function getDateFrom(): string
     {
         return $this->dateFrom;
@@ -32,9 +29,6 @@ trait DateIntervalFilterTrait
         return $this->has('dateFrom');
     }
 
-    /**
-     * @return string
-     */
     public function getDateTo(): string
     {
         return $this->dateTo;

@@ -40,46 +40,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 class Assistance
 {
-    /** @var Entity\Assistance */
-    private $assistanceRoot;
-
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var AssistanceStatisticsRepository */
-    private $assistanceStatisticRepository;
-
-    /** @var AssistanceBeneficiaryRepository */
-    private $targetRepository;
-
-    /** @var Registry $workflowRegistry */
-    private $workflowRegistry;
-
-    /** @var SelectionCriteriaFactory */
-    private $selectionCriteriaFactory;
-
-    /**
-     * @param Entity\Assistance $assistanceEntity
-     * @param CacheInterface $cache
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param Registry $workflowRegistry
-     * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
-     */
-    public function __construct(
-        Entity\Assistance $assistanceEntity,
-        CacheInterface $cache,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        Registry $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory
-    ) {
-        $this->assistanceRoot = $assistanceEntity;
-        $this->cache = $cache;
-        $this->assistanceStatisticRepository = $assistanceStatisticRepository;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->targetRepository = $targetRepository;
-        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
+    public function __construct(private readonly Entity\Assistance $assistanceRoot, private readonly CacheInterface $cache, private readonly AssistanceStatisticsRepository $assistanceStatisticRepository, private readonly Registry $workflowRegistry, private readonly AssistanceBeneficiaryRepository $targetRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory)
+    {
     }
 
     public function getStatistics(?string $countryIso3 = null): array
@@ -92,7 +54,7 @@ class Assistance
                     $this->assistanceRoot,
                     $countryIso3
                 );
-            } catch (NoResultException $noResultException) {
+            } catch (NoResultException) {
                 throw new NotFoundHttpException(
                     "Assistance {$this->assistanceRoot->getId()} is not in country $countryIso3"
                 );
@@ -225,56 +187,49 @@ class Assistance
                     );
                 }
             }
-            switch ($commodity->getDivision()) {
-                case CommodityDivision::PER_HOUSEHOLD_MEMBER:
-                    $commodityBuilder->addCommodityCallback(
-                        $modality,
-                        $unit,
-                        function (AssistanceBeneficiary $target) use ($commodity) {
-                            /** @var Household $household */
-                            $household = $target->getBeneficiary();
+            match ($commodity->getDivision()) {
+                CommodityDivision::PER_HOUSEHOLD_MEMBER => $commodityBuilder->addCommodityCallback(
+                    $modality,
+                    $unit,
+                    function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
 
-                            // fallback for HH assistances directed to HHHs
-                            if ($household instanceof Beneficiary) {
-                                $household = $household->getHousehold();
-                            }
-
-                            return $commodity->getValue() * count($household->getBeneficiaries());
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
                         }
-                    );
-                    break;
-                case CommodityDivision::PER_HOUSEHOLD_MEMBERS:
-                    $commodityBuilder->addCommodityCallback(
-                        $modality,
-                        $unit,
-                        function (AssistanceBeneficiary $target) use ($commodity) {
-                            /** @var Household $household */
-                            $household = $target->getBeneficiary();
 
-                            // fallback for HH assistances directed to HHHs
-                            if ($household instanceof Beneficiary) {
-                                $household = $household->getHousehold();
-                            }
+                        return $commodity->getValue() * count($household->getBeneficiaries());
+                    }
+                ),
+                CommodityDivision::PER_HOUSEHOLD_MEMBERS => $commodityBuilder->addCommodityCallback(
+                    $modality,
+                    $unit,
+                    function (AssistanceBeneficiary $target) use ($commodity) {
+                        /** @var Household $household */
+                        $household = $target->getBeneficiary();
 
-                            $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
-                            foreach ($commodity->getDivisionGroups() as $divisionGroup) {
-                                if (
-                                    ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
-                                    && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
-                                ) {
-                                    return (float) $divisionGroup->getValue();
-                                }
-                            }
-
-                            throw new LogicException("Division Group was not found.");
+                        // fallback for HH assistances directed to HHHs
+                        if ($household instanceof Beneficiary) {
+                            $household = $household->getHousehold();
                         }
-                    );
-                    break;
-                case CommodityDivision::PER_HOUSEHOLD:
-                default:
-                    $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue());
-                    break;
-            }
+
+                        $countOfBeneficiariesInHousehold = $household->getBeneficiaries()->count();
+                        foreach ($commodity->getDivisionGroups() as $divisionGroup) {
+                            if (
+                                ($divisionGroup->getRangeFrom() <= $countOfBeneficiariesInHousehold)
+                                && ($countOfBeneficiariesInHousehold <= ($divisionGroup->getRangeTo() ?? 1000))
+                            ) {
+                                return (float) $divisionGroup->getValue();
+                            }
+                        }
+
+                        throw new LogicException("Division Group was not found.");
+                    }
+                ),
+                default => $commodityBuilder->addCommodityValue($modality, $unit, $commodity->getValue()),
+            };
         }
 
         foreach ($modalityUnits as $modalityName => $units) {
@@ -292,9 +247,6 @@ class Assistance
         $this->cleanCache();
     }
 
-    /**
-     * @param array|null $targets
-     */
     private function expireUnusedReliefPackages(?array $targets = null): void
     {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
@@ -338,13 +290,6 @@ class Assistance
         }
     }
 
-    /**
-     * @param AbstractBeneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
-     *
-     * @return Assistance
-     */
     public function addBeneficiary(
         AbstractBeneficiary $beneficiary,
         ?string $justification = null,
@@ -383,8 +328,6 @@ class Assistance
     }
 
     /**
-     * @param AbstractBeneficiary $beneficiary
-     * @param string $justification
      *
      * @return $this
      */
@@ -425,7 +368,7 @@ class Assistance
         } // not persisted yet
         try {
             $this->cache->delete(CacheTarget::assistanceId($this->assistanceRoot->getId()));
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             // TODO: log but ignore
         }
     }
@@ -461,17 +404,13 @@ class Assistance
 
     /**
      * Get all active beneficiaries (not removed or archived)
-     *
-     * @return ArrayCollection
      */
     public function getBeneficiaries(): ArrayCollection
     {
-        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(function ($item) {
-            /**
+        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(fn($item) => /**
              * @var AssistanceBeneficiary $item
              */
-            return ($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false);
-        });
+($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false));
     }
 
     public function addSelectionCriteria(SelectionCriteria $selectionCriteria): void

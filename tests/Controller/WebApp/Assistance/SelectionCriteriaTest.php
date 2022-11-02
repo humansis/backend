@@ -41,8 +41,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
     /**
      * @param $criteria array[] will be in distinct groups
-     *
-     * @return array
      */
     private function assistanceWithCriteria($criteria): array
     {
@@ -216,7 +214,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         }',
             $this->client->getResponse()->getContent(),
         );
-        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($contentArray['data'] as $summary) {
             $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
@@ -235,7 +233,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertGreaterThan(0, $contentArray['totalCount']);
     }
 

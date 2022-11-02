@@ -14,48 +14,33 @@ use Doctrine\ORM\Mapping as ORM;
 class Address
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
      */
-    private $number;
+    private ?string $number = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
      */
-    private $street;
+    private string $street;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
      */
-    private $postcode;
+    private string $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Location")
      */
     private $location;
 
-    /**
-     * @param string|null $street
-     * @param string|null $number
-     * @param string|null $postCode
-     * @param Location|null $location
-     *
-     * @return self
-     */
     public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self
     {
         $address = new Address();

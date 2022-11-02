@@ -24,28 +24,15 @@ use Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceExport
 {
-    public const TEMPLATE_VERSION = '1.3';
-    public const DATE_FORMAT = 'j-n-y';
-    public const EOL = "\r\n";
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var SmartcardPurchaseRepository */
-    private $purchaseRepository;
+    final public const TEMPLATE_VERSION = '1.3';
+    final public const DATE_FORMAT = 'j-n-y';
+    final public const EOL = "\r\n";
 
     /**
      * SmartcardInvoiceExport constructor.
-     *
-     * @param TranslatorInterface $translator
-     * @param SmartcardPurchaseRepository $purchaseRepository
      */
-    public function __construct(
-        TranslatorInterface $translator,
-        SmartcardPurchaseRepository $purchaseRepository
-    ) {
-        $this->translator = $translator;
-        $this->purchaseRepository = $purchaseRepository;
+    public function __construct(private readonly TranslatorInterface $translator, private readonly SmartcardPurchaseRepository $purchaseRepository)
+    {
     }
 
     public function export(Invoice $invoice, Organization $organization, User $user, string $language)
@@ -140,10 +127,6 @@ class SmartcardInvoiceExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet $worksheet
-     * @param TranslatorInterface $translator
-     * @param Organization $organization
-     * @param Invoice $invoice
      *
      * @throws Exception
      */

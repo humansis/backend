@@ -66,14 +66,11 @@ class ExportControllerTest extends BMSServiceTestCase
     /**
      * @dataProvider availableExportProvider
      *
-     * @param string $type
-     * @param string $otherQuery
-     * @param array $body
      *
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testExport(string $type, string $otherQuery, array $body = [])
+    public function testExport(string $type, string $otherQuery, array $body = []): never
     {
         $this->markTestSkipped('Export tests takes too much time. It kills processing.');
 

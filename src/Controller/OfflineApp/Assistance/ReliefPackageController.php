@@ -14,17 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReliefPackageController extends AbstractOfflineAppController
 {
-    /**
-     * @var AssistanceDistributionService
-     */
-    private $assistanceDistributionService;
-
-    /**
-     * @param AssistanceDistributionService $assistanceDistributionService
-     */
-    public function __construct(AssistanceDistributionService $assistanceDistributionService)
+    public function __construct(private readonly AssistanceDistributionService $assistanceDistributionService)
     {
-        $this->assistanceDistributionService = $assistanceDistributionService;
     }
 
     /**
@@ -32,8 +23,6 @@ class ReliefPackageController extends AbstractOfflineAppController
      * @ParamConverter(class="InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
-     *
-     * @return Response
      */
     public function distributePackages(
         array $packages

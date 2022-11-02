@@ -11,25 +11,14 @@ use Enum\EnumValueNoFoundException;
  */
 class EnumsBuilder
 {
-    /** @var string */
-    private $enumClassName;
+    private bool $nullToEmptyArrayTransformation = false;
 
-    /** @var bool */
-    private $nullToEmptyArrayTransformation = false;
+    private array $explodeDelimiters = [',', ';'];
 
-    private $explodeDelimiters = [',', ';'];
-
-    /**
-     * @param string $enumClassName
-     */
-    public function __construct(string $enumClassName)
+    public function __construct(private readonly string $enumClassName)
     {
-        $this->enumClassName = $enumClassName;
     }
 
-    /**
-     * @param bool $nullToEmptyArrayTransformation
-     */
     public function setNullToEmptyArrayTransformation(bool $nullToEmptyArrayTransformation = true): void
     {
         $this->nullToEmptyArrayTransformation = $nullToEmptyArrayTransformation;
@@ -56,7 +45,7 @@ class EnumsBuilder
             try {
                 $enumValues[] = $transformed = $this->enumClassName::valueFromAPI($apiValue);
                 // echo "$apiValue => $transformed\n";
-            } catch (EnumValueNoFoundException $exception) {
+            } catch (EnumValueNoFoundException) {
                 $enumValues[] = $apiValue;
             }
         }
@@ -80,7 +69,7 @@ class EnumsBuilder
     private function explode(iterable $values, $delimiter): iterable
     {
         foreach ($values as $value) {
-            foreach (explode($delimiter, $value) as $shard) {
+            foreach (explode($delimiter, (string) $value) as $shard) {
                 if (strlen(trim($shard)) > 0) {
                     yield trim($shard);
                 }

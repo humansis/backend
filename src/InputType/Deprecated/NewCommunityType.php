@@ -10,8 +10,8 @@ class NewCommunityType extends UpdateCommunityType
 {
     /**
      * @var int[]
-     * @Assert\NotNull
-     * @Assert\Count(min="1")
      */
+    #[Assert\NotNull]
+    #[Assert\Count(min: 1)]
     public $projects;
 }

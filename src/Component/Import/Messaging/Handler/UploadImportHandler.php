@@ -20,37 +20,15 @@ class UploadImportHandler implements MessageHandlerInterface
     use ImportQueueLoggerTrait;
     use ImportLoggerTrait;
 
-    /** @var ImportFileRepository */
-    private $importFileRepository;
-
-    /** @var UploadImportService */
-    private $uploadImportService;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    /**
-     * @param LoggerInterface $importLogger
-     * @param ImportFileRepository $importFileRepository
-     * @param UploadImportService $uploadImportService
-     * @param MessageBusInterface $messageBus
-     */
     public function __construct(
         LoggerInterface $importLogger,
-        ImportFileRepository $importFileRepository,
-        UploadImportService $uploadImportService,
-        MessageBusInterface $messageBus
+        private readonly ImportFileRepository $importFileRepository,
+        private readonly UploadImportService $uploadImportService,
+        private readonly MessageBusInterface $messageBus
     ) {
         $this->logger = $importLogger;
-        $this->importFileRepository = $importFileRepository;
-        $this->uploadImportService = $uploadImportService;
-        $this->messageBus = $messageBus;
     }
 
-    /**
-     * @param UploadFileFinished $uploadFile
-     *
-     */
     public function __invoke(UploadFileFinished $uploadFile): void
     {
         $importFile = $this->importFileRepository->find($uploadFile->getImportFileId());

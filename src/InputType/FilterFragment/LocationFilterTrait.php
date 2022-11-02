@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait LocationFilterTrait
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -17,11 +16,9 @@ trait LocationFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $locations;
 
-    /**
-     * @return bool
-     */
     public function hasLocations(): bool
     {
         return $this->has('locations');

@@ -74,7 +74,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamp()
+    public function testGetCamp(): never
     {
         $this->markTestSkipped('There is no camp');
 
@@ -87,7 +87,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps/' . $camp->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -109,7 +109,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamps()
+    public function testGetCamps(): never
     {
         $this->markTestSkipped('There is no camp');
 
@@ -122,7 +122,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps?filter[id][]=' . $campAddress->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -148,7 +148,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/residencies/' . $residence->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -195,7 +195,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlement()
+    public function testGetTemporarySettlement(): never
     {
         $this->markTestSkipped('There is no temporary settlement');
 
@@ -208,7 +208,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements/' . $settlement->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -231,7 +231,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlements()
+    public function testGetTemporarySettlements(): never
     {
         $this->markTestSkipped('There is no temporary settlement');
 

@@ -9,33 +9,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class TemporarySettlementAddressInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank(allowNull=true)
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank(allowNull: true)]
     private $number;
 
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank(allowNull=true)
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank(allowNull: true)]
     private $street;
 
-    /**
-     * @Assert\Type("scalar")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank(allowNull=true)
-     */
+    #[Assert\Type('scalar')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank(allowNull: true)]
     private $postcode;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $locationId;
 
     /**

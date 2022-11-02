@@ -14,22 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AssistanceController extends AbstractOfflineAppController
 {
-    /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
-
-    public function __construct(
-        AssistanceRepository $assistanceRepository
-    ) {
-        $this->assistanceRepository = $assistanceRepository;
+    public function __construct(private readonly AssistanceRepository $assistanceRepository)
+    {
     }
 
     /**
      * @Rest\Get("/offline-app/{version}/projects/{id}/distributions")
      *
-     * @param string $version
-     * @param Project $project
      *
      * @return void
      */

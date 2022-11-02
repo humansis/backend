@@ -32,7 +32,7 @@ class ImportDuplicityTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    final public const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -46,25 +46,18 @@ class ImportDuplicityTest extends KernelTestCase
     /** @var UploadImportService */
     private $uploadService;
 
-    /** @var Project */
-    private $project;
+    private \Entity\Project $project;
 
-    /** @var Import */
-    private $import;
+    private readonly \Entity\Import $import;
 
-    /** @var Household */
-    private $originHousehold;
+    private \Entity\Household $originHousehold;
 
-    /** @var ImportFile */
-    private $importFile;
+    private readonly \Entity\ImportFile $importFile;
 
     /** @var ProjectService */
     private $projectService;
 
-    /**
-     * @var object|KernelBrowser|null
-     */
-    private $client;
+    private object|\Symfony\Bundle\FrameworkBundle\KernelBrowser|null $client;
 
     protected function setUp(): void
     {

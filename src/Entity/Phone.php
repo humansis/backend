@@ -13,48 +13,37 @@ use Doctrine\ORM\Mapping as ORM;
 class Phone
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="number", type="string", length=45)
      */
-    private $number;
+    private string $number;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="type", type="string", length=45, nullable=true)
      */
-    private $type;
+    private ?string $type = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="prefix", type="string", length=45)
      */
-    private $prefix;
+    private string $prefix;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="proxy", type="boolean")
      */
-    private $proxy = false;
+    private bool $proxy = false;
 
     /**
-     * @var Person
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="phones")
      */
-    private $person;
+    private ?\Entity\Person $person = null;
 
     /**
      * Get id.
@@ -117,9 +106,7 @@ class Phone
     /**
      * Set type.
      *
-     * @param string|null $type
      *
-     * @return Phone
      */
     public function setType(?string $type): Phone
     {
@@ -130,8 +117,6 @@ class Phone
 
     /**
      * Get type.
-     *
-     * @return string|null
      */
     public function getType(): ?string
     {
@@ -165,7 +150,6 @@ class Phone
     /**
      * Set beneficiary.
      *
-     * @param Person|null $person
      *
      * @return Phone
      */

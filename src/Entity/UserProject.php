@@ -14,34 +14,27 @@ use Entity\Project;
 class UserProject
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="projects", cascade={"persist"})
      */
-    private $user;
+    private ?\Entity\User $user = null;
 
     /**
-     * @var Project
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="usersProject")
      */
-    private $project;
+    private ?\Entity\Project $project = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="rights", type="string")
      */
-    private $rights;
+    private string $rights;
 
     /**
      * Get id.

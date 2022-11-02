@@ -12,30 +12,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LogsCleanCommand extends Command
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var LogsStorageService
-     */
-    private $logsStorageService;
-
-    public function __construct(LoggerInterface $logger, LogsStorageService $logsStorageService)
+    protected static $defaultName = 'aws:logs:clean';
+    public function __construct(private readonly LoggerInterface $logger, private readonly LogsStorageService $logsStorageService)
     {
         parent::__construct();
-
-        $this->logger = $logger;
-        $this->logsStorageService = $logsStorageService;
     }
 
     protected function configure()
     {
         parent::configure();
-        $this
-            ->setName('aws:logs:clean')
-            ->setDescription('Clean all old logs sent by vendor app or field app');
+        $this->setDescription('Clean all old logs sent by vendor app or field app');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -24,9 +24,6 @@ class InputTypeNullableDenormalizerConverter extends InputTypeConverter
         return in_array(InputTypeNullableDenormalizer::class, class_implements($class));
     }
 
-    /**
-     * @return ContextAwareDenormalizerInterface
-     */
     protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
     {
         return new ArrayNullableDenormalizer();

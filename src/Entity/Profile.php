@@ -13,20 +13,17 @@ use Doctrine\ORM\Mapping as ORM;
 class Profile
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="photo", type="string", length=255)
      */
-    private $photo;
+    private string $photo;
 
     /**
      * Get id.
