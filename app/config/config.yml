@@ -239,26 +239,6 @@ fos_rest:
     serializer:
         serialize_null: true
 
-# Nelmio ApiDoc Bundle
-nelmio_api_doc:
-    areas:
-        path_patterns: # an array of regexps
-            - ^/api(?!/doc$)
-    documentation:
-        info:
-            title: Beneficiary Management System
-
-nelmio_cors:
-    defaults:
-        allow_credentials: true
-        allow_origin: []
-        allow_headers: ['*']
-        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
-        max_age: 3600
-        expose_headers: []
-        hosts: []
-        origin_regex: false
-
 services:
     acme.aws_s3.client:
         class: Aws\S3\S3Client
