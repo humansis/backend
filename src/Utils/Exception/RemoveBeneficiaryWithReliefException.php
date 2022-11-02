@@ -21,7 +21,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getMessageTemplate()
+    public function getMessageTemplate(): string
     {
         return 'Beneficiary {{ name }} can\'t be removed from assistance. He has already received a relief.';
     }
@@ -29,7 +29,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return [
             '{{ name }}' => $this->beneficiary->getLocalGivenName() . ' ' . $this->beneficiary->getLocalFamilyName(),
@@ -39,7 +39,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getPlural()
+    public function getPlural(): int
     {
         return 1;
     }
@@ -47,7 +47,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getRoot()
+    public function getRoot(): Beneficiary
     {
         return $this->beneficiary;
     }
@@ -55,15 +55,15 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getPropertyPath()
+    public function getPropertyPath(): string
     {
-        return null;
+        return '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getInvalidValue()
+    public function getInvalidValue(): Beneficiary
     {
         return $this->beneficiary;
     }

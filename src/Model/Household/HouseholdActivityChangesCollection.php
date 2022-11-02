@@ -24,7 +24,7 @@ class HouseholdActivityChangesCollection implements JsonSerializable, IteratorAg
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = [];
 
@@ -51,7 +51,7 @@ class HouseholdActivityChangesCollection implements JsonSerializable, IteratorAg
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new ArrayIterator($this->jsonSerialize());
     }
