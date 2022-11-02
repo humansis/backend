@@ -62,7 +62,6 @@ services:
             RDS_USERNAME: bms_user
             RDS_PASSWORD: aA123
             HID_SECRET: xxx
-            GOOGLE_CLIENT: xxx
             MOBILE_MASTER_KEY: xxx
             MOBILE_MASTER_KEY_VERSION: xxx
             JWT_PASSPHRASE: xxx
@@ -111,7 +110,6 @@ services:
             RDS_USERNAME: bms_user
             RDS_PASSWORD: aA123
             HID_SECRET: xxx
-            GOOGLE_CLIENT: xxx
             MOBILE_MASTER_KEY: xxx
             MOBILE_MASTER_KEY_VERSION: xxx
             JWT_PASSPHRASE: xxx
