@@ -1330,6 +1330,8 @@ services:
             - '@monolog.logger'
             - '@security.token_storage'
             - '%kernel.root_dir%'
+            -
+    Utils\Provider\DefaultFinancialProvider: '@transaction.default_financial_provider'
 
     transaction.khm_financial_provider:
         class: Utils\Provider\KHMFinancialProvider
@@ -1337,6 +1339,8 @@ services:
         autowire: false
         autoconfigure: false
         public: true
+
+    Utils\Provider\KHMFinancialProvider: '@transaction.khm_financial_provider'
 
     Export\DistributedSummarySpreadsheetExport:
         alias: export.distributed_summary.spreadsheet

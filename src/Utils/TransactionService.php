@@ -20,6 +20,7 @@ use Entity\Transaction;
 use Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use Entity\User;
+use Utils\Provider\KHMFinancialProvider;
 
 /**
  * Class TransactionService
@@ -38,7 +39,10 @@ class TransactionService
     private $container;
 
     /** @var DefaultFinancialProvider $financialProvider */
-    private $financialProvider;
+    private $defaultFinancialProvider;
+
+    /** @var KHMFinancialProvider $khmFinancialProvider */
+    private $khmFinancialProvider;
 
     /** @var LoggerInterface */
     private $logger;
@@ -77,7 +81,9 @@ class TransactionService
         Environment $twig,
         LoggerInterface $mobileLogger,
         Swift_Mailer $mailer,
-        ExportService $exportService
+        ExportService $exportService,
+        DefaultFinancialProvider $defaultFinancialProvider,
+        KHMFinancialProvider $khmFinancialProvider
     ) {
         $this->em = $entityManager;
         $this->container = $container;
@@ -87,6 +93,8 @@ class TransactionService
         $this->twig = $twig;
         $this->mailer = $mailer;
         $this->exportService = $exportService;
+        $this->defaultFinancialProvider = $defaultFinancialProvider;
+        $this->khmFinancialProvider = $khmFinancialProvider;
     }
 
     /**
@@ -103,7 +111,7 @@ class TransactionService
      */
     public function sendMoney(string $countryISO3, Assistance $assistance, User $user): object
     {
-        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+        $financialProvider = $this->getFinancialProviderForCountry($countryISO3);
 
         if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::MOBILE_MONEY) {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
@@ -116,7 +124,7 @@ class TransactionService
         $from = $user->getId();
         $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
 
-        return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
+        return $financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
     }
 
     /**
@@ -129,7 +137,11 @@ class TransactionService
     private function getFinancialProviderForCountry(string $countryISO3)
     {
         try {
-            $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
+            if ($countryISO3 === 'KHM') {
+                $provider = $this->khmFinancialProvider;
+            } else {
+                $provider = $this->defaultFinancialProvider;
+            }
         } catch (Exception $e) {
             $provider = null;
         }
