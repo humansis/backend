@@ -9,14 +9,9 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function __construct(private readonly EncoderFactoryInterface $encoderFactory)
-    {
-    }
-
     public function getDependencies(): array
     {
         return [
