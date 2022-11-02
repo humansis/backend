@@ -2,8 +2,10 @@
 
 namespace Services;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
+use Enum\ReliefPackageState;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
@@ -13,6 +15,7 @@ use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Repository\SmartcardDepositRepository;
 use Throwable;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
@@ -199,5 +202,30 @@ class AssistanceDistributionService
             $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
         }
         $this->reliefPackageRepository->save($reliefPackage);
+    }
+
+    public function deleteDistribution($reliefPackages, $smartcardDeposits)
+    {
+
+        $this->em->getConnection()->beginTransaction();
+        try {
+            $smartcardDeposit = $this->smartcardDepositRepository->find($smartcardDeposits[0]->getId());
+            $this->em->remove($smartcardDeposit);
+
+            $reliefPackage = $this->reliefPackageRepository->find($reliefPackages[0]->getId());
+            $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
+            $reliefPackage->setAmountDistributed("0");
+            $reliefPackage->setDistributedAt(null);
+            $reliefPackage->setDistributedBy(null);
+            $this->em->persist($reliefPackage);
+
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            if ($this->em->getConnection()->isTransactionActive()) {
+                $this->em->getConnection()->rollBack();
+            }
+            throw $e;
+        }
     }
 }
