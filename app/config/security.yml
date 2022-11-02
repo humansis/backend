@@ -1,6 +1,7 @@
 security:
     encoders:
-        Entity\User: sha512
+        Entity\User:
+            algorithm: sha512
 
     providers:
         our_db_provider:

@@ -15,7 +15,6 @@ class UserCreateInputType implements InputTypeInterface
      *
      * @Assert\Length(max="180")
      * @Assert\Type("string")
-     * @Assert\NotNull
      * @Assert\NotBlank
      */
     private $email;
@@ -73,7 +72,6 @@ class UserCreateInputType implements InputTypeInterface
      *
      * @Assert\Type("array")
      * @Assert\NotBlank
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})

@@ -9,7 +9,6 @@ class UserInitializeInputType implements InputTypeInterface
 {
     /**
      * @Assert\Type("string")
-     * @Assert\NotNull
      * @Assert\NotBlank
      * @Assert\Length(min=2, max=180)
      */

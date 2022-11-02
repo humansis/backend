@@ -12,7 +12,6 @@ use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
@@ -53,7 +52,7 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
 
     /**
      * @var string
-     * @ORM\Column(name="password", type="string")
+     * @ORM\Column(name="password", type="string", nullable=false)
      */
     protected $password;
 
@@ -625,6 +624,20 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function eraseCredentials(): void

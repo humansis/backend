@@ -7,8 +7,12 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Exception;
 use Enum\RoleType;
 use Entity\Project;
+use InputType\UserCreateInputType;
+use InputType\UserInitializeInputType;
+use Repository\UserRepository;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tests\BMSServiceTestCase;
 use Entity\User;
 use Entity\UserCountry;
@@ -27,27 +31,25 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     /** @var Kernel $kernel */
     private $kernel;
 
-//    /** @var UserManager $manager */
-//    private $manager;
-
-    /** @var EncoderFactoryInterface $encoderFactory */
-    private $encoderFactory;
-
-    /**
-     * @var UserService
-     */
+    /** @var UserService  */
     private $userService;
 
+    /** @var ValidatorInterface  */
+    private $validator;
+
+    /** @var UserRepository */
+    private $repository;
+
     public function __construct(
-        //        UserManager $manager,
-        EncoderFactoryInterface $encoderFactory,
         Kernel $kernel,
-        UserService $userService
+        UserService $userService,
+        ValidatorInterface $validator,
+        UserRepository $repository
     ) {
-//        $this->manager = $manager;
-        $this->encoderFactory = $encoderFactory;
         $this->kernel = $kernel;
         $this->userService = $userService;
+        $this->validator = $validator;
+        $this->repository = $repository;
     }
 
     private $defaultCountries = ["KHM", "SYR", "UKR", "ETH", "MNG", "ARM", "ZMB"];
@@ -163,8 +165,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         if ($instance instanceof User) {
             echo "User {$instance->getUsername()} already exists. Ommit creation.\n";
         } else {
-            //$instance = $this->saveDataAsUser($userData, $manager);
-            throw new Exception('instance is not user');
+            $instance = $this->saveDataAsUser($userData);
         }
 
         $this->makeAccessRights($manager, $instance, $countries);
@@ -181,6 +182,27 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         }
 
         return $instance;
+    }
+
+    private function saveDataAsUser(array $userData): User
+    {
+        $userInitializeInputType = new UserInitializeInputType();
+        $userInitializeInputType->setUsername($userData['email']);
+        $this->validator->validate($userInitializeInputType);
+
+        $initializedUser = $this->userService->initialize($userInitializeInputType, $userData['salt']);
+
+        /** @var User $user */
+        $user = $this->repository->find($initializedUser['userId']);
+
+        $userCreateInputType = new UserCreateInputType();
+        $userCreateInputType->setEmail($userData['email']);
+        $userCreateInputType->setPassword($userData['passwd']);
+        $userCreateInputType->setRoles([$userData['roles']]);
+        $userCreateInputType->setChangePassword(false);
+        $this->validator->validate($userCreateInputType);
+
+        return $this->userService->create($user, $userCreateInputType);
     }
 
     private function makeAccessRights(ObjectManager $manager, User $instance, array $countryCodes)
