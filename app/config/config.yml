@@ -202,23 +202,30 @@ doctrine:
                 levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
                 levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
         metadata_cache_driver:
-            type: array
+            type: pool
+            id: doctrine.system_cache_pool
         result_cache_driver:
-            type: array
+            type: pool
+            id: doctrine.system_cache_pool
         query_cache_driver:
-            type: array
+            type: pool
+            id: doctrine.system_cache_pool
         hydrators:
             plain_values_hydrator: Hydration\PlainValuesHydrator
 
 
 doctrine_migrations:
-    dir_name:             "%kernel.project_dir%/DoctrineMigrations"
-    namespace:            Application\Migrations
-    table_name:           migration_versions
-    name:                 Application Migrations
+    migrations_paths:
+        'Application\Migrations': "%kernel.project_dir%/DoctrineMigrations"
+    storage:
+        # Default (SQL table) metadata storage configuration
+        table_storage:
+            table_name: 'migration_versions'
+            version_column_name: 'version'
+            version_column_length: 192
     organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
     custom_template:      ~ # Version >= 1.2, path to your custom migrations template
-#    all_or_nothing:       true # we have too old doctrine version
+    all_or_nothing:       true # we have too old doctrine version
 
 fos_rest:
     param_fetcher_listener: true
