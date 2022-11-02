@@ -33,7 +33,7 @@ final class RulesEnum
 
         try {
             return $rule->getOptionByValue($value)->getScore();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return 0;
         }
     }

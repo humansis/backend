@@ -21,50 +21,17 @@ class ImportReset
     use ImportLoggerTrait;
     use ImportQueueLoggerTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importQueueStateMachine;
-
-    /**
-     * @var ImportQueueRepository
-     */
-    private $queueRepository;
-
-    /**
-     * @var ImportRepository
-     */
-    private $importRepository;
-
     public function __construct(
-        EntityManagerInterface $em,
+        private readonly EntityManagerInterface $em,
         LoggerInterface $logger,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        ImportRepository $importRepository,
-        ImportQueueRepository $queueRepository
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly ImportRepository $importRepository,
+        private readonly ImportQueueRepository $queueRepository
     ) {
-        $this->em = $em;
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
         $this->logger = $logger;
-        $this->importRepository = $importRepository;
-        $this->queueRepository = $queueRepository;
     }
 
-    /**
-     * @param Import $import
-     */
     public function resetOtherImports(Import $import)
     {
         if ($import->getState() !== ImportState::FINISHED) {
@@ -91,9 +58,6 @@ class ImportReset
         $this->em->flush();
     }
 
-    /**
-     * @param Import $conflictImport
-     */
     public function reset(Import $conflictImport): void
     {
         $conflictQueue = $this->queueRepository->findBy([
@@ -111,9 +75,6 @@ class ImportReset
         );
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     private function resetItem(ImportQueue $item): void
     {
         $item->setIdentityCheckedAt(null);

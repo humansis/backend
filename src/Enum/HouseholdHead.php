@@ -10,8 +10,8 @@ class HouseholdHead
         valueFromAPI as private parentValueFromAPI;
     }
 
-    public const TRUE = 1;
-    public const FALSE = 0;
+    final public const TRUE = 1;
+    final public const FALSE = 0;
 
     protected static $values = [
         1 => self::TRUE,

@@ -24,68 +24,16 @@ use Utils\SmartcardService;
 
 class DepositFactory
 {
-    /**
-     * @var SmartcardService
-     */
-    private $smartcardService;
+    private array $messages = [];
 
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
+    private bool $suspicious = false;
 
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var array
-     */
-    private $messages = [];
-
-    /**
-     * @var bool
-     */
-    private $suspicious = false;
-
-    /**
-     * @var ReliefPackageService
-     */
-    private $reliefPackageService;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        SmartcardDepositRepository $smartcardDepositRepository,
-        SmartcardService $smartcardService,
-        ReliefPackageRepository $reliefPackageRepository,
-        CacheInterface $cache,
-        ReliefPackageService $reliefPackageService,
-        LoggerInterface $logger
-    ) {
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
-        $this->smartcardService = $smartcardService;
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->cache = $cache;
-        $this->reliefPackageService = $reliefPackageService;
-        $this->logger = $logger;
+    public function __construct(private readonly SmartcardDepositRepository $smartcardDepositRepository, private readonly SmartcardService $smartcardService, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly CacheInterface $cache, private readonly ReliefPackageService $reliefPackageService, private readonly LoggerInterface $logger)
+    {
     }
 
     /**
-     * @param string $smartcardSerialNumber
-     * @param DepositInputType $depositInputType
-     * @param User $user
      *
-     * @return SmartcardDeposit
      * @throws DoubledDepositException
      * @throws
      * @throws ORMException
@@ -120,15 +68,6 @@ class DepositFactory
         return $deposit;
     }
 
-    /**
-     * @param Smartcard $smartcard
-     * @param User $user
-     * @param ReliefPackage $reliefPackage
-     * @param DepositInputType $depositInputType
-     * @param string $hash
-     *
-     * @return SmartcardDeposit
-     */
     private function createNewDepositRoot(
         Smartcard $smartcard,
         User $user,
@@ -158,9 +97,6 @@ class DepositFactory
     }
 
     /**
-     * @param string $hash
-     *
-     * @return void
      * @throws DoubledDepositException
      */
     private function checkDepositDuplicity(string $hash): void

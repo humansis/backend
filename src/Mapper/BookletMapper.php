@@ -11,8 +11,7 @@ use Entity\Booklet;
 
 class BookletMapper implements MapperInterface
 {
-    /** @var Booklet */
-    private $object;
+    private ?\Entity\Booklet $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,7 +35,7 @@ class BookletMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Booklet::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Booklet::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -67,9 +66,7 @@ class BookletMapper implements MapperInterface
 
     public function getIndividualValues(): array
     {
-        $fn = function (Voucher $item) {
-            return $item->getValue();
-        };
+        $fn = fn(Voucher $item) => $item->getValue();
 
         return array_values(array_map($fn, $this->object->getVouchers()->toArray()));
     }
@@ -81,9 +78,7 @@ class BookletMapper implements MapperInterface
 
     public function getQuantityOfUsedVouchers(): int
     {
-        $fn = function ($ax, Voucher $dx) {
-            return $ax + ($dx->getUsedAt() ? 1 : 0);
-        };
+        $fn = fn($ax, Voucher $dx) => $ax + ($dx->getUsedAt() ? 1 : 0);
 
         return array_reduce($this->object->getVouchers()->toArray(), $fn, 0);
     }

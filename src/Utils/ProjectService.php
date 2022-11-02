@@ -28,32 +28,12 @@ use Entity\UserProject;
 class ProjectService
 {
     /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**
      * ProjectService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
+    public function __construct(protected EntityManagerInterface $em, private readonly ExportService $exportService)
+    {
     }
 
-    /**
-     * @param string $countryIso3
-     *
-     * @return int
-     */
     public function countActive(string $countryIso3): int
     {
         $count = $this->em->getRepository(Project::class)->countActiveInCountry($countryIso3);
@@ -62,10 +42,7 @@ class ProjectService
     }
 
     /**
-     * @param ProjectCreateInputType $inputType
-     * @param User $user
      *
-     * @return Project
      * @throws EntityNotFoundException
      */
     public function create(ProjectCreateInputType $inputType, User $user): Project
@@ -120,9 +97,6 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @param ProjectUpdateInputType $inputType
-     *
      * @return Project
      * @throws EntityNotFoundException
      */
@@ -175,10 +149,6 @@ class ProjectService
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param AddHouseholdsToProjectInputType $inputType
-     */
     public function addHouseholds(Project $project, AddHouseholdsToProjectInputType $inputType): void
     {
         foreach ($inputType->getHouseholdIds() as $householdId) {
@@ -196,10 +166,6 @@ class ProjectService
         $this->em->flush();
     }
 
-    /**
-     * @param Project $project
-     * @param User $user
-     */
     public function addUser(Project $project, User $user)
     {
         $right = $user->getRoles();
@@ -219,11 +185,10 @@ class ProjectService
         /** @var Paginator $assistance */
         $assistances = $this->em->getRepository(Assistance::class)->findByProject($project);
 
-        return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
+        return 0 === (is_countable($assistances) ? count($assistances) : 0) || $this->checkIfAllDistributionClosed($assistances);
     }
 
     /**
-     * @param Project $project
      * @return void
      * @throws error if one or more distributions prevent the project from being deleted
      */
@@ -257,7 +222,7 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-                } catch (Exception $error) {
+                } catch (Exception) {
                     throw new Exception("Error archiving project");
                 }
             }
@@ -286,7 +251,6 @@ class ProjectService
      * Export all projects of the country in the CSV file
      *
      * @param $countryIso3
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv($countryIso3, string $type)

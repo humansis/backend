@@ -13,31 +13,15 @@ use Component\Assistance\Scoring\Validator\Scoring as ScoringConstraint;
 final class Scoring
 {
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var ScoringRule[]
-     */
-    private $rules;
-
-    /**
      * Scoring constructor
      * .
      *
-     * @param string $name
      * @param ScoringRule[] $rules
      */
-    public function __construct(string $name, array $rules)
+    public function __construct(private readonly string $name, private readonly array $rules)
     {
-        $this->name = $name;
-        $this->rules = $rules;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;

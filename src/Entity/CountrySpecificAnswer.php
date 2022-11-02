@@ -21,25 +21,19 @@ class CountrySpecificAnswer
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="answer", type="string", length=255, nullable=true)
      */
-    private $answer;
+    private string $answer;
 
     /**
-     * @var CountrySpecific
-     *
      * @ORM\ManyToOne(targetEntity="Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
      */
-    private $countrySpecific;
+    private ?\Entity\CountrySpecific $countrySpecific = null;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="countrySpecificAnswers")
      */
-    private $household;
+    private ?\Entity\Household $household = null;
 
     /**
      * Set answer.

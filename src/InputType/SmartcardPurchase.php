@@ -8,10 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SmartcardPurchase
 {
     /**
-     * @var array
-     *
-     * @Assert\Valid()
-     * @Assert\NotBlank()
      * @Assert\All({
      *      @Assert\Collection(fields={
      *          "id" = @Assert\Type("int"),
@@ -25,91 +21,62 @@ class SmartcardPurchase
      *      })
      * })
      */
-    private $products;
+    #[Assert\Valid]
+    #[Assert\NotBlank]
+    private ?array $products = null;
 
     /**
      * @var int ID of vendor/seller
-     *
-     * @Assert\Type("int")
-     * @Assert\NotBlank()
      */
-    private $vendorId;
+    #[Assert\Type('int')]
+    #[Assert\NotBlank]
+    private ?int $vendorId = null;
 
     /**
      * @var int ID of beneficiary/holder
-     *
-     * @Assert\Type("int")
-     * @ Assert\NotBlank() // will be required later
      */
-    private $beneficiaryId;
+    #[Assert\Type('int')]
+    private ?int $beneficiaryId = null;
 
-    /**
-     * @var DateTimeInterface
-     *
-     * @Assert\DateTime()
-     * @Assert\NotBlank()
-     */
-    private $createdAt;
+    #[Assert\DateTime]
+    #[Assert\NotBlank]
+    private ?\DateTimeInterface $createdAt = null;
 
-    /**
-     * @return array
-     */
     public function getProducts(): array
     {
         return $this->products;
     }
 
-    /**
-     * @param array $products
-     */
     public function setProducts(array $products): void
     {
         $this->products = $products;
     }
 
-    /**
-     * @return int
-     */
     public function getVendorId(): int
     {
         return $this->vendorId;
     }
 
-    /**
-     * @param int $vendorId
-     */
     public function setVendorId(int $vendorId): void
     {
         $this->vendorId = $vendorId;
     }
 
-    /**
-     * @return ?int
-     */
     public function getBeneficiaryId(): ?int
     {
         return $this->beneficiaryId;
     }
 
-    /**
-     * @param ?int $beneficiaryId
-     */
     public function setBeneficiaryId(?int $beneficiaryId): void
     {
         $this->beneficiaryId = $beneficiaryId;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param DateTimeInterface $createdAt
-     */
     public function setCreatedAt(DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;

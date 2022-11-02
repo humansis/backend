@@ -16,25 +16,19 @@ class UserProject
     use StandardizedPrimaryKey;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="projects", cascade={"persist"})
      */
-    private $user;
+    private ?\Entity\User $user = null;
 
     /**
-     * @var Project
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="usersProject")
      */
-    private $project;
+    private ?\Entity\Project $project = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="rights", type="string")
      */
-    private $rights;
+    private string $rights;
 
     /**
      * Set rights.

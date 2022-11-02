@@ -25,44 +25,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FinishSubscriber implements EventSubscriberInterface
 {
-    public const GUARD_CODE_NOT_COMPLETE = '810bf93b-7e86-45a8-a694-ba15428b4703';
+    final public const GUARD_CODE_NOT_COMPLETE = '810bf93b-7e86-45a8-a694-ba15428b4703';
 
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportRepository */
-    private $importRepository;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    /** @var ImportReset */
-    private $importReset;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ImportReset $importReset,
-        ImportQueueRepository $queueRepository,
-        MessageBusInterface $messageBus,
-        ImportRepository $importRepository,
-        TranslatorInterface $translator
-    ) {
-        $this->entityManager = $entityManager;
-        $this->importReset = $importReset;
-        $this->queueRepository = $queueRepository;
-        $this->messageBus = $messageBus;
-        $this->importRepository = $importRepository;
-        $this->translator = $translator;
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly ImportReset $importReset, private readonly ImportQueueRepository $queueRepository, private readonly MessageBusInterface $messageBus, private readonly ImportRepository $importRepository, private readonly TranslatorInterface $translator)
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -142,9 +108,6 @@ class FinishSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $event
-     */
     public function guardIfThereIsOnlyOneFinishingImport(GuardEvent $event): void
     {
         /** @var Import $import */
@@ -162,9 +125,6 @@ class FinishSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param CompletedEvent $enteredEvent
-     */
     public function resetOtherImports(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */

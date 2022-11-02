@@ -33,36 +33,14 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceSpreadsheetExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var CountryLocaleResolverService */
-    private $countryLocaleResolverService;
-
-    /** @var SmartcardDepositService */
-    private $smartcardDepositService;
-
     /** @var SmartcardDeposit[] */
-    private $smartCardDeposits = [];
+    private array $smartCardDeposits = [];
 
     private const GDPR_TEXT_1 = "Privacy notice: Please note that PIN as the Personal Data Controller (contact details of the Data Protection Officer: dpo@clovekvtisni.cz), will be processing your above-mentioned personal data. PIN will use the data only for the purpose of providing assistance within the project you agreed to participate in. PIN needs these data because 1) it is necessary for the provision of assistance to you according to the project terms, and 2) PIN has a legitimate interest in reporting of the project results to the donor. PIN will keep the data only for the period required by the donors financing the project, or by the legislation binding for PIN; however, the maximum period of storage is 10 years. Your data may also be shared with other persons for the purpose of implementation and verification of the project, i.e. the service providers of PIN's systems and software, where your data are stored, our project partners, donors and the auditors.";
     private const GDPR_TEXT_2 = "You have the following rights: 1) right to request information on which personal data of yours PIN is processing, 2) right to request explanation from PIN regarding the processing of personal data, 3) right to request access to such data from PIN, right to have the data updated, corrected or restricted, as the case may be, and right to object to processing, 4) the right to obtain personal data in a structured, commonly used and machine-readable format, 5) right to request the deletion of such personal data from PIN, 6) right to address the Controller or lodge a complaint to the Office for Personal Data Protection in case of doubt regarding the compliance with the obligations related to the processing of personal data.";
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(
-        TranslatorInterface $translator,
-        SmartcardDepositService $smartcardDepositService,
-        CountryLocaleResolverService $countryLocaleResolverService,
-        LoggerInterface $logger
-    ) {
-        $this->translator = $translator;
-        $this->countryLocaleResolverService = $countryLocaleResolverService;
-        $this->smartcardDepositService = $smartcardDepositService;
-        $this->logger = $logger;
+    public function __construct(private readonly TranslatorInterface $translator, private readonly SmartcardDepositService $smartcardDepositService, private readonly CountryLocaleResolverService $countryLocaleResolverService, private readonly LoggerInterface $logger)
+    {
     }
 
     public function export(Assistance $assistance, Organization $organization, string $filetype): string
@@ -319,12 +297,12 @@ class AssistanceSpreadsheetExport
 
         $worksheet->getStyle('J7')->applyFromArray($userInputStyle);
         $worksheet->getCell('J7')->setValue(
-            $assistance->getRound() === null ? $this->translator->trans(
+            $assistance->getRound() ?? $this->translator->trans(
                 'N/A',
                 [],
                 null,
                 $languageCode
-            ) : $assistance->getRound()
+            )
         );
         $worksheet->mergeCells('J7:J8');
 
@@ -336,7 +314,7 @@ class AssistanceSpreadsheetExport
 
         $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
         $worksheet->getCell('D10')->setValue(
-            $assistance->isValidated() ? $assistance->getValidatedBy()->getUsername() : ""
+            $assistance->isValidated() ? $assistance->getValidatedBy()->getUserIdentifier() : ""
         );
         $worksheet->mergeCells('D10:F11');
 
@@ -631,10 +609,8 @@ class AssistanceSpreadsheetExport
 
     private function getDistributionDateTime(AssistanceBeneficiary $distributionBeneficiary): string
     {
-        $deposits = array_filter($this->smartCardDeposits, function ($smartcardDeposit) use ($distributionBeneficiary) {
-            return $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId(
-            ) === $distributionBeneficiary->getId();
-        });
+        $deposits = array_filter($this->smartCardDeposits, fn($smartcardDeposit) => $smartcardDeposit->getReliefPackage()->getAssistanceBeneficiary()->getId(
+        ) === $distributionBeneficiary->getId());
 
         if (empty($deposits)) {
             return "";
@@ -642,9 +618,7 @@ class AssistanceSpreadsheetExport
 
         return implode(
             "\n",
-            array_map(function ($deposit) {
-                return $deposit->getDistributedAt()->format('d. m. Y H:i');
-            }, $deposits)
+            array_map(fn($deposit) => $deposit->getDistributedAt()->format('d. m. Y H:i'), $deposits)
         );
     }
 }

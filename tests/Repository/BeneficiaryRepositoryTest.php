@@ -33,8 +33,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     }
 
     /**
-     * @param int $householdId
-     * @param int $expectedBeneficiariesCount
      *
      * @throws NoResultException
      * @throws NonUniqueResultException

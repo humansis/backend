@@ -12,7 +12,6 @@ abstract class AbstractCsvParser
     abstract protected function mandatoryColumns(): array;
 
     /**
-     * @param string $pathToCsv
      *
      * @return mixed
      * @throws CsvParserException
@@ -33,7 +32,6 @@ abstract class AbstractCsvParser
 
     /**
      * @param        $csvStream
-     * @param string $pathToCsv
      *
      * @return mixed
      * @throws CsvParserException
@@ -44,9 +42,7 @@ abstract class AbstractCsvParser
         $this->checkMandatoryColumns($pathToCsv, $csvHead);
         $csv = [];
         while (false !== ($row = fgetcsv($csvStream))) {
-            $trimmedRow = array_map(function (string $cell) {
-                return trim($cell);
-            }, $row);
+            $trimmedRow = array_map(fn(string $cell) => trim($cell), $row);
 
             $csv[] = array_combine($csvHead, $trimmedRow);
         }
@@ -57,8 +53,6 @@ abstract class AbstractCsvParser
     }
 
     /**
-     * @param string $pathToCsv
-     * @param array $firstRow
      *
      * @throws CsvParserException
      */

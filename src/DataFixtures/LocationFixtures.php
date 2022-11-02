@@ -12,24 +12,10 @@ use Component\Country\Countries;
 class LocationFixtures extends Fixture implements FixtureGroupInterface
 {
     // maximum imported lines per file (due to performace on dev env)
-    public const LIMIT = 10;
+    final public const LIMIT = 10;
 
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var Countries
-     */
-    private $countries;
-
-    public function __construct(
-        LocationRepository $locationRepository,
-        Countries $countries
-    ) {
-        $this->locationRepository = $locationRepository;
-        $this->countries = $countries;
+    public function __construct(private readonly LocationRepository $locationRepository, private readonly Countries $countries)
+    {
     }
 
     /**

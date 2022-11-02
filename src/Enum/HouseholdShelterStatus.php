@@ -6,16 +6,16 @@ class HouseholdShelterStatus
 {
     use EnumTrait;
 
-    public const TENT = 'Tent';
-    public const MAKESHIFT_SHELTER = 'Makeshift Shelter';
-    public const TRANSITIONAL_SHELTER = 'Transitional Shelter';
-    public const HOUSE_APARTMENT_SEVERELY_DAMAGED = 'House/Apartment - Severely Damaged';
-    public const HOUSE_APARTMENT_MODERATELY_DAMAGED = 'House/Apartment - Moderately Damaged';
-    public const HOUSE_APARTMENT_NOT_DAMAGED = 'House/Apartment - Not Damaged';
-    public const ROOM_OR_SPACE_IN_PUBLIC_BUILDING = 'Room or Space in Public Building';
-    public const ROOM_OR_SPACE_IN_UNFINISHED_BUILDING = 'Room or Space in Unfinished Building';
-    public const OTHER = 'Other';
-    public const HOUSE_APARTMENT_LIGHTLY_DAMAGED = 'House/Apartment - Lightly Damaged';
+    final public const TENT = 'Tent';
+    final public const MAKESHIFT_SHELTER = 'Makeshift Shelter';
+    final public const TRANSITIONAL_SHELTER = 'Transitional Shelter';
+    final public const HOUSE_APARTMENT_SEVERELY_DAMAGED = 'House/Apartment - Severely Damaged';
+    final public const HOUSE_APARTMENT_MODERATELY_DAMAGED = 'House/Apartment - Moderately Damaged';
+    final public const HOUSE_APARTMENT_NOT_DAMAGED = 'House/Apartment - Not Damaged';
+    final public const ROOM_OR_SPACE_IN_PUBLIC_BUILDING = 'Room or Space in Public Building';
+    final public const ROOM_OR_SPACE_IN_UNFINISHED_BUILDING = 'Room or Space in Unfinished Building';
+    final public const OTHER = 'Other';
+    final public const HOUSE_APARTMENT_LIGHTLY_DAMAGED = 'House/Apartment - Lightly Damaged';
 
     protected static $values = [
         1 => self::TENT,

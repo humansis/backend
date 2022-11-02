@@ -25,46 +25,19 @@ use Entity\Project;
  */
 class CriteriaAssistanceService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ScoringFactory */
-    private $scoringFactory;
-
-    /** @var ScoringResolver */
-    private $resolver;
-
-    /** @var ScoringBlueprintRepository */
-    private $scoringBlueprintRepository;
-
     /**
      * CriteriaAssistanceService constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param ScoringResolver $resolver
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
      * @throws Exception
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ScoringFactory $scoringFactory,
-        ScoringResolver $resolver,
-        ScoringBlueprintRepository $scoringBlueprintRepository
-    ) {
-        $this->em = $entityManager;
-        $this->scoringFactory = $scoringFactory;
-        $this->resolver = $resolver;
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly OldResolver $oldResolver, private readonly ScoringFactory $scoringFactory, private readonly ScoringResolver $resolver, private readonly ScoringBlueprintRepository $scoringBlueprintRepository)
+    {
     }
 
     /**
      * @param iterable|CriteriaGroup[] $criteriaGroups
      * @param Project $project
-     * @param string $targetType
-     * @param string $sector
-     * @param string|null $subsector
      * @param int $threshold
-     * @param bool $isCount
      *
      * @return array
      * @throws CsvParserException

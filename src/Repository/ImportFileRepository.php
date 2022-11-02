@@ -11,8 +11,6 @@ use Entity\ImportFile;
 class ImportFileRepository extends EntityRepository
 {
     /**
-     * @param Import $import
-     *
      * @return ImportFile[]
      */
     public function findInvalid(Import $import): array

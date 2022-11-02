@@ -11,8 +11,7 @@ use Entity\Invoice;
 
 class InvoiceMapper implements MapperInterface
 {
-    /** @var Invoice */
-    private $object;
+    private ?\Entity\Invoice $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class InvoiceMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Invoice::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Invoice::class . ', ' . $object::class . ' given.'
         );
     }
 

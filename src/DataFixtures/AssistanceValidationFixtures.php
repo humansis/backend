@@ -15,26 +15,13 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceValidationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    private $assistanceService;
-
-    private $kernel;
-
-    /**
-     * @var Countries
-     */
-    private $countries;
-
-    public function __construct(Kernel $kernel, Countries $countries, AssistanceService $assistanceService)
+    public function __construct(private readonly Kernel $kernel, private readonly Countries $countries, private readonly AssistanceService $assistanceService)
     {
-        $this->assistanceService = $assistanceService;
-        $this->kernel = $kernel;
-        $this->countries = $countries;
     }
 
     /**
      * Load data fixtures with the passed EntityManager.
      *
-     * @param ObjectManager $manager
      *
      * @throws ValidationException
      */

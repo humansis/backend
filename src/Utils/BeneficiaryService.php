@@ -28,41 +28,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BeneficiaryService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /**
-     * @var ExportService
-     */
-    private $exportService;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var HouseholdRepository
-     */
-    private $householdRepository;
-
-    /**
-     * @var VulnerabilityCriterionRepository
-     */
-    private $vulnerabilityCriterionRepository;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService,
-        BeneficiaryRepository $beneficiaryRepository,
-        HouseholdRepository $householdRepository,
-        VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->householdRepository = $householdRepository;
-        $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly HouseholdRepository $householdRepository, private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository)
+    {
     }
 
     public function createPhone(PhoneInputType $inputType): Phone
@@ -93,12 +60,6 @@ class BeneficiaryService
         return $nationalId;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     * @param BeneficiaryInputType $inputType
-     *
-     * @return Beneficiary
-     */
     public function update(Beneficiary $beneficiary, BeneficiaryInputType $inputType): Beneficiary
     {
         $beneficiaryPerson = $beneficiary->getPerson();
@@ -232,7 +193,6 @@ class BeneficiaryService
 
     /**
      * @param $vulnerabilityCriterionId
-     * @return VulnerabilityCriterion
      * @throws \Exception
      */
     public function getVulnerabilityCriterion($vulnerabilityCriterionId): VulnerabilityCriterion
@@ -253,39 +213,25 @@ class BeneficiaryService
         return $vulnerabilityCriterion;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     */
     public function remove(Beneficiary $beneficiary): void
     {
         $beneficiary->setArchived();
     }
 
-    /**
-     * @param string $iso3
-     * @return int
-     */
     public function countAll(string $iso3): int
     {
         return (int) $this->beneficiaryRepository->countAllInCountry($iso3);
     }
 
-    /**
-     * @param string $iso3
-     * @return int
-     */
     public function countAllServed(string $iso3): int
     {
         return (int) $this->beneficiaryRepository->countServedInCountry($iso3);
     }
 
     /**
-     * @param string $type
-     * @param string $countryIso3
      * @param        $filters
      * @param        $ids
      *
-     * @return string
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \Exception
@@ -306,14 +252,14 @@ class BeneficiaryService
             }
         }
 
-        if ('csv' !== $type && count($households) > ExportController::EXPORT_LIMIT) {
-            $count = count($households);
+        if ('csv' !== $type && (is_countable($households) ? count($households) : 0) > ExportController::EXPORT_LIMIT) {
+            $count = is_countable($households) ? count($households) : 0;
             throw new BadRequestHttpException(
                 "Too much households ($count) to export. Limit is " . ExportController::EXPORT_LIMIT
             );
         }
-        if ('csv' === $type && count($households) > ExportController::EXPORT_LIMIT_CSV) {
-            $count = count($households);
+        if ('csv' === $type && (is_countable($households) ? count($households) : 0) > ExportController::EXPORT_LIMIT_CSV) {
+            $count = is_countable($households) ? count($households) : 0;
             throw new BadRequestHttpException(
                 "Too much households ($count) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
             );
@@ -327,16 +273,16 @@ class BeneficiaryService
             }
         }
 
-        if ('csv' !== $type && count($exportableTable) > ExportController::EXPORT_LIMIT) {
-            $BNFcount = count($exportableTable);
-            $HHcount = count($households);
+        if ('csv' !== $type && (is_countable($exportableTable) ? count($exportableTable) : 0) > ExportController::EXPORT_LIMIT) {
+            $BNFcount = is_countable($exportableTable) ? count($exportableTable) : 0;
+            $HHcount = is_countable($households) ? count($households) : 0;
             throw new BadRequestHttpException(
                 "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit is " . ExportController::EXPORT_LIMIT
             );
         }
-        if ('csv' === $type && count($exportableTable) > ExportController::EXPORT_LIMIT_CSV) {
-            $BNFcount = count($exportableTable);
-            $HHcount = count($households);
+        if ('csv' === $type && (is_countable($exportableTable) ? count($exportableTable) : 0) > ExportController::EXPORT_LIMIT_CSV) {
+            $BNFcount = is_countable($exportableTable) ? count($exportableTable) : 0;
+            $HHcount = is_countable($households) ? count($households) : 0;
             throw new BadRequestHttpException(
                 "Too much beneficiaries ($BNFcount) in households ($HHcount) to export. Limit for CSV is " . ExportController::EXPORT_LIMIT_CSV
             );
@@ -344,19 +290,13 @@ class BeneficiaryService
 
         try {
             return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             throw new BadRequestHttpException("No data to export.");
         }
     }
 
     /**
-     * @param string $type
-     * @param string $countryIso3
-     * @param HouseholdFilterInputType $filter
-     * @param Pagination $pagination
-     * @param HouseholdOrderInputType $order
      *
-     * @return string
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
@@ -408,7 +348,7 @@ class BeneficiaryService
 
         try {
             return $this->exportService->export($exportableTable, 'beneficiaryhousehoulds', $type);
-        } catch (ExportNoDataException $e) {
+        } catch (ExportNoDataException) {
             throw new BadRequestHttpException("No data to export.");
         }
     }

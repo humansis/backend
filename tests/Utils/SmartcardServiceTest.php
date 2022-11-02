@@ -38,7 +38,7 @@ use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
 {
-    public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
+    final public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
     /** @var ObjectManager|null */
     private $em;
@@ -46,11 +46,9 @@ class SmartcardServiceTest extends KernelTestCase
     /** @var SmartcardService */
     private $smartcardService;
 
-    /** @var Vendor */
-    private $vendor;
+    private ?\Entity\Vendor $vendor = null;
 
-    /** @var string */
-    private $smartcardNumber = '';
+    private string $smartcardNumber = '';
 
     /** @var DepositFactory */
     private $depositFactory;
@@ -60,10 +58,7 @@ class SmartcardServiceTest extends KernelTestCase
      */
     private $invoiceFactory;
 
-    /**
-     * @var User
-     */
-    private $user;
+    private ?\Entity\User $user = null;
 
     /**
      * @var PreliminaryInvoiceRepository
@@ -201,8 +196,6 @@ class SmartcardServiceTest extends KernelTestCase
     /**
      * @dataProvider validSmartcardCashflows
      *
-     * @param array $actions
-     * @param array $expectedResults
      *
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
@@ -233,7 +226,7 @@ class SmartcardServiceTest extends KernelTestCase
                     );
                     try {
                         $this->smartcardService->register($registerInputType);
-                    } catch (SmartcardDoubledRegistrationException $e) {
+                    } catch (SmartcardDoubledRegistrationException) {
                     }
                     break;
                 case 'purchase':
@@ -510,9 +503,6 @@ class SmartcardServiceTest extends KernelTestCase
     /**
      * @dataProvider validSmartcardReuseFlows
      *
-     * @param array $actions
-     * @param array $expectedBeneficiaryResults
-     * @param array $expectedVendorResults
      *
      * @throws EntityNotFoundException
      * @throws ORMException
@@ -582,7 +572,7 @@ class SmartcardServiceTest extends KernelTestCase
                         );
                         try {
                             $this->smartcardService->register($registerInputType);
-                        } catch (SmartcardDoubledRegistrationException $e) {
+                        } catch (SmartcardDoubledRegistrationException) {
                         }
                         break;
                     case 'deposit':
@@ -731,6 +721,6 @@ class SmartcardServiceTest extends KernelTestCase
             ->setArchived(false)
             ->setUser($this->user)
             ->setLocation($adm2);
-        $this->vendor->setName("Test Vendor for " . __CLASS__);
+        $this->vendor->setName("Test Vendor for " . self::class);
     }
 }

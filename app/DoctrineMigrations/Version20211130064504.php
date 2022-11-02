@@ -22,7 +22,7 @@ final class Version20211130064504 extends AbstractMigration
         foreach ($data as $row) {
             $id = $row['id'];
 
-            $content = json_decode($row['content'], true);
+            $content = json_decode((string) $row['content'], true, 512, JSON_THROW_ON_ERROR);
 
             foreach ($content as $beneficiaryNo => $beneficiary) {
                 foreach ($beneficiary as $attribute => $value) {
@@ -38,7 +38,7 @@ final class Version20211130064504 extends AbstractMigration
                 }
             }
 
-            $serializedContent = json_encode($content);
+            $serializedContent = json_encode($content, JSON_THROW_ON_ERROR);
 
             $this->addSql("UPDATE import_queue SET content=? WHERE id=$id", [$serializedContent]);
         }

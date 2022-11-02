@@ -8,8 +8,7 @@ use Serializer\MapperInterface;
 
 class InstitutionMapper implements MapperInterface
 {
-    /** @var Institution */
-    private $object;
+    private ?\Entity\Institution $object = null;
 
     /**
      * {@inheritdoc}
@@ -28,7 +27,7 @@ class InstitutionMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Institution::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Institution::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -40,9 +39,7 @@ class InstitutionMapper implements MapperInterface
     public function getProjectIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getProjects()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getProjects()->toArray())
         );
     }
 

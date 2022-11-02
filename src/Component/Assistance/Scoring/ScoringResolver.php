@@ -20,34 +20,8 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class ScoringResolver
 {
-    /**
-     * @var RulesCalculation
-     */
-    private $customComputation;
-
-    /** @var RulesEnum */
-    private $enumResolver;
-
-    /**
-     * @var CountrySpecificRepository
-     */
-    private $countrySpecificRepository;
-
-    /**
-     * @var CountrySpecificAnswerRepository
-     */
-    private $countrySpecificAnswerRepository;
-
-    public function __construct(
-        RulesCalculation $customComputation,
-        RulesEnum $enumResolver,
-        CountrySpecificRepository $countrySpecificRepository,
-        CountrySpecificAnswerRepository $countrySpecificAnswerRepository
-    ) {
-        $this->customComputation = $customComputation;
-        $this->enumResolver = $enumResolver;
-        $this->countrySpecificRepository = $countrySpecificRepository;
-        $this->countrySpecificAnswerRepository = $countrySpecificAnswerRepository;
+    public function __construct(private readonly RulesCalculation $customComputation, private readonly RulesEnum $enumResolver, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly CountrySpecificAnswerRepository $countrySpecificAnswerRepository)
+    {
     }
 
     public function compute(Household $household, Scoring $scoring, string $countryCode): ScoringProtocol
@@ -89,12 +63,6 @@ final class ScoringResolver
         return $this->enumResolver->getScore($household, $rule);
     }
 
-    /**
-     * @param Household $household
-     * @param ScoringRule $rule
-     *
-     * @return float
-     */
     private function customComputation(Household $household, ScoringRule $rule): float
     {
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
@@ -108,12 +76,9 @@ final class ScoringResolver
     }
 
     /**
-     * @param Household $household
      * @param string $countrySpecificName value of Entity\CountrySpecific::$fieldString for given country
      * @param ScoringRuleOption[] $scoringOptions
-     * @param string $countryCode
      *
-     * @return float
      */
     private function countrySpecifics(
         Household $household,

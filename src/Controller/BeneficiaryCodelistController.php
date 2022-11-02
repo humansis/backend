@@ -21,18 +21,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class BeneficiaryCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/types")
-     *
-     * @return JsonResponse
      */
     public function getTypes(): JsonResponse
     {
@@ -43,8 +37,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/referral-types")
-     *
-     * @return JsonResponse
      */
     public function getReferralTypes(): JsonResponse
     {
@@ -55,8 +47,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/residency-statuses")
-     *
-     * @return JsonResponse
      */
     public function getResidencyStatuses(): JsonResponse
     {
@@ -67,8 +57,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/vulnerability-criteria")
-     *
-     * @return JsonResponse
      */
     public function getVulnerabilityCriterion(): JsonResponse
     {
@@ -80,8 +68,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids/types")
-     *
-     * @return JsonResponse
      */
     public function getNationalIdTypes(): JsonResponse
     {
@@ -92,8 +78,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/phones/types")
-     *
-     * @return JsonResponse
      */
     public function getPhoneTypes(): JsonResponse
     {

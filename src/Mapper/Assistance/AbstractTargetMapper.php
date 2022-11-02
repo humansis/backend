@@ -30,9 +30,7 @@ abstract class AbstractTargetMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -54,9 +52,7 @@ abstract class AbstractTargetMapper implements MapperInterface
     public function getReliefPackageIds(): array
     {
         return array_values(
-            array_map(function (ReliefPackage $package) {
-                return $package->getId();
-            }, $this->object->getReliefPackages()->toArray())
+            array_map(fn(ReliefPackage $package) => $package->getId(), $this->object->getReliefPackages()->toArray())
         );
     }
 }

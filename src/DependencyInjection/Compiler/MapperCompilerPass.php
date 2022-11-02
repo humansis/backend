@@ -12,11 +12,11 @@ class MapperCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('Serializer\MapperNormalizer')) {
+        if (!$container->has(\Serializer\MapperNormalizer::class)) {
             return;
         }
 
-        $definition = $container->getDefinition('Serializer\MapperNormalizer');
+        $definition = $container->getDefinition(\Serializer\MapperNormalizer::class);
 
         $taggedServices = $container->findTaggedServiceIds('app.mapper');
         foreach ($taggedServices as $id => $tags) {

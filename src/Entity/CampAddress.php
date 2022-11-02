@@ -16,11 +16,9 @@ class CampAddress
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="tentNumber", type="string", length=45)
      */
-    private $tentNumber;
+    private string $tentNumber;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Camp", cascade={"persist"})

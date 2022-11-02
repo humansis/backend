@@ -6,11 +6,11 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class UserOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_EMAIL = 'email';
-    public const SORT_BY_RIGHTS = 'rights';
-    public const SORT_BY_PREFIX = 'prefix';
-    public const SORT_BY_PHONE = 'phone';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_EMAIL = 'email';
+    final public const SORT_BY_RIGHTS = 'rights';
+    final public const SORT_BY_PREFIX = 'prefix';
+    final public const SORT_BY_PHONE = 'phone';
 
     protected function getValidNames(): array
     {

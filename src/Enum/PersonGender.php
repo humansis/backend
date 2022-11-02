@@ -8,8 +8,8 @@ class PersonGender
 {
     use EnumTrait;
 
-    public const MALE = 'male';
-    public const FEMALE = 'female';
+    final public const MALE = 'male';
+    final public const FEMALE = 'female';
 
     protected static $values = [
         'Female' => self::FEMALE,

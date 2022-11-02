@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class StatisticsMapper implements MapperInterface
 {
-    /** @var AssistanceStatistics */
-    private $object;
+    private ?\Entity\AssistanceStatistics $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,9 +32,7 @@ class StatisticsMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceStatistics::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceStatistics::class . ', ' . $object::class . ' given.'
         );
     }
 

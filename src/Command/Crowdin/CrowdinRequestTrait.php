@@ -39,7 +39,7 @@ trait CrowdinRequestTrait
 
         return array_merge(
             ['headers' => $headers],
-            json_decode($content, true, 512, JSON_THROW_ON_ERROR)
+            json_decode((string) $content, true, 512, JSON_THROW_ON_ERROR)
         );
     }
 }

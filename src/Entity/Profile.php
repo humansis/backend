@@ -16,11 +16,9 @@ class Profile
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="photo", type="string", length=255)
      */
-    private $photo;
+    private string $photo;
 
     /**
      * Set photo.

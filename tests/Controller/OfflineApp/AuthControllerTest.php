@@ -17,11 +17,9 @@ class AuthControllerTest extends BMSServiceTestCase
     private const PASSWORD = 'pin1234';
     private const USER = 'test-no-vendor@test.org';
 
-    /** @var EntityRepository|ObjectRepository|UserRepository */
-    private $userRepository;
+    private \Doctrine\ORM\EntityRepository|\Doctrine\Persistence\ObjectRepository|\Repository\UserRepository $userRepository;
 
-    /** @var User */
-    private $user;
+    private \Entity\User $user;
 
     /**
      * @throws OptimisticLockException
@@ -38,7 +36,6 @@ class AuthControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return User
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -72,7 +69,7 @@ class AuthControllerTest extends BMSServiceTestCase
         parent::tearDown();
     }
 
-    public function testOfflineAppLogin(): void
+    public function testOfflineAppLogin(): never
     {
         $this->markTestSkipped('Support for JWT in test environment needs to be done first');
 
@@ -81,9 +78,9 @@ class AuthControllerTest extends BMSServiceTestCase
             'password' => self::PASSWORD,
         ];
 
-        $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body));
+        $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body, JSON_THROW_ON_ERROR));
 
-        $responseBody = json_decode($this->client->getResponse()->getContent(), true);
+        $responseBody = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             "Request failed: " . $this->client->getResponse()->getContent()

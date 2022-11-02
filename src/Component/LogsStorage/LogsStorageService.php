@@ -17,45 +17,20 @@ use Entity\Vendor;
 
 class LogsStorageService
 {
-    /**
-     * @var AwsStorage
-     */
-    private $aws;
-
-    /**
-     * @var string
-     */
-    private $vendorLogPathTemple;
-
-    /**
-     * @var string
-     */
-    private $fieldLogPathTemplate;
-
-    /**
-     * @var int
-     */
-    private $logsLifetime;
+    private readonly \Component\Storage\Aws\AwsStorage $aws;
 
     public function __construct(
-        string $vendorLogPathTemplate,
-        string $filedLogPathTemplate,
-        int $logsLifetime,
+        private readonly string $vendorLogPathTemple,
+        private readonly string $fieldLogPathTemplate,
+        private readonly int $logsLifetime,
         LogsStorageConfigFactory $logsStorageFactory,
         AwsStorageFactory $awsStorageFactory
     ) {
-        $this->vendorLogPathTemple = $vendorLogPathTemplate;
-        $this->fieldLogPathTemplate = $filedLogPathTemplate;
-        $this->logsLifetime = $logsLifetime;
-
         $this->aws = $awsStorageFactory->create($logsStorageFactory->create());
     }
 
     /**
-     * @param string $fileName
      * @param        $file
-     *
-     * @return string
      * @throws FilesystemException
      */
     private function upload(string $fileName, $file): string
@@ -66,8 +41,6 @@ class LogsStorageService
     }
 
     /**
-     * @param Vendor $vendor
-     * @param File $file
      *
      * @throws FilesystemException
      */
@@ -87,8 +60,6 @@ class LogsStorageService
     }
 
     /**
-     * @param User $user
-     * @param File $file
      *
      * @throws FilesystemException
      */

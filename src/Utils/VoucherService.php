@@ -20,45 +20,16 @@ use InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**@var PdfService */
-    private $pdfService;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
-     * @param Environment $twig
-     * @param PdfService $pdfService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService,
-        Environment $twig,
-        PdfService $pdfService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
-        $this->twig = $twig;
-        $this->pdfService = $pdfService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly Environment $twig, private readonly PdfService $pdfService)
+    {
     }
 
     /**
      * Creates a new Voucher entity
      *
-     * @param array $vouchersData
-     * @param bool $flush
      *
      * @return array
      * @throws Exception
@@ -97,8 +68,6 @@ class VoucherService
     /**
      * Generate a new random code for a voucher
      *
-     * @param array $voucherData
-     * @param int $voucherId
      * @return string
      */
     public function generateCode(array $voucherData, int $voucherId)
@@ -114,13 +83,6 @@ class VoucherService
         return $fullCode;
     }
 
-    /**
-     * @param VoucherRedemptionBatch $batch
-     *
-     * @param Vendor|null $vendor
-     *
-     * @return RedemptionVoucherBatchCheck
-     */
     public function checkBatch(VoucherRedemptionBatch $batch, ?Vendor $vendor = null): RedemptionVoucherBatchCheck
     {
         $ids = $batch->getVouchers();
@@ -219,8 +181,6 @@ class VoucherService
     /**
      * Deletes a voucher from the database
      *
-     * @param Voucher $voucher
-     * @param bool $removeVoucher
      * @return bool
      * @throws Exception
      */
@@ -237,11 +197,9 @@ class VoucherService
     }
 
     // =============== DELETE A BATCH OF VOUCHERS ===============
-
     /**
      * Deletes all the vouchers of the given booklet
      *
-     * @param Booklet $booklet
      * @return bool
      * @throws Exception
      */
@@ -259,8 +217,6 @@ class VoucherService
     /**
      * Export all vouchers in a CSV file
      *
-     * @param string $type
-     * @param string $countryIso3
      * @param array $ids
      * @param array $filters
      * @return mixed
@@ -328,7 +284,6 @@ class VoucherService
      * Export all vouchers in a pdf
      *
      * @param array $ids
-     * @param string $countryIso3
      * @param array $filters
      * @return mixed
      */
@@ -412,7 +367,7 @@ class VoucherService
             }
             fclose($csv);
         });
-        $response->setStatusCode(200);
+        $response->setStatusCode(\Symfony\Component\HttpFoundation\Response::HTTP_OK);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
 

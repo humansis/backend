@@ -19,20 +19,14 @@ use Entity\Product;
 
 class ProductCategoryController extends AbstractController
 {
-    /** @var ProductCategoryService */
-    private $productCategoryService;
-
-    public function __construct(ProductCategoryService $productCategoryService)
+    public function __construct(private readonly ProductCategoryService $productCategoryService)
     {
-        $this->productCategoryService = $productCategoryService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/product-categories/{id}")
      *
-     * @param ProductCategory $productCategory
      *
-     * @return JsonResponse
      */
     public function item(ProductCategory $productCategory): JsonResponse
     {
@@ -42,8 +36,6 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/product-categories")
      * @Rest\Get("/vendor-app/v1/product-categories")
-     *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -59,9 +51,7 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/product-categories")
      *
-     * @param ProductCategoryInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(ProductCategoryInputType $inputType): JsonResponse
     {
@@ -75,10 +65,7 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/product-categories/{id}")
      *
-     * @param ProductCategory $productCategory
-     * @param ProductCategoryInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(ProductCategory $productCategory, ProductCategoryInputType $inputType): JsonResponse
     {
@@ -92,9 +79,7 @@ class ProductCategoryController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/product-categories/{id}")
      *
-     * @param ProductCategory $productCategory
      *
-     * @return JsonResponse
      */
     public function delete(ProductCategory $productCategory): JsonResponse
     {

@@ -25,8 +25,7 @@ use function Matrix\trace;
 
 class TestReportImportCommand extends KernelTestCase
 {
-    /** @var Application */
-    private $application;
+    private \Symfony\Bundle\FrameworkBundle\Console\Application $application;
 
     /** @var EntityManagerInterface */
     private $entityManager;

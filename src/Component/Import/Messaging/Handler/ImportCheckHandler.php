@@ -26,45 +26,15 @@ class ImportCheckHandler implements MessageHandlerInterface
 {
     use ImportLoggerTrait;
 
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var ImportRepository */
-    private $importRepository;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /**
-     * @var AuditorService
-     */
-    private $auditorService;
-
-    /**
-     * @param LoggerInterface $importLogger
-     * @param WorkflowInterface $importStateMachine
-     * @param ImportRepository $importRepository
-     * @param MessageBusInterface $messageBus
-     * @param EntityManagerInterface $em
-     * @param AuditorService $auditorService
-     */
     public function __construct(
         LoggerInterface $importLogger,
-        WorkflowInterface $importStateMachine,
-        ImportRepository $importRepository,
-        MessageBusInterface $messageBus,
-        EntityManagerInterface $em,
-        AuditorService $auditorService
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly ImportRepository $importRepository,
+        private readonly MessageBusInterface $messageBus,
+        private readonly EntityManagerInterface $em,
+        private readonly AuditorService $auditorService,
     ) {
         $this->logger = $importLogger;
-        $this->importStateMachine = $importStateMachine;
-        $this->importRepository = $importRepository;
-        $this->messageBus = $messageBus;
-        $this->em = $em;
-        $this->auditorService = $auditorService;
     }
 
     public function __invoke(ImportCheck $importCheck): void
@@ -111,8 +81,6 @@ class ImportCheckHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param Import $import
-     *
      * @return void
      */
     private function checkUpload(Import $import)
@@ -124,8 +92,6 @@ class ImportCheckHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param Import $import
-     *
      * @return void
      */
     private function checkIntegrity(Import $import)
@@ -147,8 +113,6 @@ class ImportCheckHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param Import $import
-     *
      * @return void
      */
     private function checkIdentity(Import $import)
@@ -170,8 +134,6 @@ class ImportCheckHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param Import $import
-     *
      * @return void
      */
     private function checkSimilarity(Import $import)
@@ -193,8 +155,6 @@ class ImportCheckHandler implements MessageHandlerInterface
     }
 
     /**
-     * @param Import $import
-     *
      * @return void
      */
     private function checkImport(Import $import)
@@ -214,13 +174,6 @@ class ImportCheckHandler implements MessageHandlerInterface
         }
     }
 
-    /**
-     * @param Import $import
-     * @param string $transition
-     * @param string $code
-     *
-     * @return bool
-     */
     private function isBlockedByNotCompleted(Import $import, string $transition, string $code): bool
     {
         foreach ($this->importStateMachine->buildTransitionBlockerList($import, $transition) as $block) {

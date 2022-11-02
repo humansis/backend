@@ -19,40 +19,22 @@ use Component\Storage\StorageEnum;
 
 class AwsStorage implements IStorage
 {
-    /**
-     * @var IStorageConfig
-     */
-    private $storageConfig;
+    private \Aws\S3\S3ClientInterface $client;
 
-    /**
-     * @var S3ClientInterface
-     */
-    private $client;
+    private \League\Flysystem\FilesystemAdapter $adapter;
 
-    /**
-     * @var FilesystemAdapter
-     */
-    private $adapter;
+    private \League\Flysystem\FilesystemOperator $filesystem;
 
-    /**
-     * @var FilesystemOperator
-     */
-    private $filesystem;
-
-    public function __construct(IStorageConfig $storageConfig)
+    public function __construct(private IStorageConfig $storageConfig)
     {
-        $this->storageConfig = $storageConfig;
         $this->client = new S3Client($storageConfig->getOptions());
         $this->adapter = new AwsS3V3Adapter($this->client, $storageConfig->getBucketName());
         $this->filesystem = new Filesystem($this->adapter);
     }
 
     /**
-     * @param string $path
      * @param        $file
-     * @param string $visibility
      *
-     * @return string
      * @throws FilesystemException
      */
     public function upload(string $path, $file, string $visibility = StorageEnum::PRIVATE_S): string
@@ -85,9 +67,6 @@ class AwsStorage implements IStorage
     }
 
     /**
-     * @param string $filePath
-     *
-     * @return bool
      * @throws FilesystemException
      */
     public function delete(string $filePath): bool
@@ -97,17 +76,11 @@ class AwsStorage implements IStorage
         return true;
     }
 
-    /**
-     * @return IStorageConfig
-     */
     public function getStorageConfig(): IStorageConfig
     {
         return $this->storageConfig;
     }
 
-    /**
-     * @param IStorageConfig $storageConfig
-     */
     public function setStorageConfig(IStorageConfig $storageConfig): void
     {
         $this->storageConfig = $storageConfig;
@@ -121,9 +94,6 @@ class AwsStorage implements IStorage
         return $this->client;
     }
 
-    /**
-     * @param S3ClientInterface $client
-     */
     public function setClient(S3ClientInterface $client): void
     {
         $this->client = $client;
@@ -137,9 +107,6 @@ class AwsStorage implements IStorage
         return $this->adapter;
     }
 
-    /**
-     * @param FilesystemAdapter $adapter
-     */
     public function setAdapter(FilesystemAdapter $adapter): void
     {
         $this->adapter = $adapter;
@@ -153,9 +120,6 @@ class AwsStorage implements IStorage
         return $this->filesystem;
     }
 
-    /**
-     * @param FilesystemOperator $filesystem
-     */
     public function setFilesystem(FilesystemOperator $filesystem): void
     {
         $this->filesystem = $filesystem;

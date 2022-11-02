@@ -26,8 +26,8 @@ final class Version20220228152150 extends AbstractMigration
             $oldValue = $row['old_type'];
             $number = $row['id_number'];
 
-            if (str_starts_with($oldValue, '=IF(LEN(AL')) {
-                if (strlen($number) > 7) {
+            if (str_starts_with((string) $oldValue, '=IF(LEN(AL')) {
+                if (strlen((string) $number) > 7) {
                     $oldValue = NationalIdType::NATIONAL_ID;
                 } else {
                     $oldValue = NationalIdType::FAMILY;
@@ -36,7 +36,7 @@ final class Version20220228152150 extends AbstractMigration
             try {
                 $newValue = NationalIdTypeEnum::valueToDB(NationalIdType::valueFromAPI($oldValue));
                 $this->addSql("UPDATE national_id SET id_type=? WHERE id=$id", [$newValue]);
-            } catch (EnumValueNoFoundException $e) {
+            } catch (EnumValueNoFoundException) {
                 echo "ERROR in national ID transformation: $oldValue\n";
             }
         }

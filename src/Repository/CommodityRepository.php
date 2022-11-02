@@ -17,8 +17,6 @@ use InputType\CommodityOfflineFilterInputType;
 class CommodityRepository extends EntityRepository
 {
     /**
-     * @param CommodityFilterInputType $filter
-     *
      * @return Paginator|Commodity[]
      */
     public function findByParams(CommodityFilterInputType $filter): Paginator
@@ -31,8 +29,6 @@ class CommodityRepository extends EntityRepository
     }
 
     /**
-     * @param CommodityOfflineFilterInputType $filter
-     * @param string $country
      *
      * @return Paginator|Commodity[]
      */
@@ -53,8 +49,6 @@ class CommodityRepository extends EntityRepository
     }
 
     /**
-     * @param string $country
-     *
      * @return Commodity[]
      */
     public function findByCountry(string $country): iterable

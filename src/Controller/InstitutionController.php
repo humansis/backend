@@ -19,20 +19,14 @@ use Utils\InstitutionService;
 
 class InstitutionController extends AbstractController
 {
-    /** @var InstitutionService */
-    private $institutionService;
-
-    public function __construct(InstitutionService $institutionService)
+    public function __construct(private readonly InstitutionService $institutionService)
     {
-        $this->institutionService = $institutionService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
      *
-     * @return JsonResponse
      */
     public function item(Institution $institution): JsonResponse
     {
@@ -46,12 +40,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/institutions")
      *
-     * @param Request $request
-     * @param Pagination $pagination
-     * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -72,9 +61,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/institutions")
      *
-     * @param InstitutionCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
@@ -86,10 +73,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
-     * @param InstitutionUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
     {
@@ -101,7 +85,6 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
      *
      * @return JsonResponse
      */
@@ -115,9 +98,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/institutions")
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function institutionsByProject(Project $project): JsonResponse
     {

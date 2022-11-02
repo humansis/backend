@@ -18,15 +18,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class InputTypeConverter implements ParamConverterInterface
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**
@@ -70,19 +63,11 @@ class InputTypeConverter implements ParamConverterInterface
         return in_array(InputTypeInterface::class, class_implements($class));
     }
 
-    /**
-     * @return ContextAwareDenormalizerInterface
-     */
     protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
     {
         return new ArrayDenormalizer();
     }
 
-    /**
-     * @param ParamConverter $configuration
-     *
-     * @return string|null
-     */
     protected function getClassFromConfiguration(ParamConverter $configuration): ?string
     {
         $class = $configuration->getClass();

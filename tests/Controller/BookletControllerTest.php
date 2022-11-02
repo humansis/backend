@@ -72,7 +72,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/booklets/' . $booklet->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -100,7 +100,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/booklets?sort[]=value.asc&filter[fulltext]=KHM');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -137,7 +137,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one beneficiary assigned to an assistance to complete this test'
             );
@@ -178,7 +178,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one community assigned to an assistance to complete this test'
             );
@@ -219,7 +219,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one institution assigned to an assistance to complete this test'
             );

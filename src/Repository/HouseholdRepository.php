@@ -24,10 +24,7 @@ use Doctrine\ORM\Query\Expr\Join;
  */
 class HouseholdRepository extends EntityRepository
 {
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    private ?\Repository\LocationRepository $locationRepository = null;
 
     public function injectLocationRepository(LocationRepository $locationRepository)
     {
@@ -37,7 +34,6 @@ class HouseholdRepository extends EntityRepository
     /**
      * Find all households in country
      *
-     * @param string $iso3
      * @return QueryBuilder
      */
     public function findAllByCountry(string $iso3)
@@ -71,7 +67,7 @@ class HouseholdRepository extends EntityRepository
             ->andWhere("hh.archived = 0");
         try {
             return $qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return 0;
         }
     }
@@ -92,9 +88,6 @@ class HouseholdRepository extends EntityRepository
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
      *
-     * @param string $iso3
-     * @param string $stringToSearch
-     * @param int $minimumTolerance
      * @return mixed
      */
     public function foundSimilarAddressLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
@@ -135,9 +128,6 @@ class HouseholdRepository extends EntityRepository
     /**
      * Return households which a Levenshtein distance with the stringToSearch under minimumTolerance
      *
-     * @param string $iso3
-     * @param string $stringToSearch
-     * @param int $minimumTolerance
      * @return mixed
      */
     public function foundSimilarCampLevenshtein(string $iso3, string $stringToSearch, int $minimumTolerance)
@@ -176,10 +166,7 @@ class HouseholdRepository extends EntityRepository
     }
 
     /**
-     * @param string $iso3
-     * @param HouseholdFilterInputType $filter
      * @param HouseholdOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Household[]
      */
@@ -301,9 +288,7 @@ class HouseholdRepository extends EntityRepository
 
         if ($filter->hasLivelihoods()) {
             $livelihoods = array_values(
-                array_map(static function ($livelihood) {
-                    return LivelihoodEnum::valueToDB($livelihood);
-                }, $filter->getLivelihoods())
+                array_map(static fn($livelihood) => LivelihoodEnum::valueToDB($livelihood), $filter->getLivelihoods())
             );
 
             $qb->andWhere('hh.livelihood IN (:livelihoods)')
@@ -405,7 +390,6 @@ class HouseholdRepository extends EntityRepository
      * Get all Household by country and id
      *
      * @param string $iso3
-     * @param array $ids
      * @return mixed
      */
     public function getAllByIds(array $ids)
@@ -479,8 +463,6 @@ class HouseholdRepository extends EntityRepository
 
     /**
      * Create sub request to get location from household
-     *
-     * @param QueryBuilder $qb
      */
     protected function getHouseholdLocation(QueryBuilder &$qb)
     {

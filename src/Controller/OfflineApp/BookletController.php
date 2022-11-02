@@ -22,27 +22,14 @@ use Utils\BookletService;
 
 class BookletController extends AbstractOfflineAppController
 {
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(BookletService $bookletService, LoggerInterface $logger)
+    public function __construct(private readonly BookletService $bookletService, private readonly LoggerInterface $logger)
     {
-        $this->bookletService = $bookletService;
-        $this->logger = $logger;
     }
 
     /**
      * @Rest\Get("/offline-app/v1/booklets")
      *
-     * @param Request $request
-     * @param BookletFilterInputType $filter
-     * @param Pagination $pagination
-     * @param BookletOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -75,9 +62,6 @@ class BookletController extends AbstractOfflineAppController
      * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
      * @return Response
      */
     public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
@@ -92,6 +76,6 @@ class BookletController extends AbstractOfflineAppController
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode($return));
+        return new Response(json_encode($return, JSON_THROW_ON_ERROR));
     }
 }

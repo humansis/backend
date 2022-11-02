@@ -27,18 +27,14 @@ class HouseholdLocation
     ];
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="location_group", type="string", length=45)
      */
-    private $locationGroup;
+    private string $locationGroup;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=45)
      */
-    private $type;
+    private string $type;
 
     /**
      * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
@@ -51,11 +47,9 @@ class HouseholdLocation
     private $campAddress;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="householdLocations")
      */
-    private $household;
+    private ?\Entity\Household $household = null;
 
     /**
      * Set locationGroup.

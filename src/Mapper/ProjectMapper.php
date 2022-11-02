@@ -14,19 +14,10 @@ use Utils\ProjectService;
 
 class ProjectMapper implements MapperInterface
 {
-    /** @var Project */
-    private $object;
+    private ?\Entity\Project $object = null;
 
-    /** @var ProjectService */
-    private $projectService;
-
-    /** @var BeneficiaryRepository */
-    private $beneficiaryRepository;
-
-    public function __construct(ProjectService $projectService, BeneficiaryRepository $beneficiaryRepository)
+    public function __construct(private readonly ProjectService $projectService, private readonly BeneficiaryRepository $beneficiaryRepository)
     {
-        $this->projectService = $projectService;
-        $this->beneficiaryRepository = $beneficiaryRepository;
     }
 
     /**
@@ -49,7 +40,7 @@ class ProjectMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Project::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Project::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -96,18 +87,14 @@ class ProjectMapper implements MapperInterface
     public function getSectors(): array
     {
         return array_values(
-            array_map(function (ProjectSector $item) {
-                return $item->getSector();
-            }, $this->object->getSectors()->toArray())
+            array_map(fn(ProjectSector $item) => $item->getSector(), $this->object->getSectors()->toArray())
         );
     }
 
     public function getDonorIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getDonors()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getDonors()->toArray())
         );
     }
 

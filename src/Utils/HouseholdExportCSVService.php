@@ -8,7 +8,7 @@ use Entity\CountrySpecific;
 
 class HouseholdExportCSVService
 {
-    public const
+    final public const
         PRIMARY_ID_TYPE = 'ID Type',
         PRIMARY_ID_NUMBER = 'ID Number',
         SECONDARY_ID_TYPE = 'Secondary ID Type',
@@ -16,12 +16,6 @@ class HouseholdExportCSVService
         TERTIARY_ID_TYPE = 'Tertiary ID Type',
         TERTIARY_ID_NUMBER = 'Tertiary ID Number',
         HEAD = 'Head';
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
 
     private const LINE_1_MAPPING = [
         ImportTemplate::ROW_NAME_STATUS => '(!) Do not remove lines 1-5',
@@ -271,7 +265,7 @@ class HouseholdExportCSVService
         'M 60+' => 'Number',
     ];
 
-    public const MAPPING_PROPERTIES = [
+    final public const MAPPING_PROPERTIES = [
         ImportTemplate::ROW_NAME_STATUS => 'humansisData',
         ImportTemplate::ROW_NAME_MESSAGES => 'humansisComment',
         'Address street' => 'addressStreet',
@@ -333,10 +327,8 @@ class HouseholdExportCSVService
         'M 60+' => 'm60',
     ];
 
-    public function __construct(EntityManagerInterface $entityManager, ExportService $exportService)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
     {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
     }
 
     /**
@@ -353,7 +345,6 @@ class HouseholdExportCSVService
     /**
      * Returns list headers cells.
      *
-     * @param string $countryISO3
      *
      * @return array
      */
@@ -382,8 +373,6 @@ class HouseholdExportCSVService
     /**
      * Export all projects of the country in the CSV file.
      *
-     * @param string $type
-     * @param string $countryISO3
      *
      * @return mixed
      */

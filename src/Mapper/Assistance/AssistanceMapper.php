@@ -16,21 +16,12 @@ use Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
 {
-    /** @var Entity\Assistance */
-    private $object;
+    private ?\Entity\Assistance $object = null;
 
-    /** @var Domain\Assistance */
-    private $domainObject;
+    private ?\Component\Assistance\Domain\Assistance $domainObject = null;
 
-    /** @var AssistanceFactory */
-    private $factory;
-
-    /**
-     * @param AssistanceFactory $factory
-     */
-    public function __construct(AssistanceFactory $factory)
+    public function __construct(private readonly AssistanceFactory $factory)
     {
-        $this->factory = $factory;
     }
 
     /**
@@ -64,9 +55,7 @@ class AssistanceMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -217,25 +206,16 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getNote();
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoodLimit(): ?string
     {
         return $this->object->getFoodLimit();
     }
 
-    /**
-     * @return string|null
-     */
     public function getNonFoodLimit(): ?string
     {
         return $this->object->getNonFoodLimit();
     }
 
-    /**
-     * @return string|null
-     */
     public function getCashbackLimit(): ?string
     {
         return $this->object->getCashbackLimit();

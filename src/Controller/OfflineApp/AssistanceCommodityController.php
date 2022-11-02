@@ -17,10 +17,7 @@ class AssistanceCommodityController extends AbstractController
     /**
      * @Rest\Get("/offline-app/v2/commodities")
      *
-     * @param Request $request
-     * @param CommodityOfflineFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function commodities(Request $request, CommodityOfflineFilterInputType $filter): JsonResponse
     {

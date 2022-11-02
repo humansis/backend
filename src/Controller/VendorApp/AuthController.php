@@ -15,22 +15,14 @@ use Utils\VendorService;
 
 class AuthController extends AbstractVendorAppController
 {
-    private $vendorService;
-
-    /**
-     * @param VendorService $vendorService
-     */
-    public function __construct(VendorService $vendorService)
+    public function __construct(private readonly VendorService $vendorService)
     {
-        $this->vendorService = $vendorService;
     }
 
     /**
      * @Rest\Post("/vendor-app/v2/login")
      *
-     * @param Profiler|null $profiler
      *
-     * @return JsonResponse|Response
      */
     public function loginVendorApp(?Profiler $profiler): Response
     {
@@ -42,7 +34,7 @@ class AuthController extends AbstractVendorAppController
         $user = $this->getUser();
         try {
             $vendor = $this->vendorService->getVendorByUser($user);
-        } catch (NotFoundHttpException $ex) {
+        } catch (NotFoundHttpException) {
             throw new AccessDeniedHttpException(
                 'User does not have assigned vendor. You cannot log-in into vendor app.'
             );

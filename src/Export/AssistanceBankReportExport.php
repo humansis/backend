@@ -17,18 +17,8 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class AssistanceBankReportExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var AssistanceBeneficiaryRepository */
-    private $assistanceBeneficiaryRepository;
-
-    public function __construct(
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        TranslatorInterface $translator
-    ) {
-        $this->translator = $translator;
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
+    public function __construct(private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, private readonly TranslatorInterface $translator)
+    {
     }
 
     public function export(Assistance $assistance, string $filetype): string

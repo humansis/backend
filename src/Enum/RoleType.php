@@ -8,7 +8,7 @@ class RoleType
 {
     use EnumTrait;
 
-    public const
+    final public const
         REPORTING = 'ROLE_REPORTING',
         PROJECT_MANAGEMENT = 'ROLE_PROJECT_MANAGEMENT',
         BENEFICIARY_MANAGEMENT = 'ROLE_BENEFICIARY_MANAGEMENT',

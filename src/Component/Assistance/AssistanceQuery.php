@@ -9,20 +9,8 @@ use Component\Assistance\Domain\Assistance;
 
 class AssistanceQuery
 {
-    /** @var AssistanceRepository */
-    private $rootRepository;
-
-    /** @var AssistanceFactory */
-    private $factory;
-
-    /**
-     * @param AssistanceRepository $rootRepository
-     * @param AssistanceFactory $factory
-     */
-    public function __construct(AssistanceRepository $rootRepository, AssistanceFactory $factory)
+    public function __construct(private readonly AssistanceRepository $rootRepository, private readonly AssistanceFactory $factory)
     {
-        $this->rootRepository = $rootRepository;
-        $this->factory = $factory;
     }
 
     public function find(int $assistanceRootId): Assistance

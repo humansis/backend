@@ -34,9 +34,7 @@ class TargetMapper extends AbstractTargetMapper
     public function getBookletIds(): array
     {
         return array_values(
-            array_map(function (Booklet $booklet) {
-                return $booklet->getId();
-            }, $this->object->getBooklets()->toArray())
+            array_map(fn(Booklet $booklet) => $booklet->getId(), $this->object->getBooklets()->toArray())
         );
     }
 }

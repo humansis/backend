@@ -10,28 +10,12 @@ use Entity\DivisionGroup;
 class DivisionSummary
 {
     /**
-     * @var string|null
+     * @param \Entity\DivisionGroup[]|Collection $divisionGroups
      */
-    private $division;
-
-    /**
-     * @var DivisionGroup[]|Collection
-     */
-    private $divisionGroups;
-
-    /**
-     * @param string|null $division
-     * @param Collection $divisionGroups
-     */
-    public function __construct(?string $division, Collection $divisionGroups)
+    public function __construct(private readonly ?string $division, private readonly Collection $divisionGroups)
     {
-        $this->division = $division;
-        $this->divisionGroups = $divisionGroups;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDivision(): ?string
     {
         return $this->division;

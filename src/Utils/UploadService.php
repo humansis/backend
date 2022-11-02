@@ -16,8 +16,6 @@ use Aws\Credentials\Credentials;
 
 class UploadService implements ContainerAwareInterface
 {
-    private $container;
-
     private $s3;
 
     protected $aws_access_key_id;
@@ -26,9 +24,6 @@ class UploadService implements ContainerAwareInterface
 
     protected $aws_s3_region;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function setContainer(ContainerInterface $container = null)
     {
         $this->container = $container;
@@ -42,10 +37,8 @@ class UploadService implements ContainerAwareInterface
         $aws_access_key_id,
         $aws_secret_access_key,
         $aws_s3_region,
-        ContainerInterface $container
+        private ContainerInterface $container
     ) {
-        $this->container = $container;
-
         $credentials = new Credentials(
             $aws_access_key_id,
             $aws_secret_access_key
@@ -62,9 +55,6 @@ class UploadService implements ContainerAwareInterface
     }
 
     /**
-     * @param UploadedFile $file
-     * @param AwsS3 $adapter
-     *
      * @return mixed
      * @throws Exception
      */
@@ -76,9 +66,7 @@ class UploadService implements ContainerAwareInterface
             $response = $adapter->write($filename, file_get_contents($file->getPathname()));
 
             return $filename;
-        } catch (S3Exception $e) {
-            throw $e;
-        } catch (Exception $e) {
+        } catch (S3Exception | Exception $e) {
             throw $e;
         }
     }

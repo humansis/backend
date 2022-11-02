@@ -12,7 +12,6 @@ trait GenericStateFilterTrait
     /**
      * TODO: add validation from enum
      *
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -20,6 +19,7 @@ trait GenericStateFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $states;
 
     abstract protected function availableStates(): array;

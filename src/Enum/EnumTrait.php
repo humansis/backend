@@ -34,12 +34,9 @@ trait EnumTrait
     }
 
     /**
-     * @param int|string $APIValue
-     *
-     * @return string|int|bool
      * @throws EnumValueNoFoundException
      */
-    public static function valueFromAPI($APIValue)
+    public static function valueFromAPI(int|string $APIValue): string|int|bool
     {
         $normalizedApiValue = self::normalizeValue($APIValue);
         foreach (self::values() as $originalValue) {
@@ -59,20 +56,18 @@ trait EnumTrait
                 }
             }
         }
-        throw new EnumValueNoFoundException(__CLASS__, (string) $APIValue);
+        throw new EnumValueNoFoundException(self::class, (string) $APIValue);
     }
 
     /**
-     * @param string|int|bool $value
      *
-     * @return string|int|bool
      *
      * @throws EnumApiValueNoFoundException
      */
-    public static function valueToAPI($value)
+    public static function valueToAPI(string|int|bool $value): string|int|bool
     {
         if (!isset(self::apiMap()[$value])) {
-            throw new EnumApiValueNoFoundException(__CLASS__, $value);
+            throw new EnumApiValueNoFoundException(self::class, $value);
         }
 
         return self::apiMap()[$value];
@@ -82,8 +77,6 @@ trait EnumTrait
      * Everytime this function is updated, table location needs to be migrated. enum_normalized_name column needs to be generated again.
      *
      * @param $value
-     *
-     * @return string
      */
     public static function normalizeValue($value): string
     {

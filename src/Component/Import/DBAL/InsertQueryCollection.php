@@ -10,16 +10,12 @@ use Enum\ImportQueueState;
 
 class InsertQueryCollection
 {
-    private $params = [];
+    private array $params = [];
 
-    private $counter = 0;
+    private int $counter = 0;
 
-    /** @var EntityManagerInterface */
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     public function add(ImportFile $importFile, string $content)

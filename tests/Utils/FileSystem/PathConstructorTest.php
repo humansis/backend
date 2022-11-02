@@ -38,10 +38,6 @@ class PathConstructorTest extends TestCase
 
     /**
      * @dataProvider constructDataProvider
-     *
-     * @param string $template
-     * @param array $params
-     * @param string $expectedResultPath
      */
     public function testConstruct(string $template, array $params, string $expectedResultPath)
     {

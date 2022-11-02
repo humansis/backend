@@ -18,7 +18,7 @@ class Purchases extends SynchronizationBatch
     /**
      * @var SmartcardPurchase[]
      */
-    private $createdPurchases;
+    private array $createdPurchases;
 
     public function __construct(array $requestData)
     {
@@ -42,9 +42,6 @@ class Purchases extends SynchronizationBatch
         $this->createdPurchases = $createdPurchases;
     }
 
-    /**
-     * @param SmartcardPurchase $createdDeposit
-     */
     public function addCreatedDeposit(SmartcardPurchase $createdDeposit): void
     {
         $this->createdPurchases[] = $createdDeposit;

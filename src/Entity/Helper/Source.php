@@ -25,9 +25,6 @@ trait Source
         return $this->source;
     }
 
-    /**
-     * @param string $source
-     */
     public function setSource(string $source): void
     {
         $this->source = $source;

@@ -18,51 +18,15 @@ use InputType;
 
 class BookletService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var BookletGenerator */
-    private $generator;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var VoucherService */
-    private $voucherService;
-
-    /** @var PdfService */
-    private $pdfService;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param BookletGenerator $generator
-     * @param Environment $twig
-     * @param VoucherService $voucherService
-     * @param PdfService $pdfService
-     */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        BookletGenerator $generator,
-        Environment $twig,
-        VoucherService $voucherService,
-        PdfService $pdfService
-    ) {
-        $this->em = $entityManager;
-        $this->generator = $generator;
-        $this->twig = $twig;
-        $this->voucherService = $voucherService;
-        $this->pdfService = $pdfService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly BookletGenerator $generator, private readonly Environment $twig, private readonly VoucherService $voucherService, private readonly PdfService $pdfService)
+    {
     }
 
     /**
      * Find one booklet by code
      *
-     * @param string $code
      * @return Booklet
      */
-
     public function getOne(string $code)
     {
         return $this->em->getRepository(Booklet::class)->findOneBy(['code' => $code]);
@@ -71,7 +35,6 @@ class BookletService
     /**
      * Creates a new Booklet entity
      *
-     * @param array $bookletData
      * @return mixed
      * @throws Exception
      * @deprecated
@@ -89,7 +52,7 @@ class BookletService
 
         $this->createBooklets($inputType);
 
-        return $this->em->getRepository(Booklet::class)->findOneBy([], ['id' => 'DESC'], 1);
+        return $this->em->getRepository(Booklet::class)->findOneBy([], ['id' => 'DESC']);
     }
 
     public function createBooklets(BookletBatchCreateInputType $inputType)
@@ -133,8 +96,6 @@ class BookletService
     /**
      * Updates a booklet
      *
-     * @param Booklet $booklet
-     * @param array $bookletData
      * @return Booklet
      * @throws Exception
      */
@@ -162,7 +123,7 @@ class BookletService
                     ];
 
                     $this->voucherService->create($voucherData);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     throw new Exception('Error creating vouchers');
                 }
             } elseif ($vouchersToAdd < 0) {
@@ -190,7 +151,7 @@ class BookletService
             }
 
             $this->em->flush();
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new Exception('Error updating Booklet');
         }
 
@@ -224,12 +185,12 @@ class BookletService
 
         if (!empty($value)) {
             $voucher->setValue($value);
-            $oldValuePos = strpos($qrCode, $matches[2]);
-            $qrCode = substr_replace($qrCode, $value, $oldValuePos, strlen($matches[2]));
+            $oldValuePos = strpos($qrCode, (string) $matches[2]);
+            $qrCode = substr_replace($qrCode, $value, $oldValuePos, strlen((string) $matches[2]));
         }
         if (!empty($currency)) {
-            $oldCurrencyPos = strpos($qrCode, $matches[1]);
-            $qrCode = substr_replace($qrCode, $currency, $oldCurrencyPos, strlen($matches[1]));
+            $oldCurrencyPos = strpos($qrCode, (string) $matches[1]);
+            $qrCode = substr_replace($qrCode, $currency, $oldCurrencyPos, strlen((string) $matches[1]));
         }
         $voucher->setCode($qrCode);
 
@@ -258,9 +219,6 @@ class BookletService
     /**
      * Assign the booklet to a beneficiary
      *
-     * @param Booklet $booklet
-     * @param AbstractBeneficiary $abstractBeneficiary
-     * @param Assistance $assistance
      * @return string
      * @throws Exception
      *
@@ -296,12 +254,9 @@ class BookletService
     }
 
     // =============== DELETE 1 BOOKLET AND ITS VOUCHERS FROM DATABASE ===============
-
     /**
      * Permanently delete the record from the database
      *
-     * @param Booklet $booklet
-     * @param bool $removeBooklet
      * @return bool
      * @throws Exception
      */
@@ -314,7 +269,7 @@ class BookletService
                 // === if no vouchers then delete ===
                 $this->em->remove($booklet);
                 $this->em->flush();
-            } catch (Exception $exception) {
+            } catch (Exception) {
                 throw new Exception('Unable to delete Booklet');
             }
         } elseif ($removeBooklet && $vouchers) {
@@ -323,7 +278,7 @@ class BookletService
                 $this->voucherService->deleteBatchVouchers($booklet);
                 $this->em->remove($booklet);
                 $this->em->flush();
-            } catch (Exception $exception) {
+            } catch (Exception) {
                 throw new Exception('This booklet still contains potentially used vouchers.');
             }
         } else {
@@ -342,9 +297,9 @@ class BookletService
             foreach ($booklets as $booklet) {
                 if ($booklet !== $booklets[0]) {
                     $bookletHtml = $this->getPdfHtml($booklet, $voucherHtmlSeparation);
-                    preg_match('/<main>([\s\S]*)<\/main>/', $bookletHtml, $matches);
+                    preg_match('/<main>([\s\S]*)<\/main>/', (string) $bookletHtml, $matches);
                     $bookletInnerHtml = '<p style="page-break-before: always">' . $matches[1];
-                    $pos = strrpos($html, $voucherHtmlSeparation);
+                    $pos = strrpos((string) $html, $voucherHtmlSeparation);
                     $html = substr_replace($html, $bookletInnerHtml, $pos, strlen($voucherHtmlSeparation));
                 }
             }
@@ -417,8 +372,6 @@ class BookletService
     }
 
     /**
-     * @param InputType\Country $countryISO3
-     * @param InputType\DataTableType $filter
      * @return mixed
      */
     public function getAll(InputType\Country $countryISO3, InputType\DataTableType $filter)

@@ -10,8 +10,8 @@ trait FulltextFilterTrait
 {
     /**
      * @var string
-     * @Assert\Type("scalar")
      */
+    #[Assert\Type('scalar')]
     protected $fulltext;
 
     public function hasFulltext(): bool

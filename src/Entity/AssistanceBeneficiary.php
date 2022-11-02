@@ -32,32 +32,30 @@ class AssistanceBeneficiary
     use StandardizedPrimaryKey;
 
     /**
-     * @var Assistance
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="distributionBeneficiaries")
      * @ORM\JoinColumn(name="assistance_id")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullBooklet"})
      */
-    private $assistance;
+    #[SymfonyGroups(['FullAssistanceBeneficiary', 'FullBooklet'])]
+    private ?\Entity\Assistance $assistance = null;
 
     /**
-     * @var AbstractBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
      * @ORM\JoinColumn(name="beneficiary_id")
-     * @SymfonyGroups({"FullAssistanceBeneficiary", "FullAssistance", "SmallAssistance", "ValidatedAssistance", "FullBooklet", "FullProject"})
-     * @SymfonyMaxDepth(3)
      */
-    private $beneficiary;
+    #[SymfonyGroups(['FullAssistanceBeneficiary', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance', 'FullBooklet', 'FullProject'])]
+    #[SymfonyMaxDepth(3)]
+    private ?\Entity\AbstractBeneficiary $beneficiary = null;
 
     /**
      * @var Collection|Transaction[]
      * @deprecated you shouldn't know about transaction here
      *
      * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
-     * @SymfonyMaxDepth(1)
      */
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    #[SymfonyMaxDepth(1)]
     private $transactions;
 
     /**
@@ -65,16 +63,14 @@ class AssistanceBeneficiary
      * @deprecated you shouldn't know about booklets here
      *
      * @ORM\OneToMany(targetEntity="Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
     private $booklets;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="content", type="json", nullable=true)
      */
-    private $vulnerabilityScores;
+    private ?string $vulnerabilityScores = null;
 
     /**
      * @var Collection|ReliefPackage[]
@@ -82,7 +78,7 @@ class AssistanceBeneficiary
      * @ORM\OneToMany(targetEntity="Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $reliefPackages;
+    private \Doctrine\Common\Collections\Collection|array $reliefPackages;
 
     public function __construct()
     {
@@ -92,27 +88,25 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @var string
      *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
-    private $justification;
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    private string $justification;
 
     /**
-     * @var bool
      *
      * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      */
-    private $removed = 0;
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    private int|bool $removed = 0;
 
     /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
      * @return bool|null true, if smartcard money was already distributed/deposited to beneficiary. Null, if distribution is not about smartcard.
      */
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
     public function getSmartcardDistributed(): ?bool
     {
         foreach ($this->getAssistance()->getCommodities() as $commodity) {
@@ -125,11 +119,7 @@ class AssistanceBeneficiary
         return null;
     }
 
-    /**
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "ValidatedAssistance"})
-     *
-     * @return DateTimeInterface|null
-     */
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
     public function getSmartcardDistributedAt(): ?DateTimeInterface
     {
         foreach ($this->getSmartcardDeposits() as $deposit) {
@@ -142,7 +132,6 @@ class AssistanceBeneficiary
     /**
      * Set assistance.
      *
-     * @param Assistance $assistance
      *
      * @return AssistanceBeneficiary
      */
@@ -209,7 +198,7 @@ class AssistanceBeneficiary
      *
      * @return Collection|Transaction[]
      */
-    public function getTransactions()
+    public function getTransactions(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->transactions;
     }
@@ -217,7 +206,6 @@ class AssistanceBeneficiary
     /**
      * Add a Transaction.
      *
-     * @param Transaction $transaction
      *
      * @return self
      */
@@ -231,7 +219,6 @@ class AssistanceBeneficiary
     /**
      * Remove a Transaction.
      *
-     * @param Transaction $transaction
      *
      * @return self
      */
@@ -353,9 +340,7 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @param ScoringProtocol $vulnerabilityScores
      *
-     * @return AssistanceBeneficiary
      *
      * @throws JsonException
      */
@@ -391,7 +376,7 @@ class AssistanceBeneficiary
     /**
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackages(?Criteria $criteria = null)
+    public function getReliefPackages(?Criteria $criteria = null): \Doctrine\Common\Collections\Collection|array
     {
         if ($criteria === null) {
             $criteria = Criteria::create();
@@ -405,7 +390,7 @@ class AssistanceBeneficiary
      *
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackagesInStates(array $states)
+    public function getReliefPackagesInStates(array $states): \Doctrine\Common\Collections\Collection|array
     {
         if (empty($states)) {
             return [];
@@ -419,7 +404,7 @@ class AssistanceBeneficiary
      *
      * @return Collection|ReliefPackage[]
      */
-    public function getReliefPackagesNotInStates(array $states)
+    public function getReliefPackagesNotInStates(array $states): \Doctrine\Common\Collections\Collection|array
     {
         if (empty($states)) {
             return $this->getReliefPackages();
@@ -429,8 +414,6 @@ class AssistanceBeneficiary
     }
 
     /**
-     * @param string $modalityName
-     * @param string $unit
      * @param                       $value
      */
     public function setCommodityToDistribute(string $modalityName, string $unit, $value): void

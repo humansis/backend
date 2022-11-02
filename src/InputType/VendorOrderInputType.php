@@ -6,14 +6,14 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class VendorOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_SHOP = 'shop';
-    public const SORT_BY_NAME = 'name';
-    public const SORT_BY_USERNAME = 'username';
-    public const SORT_BY_ADDRESS_STREET = 'addressStreet';
-    public const SORT_BY_ADDRESS_NUMBER = 'addressNumber';
-    public const SORT_BY_ADDRESS_POSTCODE = 'addressPostcode';
-    public const SORT_BY_LOCATION = 'location';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_SHOP = 'shop';
+    final public const SORT_BY_NAME = 'name';
+    final public const SORT_BY_USERNAME = 'username';
+    final public const SORT_BY_ADDRESS_STREET = 'addressStreet';
+    final public const SORT_BY_ADDRESS_NUMBER = 'addressNumber';
+    final public const SORT_BY_ADDRESS_POSTCODE = 'addressPostcode';
+    final public const SORT_BY_LOCATION = 'location';
 
     protected function getValidNames(): array
     {

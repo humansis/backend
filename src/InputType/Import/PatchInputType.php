@@ -10,37 +10,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class PatchInputType implements InputTypeInterface
 {
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     * @Assert\Choice(callback="allowedStates")
-     */
-    private $status;
+    #[Assert\Type('string')]
+    private ?string $description = null;
 
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     */
-    private $description;
-
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     * @Assert\NotBlank(allowNull=true)
-     */
-    private $title;
+    #[Assert\Type('string')]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?string $title = null;
 
     /**
      * ImportUpdateStatusInputType constructor.
-     *
-     * @param string|null $status
      */
-    public function __construct(?string $status = null)
+    public function __construct(private ?string $status = null)
     {
-        $this->status = $status;
     }
 
     public static function allowedStates(): array

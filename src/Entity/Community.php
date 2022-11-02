@@ -14,17 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
 class Community extends AbstractBeneficiary
 {
     /**
-     * @var string
      * @ORM\Column(name="name", type="string", length=100, nullable=false)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var Person|null
      * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
      */
-    private $contact;
+    private ?\Entity\Person $contact;
 
     /**
      * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
@@ -32,18 +30,14 @@ class Community extends AbstractBeneficiary
     private $address;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      */
-    private $latitude;
+    private ?string $latitude = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
-    private $longitude;
+    private ?string $longitude = null;
 
     /**
      * Community constructor.
@@ -54,73 +48,46 @@ class Community extends AbstractBeneficiary
         $this->contact = new Person();
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return Person|null
-     */
     public function getContact(): ?Person
     {
         return $this->contact;
     }
 
-    /**
-     * @param Person|null $contact
-     */
     public function setContact(?Person $contact): void
     {
         $this->contact = $contact;
     }
 
-    /**
-     * @return string|null
-     */
     public function getContactName(): ?string
     {
         return $this->contact->getEnGivenName();
     }
 
-    /**
-     * @param string|null $contactName
-     */
     public function setContactName(?string $contactName): void
     {
         $this->contact->setEnGivenName($contactName);
     }
 
-    /**
-     * @return string|null
-     */
     public function getContactFamilyName(): ?string
     {
         return $this->contact->getEnFamilyName();
     }
 
-    /**
-     * @param string|null $contactFamilyName
-     */
     public function setContactFamilyName(?string $contactFamilyName): void
     {
         $this->contact->setEnFamilyName($contactFamilyName);
     }
 
-    /**
-     * @return Phone|null
-     */
     public function getPhone(): ?Phone
     {
         if ($this->contact->getPhones()->count() === 0) {
@@ -130,9 +97,6 @@ class Community extends AbstractBeneficiary
         return $this->contact->getPhones()->current();
     }
 
-    /**
-     * @param Phone|null $phone
-     */
     public function setPhone(?Phone $phone): void
     {
         if ($phone) {
@@ -143,9 +107,6 @@ class Community extends AbstractBeneficiary
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhoneNumber(): ?string
     {
         if ($this->getPhone()) {
@@ -155,9 +116,6 @@ class Community extends AbstractBeneficiary
         return null;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhonePrefix(): ?string
     {
         if (!$this->getPhone()) {
@@ -167,9 +125,6 @@ class Community extends AbstractBeneficiary
         return $this->getPhone()->getPrefix();
     }
 
-    /**
-     * @return NationalId|null
-     */
     public function getNationalId(): ?NationalId
     {
         if ($this->contact->getNationalIds()->count() === 0) {
@@ -179,9 +134,6 @@ class Community extends AbstractBeneficiary
         return $this->contact->getNationalIds()->current();
     }
 
-    /**
-     * @param NationalId|null $nationalId
-     */
     public function setNationalId(?NationalId $nationalId): void
     {
         if ($nationalId) {
@@ -192,9 +144,6 @@ class Community extends AbstractBeneficiary
         }
     }
 
-    /**
-     * @return Address|null
-     */
     public function getAddress(): ?Address
     {
         return $this->address;
@@ -211,7 +160,6 @@ class Community extends AbstractBeneficiary
     /**
      * Set lat.
      *
-     * @param string|null $latitude
      *
      * @return self
      */
@@ -224,8 +172,6 @@ class Community extends AbstractBeneficiary
 
     /**
      * Get lat.
-     *
-     * @return string|null
      */
     public function getLatitude(): ?string
     {
@@ -235,7 +181,6 @@ class Community extends AbstractBeneficiary
     /**
      * Set long.
      *
-     * @param string|null $longitude
      *
      * @return self
      */
@@ -246,9 +191,6 @@ class Community extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLongitude(): ?string
     {
         return $this->longitude;

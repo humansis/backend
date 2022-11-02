@@ -10,31 +10,11 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 class ImportCheck
 {
-    /**
-     * @SerializedName("checkType")
-     * @var string
-     */
-    private $checkType;
-
-    /**
-     * @SerializedName("importId")
-     * @var int
-     */
-    private $importId;
-
-    /**
-     * @param string|null $checkType
-     * @param int|null $importId
-     */
-    private function __construct(?string $checkType = null, ?int $importId = null)
+    private function __construct(private ?string $checkType = null, private ?int $importId = null)
     {
-        $this->importId = $importId;
-        $this->checkType = $checkType;
     }
 
     /**
-     * @param Import $import
-     *
      * @return static
      */
     public static function checkUploadingComplete(Import $import): self
@@ -43,8 +23,6 @@ class ImportCheck
     }
 
     /**
-     * @param Import $import
-     *
      * @return static
      */
     public static function checkIntegrityComplete(Import $import): self
@@ -53,8 +31,6 @@ class ImportCheck
     }
 
     /**
-     * @param Import $import
-     *
      * @return static
      */
     public static function checkIdentityComplete(Import $import): self
@@ -63,8 +39,6 @@ class ImportCheck
     }
 
     /**
-     * @param Import $import
-     *
      * @return static
      */
     public static function checkSimilarityComplete(Import $import): self
@@ -73,8 +47,6 @@ class ImportCheck
     }
 
     /**
-     * @param Import $import
-     *
      * @return static
      */
     public static function checkImportingComplete(Import $import): self
@@ -90,9 +62,6 @@ class ImportCheck
         return $this->checkType;
     }
 
-    /**
-     * @param string $checkType
-     */
     public function setCheckType(string $checkType): void
     {
         $this->checkType = $checkType;
@@ -106,9 +75,6 @@ class ImportCheck
         return $this->importId;
     }
 
-    /**
-     * @param int $importId
-     */
     public function setImportId(int $importId): void
     {
         $this->importId = $importId;

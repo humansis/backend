@@ -13,8 +13,7 @@ use Utils\DateTime\DateOnlyFormat;
 
 class BeneficiaryMapper implements MapperInterface
 {
-    /** @var Beneficiary */
-    private $object;
+    private ?\Entity\Beneficiary $object = null;
 
     /**
      * {@inheritdoc}
@@ -38,7 +37,7 @@ class BeneficiaryMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -55,18 +54,14 @@ class BeneficiaryMapper implements MapperInterface
     public function getNationalIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getPerson()->getNationalIds()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getPerson()->getNationalIds()->toArray())
         );
     }
 
     public function getPhoneIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getPerson()->getPhones()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getPerson()->getPhones()->toArray())
         );
     }
 

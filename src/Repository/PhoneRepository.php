@@ -16,8 +16,6 @@ use InputType\PhoneFilterInputType;
 class PhoneRepository extends EntityRepository
 {
     /**
-     * @param PhoneFilterInputType $filter
-     *
      * @return Paginator|Phone[]
      */
     public function findByParams(PhoneFilterInputType $filter): Paginator

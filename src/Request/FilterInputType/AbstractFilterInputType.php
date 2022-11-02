@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 abstract class AbstractFilterInputType implements FilterInputTypeInterface
 {
-    private $filter = [];
+    private array $filter = [];
 
     public function setFilter($filter)
     {
@@ -49,7 +49,7 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
                 $value[$i] = $this->recursiveNormalize($v);
             }
         } elseif (is_numeric($value) && !is_int($value)) {
-            if (strlen($value) > 1 && 0 === strpos($value, '0')) {
+            if (strlen($value) > 1 && str_starts_with($value, '0')) {
                 // no transformation for "numbers" like "007"
             } elseif (ctype_digit($value)) {
                 $value = (int) $value;

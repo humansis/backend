@@ -6,52 +6,25 @@ namespace Component\Import\CellError;
 
 class CellError
 {
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var string
-     */
-    private $property;
-
-    private $value;
-
-    public function __construct(string $type, string $property, $value)
+    public function __construct(private string $type, private string $property, private $value)
     {
-        $this->type = $type;
-        $this->property = $property;
-        $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
     public function getProperty(): string
     {
         return $this->property;
     }
 
-    /**
-     * @param string $property
-     */
     public function setProperty(string $property): void
     {
         $this->property = $property;
@@ -65,10 +38,7 @@ class CellError
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
     }

@@ -15,82 +15,70 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Logs
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $id;
+    #[SymfonyGroups(['FullLogs'])]
+    private int $id;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="url", type="string", length=255)
      *
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $url;
+    #[SymfonyGroups(['FullLogs'])]
+    private string $url;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="idUser", type="integer")
      */
-    private $idUser;
+    private int $idUser;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="mailUser", type="string", length=255)
      *
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $mailUser;
+    #[SymfonyGroups(['FullLogs'])]
+    private string $mailUser;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="method", type="string", length=255)
      *
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $method;
+    #[SymfonyGroups(['FullLogs'])]
+    private string $method;
 
     /**
-     * @var DateTime
-     *
      * @ORM\Column(name="date", type="datetime")
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $date;
+    #[SymfonyGroups(['FullLogs'])]
+    private \DateTime $date;
 
     /**
-     * @var int
      *
      * @ORM\Column(name="httpStatus", type="integer")
      *
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $httpStatus;
+    #[SymfonyGroups(['FullLogs'])]
+    private int $httpStatus;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="controller", type="string", length=255)
-     * @SymfonyGroups({"FullLogs"})
      */
-    private $controller;
+    #[SymfonyGroups(['FullLogs'])]
+    private string $controller;
 
     /**
      * @var array
      *
      * @ORM\Column(name="request", type="text")
-     *
-     * @SymfonyGroups({"FullLogs"})
      */
+    #[SymfonyGroups(['FullLogs'])]
     protected $request;
 
     /**

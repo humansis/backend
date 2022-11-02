@@ -17,12 +17,8 @@ use UnexpectedValueException;
 
 class SelectionCriterionFieldValidator extends ConstraintValidator
 {
-    /** @var SelectionCriterionService */
-    private $service = [];
-
-    public function __construct(SelectionCriterionService $service)
+    public function __construct(private readonly SelectionCriterionService $service)
     {
-        $this->service = $service;
     }
 
     /**

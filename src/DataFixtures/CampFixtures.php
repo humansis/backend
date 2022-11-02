@@ -10,9 +10,6 @@ use Entity\Location;
 
 class CampFixtures extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         $location = $manager->getRepository(Location::class)->findBy([], ['id' => 'asc'], 1)[0];

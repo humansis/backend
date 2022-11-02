@@ -16,9 +16,7 @@ class SmartcardDepositController extends AbstractWebAppController
     /**
      * @Rest\Get("/web-app/v1/smartcard-deposits")
      *
-     * @param SmartcardDepositFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(SmartcardDepositFilterInputType $filter): JsonResponse
     {

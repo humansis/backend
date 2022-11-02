@@ -14,8 +14,6 @@ class AuthController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/login")
      *
-     * @param JWTTokenManagerInterface $JWTManager
-     * @param Profiler|null $profiler
      *
      * @return JsonResponse
      */

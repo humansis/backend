@@ -23,11 +23,10 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  */
 class User implements ExportableInterface, ObjectManagerAware, UserInterface
 {
-    public const ROLE_DEFAULT = 'ROLE_USER';
-    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+    final public const ROLE_DEFAULT = 'ROLE_USER';
+    final public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
-    /** @var ObjectManager|null */
-    private $em;
+    private ?\Doctrine\Persistence\ObjectManager $em = null;
 
     /**
      * @var int
@@ -41,14 +40,9 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     /**
      * @var string
      * @ORM\Column(name="username", type="string")
-     * @Assert\NotBlank(message="Username can't be empty")
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 50,
-     *      minMessage = "Your username must be at least {{ limit }} characters long",
-     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
-     * )
      */
+    #[Assert\NotBlank(message: "Username can't be empty")]
+    #[Assert\Length(min: 2, max: 50, minMessage: 'Your username must be at least {{ limit }} characters long', maxMessage: 'Your username cannot be longer than {{ limit }} characters')]
     protected $username;
 
     /**
@@ -78,8 +72,8 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     /**
      * @var string
      * @ORM\Column(name="email", type="string")
-     * @Assert\NotBlank(message="Email can't be empty")
      */
+    #[Assert\NotBlank(message: "Email can't be empty")]
     protected $email;
 
     /**
@@ -168,7 +162,6 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     /**
      * Add country.
      *
-     * @param UserCountry $country
      *
      * @return User
      */
@@ -215,8 +208,6 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -467,9 +458,7 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     public function getRoles(): array
     {
         return array_values(
-            array_map(function (Role $role) {
-                return $role->getCode();
-            }, $this->roles->toArray())
+            array_map(fn(Role $role) => $role->getCode(), $this->roles->toArray())
         );
     }
 
@@ -513,7 +502,7 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
         return $this->password;
     }
 
-    public function getUsername(): string
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }

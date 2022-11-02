@@ -9,38 +9,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="20")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 20)]
     private $unit;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $image;
 
-    /**
-     * @var int|null
-     *
-     * @Assert\Type("integer")
-     */
-    private $productCategoryId;
+    #[Assert\Type('integer')]
+    private ?int $productCategoryId = null;
 
     /**
      * @var numeric|null
-     *
-     * @Assert\Type("numeric")
      */
+    #[Assert\Type('numeric')]
     private $unitPrice;
 
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     */
-    private $currency;
+    #[Assert\Type('string')]
+    private ?string $currency = null;
 
     /**
      * @return string|null
@@ -108,9 +95,6 @@ class ProductUpdateInputType implements InputTypeInterface
         return $this->currency;
     }
 
-    /**
-     * @param string|null $currency
-     */
     public function setCurrency(?string $currency): void
     {
         $this->currency = $currency;

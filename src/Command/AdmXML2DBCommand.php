@@ -17,27 +17,10 @@ use Symfony\Component\Console\Question\Question;
 
 class AdmXML2DBCommand extends ContainerAwareCommand
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param LocationRepository $locationRepository
-     */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LocationRepository $locationRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LocationRepository $locationRepository
     ) {
-        $this->entityManager = $entityManager;
-        $this->locationRepository = $locationRepository;
-
         parent::__construct();
     }
 
@@ -52,8 +35,6 @@ class AdmXML2DBCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int|void|null
      *
@@ -98,13 +79,11 @@ class AdmXML2DBCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @param AdmsImporter|LocationImporter $importer
      */
     private function importLocations(InputInterface $input, OutputInterface $output, $importer): void
     {
-        $output->writeln(" - Importing by " . get_class($importer));
+        $output->writeln(" - Importing by " . $importer::class);
         if ($input->hasOption('limit')) {
             $importer->setLimit($input->getOption('limit'));
         }
@@ -138,7 +117,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             if ('.' == $file || '..' == $file) {
                 continue;
             }
-            $iso3 = explode('.', $file)[0];
+            $iso3 = explode('.', (string) $file)[0];
 
             $choices[$iso3] = realpath($directory . '/' . $file);
         }
@@ -146,9 +125,6 @@ class AdmXML2DBCommand extends ContainerAwareCommand
         return $choices;
     }
 
-    /**
-     * @return Question
-     */
     protected function createCountryQuestion(): Question
     {
         $directory = __DIR__ . '/../Resources/locations';
@@ -158,7 +134,7 @@ class AdmXML2DBCommand extends ContainerAwareCommand
             if ('.' == $file || '..' == $file) {
                 continue;
             }
-            $iso3 = explode('.', $file)[0];
+            $iso3 = explode('.', (string) $file)[0];
 
             $choices[$iso3] = realpath($directory . '/' . $file);
         }

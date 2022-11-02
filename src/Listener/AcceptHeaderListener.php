@@ -7,23 +7,16 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class AcceptHeaderListener
+class AcceptHeaderEventSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
-    /** @var string[] */
-    private $locales;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    public function __construct(array $languages, TranslatorInterface $translator)
+    /**
+     * @param string[] $locales
+     */
+    public function __construct(private readonly array $locales, private readonly TranslatorInterface $translator)
     {
-        $this->locales = $languages;
-        $this->translator = $translator;
     }
 
     /**
-     * @param RequestEvent $event
-     *
      * @throws Exception
      */
     public function onKernelRequest(RequestEvent $event)
@@ -40,5 +33,12 @@ class AcceptHeaderListener
                 break;
             }
         }
+    }
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [\Symfony\Component\HttpKernel\KernelEvents::REQUEST => ''];
     }
 }

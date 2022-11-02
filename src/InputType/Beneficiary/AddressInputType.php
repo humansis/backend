@@ -7,37 +7,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class AddressInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
     private $number;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $street;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
     private $postcode;
 
-    /**
-     * @Assert\Type("integer")
-     */
+    #[Assert\Type('integer')]
     private $locationId;
 
-    /**
-     * @param int $locationId
-     * @param string|null $street
-     * @param string|null $postcode
-     * @param string|null $number
-     *
-     * @return AddressInputType
-     */
     public static function create(
         int $locationId,
         ?string $street,

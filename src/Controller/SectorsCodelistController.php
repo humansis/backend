@@ -18,24 +18,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class SectorsCodelistController extends AbstractController
 {
-    /** @var SectorService */
-    private $sectorService;
-
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(
-        SectorService $sectorService,
-        CodeListService $codeListService
-    ) {
-        $this->sectorService = $sectorService;
-        $this->codeListService = $codeListService;
+    public function __construct(private readonly SectorService $sectorService, private readonly CodeListService $codeListService)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/sectors")
      *
-     * @return JsonResponse
      * @deprecated use /projects/{id}/sectors instead
      */
     public function getSectors(): JsonResponse
@@ -48,9 +37,7 @@ class SectorsCodelistController extends AbstractController
     /**
      * @Rest\Get("/web-app/v2/projects/{id}/sectors")
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function getSectorsV2(Project $project): JsonResponse
     {
@@ -62,9 +49,7 @@ class SectorsCodelistController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/sectors/{code}/subsectors")
      *
-     * @param string $code
      *
-     * @return JsonResponse
      */
     public function getSubSectors(string $code): JsonResponse
     {

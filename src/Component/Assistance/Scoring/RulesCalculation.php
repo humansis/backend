@@ -124,16 +124,11 @@ final class RulesCalculation
     {
         $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
 
-        switch ($hhhGender) {
-            case PersonGender::FEMALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore();
-
-            case PersonGender::MALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore();
-
-            default:
-                return 0;
-        }
+        return match ($hhhGender) {
+            PersonGender::FEMALE => $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore(),
+            PersonGender::MALE => $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore(),
+            default => 0,
+        };
     }
 
     public function dependencyRatioSyrNWS(Household $household, ScoringRule $rule): float

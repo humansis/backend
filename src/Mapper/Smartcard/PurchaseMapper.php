@@ -12,8 +12,7 @@ use Entity\SmartcardPurchaseRecord;
 
 class PurchaseMapper implements MapperInterface
 {
-    /** @var SmartcardPurchase */
-    private $object;
+    private ?\Entity\SmartcardPurchase $object = null;
 
     /**
      * {@inheritdoc}
@@ -35,9 +34,7 @@ class PurchaseMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . SmartcardPurchase::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . SmartcardPurchase::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -48,9 +45,7 @@ class PurchaseMapper implements MapperInterface
 
     public function getValue()
     {
-        $fn = function ($ax, SmartcardPurchaseRecord $dx) {
-            return $ax + $dx->getValue();
-        };
+        $fn = fn($ax, SmartcardPurchaseRecord $dx) => $ax + $dx->getValue();
 
         return array_reduce($this->object->getRecords()->toArray(), $fn, 0);
     }

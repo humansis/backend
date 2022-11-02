@@ -9,28 +9,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateInputType implements InputTypeInterface
 {
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\Length(max="64")
-     * @Assert\NotBlank
-     */
-    private $title;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 64)]
+    #[Assert\NotBlank]
+    private ?string $title = null;
 
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $description;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $description = null;
 
     /**
      * TODO array should not be empty (after FE implementation)
      *
      * @var int[]
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -38,16 +29,16 @@ class CreateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projects;
+    #[Assert\Type('array')]
+    private ?array $projects = null;
 
     /**
      * TODO remove after FE part of PIN-2820 will be implemented
      *
-     * @var int
      *
-     * @Assert\Type("integer")
      */
-    private $projectId;
+    #[Assert\Type('integer')]
+    private ?int $projectId = null;
 
     /**
      * @return string

@@ -16,58 +16,46 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class Voucher implements ExportableInterface
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $code;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="value", type="integer")
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
-     */
-    private $value;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=false)
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $booklet;
+    #[SymfonyGroups(['FullVoucher'])]
+    private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
-     * @SymfonyGroups({"FullVoucher"})
      */
+    #[SymfonyGroups(['FullVoucher'])]
     private $voucherPurchase;
 
     /**
-     * @var VoucherRedemptionBatch|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $redemptionBatch;
+    private ?\Entity\VoucherRedemptionBatch $redemptionBatch = null;
 
-    public function __construct(string $code, int $value, Booklet $booklet)
-    {
-        $this->code = $code;
-        $this->value = $value;
-        $this->booklet = $booklet;
+    public function __construct(
+        /**
+         * @ORM\Column(name="code", type="string", length=255, unique=true)
+         */
+        #[SymfonyGroups(['FullVoucher'])]
+        private string $code,
+        /**
+         * @ORM\Column(name="value", type="integer")
+         */
+        #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+        private int $value,
+        /**
+         * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
+         * @ORM\JoinColumn(nullable=false)
+         */
+        #[SymfonyGroups(['FullVoucher'])]
+        private Booklet $booklet
+    ) {
     }
 
     /**
@@ -104,10 +92,7 @@ class Voucher implements ExportableInterface
         return $this->value;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
-     */
+    #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
     public function getRedeemedAt(): ?DateTimeInterface
     {
         if (null !== $this->redemptionBatch) {
@@ -117,11 +102,7 @@ class Voucher implements ExportableInterface
         return null;
     }
 
-    /**
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
-     *
-     * @return string|null
-     */
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
     public function getUsedAt(): ?string
     {
         if (!$this->getUsedAtDate()) {
@@ -131,9 +112,6 @@ class Voucher implements ExportableInterface
         return $this->getUsedAtDate()->format('Y-m-d');
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getUsedAtDate(): ?DateTimeInterface
     {
         if (!$this->getVoucherPurchase()) {
@@ -179,17 +157,12 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return VoucherPurchase|null
-     */
     public function getVoucherPurchase(): ?VoucherPurchase
     {
         return $this->voucherPurchase;
     }
 
     /**
-     * @param VoucherPurchase $purchase
-     *
      * @return $this
      */
     public function setVoucherPurchase(VoucherPurchase $purchase): self
@@ -201,8 +174,6 @@ class Voucher implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export.
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -212,19 +183,11 @@ class Voucher implements ExportableInterface
         ];
     }
 
-    /**
-     * @return VoucherRedemptionBatch|null
-     */
     public function getRedemptionBatch(): ?VoucherRedemptionBatch
     {
         return $this->redemptionBatch;
     }
 
-    /**
-     * @param VoucherRedemptionBatch|null $redemptionBatch
-     *
-     * @return Voucher
-     */
     public function setRedemptionBatch(?VoucherRedemptionBatch $redemptionBatch): Voucher
     {
         $this->redemptionBatch = $redemptionBatch;

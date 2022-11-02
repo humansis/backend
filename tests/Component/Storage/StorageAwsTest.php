@@ -32,10 +32,7 @@ class StorageAwsTest extends KernelTestCase
      */
     private static $aws;
 
-    /**
-     * @var string
-     */
-    private static $filePath;
+    private static string $filePath;
 
     public static function setUpBeforeClass(): void
     {
@@ -52,7 +49,7 @@ class StorageAwsTest extends KernelTestCase
     /**
      * @throws FilesystemException
      */
-    public function testUploadFile(): void
+    public function testUploadFile(): never
     {
         $this->markTestSkipped('not on local');
 

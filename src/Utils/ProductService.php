@@ -13,30 +13,16 @@ use Entity\Product;
 
 class ProductService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    {
     }
 
     /**
      * Creates a new Product entity.
      *
-     * @param ProductCreateInputType $productData
      *
      * @return Product
      * @throws EntityNotFoundException
@@ -88,8 +74,6 @@ class ProductService
     /**
      * Updates a product according to the $productData.
      *
-     * @param Product $product
-     * @param ProductUpdateInputType $productData
      *
      * @return Product
      * @throws EntityNotFoundException
@@ -128,7 +112,6 @@ class ProductService
     /**
      * Archives a product
      *
-     * @param Product $product
      * @return string
      */
     public function archive(Product $product)
@@ -144,8 +127,6 @@ class ProductService
     /**
      * Export all products in a CSV file
      *
-     * @param string $type
-     * @param string $countryIso3
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryIso3)

@@ -24,9 +24,9 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var HttpKernelBrowser $client */
     protected $client;
 
-    public const USER_PHPUNIT = 'phpunit';
-    public const USER_TESTER = 'test@example.org';
-    public const USER_TESTER_VENDOR = 'vendor.eth@example.org';
+    final public const USER_PHPUNIT = 'phpunit';
+    final public const USER_TESTER = 'test@example.org';
+    final public const USER_TESTER_VENDOR = 'vendor.eth@example.org';
     // SERVICES
 
     /** @var EntityManager $em */
@@ -328,7 +328,6 @@ class BMSServiceTestCase extends KernelTestCase
     /**
      * Require Functional tests and real Entity Manager
      *
-     * @param string $username
      * @return null|object|User {[type] [description]
      * @throws ORMException
      * @throws OptimisticLockException
@@ -380,6 +379,6 @@ class BMSServiceTestCase extends KernelTestCase
     {
         static::assertJson($expected);
         static::assertJson($actual);
-        static::assertArrayFragment(json_decode($expected, true), json_decode($actual, true), $message);
+        static::assertArrayFragment(json_decode((string) $expected, true, 512, JSON_THROW_ON_ERROR), json_decode((string) $actual, true, 512, JSON_THROW_ON_ERROR), $message);
     }
 }

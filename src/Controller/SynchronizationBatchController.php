@@ -20,9 +20,7 @@ class SynchronizationBatchController extends AbstractController
      *
      * @param API\FilterInputType $filter
      * @param API\OrderInputType $orderBy
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function list(API\FilterInputType $filter, API\OrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
@@ -36,9 +34,7 @@ class SynchronizationBatchController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/syncs/{id}")
      *
-     * @param SynchronizationBatch $object
      *
-     * @return JsonResponse
      */
     public function detail(SynchronizationBatch $object): JsonResponse
     {

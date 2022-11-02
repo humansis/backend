@@ -24,16 +24,7 @@ abstract class DefaultFinancialProvider
     /**
      * Limit for one batch site due problems with timeouts
      */
-    public const MAX_BATCH_SIZE = 100;
-
-    /** @var EntityManagerInterface $em */
-    protected $em;
-
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    /** @var string */
-    protected $rootDir;
+    final public const MAX_BATCH_SIZE = 100;
 
     /** @var string $url */
     protected $url;
@@ -41,30 +32,16 @@ abstract class DefaultFinancialProvider
     /** @var string from */
     protected $from;
 
-    /** @var LoggerInterface */
-    protected $logger;
-
     /**
      * DefaultFinancialProvider constructor.
-     *
-     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        LoggerInterface $mobileLogger,
-        TokenStorageInterface $tokenStorage,
-        string $rootDir
-    ) {
-        $this->em = $entityManager;
-        $this->logger = $mobileLogger;
-        $this->tokenStorage = $tokenStorage;
-        $this->rootDir = $rootDir;
+    public function __construct(protected EntityManagerInterface $em, protected LoggerInterface $logger, private readonly TokenStorageInterface $tokenStorage, protected string $rootDir)
+    {
     }
 
     /**
      * Send request to financial API
      *
-     * @param Assistance $assistance
      * @param string $type type of the request ("GET", "POST", etc.)
      * @param string $route url of the request
      * @param array $headers headers of the request (optional)
@@ -72,7 +49,7 @@ abstract class DefaultFinancialProvider
      * @return mixed  response
      * @throws Exception
      */
-    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = [])
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = []): never
     {
         throw new Exception("You need to define the financial provider for the country.");
     }
@@ -80,10 +57,6 @@ abstract class DefaultFinancialProvider
     /**
      * Send money to one beneficiary
      *
-     * @param string $phoneNumber
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param float $amount
-     * @param string $currency
      * @return Transaction
      * @throws Exception
      */
@@ -92,17 +65,13 @@ abstract class DefaultFinancialProvider
         AssistanceBeneficiary $assistanceBeneficiary,
         float $amount,
         string $currency
-    ) {
+    ): never {
         throw new Exception("You need to define the financial provider for the country.");
     }
 
     /**
      * Send money to all beneficiaries
      *
-     * @param Assistance $assistance
-     * @param float $amount
-     * @param string $currency
-     * @param string $from
      * @return array
      * @throws Exception
      * @throws InvalidArgumentException
@@ -153,9 +122,7 @@ abstract class DefaultFinancialProvider
                 // if this beneficiary already has transactions
                 // filter out the one that is a success (if it exists)
                 $transactions = $transactions->filter(
-                    function ($transaction) {
-                        return $transaction->getTransactionStatus() === 1;
-                    }
+                    fn($transaction) => $transaction->getTransactionStatus() === 1
                 );
             }
 
@@ -256,12 +223,6 @@ abstract class DefaultFinancialProvider
     /**
      * Create transaction
      *
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param string $transactionId
-     * @param DateTime $dateSent
-     * @param string $amountSent
-     * @param int $transactionStatus
-     * @param string $message
      * @return Transaction
      */
     public function createTransaction(
@@ -297,8 +258,6 @@ abstract class DefaultFinancialProvider
     /**
      * Save transaction record in file
      *
-     * @param Assistance $assistance
-     * @param array $data
      * @return void
      */
     public function recordTransaction(Assistance $assistance, array $data)

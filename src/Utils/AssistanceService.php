@@ -48,111 +48,15 @@ use Component\Assistance\Domain\Assistance as AssistanceDomain;
  */
 class AssistanceService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var CriteriaAssistanceService $criteriaAssistanceService */
-    private $criteriaAssistanceService;
-
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var AssistanceFactory */
-    private $assistanceFactory;
-
-    /** @var AssistanceRepository */
-    private $assistanceRepository;
-
-    /** @var SelectionCriteriaFactory */
-    private $selectionCriteriaFactory;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
-    /**
-     * @var ExportService
-     */
-    private $exportService;
-
-    /**
-     * @var PdfService
-     */
-    private $pdfService;
-
     /**
      * AssistanceService constructor.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param Environment $twig
      * @param FilesystemAdapter $cache
-     * @param AssistanceFactory $assistanceFactory
-     * @param AssistanceRepository $assistanceRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
-     * @param TranslatorInterface $translator
-     * @param ProjectRepository $projectRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param ReliefPackageRepository $reliefPackageRepository
-     * @param ExportService $exportService
-     * @param PdfService $pdfService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        CriteriaAssistanceService $criteriaAssistanceService,
-        Environment $twig,
-        CacheInterface $cache,
-        AssistanceFactory $assistanceFactory,
-        AssistanceRepository $assistanceRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory,
-        TranslatorInterface $translator,
-        ProjectRepository $projectRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        ReliefPackageRepository $reliefPackageRepository,
-        ExportService $exportService,
-        PdfService $pdfService
-    ) {
-        $this->em = $entityManager;
-        $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->cache = $cache;
-        $this->assistanceFactory = $assistanceFactory;
-        $this->assistanceRepository = $assistanceRepository;
-        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
-        $this->twig = $twig;
-        $this->translator = $translator;
-        $this->projectRepository = $projectRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->exportService = $exportService;
-        $this->pdfService = $pdfService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly CriteriaAssistanceService $criteriaAssistanceService, private readonly Environment $twig, private readonly CacheInterface $cache, private readonly AssistanceFactory $assistanceFactory, private readonly AssistanceRepository $assistanceRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory, private readonly TranslatorInterface $translator, private readonly ProjectRepository $projectRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly ExportService $exportService, private readonly PdfService $pdfService)
+    {
     }
 
-    /**
-     * @param Assistance $assistanceRoot
-     * @param UpdateAssistanceInputType $updateAssistanceInputType
-     * @param User $user
-     *
-     * @return AssistanceDomain
-     */
     public function update(
         Assistance $assistanceRoot,
         UpdateAssistanceInputType $updateAssistanceInputType,
@@ -188,8 +92,6 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistanceRoot
-     * @param User $user
      *
      * @deprecated use Assistance::validate instead
      */
@@ -230,8 +132,6 @@ class AssistanceService
     }
 
     /**
-     * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
      *
      * @return Paginator|VulnerabilityScore[]
      * @throws EntityNotFoundException
@@ -240,7 +140,7 @@ class AssistanceService
      * @throws NonUniqueResultException
      * @throws ORMException
      */
-    public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination)
+    public function findVulnerabilityScores(AssistanceCreateInputType $inputType, Pagination $pagination): \Pagination\Paginator|array
     {
         $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {
@@ -300,10 +200,7 @@ class AssistanceService
     }
 
     /**
-     * @param int $projectId
-     * @param string $type
      *
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
@@ -316,10 +213,7 @@ class AssistanceService
     }
 
     /**
-     * @param int $projectId
-     * @param string $type
      *
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
@@ -337,9 +231,7 @@ class AssistanceService
 
         $donors = implode(
             ', ',
-            array_map(function ($donor) {
-                return $donor->getShortname();
-            }, $project->getDonors()->toArray())
+            array_map(fn($donor) => $donor->getShortname(), $project->getDonors()->toArray())
         );
 
         foreach ($assistances as $assistance) {
@@ -429,27 +321,21 @@ class AssistanceService
             $commodityNames = implode(
                 ', ',
                 array_map(
-                    function ($commodity) {
-                        return $commodity->getModalityType();
-                    },
+                    fn($commodity) => $commodity->getModalityType(),
                     $assistance->getCommodities()->toArray()
                 )
             );
             $commodityUnit = implode(
                 ', ',
                 array_map(
-                    function ($commodity) {
-                        return $commodity->getUnit();
-                    },
+                    fn($commodity) => $commodity->getUnit(),
                     $assistance->getCommodities()->toArray()
                 )
             );
             $numberOfUnits = implode(
                 ', ',
                 array_map(
-                    function ($commodity) {
-                        return $commodity->getValue();
-                    },
+                    fn($commodity) => $commodity->getValue(),
                     $assistance->getCommodities()->toArray()
                 )
             );
@@ -457,9 +343,7 @@ class AssistanceService
             $totalAmount = implode(
                 ', ',
                 array_map(
-                    function ($commodity) use ($noFamilies) {
-                        return $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit();
-                    },
+                    fn($commodity) => $commodity->getValue() * $noFamilies . ' ' . $commodity->getUnit(),
                     $assistance->getCommodities()->toArray()
                 )
             );
@@ -468,9 +352,9 @@ class AssistanceService
                 $this->translator->trans("Navi/Elo number") => $assistance->getProject()->getInternalId() ?? " ",
                 $this->translator->trans("DISTR. NO.") => $assistance->getId(),
                 $this->translator->trans("Distributed by") => " ",
-                $this->translator->trans("Round") => ($assistance->getRound() === null ? $this->translator->trans(
+                $this->translator->trans("Round") => ($assistance->getRound() ?? $this->translator->trans(
                     "N/A"
-                ) : $assistance->getRound()),
+                )),
                 $this->translator->trans("Donor") => $donors,
                 $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
                 $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn(
@@ -526,7 +410,6 @@ class AssistanceService
     /**
      * Export all distributions in a pdf
      *
-     * @param int $projectId
      *
      * @return mixed
      * @throws Exception
@@ -555,8 +438,6 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistanceEntity
-     *
      * @throws InvalidArgumentException
      */
     public function delete(Assistance $assistanceEntity)
@@ -611,10 +492,7 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
      *
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
@@ -662,10 +540,7 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
      *
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
@@ -682,7 +557,7 @@ class AssistanceService
             $beneficiary = $assistanceBeneficiary->getBeneficiary();
             $booklets = $assistanceBeneficiary->getBooklets();
             $transactionBooklet = null;
-            if (count($booklets) > 0) {
+            if ((is_countable($booklets) ? count($booklets) : 0) > 0) {
                 foreach ($booklets as $booklet) {
                     if ($booklet->getStatus() !== 3) {
                         $transactionBooklet = $booklet;
@@ -726,10 +601,7 @@ class AssistanceService
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
      *
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception

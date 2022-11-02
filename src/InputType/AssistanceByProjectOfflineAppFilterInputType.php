@@ -12,18 +12,13 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
 {
     use ModalityTypeFilterTrait;
 
-    /**
-     * @Assert\Choice(callback={"Enum\AssistanceType", "values"})
-     */
+    #[Assert\Choice(callback: [\Enum\AssistanceType::class, 'values'])]
     protected $type;
 
-    /**
-     * @Assert\Choice({0, 1}, message="Invalid boolean value. Accepted are 0,1, given {{ value }}.")
-     */
+    #[Assert\Choice([0, 1], message: 'Invalid boolean value. Accepted are 0,1, given {{ value }}.')]
     protected $completed;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -31,6 +26,7 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $notModalityTypes;
 
     public function hasType(): bool

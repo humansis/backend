@@ -25,17 +25,11 @@ use Entity\Vendor;
 
 class SmartcardInvoiceLegacyExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
     /**
      * SmartcardInvoiceExport constructor.
-     *
-     * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function export(Invoice $invoice, Organization $organization, User $user)
@@ -109,10 +103,6 @@ class SmartcardInvoiceLegacyExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet $worksheet
-     * @param TranslatorInterface $translator
-     * @param Organization $organization
-     * @param Invoice $invoice
      *
      * @throws Exception
      */
@@ -135,7 +125,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->mergeCells('D2:E2');
         $worksheet->mergeCells('D3:E3');
         $worksheet->setCellValue('D2', 'Humansis Vendor Username');
-        $worksheet->setCellValue('D3', $invoice->getVendor()->getUser()->getUsername());
+        $worksheet->setCellValue('D3', $invoice->getVendor()->getUser()->getUserIdentifier());
         self::setSmallHeadline($worksheet, 'D2:E3');
         self::setSmallBorder($worksheet, 'D2:E3');
 
@@ -167,7 +157,7 @@ class SmartcardInvoiceLegacyExport
                 $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
                 $drawing->setHeight(60);
                 $drawing->setWorksheet($worksheet);
-            } catch (ImageException $e) {
+            } catch (ImageException) {
                 // invoice will be without logo
             }
         }

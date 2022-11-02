@@ -10,21 +10,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ResolveSingleDuplicityInputType implements InputTypeInterface
 {
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\NotNull()
-     * @Assert\Choice(callback="allowedStatuses")
-     */
-    private $status;
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    #[Assert\Choice(callback: 'allowedStatuses')]
+    private ?string $status = null;
 
-    /**
-     * @var int|null
-     *
-     * @Assert\Type("integer")
-     */
-    private $acceptedDuplicityId;
+    #[Assert\Type('integer')]
+    private ?int $acceptedDuplicityId = null;
 
     public static function allowedStatuses(): array
     {

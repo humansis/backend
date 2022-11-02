@@ -8,9 +8,7 @@ use InputType\FilterFragment\PrimaryIdFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"ResidenceAddressFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['ResidenceAddressFilterInputType', 'Strict'])]
 class ResidenceAddressFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;

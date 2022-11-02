@@ -33,7 +33,7 @@ trait DefaultDataTrait
         $hh->setDebtLevel(0);
         $hh->setFoodConsumptionScore(0);
         $hh->setIncome(0);
-        $hh->setNotes('default HH in ' . __CLASS__);
+        $hh->setNotes('default HH in ' . self::class);
         $hh->setCountryIso3($project->getCountryIso3());
 
         $householdLocation = new HouseholdLocation();

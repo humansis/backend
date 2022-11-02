@@ -128,8 +128,6 @@ class ImportRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
-     *
      * @return Import[]
      */
     public function getConflictingImports(Import $import): iterable

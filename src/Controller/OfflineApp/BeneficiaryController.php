@@ -15,10 +15,7 @@ class BeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v2/beneficiaries")
      *
-     * @param Request $request
-     * @param BeneficiaryFilterInputType $filter
      *
-     * @return JsonResponse
      * @deprecated Application require only one beneficiary at a time
      */
     public function beneficiaries(Request $request, BeneficiaryFilterInputType $filter): JsonResponse
@@ -36,10 +33,7 @@ class BeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v2/beneficiary/{id}")
      *
-     * @param Beneficiary $beneficiary
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function beneficiary(Beneficiary $beneficiary, Request $request): JsonResponse
     {

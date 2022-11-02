@@ -24,11 +24,6 @@ abstract class AbstractController extends Controller
         return parent::json($data, $status, $headers, $context);
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return string
-     */
     protected function getCountryCode(Request $request): string
     {
         $countryIso3 = $request->headers->get('country', false);

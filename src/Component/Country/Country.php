@@ -38,7 +38,7 @@ class Country
         if (!isset($data['adms'])) {
             throw new InvalidArgumentException("Invalid argument 5. It must contains attribute 'adms'.");
         }
-        if (4 !== count($data['adms'])) {
+        if (4 !== (is_countable($data['adms']) ? count($data['adms']) : 0)) {
             throw new InvalidArgumentException(
                 "Invalid argument 6. Attribute 'adms' does not contains complete list of names."
             );

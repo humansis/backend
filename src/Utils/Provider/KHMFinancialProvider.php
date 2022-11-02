@@ -28,10 +28,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      */
     private $token;
 
-    /**
-     * @var DateTime
-     */
-    private $lastTokenDate;
+    private ?\DateTime $lastTokenDate = null;
 
     /**
      * @var string
@@ -51,7 +48,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Get token to connect to API
      *
-     * @param Assistance $assistance
      * @return object token
      * @throws Exception
      */
@@ -70,7 +66,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         $this->username = $organizationWINGCashTransfer->getParameterValue('username');
         $this->production = $organizationWINGCashTransfer->getParameterValue(
             'production'
-        ) ? $organizationWINGCashTransfer->getParameterValue('production') : false;
+        ) ?: false;
 
         if (!$this->password || !$this->username) {
             $this->logger->error("Missing credentials for Wing money service in DB", [$assistance]);
@@ -99,10 +95,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Send money to one beneficiary
      *
-     * @param string $phoneNumber
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param float $amount
-     * @param string $currency
      * @return Transaction
      * @throws Exception
      */
@@ -153,8 +145,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Get status of transaction
      *
-     * @param Assistance $assistance
-     * @param string $transaction_id
      * @return object
      * @throws Exception
      */
@@ -171,7 +161,6 @@ class KHMFinancialProvider extends DefaultFinancialProvider
     /**
      * Send request to WING API for Cambodia
      *
-     * @param Assistance $assistance
      * @param string $type type of the request ("GET", "POST", etc.)
      * @param string $route url of the request
      * @param array $body body of the request (optional)
@@ -210,7 +199,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
                 "Authorization: Bearer " . $this->token->access_token,
                 "Content-type: application/json"
             );
-            $body = json_encode((object) $body);
+            $body = json_encode((object) $body, JSON_THROW_ON_ERROR);
         } else { // Authentication request
             $body = http_build_query($body); // Pass body as url-encoded string
         }
@@ -326,7 +315,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
             throw new Exception($err);
         } else {
             $this->logger->error($requestID . __METHOD__ . "ended correctly");
-            $result = json_decode($response);
+            $result = json_decode($response, null, 512, JSON_THROW_ON_ERROR);
 
             return $result;
         }

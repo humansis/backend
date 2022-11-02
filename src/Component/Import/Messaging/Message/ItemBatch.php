@@ -11,37 +11,14 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 class ItemBatch
 {
     /**
-     * @SerializedName("checkType")
-     * @var string
-     */
-    private $checkType;
-
-    /**
-     * @SerializedName("importId")
-     * @var int
-     */
-    private $importId;
-
-    /**
-     * @SerializedName("queueItemIds")
-     * @var array
-     */
-    private $queueItemIds = [];
-
-    /**
-     * @param string|null $checkType
      * @param int[]|null $queueItemIds
      */
-    private function __construct(int $importId, ?string $checkType = null, ?array $queueItemIds = null)
+    private function __construct(#[SerializedName('importId')]
+    private int $importId, private ?string $checkType = null, private ?array $queueItemIds = null)
     {
-        $this->queueItemIds = $queueItemIds;
-        $this->checkType = $checkType;
-        $this->importId = $importId;
     }
 
     /**
-     * @param ImportQueue $item
-     *
      * @return static
      */
     public static function checkSingleItemIntegrity(ImportQueue $item): self
@@ -50,8 +27,6 @@ class ItemBatch
     }
 
     /**
-     * @param ImportQueue $item
-     *
      * @return static
      */
     public static function checkSingleItemIdentity(ImportQueue $item): self
@@ -65,8 +40,6 @@ class ItemBatch
     }
 
     /**
-     * @param ImportQueue $item
-     *
      * @return static
      */
     public static function checkSingleItemSimilarity(ImportQueue $item): self
@@ -74,19 +47,11 @@ class ItemBatch
         return new self($item->getImport()->getId(), ImportState::SIMILARITY_CHECKING, [$item->getId()]);
     }
 
-    /**
-     * @return int
-     */
     public function getImportId(): int
     {
         return $this->importId;
     }
 
-    /**
-     * @param int $importId
-     *
-     * @return ItemBatch
-     */
     public function setImportId(int $importId): ItemBatch
     {
         $this->importId = $importId;
@@ -102,9 +67,6 @@ class ItemBatch
         return $this->checkType;
     }
 
-    /**
-     * @param string $checkType
-     */
     public function setCheckType(string $checkType): void
     {
         $this->checkType = $checkType;
@@ -131,8 +93,6 @@ class ItemBatch
      */
     public function setQueueItems(iterable $queueItems): void
     {
-        $this->queueItemIds = array_map(function (ImportQueue $queue) {
-            return $queue->getId();
-        }, $queueItems);
+        $this->queueItemIds = array_map(fn(ImportQueue $queue) => $queue->getId(), $queueItems);
     }
 }

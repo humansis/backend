@@ -47,7 +47,7 @@ class CampControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped('You need to have at least one camp with location in system');
 
             return;
@@ -84,7 +84,7 @@ class CampControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped('You need to have at least one camp with location in system');
 
             return;

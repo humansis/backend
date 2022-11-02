@@ -9,7 +9,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 trait ModalityTypeFilterTrait
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -17,6 +16,7 @@ trait ModalityTypeFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $modalityTypes;
 
     public function hasModalityTypes(): bool

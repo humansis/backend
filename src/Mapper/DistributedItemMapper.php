@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class DistributedItemMapper implements MapperInterface
 {
-    /** @var DistributedItem */
-    private $object;
+    private ?\Entity\DistributedItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,7 @@ class DistributedItemMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . DistributedItem::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . DistributedItem::class . ', ' . $object::class . ' given.'
         );
     }
 

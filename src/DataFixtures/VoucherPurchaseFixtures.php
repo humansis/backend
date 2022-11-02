@@ -15,27 +15,12 @@ use Model\PurchaseService;
 
 class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const FRACTION_TO_SPENT = 5;
+    final public const FRACTION_TO_SPENT = 5;
 
-    /** @var string */
-    private $environment;
-
-    /** @var PurchaseService */
-    private $purchaseService;
-
-    /**
-     * @param string $environment
-     * @param PurchaseService $purchaseService
-     */
-    public function __construct(string $environment, PurchaseService $purchaseService)
+    public function __construct(private readonly string $environment, private readonly PurchaseService $purchaseService)
     {
-        $this->environment = $environment;
-        $this->purchaseService = $purchaseService;
     }
 
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         if ('prod' === $this->environment) {
@@ -44,7 +29,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         $booklets = $manager->getRepository(Booklet::class)->findBy([
             'status' => Booklet::DISTRIBUTED,
@@ -109,9 +94,9 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         $input = new \InputType\VoucherPurchase();
 
         $products = [];
-        for ($j = 0; $j < rand(1, 3); ++$j) {
-            $quantity = rand(1, 10000);
-            $value = rand(1, 10000);
+        for ($j = 0; $j < random_int(1, 3); ++$j) {
+            $quantity = random_int(1, 10000);
+            $value = random_int(1, 10000);
             $products[] = [
                 'id' => $this->randomEntity(Product::class, $manager),
                 'quantity' => $quantity / 100,
@@ -123,9 +108,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
         $input->setCreatedAt(new DateTimeImmutable('now'));
         $input->setVendorId($vendor->getId());
         $input->setVouchers(
-            array_map(function ($voucher) {
-                return $voucher->getId();
-            }, $vouchers)
+            array_map(fn($voucher) => $voucher->getId(), $vouchers)
         );
 
         return $this->purchaseService->purchase($input);
@@ -138,7 +121,7 @@ class VoucherPurchaseFixtures extends Fixture implements DependentFixtureInterfa
             return null;
         }
 
-        $i = rand(0, count($entities) - 1);
+        $i = random_int(0, count($entities) - 1);
 
         return $entities[$i];
     }

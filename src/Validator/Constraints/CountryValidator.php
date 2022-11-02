@@ -15,12 +15,8 @@ use function is_object;
 
 class CountryValidator extends ConstraintValidator
 {
-    /** @var Countries */
-    private $countries;
-
-    public function __construct(Countries $countries)
+    public function __construct(private readonly Countries $countries)
     {
-        $this->countries = $countries;
     }
 
     /**

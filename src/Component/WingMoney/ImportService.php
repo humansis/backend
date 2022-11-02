@@ -17,36 +17,10 @@ use Entity\User;
 
 class ImportService
 {
-    /**
-     * @var TransactionRepository
-     */
-    private $transactionRepository;
-
-    /**
-     * @var PhoneRepository
-     */
-    private $phoneRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    public function __construct(
-        TransactionRepository $transactionRepository,
-        PhoneRepository $phoneRepository,
-        EntityManagerInterface $em
-    ) {
-        $this->transactionRepository = $transactionRepository;
-        $this->phoneRepository = $phoneRepository;
-        $this->em = $em;
+    public function __construct(private readonly TransactionRepository $transactionRepository, private readonly PhoneRepository $phoneRepository, private readonly EntityManagerInterface $em)
+    {
     }
 
-    /**
-     * @param array $entries
-     *
-     * @return array
-     */
     public function filterExistingTransactions(array $entries): array
     {
         return array_filter($entries, function (ReportEntry $entry) {
@@ -58,17 +32,9 @@ class ImportService
         });
     }
 
-    /**
-     * @param array $entries
-     * @param Assistance $assistance
-     *
-     * @return array
-     */
     public function filterTransactionsInAssistanceOnly(array $entries, Assistance $assistance): array
     {
-        return array_filter($entries, function (ReportEntry $entry) use ($assistance) {
-            return $this->findAssistanceBeneficiaryByPhoneNumber($entry, $assistance) instanceof AssistanceBeneficiary;
-        });
+        return array_filter($entries, fn(ReportEntry $entry) => $this->findAssistanceBeneficiaryByPhoneNumber($entry, $assistance) instanceof AssistanceBeneficiary);
     }
 
     private function findAssistanceBeneficiaryByPhoneNumber(

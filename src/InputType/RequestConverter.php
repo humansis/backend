@@ -15,17 +15,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestConverter implements ParamConverterInterface
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
     /**
      * RequestConverter constructor.
-     *
-     * @param ValidatorInterface $validator
      */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -68,9 +62,7 @@ class RequestConverter implements ParamConverterInterface
             return $value->__toString();
         }
         if (is_array($value)) {
-            $values = array_map(function ($subvalue) {
-                return $this->toString($subvalue);
-            }, $value);
+            $values = array_map(fn($subvalue) => $this->toString($subvalue), $value);
 
             return '[' . implode(', ', $values) . ']';
         }

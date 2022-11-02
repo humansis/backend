@@ -21,41 +21,14 @@ use Utils\SmartcardService;
  */
 class SmartcardController extends AbstractController
 {
-    /**
-     * @var SmartcardService
-     */
-    private $smartcardService;
-
-    /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @param SmartcardService $smartcardService
-     * @param TokenStorageInterface $tokenStorage
-     */
-    public function __construct(
-        SmartcardService $smartcardService,
-        SmartcardRepository $smartcardRepository,
-        TokenStorageInterface $tokenStorage
-    ) {
-        $this->smartcardService = $smartcardService;
-        $this->smartcardRepository = $smartcardRepository;
-        $this->tokenStorage = $tokenStorage;
+    public function __construct(private readonly SmartcardService $smartcardService, private readonly SmartcardRepository $smartcardRepository, private readonly TokenStorageInterface $tokenStorage)
+    {
     }
 
     /**
      * @Rest\Get("/{smartcardCode}")
      *
-     * @param string $smartcardCode
      *
-     * @return JsonResponse
      * @throws ORMException
      */
     public function smartcard(string $smartcardCode): JsonResponse
@@ -68,9 +41,7 @@ class SmartcardController extends AbstractController
     /**
      * @Rest\Get ("/{smartcardCode}/purchases")
      *
-     * @param string $smartcardCode
      *
-     * @return JsonResponse
      * @throws ORMException
      */
     public function smartcardPurchases(string $smartcardCode): JsonResponse
@@ -84,7 +55,6 @@ class SmartcardController extends AbstractController
     /**
      * @Rest\Get ("/{smartcardCode}/deposits")
      *
-     * @param string $smartcardCode
      *
      * @return JsonnResponse
      * @throws ORMException
@@ -100,11 +70,7 @@ class SmartcardController extends AbstractController
     /**
      * @Rest\Patch("/{id}")
      *
-     * @param Smartcard $smartcard
-     * @param UpdateSmartcardInputType $updateSmartcardInputType
-     * @param SmartcardService $smartcardService
      *
-     * @return JsonResponse
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException

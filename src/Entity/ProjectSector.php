@@ -20,20 +20,18 @@ class ProjectSector
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
      * @see SectorEnum
      *
      * @ORM\Column(name="sector", type="enum_sector", nullable=false)
      */
-    private $sector;
+    private string $sector;
 
     /**
-     * @var string|null
      * @see SubSectorEnum
      *
      * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
      */
-    private $subSector;
+    private string|null $subSector;
 
     /**
      * @var Project
@@ -42,13 +40,6 @@ class ProjectSector
      */
     private $project;
 
-    /**
-     * ProjectSector constructor.
-     *
-     * @param string $sector
-     * @param string|null $subSector
-     * @param Project $project
-     */
     public function __construct(string $sector, Project $project, ?string $subSector = null)
     {
         $this->sector = $sector;
@@ -56,17 +47,11 @@ class ProjectSector
         $this->project = $project;
     }
 
-    /**
-     * @return string
-     */
     public function getSector(): string
     {
         return $this->sector;
     }
 
-    /**
-     * @param string $sector
-     */
     public function setSector(string $sector): void
     {
         $this->sector = $sector;
@@ -74,8 +59,6 @@ class ProjectSector
 
     /**
      * backward compatibility
-     *
-     * @return string
      */
     public function getName(): string
     {
@@ -84,33 +67,21 @@ class ProjectSector
         return $this->getSector() . $subSectorText;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSubSector(): ?string
     {
         return $this->subSector;
     }
 
-    /**
-     * @param string|null $subSector
-     */
     public function setSubSector(?string $subSector): void
     {
         $this->subSector = $subSector;
     }
 
-    /**
-     * @return Project
-     */
     public function getProject(): Project
     {
         return $this->project;
     }
 
-    /**
-     * @param Project $project
-     */
     public function setProject(Project $project): void
     {
         $this->project = $project;

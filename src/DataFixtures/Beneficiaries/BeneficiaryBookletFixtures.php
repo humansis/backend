@@ -24,27 +24,19 @@ use Utils\BookletService;
 
 class BeneficiaryBookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
-    private $kernel;
-
-    /** @var BookletService */
-    private $bookletService;
-
-    public function __construct(Kernel $kernel, BookletService $bookletService)
+    public function __construct(private readonly Kernel $kernel, private readonly BookletService $bookletService)
     {
-        $this->kernel = $kernel;
-        $this->bookletService = $bookletService;
     }
 
     /**
      * Load data fixtures with the passed EntityManager
      *
-     * @param ObjectManager $manager
      * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() === "prod") {
-            echo __CLASS__ . " can't be running at production\n";
+            echo self::class . " can't be running at production\n";
 
             return;
         }

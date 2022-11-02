@@ -12,17 +12,13 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class SectorMapper
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
     /**
      * SectorMapper constructor.
      *
      * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     private function getLabel(string $enumValue): string

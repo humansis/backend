@@ -32,14 +32,8 @@ use Entity\SmartcardDeposit;
  */
 class AssistanceBeneficiaryRepository extends EntityRepository
 {
-    public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
+    final public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
 
-    /**
-     * @param int $assistanceId
-     * @param int $beneficiaryId
-     *
-     * @return AssistanceBeneficiary|null
-     */
     public function findByAssistanceAndBeneficiary(int $assistanceId, int $beneficiaryId): ?AssistanceBeneficiary
     {
         return $this->findOneBy([
@@ -49,8 +43,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     *
      * @return int
      */
     public function countActive(Assistance $assistance)
@@ -69,27 +61,15 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
             ->leftJoin("db.beneficiary", "beneficiary");
-
-        switch ($assistance->getTargetType()) {
-            case AssistanceTargetType::INDIVIDUAL:
-            case AssistanceTargetType::HOUSEHOLD:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class));
-                break;
-            // $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Household::class));
-            // break;
-            case AssistanceTargetType::COMMUNITY:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class));
-                break;
-            case AssistanceTargetType::INSTITUTION:
-                $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class));
-                break;
-        }
-
-        return $qb->getQuery()->getResult();
+        match ($assistance->getTargetType()) {
+            AssistanceTargetType::INDIVIDUAL, AssistanceTargetType::HOUSEHOLD => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class)),
+            AssistanceTargetType::COMMUNITY => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class)),
+            AssistanceTargetType::INSTITUTION => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class)),
+            default => $qb->getQuery()->getResult(),
+        };
     }
 
     /**
-     * @param Assistance $assistance
      * @param BeneficiaryFilterInputType|null $filter
      * @param BeneficiaryOrderInputType|null $orderBy
      * @param Pagination|null $pagination
@@ -99,7 +79,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
      *      notRemoved = show only not removed assistance-bnf
      * ]
      *
-     * @return Paginator
      */
     public function findBeneficiariesByAssistance(
         Assistance $assistance,
@@ -195,15 +174,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param InstitutionFilterInputType|null $filter
-     * @param InstitutionOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     * @param array|null $context
-     *
-     * @return Paginator
-     */
     public function findInstitutionsByAssistance(
         Assistance $assistance,
         ?InstitutionFilterInputType $filter = null,
@@ -298,15 +268,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param CommunityFilterType|null $filter
-     * @param CommunityOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     * @param array|null $context
-     *
-     * @return Paginator
-     */
     public function findCommunitiesByAssistance(
         Assistance $assistance,
         ?CommunityFilterType $filter = null,
@@ -399,9 +360,7 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
      * @param CountrySpecific|null $countrySpecific
-     *
      * @return float|int|mixed|string
      */
     public function getBeneficiaryReliefCompilation(Assistance $assistance)
@@ -422,8 +381,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     *
      * @return array
      */
     private function getAssistanceBeneficiaryInformation(Assistance $assistance)
@@ -464,9 +421,7 @@ class AssistanceBeneficiaryRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
      * @param CountrySpecific|null $countrySpecific
-     *
      * @return float|int|mixed|string
      */
     private function getAssistanceBeneficiaryReliefAmounts(Assistance $assistance)

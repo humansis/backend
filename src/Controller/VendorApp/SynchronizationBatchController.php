@@ -18,9 +18,7 @@ class SynchronizationBatchController extends AbstractVendorAppController
     /**
      * @Rest\Post("/vendor-app/v1/syncs/deposit")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function create(Request $request, SmartcardDepositService $depositService): Response
     {

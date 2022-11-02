@@ -13,25 +13,10 @@ use Utils\VoucherService;
 
 class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var string */
-    private $environment;
-
-    /** @var VoucherService */
-    private $voucherService;
-
-    /**
-     * @param string $environment
-     * @param VoucherService $voucherService
-     */
-    public function __construct(string $environment, VoucherService $voucherService)
+    public function __construct(private readonly string $environment, private readonly VoucherService $voucherService)
     {
-        $this->environment = $environment;
-        $this->voucherService = $voucherService;
     }
 
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         if ('prod' === $this->environment) {
@@ -40,7 +25,7 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         $vendors = $manager->getRepository(Vendor::class)->findAll();
         $user = $manager->getRepository(User::class)->findOneBy([], ['id' => 'asc']);
@@ -52,7 +37,7 @@ class VoucherRedemptionFixtures extends Fixture implements DependentFixtureInter
             $vouchers = [];
             $usedVouchers = $manager->getRepository(Voucher::class)->findUsedButUnredeemedByVendor($vendor);
 
-            $count = count($usedVouchers);
+            $count = is_countable($usedVouchers) ? count($usedVouchers) : 0;
             echo " ($count)";
 
             $purchaseCount = $vendor->getId();
