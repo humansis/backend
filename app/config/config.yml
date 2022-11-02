@@ -191,7 +191,7 @@ doctrine:
 #            FOSUserBundle: ~
             App:
                 type: annotation
-                dir: "%kernel.root_dir%/../src/Entity"
+                dir: "%kernel.project_dir%/../src/Entity"
                 prefix: "Entity"
         dql:
             string_functions:
@@ -217,7 +217,7 @@ doctrine:
 
 
 doctrine_migrations:
-    dir_name:             "%kernel.root_dir%/DoctrineMigrations"
+    dir_name:             "%kernel.project_dir%/DoctrineMigrations"
     namespace:            Application\Migrations
     table_name:           migration_versions
     name:                 Application Migrations
