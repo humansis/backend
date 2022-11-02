@@ -12,7 +12,6 @@ use Repository\AssistanceRepository;
 use Utils\AssistanceBeneficiaryService;
 use Utils\AssistanceService;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,12 +34,6 @@ use Utils\VoucherService;
  *
  * @package Controller
  *
- * @SWG\Parameter(
- *      name="country",
- *      in="header",
- *      type="string",
- *      required=true
- * )
  */
 class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
@@ -54,19 +47,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
 
     /**
      * @Rest\Post("/export", name="export_data")
-     *
-     * @SWG\Tag(name="Export")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="OK"
-     * )
-     *
-     * @SWG\Response(
-     *     response=204,
-     *     description="HTTP_NO_CONTENT"
-     * )
-     *
      *
      * @return Response
      * @deprecated export action must be refactorized. Please make own export action instead.
@@ -215,42 +195,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
 
     /**
      * @Rest\Get("/export/distribution", name="export_distribution")
-     *
-     * @SWG\Tag(name="Export")
-     *
-     * @SWG\Parameter(name="id",
-     *     type="string",
-     *     in="query",
-     *     required=true,
-     *     description="ID of distribution to export"
-     * )
-     *
-     * @SWG\Parameter(name="type",
-     *     type="string",
-     *     in="query",
-     *     required=true,
-     *     description="requested file type (pdf only is support now)"
-     * )
-     *
-     * @SWG\Parameter(name="locale",
-     *     type="string",
-     *     in="query",
-     *     default="en"
-     * )
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="streamed file"
-     * )
-     *
-     * @SWG\Response(
-     *     response=404,
-     *     description="invalid query parameters"
-     * )
-     *
-     *
-     *
-     * @throws
      */
     public function exportDistributionToPdf(Request $request): Response
     {
