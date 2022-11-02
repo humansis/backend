@@ -1252,7 +1252,12 @@ services:
 
     voucher.voucher_service:
         class: Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager','@service_container', '@export_csv_service', '@Twig\Environment','@pdf_service']
+        arguments: [
+            '@doctrine.orm.entity_manager',
+            '@export_csv_service',
+            '@Twig\Environment',
+            '@pdf_service'
+        ]
         public: true
 
     Utils\ProductService:
