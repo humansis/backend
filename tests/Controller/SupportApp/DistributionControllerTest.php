@@ -136,7 +136,6 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->getStatusCode(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        echo 'Request failed: ' . $this->client->getResponse()->getContent();
     }
 
     /**
@@ -218,7 +217,6 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->getStatusCode(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        echo 'Request failed: ' . $this->client->getResponse()->getContent();
     }
 
     /**
