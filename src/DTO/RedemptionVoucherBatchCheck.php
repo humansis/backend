@@ -88,7 +88,7 @@ class RedemptionVoucherBatchCheck implements JsonSerializable
             || !empty($this->alreadyRedeemedVouchers);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'valid' => $this->toIdArray($this->validVouchers),

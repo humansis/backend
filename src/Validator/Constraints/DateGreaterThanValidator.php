@@ -14,7 +14,7 @@ class DateGreaterThanValidator extends GreaterThanValidator
     /**
      * {@inheritdoc}
      */
-    protected function compareValues($value1, $value2)
+    protected function compareValues($value1, $value2): bool
     {
         try {
             if (is_string($value1)) {
@@ -37,7 +37,7 @@ class DateGreaterThanValidator extends GreaterThanValidator
     /**
      * {@inheritdoc}
      */
-    protected function getErrorCode()
+    protected function getErrorCode(): string
     {
         return DateGreaterThan::TOO_LOW_ERROR;
     }

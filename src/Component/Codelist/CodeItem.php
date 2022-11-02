@@ -22,7 +22,7 @@ class CodeItem implements JsonSerializable
         return $this->value;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'code' => (string) $this->code,
