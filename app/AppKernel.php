@@ -75,19 +75,6 @@ class AppKernel extends Kernel
         $loader->load($confDir . '/services_' . $this->environment . self::CONFIG_EXTS, 'glob');
 
         $containerBuilder->addCompilerPass(new MapperCompilerPass());
-
-//        $mappings = [
-//            realpath(__DIR__ . '/../src/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',
-//        ];
-
-        //Compiler pass added for overriding user-bundle User entity mapping of roles.
-//        $containerBuilder->addCompilerPass(
-//            DoctrineOrmMappingsPass::createXmlMappingDriver(
-//                $mappings,
-//                ['fos_user.model_manager_name'],
-//                false
-//            )
-//        );
     }
 
     protected function configureRoutes(\Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator $routes)
