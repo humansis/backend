@@ -29,7 +29,7 @@ class Paginator implements JsonSerializable
      * @param int|null $totalCount
      * @param int $page
      */
-    public function __construct(iterable $data, $totalCount = null, $page = 1)
+    public function __construct(iterable $data, ?int $totalCount = null, int $page = 1)
     {
         if ($page <= 0) {
             throw new InvalidArgumentException('Page must be greater than zero');

@@ -12,7 +12,6 @@ use InputType\VendorCreateInputType;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InputType\VendorUpdateInputType;
-use Pagination\Paginator;
 use Repository\SmartcardPurchaseRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -94,17 +93,30 @@ class VendorController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $vendors = $this->vendorRepository->findByParams(
-            $request->headers->get('country'),
-            $filter,
-            $orderBy,
-            $pagination
-        );
         if ($filter->hasInvoicing()) {
-            $vendors = $preliminaryInvoiceService->filterVendorsByInvoicing($vendors, $filter->getInvoicing());
-        }
+            $filteredVendors = $this->vendorRepository->findByParams(
+                $request->headers->get('country'),
+                $filter,
+                $orderBy
+            );
+            $vendorsInInvoicingState = $preliminaryInvoiceService->filterVendorsByInvoicing(
+                $filteredVendors->getQuery()->getResult(),
+                $filter->getInvoicing()
+            );
 
-        return $this->json(new Paginator($vendors));
+            return $this->json(
+                $this->vendorRepository->getVendorsPaginatorByEntityRoot($vendorsInInvoicingState, $pagination)
+            );
+        } else {
+            $vendors = $this->vendorRepository->findByParams(
+                $request->headers->get('country'),
+                $filter,
+                $orderBy,
+                $pagination
+            );
+
+            return $this->json($vendors);
+        }
     }
 
     /**

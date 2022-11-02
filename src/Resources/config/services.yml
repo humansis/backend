@@ -1200,7 +1200,6 @@ services:
         class: Doctrine\ORM\EntityRepository
         calls:
             - setLocationRepository: ['@Repository\LocationRepository']
-            - setPreliminaryInvoiceRepository: ['@Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Vendor
