@@ -6,7 +6,7 @@ use Exception;
 use Repository\LocationRepository;
 use Utils\LocationImporter;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AdmXML2DBCommand extends ContainerAwareCommand
+class AdmXML2DBCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
