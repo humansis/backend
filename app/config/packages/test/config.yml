@@ -1,5 +1,7 @@
 framework:
     profiler: { only_exceptions: false }
+    mailer:
+        dsn: 'null://null'
 
 web_profiler:
     toolbar: true
@@ -40,9 +42,6 @@ monolog:
         #chromephp:
         #    type: chromephp
         #    level: info
-
-#swiftmailer:
-#    delivery_addresses: ['me@example.com']
 
 nelmio_cors:
     defaults:
