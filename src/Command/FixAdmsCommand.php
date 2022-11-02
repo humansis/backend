@@ -4,7 +4,7 @@ namespace Command;
 
 use Doctrine\DBAL\Connection;
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use XMLReader;
 
-class FixAdmsCommand extends ContainerAwareCommand
+class FixAdmsCommand extends Command
 {
     public function __construct(private readonly Connection $connection)
     {
