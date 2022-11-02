@@ -924,7 +924,7 @@ services:
         tags:
             - { name: 'console.command' }
         arguments:
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
 
     logger:
         alias: monolog.logger
@@ -1334,7 +1334,7 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@monolog.logger'
             - '@security.token_storage'
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
             -
     Utils\Provider\DefaultFinancialProvider: '@transaction.default_financial_provider'
 
