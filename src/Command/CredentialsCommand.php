@@ -8,9 +8,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
+use Entity\Role;
 use Entity\User;
 use Entity\UserCountry;
 use Enum\RoleType;
+use Repository\RoleRepository;
 use Repository\UserCountryRepository;
 use Repository\UserRepository;
 use Symfony\Component\Console\Command\Command;
@@ -27,6 +29,7 @@ class CredentialsCommand extends Command
         private readonly string $salt,
         private readonly string $encodedPassword,
         private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
         private readonly UserCountryRepository $userCountryRepository,
         private readonly Countries $countries,
         private readonly EntityManagerInterface $entityManager
@@ -75,13 +78,14 @@ class CredentialsCommand extends Command
      */
     private function createAccount(): void
     {
+        $roles = $this->roleRepository->findByName( [RoleType::ADMIN]);
         $user = new User();
         $user->setUsername($this->account)
             ->setEnabled(true)
             ->setSalt($this->salt)
-            ->setPassword($this->encodedPassword);
-        $user->injectObjectManager($this->entityManager);
-        $user->addRole(RoleType::ADMIN);
+            ->setPassword($this->encodedPassword)
+            ->setRoles($roles);
+
         $this->userRepository->save($user);
         $this->setCountries($user);
     }
