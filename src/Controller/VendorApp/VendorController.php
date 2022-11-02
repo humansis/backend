@@ -2,13 +2,12 @@
 
 namespace Controller\VendorApp;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Vendor;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class VendorController extends Controller
+class VendorController extends AbstractVendorAppController
 {
     public function __construct(private readonly SerializerInterface $serializer)
     {

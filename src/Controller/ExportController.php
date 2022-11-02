@@ -11,7 +11,6 @@ use Export\AssistanceSpreadsheetExport;
 use Repository\AssistanceRepository;
 use Utils\AssistanceBeneficiaryService;
 use Utils\AssistanceService;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +42,7 @@ use Utils\VoucherService;
  *      required=true
  * )
  */
-class ExportController extends Controller
+class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\AbstractController
 {
     /** @var int maximum count of exported entities */
     final public const EXPORT_LIMIT = 10000;
