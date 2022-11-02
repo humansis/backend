@@ -6,13 +6,13 @@ class HouseholdAssets
 {
     use EnumTrait;
 
-    public const AC = 'A/C';
-    public const AGRICULTURAL_LAND = 'Agricultural Land';
-    public const CAR = 'Car';
-    public const FLATSCREEN_TV = 'Flatscreen TV';
-    public const LIVESTOCK = 'Livestock';
-    public const MOTORBIKE = 'Motorbike';
-    public const WASHING_MACHINE = 'Washing Machine';
+    final public const AC = 'A/C';
+    final public const AGRICULTURAL_LAND = 'Agricultural Land';
+    final public const CAR = 'Car';
+    final public const FLATSCREEN_TV = 'Flatscreen TV';
+    final public const LIVESTOCK = 'Livestock';
+    final public const MOTORBIKE = 'Motorbike';
+    final public const WASHING_MACHINE = 'Washing Machine';
 
     protected static $values = [
         0 => self::AC,

@@ -13,7 +13,6 @@ trait SourceFilterTrait
      * TODO: add validation from enum
      *
      * @see SourceType
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -21,6 +20,7 @@ trait SourceFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $sources;
 
     public function hasSources(): bool

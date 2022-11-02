@@ -9,30 +9,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DonorUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private $fullname;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank()
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
     private $shortname;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $notes;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $logo;
 
     /**
@@ -43,9 +35,6 @@ class DonorUpdateInputType implements InputTypeInterface
         return $this->fullname;
     }
 
-    /**
-     * @param string $fullname
-     */
     public function setFullname(string $fullname)
     {
         $this->fullname = $fullname;
@@ -59,9 +48,6 @@ class DonorUpdateInputType implements InputTypeInterface
         return $this->shortname;
     }
 
-    /**
-     * @param string|null $shortname
-     */
     public function setShortname(?string $shortname)
     {
         $this->shortname = $shortname;
@@ -75,9 +61,6 @@ class DonorUpdateInputType implements InputTypeInterface
         return $this->notes;
     }
 
-    /**
-     * @param string|null $notes
-     */
     public function setNotes(?string $notes)
     {
         $this->notes = $notes;
@@ -91,9 +74,6 @@ class DonorUpdateInputType implements InputTypeInterface
         return $this->logo;
     }
 
-    /**
-     * @param string|null $logo
-     */
     public function setLogo(?string $logo)
     {
         $this->logo = $logo;

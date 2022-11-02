@@ -21,9 +21,6 @@ trait ExecutedAt
      */
     protected $executedAt;
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getExecutedAt(): DateTimeInterface
     {
         if (null === $this->executedAt) {
@@ -33,9 +30,6 @@ trait ExecutedAt
         return $this->executedAt;
     }
 
-    /**
-     * @param DateTimeInterface $dateTime
-     */
     public function setExecutedAt(DateTimeInterface $dateTime): void
     {
         $this->executedAt = $dateTime;

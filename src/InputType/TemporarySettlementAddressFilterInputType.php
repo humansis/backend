@@ -8,9 +8,7 @@ use InputType\FilterFragment\PrimaryIdFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"TemporarySettlementAddressFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['TemporarySettlementAddressFilterInputType', 'Strict'])]
 class TemporarySettlementAddressFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;

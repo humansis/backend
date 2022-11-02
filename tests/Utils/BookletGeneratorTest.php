@@ -13,8 +13,7 @@ class BookletGeneratorTest extends KernelTestCase
     /** @var ObjectManager|null */
     private $em;
 
-    /** @var BookletGenerator */
-    private $generator;
+    private \Utils\BookletGenerator $generator;
 
     public function setUp(): void
     {

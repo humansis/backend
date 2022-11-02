@@ -12,18 +12,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ProductCategoryCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/product-categories/types")
-     *
-     * @return JsonResponse
      */
     public function getTypes(): JsonResponse
     {

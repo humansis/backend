@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class ScoringBlueprintMapper implements MapperInterface
 {
-    /** @var ScoringBlueprint */
-    private $object;
+    private ?\Entity\ScoringBlueprint $object = null;
 
     /**
      * {@inheritdoc}
@@ -35,9 +34,7 @@ class ScoringBlueprintMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ScoringBlueprint::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . ScoringBlueprint::class . ', ' . $object::class . ' given.'
         );
     }
 

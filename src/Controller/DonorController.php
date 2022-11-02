@@ -21,26 +21,14 @@ use Utils\DonorService;
 
 class DonorController extends AbstractController
 {
-    /** @var UploadService */
-    private $uploadService;
-
-    /**
-     * @var DonorService
-     */
-    private $donorService;
-
-    public function __construct(UploadService $uploadService, DonorService $donorService)
+    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService)
     {
-        $this->uploadService = $uploadService;
-        $this->donorService = $donorService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/donors/exports")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function exports(Request $request): Response
     {
@@ -53,9 +41,7 @@ class DonorController extends AbstractController
      * @Rest\Get("/web-app/v1/donors/{id}")
      * @Cache(lastModified="donor.getLastModifiedAt()", public=true)
      *
-     * @param Donor $donor
      *
-     * @return JsonResponse
      */
     public function item(Donor $donor): JsonResponse
     {
@@ -65,11 +51,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/donors")
      *
-     * @param Pagination $pagination
-     * @param DonorOrderInputType $orderBy
-     * @param DonorFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(
         Pagination $pagination,
@@ -85,9 +67,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/donors")
      *
-     * @param DonorCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(DonorCreateInputType $inputType): JsonResponse
     {
@@ -99,10 +79,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/donors/{id}")
      *
-     * @param Donor $donor
-     * @param DonorUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
     {
@@ -114,9 +91,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/donors/{id}")
      *
-     * @param Donor $object
      *
-     * @return JsonResponse
      */
     public function delete(Donor $object): JsonResponse
     {
@@ -128,10 +103,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/donors/{id}/images")
      *
-     * @param Donor $donor
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function uploadImage(Donor $donor, Request $request): JsonResponse
     {

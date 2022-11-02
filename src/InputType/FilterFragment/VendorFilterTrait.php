@@ -10,7 +10,6 @@ use Happyr\Validator\Constraint\EntityExist;
 trait VendorFilterTrait
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"}),
@@ -19,11 +18,9 @@ trait VendorFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $vendors;
 
-    /**
-     * @return bool
-     */
     public function hasVendors(): bool
     {
         return $this->has('vendors');

@@ -8,10 +8,10 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class OrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_TYPE = 'type';
-    public const SORT_BY_SOURCE = 'source';
-    public const SORT_BY_DATE = 'date';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_TYPE = 'type';
+    final public const SORT_BY_SOURCE = 'source';
+    final public const SORT_BY_DATE = 'date';
 
     protected function getValidNames(): array
     {

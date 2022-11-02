@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class PaginatorMapper implements MapperInterface
 {
-    /** @var Paginator */
-    private $object;
+    private ?\Doctrine\ORM\Tools\Pagination\Paginator $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,7 +32,7 @@ class PaginatorMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Paginator::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Paginator::class . ', ' . $object::class . ' given.'
         );
     }
 

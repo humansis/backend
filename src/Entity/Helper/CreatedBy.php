@@ -18,19 +18,11 @@ trait CreatedBy
      */
     private $createdBy;
 
-    /**
-     * @return User|null
-     */
     public function getCreatedBy(): ?User
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param User|null $createdBy
-     *
-     * @return self
-     */
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;

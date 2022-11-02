@@ -36,46 +36,12 @@ use Repository\SmartcardRepository;
 
 class SmartcardService
 {
-    /** @var EntityManager */
-    private $em;
-
-    /** @var PurchaseService */
-    private $purchaseService;
-
-    /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var PreliminaryInvoiceRepository
-     */
-    private $preliminaryInvoiceRepository;
-
-    public function __construct(
-        EntityManager $em,
-        PurchaseService $purchaseService,
-        SmartcardRepository $smartcardRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
-    ) {
-        $this->em = $em;
-        $this->purchaseService = $purchaseService;
-        $this->smartcardRepository = $smartcardRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
+    public function __construct(private readonly EntityManager $em, private readonly PurchaseService $purchaseService, private readonly SmartcardRepository $smartcardRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
+    {
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
-     * @return void
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
@@ -102,10 +68,7 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param UpdateSmartcardInputType $updateSmartcardInputType
      *
-     * @return Smartcard
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
      * @throws OptimisticLockException
@@ -138,9 +101,7 @@ class SmartcardService
     }
 
     /**
-     * @param SmartcardRegisterInputType $registerInputType
      *
-     * @return Smartcard
      * @throws SmartcardDoubledRegistrationException
      * @throws ORMException
      * @throws OptimisticLockException
@@ -170,10 +131,7 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param DateTimeInterface $registrationDateTime
      *
-     * @return void
      * @throws SmartcardDoubledRegistrationException
      */
     private function checkSmartcardRegistrationDuplicity(
@@ -189,14 +147,12 @@ class SmartcardService
     }
 
     /**
-     * @param string $serialNumber
      * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
      *
-     * @return SmartcardPurchase
      * @throws EntityNotFoundException
      * @throws ORMException
      */
-    public function purchase(string $serialNumber, $data): SmartcardPurchase
+    public function purchase(string $serialNumber, SmartcardPurchaseInput|\InputType\SmartcardPurchaseInputType $data): SmartcardPurchase
     {
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
             throw new InvalidArgumentException(
@@ -269,9 +225,6 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param ReliefPackage $reliefPackage
-     *
      * @return void
      * @throws ORMException
      */
@@ -282,12 +235,6 @@ class SmartcardService
         $this->smartcardRepository->save($smartcard);
     }
 
-    /**
-     * @param Smartcard $smartcard
-     * @param ReliefPackage $reliefPackage
-     *
-     * @return void
-     */
     private function setMissingCurrencyToSmartcard(Smartcard $smartcard, ReliefPackage $reliefPackage): void
     {
         if (null === $smartcard->getCurrency()) {
@@ -296,9 +243,6 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
-     *
-     * @return void
      * @throws ORMException
      */
     private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
@@ -314,7 +258,6 @@ class SmartcardService
     }
 
     /**
-     * @param string $smartcardCode
      *
      * @retrun Smartcard
      * @throws ORMException

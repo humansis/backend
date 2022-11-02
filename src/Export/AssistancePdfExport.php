@@ -11,16 +11,8 @@ use Twig\Environment;
 
 class AssistancePdfExport
 {
-    /** @var Environment */
-    private $twig;
-
-    /** @var PdfService */
-    private $pdfService;
-
-    public function __construct(PdfService $pdfService, Environment $twig)
+    public function __construct(private readonly PdfService $pdfService, private readonly Environment $twig)
     {
-        $this->twig = $twig;
-        $this->pdfService = $pdfService;
     }
 
     public function export(Assistance $assistance, Organization $organization)

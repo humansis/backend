@@ -6,9 +6,9 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class DistributedItemOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_BENEFICIARY_ID = 'beneficiaryId';
-    public const SORT_BY_DISTRIBUTION_DATE = 'dateDistribution';
-    public const SORT_BY_AMOUNT = 'amount';
+    final public const SORT_BY_BENEFICIARY_ID = 'beneficiaryId';
+    final public const SORT_BY_DISTRIBUTION_DATE = 'dateDistribution';
+    final public const SORT_BY_AMOUNT = 'amount';
 
     protected function getValidNames(): array
     {

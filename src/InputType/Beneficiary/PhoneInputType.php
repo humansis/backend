@@ -13,20 +13,16 @@ use Validator\Constraints\Enum;
 
 class PhoneInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $prefix;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $number;
 
     /**
@@ -39,14 +35,6 @@ class PhoneInputType implements InputTypeInterface
      */
     private $proxy;
 
-    /**
-     * @param string $prefix
-     * @param string $number
-     * @param string|null $type
-     * @param bool|null $proxy
-     *
-     * @return PhoneInputType
-     */
     public static function create(string $prefix, string $number, ?string $type, ?bool $proxy = null): PhoneInputType
     {
         $self = new self();
@@ -93,7 +81,6 @@ class PhoneInputType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
      * @throws EnumValueNoFoundException
      */
     public function getType(): ?string
@@ -105,9 +92,6 @@ class PhoneInputType implements InputTypeInterface
         return PhoneTypes::valueFromAPI($this->type);
     }
 
-    /**
-     * @param string|null $type
-     */
     public function setType(?string $type)
     {
         $this->type = $type;

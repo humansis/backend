@@ -14,11 +14,6 @@ use InputType\TransactionFilterInputType;
  */
 class TransactionRepository extends EntityRepository
 {
-    /**
-     * @param TransactionFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
     public function findByParams(?TransactionFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('t');

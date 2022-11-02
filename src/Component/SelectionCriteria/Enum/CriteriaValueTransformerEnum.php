@@ -10,10 +10,10 @@ class CriteriaValueTransformerEnum
 {
     use EnumTrait;
 
-    public const CONVERT_TO_STRING = 'to_string';
-    public const CONVERT_TO_INT = 'to_int';
-    public const CONVERT_TO_FLOAT = 'to_float';
-    public const CONVERT_TO_BOOL = 'to_bool';
+    final public const CONVERT_TO_STRING = 'to_string';
+    final public const CONVERT_TO_INT = 'to_int';
+    final public const CONVERT_TO_FLOAT = 'to_float';
+    final public const CONVERT_TO_BOOL = 'to_bool';
 
     public static function values(): array
     {

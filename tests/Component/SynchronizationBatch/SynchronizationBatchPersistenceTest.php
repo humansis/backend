@@ -26,8 +26,7 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
     /** @var EntityRepository */
     private $syncRepo;
 
-    /** @var Deposits */
-    private $sync;
+    private \Entity\SynchronizationBatch\Deposits $sync;
 
     protected function setUp(): void
     {

@@ -4,10 +4,7 @@ namespace Services;
 
 class CountryLocaleResolverService
 {
-    /**
-     * @var array
-     */
-    private $countries;
+    private array $countries;
 
     public function __construct(array $countries)
     {
@@ -17,11 +14,6 @@ class CountryLocaleResolverService
         }
     }
 
-    /**
-     * @param string $countryCode
-     *
-     * @return string
-     */
     public function resolve(string $countryCode): string
     {
         if (key_exists($countryCode, $this->countries)) {

@@ -50,7 +50,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with beneficiary in database to complete this test.'
             );
@@ -98,7 +98,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with institution in database to complete this test.'
             );
@@ -146,7 +146,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with community in database to complete this test.'
             );
@@ -247,7 +247,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             if ($data['beneficiaryId'] == $beneficiaryId) {
                 $this->assertTrue($data['removed'], "Target $beneficiaryId wasn't removed");
@@ -343,7 +343,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $resultData) {
             if ($resultData['beneficiaryId'] === $beneficiaryId) {
                 $this->assertTrue($resultData['removed'], "Target $beneficiaryId wasn't removed ($idType: $idNumber)");
@@ -475,19 +475,19 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame(
-            count($result['success']),
+            is_countable($result['success']) ? count($result['success']) : 0,
             1,
-            'Removed more beneficiaries - should remove: ' . $hhTaxId . ', removed ' . json_encode($result['success'])
+            'Removed more beneficiaries - should remove: ' . $hhTaxId . ', removed ' . json_encode($result['success'], JSON_THROW_ON_ERROR)
         );
 
         $this->assertSame(
-            count($result['notFound']) + count($result['success']) + count($result['failed']) + count(
+            (is_countable($result['notFound']) ? count($result['notFound']) : 0) + (is_countable($result['success']) ? count($result['success']) : 0) + (is_countable($result['failed']) ? count($result['failed']) : 0) + (is_countable($result['alreadyRemoved']) ? count(
                 $result['alreadyRemoved']
-            ),
-            count($bnfTaxIds) + 1,
+            ) : 0),
+            (is_countable($bnfTaxIds) ? count($bnfTaxIds) : 0) + 1,
             'Lost ids, input: ' . $hhTaxId . ',' . implode(',', $bnfTaxIds) . ' output: ' . $this->client->getResponse(
             )->getContent()
         );
@@ -502,7 +502,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $resultData) {
             if ($resultData['beneficiaryId'] === $hhId) {
                 $this->assertTrue($resultData['removed'], "Target $hhId wasn't removed ($idType: $hhTaxId)");
@@ -570,7 +570,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             if ($data['institutionId'] == $institutionId) {
                 $this->assertTrue($data['removed'], "Target $institutionId wasn't removed");
@@ -638,7 +638,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             if ($data['communityId'] == $communityId) {
                 $this->assertTrue($data['removed'], "Target $communityId wasn't removed");

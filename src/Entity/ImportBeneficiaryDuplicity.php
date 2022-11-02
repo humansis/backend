@@ -18,80 +18,48 @@ class ImportBeneficiaryDuplicity
     use StandardizedPrimaryKey;
 
     /**
-     * @var ImportQueue
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
-     */
-    private $queue;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $memberIndex;
-
-    /**
-     * @var Beneficiary
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
-     */
-    private $beneficiary;
-
-    /**
-     * @var ImportHouseholdDuplicity
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
-     */
-    private $householdDuplicity;
-
-    /**
      * @var string[]
      *
      * @ORM\Column(type="array", nullable=true)
      */
-    private $reasons;
+    private array $reasons;
 
     public function __construct(
-        ImportHouseholdDuplicity $householdDuplicity,
-        ImportQueue $ours,
-        int $memberIndex,
-        Beneficiary $theirs
+        /**
+         * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
+         */
+        private ImportHouseholdDuplicity $householdDuplicity,
+        /**
+         * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
+         */
+        private ImportQueue $queue,
+        /**
+         * @ORM\Column(type="integer")
+         */
+        private int $memberIndex,
+        /**
+         * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
+         */
+        private Beneficiary $beneficiary
     ) {
-        $this->queue = $ours;
-        $this->beneficiary = $theirs;
         $this->reasons = [];
-        $this->memberIndex = $memberIndex;
-        $this->householdDuplicity = $householdDuplicity;
     }
 
-    /**
-     * @return ImportQueue
-     */
     public function getQueue(): ImportQueue
     {
         return $this->queue;
     }
 
-    /**
-     * @return int
-     */
     public function getMemberIndex(): int
     {
         return $this->memberIndex;
     }
 
-    /**
-     * @return Beneficiary
-     */
     public function getBeneficiary(): Beneficiary
     {
         return $this->beneficiary;
     }
 
-    /**
-     * @return ImportHouseholdDuplicity
-     */
     public function getHouseholdDuplicity(): ImportHouseholdDuplicity
     {
         return $this->householdDuplicity;
@@ -105,9 +73,6 @@ class ImportBeneficiaryDuplicity
         return $this->reasons;
     }
 
-    /**
-     * @param array $reason
-     */
     public function addReason(array $reason): void
     {
         $this->reasons[] = $reason;

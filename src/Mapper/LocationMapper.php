@@ -8,8 +8,7 @@ use Serializer\MapperInterface;
 
 class LocationMapper implements MapperInterface
 {
-    /** @var Location */
-    private $object;
+    private ?\Entity\Location $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -25,7 +24,7 @@ class LocationMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Location::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Location::class . ', ' . $object::class . ' given.'
         );
     }
 

@@ -10,24 +10,18 @@ class VoucherRedemptionBatch implements InputTypeInterface
     /**
      * @var int[]
      *
-     * @Assert\NotBlank()
      * @Assert\All({
      *     @Assert\Type("int")
      * })
      */
+    #[Assert\NotBlank]
     private $vouchers;
 
-    /**
-     * @return array
-     */
     public function getVouchers(): array
     {
         return $this->vouchers;
     }
 
-    /**
-     * @param array $vouchers
-     */
     public function setVouchers(array $vouchers): void
     {
         $this->vouchers = $vouchers;

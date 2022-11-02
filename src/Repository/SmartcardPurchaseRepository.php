@@ -24,9 +24,7 @@ use Entity\Vendor;
 class SmartcardPurchaseRepository extends EntityRepository
 {
     /**
-     * @param Vendor $vendor
      *
-     * @return PurchaseSummary
      *
      * @throws NonUniqueResultException
      */
@@ -42,7 +40,7 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         try {
             $summary = $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return new PurchaseSummary(0, 0);
         }
 
@@ -59,9 +57,7 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         try {
             return $qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException $e) {
-            return 0;
-        } catch (NonUniqueResultException $e) {
+        } catch (NoResultException | NonUniqueResultException $e) {
             return 0;
         }
     }
@@ -107,12 +103,10 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param Invoice $invoice
-     * @param Pagination|null $pagination
      *
      * @return Paginator|SmartcardPurchase[]
      */
-    public function findByBatch(Invoice $invoice, ?Pagination $pagination = null)
+    public function findByBatch(Invoice $invoice, ?Pagination $pagination = null): \Doctrine\ORM\Tools\Pagination\Paginator|array
     {
         $qbr = $this->createQueryBuilder('sp')
             ->andWhere('sp.redemptionBatch = :redemptionBatch')
@@ -142,9 +136,7 @@ class SmartcardPurchaseRepository extends EntityRepository
     }
 
     /**
-     * @param SmartcardPurchaseFilterInputType $filter
      * @param Pagination|null $pagination
-     *
      * @return Paginator|SmartcardPurchase[]
      */
     public function findByParams(SmartcardPurchaseFilterInputType $filter, Pagination $pagination): Paginator

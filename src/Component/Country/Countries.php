@@ -6,11 +6,8 @@ namespace Component\Country;
 
 class Countries
 {
-    private $array;
-
-    public function __construct(array $array)
+    public function __construct(private readonly array $array)
     {
-        $this->array = $array;
     }
 
     /**
@@ -21,11 +18,6 @@ class Countries
         return $this->lazyList($withArchived);
     }
 
-    /**
-     * @param string $iso3
-     *
-     * @return Country|null
-     */
     public function getCountry(string $iso3): ?Country
     {
         foreach ($this->lazyList() as $country) {

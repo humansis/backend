@@ -14,16 +14,11 @@ class ScoringPatchInputType implements InputTypeInterface
 {
     use PropertyList;
 
-    /**
-     * @var string
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $name;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $name = null;
 
-    /**
-     * @Assert\Type("bool")
-     */
+    #[Assert\Type('bool')]
     private $archived;
 
     /**
@@ -34,12 +29,7 @@ class ScoringPatchInputType implements InputTypeInterface
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     *
-     * @return ScoringPatchInputType
-     */
-    public function setName($name): ScoringPatchInputType
+    public function setName(mixed $name): ScoringPatchInputType
     {
         $this->name = $name;
 
@@ -54,11 +44,6 @@ class ScoringPatchInputType implements InputTypeInterface
         return $this->archived;
     }
 
-    /**
-     * @param bool $archived
-     *
-     * @return ScoringPatchInputType
-     */
     public function setArchived(bool $archived): ScoringPatchInputType
     {
         $this->archived = $archived;

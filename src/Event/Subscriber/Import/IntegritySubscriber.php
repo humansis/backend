@@ -27,43 +27,10 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IntegritySubscriber implements EventSubscriberInterface
 {
-    public const GUARD_CODE_NOT_COMPLETE = '93226f1a-1b68-4ed4-bd78-1129d16d3333';
+    final public const GUARD_CODE_NOT_COMPLETE = '93226f1a-1b68-4ed4-bd78-1129d16d3333';
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var IntegrityChecker
-     */
-    private $integrityChecker;
-
-    /**
-     * @var EntityRepository|ObjectRepository|ImportQueueRepository
-     */
-    private $queueRepository;
-
-    /**
-     * @var ImportInvalidFileService
-     */
-    private $importInvalidFileService;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        IntegrityChecker $integrityChecker,
-        ImportInvalidFileService $importInvalidFileService,
-        MessageBusInterface $messageBus,
-        ImportQueueRepository $queueRepository
-    ) {
-        $this->entityManager = $entityManager;
-        $this->integrityChecker = $integrityChecker;
-        $this->queueRepository = $queueRepository;
-        $this->importInvalidFileService = $importInvalidFileService;
-        $this->messageBus = $messageBus;
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly IntegrityChecker $integrityChecker, private readonly ImportInvalidFileService $importInvalidFileService, private readonly MessageBusInterface $messageBus, private readonly ImportQueueRepository $queueRepository)
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -92,9 +59,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         $this->fillQueue($import);
     }
 
-    /**
-     * @param CompletedEvent $enteredEvent
-     */
     public function checkIntegrityAgain(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
@@ -119,9 +83,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         $this->messageBus->dispatch(ImportCheck::checkIntegrityComplete($import), [new DelayStamp(5000)]);
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardNotEmptyImport(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -132,9 +93,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardNoItemsFailed(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -145,9 +103,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardSomeItemsFailedOrEmptyQueue(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -187,9 +142,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardSomeItemsFailed(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -202,9 +154,6 @@ class IntegritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param Event $event
-     */
     public function generateFile(Event $event): void
     {
         /** @var Import $import */

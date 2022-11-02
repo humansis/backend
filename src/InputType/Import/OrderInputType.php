@@ -8,13 +8,13 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class OrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_TITLE = 'title';
-    public const SORT_BY_DESCRIPTION = 'description';
-    public const SORT_BY_PROJECT = 'project';
-    public const SORT_BY_STATUS = 'status';
-    public const SORT_BY_CREATED_BY = 'createdBy';
-    public const SORT_BY_CREATED_AT = 'createdAt';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_TITLE = 'title';
+    final public const SORT_BY_DESCRIPTION = 'description';
+    final public const SORT_BY_PROJECT = 'project';
+    final public const SORT_BY_STATUS = 'status';
+    final public const SORT_BY_CREATED_BY = 'createdBy';
+    final public const SORT_BY_CREATED_AT = 'createdAt';
 
     protected function getValidNames(): array
     {

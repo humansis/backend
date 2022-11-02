@@ -20,18 +20,11 @@ class ReportParser
     private const CURRENCY = 8;
     private const PHONE_NUMBER = 18;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**
-     * @param string $reportFilePath
      *
      * @return ReportEntry[]
      * @throws Exception

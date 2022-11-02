@@ -7,27 +7,13 @@ namespace DTO;
  */
 class PurchaseSummary
 {
-    /** @var int */
-    private $count;
-
-    /** @var string decimal */
-    private $value;
-
     /**
      * SmartcardPurchaseSummary constructor.
-     *
-     * @param int $count
-     * @param mixed $value
      */
-    public function __construct(int $count, $value)
+    public function __construct(private readonly int $count, private readonly mixed $value)
     {
-        $this->count = $count;
-        $this->value = $value;
     }
 
-    /**
-     * @return int
-     */
     public function getCount(): int
     {
         return $this->count;

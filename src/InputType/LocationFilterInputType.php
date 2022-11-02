@@ -9,9 +9,7 @@ use InputType\FilterFragment\PrimaryIdFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"LocationFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['LocationFilterInputType', 'Strict'])]
 class LocationFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
@@ -19,20 +17,20 @@ class LocationFilterInputType extends AbstractFilterInputType
 
     /**
      * @var int
-     * @Assert\Type(type="integer")
      */
+    #[Assert\Type(type: 'integer')]
     protected $level;
 
     /**
      * @var int
-     * @Assert\Type(type="integer")
      */
+    #[Assert\Type(type: 'integer')]
     protected $parent;
 
     /**
      * @var string
-     * @Assert\Type(type="string")
      */
+    #[Assert\Type(type: 'string')]
     protected $enumNormalizedName;
 
     public function hasLevel(): bool

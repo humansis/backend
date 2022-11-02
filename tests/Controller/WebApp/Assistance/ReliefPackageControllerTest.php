@@ -49,7 +49,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         /** @var Assistance $assitance */
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
-        $packageCount = count($this->em->getRepository(ReliefPackage::class)->findByAssistance($assistance));
+        $packageCount = is_countable($this->em->getRepository(ReliefPackage::class)->findByAssistance($assistance)) ? count($this->em->getRepository(ReliefPackage::class)->findByAssistance($assistance)) : 0;
 
         $this->request('GET', "/api/basic/web-app/v1/assistances/{$assistance->getId()}/relief-packages");
 

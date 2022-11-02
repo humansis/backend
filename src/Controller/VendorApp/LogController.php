@@ -14,24 +14,15 @@ use Entity\Vendor;
 
 class LogController extends AbstractVendorAppController
 {
-    /**
-     * @var LogsStorageService
-     */
-    private $logsStorageService;
-
-    public function __construct(LogsStorageService $logsStorageService)
+    public function __construct(private readonly LogsStorageService $logsStorageService)
     {
-        $this->logsStorageService = $logsStorageService;
     }
 
     /**
      * @Rest\Post("/vendor-app/v1/vendors/{id}/logs")
      *
-     * @param Vendor $vendor
      *
-     * @param Request $request
      *
-     * @return Response
      * @throws FilesystemException
      */
     public function uploadLogs(Vendor $vendor, Request $request): Response

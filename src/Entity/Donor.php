@@ -25,36 +25,32 @@ class Donor implements ExportableInterface
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="fullname", type="string", length=255)
      *
      */
-    private $fullname;
+    private ?string $fullname = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="shortname", type="string", length=255)
      *
      */
-    private $shortname;
+    private ?string $shortname = null;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(name="dateAdded", type="datetime")
      *
      */
-    private $dateAdded;
+    private ?\DateTime $dateAdded = null;
 
     /**
-     * @var string|null
      *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      *
      */
-    private $notes;
+    private ?string $notes = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="Entity\Project", mappedBy="donors")
@@ -63,18 +59,19 @@ class Donor implements ExportableInterface
     private $projects;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
      */
-    private $logo;
+    private ?string $logo = null;
+
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
+    }
 
     /**
      * Set fullname.
      *
-     * @param string $fullname
      *
-     * @return Donor
      */
     public function setFullname(string $fullname): Donor
     {
@@ -85,8 +82,6 @@ class Donor implements ExportableInterface
 
     /**
      * Get fullname.
-     *
-     * @return string
      */
     public function getFullname(): string
     {
@@ -96,9 +91,7 @@ class Donor implements ExportableInterface
     /**
      * Set shortname.
      *
-     * @param string $shortname
      *
-     * @return Donor
      */
     public function setShortname(string $shortname): Donor
     {
@@ -109,8 +102,6 @@ class Donor implements ExportableInterface
 
     /**
      * Get shortname.
-     *
-     * @return string
      */
     public function getShortname(): string
     {
@@ -120,9 +111,7 @@ class Donor implements ExportableInterface
     /**
      * Set dateAdded.
      *
-     * @param DateTime $dateAdded
      *
-     * @return Donor
      */
     public function setDateAdded(DateTime $dateAdded): Donor
     {
@@ -133,8 +122,6 @@ class Donor implements ExportableInterface
 
     /**
      * Get dateAdded.
-     *
-     * @return DateTime
      */
     public function getDateAdded(): DateTime
     {
@@ -144,9 +131,7 @@ class Donor implements ExportableInterface
     /**
      * Set notes.
      *
-     * @param string|null $notes
      *
-     * @return Donor
      */
     public function setNotes(?string $notes): Donor
     {
@@ -157,8 +142,6 @@ class Donor implements ExportableInterface
 
     /**
      * Get notes.
-     *
-     * @return string|null
      */
     public function getNotes(): ?string
     {
@@ -166,19 +149,9 @@ class Donor implements ExportableInterface
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
-    }
-
-    /**
      * Add project.
      *
-     * @param Project $project
      *
-     * @return Donor
      */
     public function addProject(Project $project): Donor
     {
@@ -190,7 +163,6 @@ class Donor implements ExportableInterface
     /**
      * Remove project.
      *
-     * @param Project $project
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -211,8 +183,6 @@ class Donor implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -235,9 +205,7 @@ class Donor implements ExportableInterface
     /**
      * Set logo.
      *
-     * @param string|null $logo
      *
-     * @return Donor
      */
     public function setLogo(?string $logo): self
     {
@@ -248,8 +216,6 @@ class Donor implements ExportableInterface
 
     /**
      * Get logo.
-     *
-     * @return string|null
      */
     public function getLogo(): ?string
     {

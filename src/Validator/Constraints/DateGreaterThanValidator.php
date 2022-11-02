@@ -23,7 +23,7 @@ class DateGreaterThanValidator extends GreaterThanValidator
             if (is_string($value2)) {
                 $value2 = new DateTime($value2);
             }
-        } catch (Exception $ex) {
+        } catch (Exception) {
             return false;
         }
 

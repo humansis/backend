@@ -11,21 +11,15 @@ class AssistanceTypeFilterInputType extends AbstractFilterInputType
 {
     /**
      * @var string
-     * @Assert\Choice(callback={"DBAL\SubSectorEnum", "all"})
      */
+    #[Assert\Choice(callback: [\DBAL\SubSectorEnum::class, 'all'])]
     protected $subsector;
 
-    /**
-     * @return string
-     */
     public function getSubsector(): string
     {
         return $this->subsector;
     }
 
-    /**
-     * @return bool
-     */
     public function hasSubsector(): bool
     {
         return $this->has('subsector');

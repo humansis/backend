@@ -9,37 +9,29 @@ use Validator\Constraints\Country;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @Assert\GroupSequence({"BookletBatchCreateInputType", "PrimaryValidation", "SecondaryValidation"})
- */
+#[Assert\GroupSequence(['BookletBatchCreateInputType', 'PrimaryValidation', 'SecondaryValidation'])]
 class BookletBatchCreateInputType implements InputTypeInterface
 {
     /**
      * @Country
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $iso3;
 
-    /**
-     * @Assert\Type("int")
-     * @Assert\GreaterThan(0)
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('int')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $quantityOfBooklets;
 
-    /**
-     * @Assert\Type("int")
-     * @Assert\GreaterThan(0)
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('int')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $quantityOfVouchers;
 
     /**
-     * @Assert\NotNull
-     * @Assert\Type("array", groups={"PrimaryValidation"})
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"SecondaryValidation"}),
@@ -47,33 +39,29 @@ class BookletBatchCreateInputType implements InputTypeInterface
      *     },
      *     groups={"SecondaryValidation"}
      * )
-     * @Assert\Callback({"InputType\BookletBatchCreateInputType", "validateIndividualValues"}, groups={"SecondaryValidation"}),
      */
+    #[Assert\NotNull]
+    #[Assert\Type('array', groups: ['PrimaryValidation'])]
+    #[Assert\Callback([\InputType\BookletBatchCreateInputType::class, 'validateIndividualValues'], groups: ['SecondaryValidation'])]
     private $values;
 
-    /**
-     * @Assert\Type("int")
-     * @Assert\GreaterThan(0)
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('int')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $projectId;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $password;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $currency;
 
     public static function validateIndividualValues($array, ExecutionContextInterface $context, $payload)
     {
-        if (count($array) > $context->getObject()->getQuantityOfVouchers()) {
+        if ((is_countable($array) ? count($array) : 0) > $context->getObject()->getQuantityOfVouchers()) {
             $context->buildViolation('Too many individual values')
                 ->atPath('individualValues')
                 ->addViolation();

@@ -13,11 +13,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ParserTest extends KernelTestCase
 {
-    /** @var ScoringCsvParser */
-    private $parser;
+    private readonly \Component\Assistance\Scoring\ScoringCsvParser $parser;
 
-    /** @var String */
-    private $projectDir;
+    private readonly string $projectDir;
 
     /** @var ScoringFactory */
     private $scoringFactory;

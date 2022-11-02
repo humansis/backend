@@ -13,12 +13,8 @@ use Component\SelectionCriteria\Structure\Field;
 
 class BeneficiaryFieldGenerator implements FieldGeneratorInterface
 {
-    /** @var VulnerabilityCriterionRepository */
-    private $vulnerabilityCriterionRepository;
-
-    public function __construct(VulnerabilityCriterionRepository $vulnerabilityCriterionRepository)
+    public function __construct(private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository)
     {
-        $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
     }
 
     /**

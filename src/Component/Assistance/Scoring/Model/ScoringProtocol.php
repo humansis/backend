@@ -10,7 +10,7 @@ use Serializable;
 final class ScoringProtocol implements Serializable
 {
     /** @var float[] */
-    private $score = [];
+    private array $score = [];
 
     /**
      * @var float|null
@@ -62,7 +62,6 @@ final class ScoringProtocol implements Serializable
     }
 
     /**
-     * @return string
      * @throws JsonException
      */
     public function serialize(): string

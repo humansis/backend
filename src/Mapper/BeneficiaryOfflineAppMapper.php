@@ -10,15 +10,12 @@ use Serializer\MapperInterface;
 
 class BeneficiaryOfflineAppMapper implements MapperInterface
 {
-    /** @var Beneficiary */
-    private $object;
+    private ?\Entity\Beneficiary $object = null;
 
     /**
-     * @param object $object
      * @param null $format
      * @param array|null $context
      *
-     * @return bool
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -27,9 +24,6 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
             isset($context['offline-app']) && $context['version'] = true;
     }
 
-    /**
-     * @param object $object
-     */
     public function populate(object $object)
     {
         if ($object instanceof Beneficiary) {
@@ -39,7 +33,7 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Beneficiary::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -61,9 +55,7 @@ class BeneficiaryOfflineAppMapper implements MapperInterface
     public function getNationalIdCards(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getPerson()->getNationalIds()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getPerson()->getNationalIds()->toArray())
         );
     }
 

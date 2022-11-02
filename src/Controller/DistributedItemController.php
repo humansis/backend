@@ -23,21 +23,15 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class DistributedItemController extends AbstractController
 {
-    /** @var DistributedSummarySpreadsheetExport */
-    private $distributedSummarySpreadsheetExport;
-
-    public function __construct(DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport)
+    public function __construct(private readonly DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport)
     {
-        $this->distributedSummarySpreadsheetExport = $distributedSummarySpreadsheetExport;
     }
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}/distributed-items")
      * @ParamConverter("beneficiary")
      *
-     * @param Beneficiary $beneficiary
      *
-     * @return JsonResponse
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
@@ -51,9 +45,7 @@ class DistributedItemController extends AbstractController
      * @Rest\Get("/web-app/v1/households/{id}/distributed-items")
      * @ParamConverter("household")
      *
-     * @param Household $household
      *
-     * @return JsonResponse
      */
     public function listByHousehold(Household $household): JsonResponse
     {
@@ -66,13 +58,7 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/distributed-items")
      *
-     * @param Request $request
-     * @param DistributedItemFilterInputType $inputType
-     * @param DistributedItemOrderInputType $order
-     * @param DistributedItemRepository $distributedItemRepository
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function distributedItems(
         Request $request,
@@ -98,10 +84,7 @@ class DistributedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/distributed-items/exports")
      *
-     * @param Request $request
-     * @param DistributedItemFilterInputType $inputType
      *
-     * @return Response
      */
     public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): Response
     {
@@ -116,7 +99,7 @@ class DistributedItemController extends AbstractController
         );
 
         $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $filename));
 
         return $response;
     }

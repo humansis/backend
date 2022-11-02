@@ -46,90 +46,11 @@ use Utils\VoucherService;
 class ExportController extends Controller
 {
     /** @var int maximum count of exported entities */
-    public const EXPORT_LIMIT = 10000;
-    public const EXPORT_LIMIT_CSV = 20000;
+    final public const EXPORT_LIMIT = 10000;
+    final public const EXPORT_LIMIT_CSV = 20000;
 
-    /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
-
-    /**
-     * @var AssistanceService
-     */
-    private $assistanceService;
-
-    /** @var BeneficiaryService */
-    private $beneficiaryService;
-
-    /** @var UserService */
-    private $userService;
-
-    /** @var CountrySpecificService */
-    private $countrySpecificService;
-
-    /** @var DonorService */
-    private $donorService;
-
-    /** @var ProjectService */
-    private $projectService;
-
-    /** @var AssistanceBeneficiaryService */
-    private $assistanceBeneficiaryService;
-
-    /** @var HouseholdExportCSVService */
-    private $householdExportCSVService;
-
-    /** @var AssistancePdfExport */
-    private $assistancePdfExport;
-
-    /** @var AssistanceSpreadsheetExport */
-    private $assistanceSpreadsheetExport;
-
-    /** @var TransactionService */
-    private $transactionService;
-
-    /** @var VoucherService */
-    private $voucherService;
-
-    /** @var ProductService */
-    private $productService;
-
-    /** @var VendorService */
-    private $vendorService;
-
-    public function __construct(
-        AssistanceRepository $assistanceRepository,
-        AssistanceService $assistanceService,
-        BeneficiaryService $beneficiaryService,
-        UserService $userService,
-        CountrySpecificService $countrySpecificService,
-        DonorService $donorService,
-        ProjectService $projectService,
-        AssistanceBeneficiaryService $assistanceBeneficiaryService,
-        HouseholdExportCSVService $HouseholdExportCSVService,
-        AssistancePdfExport $assistancePdfExport,
-        AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
-        TransactionService $transactionService,
-        VoucherService $voucherService,
-        ProductService $productService,
-        VendorService $vendorService
-    ) {
-        $this->assistanceRepository = $assistanceRepository;
-        $this->assistanceService = $assistanceService;
-        $this->beneficiaryService = $beneficiaryService;
-        $this->userService = $userService;
-        $this->countrySpecificService = $countrySpecificService;
-        $this->donorService = $donorService;
-        $this->projectService = $projectService;
-        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
-        $this->householdExportCSVService = $HouseholdExportCSVService;
-        $this->assistancePdfExport = $assistancePdfExport;
-        $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
-        $this->transactionService = $transactionService;
-        $this->voucherService = $voucherService;
-        $this->productService = $productService;
-        $this->vendorService = $vendorService;
+    public function __construct(private readonly AssistanceRepository $assistanceRepository, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly UserService $userService, private readonly CountrySpecificService $countrySpecificService, private readonly DonorService $donorService, private readonly ProjectService $projectService, private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService, private readonly HouseholdExportCSVService $householdExportCSVService, private readonly AssistancePdfExport $assistancePdfExport, private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly TransactionService $transactionService, private readonly VoucherService $voucherService, private readonly ProductService $productService, private readonly VendorService $vendorService)
+    {
     }
 
     /**
@@ -147,10 +68,8 @@ class ExportController extends Controller
      *     description="HTTP_NO_CONTENT"
      * )
      *
-     * @param Request $request
      *
      * @return Response
-     *
      * @deprecated export action must be refactorized. Please make own export action instead.
      */
     public function exportAction(Request $request)
@@ -330,9 +249,7 @@ class ExportController extends Controller
      *     description="invalid query parameters"
      * )
      *
-     * @param Request $request
      *
-     * @return Response
      *
      * @throws
      */

@@ -16,11 +16,6 @@ use Entity\SmartcardDeposit;
 
 class SmartcardDepositRepository extends EntityRepository
 {
-    /**
-     * @param SmartcardDepositFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
     public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('sd');
@@ -36,8 +31,6 @@ class SmartcardDepositRepository extends EntityRepository
     }
 
     /**
-     * @param Beneficiary $beneficiary
-     * @param Assistance $assistance
      * @return SmartcardDeposit[]
      */
     public function getDepositsByBeneficiaryAndAssistance(
@@ -57,8 +50,6 @@ class SmartcardDepositRepository extends EntityRepository
     }
 
     /**
-     * @param string $hash
-     *
      * @return object|SmartcardDeposit|null
      */
     public function findByHash(string $hash): ?SmartcardDeposit
@@ -67,7 +58,6 @@ class SmartcardDepositRepository extends EntityRepository
     }
 
     /**
-     * @param SmartcardDeposit $deposit
      *
      * @return void
      * @throws ORMException

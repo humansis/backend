@@ -16,9 +16,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/camps")
      *
-     * @param CampAddressFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function camps(CampAddressFilterInputType $filter): JsonResponse
     {
@@ -32,9 +30,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/camps/{id}")
      *
-     * @param HouseholdLocation $campAddress
      *
-     * @return JsonResponse
      */
     public function camp(HouseholdLocation $campAddress): JsonResponse
     {
@@ -48,9 +44,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/residencies")
      *
-     * @param ResidenceAddressFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function residences(ResidenceAddressFilterInputType $filter): JsonResponse
     {
@@ -62,9 +56,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/residencies/{id}")
      *
-     * @param HouseholdLocation $residence
      *
-     * @return JsonResponse
      */
     public function residence(HouseholdLocation $residence): JsonResponse
     {
@@ -78,9 +70,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/temporary-settlements")
      *
-     * @param TemporarySettlementAddressFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function temporarySettlements(TemporarySettlementAddressFilterInputType $filter): JsonResponse
     {
@@ -94,9 +84,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/temporary-settlements/{id}")
      *
-     * @param HouseholdLocation $temporarySettlement
      *
-     * @return JsonResponse
      */
     public function temporarySettlement(HouseholdLocation $temporarySettlement): JsonResponse
     {
@@ -110,9 +98,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses")
      *
-     * @param AddressFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function addresses(AddressFilterInputType $filter): JsonResponse
     {
@@ -124,9 +110,7 @@ class AddressController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/addresses/{id}")
      *
-     * @param Address $address
      *
-     * @return JsonResponse
      */
     public function address(Address $address): JsonResponse
     {

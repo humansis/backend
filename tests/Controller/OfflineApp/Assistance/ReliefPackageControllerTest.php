@@ -41,7 +41,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . json_decode($this->client->getResponse()->getContent(), true)['debug'][0]['message']
+            'Request failed: ' . json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR)['debug'][0]['message']
         );
 
         foreach ($reliefPackages as $package) {
@@ -69,9 +69,9 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . json_decode($this->client->getResponse()->getContent(), true)['debug'][0]['message']
+            'Request failed: ' . json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR)['debug'][0]['message']
         );
-        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
 
         foreach ($reliefPackages as $package) {
             $this->em->refresh($package);
@@ -81,8 +81,6 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @param array $reliefPackages
-     *
      * @return ReliefPackage[]
      */
     private function createDistributionRequest(array $reliefPackages): array

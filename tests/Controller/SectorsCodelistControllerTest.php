@@ -32,7 +32,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v2/projects/' . $project->getId() . '/sectors');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -54,7 +54,7 @@ class SectorsCodelistControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/sectors/' . $testSector . '/subsectors');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

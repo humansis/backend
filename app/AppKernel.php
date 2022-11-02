@@ -13,7 +13,7 @@ class AppKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    final public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     public function getRootDir()
     {
@@ -30,7 +30,7 @@ class AppKernel extends Kernel
         return dirname(__DIR__) . '/var/logs';
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
@@ -90,7 +90,7 @@ class AppKernel extends Kernel
 //        );
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    protected function configureRoutes(\Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator $routes)
     {
         $routes->import($this->getRootDir() . '/config/routing.yml');
         $environmentRoutingConfig = $this->getRootDir() . '/config/routing/' . $this->getEnvironment() . '/routing.yml';

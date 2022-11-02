@@ -50,19 +50,12 @@ class CountrySpecificRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case CountrySpecificOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('cs.id', $direction);
-                        break;
-                    case CountrySpecificOrderInputType::SORT_BY_FIELD:
-                        $qb->orderBy('cs.fieldString', $direction);
-                        break;
-                    case CountrySpecificOrderInputType::SORT_BY_TYPE:
-                        $qb->orderBy('cs.type', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    CountrySpecificOrderInputType::SORT_BY_ID => $qb->orderBy('cs.id', $direction),
+                    CountrySpecificOrderInputType::SORT_BY_FIELD => $qb->orderBy('cs.fieldString', $direction),
+                    CountrySpecificOrderInputType::SORT_BY_TYPE => $qb->orderBy('cs.type', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 

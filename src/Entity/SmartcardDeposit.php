@@ -22,35 +22,32 @@ class SmartcardDeposit
     use CreatedAt;
 
     /**
-     * @var int
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $id;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private int $id;
 
     /**
-     * @var Smartcard
      *
      * @ORM\ManyToOne(targetEntity="Entity\Smartcard", inversedBy="deposites")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $smartcard;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?\Entity\Smartcard $smartcard = null;
 
     /**
-     * @var User
      *
      * @ORM\ManyToOne(targetEntity="Entity\User")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $distributedBy;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?\Entity\User $distributedBy = null;
 
     /**
      * @var DateTime
@@ -60,35 +57,32 @@ class SmartcardDeposit
     private $distributedAt;
 
     /**
-     * @var ReliefPackage|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage", inversedBy="smartcardDeposits")
      * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $reliefPackage;
+    private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
 
     /**
      * @var float
      *
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
-     * @SymfonyGroups({"FullSmartcard"})
      */
+    #[SymfonyGroups(['FullSmartcard'])]
     private $value;
 
     /**
      * @var float
      *
      * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
-     * @SymfonyGroups({"FullSmartcard"})
      */
+    #[SymfonyGroups(['FullSmartcard'])]
     private $balance;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="suspicious", type="boolean", options={"default": false})
      */
-    private $suspicious;
+    private ?bool $suspicious = null;
 
     /**
      * @var array|null
@@ -98,11 +92,9 @@ class SmartcardDeposit
     private $message;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="hash", type="string", nullable=true)
      */
-    private $hash;
+    private ?string $hash = null;
 
     public static function create(
         Smartcard $smartcard,
@@ -141,17 +133,11 @@ class SmartcardDeposit
         return $this->id;
     }
 
-    /**
-     * @return Smartcard
-     */
     public function getSmartcard(): Smartcard
     {
         return $this->smartcard;
     }
 
-    /**
-     * @return User
-     */
     public function getDistributedBy(): User
     {
         return $this->distributedBy;
@@ -167,91 +153,56 @@ class SmartcardDeposit
         return $this->balance;
     }
 
-    /**
-     * @return ReliefPackage|null
-     */
     public function getReliefPackage(): ?ReliefPackage
     {
         return $this->reliefPackage;
     }
 
-    /**
-     * @param ReliefPackage|null $reliefPackage
-     */
     public function setReliefPackage(?ReliefPackage $reliefPackage): void
     {
         $this->reliefPackage = $reliefPackage;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDistributedAt(): DateTime
     {
         return $this->distributedAt;
     }
 
-    /**
-     * @param DateTime $distributedAt
-     */
     public function setDistributedAt(DateTime $distributedAt): void
     {
         $this->distributedAt = $distributedAt;
     }
 
-    /**
-     * @return bool
-     */
     public function isSuspicious(): bool
     {
         return $this->suspicious;
     }
 
-    /**
-     * @param bool $suspicious
-     */
     public function setSuspicious(bool $suspicious): void
     {
         $this->suspicious = $suspicious;
     }
 
-    /**
-     * @return array|null
-     */
     public function getMessage(): ?array
     {
         return $this->message;
     }
 
-    /**
-     * @param array|null $message
-     */
     public function setMessage(?array $message): void
     {
         $this->message = $message;
     }
 
-    /**
-     * @param string $message
-     *
-     * @return void
-     */
     public function addMessage(string $message): void
     {
         $this->message[] = $message;
     }
 
-    /**
-     * @return string|null
-     */
     public function getHash(): ?string
     {
         return $this->hash;
     }
 
-    /**
-     * @param string|null $hash
-     */
     public function setHash(?string $hash): void
     {
         $this->hash = $hash;

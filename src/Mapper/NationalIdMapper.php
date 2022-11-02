@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class NationalIdMapper implements MapperInterface
 {
-    /** @var NationalId */
-    private $object;
+    private ?\Entity\NationalId $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,7 +32,7 @@ class NationalIdMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . NationalId::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . NationalId::class . ', ' . $object::class . ' given.'
         );
     }
 

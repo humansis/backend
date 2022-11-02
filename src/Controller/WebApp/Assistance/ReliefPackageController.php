@@ -19,27 +19,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ReliefPackageController extends AbstractWebAppController
 {
-    /**
-     * @var AssistanceDistributionService
-     */
-    private $assistanceDistributionService;
-
-    /**
-     * @param AssistanceDistributionService $assistanceDistributionService
-     */
-    public function __construct(AssistanceDistributionService $assistanceDistributionService)
+    public function __construct(private readonly AssistanceDistributionService $assistanceDistributionService)
     {
-        $this->assistanceDistributionService = $assistanceDistributionService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
      *
-     * @param Assistance $assistance
-     * @param Request $request
-     * @param ReliefPackageFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function packages(
         Assistance $assistance,
@@ -63,10 +50,7 @@ class ReliefPackageController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/assistances/relief-packages/{id}")
      * @Cache(lastModified="package.getLastModifiedAt()", public=true)
      *
-     * @param ReliefPackage $package
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function package(ReliefPackage $package, Request $request): JsonResponse
     {
@@ -83,8 +67,6 @@ class ReliefPackageController extends AbstractWebAppController
      * @ParamConverter(class="InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
-     *
-     * @return JsonResponse
      */
     public function distributePackages(
         array $packages
@@ -98,10 +80,8 @@ class ReliefPackageController extends AbstractWebAppController
      * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
      * @ParamConverter(class="InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
-     * @param Assistance $assistance
      * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
      *
-     * @return JsonResponse
      */
     public function distributeBeneficiaryPackages(
         Assistance $assistance,

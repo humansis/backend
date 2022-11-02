@@ -14,12 +14,8 @@ use XMLReader;
 
 class FixAdmsCommand extends ContainerAwareCommand
 {
-    /**@var Connection */
-    private $connection;
-
-    public function __construct(Connection $connection)
+    public function __construct(private readonly Connection $connection)
     {
-        $this->connection = $connection;
         parent::__construct();
     }
 
@@ -32,8 +28,6 @@ class FixAdmsCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int|void|null
      *
@@ -90,7 +84,7 @@ class FixAdmsCommand extends ContainerAwareCommand
 
     private function getFilepath(InputInterface $input)
     {
-        $filepath = __DIR__ . '/../Resources/locations/' . strtolower($input->getArgument('country')) . '.xml';
+        $filepath = __DIR__ . '/../Resources/locations/' . strtolower((string) $input->getArgument('country')) . '.xml';
         if (!file_exists($filepath)) {
             throw new InvalidArgumentException('Unable to find file with Adms for specified country.');
         }
@@ -153,7 +147,7 @@ class FixAdmsCommand extends ContainerAwareCommand
         if (false === $data) {
             $conn->executeQuery(
                 'INSERT INTO adm1 SET code=?, name=?, countryIso3=?, location_id=?',
-                [$code, $name, strtoupper($countryIso3), $this->getNewLocationId($conn)]
+                [$code, $name, strtoupper((string) $countryIso3), $this->getNewLocationId($conn)]
             );
         } elseif ($data['name'] !== $name) {
             $conn->executeQuery('UPDATE adm1 SET name=? WHERE code=?', [$name, $code]);

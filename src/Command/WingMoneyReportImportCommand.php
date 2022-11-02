@@ -18,38 +18,19 @@ use Entity\User;
 
 class WingMoneyReportImportCommand extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var ReportParser
-     */
-    private $reportParser;
-
-    /**
-     * @var ImportService
-     */
-    private $importService;
-
+    protected static $defaultName = 'app:wing-money:import';
     public function __construct(
-        EntityManagerInterface $em,
-        ReportParser $reportParser,
-        ImportService $importService,
+        private readonly EntityManagerInterface $em,
+        private readonly ReportParser $reportParser,
+        private readonly ImportService $importService,
         string $name = null
     ) {
         parent::__construct($name);
-
-        $this->em = $em;
-        $this->reportParser = $reportParser;
-        $this->importService = $importService;
     }
 
     public function configure()
     {
-        $this->setName('app:wing-money:import')
-            ->addArgument('reportFile', InputArgument::REQUIRED, 'Report file in xlsx format')
+        $this->addArgument('reportFile', InputArgument::REQUIRED, 'Report file in xlsx format')
             ->addArgument(
                 'assistance',
                 InputArgument::REQUIRED,
@@ -103,11 +84,6 @@ class WingMoneyReportImportCommand extends Command
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     *
-     * @return string
-     */
     private function getReportFilePath(InputInterface $input): string
     {
         $filepath = $input->getArgument('reportFile');

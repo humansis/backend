@@ -15,23 +15,21 @@ use Validator\Constraints\Country;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"AssistanceCreateInputType", "Strict", "AdditionalChecks"})
- */
+#[Assert\GroupSequence(['AssistanceCreateInputType', 'Strict', 'AdditionalChecks'])]
 class AssistanceCreateInputType implements InputTypeNullableDenormalizer
 {
     /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
      * @Country
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $iso3;
 
     /**
      * @Iso8601
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $dateDistribution;
 
     /**
@@ -39,80 +37,56 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
      */
     private $dateExpiration;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $description;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $projectId;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $locationId;
 
-    /**
-     * @Assert\Choice(callback={"Enum\AssistanceTargetType", "values"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Choice(callback: [\Enum\AssistanceTargetType::class, 'values'])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $target;
 
-    /**
-     * @Assert\Choice(callback={"Enum\AssistanceType", "values"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Choice(callback: [\Enum\AssistanceType::class, 'values'])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $type;
 
-    /**
-     * @Assert\Choice(callback={"DBAL\SectorEnum", "all"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Choice(callback: [\DBAL\SectorEnum::class, 'all'])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $sector;
 
-    /**
-     * @Assert\Choice(callback={"DBAL\SubSectorEnum", "all"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Choice(callback: [\DBAL\SubSectorEnum::class, 'all'])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $subsector;
 
-    /**
-     * @var int
-     * @Assert\Type("integer")
-     */
-    private $scoringBlueprintId;
+    #[Assert\Type('integer')]
+    private ?int $scoringBlueprintId = null;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $commodities = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $commodities = [];
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $selectionCriteria = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $selectionCriteria = [];
 
-    /**
-     * @Assert\Type("integer")
-     */
+    #[Assert\Type('integer')]
     private $threshold;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -120,10 +94,10 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     private $communities;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -131,65 +105,44 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     private $institutions;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $householdsTargeted;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $individualsTargeted;
 
-    /**
-     * @Assert\Type("boolean")
-     */
-    private $completed = false;
+    #[Assert\Type('boolean')]
+    private bool $completed = false;
 
-    /**
-     * @Assert\Type("boolean")
-     */
-    private $validated = false;
+    #[Assert\Type('boolean')]
+    private bool $validated = false;
 
-    /**
-     * @Assert\Type("numeric")
-     */
+    #[Assert\Type('numeric')]
     private $foodLimit;
 
-    /**
-     * @Assert\Type("numeric")
-     */
+    #[Assert\Type('numeric')]
     private $nonFoodLimit;
 
-    /**
-     * @Assert\Type("numeric")
-     */
+    #[Assert\Type('numeric')]
     private $cashbackLimit;
 
-    /**
-     * @Assert\Type("boolean")
-     */
+    #[Assert\Type('boolean')]
     private $remoteDistributionAllowed;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $note;
 
-    /**
-     * @var int|null
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan("0")
-     * @Assert\LessThan("100")
-     */
-    private $round;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\LessThan(100)]
+    private ?int $round = null;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
@@ -197,21 +150,16 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     private $allowedProductCategoryTypes;
 
-    /**
-     * @Assert\IsTrue(groups="Strict", message="Expiration date must be greater than distribution date")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: 'Strict', message: 'Expiration date must be greater than distribution date')]
     public function isExpirationDateValid(): bool
     {
         return $this->getDateExpiration() == null || $this->getDateExpiration() >= $this->getDateDistribution();
     }
 
-    /**
-     * @Assert\IsTrue(groups="AdditionalChecks", message="Please add BNF has valid card criterion for each group")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'Please add BNF has valid card criterion for each group')]
     public function isValidSmartcardForRemoteDistribution(): bool
     {
         if ($this->remoteDistributionAllowed) {
@@ -241,9 +189,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    /**
-     * @Assert\IsTrue(groups="AdditionalChecks", message="remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.")
-     */
+    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.')]
     public function isNotNullRemoteDistributionWhenSmartcard(): bool
     {
         /** @var CommodityInputType $commodity */
@@ -256,16 +202,12 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->remoteDistributionAllowed === null;
     }
 
-    /**
-     * @Assert\IsTrue(groups="AdditionalChecks", message="Assistance cannot have more than one smartcard commodity.")
-     */
+    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'Assistance cannot have more than one smartcard commodity.')]
     public function hasMaxOneSmartcardCommodity(): bool
     {
-        $smartcardCommodities = array_filter($this->commodities, function (CommodityInputType $commodity) {
-            return $commodity->getModalityType() === ModalityType::SMART_CARD;
-        });
+        $smartcardCommodities = array_filter($this->commodities, fn(CommodityInputType $commodity) => $commodity->getModalityType() === ModalityType::SMART_CARD);
 
-        return count($smartcardCommodities) <= 1;
+        return count((array) $smartcardCommodities) <= 1;
     }
 
     /**
@@ -284,33 +226,21 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->iso3 = $iso3;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getDateDistribution(): DateTimeInterface
     {
         return Iso8601Converter::toDateTime($this->dateDistribution);
     }
 
-    /**
-     * @param string $dateDistribution
-     */
     public function setDateDistribution(string $dateDistribution): void
     {
         $this->dateDistribution = $dateDistribution;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpiration ? Iso8601Converter::toDateTime($this->dateExpiration) : null;
     }
 
-    /**
-     * @param string|null $dateExpiration
-     */
     public function setDateExpiration(?string $dateExpiration): void
     {
         $this->dateExpiration = $dateExpiration;
@@ -428,19 +358,11 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->subsector = $subsector;
     }
 
-    /**
-     * @return int|null
-     */
     public function getScoringBlueprintId(): ?int
     {
         return $this->scoringBlueprintId;
     }
 
-    /**
-     * @param int|null $scoringBlueprintId
-     *
-     * @return AssistanceCreateInputType
-     */
     public function setScoringBlueprintId(?int $scoringBlueprintId): AssistanceCreateInputType
     {
         $this->scoringBlueprintId = $scoringBlueprintId;
@@ -456,9 +378,6 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->commodities;
     }
 
-    /**
-     * @param Assistance\CommodityInputType $commodity
-     */
     public function addCommodity(Assistance\CommodityInputType $commodity)
     {
         $this->commodities[] = $commodity;
@@ -477,9 +396,6 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->selectionCriteria;
     }
 
-    /**
-     * @param Assistance\SelectionCriterionInputType $selectionCriterion
-     */
     public function addSelectionCriterion(Assistance\SelectionCriterionInputType $selectionCriterion)
     {
         $this->selectionCriteria[] = $selectionCriterion;
@@ -610,10 +526,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->foodLimit;
     }
 
-    /**
-     * @param mixed $foodLimit
-     */
-    public function setFoodLimit($foodLimit): void
+    public function setFoodLimit(mixed $foodLimit): void
     {
         $this->foodLimit = $foodLimit;
     }
@@ -626,10 +539,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->nonFoodLimit;
     }
 
-    /**
-     * @param mixed $nonFoodLimit
-     */
-    public function setNonFoodLimit($nonFoodLimit): void
+    public function setNonFoodLimit(mixed $nonFoodLimit): void
     {
         $this->nonFoodLimit = $nonFoodLimit;
     }
@@ -642,10 +552,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->cashbackLimit;
     }
 
-    /**
-     * @param mixed $cashbackLimit
-     */
-    public function setCashbackLimit($cashbackLimit): void
+    public function setCashbackLimit(mixed $cashbackLimit): void
     {
         $this->cashbackLimit = $cashbackLimit;
     }
@@ -682,9 +589,6 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNote(): ?string
     {
         return $this->note;
@@ -703,9 +607,6 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->round;
     }
 
-    /**
-     * @param int|null $round
-     */
     public function setRound(?int $round): void
     {
         $this->round = $round;

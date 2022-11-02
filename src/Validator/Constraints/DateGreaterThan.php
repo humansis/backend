@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
  */
 class DateGreaterThan extends GreaterThan
 {
-    public const TOO_LOW_ERROR = 'd6aadef3-8df1-4f11-900a-215ecd726cd6';
+    final public const TOO_LOW_ERROR = 'd6aadef3-8df1-4f11-900a-215ecd726cd6';
 
     protected static $errorNames = [
         self::TOO_LOW_ERROR => 'TOO_LOW_ERROR',

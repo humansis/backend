@@ -19,8 +19,6 @@ use Utils\VendorService;
 trait VendorHelper
 {
     /**
-     * @param VendorCreateInputType $vendorCreateInputType
-     * @return Vendor
      * @throws Exception
      */
     public function createVendor(VendorCreateInputType $vendorCreateInputType): Vendor
@@ -36,11 +34,6 @@ trait VendorHelper
         }
     }
 
-    /**
-     * @param int $locationId
-     * @param int $userId
-     * @return VendorCreateInputType
-     */
     public function buildVendorInputType(int $locationId, int $userId): VendorCreateInputType
     {
         $vendorInputType = new VendorCreateInputType();

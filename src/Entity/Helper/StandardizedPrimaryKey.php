@@ -17,9 +17,6 @@ trait StandardizedPrimaryKey
      */
     private $id;
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;

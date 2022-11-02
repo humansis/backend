@@ -10,10 +10,10 @@ use Utils\FileSystem\Exception\NotSupportedExtensionException;
 
 class Image
 {
-    public const JPEG = 'jpeg';
-    public const JPG = 'jpg';
-    public const PNG = 'png';
-    public const GIF = 'gif';
+    final public const JPEG = 'jpeg';
+    final public const JPG = 'jpg';
+    final public const PNG = 'png';
+    final public const GIF = 'gif';
 
     /**
      * @return string[]
@@ -29,7 +29,6 @@ class Image
     }
 
     /**
-     * @param string $filePath
      *
      * @return GdImage|resource
      * @throws NotSupportedExtensionException|CorruptedFileException
@@ -37,26 +36,18 @@ class Image
     public static function getImageResource(string $filePath)
     {
         $type = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        switch ($type) {
-            case self::GIF:
-                $image = imagecreatefromgif($filePath);
-                break;
-            case self::JPEG:
-            case self::JPG:
-                $image = imagecreatefromjpeg($filePath);
-                break;
-            case self::PNG:
-                $image = imagecreatefrompng($filePath);
-                break;
-            default:
-                throw new NotSupportedExtensionException(
-                    sprintf(
-                        'Unsupported type %s. Supported types are (%s)',
-                        $type,
-                        implode(self::getSupportedImageExtensions())
-                    )
-                );
-        }
+        $image = match ($type) {
+            self::GIF => imagecreatefromgif($filePath),
+            self::JPEG, self::JPG => imagecreatefromjpeg($filePath),
+            self::PNG => imagecreatefrompng($filePath),
+            default => throw new NotSupportedExtensionException(
+                sprintf(
+                    'Unsupported type %s. Supported types are (%s)',
+                    $type,
+                    implode(self::getSupportedImageExtensions())
+                )
+            ),
+        };
 
         if ($image) {
             return $image;

@@ -8,18 +8,18 @@ class HouseholdSupportReceivedType
 {
     use EnumTrait;
 
-    public const MPCA = 'MPCA';
-    public const CASH_FOR_WORK = 'Cash for Work';
-    public const FOOD_KIT = 'Food Kit';
-    public const FOOD_VOUCHER = 'Food Voucher';
-    public const HYGIENE_KIT = 'Hygiene Kit';
-    public const SHELTER_KIT = 'Shelter Kit';
-    public const SHELTER_RECONSTRUCTION_SUPPORT = 'Shelter Reconstruction Support';
-    public const NON_FOOD_ITEMS = 'Non Food Items';
-    public const LIVELIHOODS_SUPPORT = 'Livelihoods Support';
-    public const VOCATIONAL_TRAINING = 'Vocational Training';
-    public const NONE = 'None';
-    public const OTHER = 'Other';
+    final public const MPCA = 'MPCA';
+    final public const CASH_FOR_WORK = 'Cash for Work';
+    final public const FOOD_KIT = 'Food Kit';
+    final public const FOOD_VOUCHER = 'Food Voucher';
+    final public const HYGIENE_KIT = 'Hygiene Kit';
+    final public const SHELTER_KIT = 'Shelter Kit';
+    final public const SHELTER_RECONSTRUCTION_SUPPORT = 'Shelter Reconstruction Support';
+    final public const NON_FOOD_ITEMS = 'Non Food Items';
+    final public const LIVELIHOODS_SUPPORT = 'Livelihoods Support';
+    final public const VOCATIONAL_TRAINING = 'Vocational Training';
+    final public const NONE = 'None';
+    final public const OTHER = 'Other';
 
     protected static $values = [
         0 => self::MPCA,

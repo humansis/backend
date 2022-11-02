@@ -21,10 +21,5 @@ interface MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool;
 
-    /**
-     *
-     * @param object $object
-     *
-     */
     public function populate(object $object);
 }

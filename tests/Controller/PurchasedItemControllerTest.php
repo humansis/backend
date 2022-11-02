@@ -35,7 +35,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no household in purchased items.");
         }
 
@@ -66,7 +66,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no beneficiary in purchased items.");
         }
 

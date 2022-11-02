@@ -7,78 +7,50 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class VendorUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $shop;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotNull]
     private $name;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $addressStreet;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $addressNumber;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $addressPostcode;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\NotNull]
     private $locationId;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $vendorNo;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max=255)
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $contractNo;
 
-    /**
-     * @var bool
-     * @Assert\Type("bool")
-     */
-    private $canSellFood = true;
+    #[Assert\Type('bool')]
+    private bool $canSellFood = true;
 
-    /**
-     * @var bool
-     * @Assert\Type("bool")
-     */
-    private $canSellNonFood = true;
+    #[Assert\Type('bool')]
+    private bool $canSellNonFood = true;
 
-    /**
-     * @var bool
-     * @Assert\Type("bool")
-     */
-    private $canSellCashback = true;
+    #[Assert\Type('bool')]
+    private bool $canSellCashback = true;
 
-    /**
-     * @var bool
-     * @Assert\Type("bool")
-     */
-    private $canDoRemoteDistributions = false;
+    #[Assert\Type('bool')]
+    private bool $canDoRemoteDistributions = false;
 
     /**
      * @return string|null
@@ -264,9 +236,6 @@ class VendorUpdateInputType implements InputTypeInterface
         return $this->canDoRemoteDistributions;
     }
 
-    /**
-     * @param bool $canDoRemoteDistributions
-     */
     public function setCanDoRemoteDistributions(bool $canDoRemoteDistributions): void
     {
         $this->canDoRemoteDistributions = $canDoRemoteDistributions;

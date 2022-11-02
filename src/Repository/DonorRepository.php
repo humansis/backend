@@ -20,8 +20,6 @@ class DonorRepository extends EntityRepository
 {
     /**
      * @param DonorOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     * @param DonorFilterInputType|null $filter
      *
      * @return Paginator|Donor[]
      */
@@ -54,22 +52,13 @@ class DonorRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case DonorOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('d.id', $direction);
-                        break;
-                    case DonorOrderInputType::SORT_BY_FULLNAME:
-                        $qb->orderBy('d.fullname', $direction);
-                        break;
-                    case DonorOrderInputType::SORT_BY_SHORTNAME:
-                        $qb->orderBy('d.shortname', $direction);
-                        break;
-                    case DonorOrderInputType::SORT_BY_DATE_ADDED:
-                        $qb->orderBy('d.dateAdded', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    DonorOrderInputType::SORT_BY_ID => $qb->orderBy('d.id', $direction),
+                    DonorOrderInputType::SORT_BY_FULLNAME => $qb->orderBy('d.fullname', $direction),
+                    DonorOrderInputType::SORT_BY_SHORTNAME => $qb->orderBy('d.shortname', $direction),
+                    DonorOrderInputType::SORT_BY_DATE_ADDED => $qb->orderBy('d.dateAdded', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 

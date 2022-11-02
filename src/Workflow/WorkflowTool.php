@@ -9,12 +9,6 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class WorkflowTool
 {
-    /**
-     * @param WorkflowInterface $workflow
-     * @param object $subject
-     * @param array $transitions
-     * @param bool $throw
-     */
     public static function checkAndApply(
         WorkflowInterface $workflow,
         object $subject,

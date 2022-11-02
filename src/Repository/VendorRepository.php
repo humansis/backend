@@ -28,10 +28,14 @@ use Entity\User;
  */
 class VendorRepository extends EntityRepository
 {
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    private ?\Repository\LocationRepository $locationRepository = null;
+
+    private ?\Repository\Smartcard\PreliminaryInvoiceRepository $preliminaryInvoiceRepository = null;
+
+    public function setPreliminaryInvoiceRepository(PreliminaryInvoiceRepository $preliminaryInvoiceRepository): void
+    {
+        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
+    }
 
     public function setLocationRepository(LocationRepository $locationRepository)
     {
@@ -50,10 +54,6 @@ class VendorRepository extends EntityRepository
     }
 
     /**
-     * @param string|null $iso3
-     * @param VendorFilterInputType|null $filter
-     * @param VendorOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator
      * @throws EnumValueNoFoundException
@@ -198,11 +198,6 @@ class VendorRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Location $location
-     *
-     * @return Generator
-     */
     private function getChildrenLocationIdListByLocation(Location $location): Generator
     {
         $children = $this->locationRepository->getChildrenLocations($location);

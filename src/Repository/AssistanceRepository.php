@@ -66,10 +66,6 @@ class AssistanceRepository extends EntityRepository
 
     /**
      * @param Project|null $project
-     * @param string|null $iso3
-     * @param ProjectsAssistanceFilterInputType|null $filter
-     * @param AssistanceOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Assistance[]
      */
@@ -149,9 +145,6 @@ class AssistanceRepository extends EntityRepository
     }
 
     /**
-     * @param Project $project
-     * @param string $iso3
-     * @param AssistanceByProjectOfflineAppFilterInputType $filter
      *
      * @return Assistance[]
      */
@@ -197,10 +190,6 @@ class AssistanceRepository extends EntityRepository
     }
 
     /**
-     * @param string $iso3
-     * @param AssistanceFilterInputType|null $filter
-     * @param AssistanceOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Assistance[]
      */

@@ -27,23 +27,14 @@ use Repository\SmartcardDepositRepository;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {
-    /**
-     * @var string
-     */
-    private $logsDir;
-
-    public function __construct(string $logsDir)
+    public function __construct(private readonly string $logsDir)
     {
-        $this->logsDir = $logsDir;
     }
 
     /**
      * @Rest\Get("/offline-app/v1/smartcard-deposits")
      *
-     * @param Request $request
-     * @param SmartcardDepositFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(Request $request, SmartcardDepositFilterInputType $filter): JsonResponse
     {
@@ -62,10 +53,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/last-smartcard-deposit/{id}")
      *
-     * @param SmartcardDeposit $smartcardDeposit
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function lastSmartcardDeposit(SmartcardDeposit $smartcardDeposit, Request $request): JsonResponse
     {
@@ -81,14 +69,8 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * Put money to smartcard. If smartcard does not exist, it will be created.
      *
      * @Rest\Post("/offline-app/v4/smartcards/{serialNumber}/deposit")
-     * @param string $serialNumber
-     * @param Request $request
      * @param DepositInputType $depositInputType
-     * @param DepositFactory $depositFactory
-     * @param ReliefPackageRepository $reliefPackageRepository
-     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
      *
-     * @return Response
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws InvalidArgumentException
@@ -152,7 +134,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 'depositV4',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
 
             // due to PIN-2943 was removed exception propagation
@@ -162,7 +144,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 'depositV4',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
             throw $exception;
         }
@@ -173,12 +155,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     /**
      * @Rest\Post("/offline-app/v5/smartcards/{serialNumber}/deposit")
      *
-     * @param Request $request
-     * @param string $serialNumber
-     * @param DepositInputType $depositInputType
-     * @param DepositFactory $depositFactory
      *
-     * @return Response
      * @throws DoubledDepositException
      * @throws InvalidArgumentException
      * @throws ORMException
@@ -197,7 +174,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
         } catch (DoubledDepositException $e) {
             return new Response('', Response::HTTP_ACCEPTED);
@@ -206,7 +183,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
                 'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all())
+                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
             throw $e;
         }
@@ -219,7 +196,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
         $filename = $this->logsDir . '/';
         $filename .= implode('_', ['SC-invalidData', $type, 'vendor-' . $user, 'sc-' . $smartcard . '.json']);
         $logFile = fopen($filename, "a+");
-        fwrite($logFile, $data);
+        fwrite($logFile, (string) $data);
         fclose($logFile);
     }
 }

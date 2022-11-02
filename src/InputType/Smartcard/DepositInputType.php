@@ -13,11 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class DepositInputType implements InputTypeInterface
 {
     /**
-     * @var int
-     * @Assert\NotBlank
      * @EntityExist(entity="Entity\Assistance\ReliefPackage")
      */
-    private $reliefPackageId;
+    #[Assert\NotBlank]
+    private ?int $reliefPackageId = null;
 
     private $value = null;
 
@@ -25,8 +24,8 @@ final class DepositInputType implements InputTypeInterface
 
     /**
      * @var DateTimeInterface
-     * @Assert\DateTime
      */
+    #[Assert\DateTime]
     private $createdAt;
 
     public static function create(int $reliefPackageId, $value, $balance, DateTimeInterface $createdAt): self
@@ -48,10 +47,7 @@ final class DepositInputType implements InputTypeInterface
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
     }
@@ -64,41 +60,26 @@ final class DepositInputType implements InputTypeInterface
         return $this->balance;
     }
 
-    /**
-     * @param mixed $balance
-     */
-    public function setBalance($balance): void
+    public function setBalance(mixed $balance): void
     {
         $this->balance = $balance;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
     public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ISO8601, $createdAt);
     }
 
-    /**
-     * @return int|null
-     */
     public function getReliefPackageId(): ?int
     {
         return $this->reliefPackageId;
     }
 
-    /**
-     * @param int|null $reliefPackageId
-     */
     public function setReliefPackageId(?int $reliefPackageId): void
     {
         $this->reliefPackageId = $reliefPackageId;

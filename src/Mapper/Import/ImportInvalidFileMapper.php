@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class ImportInvalidFileMapper implements MapperInterface
 {
-    /** @var ImportInvalidFile */
-    private $object;
+    private ?\Entity\ImportInvalidFile $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,7 @@ class ImportInvalidFileMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ImportInvalidFile::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . ImportInvalidFile::class . ', ' . $object::class . ' given.'
         );
     }
 

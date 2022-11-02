@@ -25,8 +25,6 @@ class AclController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/acl/roles")
      * @Cache(expires="+12 hours", public=true)
-     *
-     * @return JsonResponse
      */
     public function roles(): JsonResponse
     {
@@ -49,9 +47,7 @@ class AclController extends AbstractController
      * @ParamConverter("role", options={"mapping": {"code": "code"}})
      * @Cache(expires="+12 hours", public=true)
      *
-     * @param Role $role
      *
-     * @return JsonResponse
      */
     public function getRole(Role $role): JsonResponse
     {

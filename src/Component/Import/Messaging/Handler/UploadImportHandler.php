@@ -21,45 +21,16 @@ class UploadImportHandler implements MessageHandlerInterface
     use ImportQueueLoggerTrait;
     use ImportLoggerTrait;
 
-    /** @var ImportFileRepository */
-    private $importFileRepository;
-
-    /** @var UploadImportService */
-    private $uploadImportService;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    /**
-     * @var AuditorService
-     */
-    private $auditorService;
-
-    /**
-     * @param LoggerInterface $importLogger
-     * @param ImportFileRepository $importFileRepository
-     * @param UploadImportService $uploadImportService
-     * @param MessageBusInterface $messageBus
-     * @param AuditorService $auditorService
-     */
     public function __construct(
         LoggerInterface $importLogger,
-        ImportFileRepository $importFileRepository,
-        UploadImportService $uploadImportService,
-        MessageBusInterface $messageBus,
-        AuditorService $auditorService
+        private readonly ImportFileRepository $importFileRepository,
+        private readonly UploadImportService $uploadImportService,
+        private readonly MessageBusInterface $messageBus,
+        private readonly AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
-        $this->importFileRepository = $importFileRepository;
-        $this->uploadImportService = $uploadImportService;
-        $this->messageBus = $messageBus;
-        $this->auditorService = $auditorService;
     }
 
-    /**
-     * @param UploadFileFinished $uploadFile
-     *
-     */
     public function __invoke(UploadFileFinished $uploadFile): void
     {
         $this->auditorService->disableAuditing();

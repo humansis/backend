@@ -33,10 +33,8 @@ class LocationRepository extends EntityRepository
     }
 
     /**
-     * @param string $countryIso3
      * @param array $adms full path of adms from Adm1 to whatever level (for example [adm1, adm2, adm3])
      *
-     * @return Location|null
      */
     public function getByNormalizedNames(string $countryIso3, array $adms): ?Location
     {
@@ -65,10 +63,7 @@ class LocationRepository extends EntityRepository
     /**
      * It will iterate through location path and check if all parts of location are equal to ADMs array
      *
-     * @param Location $location
-     * @param array $adms
      *
-     * @return bool
      */
     private function isLocationEqualAdmPath(Location $location, array $adms): bool
     {
@@ -89,7 +84,6 @@ class LocationRepository extends EntityRepository
      * Create sub request to get items in country.
      * The location must be in the country ($countryIso3).
      *
-     * @param QueryBuilder $qb
      * @param              $countryIso3
      */
     public function whereCountry(QueryBuilder &$qb, $countryIso3)
@@ -104,8 +98,6 @@ class LocationRepository extends EntityRepository
     }
 
     /**
-     * @param Location $location
-     *
      * @return Location[]
      */
     public function getChildrenLocations(Location $location): array
@@ -115,11 +107,6 @@ class LocationRepository extends EntityRepository
             ->getResult();
     }
 
-    /**
-     * @param Location $location
-     *
-     * @return QueryBuilder
-     */
     public function getChildrenLocationsQueryBuilder(Location $location): QueryBuilder
     {
         $qb = $this->createQueryBuilder('l');
@@ -139,10 +126,7 @@ class LocationRepository extends EntityRepository
     /**
      * return query for children locations (to be used in subquery)
      *
-     * @param Location $ancestor
-     * @param string $childAlias
      * @param bool $withParent - include parent in the query
-     * @return QueryBuilder
      */
     public function addChildrenLocationsQueryBuilder(
         Location $ancestor,
@@ -161,13 +145,6 @@ class LocationRepository extends EntityRepository
 
     /**
      * add join for children locations to query in param
-     *
-     * @param QueryBuilder $qb
-     * @param Location $ancestor
-     * @param string $joinAlias
-     * @param string $childAlias
-     * @param bool $withParent
-     * @return QueryBuilder
      */
     public function joinChildrenLocationsQueryBuilder(
         QueryBuilder $qb,
@@ -186,12 +163,6 @@ class LocationRepository extends EntityRepository
         );
     }
 
-    /**
-     * @param int $level
-     * @param string $childAlias
-     * @param string $parentAlias
-     * @return QueryBuilder
-     */
     public function addParentLocationFulltextSubQueryBuilder(
         int $level,
         string $childAlias,
@@ -213,12 +184,6 @@ class LocationRepository extends EntityRepository
             ->setParameter($parentAlias . 'Level', $level);
     }
 
-    /**
-     * @param LocationFilterInputType $filter
-     * @param string|null $iso3
-     *
-     * @return Paginator
-     */
     public function findByParams(LocationFilterInputType $filter, ?string $iso3 = null): Paginator
     {
         $qbr = $this->createQueryBuilder('l');
@@ -260,8 +225,6 @@ class LocationRepository extends EntityRepository
     }
 
     /**
-     * @param string $code
-     * @param string|null $iso3
      * @param array|null $context
      *
      * @return Location[]
@@ -310,10 +273,7 @@ class LocationRepository extends EntityRepository
     }
 
     /**
-     * @param int $id
-     * @param string $countryCode
      *
-     * @return Location
      * @throws EntityNotFoundException
      */
     public function getLocationByIdAndCountryCode(int $id, string $countryCode): Location

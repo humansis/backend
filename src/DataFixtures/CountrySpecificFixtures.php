@@ -10,32 +10,18 @@ use Component\Country\Countries;
 
 class CountrySpecificFixtures extends Fixture
 {
-    private $data = [
+    private array $data = [
         ['IDPoor', 'number'],
         ['equityCardNo', 'text'],
         ['CSO float property', 'number'],
     ];
 
-    /**
-     * @var Countries
-     */
-    private $countries;
-
-    /**
-     * @var CountrySpecificRepository
-     */
-    private $countrySpecificRepository;
-
-    public function __construct(Countries $countries, CountrySpecificRepository $countrySpecificRepository)
+    public function __construct(private readonly Countries $countries, private readonly CountrySpecificRepository $countrySpecificRepository)
     {
-        $this->countries = $countries;
-        $this->countrySpecificRepository = $countrySpecificRepository;
     }
 
     /**
      * Load data fixtures with the passed EntityManager
-     *
-     * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
     {

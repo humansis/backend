@@ -12,9 +12,7 @@ abstract class AbstractEnum extends Type
 
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $values = array_map(function ($val) {
-            return "'" . $val . "'";
-        }, $this::all());
+        $values = array_map(fn($val) => "'" . $val . "'", $this::all());
 
         return "ENUM(" . implode(", ", $values) . ")";
     }

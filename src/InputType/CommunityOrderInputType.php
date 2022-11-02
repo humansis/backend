@@ -6,12 +6,12 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class CommunityOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_NAME = 'name';
-    public const SORT_BY_LONGITUDE = 'longitude';
-    public const SORT_BY_LATITUDE = 'latitude';
-    public const SORT_BY_CONTACT_GIVEN_NAME = 'contactGivenName';
-    public const SORT_BY_CONTACT_FAMILY_NAME = 'contactFamilyName';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_NAME = 'name';
+    final public const SORT_BY_LONGITUDE = 'longitude';
+    final public const SORT_BY_LATITUDE = 'latitude';
+    final public const SORT_BY_CONTACT_GIVEN_NAME = 'contactGivenName';
+    final public const SORT_BY_CONTACT_FAMILY_NAME = 'contactFamilyName';
 
     protected function getValidNames(): array
     {

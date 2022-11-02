@@ -8,19 +8,8 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 
 class UploadFileFinished
 {
-    /**
-     *
-     * @SerializedName("importFileId")
-     * @var int
-     */
-    private $importFileId;
-
-    /**
-     * @param int $importFileId
-     */
-    public function __construct(int $importFileId)
+    public function __construct(private readonly int $importFileId)
     {
-        $this->importFileId = $importFileId;
     }
 
     /**

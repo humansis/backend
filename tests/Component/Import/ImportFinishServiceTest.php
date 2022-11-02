@@ -27,9 +27,9 @@ class ImportFinishServiceTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    final public const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
-    public const TEST_QUEUE_ITEM = '[
+    final public const TEST_QUEUE_ITEM = '[
   {
     "Adm1": {
       "value": "Banteay Meanchey",
@@ -190,7 +190,7 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
-    public const TEST_WRONG_QUEUE_ITEM = '[
+    final public const TEST_WRONG_QUEUE_ITEM = '[
   {
     "Adm1": {
       "value": "some wrong value",
@@ -326,7 +326,7 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
-    public const TEST_MINIMAL_QUEUE_ITEM = '[
+    final public const TEST_MINIMAL_QUEUE_ITEM = '[
   {
     "Local given name": {
       "value": "John",
@@ -397,17 +397,13 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var Application */
     private $application;
 
-    /** @var Project */
-    private $project;
+    private \Entity\Project $project;
 
-    /** @var Entity\Import */
-    private $import;
+    private \Entity\Import $import;
 
-    /** @var Household */
-    private $originHousehold;
+    private \Entity\Household $originHousehold;
 
-    /** @var Entity\ImportFile */
-    private $importFile;
+    private \Entity\ImportFile $importFile;
 
     /** @var ProjectService */
     private $projectService;
@@ -440,7 +436,7 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $this->project = new Project();
         $this->project->setName(uniqid());
-        $this->project->setNotes(get_class($this));
+        $this->project->setNotes($this::class);
         $this->project->setStartDate(new DateTime());
         $this->project->setEndDate(new DateTime());
         $this->project->setCountryIso3(self::TEST_COUNTRY);
@@ -620,7 +616,7 @@ class ImportFinishServiceTest extends KernelTestCase
         try {
             $this->userStartedFinishing($this->import);
             $this->fail('Finishing import with undecided duplicities must fail.');
-        } catch (BadRequestHttpException $badRequestHttpException) {
+        } catch (BadRequestHttpException) {
         }
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);

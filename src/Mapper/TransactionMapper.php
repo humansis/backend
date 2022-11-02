@@ -11,8 +11,7 @@ use Entity\Transaction;
 
 class TransactionMapper implements MapperInterface
 {
-    /** @var Transaction */
-    private $object;
+    private ?\Entity\Transaction $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class TransactionMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Transaction::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Transaction::class . ', ' . $object::class . ' given.'
         );
     }
 

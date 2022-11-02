@@ -13,8 +13,7 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 
-    /** @var GeneralReliefItem */
-    private $object;
+    private ?\Entity\GeneralReliefItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,9 +35,7 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . $object::class . ' given.'
         );
     }
 

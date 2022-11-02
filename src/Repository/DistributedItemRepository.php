@@ -19,10 +19,6 @@ use Request\Pagination;
 class DistributedItemRepository extends EntityRepository
 {
     /**
-     * @param string $countryIso3
-     * @param DistributedItemFilterInputType|null $filter
-     * @param DistributedItemOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|DistributedItem[]
      */
@@ -127,8 +123,6 @@ class DistributedItemRepository extends EntityRepository
     }
 
     /**
-     * @param Beneficiary $beneficiary
-     *
      * @return Paginator|DistributedItem[]
      */
     public function findByBeneficiary(Beneficiary $beneficiary): Paginator
@@ -143,8 +137,6 @@ class DistributedItemRepository extends EntityRepository
     }
 
     /**
-     * @param Household $household
-     *
      * @return Paginator|DistributedItem[]
      */
     public function findByHousehold(Household $household): Paginator

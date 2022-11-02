@@ -34,18 +34,9 @@ abstract class SynchronizationBatch
     use CreatedBy;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_synchronization_batch_state", nullable=false)
      */
-    private $state = SynchronizationBatchState::UPLOADED;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="request_data", type="json", nullable=false)
-     */
-    private $requestData;
+    private string $state = SynchronizationBatchState::UPLOADED;
 
     /**
      * @var string serialized ConstraintViolationListInterface[]
@@ -55,42 +46,27 @@ abstract class SynchronizationBatch
     private $violations;
 
     /**
-     * @var DateTimeInterface|null
-     *
      * @ORM\Column(name="validated_at", type="datetime", nullable=true)
      */
-    private $validatedAt;
+    private ?\DateTimeInterface $validatedAt = null;
 
-    /**
-     * @param array $requestData
-     */
-    protected function __construct(array $requestData)
+    protected function __construct(private array $requestData)
     {
-        $this->requestData = $requestData;
     }
 
-    /**
-     * @param string $state
-     */
     public function setState(string $state): void
     {
         if (!in_array($state, SynchronizationBatchState::values())) {
-            throw new InvalidArgumentException("Invalid " . get_class($this) . " state: " . $state);
+            throw new InvalidArgumentException("Invalid " . $this::class . " state: " . $state);
         }
         $this->state = $state;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @return array
-     */
     public function getRequestData(): array
     {
         return $this->requestData;
@@ -139,9 +115,6 @@ abstract class SynchronizationBatch
         $this->violations[$index] = $violations;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getValidatedAt(): ?DateTimeInterface
     {
         return $this->validatedAt;

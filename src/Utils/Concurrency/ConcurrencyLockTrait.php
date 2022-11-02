@@ -24,17 +24,11 @@ trait ConcurrencyLockTrait
      */
     protected $lockedBy;
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getLockedAt(): ?DateTimeInterface
     {
         return $this->lockedAt;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLockedBy(): ?string
     {
         return $this->lockedBy;

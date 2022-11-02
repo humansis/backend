@@ -18,8 +18,6 @@ class ModalityCodelistController extends AbstractController
 {
     /**
      * @Rest\Get("/offline-app/v1/modality-types")
-     *
-     * @return JsonResponse
      */
     public function allTypes(): JsonResponse
     {

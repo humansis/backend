@@ -25,9 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequenceProvider()
- */
+#[Assert\GroupSequenceProvider]
 class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProviderInterface
 {
     public function getGroupSequence()
@@ -68,9 +66,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     private $livelihood;
 
-    /**
-     * @Assert\Type({"array", "string"})
-     */
+    #[Assert\Type(['array', 'string'])]
     private $assets;
 
     /**
@@ -79,8 +75,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private $shelterStatus;
 
     /**
-     * @Assert\Type("array")
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -88,54 +82,38 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
+    #[Assert\NotNull]
     private $projectIds;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $notes;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $longitude;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $latitude;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $beneficiaries = []; // todo validate only one head is allowed
-
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $beneficiaries = []; #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $income;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $foodConsumptionScore;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $copingStrategiesIndex;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $debtLevel;
 
     /**
@@ -143,102 +121,63 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     private $supportDateReceived;
 
-    /**
-     * @Assert\Type({"array", "string"})
-     */
-    private $supportReceivedTypes = [];
+    #[Assert\Type(['array', 'string'])]
+    private array $supportReceivedTypes = [];
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $supportOrganizationName;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $incomeSpentOnFood;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
     private $houseIncome;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $enumeratorName;
 
-    /**
-     * @var ResidenceAddressInputType
-     * @Assert\Valid
-     */
-    private $residenceAddress;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\Address\ResidenceAddressInputType $residenceAddress = null;
 
-    /**
-     * @var TemporarySettlementAddressInputType
-     * @Assert\Valid
-     */
-    private $temporarySettlementAddress;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\Address\TemporarySettlementAddressInputType $temporarySettlementAddress = null;
 
-    /**
-     * @var CampAddressInputType
-     * @Assert\Valid
-     */
-    private $campAddress;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\Address\CampAddressInputType $campAddress = null;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $countrySpecificAnswers = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $countrySpecificAnswers = [];
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $proxyEnGivenName;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $proxyEnFamilyName;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $proxyEnParentsName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(groups={"Proxy"})
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank(groups: ['Proxy'])]
     private $proxyLocalGivenName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(groups={"Proxy"})
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank(groups: ['Proxy'])]
     private $proxyLocalFamilyName;
 
-    /**
-     * @Assert\Type("string")
-     */
+    #[Assert\Type('string')]
     private $proxyLocalParentsName;
 
-    /**
-     * @var NationalIdCardInputType|null
-     * @Assert\Valid
-     */
-    private $proxyNationalIdCard;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\NationalIdCardInputType $proxyNationalIdCard = null;
 
-    /**
-     * @var PhoneInputType|null
-     * @Assert\Valid
-     */
-    private $proxyPhone;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\PhoneInputType $proxyPhone = null;
 
     /**
      * @return string
@@ -386,17 +325,11 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $this->beneficiaries;
     }
 
-    /**
-     * @param BeneficiaryInputType $beneficiary
-     */
     public function addBeneficiary(BeneficiaryInputType $beneficiary)
     {
         $this->beneficiaries[] = $beneficiary;
     }
 
-    /**
-     * @param BeneficiaryInputType $beneficiary
-     */
     public function removeBeneficiary(BeneficiaryInputType $beneficiary)
     {
         // method must be declared to fullfill normalizer requirements
@@ -642,9 +575,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $this->countrySpecificAnswers;
     }
 
-    /**
-     * @param CountrySpecificsAnswerInputType $inputType
-     */
     public function addCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType)
     {
         $this->countrySpecificAnswers[] = $inputType;
@@ -762,9 +692,6 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $this->proxyNationalIdCard;
     }
 
-    /**
-     * @param NationalIdCardInputType|null $proxyNationalIdCard
-     */
     public function setProxyNationalIdCard(?NationalIdCardInputType $proxyNationalIdCard)
     {
         $this->proxyNationalIdCard = $proxyNationalIdCard;
@@ -778,18 +705,15 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $this->proxyPhone;
     }
 
-    /**
-     * @param PhoneInputType|null $proxyPhone
-     */
     public function setProxyPhone(?PhoneInputType $proxyPhone)
     {
         $this->proxyPhone = $proxyPhone;
     }
 
     /**
-     * @Assert\EqualTo(1)
      * @return int
      */
+    #[Assert\EqualTo(1)]
     public function getBeneficiaryHeadCount(): int
     {
         $headCount = 0;

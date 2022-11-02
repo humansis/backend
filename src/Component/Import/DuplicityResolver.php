@@ -21,53 +21,17 @@ class DuplicityResolver
 {
     use ImportQueueLoggerTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var IdentityChecker
-     */
-    private $identityChecker;
-
-    /**
-     * @var SimilarityChecker
-     */
-    private $similarityChecker;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importQueueStateMachine;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $em,
         LoggerInterface $logger,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        WorkflowInterface $importQueueStateMachine,
-        WorkflowInterface $importStateMachine
+        private readonly IdentityChecker $identityChecker,
+        private readonly SimilarityChecker $similarityChecker,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly WorkflowInterface $importStateMachine
     ) {
-        $this->em = $entityManager;
         $this->logger = $logger;
-        $this->identityChecker = $identityChecker;
-        $this->similarityChecker = $similarityChecker;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->importStateMachine = $importStateMachine;
     }
 
-    /**
-     * @param ImportQueue $importQueue
-     * @param int|null $acceptedDuplicityId
-     * @param string $status
-     * @param User $user
-     */
     public function resolve(ImportQueue $importQueue, ?int $acceptedDuplicityId, string $status, User $user)
     {
         $import = $importQueue->getImport();

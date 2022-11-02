@@ -42,7 +42,7 @@ class Household extends AbstractBeneficiary
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
      */
-    private $assets;
+    private array $assets;
 
     /**
      * TODO: migrate to enum sometimes
@@ -54,61 +54,47 @@ class Household extends AbstractBeneficiary
     private $shelterStatus;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      */
-    private $notes;
+    private string $notes;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      */
-    private $latitude;
+    private string $latitude;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
-    private $longitude;
+    private string $longitude;
 
     /**
-     * @var CountrySpecificAnswer
-     *
      * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
      */
-    private $countrySpecificAnswers;
+    private \Entity\CountrySpecificAnswer $countrySpecificAnswers;
 
     /**
      * @var Collection|Beneficiary[]
      *
      * @ORM\OneToMany(targetEntity="Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
-     * @SymfonyGroups({"FullHousehold", "SmallHousehold", "FullReceivers"})
      */
+    #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullReceivers'])]
     private $beneficiaries;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="income", type="integer", nullable=true)
      */
-    private $income;
+    private ?int $income = null;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
      */
-    private $foodConsumptionScore;
+    private int $foodConsumptionScore;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
      */
-    private $copingStrategiesIndex;
+    private int $copingStrategiesIndex;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
@@ -116,61 +102,48 @@ class Household extends AbstractBeneficiary
     private $householdLocations;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
      */
-    private $debtLevel;
+    private ?int $debtLevel = null;
 
     /**
      * @var int[]
      *
      * @ORM\Column(name="support_received_types", type="array", nullable=true)
      */
-    private $supportReceivedTypes;
+    private array $supportReceivedTypes;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
      */
-    private $supportOrganizationName;
+    private ?string $supportOrganizationName = null;
 
     /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
      */
-    private $supportDateReceived;
+    private ?\DateTimeInterface $supportDateReceived = null;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
      */
-    private $incomeSpentOnFood;
+    private ?int $incomeSpentOnFood = null;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="household_income", type="integer", nullable=true)
      */
-    private $householdIncome;
+    private ?int $householdIncome = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="enumerator_name", type="string", nullable=true)
      */
-    private $enumeratorName = null;
+    private ?string $enumeratorName = null;
 
     /**
-     * @var Person|null
      *
      * @ORM\OneToOne(targetEntity="Entity\Person")
      * @ORM\JoinColumn(name="proxy_id")
      */
-    private $proxy;
+    private ?\Entity\Person $proxy = null;
 
     /**
      * Constructor
@@ -189,9 +162,7 @@ class Household extends AbstractBeneficiary
     /**
      * Set livelihood.
      *
-     * @param string|null $livelihood
      *
-     * @return self
      */
     public function setLivelihood(?string $livelihood): self
     {
@@ -202,8 +173,6 @@ class Household extends AbstractBeneficiary
 
     /**
      * Get livelihood.
-     *
-     * @return string|null
      */
     public function getLivelihood(): ?string
     {
@@ -216,25 +185,19 @@ class Household extends AbstractBeneficiary
     public function getAssets(): array
     {
         return array_values(
-            array_map(function ($asset) {
-                return HouseholdAssetsEnum::valueFromDB($asset);
-            }, $this->assets)
+            array_map(fn($asset) => HouseholdAssetsEnum::valueFromDB($asset), $this->assets)
         );
     }
 
     /**
      * @param string[] $assets
-     *
-     * @return self
      */
     public function setAssets(array $assets): self
     {
         self::validateValues('assets', HouseholdAssets::class, $assets);
         $this->assets = array_values(
             array_unique(
-                array_map(function ($asset) {
-                    return HouseholdAssetsEnum::valueToDB($asset);
-                }, $assets)
+                array_map(fn($asset) => HouseholdAssetsEnum::valueToDB($asset), $assets)
             )
         );
 
@@ -242,7 +205,6 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @return string|null
      * @see HouseholdShelterStatus::values()
      */
     public function getShelterStatus(): ?string
@@ -251,9 +213,6 @@ class Household extends AbstractBeneficiary
     }
 
     /**
-     * @param string|null $shelterStatus
-     *
-     * @return self
      * @see HouseholdShelterStatus::values()
      */
     public function setShelterStatus(?string $shelterStatus): self
@@ -368,7 +327,6 @@ class Household extends AbstractBeneficiary
     /**
      * Add countrySpecificAnswer.
      *
-     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return Household
      */
@@ -382,7 +340,6 @@ class Household extends AbstractBeneficiary
     /**
      * Remove countrySpecificAnswer.
      *
-     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -404,7 +361,6 @@ class Household extends AbstractBeneficiary
     /**
      * Add beneficiary.
      *
-     * @param Beneficiary $beneficiary
      *
      * @return Household
      */
@@ -418,7 +374,6 @@ class Household extends AbstractBeneficiary
     /**
      * Remove beneficiary.
      *
-     * @param Beneficiary $beneficiary
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -432,7 +387,7 @@ class Household extends AbstractBeneficiary
      *
      * @return Collection|Beneficiary[]
      */
-    public function getBeneficiaries(bool $showArchived = false)
+    public function getBeneficiaries(bool $showArchived = false): \Doctrine\Common\Collections\Collection|array
     {
         $criteria = Criteria::create();
         if (!$showArchived) {
@@ -452,9 +407,6 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getNumberDependents(): int
     {
         return count($this->getBeneficiaries()) - 1;
@@ -463,7 +415,6 @@ class Household extends AbstractBeneficiary
     /**
      * Set income.
      *
-     * @param int|null $income
      *
      * @return Household
      */
@@ -476,8 +427,6 @@ class Household extends AbstractBeneficiary
 
     /**
      * Get income.
-     *
-     * @return int|null
      */
     public function getIncome(): ?int
     {
@@ -535,7 +484,6 @@ class Household extends AbstractBeneficiary
     /**
      * Remove householdLocation.
      *
-     * @param HouseholdLocation $householdLocation
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -547,7 +495,6 @@ class Household extends AbstractBeneficiary
     /**
      * Add householdLocation.
      *
-     * @param HouseholdLocation $householdLocation
      *
      * @return Household
      */
@@ -569,19 +516,11 @@ class Household extends AbstractBeneficiary
         return $this->householdLocations;
     }
 
-    /**
-     * @return int|null
-     */
     public function getDebtLevel(): ?int
     {
         return $this->debtLevel;
     }
 
-    /**
-     * @param int|null $debtLevel
-     *
-     * @return self
-     */
     public function setDebtLevel(?int $debtLevel): self
     {
         $this->debtLevel = $debtLevel;
@@ -595,42 +534,28 @@ class Household extends AbstractBeneficiary
     public function getSupportReceivedTypes(): array
     {
         return array_values(
-            array_map(function ($type) {
-                return HouseholdSupportReceivedTypeEnum::valueFromDB($type);
-            }, $this->supportReceivedTypes)
+            array_map(fn($type) => HouseholdSupportReceivedTypeEnum::valueFromDB($type), $this->supportReceivedTypes)
         );
     }
 
     /**
      * @param string[] $supportReceivedTypes
-     *
-     * @return self
      */
     public function setSupportReceivedTypes(array $supportReceivedTypes): self
     {
         self::validateValues('supportReceivedType', HouseholdSupportReceivedType::class, $supportReceivedTypes);
         $this->supportReceivedTypes = array_values(
-            array_map(function ($type) {
-                return HouseholdSupportReceivedTypeEnum::valueToDB($type);
-            }, $supportReceivedTypes)
+            array_map(fn($type) => HouseholdSupportReceivedTypeEnum::valueToDB($type), $supportReceivedTypes)
         );
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSupportOrganizationName(): ?string
     {
         return $this->supportOrganizationName;
     }
 
-    /**
-     * @param string|null $supportOrganizationName
-     *
-     * @return self
-     */
     public function setSupportOrganizationName(?string $supportOrganizationName): self
     {
         $this->supportOrganizationName = $supportOrganizationName;
@@ -638,19 +563,11 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getSupportDateReceived(): ?DateTimeInterface
     {
         return $this->supportDateReceived;
     }
 
-    /**
-     * @param DateTimeInterface|null $supportDateReceived
-     *
-     * @return self
-     */
     public function setSupportDateReceived(?DateTimeInterface $supportDateReceived): self
     {
         $this->supportDateReceived = $supportDateReceived;
@@ -658,11 +575,6 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @param int|null $incomeSpentOnFood
-     *
-     * @return self
-     */
     public function setIncomeSpentOnFood(?int $incomeSpentOnFood): self
     {
         $this->incomeSpentOnFood = $incomeSpentOnFood;
@@ -670,11 +582,6 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @param int|null $householdIncome
-     *
-     * @return self
-     */
     public function setHouseholdIncome(?int $householdIncome): self
     {
         $this->householdIncome = $householdIncome;
@@ -682,25 +589,16 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getIncomeSpentOnFood(): ?int
     {
         return $this->incomeSpentOnFood;
     }
 
-    /**
-     * @return int|null
-     */
     public function getHouseholdIncome(): ?int
     {
         return $this->householdIncome;
     }
 
-    /**
-     * @return Beneficiary|null
-     */
     public function getHouseholdHead(): ?Beneficiary
     {
         $householdHead = null;
@@ -715,19 +613,11 @@ class Household extends AbstractBeneficiary
         return $householdHead;
     }
 
-    /**
-     * @return string|null
-     */
     public function getEnumeratorName(): ?string
     {
         return $this->enumeratorName;
     }
 
-    /**
-     * @param string|null $enumeratorName
-     *
-     * @return Household
-     */
     public function setEnumeratorName(?string $enumeratorName): Household
     {
         $this->enumeratorName = $enumeratorName;
@@ -735,25 +625,16 @@ class Household extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return Person|null
-     */
     public function getProxy(): ?Person
     {
         return $this->proxy;
     }
 
-    /**
-     * @param Person|null $proxy
-     */
     public function setProxy(?Person $proxy): void
     {
         $this->proxy = $proxy;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     */
     public function addMember(Beneficiary $beneficiary)
     {
         $this->beneficiaries->add($beneficiary);

@@ -49,7 +49,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -83,7 +83,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -109,7 +109,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/product-categories/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +134,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -204,7 +204,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=' . $vendor->getId()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

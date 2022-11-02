@@ -17,11 +17,9 @@ class OrganizationServices implements JsonSerializable
     use StandardizedPrimaryKey;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="enabled", type="boolean")
      */
-    private $enabled;
+    private bool $enabled;
 
     /**
      * @var json
@@ -31,18 +29,14 @@ class OrganizationServices implements JsonSerializable
     private $parametersValue;
 
     /**
-     * @var Organization
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Organization", inversedBy="organizationServices")
      */
-    private $organization;
+    private ?\Entity\Organization $organization = null;
 
     /**
-     * @var Service
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Service", inversedBy="organizationServices")
      */
-    private $service;
+    private ?\Entity\Service $service = null;
 
     /**
      * Set enabled.
@@ -95,7 +89,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Get the value of a specific parameter.
      *
-     * @param string $parameterName
      *
      * @return string
      */
@@ -107,7 +100,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set organization.
      *
-     * @param Organization $organization
      *
      * @return OrganizationServices
      */
@@ -131,7 +123,6 @@ class OrganizationServices implements JsonSerializable
     /**
      * Set Service.
      *
-     * @param Service|null $service
      *
      * @return OrganizationServices
      */

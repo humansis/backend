@@ -14,19 +14,16 @@ class ChangeSmartcardInputType implements InputTypeInterface
 {
     /**
      * @Enum(enumClass="Enum\SmartcardStates")
-     * @var string
      */
-    private $state;
+    private ?string $state = null;
 
     /**
-     * @Assert\DateTime()
      * @var DateTimeInterface
      */
+    #[Assert\DateTime]
     private $createdAt;
 
     /**
-     * @param string $state
-     * @param string $createdAt
      *
      * @return static
      */
@@ -39,33 +36,21 @@ class ChangeSmartcardInputType implements InputTypeInterface
         return $self;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @param string $state
-     */
     public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
     public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);

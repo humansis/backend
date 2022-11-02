@@ -26,44 +26,14 @@ use Repository\UserRepository;
  */
 class UserService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**
-     * @var RoleHierarchyInterface
-     */
-    private $roleHierarchy;
-
-    /** @var Security $security */
-    private $security;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
-     * @param RoleHierarchyInterface $roleHierarchy
-     * @param Security $security
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService,
-        RoleHierarchyInterface $roleHierarchy,
-        Security $security
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
-        $this->roleHierarchy = $roleHierarchy;
-        $this->security = $security;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly RoleHierarchyInterface $roleHierarchy, private readonly Security $security)
+    {
     }
 
     /**
-     * @param UserInitializeInputType $inputType
-     * @param string|null $userDefinedSalt
-     * @return array
      * @throws Exception
      */
     public function initialize(UserInitializeInputType $inputType, ?string $userDefinedSalt = null): array
@@ -93,11 +63,6 @@ class UserService
         return ['userId' => $user->getId(), 'salt' => $user->getSalt()];
     }
 
-    /**
-     * @param string $username
-     *
-     * @return array
-     */
     public function getSalt(string $username): array
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
@@ -110,8 +75,6 @@ class UserService
     }
 
     /**
-     * @param string $username
-     * @param string $saltedPassword
      * @return mixed
      * @throws Exception
      */
@@ -135,7 +98,6 @@ class UserService
     /**
      * Export all users in a CSV file
      *
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv(string $type)
@@ -307,12 +269,6 @@ class UserService
         $this->em->flush();
     }
 
-    /**
-     * @param User $user
-     * @param string $role
-     *
-     * @return bool
-     */
     public function isGranted(User $user, string $role): bool
     {
         foreach ($this->roleHierarchy->getReachableRoleNames($user->getRoles()) as $reachableRole) {
@@ -339,7 +295,7 @@ class UserService
     public function getCurrentUser()
     {
         return $this->em->getRepository(User::class)->findOneBy(
-            ['username' => $this->security->getUser()->getUsername()]
+            ['username' => $this->security->getUser()->getUserIdentifier()]
         );
     }
 }

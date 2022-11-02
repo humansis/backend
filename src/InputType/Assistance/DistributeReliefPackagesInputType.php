@@ -10,28 +10,22 @@ use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"DistributeReliefPackagesInputType", "Strict"})
- */
+#[Assert\GroupSequence(['DistributeReliefPackagesInputType', 'Strict'])]
 class DistributeReliefPackagesInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type(type="integer")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type(type: 'integer')]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $id;
 
     /**
      * @Iso8601()
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $dateDistributed;
 
-    /**
-     * @Assert\Type(type="scalar")
-     */
+    #[Assert\Type(type: 'scalar')]
     private $amountDistributed;
 
     /**
@@ -42,17 +36,11 @@ class DistributeReliefPackagesInputType implements InputTypeInterface
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
-    public function setId($id): void
+    public function setId(mixed $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getDateDistributed(): DateTimeInterface
     {
         return Iso8601Converter::toDateTime($this->dateDistributed);
@@ -74,10 +62,7 @@ class DistributeReliefPackagesInputType implements InputTypeInterface
         return $this->amountDistributed;
     }
 
-    /**
-     * @param mixed $amountDistributed
-     */
-    public function setAmountDistributed($amountDistributed): void
+    public function setAmountDistributed(mixed $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }

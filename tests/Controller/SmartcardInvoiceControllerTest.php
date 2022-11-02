@@ -31,15 +31,9 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     use DepositHelper;
     use SmartcardInvoiceHelper;
 
-    /**
-     * @var Location
-     */
-    private $location;
+    private ?\Entity\Location $location;
 
-    /**
-     * @var Vendor
-     */
-    private $vendor;
+    private \Entity\Vendor $vendor;
 
     /**
      * @throws Exception
@@ -70,7 +64,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return AssistanceDomain
      * @throws Exception
      */
     private function createSmartcardAssistance(): AssistanceDomain
@@ -105,7 +98,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -154,7 +146,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $response
         );
 
-        $responseArray = json_decode($response, true);
+        $responseArray = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $data = $responseArray['data'][0];
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchase->getId(), $data['purchaseIds'][0]);
@@ -164,7 +156,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -229,7 +220,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $response
         );
 
-        $responseArray = json_decode($response, true);
+        $responseArray = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $data = $responseArray['data'][0];
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchase->getId(), $data['purchaseIds'][0]);
@@ -239,7 +230,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function testPurchaseCanNotBeInvoicedBeforeSync(): void
@@ -280,7 +270,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function testCanBeInvoicedAfterSync(): void
@@ -347,7 +336,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -418,7 +406,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $content
         );
 
-        $data = json_decode($content, true)['data'][0];
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR)['data'][0];
         $this->assertEquals($invoice->getId(), $data['id']);
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchaseValue, $data['value']);
@@ -426,7 +414,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -483,14 +470,13 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
 
         $this->assertJsonFragment('[{"projectId":"*","value":"*","currency":"*"}]', $response);
 
-        $data = json_decode($response, true);
+        $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data[0]['projectId']);
         $this->assertEquals((float) ($purchaseValue), (float) $data[0]['value']);
         $this->assertEquals($purchaseCurrency, $data[0]['currency']);
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception

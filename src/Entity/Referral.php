@@ -18,7 +18,7 @@ class Referral
     /**
      * Mapping of possible referral types
      */
-    public const REFERRALTYPES = [
+    final public const REFERRALTYPES = [
         '1' => 'Health',
         '2' => 'Protection',
         '3' => 'Shelter',
@@ -27,18 +27,14 @@ class Referral
     ];
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=255)
      */
-    private $type;
+    private string $type;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="comment", type="string", length=255)
      */
-    private $comment;
+    private string $comment;
 
     /**
      * Set type.

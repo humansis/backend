@@ -26,8 +26,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      *
      * @return int|void|null
      *
@@ -98,8 +96,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     *
      * @return string[]
      */
     private function getSourceFilepath(InputInterface $input): string
@@ -150,9 +146,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         fclose($file);
     }
 
-    /**
-     * @return Question
-     */
     protected function createCountryQuestion(): Question
     {
         $question = new Question('Country code in ISO3 format? (example: KHM) ');
@@ -163,9 +156,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
             return $answer;
         });
-        $question->setNormalizer(function ($value) {
-            return $value ? strtolower(trim($value)) : '';
-        });
+        $question->setNormalizer(fn($value) => $value ? strtolower(trim((string) $value)) : '');
 
         return $question;
     }
@@ -180,9 +171,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
             return $answer;
         });
-        $question->setNormalizer(function ($value) {
-            return $value ? strtolower(trim($value)) : '';
-        });
+        $question->setNormalizer(fn($value) => $value ? strtolower(trim((string) $value)) : '');
 
         return $question;
     }
@@ -211,9 +200,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
             return $answer;
         });
-        $question->setNormalizer(function ($value) {
-            return $value ? strtoupper(trim($value)) : '';
-        });
+        $question->setNormalizer(fn($value) => $value ? strtoupper(trim((string) $value)) : '');
 
         return $question;
     }
@@ -281,12 +268,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param ProgressBar $progressBar
-     * @param string $targetFilepath
-     * @param string $sourceFilePath
-     * @param string $codeColumnIndex
-     * @param string $nameColumnIndex
-     * @param string $parentCodeColumnIndex
      *
      * @throws Exception
      */
@@ -304,9 +285,9 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $emptyLines = 0;
         $xml = new SimpleXMLElement(file_get_contents($targetFilepath));
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $code = trim($line[$codeColumnIndex]);
-            $name = trim($line[$nameColumnIndex]);
-            $parent = trim($line[$parentCodeColumnIndex]);
+            $code = trim((string) $line[$codeColumnIndex]);
+            $name = trim((string) $line[$nameColumnIndex]);
+            $parent = trim((string) $line[$parentCodeColumnIndex]);
 
             if (empty($code)) {
                 ++$emptyLines;
@@ -331,7 +312,7 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
 
             // parent existence
             $xpath = $xml->xpath("//*[@code='$parent']");
-            if (count($xpath) < 1) {
+            if (($xpath === null ? 0 : count($xpath)) < 1) {
                 if (isset($admParentCodeMissing[$parent])) {
                     $admParentCodeMissing[$parent]['count']++;
                 } else {
@@ -366,13 +347,6 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param string $targetFilepath
-     * @param string $sourceFilePath
-     * @param string $parentCodeColumn
-     * @param string $codeColumn
-     * @param string $nameColumn
-     * @param ProgressBar $progressBar
-     * @param string $admLevel
      *
      * @return int[]
      */
@@ -390,11 +364,11 @@ class AdmCSV2XMLCommand extends ContainerAwareCommand
         $added = 0;
         $omitted = 0;
         foreach ($this->getCSVLines($sourceFilePath) as $line) {
-            $parent = trim($line[$parentCodeColumn]);
-            $code = trim($line[$codeColumn]);
-            $name = trim($line[$nameColumn]);
+            $parent = trim((string) $line[$parentCodeColumn]);
+            $code = trim((string) $line[$codeColumn]);
+            $name = trim((string) $line[$nameColumn]);
 
-            if (count($xml->xpath("//*[@code='$code']")) > 0) {
+            if (($xml->xpath("//*[@code='$code']") === null ? 0 : count($xml->xpath("//*[@code='$code']"))) > 0) {
                 // already imported
                 $progressBar->advance();
                 $omitted++;

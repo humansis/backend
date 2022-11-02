@@ -10,9 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class GeneralReliefPatchInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("boolean")
-     */
+    #[Assert\Type('boolean')]
     private $distributed;
 
     /**
@@ -20,17 +18,14 @@ class GeneralReliefPatchInputType implements InputTypeInterface
      */
     private $dateOfDistribution;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $note;
 
     /**
-     * @var array
      * @internal Main purpose is check that attribute was setup
      */
-    private $isSet = [];
+    private array $isSet = [];
 
     /**
      * @return bool
@@ -101,9 +96,9 @@ class GeneralReliefPatchInputType implements InputTypeInterface
     /**
      * Validation constraint to verify if distributed=true, than dateOfDistribution must be filled
      *
-     * @Assert\IsTrue(message="Date of distribution must be present.")
      * @return bool
      */
+    #[Assert\IsTrue(message: 'Date of distribution must be present.')]
     public function isdateOfDistributionValid()
     {
         if ($this->distributed) {

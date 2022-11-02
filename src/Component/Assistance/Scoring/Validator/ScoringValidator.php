@@ -80,9 +80,7 @@ final class ScoringValidator extends ConstraintValidator
                 }
             }
 
-            $optionsInCsv = array_map(function (ScoringRuleOption $option) {
-                return $option->getValue();
-            }, $rule->getOptions());
+            $optionsInCsv = array_map(fn(ScoringRuleOption $option) => $option->getValue(), $rule->getOptions());
 
             $missingOptions = array_diff($supportedOptions, $optionsInCsv);
 

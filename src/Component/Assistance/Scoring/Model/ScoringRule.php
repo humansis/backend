@@ -10,30 +10,23 @@ final class ScoringRule
 {
     /**
      * One of Enum\ScoringRuleType
-     *
-     * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * $type = countrySpecific: name of country specific option (Entity\CountrySpecific::$fieldString)
      * $type = calculation: name of method which performs the calculation (in RulesCalculation)
      * $type = enum: name of enum class
      * $type = coreHousehold: name of attribute of Household entity. (Supported fields are in ScoringSupportedHouseholdCoreFieldsEnum)
-     *
-     * @var string
      */
-    private $fieldName;
+    private string $fieldName;
 
-    /**
-     * @var string
-     */
-    private $title;
+    private string $title;
 
     /**
      * @var ScoringRuleOption[]
      */
-    private $options = [];
+    private array $options = [];
 
     public function __construct(string $type, string $fieldName, string $title)
     {
@@ -47,17 +40,11 @@ final class ScoringRule
         $this->options[] = $option;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return string
-     */
     public function getFieldName(): string
     {
         return $this->fieldName;
@@ -71,11 +58,6 @@ final class ScoringRule
         return $this->options;
     }
 
-    /**
-     * @param string $value
-     *
-     * @return ScoringRuleOption
-     */
     public function getOptionByValue(string $value): ScoringRuleOption
     {
         foreach ($this->options as $option) {
@@ -87,9 +69,6 @@ final class ScoringRule
         throw new InvalidArgumentException("Scoring rule {$this->title} does not have option with value $value.");
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;

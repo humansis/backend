@@ -16,25 +16,10 @@ use Utils\Provider\KHMFinancialProvider;
 
 class TransactionFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var string */
-    private $environment;
-
-    /** @var KHMFinancialProvider */
-    private $KHMFinancialProvider;
-
-    /**
-     * @param string $environment
-     * @param KHMFinancialProvider $KHMFinancialProvider
-     */
-    public function __construct(string $environment, KHMFinancialProvider $KHMFinancialProvider)
+    public function __construct(private readonly string $environment, private readonly KHMFinancialProvider $KHMFinancialProvider)
     {
-        $this->environment = $environment;
-        $this->KHMFinancialProvider = $KHMFinancialProvider;
     }
 
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         if ('prod' === $this->environment) {
@@ -43,11 +28,11 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         /** @var AssistanceBeneficiary $ab */
         foreach ($this->getAssistanceBeneficiaries($manager) as $ab) {
-            for ($j = 0; $j < rand(0, 2); ++$j) {
+            for ($j = 0; $j < random_int(0, 2); ++$j) {
                 $this->generateNoPhoneTransaction($ab, $manager);
             }
             if ($ab->getId() % 4 === 0) {
@@ -62,7 +47,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateNoPhoneTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new DateInterval("P" . rand(30, 200) . "D");
+        $days = new DateInterval("P" . random_int(30, 200) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
@@ -70,7 +55,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $transaction->setAssistanceBeneficiary($ab);
         $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
-        $transaction->setAmountSent(rand(10, 10000));
+        $transaction->setAmountSent(random_int(10, 10000));
         $transaction->setTransactionStatus(Transaction::NO_PHONE);
         $transaction->setMessage("no phone");
         $transaction->setSentBy($user);
@@ -92,7 +77,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateFailureTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new DateInterval("P" . rand(0, 30) . "D");
+        $days = new DateInterval("P" . random_int(0, 30) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
@@ -100,7 +85,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $transaction->setAssistanceBeneficiary($ab);
         $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
-        $transaction->setAmountSent(rand(10, 10000));
+        $transaction->setAmountSent(random_int(10, 10000));
         $transaction->setTransactionStatus(Transaction::FAILURE);
         $transaction->setMessage("some error message from third party");
         $transaction->setSentBy($user);
@@ -115,7 +100,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
 
     private function generateValidTransaction(AssistanceBeneficiary $ab, ObjectManager $manager): Transaction
     {
-        $days = new DateInterval("P" . rand(0, 30) . "D");
+        $days = new DateInterval("P" . random_int(0, 30) . "D");
         /** @see UserFixtures */
         $user = $this->getReference('user_admin');
 
@@ -123,7 +108,7 @@ class TransactionFixtures extends Fixture implements DependentFixtureInterface
         $transaction->setAssistanceBeneficiary($ab);
         $transaction->setDateSent((new DateTime())->sub($days));
         $transaction->setTransactionId(self::generateSerialNumber());
-        $transaction->setAmountSent(rand(10, 10000));
+        $transaction->setAmountSent(random_int(10, 10000));
         $transaction->setTransactionStatus(Transaction::SUCCESS);
         $transaction->setMessage("Valid tr. from fixtures");
         $transaction->setSentBy($user);

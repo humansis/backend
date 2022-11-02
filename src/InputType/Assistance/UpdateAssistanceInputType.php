@@ -9,82 +9,47 @@ use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Utils\DateTime\Iso8601Converter;
 
-/**
- * @Assert\GroupSequence({"UpdateAssistanceInputType", "Strict"})
- */
+#[Assert\GroupSequence(['UpdateAssistanceInputType', 'Strict'])]
 class UpdateAssistanceInputType implements InputTypeInterface
 {
     private const UNSET_STRING = 'undefined';
     private const UNSET_NUMBER = 0;
 
-    /**
-     * @var bool|null
-     * @Assert\Type(type="bool")
-     */
-    private $validated = null;
+    #[Assert\Type(type: 'bool')]
+    private ?bool $validated = null;
 
-    /**
-     * @var bool
-     * @Assert\Type(type="bool")
-     */
-    private $completed = false;
+    #[Assert\Type(type: 'bool')]
+    private bool $completed = false;
 
-    /**
-     * @var DateTimeInterface|null
-     * @Assert\DateTime
-     * @Assert\NotBlank(allowNull=true)
-     */
-    private $dateDistribution = null;
+    #[Assert\DateTime]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?\DateTimeInterface $dateDistribution = null;
 
-    /**
-     * @var string
-     */
-    private $originalDateDistribution;
+    private ?string $originalDateDistribution = null;
 
-    /**
-     * @var DateTimeInterface|null|string
-     */
-    private $dateExpiration = self::UNSET_STRING;
+    private string|\DateTimeInterface|null $dateExpiration = self::UNSET_STRING;
 
-    /**
-     * @var string
-     */
-    private $originalDateExpiration;
+    private ?string $originalDateExpiration = null;
 
-    /**
-     * @var DateTimeInterface|null
-     * @Assert\DateTime
-     * @Assert\NotBlank(allowNull=true)
-     */
-    private $dateExpirationToSave;
+    #[Assert\DateTime]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?\DateTimeInterface $dateExpirationToSave = null;
 
-    /**
-     * @var string|int|null
-     */
-    private $round = self::UNSET_STRING;
+    private string|int|null $round = self::UNSET_STRING;
 
-    /**
-     * @var int|null
-     * @Assert\Range(min="1", max="99", notInRangeMessage="Supported round range is from {{ min }} to {{ max }}.")
-     */
-    private $roundToSave;
+    #[Assert\Range(min: 1, max: 99, notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.')]
+    private ?int $roundToSave = null;
 
-    /**
-     * @var string|null|int
-     */
-    private $note = self::UNSET_NUMBER;
+    private int|string|null $note = self::UNSET_NUMBER;
 
     /**
      * @var string|null
-     * @Assert\Type(type="string")
-     * @Assert\NotBlank(allowNull=true)
      */
+    #[Assert\Type(type: 'string')]
+    #[Assert\NotBlank(allowNull: true)]
     private $noteToSave;
 
-    /**
-     * @Assert\IsTrue(groups="Strict", message="Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: 'Strict', message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
     public function isValidExpirationDate(): bool
     {
         if (is_null($this->originalDateExpiration)) {
@@ -97,10 +62,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         return true;
     }
 
-    /**
-     * @Assert\IsTrue(groups="Strict", message="Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: 'Strict', message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
     public function isValidDateDistribution(): bool
     {
         if (is_null($this->originalDateDistribution)) {
@@ -113,66 +75,42 @@ class UpdateAssistanceInputType implements InputTypeInterface
         return true;
     }
 
-    /**
-     * @return bool|null
-     */
     public function getValidated(): ?bool
     {
         return $this->validated;
     }
 
-    /**
-     * @param bool|null $validated
-     */
     public function setValidated(?bool $validated): void
     {
         $this->validated = $validated;
     }
 
-    /**
-     * @return bool
-     */
     public function isCompleted(): bool
     {
         return $this->completed;
     }
 
-    /**
-     * @param bool $completed
-     */
     public function setCompleted(bool $completed): void
     {
         $this->completed = $completed;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDateDistribution(): ?DateTimeInterface
     {
         return $this->dateDistribution;
     }
 
-    /**
-     * @param string|null $dateDistribution
-     */
     public function setDateDistribution(?string $dateDistribution): void
     {
         $this->originalDateDistribution = $dateDistribution;
         $this->dateDistribution = $dateDistribution ? Iso8601Converter::toDateTime($dateDistribution) : null;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpirationToSave;
     }
 
-    /**
-     * @param string|null $dateExpiration
-     */
     public function setDateExpiration(?string $dateExpiration): void
     {
         $this->originalDateExpiration = $dateExpiration;
@@ -180,34 +118,22 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->dateExpirationToSave = $this->dateExpiration;
     }
 
-    /**
-     * @return int|null
-     */
     public function getRound(): ?int
     {
         return $this->roundToSave;
     }
 
-    /**
-     * @param int|null $round
-     */
     public function setRound(?int $round): void
     {
         $this->round = $round;
         $this->roundToSave = $round;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNote(): ?string
     {
         return $this->noteToSave;
     }
 
-    /**
-     * @param string|null $note
-     */
     public function setNote(?string $note): void
     {
         $note = ($note === "") ? null : $note;

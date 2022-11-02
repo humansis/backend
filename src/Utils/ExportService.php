@@ -16,16 +16,13 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
  */
 class ExportService
 {
-    public const FORMAT_CSV = 'csv';
-    public const FORMAT_XLSX = 'xlsx';
-    public const FORMAT_ODS = 'ods';
+    final public const FORMAT_CSV = 'csv';
+    final public const FORMAT_XLSX = 'xlsx';
+    final public const FORMAT_ODS = 'ods';
 
     /**
      * Generate file.
      *
-     * @param Spreadsheet $spreadsheet
-     * @param string $name
-     * @param string $type
      *
      * @return string $filename
      *
@@ -59,10 +56,6 @@ class ExportService
      * Export data to file (csv, xlsx, ods).
      *
      * @param        $exportableTable
-     * @param string $name
-     * @param string $type
-     * @param bool $headerDown
-     * @param bool $headerBold
      *
      * @return string $filename
      *
@@ -77,7 +70,7 @@ class ExportService
         bool $headerDown = false,
         bool $headerBold = false
     ): string {
-        if (0 === count($exportableTable)) {
+        if (0 === (is_countable($exportableTable) ? count($exportableTable) : 0)) {
             throw new ExportNoDataException('No data to export');
         }
 

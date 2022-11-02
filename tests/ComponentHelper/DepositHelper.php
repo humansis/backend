@@ -21,10 +21,6 @@ use Symfony\Component\DependencyInjection\Container;
 trait DepositHelper
 {
     /**
-     * @param string $smartcardNumber
-     * @param DepositInputType $depositInputType
-     * @param User $user
-     * @return SmartcardDeposit
      * @throws Exception
      */
     public function createDeposit(
@@ -35,11 +31,6 @@ trait DepositHelper
         return self::$container->get(DepositFactory::class)->create($smartcardNumber, $depositInputType, $user);
     }
 
-    /**
-     * @param int $reliefPackageId
-     * @param float $value
-     * @return DepositInputType
-     */
     public static function buildDepositInputType(int $reliefPackageId, float $value): DepositInputType
     {
         $depositInputType = new DepositInputType();

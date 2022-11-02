@@ -7,13 +7,10 @@ namespace InputType;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"CommodityOfflineFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['CommodityOfflineFilterInputType', 'Strict'])]
 class CommodityOfflineFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -21,6 +18,7 @@ class CommodityOfflineFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $notModalityTypes;
 
     public function hasNotModalityTypes(): bool

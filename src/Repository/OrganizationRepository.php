@@ -30,9 +30,7 @@ class OrganizationRepository extends EntityRepository
     }
 
     /**
-     * @param Organization $organization
      *
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */

@@ -7,14 +7,10 @@ namespace InputType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"AddHouseholdsToProjectInputType", "Strict"})
- */
+#[Assert\GroupSequence(['AddHouseholdsToProjectInputType', 'Strict'])]
 class AddHouseholdsToProjectInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("array")
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -22,6 +18,8 @@ class AddHouseholdsToProjectInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
+    #[Assert\NotNull]
     private $householdIds;
 
     /**

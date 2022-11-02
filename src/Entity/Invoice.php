@@ -25,166 +25,67 @@ class Invoice implements JsonSerializable
     use StandardizedPrimaryKey;
 
     /**
-     * @var Vendor
-     *
-     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $vendor;
-
-    /**
-     * @var Project|null
-     *
-     * @ORM\ManyToOne(targetEntity="\Entity\Project")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $project;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
-     */
-    private $invoicedAt;
-
-    /**
-     * @var User
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(name="redeemed_by", nullable=false)
-     */
-    private $invoicedBy;
-
-    /**
-     * @var mixed
-     *
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private $value;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="currency", type="string", nullable=true)
-     */
-    private $currency;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="contract_no", type="string", nullable=true)
-     */
-    private $contractNo;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="vendor_no", type="string", nullable=true)
-     */
-    private $vendorNo;
-
-    /**
-     * @var string|null
-     *
      * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
      */
-    private $projectInvoiceAddressLocal;
+    private ?string $projectInvoiceAddressLocal;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
      */
-    private $projectInvoiceAddressEnglish;
+    private ?string $projectInvoiceAddressEnglish;
 
     /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
      */
-    private $purchases;
+    private \Doctrine\Common\Collections\Collection|array $purchases;
 
     /**
      * SmartcardPurchaseBatch constructor.
-     *
-     * @param Vendor $vendor
-     * @param Project|null $project
-     * @param DateTime $redeemedAt
-     * @param User $redeemedBy
-     * @param mixed $value
-     * @param string $currency
-     * @param string|null $contractNo
-     * @param string|null $vendorNo
-     * @param array $purchases
      */
     public function __construct(
-        Vendor $vendor,
-        ?Project $project,
-        DateTime $redeemedAt,
-        User $redeemedBy,
-        $value,
-        string $currency,
-        ?string $contractNo,
-        ?string $vendorNo,
+        private Vendor $vendor,
+        private ?\Entity\Project $project,
+        private DateTime $invoicedAt,
+        private User $invoicedBy,
+        private mixed $value,
+        private string $currency,
+        private ?string $contractNo,
+        private ?string $vendorNo,
         array $purchases
     ) {
-        $this->vendor = $vendor;
-        $this->project = $project;
-        $this->invoicedAt = $redeemedAt;
-        $this->invoicedBy = $redeemedBy;
-        $this->value = $value;
-        $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
-        $this->contractNo = $contractNo;
-        $this->vendorNo = $vendorNo;
 
         $this->projectInvoiceAddressLocal = $project->getProjectInvoiceAddressLocal();
         $this->projectInvoiceAddressEnglish = $project->getProjectInvoiceAddressEnglish();
     }
 
-    /**
-     * @return Vendor
-     */
     public function getVendor(): Vendor
     {
         return $this->vendor;
     }
 
-    /**
-     * @return Project|null
-     */
     public function getProject(): ?Project
     {
         return $this->project;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getInvoicedAt(): DateTimeInterface
     {
         return $this->invoicedAt;
     }
 
-    /**
-     * @param DateTimeInterface $invoicedAt
-     */
     public function setInvoicedAt(DateTimeInterface $invoicedAt): void
     {
         $this->invoicedAt = $invoicedAt;
     }
 
-    /**
-     * @return User
-     */
     public function getInvoicedBy(): User
     {
         return $this->invoicedBy;
     }
 
-    /**
-     * @param User $invoicedBy
-     */
     public function setInvoicedBy(User $invoicedBy): void
     {
         $this->invoicedBy = $invoicedBy;
@@ -198,25 +99,16 @@ class Invoice implements JsonSerializable
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
     }
 
-    /**
-     * @return string
-     */
     public function getCurrency(): string
     {
         return $this->currency;
     }
 
-    /**
-     * @param string $currency
-     */
     public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
@@ -233,30 +125,21 @@ class Invoice implements JsonSerializable
     /**
      * @param Collection|SmartcardPurchase[] $purchases
      */
-    public function setPurchases($purchases): void
+    public function setPurchases(\Doctrine\Common\Collections\Collection|array $purchases): void
     {
         $this->purchases = $purchases;
     }
 
-    /**
-     * @return string|null
-     */
     public function getContractNo(): ?string
     {
         return $this->contractNo;
     }
 
-    /**
-     * @return string|null
-     */
     public function getVendorNo(): ?string
     {
         return $this->vendorNo;
     }
 
-    /**
-     * @return string|null
-     */
     public function getInvoiceNo(): ?string
     {
         return $this->getId() ? sprintf('%06d', $this->getId()) : null;
@@ -279,33 +162,21 @@ class Invoice implements JsonSerializable
         ];
     }
 
-    /**
-     * @return string|null
-     */
     public function getProjectInvoiceAddressLocal(): ?string
     {
         return $this->projectInvoiceAddressLocal;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressLocal
-     */
     public function setProjectInvoiceAddressLocal(?string $projectInvoiceAddressLocal): void
     {
         $this->projectInvoiceAddressLocal = $projectInvoiceAddressLocal;
     }
 
-    /**
-     * @return string|null
-     */
     public function getProjectInvoiceAddressEnglish(): ?string
     {
         return $this->projectInvoiceAddressEnglish;
     }
 
-    /**
-     * @param string|null $projectInvoiceAddressEnglish
-     */
     public function setProjectInvoiceAddressEnglish(?string $projectInvoiceAddressEnglish): void
     {
         $this->projectInvoiceAddressEnglish = $projectInvoiceAddressEnglish;

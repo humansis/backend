@@ -12,36 +12,11 @@ use Entity\Project;
  */
 class ProjectMapper
 {
-    /** @var DonorMapper */
-    private $donorMapper;
-
-    /** @var SectorMapper */
-    private $sectorMapper;
-
-    /** @var AssistanceMapper */
-    private $assistanceMapper;
-
-    /** @var BeneficiaryRepository */
-    private $beneficiaryRepo;
-
     /**
      * ProjectMapper constructor.
-     *
-     * @param DonorMapper $donorMapper
-     * @param SectorMapper $sectorMapper
-     * @param AssistanceMapper $assistanceMapper
-     * @param BeneficiaryRepository $beneficiaryRepo
      */
-    public function __construct(
-        DonorMapper $donorMapper,
-        SectorMapper $sectorMapper,
-        AssistanceMapper $assistanceMapper,
-        BeneficiaryRepository $beneficiaryRepo
-    ) {
-        $this->donorMapper = $donorMapper;
-        $this->sectorMapper = $sectorMapper;
-        $this->assistanceMapper = $assistanceMapper;
-        $this->beneficiaryRepo = $beneficiaryRepo;
+    public function __construct(private readonly DonorMapper $donorMapper, private readonly SectorMapper $sectorMapper, private readonly AssistanceMapper $assistanceMapper, private readonly BeneficiaryRepository $beneficiaryRepo)
+    {
     }
 
     public function toFullArray(?Project $project): ?array

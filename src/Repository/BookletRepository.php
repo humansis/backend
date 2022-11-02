@@ -188,10 +188,6 @@ class BookletRepository extends EntityRepository
     }
 
     /**
-     * @param string $iso3
-     * @param BookletFilterInputType $filter
-     * @param BookletOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Booklet[]
      */

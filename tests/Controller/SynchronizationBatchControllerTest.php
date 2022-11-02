@@ -70,9 +70,6 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         $this->assertEmpty($this->client->getResponse()->getContent());
     }
 
-    /**
-     * @return int
-     */
     public function testGet(): int
     {
         $sync = new Deposits([]);
@@ -83,7 +80,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/syncs/' . $sync->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -115,7 +112,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
             '/api/basic/web-app/v1/syncs?filter[states][]=Uploaded&filter[type]=Deposit&filter[sources][]=CLI'
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

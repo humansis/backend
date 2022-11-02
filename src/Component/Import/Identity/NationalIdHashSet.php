@@ -9,16 +9,16 @@ use Entity\ImportQueue;
 
 class NationalIdHashSet
 {
-    private $hashSet = [];
+    private array $hashSet = [];
 
     /** @var ImportQueue[] */
-    private $items = [];
+    private array $items = [];
 
     /** @var string[] */
-    private $types = [];
+    private array $types = [];
 
     /** @var string[] */
-    private $numbers = [];
+    private array $numbers = [];
 
     public function add(ImportQueue $item, int $index, string $idType, string $idNumber): void
     {
@@ -45,7 +45,6 @@ class NationalIdHashSet
     }
 
     /**
-     * @param NationalId $nationalId
      * @param callable $callbackForAllItems (ImportQueue $item, int $index, NationalId $nationalId)
      */
     public function forItems(NationalId $nationalId, callable $callbackForAllItems): void

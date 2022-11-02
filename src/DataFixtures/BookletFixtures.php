@@ -17,54 +17,25 @@ use Utils\BookletService;
 
 class BookletFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
-    private $defaultBooklet = [
+    private array $defaultBooklet = [
         "number_booklets" => 2,
         "individual_values" => [200, 400, 1000],
         "number_vouchers" => 2,
     ];
 
-    private $kernel;
-
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    public function __construct(
-        Kernel $kernel,
-        Countries $countries,
-        BookletService $bookletService,
-        ProjectRepository $projectRepository,
-        BeneficiaryRepository $beneficiaryRepository
-    ) {
-        $this->kernel = $kernel;
-        $this->bookletService = $bookletService;
-        $this->countries = $countries;
-        $this->projectRepository = $projectRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
+    public function __construct(private readonly Kernel $kernel, private readonly Countries $countries, private readonly BookletService $bookletService, private readonly ProjectRepository $projectRepository, private readonly BeneficiaryRepository $beneficiaryRepository)
+    {
     }
 
     /**
      * Load data fixtures with the passed EntityManager
      *
-     * @param ObjectManager $manager
      * @throws Exception
      */
     public function load(ObjectManager $manager)
     {
         if ($this->kernel->getEnvironment() === "prod") {
-            echo __CLASS__ . " can't be running at production\n";
+            echo self::class . " can't be running at production\n";
 
             return;
         }

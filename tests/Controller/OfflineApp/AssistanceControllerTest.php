@@ -41,7 +41,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one project with assistance in database to complete this test.'
             );

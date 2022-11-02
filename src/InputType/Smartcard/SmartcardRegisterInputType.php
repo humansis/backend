@@ -11,33 +11,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class SmartcardRegisterInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\NotNull()
-     * @Assert\Type(type="string")
-     *
-     * @var string
-     */
-    private $serialNumber;
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'string')]
+    private ?string $serialNumber = null;
+
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'int')]
+    private ?int $beneficiaryId = null;
 
     /**
-     * @Assert\NotNull()
-     * @Assert\Type(type="int")
-     *
-     * @var int
-     */
-    private $beneficiaryId;
-
-    /**
-     * @Assert\DateTime()
-     *
      * @var DateTimeInterface
      */
+    #[Assert\DateTime]
     private $createdAt;
 
     /**
-     * @param string $serialNumber
-     * @param int $beneficiaryId
-     * @param string $createdAt
      *
      * @return static
      */
@@ -51,49 +39,31 @@ class SmartcardRegisterInputType implements InputTypeInterface
         return $self;
     }
 
-    /**
-     * @return string
-     */
     public function getSerialNumber(): string
     {
         return $this->serialNumber;
     }
 
-    /**
-     * @param string $serialNumber
-     */
     public function setSerialNumber(string $serialNumber): void
     {
         $this->serialNumber = strtoupper($serialNumber);
     }
 
-    /**
-     * @return int
-     */
     public function getBeneficiaryId(): int
     {
         return $this->beneficiaryId;
     }
 
-    /**
-     * @param int $beneficiaryId
-     */
     public function setBeneficiaryId(int $beneficiaryId): void
     {
         $this->beneficiaryId = $beneficiaryId;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
     public function setCreatedAt(string $createdAt): void
     {
         $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);

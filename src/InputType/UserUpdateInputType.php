@@ -5,59 +5,34 @@ namespace InputType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"UserUpdateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['UserUpdateInputType', 'Strict'])]
 class UserUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @var string $username
-     *
-     * @Assert\Length(min="2", max="45")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     */
-    private $username;
+    #[Assert\Length(min: 2, max: 45)]
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    private ?string $username = null;
+
+    #[Assert\Length(max: 180)]
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    private ?string $email = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $password = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $phonePrefix = null;
+
+    #[Assert\Length(min: 2, max: 45)]
+    #[Assert\Type('string')]
+    private ?string $phoneNumber = null;
 
     /**
-     * @var string $email
-     *
-     * @Assert\Length(max="180")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     */
-    private $email;
-
-    /**
-     * @var string|null $password
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $password;
-
-    /**
-     * @var string|null $phonePrefix
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $phonePrefix;
-
-    /**
-     * @var string|null $phoneNumber
-     *
-     * @Assert\Length(min="2", max="45")
-     * @Assert\Type("string")
-     */
-    private $phoneNumber;
-
-    /**
-     * @var array|null $countries
-     *
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"}),
@@ -66,22 +41,14 @@ class UserUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $countries;
+    #[Assert\Type('array')]
+    private ?array $countries = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $language = null;
 
     /**
-     * @var string|null $language
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $language;
-
-    /**
-     * @var array $roles
-     *
-     * @Assert\Type("array")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -89,12 +56,12 @@ class UserUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $roles;
+    #[Assert\Type('array')]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    private ?array $roles = null;
 
     /**
-     * @var array|null $projectIds
-     *
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
@@ -102,15 +69,12 @@ class UserUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projectIds;
+    #[Assert\Type('array')]
+    private ?array $projectIds = null;
 
-    /**
-     * @var bool $changePassword
-     *
-     * @Assert\Type("boolean")
-     * @Assert\NotNull
-     */
-    private $changePassword;
+    #[Assert\Type('boolean')]
+    #[Assert\NotNull]
+    private ?bool $changePassword = null;
 
     /**
      * @return string
@@ -248,25 +212,16 @@ class UserUpdateInputType implements InputTypeInterface
         return $this->projectIds;
     }
 
-    /**
-     * @param array|null $projectIds
-     */
     public function setProjectIds(?array $projectIds)
     {
         $this->projectIds = $projectIds;
     }
 
-    /**
-     * @return bool
-     */
     public function isChangePassword(): bool
     {
         return $this->changePassword;
     }
 
-    /**
-     * @param bool $changePassword
-     */
     public function setChangePassword(bool $changePassword): void
     {
         $this->changePassword = $changePassword;

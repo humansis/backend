@@ -24,69 +24,14 @@ use Entity\Vendor;
 
 class VendorService
 {
-    /** @var PdfService */
-    private $pdfService;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var VendorRepository
-     */
-    private $vendorRepository;
-
-    /**
-     * @var VoucherPurchaseRepository
-     */
-    private $voucherPurchaseRepository;
-
     /**
      * UserService constructor.
-     *
-     * @param PdfService $pdfService
-     * @param Environment $twig
-     * @param ExportService $exportService
-     * @param UserRepository $userRepository
-     * @param LocationRepository $locationRepository
-     * @param VendorRepository $vendorRepository
-     * @param VoucherPurchaseRepository $voucherPurchaseRepository
      */
-    public function __construct(
-        PdfService $pdfService,
-        Environment $twig,
-        ExportService $exportService,
-        UserRepository $userRepository,
-        LocationRepository $locationRepository,
-        VendorRepository $vendorRepository,
-        VoucherPurchaseRepository $voucherPurchaseRepository
-    ) {
-        $this->pdfService = $pdfService;
-        $this->twig = $twig;
-        $this->exportService = $exportService;
-        $this->userRepository = $userRepository;
-        $this->locationRepository = $locationRepository;
-        $this->vendorRepository = $vendorRepository;
-        $this->voucherPurchaseRepository = $voucherPurchaseRepository;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly PdfService $pdfService, private readonly Environment $twig, private readonly ExportService $exportService)
+    {
     }
 
     /**
-     * @param VendorCreateInputType $inputType
-     * @return Vendor
      * @throws EntityNotFoundException
      * @throws ORMException
      * @throws OptimisticLockException
@@ -133,9 +78,6 @@ class VendorService
     }
 
     /**
-     * @param Vendor $vendor
-     * @param VendorUpdateInputType $inputType
-     * @return Vendor
      * @throws EntityNotFoundException
      * @throws ORMException
      * @throws OptimisticLockException
@@ -169,8 +111,6 @@ class VendorService
     /**
      * Archives Vendor
      *
-     * @param Vendor $vendor
-     * @param bool $archiveVendor
      * @return Vendor
      * @throws Exception
      */
@@ -179,7 +119,7 @@ class VendorService
         try {
             $vendor->setArchived($archiveVendor);
             $this->vendorRepository->save($vendor);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             throw new Exception('Error archiving Vendor');
         }
 
@@ -187,8 +127,6 @@ class VendorService
     }
 
     /**
-     * @param User $user
-     * @return Vendor
      * @throws NotFoundHttpException
      */
     public function getVendorByUser(User $user): Vendor
@@ -207,7 +145,7 @@ class VendorService
     {
         try {
             $voucherPurchases = $this->voucherPurchaseRepository->findByVendor($vendor);
-            if (0 === count($voucherPurchases)) {
+            if (0 === (is_countable($voucherPurchases) ? count($voucherPurchases) : 0)) {
                 throw new Exception('This vendor has no voucher. Try syncing with the server.');
             }
             $totalValue = 0;
@@ -266,8 +204,6 @@ class VendorService
     /**
      * Export all vendors in a CSV file
      *
-     * @param string $type
-     * @param string $countryISO3
      * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception

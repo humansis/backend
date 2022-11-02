@@ -29,61 +29,19 @@ class ImportFinisher
 {
     use ImportLoggerTrait;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /** @var HouseholdDecoratorBuilder */
-    private $householdDecoratorBuilder;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importQueueStateMachine;
-
-    /**
-     * @var HouseholdService
-     */
-    private $householdService;
-
-    /**
-     * @var ImportQueueRepository
-     */
-    private $queueRepository;
-
-    /** @var ManagerRegistry */
-    private $managerRegistry;
-
     public function __construct(
-        EntityManagerInterface $em,
-        HouseholdService $householdService,
+        private readonly EntityManagerInterface $em,
+        private readonly HouseholdService $householdService,
         LoggerInterface $logger,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
-        ImportQueueRepository $queueRepository,
-        ManagerRegistry $managerRegistry
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        private readonly ImportQueueRepository $queueRepository,
+        private readonly ManagerRegistry $managerRegistry
     ) {
-        $this->em = $em;
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->householdService = $householdService;
-        $this->queueRepository = $queueRepository;
         $this->logger = $logger;
-        $this->householdDecoratorBuilder = $householdDecoratorBuilder;
-        $this->managerRegistry = $managerRegistry;
     }
 
-    /**
-     * @param ImportQueue $item
-     * @param Import $import
-     */
     public function finishCreationQueue(ImportQueue $item, Import $import): void
     {
         if (ImportQueueState::TO_CREATE !== $item->getState()) {
@@ -109,8 +67,6 @@ class ImportFinisher
     }
 
     /**
-     * @param ImportQueue $item
-     * @param Import $import
      *
      * @throws EntityNotFoundException|Exception
      */
@@ -130,9 +86,7 @@ class ImportFinisher
 
         $updatedHousehold = $acceptedDuplicity->getTheirs();
         $projects = array_values(
-            array_map(function (Project $project) {
-                return $project->getId();
-            }, $updatedHousehold->getProjects()->toArray())
+            array_map(fn(Project $project) => $project->getId(), $updatedHousehold->getProjects()->toArray())
         );
 
         foreach ($import->getProjects() as $project) {

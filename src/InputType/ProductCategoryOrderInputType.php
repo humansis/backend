@@ -8,8 +8,8 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class ProductCategoryOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_NAME = 'name';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_NAME = 'name';
 
     protected function getValidNames(): array
     {

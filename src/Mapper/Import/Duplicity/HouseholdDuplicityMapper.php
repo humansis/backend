@@ -13,23 +13,10 @@ use Serializer\MapperInterface;
 
 class HouseholdDuplicityMapper implements MapperInterface
 {
-    /** @var ImportHouseholdDuplicity */
-    private $object;
+    private ?\Entity\ImportHouseholdDuplicity $object = null;
 
-    /** @var ImportLineFactory */
-    private $importLineFactory;
-
-    /** @var HouseholdDecoratorBuilder */
-    private $decoratorBuilder;
-
-    /**
-     * @param ImportLineFactory $importLineFactory
-     * @param HouseholdDecoratorBuilder $decoratorBuilder
-     */
-    public function __construct(ImportLineFactory $importLineFactory, HouseholdDecoratorBuilder $decoratorBuilder)
+    public function __construct(private readonly ImportLineFactory $importLineFactory, private readonly HouseholdDecoratorBuilder $decoratorBuilder)
     {
-        $this->importLineFactory = $importLineFactory;
-        $this->decoratorBuilder = $decoratorBuilder;
     }
 
     /**
@@ -52,9 +39,7 @@ class HouseholdDuplicityMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ImportHouseholdDuplicity::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . ImportHouseholdDuplicity::class . ', ' . $object::class . ' given.'
         );
     }
 
