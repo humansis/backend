@@ -15,7 +15,6 @@ use Swift_Mailer;
 use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Transaction;
 use Utils\Provider\DefaultFinancialProvider;
@@ -42,7 +41,6 @@ class TransactionService
         private readonly CacheInterface $cache,
         private readonly Environment $twig,
         private readonly LoggerInterface $logger,
-        private readonly MailerInterface $mailer,
         private readonly ExportService $exportService,
         private readonly DefaultFinancialProvider $defaultFinancialProvider,
         private readonly KHMFinancialProvider $khmFinancialProvider
@@ -122,7 +120,7 @@ class TransactionService
         $numberOfBeneficiaries = count($assistance->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-        $message = (new Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
+        /*$message = (new Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
             ->setFrom($this->email)
             ->setTo($user->getEmail())
             ->setBody(
@@ -138,9 +136,9 @@ class TransactionService
                     ]
                 ),
                 'text/html'
-            );
+            );*/
 
-        $this->mailer->send($message);
+        //$this->mailer->send($message);
         $this->logger->error("Code for verify assistance was sent to " . $user->getEmail(), [$assistance]);
     }
 
