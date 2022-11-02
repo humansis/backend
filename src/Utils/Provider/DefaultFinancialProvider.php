@@ -65,7 +65,7 @@ abstract class DefaultFinancialProvider
         AssistanceBeneficiary $assistanceBeneficiary,
         float $amount,
         string $currency
-    ): never {
+    ): Transaction {
         throw new Exception("You need to define the financial provider for the country.");
     }
 

@@ -103,7 +103,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
         AssistanceBeneficiary $assistanceBeneficiary,
         float $amount,
         string $currency
-    ) {
+    ): Transaction {
         $assistance = $assistanceBeneficiary->getAssistance();
         $route = "/api/v1/sendmoney/nonwing/commit";
         $body = [
