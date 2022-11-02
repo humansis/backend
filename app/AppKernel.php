@@ -42,8 +42,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new FOS\RestBundle\FOSRestBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
-            new RA\RequestValidatorBundle\RARequestValidatorBundle(),
-            new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new DHAuditorBundle(),
