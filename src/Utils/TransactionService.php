@@ -15,6 +15,7 @@ use Swift_Mailer;
 use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Transaction;
 use Utils\Provider\DefaultFinancialProvider;
@@ -57,7 +58,7 @@ class TransactionService
      */
     private $twig;
 
-    /** @var Swift_Mailer */
+    /** @var MailerInterface */
     private $mailer;
 
     /** @var ExportService */
@@ -71,7 +72,7 @@ class TransactionService
      * @param CacheInterface $cache
      * @param Environment $twig
      * @param LoggerInterface $mobileLogger
-     * @param Swift_Mailer $mailer
+     * @param MailerInterface $mailer
      * @param ExportService $exportService
      */
     public function __construct(
@@ -80,7 +81,7 @@ class TransactionService
         CacheInterface $cache,
         Environment $twig,
         LoggerInterface $mobileLogger,
-        Swift_Mailer $mailer,
+        MailerInterface $mailer,
         ExportService $exportService,
         DefaultFinancialProvider $defaultFinancialProvider,
         KHMFinancialProvider $khmFinancialProvider
