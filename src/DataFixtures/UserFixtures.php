@@ -10,7 +10,6 @@ use Entity\Project;
 use InputType\UserCreateInputType;
 use InputType\UserInitializeInputType;
 use Repository\UserRepository;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Tests\BMSServiceTestCase;
@@ -28,8 +27,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     final public const REF_VENDOR_KHM = 'vendor@example.org';
     final public const REF_VENDOR_SYR = 'vendor.syr@example.org';
 
-    public function __construct(private readonly Kernel $kernel, private readonly UserService $userService, private readonly ValidatorInterface $validator, private readonly UserRepository $repository)
-    {
+    public function __construct(
+        private readonly Kernel $kernel,
+        private readonly UserService $userService,
+        private readonly ValidatorInterface $validator,
+        private readonly UserRepository $repository
+    ) {
     }
 
     private array $defaultCountries = ["KHM", "SYR", "UKR", "ETH", "MNG", "ARM", "ZMB"];
@@ -126,7 +129,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
             foreach ($this->defaultCountries as $iso3) {
                 $countrySpecificUserData = $userData;
-                $countrySpecificUserData['email'] = str_replace('@', '.' . strtolower((string) $iso3) . '@', (string) $userData['email']);
+                $countrySpecificUserData['email'] = str_replace(
+                    '@',
+                    '.' . strtolower((string) $iso3) . '@',
+                    (string) $userData['email']
+                );
                 $this->makeUser($manager, $countrySpecificUserData, [$iso3]);
             }
         }

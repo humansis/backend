@@ -1143,9 +1143,6 @@ services:
 
     DataFixtures\ServiceFixtures:
         public: true
-        arguments:
-            #- "@fos_user.user_manager"
-            - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }
 
