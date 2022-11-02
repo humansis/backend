@@ -6,6 +6,7 @@ namespace Controller\OfflineApp;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Enum\SmartcardStates;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
@@ -73,13 +74,21 @@ class SmartcardController extends AbstractOfflineAppController
         SmartcardRepository $smartcardRepository,
         SmartcardService $smartcardService
     ): Response {
-        $smartcard = $smartcardRepository->findOneBy(['serialNumber' => $serialNumber]);
-        try {
-            $smartcardService->change($smartcard, $changeSmartcardInputType);
+        $smartcards = $smartcardRepository->findBy(['serialNumber' => $serialNumber, 'state' => SmartcardStates::ACTIVE]);
+        $doubledRequest = count($smartcards) === 0;
 
-            return Response::create();
-        } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition $e) {
+        foreach ($smartcards as $smartcard) {
+            try {
+                $smartcardService->change($smartcard, $changeSmartcardInputType);
+            } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
+                $doubledRequest = true;
+            }
+        }
+
+        if ($doubledRequest) {
             return Response::create('', Response::HTTP_ACCEPTED);
+        } else {
+            return Response::create();
         }
     }
 
