@@ -18,6 +18,7 @@ use InputType\Beneficiary\PhoneInputType;
 use InputType\Helper\EnumsBuilder;
 use Exception\MissingHouseholdHeadException;
 use Request\InputTypeInterface;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
 use Enum\Livelihood;
@@ -28,7 +29,7 @@ use Validator\Constraints\Enum;
 #[Assert\GroupSequenceProvider]
 class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProviderInterface
 {
-    public function getGroupSequence()
+    public function getGroupSequence(): array|GroupSequence
     {
         $commonSequence = [
             'HouseholdUpdateInputType',

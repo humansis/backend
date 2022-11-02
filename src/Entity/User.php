@@ -13,7 +13,6 @@ use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
  * User
@@ -21,7 +20,7 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User implements ExportableInterface, ObjectManagerAware, UserInterface
+class User implements ExportableInterface, UserInterface
 {
     final public const ROLE_DEFAULT = 'ROLE_USER';
     final public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
@@ -140,24 +139,6 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
         $this->roles = new ArrayCollection();
     }
 
-    public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
-    {
-        $this->em = $objectManager;
-    }
-
-    /**
-     * @return ObjectManager
-     */
-    private function getObjectManager(): ObjectManager
-    {
-        if (!$this->em instanceof ObjectManager) {
-            throw new RuntimeException(
-                'You need to call injectObjectManager() first to use entity manager inside entity.'
-            );
-        }
-
-        return $this->em;
-    }
 
     /**
      * Add country.
@@ -400,54 +381,12 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setRoles(array $roles)
+    public function setRoles(Collection $roles)
     {
         $this->roles->clear();
-
         foreach ($roles as $role) {
-            $this->addRole($role);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addRole($roleName)
-    {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
-        if (!$this->roles->contains($role)) {
             $this->roles->add($role);
         }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeRole($roleName)
-    {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
-        if (!$this->roles->contains($role)) {
-            $this->roles->removeElement($role);
-        }
-
         return $this;
     }
 
@@ -463,15 +402,15 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
     }
 
 
-    public function __serialize(): string
+    public function __serialize(): array
     {
-        return serialize([
+        return [
             $this->password,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-        ]);
+        ];
     }
 
     public function __unserialize($serialized): void

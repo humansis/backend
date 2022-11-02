@@ -9,6 +9,7 @@ use InputType\UserCreateInputType;
 use InputType\UserUpdateInputType;
 use InputType\UserInitializeInputType;
 use Entity\Project;
+use Repository\RoleRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
@@ -29,7 +30,7 @@ class UserService
     /**
      * UserService constructor.
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly RoleHierarchyInterface $roleHierarchy, private readonly Security $security)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly RoleHierarchyInterface $roleHierarchy, private readonly Security $security, private readonly RoleRepository $roleRepository)
     {
     }
 
@@ -48,8 +49,6 @@ class UserService
         $salt = $userDefinedSalt ?: $this->generateSalt();
 
         $user = new User();
-
-        $user->injectObjectManager($this->em);
 
         $user->setUsername($inputType->getUsername())
             ->setEmail($inputType->getUsername())
@@ -137,9 +136,11 @@ class UserService
             );
         }*/
 
+        $roles = $this->roleRepository->findByName($inputType->getRoles());
+
         $initializedUser->setEmail($inputType->getEmail())
             ->setEnabled(true)
-            ->setRoles($inputType->getRoles())
+            ->setRoles($roles)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
@@ -189,6 +190,7 @@ class UserService
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
 
+
         $existingUser = $userRepository->findOneBy(['email' => $inputType->getEmail()]);
         if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
             throw new InvalidArgumentException('The user with email ' . $inputType->getEmail() . ' already exists');
@@ -201,12 +203,14 @@ class UserService
             );
         }
 
+        $roles = $this->roleRepository->findByName($inputType->getRoles());
+
         $user->setEmail($inputType->getEmail())
             ->setUsername($inputType->getUsername())
             ->setEnabled(true)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
-            ->setRoles($inputType->getRoles())
+            ->setRoles($roles)
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
 
