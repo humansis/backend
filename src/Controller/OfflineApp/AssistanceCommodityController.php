@@ -21,8 +21,8 @@ class AssistanceCommodityController extends AbstractController
      */
     public function commodities(Request $request, CommodityOfflineFilterInputType $filter): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
