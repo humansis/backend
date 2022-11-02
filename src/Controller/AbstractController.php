@@ -26,8 +26,8 @@ abstract class AbstractController extends SymfonyAbstractController
 
     protected function getCountryCode(Request $request): string
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 

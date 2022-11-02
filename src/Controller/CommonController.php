@@ -37,8 +37,8 @@ class CommonController extends AbstractController
      */
     public function summaries(Request $request, AssistanceRepository $assistanceRepository): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -201,8 +201,8 @@ class CommonController extends AbstractController
      */
     public function adms(Request $request): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
