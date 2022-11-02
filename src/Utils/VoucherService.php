@@ -9,7 +9,6 @@ use InputType\DataTableType;
 use InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\User;
 use DTO\RedemptionVoucherBatchCheck;
@@ -23,9 +22,6 @@ class VoucherService
 {
     /** @var EntityManagerInterface $em */
     private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
 
     /**
      * @var Environment
@@ -42,20 +38,17 @@ class VoucherService
      * UserService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
      * @param ExportService $exportService
      * @param Environment $twig
      * @param PdfService $pdfService
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        ContainerInterface $container,
         ExportService $exportService,
         Environment $twig,
         PdfService $pdfService
     ) {
         $this->em = $entityManager;
-        $this->container = $container;
         $this->exportService = $exportService;
         $this->twig = $twig;
         $this->pdfService = $pdfService;
@@ -285,7 +278,7 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                $booklets = $this->getAllBooklets(
                     new Country($countryIso3),
                     $dataTableFilter
                 )[1];
@@ -350,7 +343,7 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                $booklets = $this->getAllBooklets(
                     new Country($countryIso3),
                     $dataTableFilter
                 )[1];
@@ -424,5 +417,26 @@ class VoucherService
         $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
 
         return $response;
+    }
+
+    /**
+     * copy&paste Utils\BookletService::getAll()
+     * @deprecated
+     */
+    private function getAllBooklets(Country $countryISO3, DataTableType $filter): array
+    {
+        $limitMinimum = $filter->pageIndex * $filter->pageSize;
+
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy(
+            $countryISO3->getIso3(),
+            $limitMinimum,
+            $filter->pageSize,
+            $filter->getSort(),
+            $filter->getFilter()
+        );
+        $length = $booklets[0];
+        $booklets = $booklets[1];
+
+        return [$length, $booklets];
     }
 }
