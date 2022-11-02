@@ -560,51 +560,30 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
         );
     }
 
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function serialize(): string
-//    {
-//        return serialize(array(
-//            $this->password,
-//            //$this->salt,
-//            //$this->usernameCanonical,
-//            $this->username,
-//            $this->enabled,
-//            $this->id,
-//            $this->email,
-//            //$this->emailCanonical,
-//        ));
-//    }
-//
-//    /**
-//     * {@inheritdoc}
-//     */
-//    public function unserialize($serialized): void
-//    {
-//        $data = unserialize($serialized);
-//
-//        if (13 === count($data)) {
-//            // Unserializing a User object from 1.3.x
-//            unset($data[4], $data[5], $data[6], $data[9], $data[10]);
-//            $data = array_values($data);
-//        } elseif (11 === count($data)) {
-//            // Unserializing a User from a dev version somewhere between 2.0-alpha3 and 2.0-beta1
-//            unset($data[4], $data[7], $data[8]);
-//            $data = array_values($data);
-//        }
-//
-//        [
-//            $this->password,
-//            //$this->salt,
-//            //$this->usernameCanonical,
-//            $this->username,
-//            $this->enabled,
-//            $this->id,
-//            $this->email,
-//            //$this->emailCanonical
-//        ] = $data;
-//    }
+
+    public function __serialize(): string
+    {
+        return serialize([
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ]);
+    }
+
+    public function __unserialize($serialized): void
+    {
+        $data = unserialize($serialized);
+
+        [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ] = $data;
+    }
 
     public function getId(): int
     {
@@ -642,7 +621,7 @@ class User implements ExportableInterface, ObjectManagerAware, UserInterface
 
     public function eraseCredentials(): void
     {
-        $this->password = null;
+        // If you store any temporary, sensitive data on the user (like a password in plaintext), clear it here
     }
 
     public function setPassword(string $password): self
