@@ -7,6 +7,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Component\Country\Countries;
+use Entity\Role;
 use Symfony\Component\HttpKernel\Kernel;
 use Entity\User;
 use Entity\Vendor;
@@ -148,13 +149,13 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $email = "vendor$userIndex.$country@example.org";
         $instance = new User();
 
-        $instance->injectObjectManager($manager);
+        $roles = $manager->getRepository(Role::class)->findByName(['ROLE_ADMIN']);
 
         $instance->setEnabled(1)
             ->setEmail($email)
             ->setUsername($email)
             ->setSalt('no salt')
-            ->setRoles(['ROLE_VENDOR'])
+            ->setRoles($roles)
             ->setChangePassword(0);
         $instance->setPassword('no passwd');
         $manager->persist($instance);

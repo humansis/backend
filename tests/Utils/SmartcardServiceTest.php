@@ -26,6 +26,7 @@ use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\RoleRepository;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
@@ -65,6 +66,11 @@ class SmartcardServiceTest extends KernelTestCase
      */
     private $preliminaryInvoiceRepository;
 
+    /**
+     * @var RoleRepository
+     */
+    private $roleRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -77,6 +83,7 @@ class SmartcardServiceTest extends KernelTestCase
         $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
         $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
         $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
+        $this->roleRepository = static::$kernel->getContainer()->get(RoleRepository::class);
         $this->preliminaryInvoiceRepository = static::$kernel->getContainer()->get(PreliminaryInvoiceRepository::class);
 
         $this->createTempVendor($this->em);
@@ -702,13 +709,14 @@ class SmartcardServiceTest extends KernelTestCase
             ['id' => 'asc']
         );
 
+        $roles = $this->roleRepository->findByName(['ROLE_ADMIN']);
+
         $this->user = new User();
-        $this->user->injectObjectManager($em);
         $this->user->setEnabled(1)
             ->setEmail($id . self::VENDOR_USERNAME)
             ->setUsername($id . self::VENDOR_USERNAME)
             ->setSalt('')
-            ->setRoles(['ROLE_ADMIN'])
+            ->setRoles($roles)
             ->setChangePassword(0)
             ->setPassword('');
 
