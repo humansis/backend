@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Model\PurchaseService;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -18,7 +17,7 @@ use InputType\VoucherPurchase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Utils\SmartcardService;
 
-class VoucherController extends Controller
+class VoucherController extends AbstractVendorAppController
 {
     public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator, private readonly LoggerInterface $logger, private readonly PurchaseService $purchaseService)
     {
