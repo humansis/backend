@@ -1308,7 +1308,6 @@ services:
             - '@cache.app'
             - '@Twig\Environment'
             - '@monolog.logger'
-            - '@swiftmailer.mailer.default'
             - '@export_csv_service'
 
     transaction.default_financial_provider:
