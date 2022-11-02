@@ -114,8 +114,8 @@ class BookletController extends AbstractController
         Pagination $pagination,
         BookletOrderInputType $orderBy
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
