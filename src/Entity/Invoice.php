@@ -145,7 +145,7 @@ class Invoice implements JsonSerializable
         return $this->getId() ? sprintf('%06d', $this->getId()) : null;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

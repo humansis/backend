@@ -18,7 +18,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getMessageTemplate()
+    public function getMessageTemplate(): string
     {
         return 'Value \'{{ value }}\' already exists';
     }
@@ -26,7 +26,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return ['{{ value }}' => $this->value];
     }
@@ -34,7 +34,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getPlural()
+    public function getPlural(): int
     {
         return 1;
     }
@@ -42,7 +42,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getRoot()
+    public function getRoot(): mixed
     {
         return $this->value;
     }
@@ -50,7 +50,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getPropertyPath()
+    public function getPropertyPath(): string
     {
         return $this->atPath;
     }
@@ -58,7 +58,7 @@ class NotUniqueException extends RuntimeException implements ConstraintViolation
     /**
      * {@inheritdoc}
      */
-    public function getInvalidValue()
+    public function getInvalidValue(): mixed
     {
         return $this->value;
     }

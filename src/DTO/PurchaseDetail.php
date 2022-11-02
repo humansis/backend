@@ -67,7 +67,7 @@ class PurchaseDetail implements JsonSerializable
         return implode(' ', $names);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'purchase_datetime' => $this->getDate()->format('U'),
