@@ -76,7 +76,7 @@ class ErrorResponseEventSubscriber implements \Symfony\Component\EventDispatcher
 
         $this->logger->error($exception->getMessage(), $flattenException->toArray());
 
-        $event->setResponse(JsonResponse::create($data, $data['code']));
+        $event->setResponse(new JsonResponse($data, $data['code']));
     }
     /**
      * @return array<string, mixed>
