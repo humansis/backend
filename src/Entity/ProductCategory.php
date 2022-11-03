@@ -29,6 +29,16 @@ class ProductCategory
     private int $id;
 
     /**
+     * @ORM\Column(name="name", type="string", nullable=false)
+     */
+    private string $name;
+
+    /**
+     * @ORM\Column(name="type", type="enum_product_category_type", nullable=false)
+     */
+    private string $type;
+
+    /**
      * @ORM\Column(name="image", type="text", nullable=true)
      */
     private ?string $image = null;
@@ -43,17 +53,13 @@ class ProductCategory
      *
      * @ORM\OneToMany(targetEntity="Entity\Product", mappedBy="productCategory")
      */
-    private \Doctrine\Common\Collections\Collection|array $products;
+    private Collection |array $products;
 
-    public function __construct(/**
-         * @ORM\Column(name="name", type="string", nullable=false)
-         */
-        private string $name, /**
-         * @ORM\Column(name="type", type="enum_product_category_type", nullable=false)
-         */
-        private string $type
-    ) {
+    public function __construct(string $name, string $type)
+    {
+        $this->name = $name;
         $this->products = new ArrayCollection();
+        $this->type = $type;
     }
 
     public function getId(): int
@@ -74,7 +80,7 @@ class ProductCategory
     /**
      * @return Collection|Product[]
      */
-    public function getProducts(): \Doctrine\Common\Collections\Collection|array
+    public function getProducts(): Collection |array
     {
         return $this->products;
     }

@@ -43,14 +43,14 @@ class Role
      *
      * @ORM\ManyToMany(targetEntity="Entity\Privilege", inversedBy="roles")
      */
-    private \Doctrine\Common\Collections\Collection|array $privileges;
+    private Collection |array $privileges;
 
     /**
      * @var Collection|User[]
      *
      * @ORM\ManyToMany(targetEntity="Entity\User", mappedBy="roles")
      */
-    private \Doctrine\Common\Collections\Collection|array $users;
+    private Collection |array $users;
 
     public function __construct()
     {
@@ -101,7 +101,7 @@ class Role
     /**
      * @return Collection|Privilege[]
      */
-    public function getPrivileges(): \Doctrine\Common\Collections\Collection|array
+    public function getPrivileges(): Collection |array
     {
         return $this->privileges;
     }
@@ -109,7 +109,7 @@ class Role
     /**
      * @return Collection|User[]
      */
-    public function getUsers(): \Doctrine\Common\Collections\Collection|array
+    public function getUsers(): Collection |array
     {
         return $this->users;
     }
@@ -117,7 +117,7 @@ class Role
     /**
      * @param Collection|User[] $users
      */
-    public function setUsers(\Doctrine\Common\Collections\Collection|array $users): void
+    public function setUsers(Collection |array $users): void
     {
         $this->users = $users;
     }

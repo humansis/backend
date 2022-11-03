@@ -65,18 +65,14 @@ class Location implements TreeInterface
     private int $duplicityCount = 0;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $name;
+    private string $name;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
-    private $code;
+    private string|null $code;
 
     public function __construct(
         string $countryIso3
@@ -111,7 +107,7 @@ class Location implements TreeInterface
     }
 
     /**
-     * @param Location[] $childLocations
+     * @param Collection|Location[] $childLocations
      */
     public function setChildLocations(array $childLocations): void
     {

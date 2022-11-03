@@ -26,10 +26,32 @@ class ProjectSector
     private ?int $id = null;
 
     /**
+     * @see SectorEnum
+     *
+     * @ORM\Column(name="sector", type="enum_sector", nullable=false)
+     */
+    private string $sector;
+
+    /**
+     * @see SubSectorEnum
+     *
+     * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
+     */
+    private string|null $subSector;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="sectors")
+     */
+    private Project $project;
+
+    /**
      * ProjectSector constructor.
      */
-    public function __construct(private string $sector, private Project $project, private ?string $subSector = null)
+    public function __construct(string $sector, Project $project, ?string $subSector = null)
     {
+        $this->sector = $sector;
+        $this->subSector = $subSector;
+        $this->project = $project;
     }
 
     public function getId(): int
