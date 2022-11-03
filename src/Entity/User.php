@@ -462,14 +462,17 @@ class User implements ExportableInterface, UserInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Role[] $roles
+     * @return $this
      */
-    public function setRoles(Collection $roles)
+    public function setRoles(array $roles): self
     {
         $this->roles->clear();
+
         foreach ($roles as $role) {
             $this->roles->add($role);
         }
+
         return $this;
     }
 
