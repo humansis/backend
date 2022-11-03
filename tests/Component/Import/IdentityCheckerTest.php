@@ -25,7 +25,7 @@ class IdentityCheckerTest extends KernelTestCase
         self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
     }
 
-    public function testSelfCheck(): never
+    public function testSelfCheck(): void
     {
         $this->markTestSkipped('Self check is disabled for this time');
         $import = self::$entityManager->getRepository(Import::class)->findBy(
