@@ -15,18 +15,33 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportState;
 use Entity\Project;
 use Entity\User;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Import implements \Stringable
+class Import implements Stringable
 {
     use StandardizedPrimaryKey;
     use CreatedBy;
     use CreatedAt;
     use EnumTrait;
     use CountryDependent;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", nullable=false)
+     */
+    private string $title;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="notes", type="string", nullable=true)
+     */
+    private string|null $notes;
 
     /**
      * @var Project[]|Collection
@@ -37,7 +52,7 @@ class Import implements \Stringable
      *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}
      * )
      */
-    private array|\Doctrine\Common\Collections\Collection $projects;
+    private array| Collection $projects;
 
     /**
      * @ORM\Column(name="state", type="enum_import_state", nullable=false)
@@ -49,41 +64,39 @@ class Import implements \Stringable
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="import", cascade={"remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importQueue;
+    private array| Collection $importQueue;
 
     /**
      * @var ImportFile[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportFile", mappedBy="import", cascade={"persist", "remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importFiles;
+    private array| Collection $importFiles;
 
     /**
      * @var ImportBeneficiary[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="import", cascade={"persist", "remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importBeneficiaries;
+    private array| Collection $importBeneficiaries;
 
     /**
      * @var ImportInvalidFile[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportInvalidFile", mappedBy="import", cascade={"remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importInvalidFiles;
+    private array| Collection $importInvalidFiles;
 
     public function __construct(
-        string $countryIso3, /**
-         * @ORM\Column(name="title", type="string", nullable=false)
-         */
-        private string $title, /**
-         * @ORM\Column(name="notes", type="string", nullable=true)
-         */
-        private ?string $notes,
+        string $countryIso3,
+        string $title,
+        ?string $notes,
         array $projects,
-        User $creator
+        User $creator,
     ) {
         $this->countryIso3 = $countryIso3;
+        $this->title = $title;
+        $this->notes = $notes;
         $this->projects = new ArrayCollection($projects);
         $this->state = ImportState::NEW;
         $this->createdBy = $creator;
@@ -140,7 +153,7 @@ class Import implements \Stringable
     /**
      * @return Collection|ImportQueue[]
      */
-    public function getImportQueue(): \Doctrine\Common\Collections\Collection|array
+    public function getImportQueue(): Collection |array
     {
         return $this->importQueue;
     }
@@ -153,7 +166,7 @@ class Import implements \Stringable
     /**
      * @return Collection|ImportFile[]
      */
-    public function getImportFiles(): \Doctrine\Common\Collections\Collection|array
+    public function getImportFiles(): Collection |array
     {
         return $this->importFiles;
     }
@@ -161,7 +174,7 @@ class Import implements \Stringable
     /**
      * @return Collection|ImportBeneficiary[]
      */
-    public function getImportBeneficiaries(): \Doctrine\Common\Collections\Collection|array
+    public function getImportBeneficiaries(): Collection |array
     {
         return $this->importBeneficiaries;
     }
@@ -169,7 +182,7 @@ class Import implements \Stringable
     /**
      * @return Collection|ImportInvalidFile[]
      */
-    public function getImportInvalidFiles(): \Doctrine\Common\Collections\Collection|array
+    public function getImportInvalidFiles(): Collection |array
     {
         return $this->importInvalidFiles;
     }
