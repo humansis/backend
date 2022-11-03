@@ -22,7 +22,7 @@ class ExportDistributionTest extends BMSServiceTestCase
      */
     public function testExportDistribution()
     {
-        $exportservice = new ExportService($this->em, self::$container);
+        $exportservice = new ExportService($this->em, self::getContainer());
         $exportableTable = $this->em->getRepository(Assistance::class)->findAll();
 
         $filename = $exportservice->export($exportableTable, 'actual', 'csv');

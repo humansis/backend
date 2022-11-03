@@ -24,7 +24,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     protected function tearDown(): void
@@ -105,7 +105,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $reliefPackage = $this->createReliefPackage($ab);
         $date = $this->getUnusedDepositDate();
-        $depositFactory = self::$container->get(DepositFactory::class);
+        $depositFactory = self::getContainer()->get(DepositFactory::class);
         $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
         $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser(self::USER_TESTER));
 

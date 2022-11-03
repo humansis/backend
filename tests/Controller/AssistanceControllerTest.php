@@ -34,13 +34,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testGetItem()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
         $commodityIds = array_map(fn(Commodity $commodity) => $commodity->getId(), $assistance->getCommodities()->toArray());
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId());
@@ -82,9 +82,9 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request(
             'GET',
@@ -107,7 +107,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
     public function testAsisstancesByProject()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/projects/' . $project->getId() . '/assistances');
 
@@ -388,10 +388,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistribution(array $commodity)
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
             $this->markTestSkipped(
@@ -475,10 +475,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCommodityCountOfCreatedAssistance()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
 
         if (null === $project || null === $location) {
             $this->markTestSkipped(
@@ -554,7 +554,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testUpdateDistributionDate()
     {
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
@@ -578,7 +578,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
      */
     public function testUpdateExpirationDate()
     {
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
         ], ['updatedOn' => 'desc']);
@@ -600,10 +600,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateDistributionWithExpirationDate()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $modalityType = ModalityType::CASH;
 
@@ -672,10 +672,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateActivity()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $modalityType = ModalityType::CASH;
 
@@ -737,13 +737,13 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateCommunityActivity()
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Community $community */
-        $community = self::$container->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
+        $community = self::getContainer()->get('doctrine')->getRepository(Community::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var ModalityType $modalityType */
         $modalityType = ModalityType::CASH;
@@ -798,10 +798,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateRemoteDistributionWithValidSmartcard(): void
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $modalityType = ModalityType::SMART_CARD;
 
@@ -887,10 +887,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testCreateRemoteDistributionWithInvalidSmartcard(): void
     {
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Location $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $modalityType = ModalityType::SMART_CARD;
 
@@ -951,7 +951,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testBankReportExportsSuccess()
     {
         /** @var AssistanceRepository $assistanceRepository */
-        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+        $assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
 
         $commodityData = [
             'value' => 1,
@@ -980,7 +980,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testBankReportExportsNotValidated()
     {
         /** @var AssistanceRepository $assistanceRepository */
-        $assistanceRepository = self::$container->get('doctrine')->getRepository(Assistance::class);
+        $assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
 
         $assistance = $assistanceRepository->findOneBy(['validatedBy' => null]);
         $id = $assistance->getId();

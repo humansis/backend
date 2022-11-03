@@ -33,7 +33,7 @@ class ImportControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -43,7 +43,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var Project|null $projects */
-        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+        $projects = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($projects)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');

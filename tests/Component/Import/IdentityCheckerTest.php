@@ -34,7 +34,7 @@ class IdentityCheckerTest extends KernelTestCase
         )[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = self::$container->get(IdentityChecker::class);
+        $checker = self::getContainer()->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()
