@@ -6,6 +6,8 @@ namespace Entity;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\CreatedBy;
@@ -39,11 +41,11 @@ abstract class SynchronizationBatch
     private string $state = SynchronizationBatchState::UPLOADED;
 
     /**
-     * @var string serialized ConstraintViolationListInterface[]
+     * @var ?Collection serialized ConstraintViolationListInterface[]
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
-    private string $violations;
+    private ?Collection $violations = null;
 
     /**
      * @ORM\Column(name="validated_at", type="datetime", nullable=true)
@@ -84,7 +86,7 @@ abstract class SynchronizationBatch
     /**
      * @return array[]|null
      */
-    public function getViolations(): ?array
+    public function getViolations(): ?Collection
     {
         return $this->violations;
     }
@@ -98,7 +100,7 @@ abstract class SynchronizationBatch
             throw new InvalidArgumentException("Violation shouldn't be added to processed batches");
         }
         $this->validatedAt = $validatedAt ?? new DateTimeImmutable();
-        $this->violations = [];
+        $this->violations = new ArrayCollection();
         foreach ($violations as $rowKey => $violationList) {
             $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
         }
