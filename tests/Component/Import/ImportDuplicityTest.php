@@ -57,7 +57,7 @@ class ImportDuplicityTest extends KernelTestCase
     /** @var ProjectService */
     private $projectService;
 
-    private object|\Symfony\Bundle\FrameworkBundle\KernelBrowser|null $client;
+    private \Symfony\Bundle\FrameworkBundle\KernelBrowser|null $client;
 
     protected function setUp(): void
     {
