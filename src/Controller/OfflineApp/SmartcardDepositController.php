@@ -7,6 +7,7 @@ namespace Controller\OfflineApp;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Deposit\DepositFactory;
@@ -27,7 +28,7 @@ use Repository\SmartcardDepositRepository;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {
-    public function __construct(private readonly string $logsDir)
+    public function __construct(private readonly string $logsDir, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -39,7 +40,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     public function list(Request $request, SmartcardDepositFilterInputType $filter): JsonResponse
     {
         /** @var SmartcardDepositRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(SmartcardDeposit::class);
+        $repository = $this->managerRegistry->getRepository(SmartcardDeposit::class);
         $data = $repository->findByParams($filter);
 
         $response = $this->json($data);

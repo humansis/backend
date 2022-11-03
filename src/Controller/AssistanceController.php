@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\User;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -48,7 +49,7 @@ use Component\Assistance\Domain\Assistance as DomainAssistance;
 
 class AssistanceController extends AbstractController
 {
-    public function __construct(private readonly VulnerabilityScoreExport $vulnerabilityScoreExport, private readonly AssistanceService $assistanceService, private readonly AssistanceBankReportExport $assistanceBankReportExport, private readonly SerializerInterface $serializer)
+    public function __construct(private readonly VulnerabilityScoreExport $vulnerabilityScoreExport, private readonly AssistanceService $assistanceService, private readonly AssistanceBankReportExport $assistanceBankReportExport, private readonly SerializerInterface $serializer, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -75,7 +76,7 @@ class AssistanceController extends AbstractController
         } else {
             // TODO if we search only assistance IDs we can check if statistic is in cache
 
-            $statistics = $this->getDoctrine()->getRepository(AssistanceStatistics::class)->findByParams(
+            $statistics = $this->managerRegistry->getRepository(AssistanceStatistics::class)->findByParams(
                 $countryIso3,
                 $filter
             );
@@ -113,7 +114,7 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $assistances = $this->getDoctrine()->getRepository(Assistance::class)->findByParams(
+        $assistances = $this->managerRegistry->getRepository(Assistance::class)->findByParams(
             $countryIso3,
             $filter,
             $orderBy,
@@ -327,7 +328,7 @@ class AssistanceController extends AbstractController
         AssistanceOrderInputType $orderBy
     ): JsonResponse {
         /** @var AssistanceRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Assistance::class);
+        $repository = $this->managerRegistry->getRepository(Assistance::class);
 
         $assistances = $repository->findByProject($project, null, $filter, $orderBy, $pagination);
 

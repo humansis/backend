@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
@@ -29,7 +30,7 @@ use Utils\BookletService;
 
 class BookletController extends AbstractController
 {
-    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService)
+    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -71,7 +72,7 @@ class BookletController extends AbstractController
      */
     public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
-        $booklets = $this->getDoctrine()->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
+        $booklets = $this->managerRegistry->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
 
         return $this->bookletService->generatePdf($booklets);
     }
@@ -119,7 +120,7 @@ class BookletController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(Booklet::class)
+        $list = $this->managerRegistry->getRepository(Booklet::class)
             ->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($list);

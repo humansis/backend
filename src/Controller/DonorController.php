@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\DonorCreateInputType;
@@ -21,7 +22,7 @@ use Utils\DonorService;
 
 class DonorController extends AbstractController
 {
-    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService)
+    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -58,7 +59,7 @@ class DonorController extends AbstractController
         DonorOrderInputType $orderBy,
         DonorFilterInputType $filter
     ): JsonResponse {
-        $countrySpecifics = $this->getDoctrine()->getRepository(Donor::class)
+        $countrySpecifics = $this->managerRegistry->getRepository(Donor::class)
             ->findByParams($orderBy, $pagination, $filter);
 
         return $this->json($countrySpecifics);
@@ -119,8 +120,8 @@ class DonorController extends AbstractController
 
         $donor->setLogo($url);
 
-        $this->getDoctrine()->getManager()->persist($donor);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($donor);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json(['url' => $url]);
     }

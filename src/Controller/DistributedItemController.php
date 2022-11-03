@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
 use Export\DistributedSummarySpreadsheetExport;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class DistributedItemController extends AbstractController
 {
-    public function __construct(private readonly DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport)
+    public function __construct(private readonly DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -35,7 +36,7 @@ class DistributedItemController extends AbstractController
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+        $data = $this->managerRegistry->getRepository(DistributedItem::class)
             ->findByBeneficiary($beneficiary);
 
         return $this->json($data);
@@ -49,7 +50,7 @@ class DistributedItemController extends AbstractController
      */
     public function listByHousehold(Household $household): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(DistributedItem::class)
+        $data = $this->managerRegistry->getRepository(DistributedItem::class)
             ->findByHousehold($household);
 
         return $this->json($data);

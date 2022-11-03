@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\Assistance;
@@ -22,7 +23,7 @@ use Utils\BookletService;
 
 class BookletController extends AbstractOfflineAppController
 {
-    public function __construct(private readonly BookletService $bookletService, private readonly LoggerInterface $logger)
+    public function __construct(private readonly BookletService $bookletService, private readonly LoggerInterface $logger, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -42,7 +43,7 @@ class BookletController extends AbstractOfflineAppController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(Booklet::class)
+        $list = $this->managerRegistry->getRepository(Booklet::class)
             ->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         $response = $this->json($list);

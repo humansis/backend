@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Organization;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
@@ -41,7 +42,7 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
     final public const EXPORT_LIMIT = 10000;
     final public const EXPORT_LIMIT_CSV = 20000;
 
-    public function __construct(private readonly AssistanceRepository $assistanceRepository, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly UserService $userService, private readonly CountrySpecificService $countrySpecificService, private readonly DonorService $donorService, private readonly ProjectService $projectService, private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService, private readonly HouseholdExportCSVService $householdExportCSVService, private readonly AssistancePdfExport $assistancePdfExport, private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly TransactionService $transactionService, private readonly VoucherService $voucherService, private readonly ProductService $productService, private readonly VendorService $vendorService)
+    public function __construct(private readonly AssistanceRepository $assistanceRepository, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly UserService $userService, private readonly CountrySpecificService $countrySpecificService, private readonly DonorService $donorService, private readonly ProjectService $projectService, private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService, private readonly HouseholdExportCSVService $householdExportCSVService, private readonly AssistancePdfExport $assistancePdfExport, private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly TransactionService $transactionService, private readonly VoucherService $voucherService, private readonly ProductService $productService, private readonly VendorService $vendorService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -113,7 +114,7 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
                     $request->query->get('beneficiariesInDistribution');
                 $distribution = $this->assistanceRepository->find($idDistribution);
                 // todo find organisation by relation to distribution
-                $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+                $organization = $this->managerRegistry->getRepository(Organization::class)->findOneBy([]);
                 if ($type === 'pdf') {
                     return $this->assistancePdfExport->export($distribution, $organization);
                 }
@@ -202,7 +203,7 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
             throw $this->createNotFoundException("Missing distribution ID.");
         }
 
-        $distribution = $this->getDoctrine()->getRepository(Assistance::class)->find($request->query->get('id'));
+        $distribution = $this->managerRegistry->getRepository(Assistance::class)->find($request->query->get('id'));
         if (null == $distribution) {
             throw $this->createNotFoundException("Invalid distribution requested.");
         }
@@ -211,7 +212,7 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
             throw $this->createNotFoundException("Invalid file type requested.");
         }
 
-        $organization = $this->getDoctrine()->getRepository(Organization::class)->findOneBy([]);
+        $organization = $this->managerRegistry->getRepository(Organization::class)->findOneBy([]);
 
         return $this->assistancePdfExport->export($distribution, $organization);
     }

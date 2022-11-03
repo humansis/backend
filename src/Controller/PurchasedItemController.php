@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
 use Export\PurchasedSummarySpreadsheetExport;
@@ -26,7 +27,7 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class PurchasedItemController extends AbstractController
 {
-    public function __construct(private readonly SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet, private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport)
+    public function __construct(private readonly SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet, private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -39,7 +40,7 @@ class PurchasedItemController extends AbstractController
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByBeneficiary($beneficiary);
 
@@ -55,7 +56,7 @@ class PurchasedItemController extends AbstractController
     public function listByHousehold(Household $household): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByHousehold($household);
 
@@ -79,7 +80,7 @@ class PurchasedItemController extends AbstractController
         }
 
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
 
