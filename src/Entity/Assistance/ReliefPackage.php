@@ -51,7 +51,7 @@ class ReliefPackage
     /**
      * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
      */
-    private string $amountToDistribute;
+    private string|float $amountToDistribute;
 
     /**
      *
@@ -176,7 +176,7 @@ class ReliefPackage
             );
         }
 
-        $this->amountToDistribute = $amountToDistribute;
+        $this->amountToDistribute = (string) $amountToDistribute;
     }
 
     public function getUnit(): string

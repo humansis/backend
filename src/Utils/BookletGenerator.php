@@ -63,12 +63,13 @@ class BookletGenerator
      *
      *
      * @throws DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     private function findBookletCode(string $code): ?string
     {
         $code = $this->em->getConnection()
             ->executeQuery('SELECT `code` FROM booklet WHERE `code` LIKE ? ORDER BY id DESC LIMIT 1', [$code . '%'])
-            ->fetchColumn();
+            ->fetchOne();
 
         return $code ?: null;
     }

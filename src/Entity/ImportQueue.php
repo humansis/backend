@@ -64,14 +64,17 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
     private array|\Doctrine\Common\Collections\Collection $importBeneficiaryDuplicities;
 
     /**
+     * @var Collection|ImportQueueDuplicity[]
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="ours", cascade={"remove"})
      */
-    private \Entity\ImportQueueDuplicity $importQueueDuplicitiesOurs;
+    private Collection | array $importQueueDuplicitiesOurs;
 
     /**
+     * @var Collection|ImportQueueDuplicity[]
+     *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="theirs", cascade={"remove"})
      */
-    private \Entity\ImportQueueDuplicity $importQueueDuplicitiesTheirs;
+    private array | Collection $importQueueDuplicitiesTheirs;
 
     /**
      * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
@@ -266,7 +269,7 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
     }
 
     /**
-     * @return ImportQueueDuplicity
+     * @return Collection|ImportQueueDuplicity[]
      */
     public function getImportQueueDuplicitiesTheirs()
     {

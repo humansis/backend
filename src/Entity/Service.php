@@ -33,7 +33,7 @@ class Service implements JsonSerializable
     /**
      * @ORM\Column(name="country", type="string", length=255, nullable=true)
      */
-    private string $country;
+    private ?string $country;
 
     /**
      * @var OrganizationServices $organizationServices
