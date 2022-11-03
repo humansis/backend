@@ -18,7 +18,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Utils\BeneficiaryService;
 use Utils\CountrySpecificService;
 use Utils\DonorService;
@@ -29,6 +28,7 @@ use Utils\TransactionService;
 use Utils\UserService;
 use Utils\VendorService;
 use Utils\VoucherService;
+use Symfony\Component\Mime\MimeTypes;
 
 /**
  * Class ExportController
@@ -177,9 +177,9 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-            if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            $mimeTypeGuesser = new MimeTypes();
+            if ($mimeTypeGuesser->isGuesserSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }
