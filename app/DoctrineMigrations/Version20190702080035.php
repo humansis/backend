@@ -82,7 +82,7 @@ final class Version20190702080035 extends AbstractMigration
 
     public function postUp(Schema $schema): void
     {
-        $households = $this->connection->fetchAll('SELECT id, address_street, address_number, address_postcode, location_id FROM household');
+        $households = $this->connection->fetchAllAssociative('SELECT id, address_street, address_number, address_postcode, location_id FROM household');
         foreach ($households as $household) {
             $this->connection->insert(
                 'address',
@@ -94,7 +94,7 @@ final class Version20190702080035 extends AbstractMigration
                 ]
             );
 
-            $max = $this->connection->fetchAssoc('SELECT MAX(id) as max FROM address');
+            $max = $this->connection->fetchAssociative('SELECT MAX(id) as max FROM address');
 
             $this->connection->insert(
                 'household_location',
