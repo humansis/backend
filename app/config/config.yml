@@ -154,6 +154,7 @@ doctrine:
         default_connection: default
         connections:
             default:
+                auto_commit: false
                 # configure these for your database server
                 driver: pdo_mysql
                 host: '%database_host%'
