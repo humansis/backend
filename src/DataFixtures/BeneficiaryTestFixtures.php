@@ -202,29 +202,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
 
     private function replacePlaceholders(array $data, array $replaces): array
     {
-        foreach ($data as $key => $value) {
-            $newValue = $value;
-            foreach ($replaces as $placeholder => $replace) {
-                if (is_array($newValue)) {
-                    $newValue = str_replace($placeholder, $replace, $this->ultimatePop($newValue));
-                } else {
-                    $newValue = str_replace($placeholder, $replace, (string) $newValue);
-                }
-            }
-            $data[$key] = $newValue;
+        $stringData = json_encode($data);
+        foreach ($replaces as $placeholder => $replace) {
+            $stringData = str_replace($placeholder, $replace, $stringData);
         }
-
-        return $data;
+        return json_decode($stringData, true);
     }
-
-    private function ultimatePop(mixed $array)
-    {
-        $item = array_pop($array);
-
-        return is_array($array)
-            ? $this->ultimatePop($array)
-            : $item;
-    }
+    
 
     private function getHouseholdLocation(Location $location): HouseholdLocation
     {
