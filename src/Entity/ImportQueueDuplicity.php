@@ -24,7 +24,16 @@ class ImportQueueDuplicity
     use EnumTrait;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
+     */
+    private ImportQueue $ours;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
+     */
+    private ImportQueue $theirs;
+
+    /**
      * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
      */
     private string $state;
@@ -39,14 +48,10 @@ class ImportQueueDuplicity
      */
     private ?\DateTimeInterface $decideAt = null;
 
-    public function __construct(/**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
-         */
-        private ImportQueue $ours, /**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
-         */
-        private ImportQueue $theirs
-    ) {
+    public function __construct(ImportQueue $ours, ImportQueue $theirs)
+    {
+        $this->ours = $ours;
+        $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
     }
 
