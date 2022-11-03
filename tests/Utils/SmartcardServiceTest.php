@@ -709,7 +709,7 @@ class SmartcardServiceTest extends KernelTestCase
             ['id' => 'asc']
         );
 
-        $roles = $this->roleRepository->findByName(['ROLE_ADMIN']);
+        $roles = $this->roleRepository->findByCodes(['ROLE_ADMIN']);
 
         $this->user = new User();
         $this->user->setEnabled(1)

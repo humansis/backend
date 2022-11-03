@@ -78,7 +78,7 @@ class CredentialsCommand extends Command
      */
     private function createAccount(): void
     {
-        $roles = $this->roleRepository->findByName( [RoleType::ADMIN]);
+        $roles = $this->roleRepository->findByCodes([RoleType::ADMIN]);
         $user = new User();
         $user->setUsername($this->account)
             ->setEnabled(true)

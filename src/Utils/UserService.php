@@ -136,7 +136,7 @@ class UserService
             );
         }*/
 
-        $roles = $this->roleRepository->findByName($inputType->getRoles());
+        $roles = $this->roleRepository->findByCodes($inputType->getRoles());
 
         $initializedUser->setEmail($inputType->getEmail())
             ->setEnabled(true)
@@ -203,7 +203,7 @@ class UserService
             );
         }
 
-        $roles = $this->roleRepository->findByName($inputType->getRoles());
+        $roles = $this->roleRepository->findByCodes($inputType->getRoles());
 
         $user->setEmail($inputType->getEmail())
             ->setUsername($inputType->getUsername())

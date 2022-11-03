@@ -149,7 +149,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $email = "vendor$userIndex.$country@example.org";
         $instance = new User();
 
-        $roles = $manager->getRepository(Role::class)->findByName(['ROLE_ADMIN']);
+        $roles = $manager->getRepository(Role::class)->findByCodes(['ROLE_ADMIN']);
 
         $instance->setEnabled(1)
             ->setEmail($email)
