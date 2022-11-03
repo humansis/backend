@@ -50,8 +50,19 @@ abstract class SynchronizationBatch
      */
     private ?\DateTimeInterface $validatedAt = null;
 
-    protected function __construct(private array $requestData)
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="request_data", type="json", nullable=false)
+     */
+    private $requestData;
+
+    /**
+     * @param array $requestData
+     */
+    protected function __construct(array $requestData)
     {
+        $this->requestData = $requestData;
     }
 
     public function setState(string $state): void
