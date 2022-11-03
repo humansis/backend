@@ -94,18 +94,22 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $this->validateAssistance($khmKhrAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_KHR, $khmKhrAssistance->getAssistanceRoot());
 
-        $khmUsdAssistance = $this->loadSmartcardAssistance($khmProjects[1], 'USD');
-        $this->validateAssistance($khmUsdAssistance, $user);
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance->getAssistanceRoot());
+// todo this fails with InvoiceChecker::checkCurrencyConsistency();
+//      to uncomment, in SmartcardInvoiceFixtures::createInvoices load only purchases in same currency
+//        $khmUsdAssistance = $this->loadSmartcardAssistance($khmProjects[1], 'USD');
+//        $this->validateAssistance($khmUsdAssistance, $user);
+//        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_KHM_USD, $khmUsdAssistance->getAssistanceRoot());
 
         $syrProjects = $this->projectRepository->findBy(['countryIso3' => 'SYR'], ['id' => 'asc']);
         $syrSypAssistance = $this->loadSmartcardAssistance($syrProjects[0], 'SYP');
         $this->validateAssistance($syrSypAssistance, $user);
         $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_SYP, $syrSypAssistance->getAssistanceRoot());
 
-        $syrUsdAssistance = $this->loadSmartcardAssistance($syrProjects[1], 'USD');
-        $this->validateAssistance($syrUsdAssistance, $user);
-        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance->getAssistanceRoot());
+// todo this fails with InvoiceChecker::checkCurrencyConsistency();
+//      to uncomment, in SmartcardInvoiceFixtures::createInvoices load only purchases in same currency
+//        $syrUsdAssistance = $this->loadSmartcardAssistance($syrProjects[1], 'USD');
+//        $this->validateAssistance($syrUsdAssistance, $user);
+//        $this->setReference(self::REF_SMARTCARD_ASSISTANCE_SYR_USD, $syrUsdAssistance->getAssistanceRoot());
     }
 
     public function getDependencies(): array

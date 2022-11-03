@@ -25,8 +25,6 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
 
     /**
      *
-     * @throws AlreadyRedeemedInvoiceException
-     * @throws NotRedeemableInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -70,10 +68,8 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
 
     /**
      *
-     * @throws AlreadyRedeemedInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws NotRedeemableInvoiceException
      */
     private function createInvoices(Vendor $vendor, User $user): void
     {
@@ -86,7 +82,7 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
             $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
         }
 
-        foreach ($purchaseIds as $projectId => $ids) {
+        foreach ($purchaseIds as $ids) {
             $invoice = new SmartcardInvoiceCreateInputType();
             $invoice->setPurchaseIds(array_slice($ids, 1, 5));
             $this->invoiceFactory->create(
