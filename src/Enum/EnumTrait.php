@@ -36,7 +36,7 @@ trait EnumTrait
     /**
      * @throws EnumValueNoFoundException
      */
-    public static function valueFromAPI(int|string $APIValue): string|int|bool
+    public static function valueFromAPI(int|string|bool $APIValue): string|int|bool
     {
         $normalizedApiValue = self::normalizeValue($APIValue);
         foreach (self::values() as $originalValue) {

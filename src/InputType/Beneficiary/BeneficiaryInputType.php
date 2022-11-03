@@ -68,9 +68,12 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\Valid]
     private array $nationalIdCards = [];
 
+    /**
+     * @var PhoneInputType[]
+     */
     #[Assert\Type('array')]
     #[Assert\Valid]
-    private \InputType\Beneficiary\PhoneInputType $phones = [];
+    private array $phones = [];
 
     /**
      * @Enum(enumClass="Enum\ResidencyStatus")
