@@ -139,10 +139,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         }
     }
 
-    /**
-     * @param $userData
-     * @return void
-     */
     private function makeUser(ObjectManager $manager, $userData, array $countries): User
     {
         $instance = $manager->getRepository(User::class)->findOneByUsername($userData['email']);
@@ -189,7 +185,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         return $this->userService->create($user, $userCreateInputType);
     }
 
-    private function makeAccessRights(ObjectManager $manager, User $instance, array $countryCodes)
+    private function makeAccessRights(ObjectManager $manager, User $instance, array $countryCodes): void
     {
         foreach ($countryCodes as $country) {
             $currentAccess = $manager->getRepository(UserCountry::class)->findOneBy([
@@ -234,7 +230,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             ProjectFixtures::class,
