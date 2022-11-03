@@ -27,13 +27,13 @@ class HouseholdControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/households', [
             'livelihood' => Livelihood::IRREGULAR_EARNINGS,
@@ -199,11 +199,11 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $vulnerabilityCriterion = self::$container->get('doctrine')->getRepository(
+        $vulnerabilityCriterion = self::getContainer()->get('doctrine')->getRepository(
             VulnerabilityCriterion::class
         )->findBy([], ['id' => 'asc'])[0];
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
-        $camp = self::$container->get('doctrine')->getRepository(Camp::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $camp = self::getContainer()->get('doctrine')->getRepository(Camp::class)->findBy([], ['id' => 'asc'])[0];
 
         /** @var Household $household */
         $household = $this->em->getRepository(Household::class)->find($id);

@@ -19,13 +19,13 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testGet()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
+        $item = self::getContainer()->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
             [],
             ['id' => 'asc']
         );
@@ -71,7 +71,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
+        $item = self::getContainer()->get('doctrine')->getRepository(GeneralReliefItem::class)->findOneBy(
             ['distributedAt' => null],
             ['id' => 'asc']
         );
@@ -107,7 +107,7 @@ class GeneralReliefItemControllerTest extends BMSServiceTestCase
     public function testPatch2()
     {
         /** @var GeneralReliefItem $item */
-        $item = self::$container->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(
+        $item = self::getContainer()->get('doctrine')->getRepository(GeneralReliefItem::class)->findBy(
             ['distributedAt' => new DateTime('2020-01-01T10:10:00+00')],
             ['id' => 'asc']
         )[0];

@@ -31,7 +31,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
         $this->location = $this->em->getRepository(Location::class)->findOneBy(['code' => self::LOCATION_CODE]);
     }
 

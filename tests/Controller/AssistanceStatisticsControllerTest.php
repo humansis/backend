@@ -46,17 +46,17 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-        $this->assistanceRepository = self::$container->get(AssistanceRepository::class);
-        $this->reliefPackageRepository = self::$container->get(ReliefPackageRepository::class);
-        $this->assistanceBeneficiaryRepository = self::$container->get(AssistanceBeneficiaryRepository::class);
-        $this->assistanceFactory = self::$container->get(AssistanceFactory::class);
+        $this->client = self::getContainer()->get('test.client');
+        $this->assistanceRepository = self::getContainer()->get(AssistanceRepository::class);
+        $this->reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
+        $this->assistanceBeneficiaryRepository = self::getContainer()->get(AssistanceBeneficiaryRepository::class);
+        $this->assistanceFactory = self::getContainer()->get(AssistanceFactory::class);
     }
 
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
 
@@ -81,7 +81,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findBy(
             ['archived' => false],
             ['id' => 'asc']
         )[0];
@@ -184,7 +184,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+        $user = self::getContainer()->get('doctrine')->getRepository(User::class)->findOneBy([]);
 
         // validate assistance
         $assistance->validate($user);

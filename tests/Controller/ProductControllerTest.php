@@ -22,13 +22,13 @@ class ProductControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+        $productCategory = self::getContainer()->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
             ['type' => ProductCategoryType::FOOD],
             ['id' => 'asc']
         );
@@ -71,7 +71,7 @@ class ProductControllerTest extends BMSServiceTestCase
     public function testCreateCashback()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+        $productCategory = self::getContainer()->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
             ['type' => ProductCategoryType::CASHBACK],
             ['id' => 'asc']
         );
