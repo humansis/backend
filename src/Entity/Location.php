@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CountryDependent;
 use Entity\Helper\NestedTreeTrait;
@@ -40,11 +41,11 @@ class Location implements TreeInterface
     private ?\Entity\Location $parentLocation = null;
 
     /**
-     * @var Location[]
+     * @var Collection|null
      *
      * @ORM\OneToMany(targetEntity="Entity\Location", mappedBy="parentLocation")
      */
-    private ?array $childLocations = null;
+    private ?Collection $childLocations = null;
 
     /**
      * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false)
