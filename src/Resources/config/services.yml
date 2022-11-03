@@ -963,7 +963,7 @@ services:
     ##                                     LISTENER                                      ##
     #######################################################################################
 
-    Listener\ResponseListener:
+    Listener\ResponseEventSubscriber:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
