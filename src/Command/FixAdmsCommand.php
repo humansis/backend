@@ -119,7 +119,7 @@ class FixAdmsCommand extends Command
 
     private function process(Connection $conn, $adm, $admPrev, $code, $name, $codePrev)
     {
-        $data = $conn->fetchAssoc(
+        $data = $conn->fetchAssociative(
             "SELECT {$admPrev}.code AS codePrev, {$adm}.name FROM {$adm} JOIN {$admPrev} ON $adm.{$admPrev}_id={$admPrev}.id WHERE {$adm}.code=?",
             [$code]
         );
@@ -143,7 +143,7 @@ class FixAdmsCommand extends Command
 
     private function processAdm1(Connection $conn, $countryIso3, $code, $name)
     {
-        $data = $conn->fetchAssoc('SELECT code, name FROM adm1 WHERE code=?', [$code]);
+        $data = $conn->fetchAssociative('SELECT code, name FROM adm1 WHERE code=?', [$code]);
         if (false === $data) {
             $conn->executeQuery(
                 'INSERT INTO adm1 SET code=?, name=?, countryIso3=?, location_id=?',
