@@ -39,6 +39,6 @@ class AcceptHeaderEventSubscriber implements \Symfony\Component\EventDispatcher\
      */
     public static function getSubscribedEvents(): array
     {
-        return [\Symfony\Component\HttpKernel\KernelEvents::REQUEST => ''];
+        return [\Symfony\Component\HttpKernel\KernelEvents::REQUEST => 'onKernelRequest'];
     }
 }
