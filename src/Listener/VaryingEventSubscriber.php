@@ -19,6 +19,6 @@ class VaryingEventSubscriber implements \Symfony\Component\EventDispatcher\Event
      */
     public static function getSubscribedEvents(): array
     {
-        return [\Symfony\Component\HttpKernel\KernelEvents::RESPONSE => ''];
+        return [\Symfony\Component\HttpKernel\KernelEvents::RESPONSE => 'onKernelResponse'];
     }
 }

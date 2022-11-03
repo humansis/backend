@@ -83,6 +83,6 @@ class ErrorResponseEventSubscriber implements \Symfony\Component\EventDispatcher
      */
     public static function getSubscribedEvents(): array
     {
-        return [\Symfony\Component\HttpKernel\KernelEvents::EXCEPTION => ['', -100]];
+        return [\Symfony\Component\HttpKernel\KernelEvents::EXCEPTION => ['onKernelException', -100]];
     }
 }
