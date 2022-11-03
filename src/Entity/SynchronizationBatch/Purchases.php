@@ -23,7 +23,7 @@ class Purchases extends SynchronizationBatch
     public function __construct(array $requestData)
     {
         parent::__construct($requestData);
-        $this->createdPurchases = new ArrayCollection();
+        $this->createdPurchases = [];
     }
 
     /**

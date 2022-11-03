@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Entity;
 
 use DateTimeInterface;
-use Entity\Household;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
-use Entity\User;
 use InvalidArgumentException;
 
 /**
@@ -21,6 +19,16 @@ use InvalidArgumentException;
 class ImportHouseholdDuplicity
 {
     use StandardizedPrimaryKey;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
+     */
+    private ImportQueue $ours;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\Household")
+     */
+    private Household $theirs;
 
     /**
      * @var ImportBeneficiaryDuplicity[]
@@ -37,23 +45,21 @@ class ImportHouseholdDuplicity
     /**
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="importBeneficiaryDuplicities")
      */
-    private ?\Entity\User $decideBy = null;
+    private ?User $decideBy = null;
 
     /**
      * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
-    private ?\DateTimeInterface $decideAt = null;
+    private ?DateTimeInterface $decideAt = null;
 
-    public function __construct(/**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
-         */
-        private ImportQueue $ours, /**
-         * @ORM\ManyToOne(targetEntity="Entity\Household")
-         */
-        private Household $theirs
+    public function __construct(
+        ImportQueue $ours,
+        Household $theirs
     ) {
+        $this->ours = $ours;
+        $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
-        $this->beneficiaryDuplicities = new ArrayCollection();
+        $this->beneficiaryDuplicities = [];
     }
 
     public function getOurs(): ImportQueue
@@ -69,7 +75,7 @@ class ImportHouseholdDuplicity
     /**
      * @return ArrayCollection|ImportBeneficiaryDuplicity[]
      */
-    public function getBeneficiaryDuplicities(): \Doctrine\Common\Collections\ArrayCollection|array
+    public function getBeneficiaryDuplicities(): ArrayCollection | array
     {
         return $this->beneficiaryDuplicities;
     }

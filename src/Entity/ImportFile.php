@@ -10,16 +10,22 @@ use Entity\Helper\CreatedAt;
 use Entity\Helper\CreatedBy;
 use Entity\Helper\StandardizedPrimaryKey;
 use Entity\User;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportFileRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class ImportFile implements \Stringable
+class ImportFile implements Stringable
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
     use CreatedBy;
+
+    /**
+     * @ORM\Column(name="filename", type="string", nullable=false)
+     */
+    private string $filename;
 
     /**
      * @ORM\Column(name="is_loaded", type="boolean")
@@ -32,11 +38,16 @@ class ImportFile implements \Stringable
     private ?string $savedAsFilename = null;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importFiles")
+     */
+    private Import $import;
+
+    /**
      * @var ImportQueue[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="file", cascade={"remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importQueues;
+    private array | Collection $importQueues;
 
     /**
      * @ORM\Column(name="expected_valid_columns", type="simple_array", nullable=true)
@@ -60,15 +71,13 @@ class ImportFile implements \Stringable
      */
     private $structureViolations;
 
-    public function __construct(/**
-         * @ORM\Column(name="filename", type="string", nullable=false)
-         */
-        private string $filename, /**
-         * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importFiles")
-         */
-        private Import $import,
+    public function __construct(
+        string $filename,
+        Import $import,
         User $user
     ) {
+        $this->filename = $filename;
+        $this->import = $import;
         $this->createdBy = $user;
         $this->isLoaded = false;
     }
@@ -96,7 +105,7 @@ class ImportFile implements \Stringable
     /**
      * @return Collection|ImportQueue[]
      */
-    public function getImportQueues(): \Doctrine\Common\Collections\Collection|array
+    public function getImportQueues(): Collection |array
     {
         return $this->importQueues;
     }
@@ -104,7 +113,7 @@ class ImportFile implements \Stringable
     /**
      * @param Collection|ImportQueue[] $importQueues
      */
-    public function setImportQueues(\Doctrine\Common\Collections\Collection|array $importQueues): void
+    public function setImportQueues(Collection |array $importQueues): void
     {
         $this->importQueues = $importQueues;
     }

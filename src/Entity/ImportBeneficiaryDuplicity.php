@@ -18,6 +18,26 @@ class ImportBeneficiaryDuplicity
     use StandardizedPrimaryKey;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
+     */
+    private ImportQueue $queue;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private int $memberIndex;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
+     */
+    private Beneficiary $beneficiary;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
+     */
+    private ImportHouseholdDuplicity $householdDuplicity;
+
+    /**
      * @var string[]
      *
      * @ORM\Column(type="array", nullable=true)
@@ -25,24 +45,16 @@ class ImportBeneficiaryDuplicity
     private array $reasons;
 
     public function __construct(
-        /**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
-         */
-        private ImportHouseholdDuplicity $householdDuplicity,
-        /**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
-         */
-        private ImportQueue $queue,
-        /**
-         * @ORM\Column(type="integer")
-         */
-        private int $memberIndex,
-        /**
-         * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
-         */
-        private Beneficiary $beneficiary
+        ImportHouseholdDuplicity $householdDuplicity,
+        ImportQueue $ours,
+        int $memberIndex,
+        Beneficiary $theirs
     ) {
+        $this->queue = $ours;
+        $this->beneficiary = $theirs;
         $this->reasons = [];
+        $this->memberIndex = $memberIndex;
+        $this->householdDuplicity = $householdDuplicity;
     }
 
     public function getQueue(): ImportQueue
