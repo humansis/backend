@@ -7,7 +7,7 @@ namespace Mapper;
 use Component\SelectionCriteria\Structure\Field;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SelectionCriterionFieldMapper implements MapperInterface
 {
