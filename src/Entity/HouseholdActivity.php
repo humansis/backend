@@ -25,7 +25,7 @@ class HouseholdActivity
     /**
      * @ORM\ManyToOne(targetEntity="Entity\User")
      */
-    private User $author;
+    private ?User $author;
 
     /**
      * @ORM\Column(name="content", type="json")
