@@ -3,7 +3,8 @@ framework:
     mailer:
         dsn: 'null://null'
     session:
-        storage_id: session.storage.mock_file
+        handler_id: 'session.handler.native_file'
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
     profiler:
         collect: false
     messenger:
