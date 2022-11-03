@@ -26,7 +26,7 @@ class LocationImporter
     /**
      * LocationService constructor.
      */
-    public function __construct(private readonly ObjectManager $em, private string $file, private readonly LocationRepository $locationRepository)
+    public function __construct(private readonly ObjectManager $em, private string|null $file, private readonly LocationRepository $locationRepository)
     {
         $this->iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
     }

@@ -42,7 +42,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
      */
-    private \Entity\CountrySpecificAnswer $countrySpecificAnswers;
+    private \Doctrine\Common\Collections\Collection|array $countrySpecificAnswers;
 
     /**
      * CountrySpecific constructor.
