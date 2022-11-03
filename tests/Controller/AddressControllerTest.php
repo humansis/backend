@@ -74,7 +74,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamp(): never
+    public function testGetCamp(): void
     {
         $this->markTestSkipped('There is no camp');
 
@@ -109,7 +109,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamps(): never
+    public function testGetCamps(): void
     {
         $this->markTestSkipped('There is no camp');
 
@@ -195,7 +195,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlement(): never
+    public function testGetTemporarySettlement(): void
     {
         $this->markTestSkipped('There is no temporary settlement');
 
@@ -231,7 +231,7 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlements(): never
+    public function testGetTemporarySettlements(): void
     {
         $this->markTestSkipped('There is no temporary settlement');
 

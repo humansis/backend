@@ -585,7 +585,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     /**
      * @depends testPurchasesShouldHaveCurrencyInNotPresentInRequestStep2
      */
-    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array): never
+    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array): void
     {
         $this->markTestSkipped('This should be re-factorized to current deposit endpoint.');
 

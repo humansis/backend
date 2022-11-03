@@ -311,8 +311,9 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         match (ValueGenerator::int(0, 1)) {
             0 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD),
             1 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD_MEMBER),
-            default => $divisionInputType,
         };
+
+        return $divisionInputType;
     }
 
     private function buildSelectionCriteriaInputType(): SelectionCriterionInputType
