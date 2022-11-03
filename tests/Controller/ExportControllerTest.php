@@ -6,7 +6,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Project;
 use Exception;
-use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use Entity\UserProject;
 
