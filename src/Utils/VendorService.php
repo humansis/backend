@@ -7,7 +7,6 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
-use Exception\NotUniqueException;
 use InputType\VendorCreateInputType;
 use InputType\VendorUpdateInputType;
 use InvalidArgumentException;
@@ -29,7 +28,6 @@ class VendorService
 
     /**
      * @throws EntityNotFoundException
-     * @throws NotUniqueException
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
@@ -75,7 +73,6 @@ class VendorService
 
     /**
      * @throws EntityNotFoundException
-     * @throws NotUniqueException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
