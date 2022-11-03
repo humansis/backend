@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Household;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,7 +27,7 @@ use Utils\ProjectService;
 
 class HouseholdController extends AbstractController
 {
-    public function __construct(private readonly HouseholdService $householdService, private readonly HouseholdRepository $householdRepository, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService)
+    public function __construct(private readonly HouseholdService $householdService, private readonly HouseholdRepository $householdRepository, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -129,7 +130,7 @@ class HouseholdController extends AbstractController
     public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
         $household = $this->householdService->create($inputType, $this->getCountryCode($request));
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($household);
     }
@@ -143,7 +144,7 @@ class HouseholdController extends AbstractController
     public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
         $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($object);
     }

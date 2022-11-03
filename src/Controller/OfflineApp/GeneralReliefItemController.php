@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\GeneralReliefItem;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\GeneralReliefFilterInputType;
@@ -17,6 +18,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GeneralReliefItemController extends AbstractOfflineAppController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Patch("/offline-app/v2/general-relief-items/{id}")
      *
@@ -40,7 +44,7 @@ class GeneralReliefItemController extends AbstractOfflineAppController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(GeneralReliefItem::class)
+        $list = $this->managerRegistry->getRepository(GeneralReliefItem::class)
             ->findByParams($filter, $pagination);
 
         $response = $this->json($list);

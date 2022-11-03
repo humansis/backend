@@ -6,6 +6,7 @@ namespace Controller;
 
 use Controller\ExportController;
 use Doctrine\DBAL\ConnectionException;
+use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -38,7 +39,7 @@ class ImportController extends AbstractController
 {
     final public const DISABLE_CRON = 'disable-cron-fast-forward';
 
-    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo)
+    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -128,7 +129,7 @@ class ImportController extends AbstractController
      */
     public function listFiles(Entity\Import $import): JsonResponse
     {
-        $data = $this->getDoctrine()->getRepository(Entity\ImportFile::class)
+        $data = $this->managerRegistry->getRepository(Entity\ImportFile::class)
             ->findBy([
                 'import' => $import,
             ], [
@@ -236,7 +237,7 @@ class ImportController extends AbstractController
     public function duplicities(Entity\Import $import): JsonResponse
     {
         /** @var Entity\ImportHouseholdDuplicity[] $duplicities */
-        $duplicities = $this->getDoctrine()->getRepository(Entity\ImportHouseholdDuplicity::class)
+        $duplicities = $this->managerRegistry->getRepository(Entity\ImportHouseholdDuplicity::class)
             ->findByImport($import);
 
         return $this->json($duplicities);
@@ -289,7 +290,7 @@ class ImportController extends AbstractController
      */
     public function listInvalidFiles(Entity\Import $import): JsonResponse
     {
-        $invalidFiles = $this->getDoctrine()->getRepository(Entity\ImportInvalidFile::class)
+        $invalidFiles = $this->managerRegistry->getRepository(Entity\ImportInvalidFile::class)
             ->findBy([
                 'import' => $import,
             ], ['createdAt' => 'desc']);

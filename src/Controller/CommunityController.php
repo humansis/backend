@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Community;
 use Repository\CommunityRepository;
 use Utils\CommunityService;
@@ -27,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommunityController extends AbstractController
 {
-    public function __construct(private readonly CommunityService $communityService)
+    public function __construct(private readonly CommunityService $communityService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -61,7 +62,7 @@ class CommunityController extends AbstractController
         }
 
         /** @var CommunityRepository $communityRepository */
-        $communityRepository = $this->getDoctrine()->getRepository(Community::class);
+        $communityRepository = $this->managerRegistry->getRepository(Community::class);
 
         $communitiesPerCountry = $communityRepository->findByParams(
             $request->headers->get('country'),
@@ -116,7 +117,7 @@ class CommunityController extends AbstractController
      */
     public function communitiesByProject(Project $project): JsonResponse
     {
-        $communities = $this->getDoctrine()->getRepository(Community::class)->findByProject($project);
+        $communities = $this->managerRegistry->getRepository(Community::class)->findByProject($project);
 
         return $this->json($communities);
     }

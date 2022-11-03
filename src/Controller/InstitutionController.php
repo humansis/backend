@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Institution;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,7 +20,7 @@ use Utils\InstitutionService;
 
 class InstitutionController extends AbstractController
 {
-    public function __construct(private readonly InstitutionService $institutionService)
+    public function __construct(private readonly InstitutionService $institutionService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -52,7 +53,7 @@ class InstitutionController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->getDoctrine()->getRepository(Institution::class)
+        $data = $this->managerRegistry->getRepository(Institution::class)
             ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
@@ -102,7 +103,7 @@ class InstitutionController extends AbstractController
      */
     public function institutionsByProject(Project $project): JsonResponse
     {
-        $institutions = $this->getDoctrine()->getRepository(Institution::class)->findByProject($project);
+        $institutions = $this->managerRegistry->getRepository(Institution::class)->findByProject($project);
 
         return $this->json($institutions);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Controller\ExportController;
 use Entity\UserCountry;
@@ -27,7 +28,7 @@ use Utils\ProjectService;
 
 class ProjectController extends AbstractController
 {
-    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService)
+    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -42,7 +43,7 @@ class ProjectController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $repository = $this->getDoctrine()->getRepository(Beneficiary::class);
+        $repository = $this->managerRegistry->getRepository(Beneficiary::class);
 
         $result = [];
         foreach ($request->query->get('code', []) as $code) {

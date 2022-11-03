@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\SynchronizationBatch;
 use Enum\SynchronizationBatchState;
@@ -15,6 +16,9 @@ use InputType\SynchronizationBatch as API;
 
 class SynchronizationBatchController extends AbstractController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/web-app/v1/syncs")
      *
@@ -25,7 +29,7 @@ class SynchronizationBatchController extends AbstractController
     public function list(API\FilterInputType $filter, API\OrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
         /** @var SynchronizationBatchRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(SynchronizationBatch::class);
+        $repository = $this->managerRegistry->getRepository(SynchronizationBatch::class);
         $data = $repository->findByParams(null, $pagination, $filter, $orderBy);
 
         return $this->json($data);

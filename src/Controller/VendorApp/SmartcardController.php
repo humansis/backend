@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\SmartcardPurchaseInputType;
@@ -18,7 +19,7 @@ use Utils\SmartcardService;
 
 class SmartcardController extends AbstractVendorAppController
 {
-    public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator, private readonly LoggerInterface $logger, private readonly SmartcardService $smartcardService, private readonly string $logsDir)
+    public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator, private readonly LoggerInterface $logger, private readonly SmartcardService $smartcardService, private readonly string $logsDir, private readonly ManagerRegistry $managerRegistry)
     {
     }
     /** @var */
@@ -99,7 +100,7 @@ class SmartcardController extends AbstractVendorAppController
     public function listOfBlocked(Request $request): Response
     {
         $country = $request->headers->get('country');
-        $smartcards = $this->getDoctrine()->getRepository(Smartcard::class)->findBlocked($country);
+        $smartcards = $this->managerRegistry->getRepository(Smartcard::class)->findBlocked($country);
 
         return new JsonResponse($smartcards);
     }

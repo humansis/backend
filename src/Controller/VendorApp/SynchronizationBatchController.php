@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\SmartcardDepositService;
 use Entity\SynchronizationBatch;
@@ -15,6 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SynchronizationBatchController extends AbstractVendorAppController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Post("/vendor-app/v1/syncs/deposit")
      *
@@ -25,8 +29,8 @@ class SynchronizationBatchController extends AbstractVendorAppController
         $sync = new SynchronizationBatch\Deposits($request->request->all());
         $sync->setSource(SourceType::VENDOR_APP);
         $sync->setCreatedBy($this->getUser());
-        $this->getDoctrine()->getManager()->persist($sync);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($sync);
+        $this->managerRegistry->getManager()->flush();
 
         $depositService->validateSync($sync);
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Controller;
 
 use Controller\ExportController;
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\ProductCreateInputType;
@@ -23,7 +24,7 @@ use Utils\ProductService;
 
 class ProductController extends AbstractController
 {
-    public function __construct(private readonly UploadService $uploadService, private readonly ProductService $productService)
+    public function __construct(private readonly UploadService $uploadService, private readonly ProductService $productService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -76,7 +77,7 @@ class ProductController extends AbstractController
         }
 
         /** @var ProductRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Product::class);
+        $repository = $this->managerRegistry->getRepository(Product::class);
         $data = $repository->findByCountry($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);

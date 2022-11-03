@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Address;
 use Entity\HouseholdLocation;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -13,6 +14,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AddressController extends AbstractController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/web-app/v1/addresses/camps")
      *
@@ -20,7 +24,7 @@ class AddressController extends AbstractController
      */
     public function camps(CampAddressFilterInputType $filter): JsonResponse
     {
-        $campAddresses = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findCampAddressesByParams(
+        $campAddresses = $this->managerRegistry->getRepository(HouseholdLocation::class)->findCampAddressesByParams(
             $filter
         );
 
@@ -48,7 +52,7 @@ class AddressController extends AbstractController
      */
     public function residences(ResidenceAddressFilterInputType $filter): JsonResponse
     {
-        $residences = $this->getDoctrine()->getRepository(HouseholdLocation::class)->findResidenciesByParams($filter);
+        $residences = $this->managerRegistry->getRepository(HouseholdLocation::class)->findResidenciesByParams($filter);
 
         return $this->json($residences);
     }
@@ -74,7 +78,7 @@ class AddressController extends AbstractController
      */
     public function temporarySettlements(TemporarySettlementAddressFilterInputType $filter): JsonResponse
     {
-        $temporarySettlements = $this->getDoctrine()->getRepository(
+        $temporarySettlements = $this->managerRegistry->getRepository(
             HouseholdLocation::class
         )->findTemporarySettlementsByParams($filter);
 
@@ -102,7 +106,7 @@ class AddressController extends AbstractController
      */
     public function addresses(AddressFilterInputType $filter): JsonResponse
     {
-        $temporarySettlements = $this->getDoctrine()->getRepository(Address::class)->findByParams($filter);
+        $temporarySettlements = $this->managerRegistry->getRepository(Address::class)->findByParams($filter);
 
         return $this->json($temporarySettlements);
     }

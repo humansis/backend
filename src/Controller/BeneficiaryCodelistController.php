@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Referral;
 use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class BeneficiaryCodelistController extends AbstractController
 {
-    public function __construct(private readonly CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -60,7 +61,7 @@ class BeneficiaryCodelistController extends AbstractController
      */
     public function getVulnerabilityCriterion(): JsonResponse
     {
-        $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
+        $criterion = $this->managerRegistry->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
         return $this->json(new Paginator($this->codeListService->mapCriterion($criterion)));

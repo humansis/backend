@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Pagination\Paginator;
 use Component\Product\ProductCategoryService;
 use Entity\ProductCategory;
@@ -19,7 +20,7 @@ use Entity\Product;
 
 class ProductCategoryController extends AbstractController
 {
-    public function __construct(private readonly ProductCategoryService $productCategoryService)
+    public function __construct(private readonly ProductCategoryService $productCategoryService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -42,7 +43,7 @@ class ProductCategoryController extends AbstractController
         ProductCategoryFilterInputType $filter,
         ProductCategoryOrderInputType $sort
     ): JsonResponse {
-        $data = $this->getDoctrine()->getRepository(ProductCategory::class)
+        $data = $this->managerRegistry->getRepository(ProductCategory::class)
             ->findByFilter($filter, $sort);
 
         return $this->json($data);
@@ -56,8 +57,8 @@ class ProductCategoryController extends AbstractController
     public function create(ProductCategoryInputType $inputType): JsonResponse
     {
         $productCategory = $this->productCategoryService->create($inputType);
-        $this->getDoctrine()->getManager()->persist($productCategory);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($productCategory);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($productCategory);
     }
@@ -70,8 +71,8 @@ class ProductCategoryController extends AbstractController
     public function update(ProductCategory $productCategory, ProductCategoryInputType $inputType): JsonResponse
     {
         $productCategory = $this->productCategoryService->update($productCategory, $inputType);
-        $this->getDoctrine()->getManager()->persist($productCategory);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($productCategory);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($productCategory);
     }
@@ -83,15 +84,15 @@ class ProductCategoryController extends AbstractController
      */
     public function delete(ProductCategory $productCategory): JsonResponse
     {
-        $productCount = $this->getDoctrine()->getManager()->getRepository(Product::class)->count(
+        $productCount = $this->managerRegistry->getManager()->getRepository(Product::class)->count(
             ['productCategory' => $productCategory]
         );
         if ($productCount > 0) {
             throw new BadRequestHttpException("You can't delete category with products");
         }
         $this->productCategoryService->archive($productCategory);
-        $this->getDoctrine()->getManager()->persist($productCategory);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($productCategory);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

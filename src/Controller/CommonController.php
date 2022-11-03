@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Household;
 use Pagination\Paginator;
 use Punic\Language;
@@ -26,7 +27,7 @@ use ZipArchive;
 
 class CommonController extends AbstractController
 {
-    public function __construct(private readonly Countries $countries, private readonly string $translationsDir, private readonly TranslatorInterface $translator, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService)
+    public function __construct(private readonly Countries $countries, private readonly string $translationsDir, private readonly TranslatorInterface $translator, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -55,7 +56,7 @@ class CommonController extends AbstractController
                 ],
                 'enrolled_beneficiaries' => [
                     'code' => $code,
-                    'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountry(
+                    'value' => $this->managerRegistry->getRepository(Household::class)->countUnarchivedByCountry(
                         $countryIso3
                     ),
                 ],
