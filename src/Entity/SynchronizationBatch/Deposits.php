@@ -23,7 +23,7 @@ class Deposits extends SynchronizationBatch
     public function __construct(array $requestData)
     {
         parent::__construct($requestData);
-        $this->createdDeposits = new ArrayCollection();
+        $this->createdDeposits = [];
     }
 
     /**

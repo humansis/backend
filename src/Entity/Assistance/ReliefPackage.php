@@ -29,19 +29,14 @@ class ReliefPackage
     use LastModifiedAt;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
      */
     private string $state;
 
     /**
-     * @var AssistanceBeneficiary
-     *
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
      */
     private AssistanceBeneficiary $assistanceBeneficiary;
-
 
     /**
      * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=false)
@@ -68,11 +63,9 @@ class ReliefPackage
     private string $amountSpent;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="unit", type="string", nullable=false)
      */
-    private $unit;
+    private string $unit;
 
     /**
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)

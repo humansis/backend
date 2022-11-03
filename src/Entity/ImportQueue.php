@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Entity;
 
 use DateTimeInterface;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,31 +15,47 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
 use Enum\ImportQueueState;
 use InvalidArgumentException;
+use Stringable;
 use Utils\Concurrency\ConcurrencyLockableInterface;
 use Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportQueueRepository")
  */
-class ImportQueue implements ConcurrencyLockableInterface, \Stringable
+class ImportQueue implements ConcurrencyLockableInterface, Stringable
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
     use ConcurrencyLockTrait;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importQueue")
+     */
+    private Import $import;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportFile", inversedBy="importQueues")
+     */
+    private ImportFile $file;
+
+    /**
+     * @ORM\Column(name="content", type="json", nullable=false)
+     */
+    private array $content;
+
+    /**
      * @var ImportHouseholdDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"persist", "remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $householdDuplicities;
+    private array | Collection $householdDuplicities;
 
     /**
      * @var ImportBeneficiaryDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="queue", cascade={"persist", "remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $beneficiaryDuplicities;
+    private array | Collection $beneficiaryDuplicities;
 
     /**
      * @ORM\Column(name="state", type="enum_import_queue_state", nullable=false)
@@ -52,7 +67,7 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
      *
      * @ORM\Column(name="message", type="text", nullable=true)
      */
-    private $message;
+    private string | null $message;
 
     private array $rawMessageData = [];
 
@@ -61,17 +76,16 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
      *
      * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importBeneficiaryDuplicities;
+    private array | Collection $importBeneficiaryDuplicities;
 
     /**
      * @var Collection|ImportQueueDuplicity[]
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="ours", cascade={"remove"})
      */
-    private Collection | array $importQueueDuplicitiesOurs;
+    private array | Collection $importQueueDuplicitiesOurs;
 
     /**
      * @var Collection|ImportQueueDuplicity[]
-     *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="theirs", cascade={"remove"})
      */
     private array | Collection $importQueueDuplicitiesTheirs;
@@ -79,32 +93,26 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
     /**
      * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
      */
-    private ?\DateTimeInterface $identityCheckedAt = null;
+    private ?DateTimeInterface $identityCheckedAt = null;
 
     /**
      * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
      */
-    private ?\DateTimeInterface $similarityCheckedAt = null;
+    private ?DateTimeInterface $similarityCheckedAt = null;
 
     private array $violatedColumns = [];
 
-    public function __construct(/**
-         * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importQueue")
-         */
-        private Import $import, /**
-         * @ORM\ManyToOne(targetEntity="Entity\ImportFile", inversedBy="importQueues")
-         */
-        private ImportFile $file, /**
-         * @ORM\Column(name="content", type="json", nullable=false)
-         */
-        private array $content
-    ) {
+    public function __construct(Import $import, ImportFile $file, array $content)
+    {
+        $this->import = $import;
+        $this->file = $file;
+        $this->content = $content;
         $this->state = ImportQueueState::NEW;
         $this->householdDuplicities = new ArrayCollection();
         $this->beneficiaryDuplicities = new ArrayCollection();
         $this->importBeneficiaryDuplicities = new ArrayCollection();
-        $this->importQueueDuplicitiesOurs = new ArrayCollection();
-        $this->importQueueDuplicitiesTheirs = new ArrayCollection();
+        $this->importQueueDuplicitiesOurs = [];
+        $this->importQueueDuplicitiesTheirs = [];
     }
 
     public function getImport(): Import
@@ -258,7 +266,7 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
     /**
      * @return Collection|ImportBeneficiaryDuplicity[]
      */
-    public function getBeneficiaryDuplicities(): \Doctrine\Common\Collections\Collection|array
+    public function getBeneficiaryDuplicities(): Collection | array
     {
         return $this->beneficiaryDuplicities;
     }
@@ -279,7 +287,7 @@ class ImportQueue implements ConcurrencyLockableInterface, \Stringable
     /**
      * @return Collection|ImportHouseholdDuplicity[]
      */
-    public function getImportBeneficiaryDuplicities(): \Doctrine\Common\Collections\Collection|array
+    public function getImportBeneficiaryDuplicities(): Collection | array
     {
         return $this->importBeneficiaryDuplicities;
     }
