@@ -45,7 +45,7 @@ class Assistance implements ExportableInterface
     /**
      * @ORM\Column(name="UpdatedOn", type="datetime")
      */
-    private \DateTime $updatedOn;
+    private DateTimeInterface $updatedOn;
 
     /**
      * @var DateTime
