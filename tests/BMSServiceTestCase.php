@@ -263,7 +263,7 @@ class BMSServiceTestCase extends KernelTestCase
         //Serializer mocking
         $this->mockSerializer();
         //Container mocking
-        $this->mockContainer();
+        //$this->mockContainer();
     }
 
     /**
@@ -315,14 +315,14 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected function mockContainer()
     {
-        self::getContainer() = $this->getMockBuilder(Container::class)
+        /*self::getContainer() = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
         self::getContainer()->method('get')
             ->with($this->defaultSerializerName)
             ->will($this->returnValue($this->serializer));
 
-        return self::getContainer();
+        return self::getContainer();*/
     }
 
     /**
