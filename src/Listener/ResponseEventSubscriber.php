@@ -104,12 +104,6 @@ class ResponseEventSubscriber implements \Symfony\Component\EventDispatcher\Even
      */
     protected function getUser()
     {
-        if (!$this->container->has('security.token_storage')) {
-            throw new LogicException(
-                'The SecurityBundle is not registered in your application. Try running "composer require symfony/security-bundle".'
-            );
-        }
-
         if (null === $token = $this->tokenStorage->getToken()) {
             return;
         }
