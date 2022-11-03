@@ -47,11 +47,9 @@ final class Version20200602104236 extends AbstractMigration
         '
         );
 
-        $this->addSql([
-            'ALTER TABLE voucher ADD voucher_purchase_id INT DEFAULT NULL',
-            'ALTER TABLE voucher ADD CONSTRAINT FK_1392A5D881BB7F3F FOREIGN KEY (voucher_purchase_id) REFERENCES voucher_purchase (id)',
-            'CREATE INDEX IDX_1392A5D881BB7F3F ON voucher (voucher_purchase_id)',
-        ]);
+        $this->addSql('ALTER TABLE voucher ADD voucher_purchase_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE voucher ADD CONSTRAINT FK_1392A5D881BB7F3F FOREIGN KEY (voucher_purchase_id) REFERENCES voucher_purchase (id)');
+        $this->addSql('CREATE INDEX IDX_1392A5D881BB7F3F ON voucher (voucher_purchase_id)');
 
         $this->addSql(
             '
@@ -92,16 +90,11 @@ final class Version20200602104236 extends AbstractMigration
         '
         );
 
-        $this->addSql([
-            'ALTER TABLE voucher DROP FOREIGN KEY FK_1392A5D8F603EE73',
-            'DROP INDEX IDX_1392A5D8F603EE73 ON voucher',
-            'ALTER TABLE voucher DROP vendor_id, DROP used_at',
-        ]);
+        $this->addSql('ALTER TABLE voucher DROP FOREIGN KEY FK_1392A5D8F603EE73');
+        $this->addSql('DROP INDEX IDX_1392A5D8F603EE73 ON voucher');
 
-        $this->addSql([
-            'DROP TABLE voucher_product',
-            'DROP TABLE voucher_record',
-        ]);
+        $this->addSql('DROP TABLE voucher_product');
+        $this->addSql('DROP TABLE voucher_record');
     }
 
     public function down(Schema $schema): void
