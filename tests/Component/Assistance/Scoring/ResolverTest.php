@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Component\Assistance\Scoring;
 
+use Component\Assistance\Scoring\Enum\ScoringSupportedHouseholdCoreFieldsEnum;
+use Component\Assistance\Scoring\Exception\ScoreValidationException;
+use Component\Assistance\Scoring\Model\Factory\ScoringFactory;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
@@ -13,6 +16,7 @@ use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Component\Assistance\Scoring\ScoringResolver;
+use Enum\HouseholdAssets;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class ResolverTest extends KernelTestCase
@@ -23,6 +27,9 @@ class ResolverTest extends KernelTestCase
     /** @var ObjectManager */
     private $objectManager;
 
+    /** @var ScoringFactory */
+    private $scoringFactory;
+
     public function __construct()
     {
         parent::__construct();
@@ -31,6 +38,7 @@ class ResolverTest extends KernelTestCase
 
         $this->resolver = $kernel->getContainer()->get(ScoringResolver::class);
         $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->scoringFactory = $kernel->getContainer()->get(ScoringFactory::class);
     }
 
     public function testSimpleCountrySpecific(): void
@@ -95,5 +103,53 @@ class ResolverTest extends KernelTestCase
         $this->objectManager->remove($countrySpecificAnswer);
         $this->objectManager->remove($CSO);
         $this->objectManager->flush();
+    }
+
+    public function testCoreHouseholdFail()
+    {
+        $this->expectException(ScoreValidationException::class);
+
+        //non-existing field name
+        $rule = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, 'blablablablabla', 'blabla');
+        $rule->addOption(new ScoringRuleOption('test', 0));
+
+        $this->scoringFactory->createScoring('test', [$rule]);
+    }
+
+    public function testCorrectCoreHousehold()
+    {
+        $ruleDebtLevel = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL, 'Debt level');
+        $ruleDebtLevel->addOption(new ScoringRuleOption('0', 1));
+
+        $ruleNotes = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::NOTES, 'Notes');
+        $ruleNotes->addOption(new ScoringRuleOption('test', 2));
+
+        $scoring = $this->scoringFactory->createScoring('test', [$ruleDebtLevel, $ruleNotes]);
+
+        $household = new Household();
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(0, $score->getTotalScore());
+
+        $household->setDebtLevel(0);
+        $household->setNotes('test');
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(3, $score->getTotalScore());
+    }
+
+    public function testHouseholdCoreArray()
+    {
+        $rule = new ScoringRule(ScoringRuleType::CORE_HOUSEHOLD, ScoringSupportedHouseholdCoreFieldsEnum::ASSETS, 'Assets');
+        $rule->addOption(new ScoringRuleOption(HouseholdAssets::CAR, -1.5));
+        $rule->addOption(new ScoringRuleOption(HouseholdAssets::AC, -1));
+
+        $household = new Household();
+        $household->setAssets([HouseholdAssets::AC, HouseholdAssets::CAR]);
+
+        $scoring = $this->scoringFactory->createScoring('test', [$rule]);
+
+        $score = $this->resolver->compute($household, $scoring, 'SYR');
+        $this->assertEquals(-2.5, $score->getTotalScore());
     }
 }

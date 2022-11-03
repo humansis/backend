@@ -49,7 +49,7 @@ final class RulesCalculation
 
         $dependencyRatio = ($children + $elders) / $adultsInWorkingAge;
 
-        if (Floats::compare($dependencyRatio, 1.0)) {
+        if (Floats::equals($dependencyRatio, 1.0)) {
             return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_MID)->getScore();
         }
 
@@ -96,6 +96,9 @@ final class RulesCalculation
         return $totalScore;
     }
 
+    /**
+     * @deprecated This functionality could be easily replaced with CSO interval functionality
+     */
     public function noOfChronicallyIll(Household $household, ScoringRule $rule): float
     {
         /** @var CountrySpecificAnswer $countrySpecificAnswer */
@@ -133,33 +136,47 @@ final class RulesCalculation
         }
     }
 
-    public function vulnerabilityHeadOfHousehold(Household $household, ScoringRule $rule): float
+    public function dependencyRatioSyrNWS(Household $household, ScoringRule $rule): float
     {
-        $head = $household->getHouseholdHead();
+        $depRatio = $this->dependencyRatioSyr($household);
 
-        $result = 0;
-
-        if (
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
-        ) {
-            $result += $rule->getOptionByValue(
-                ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
-            )->getScore();
+        if (is_null($depRatio)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
         }
 
-        if ($head->getAge() !== null && $head->getAge() < 18) {
-            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
+        if (Floats::equals($depRatio, 1.5) || $depRatio < 1.5) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_LOW)->getScore();
         }
 
-        if ($head->getAge() !== null && $head->getAge() > 59) {
-            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
-        }
-
-        return $result;
+        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NWS_HIGH)->getScore();
     }
 
-    public function dependencyRatioSyr(Household $household, ScoringRule $rule): float
+    public function dependencyRatioSyrNES(Household $household, ScoringRule $rule): float
+    {
+        $depRatio = $this->dependencyRatioSyr($household);
+
+        if (is_null($depRatio)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+        }
+
+        if (Floats::equals($depRatio, 0)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_0)->getScore();
+        } elseif (Floats::equals($depRatio, 1) || $depRatio < 1) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_1)->getScore();
+        } elseif (Floats::equals($depRatio, 2) || $depRatio < 2) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_2)->getScore();
+        } elseif (Floats::equals($depRatio, 3) || $depRatio < 3) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_3)->getScore();
+        } elseif (Floats::equals($depRatio, 4) || $depRatio < 4) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_4)->getScore();
+        } elseif (Floats::equals($depRatio, 5) || $depRatio < 5) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_5)->getScore();
+        } else {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_NES_INF)->getScore();
+        }
+    }
+
+    private function dependencyRatioSyr(Household $household): ?float
     {
         $childAgeLimit = 17;
         $workingAgeLimit = 60;
@@ -194,15 +211,160 @@ final class RulesCalculation
         $denominator = $adultsInWorkingAge - $adultsWithDisabilitiesOrChronicallyIll;
 
         if ($denominator === 0) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_ZERO_DIVISION)->getScore();
+            return null;
         }
 
-        $depRatio = ( $children + $elders + $adultsWithDisabilitiesOrChronicallyIll) / $denominator;
+        return ( $children + $elders + $adultsWithDisabilitiesOrChronicallyIll ) / $denominator;
+    }
 
-        if (Floats::compare($depRatio, 1.5) || $depRatio < 1.5) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_LOW)->getScore();
+    public function incomeSpentOnFood(Household $household, ScoringRule $rule): float
+    {
+        $totalExpenditure = null;
+
+        /** @var CountrySpecificAnswer $countrySpecificAnswer */
+        foreach ($household->getCountrySpecificAnswers() as $countrySpecificAnswer) {
+            if ($countrySpecificAnswer->getCountrySpecific()->getFieldString() === 'Total expenditure') {
+                $totalExpenditure = (float) $countrySpecificAnswer->getAnswer();
+            }
         }
 
-        return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::DEPENDENCY_RATIO_SYR_HIGH)->getScore();
+        if (is_null($household->getIncome())) {
+            if (is_null($totalExpenditure)) {
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW)->getScore();
+            } else {
+                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH)->getScore();
+            }
+        }
+
+        if ($household->getIncome() === 0) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_HIGH)->getScore();
+        }
+
+        if (is_null($totalExpenditure)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_MISSING_VALUE_LOW)->getScore();
+        }
+
+        $incomeSpentOnFood = $totalExpenditure / $household->getIncome();
+
+        if (Floats::equals(0, $incomeSpentOnFood)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_0)->getScore();
+        } elseif ($incomeSpentOnFood < .25 || Floats::equals($incomeSpentOnFood, .25)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_25)->getScore();
+        } elseif ($incomeSpentOnFood < .50 || Floats::equals($incomeSpentOnFood, .50)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_50)->getScore();
+        } elseif ($incomeSpentOnFood < .65 || Floats::equals($incomeSpentOnFood, .65)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_65)->getScore();
+        } elseif ($incomeSpentOnFood < .80 || Floats::equals($incomeSpentOnFood, .80)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_80)->getScore();
+        } elseif ($incomeSpentOnFood < .95 || Floats::equals($incomeSpentOnFood, .95)) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_95)->getScore();
+        } else {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INCOME_SPENT_ON_FOOD_INF)->getScore();
+        }
+    }
+
+    public function vulnerabilityHeadOfHouseholdNWS(Household $household, ScoringRule $rule): float
+    {
+        $head = $household->getHouseholdHead();
+
+        $result = 0;
+
+        if (
+            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+        ) {
+            $result += $rule->getOptionByValue(
+                ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
+            )->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() < 18) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() > 59) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
+        }
+
+        return $result;
+    }
+
+    public function vulnerabilityHeadOfHouseholdNES(Household $household, ScoringRule $rule): float
+    {
+        $head = $household->getHouseholdHead();
+
+        $result = 0;
+
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL)->getScore();
+        }
+
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PERSON_WITH_DISABILITY)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() < 18) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::INFANT)->getScore();
+        }
+
+        if ($head->getAge() !== null && $head->getAge() > 59) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ELDERLY)->getScore();
+        }
+
+        if ($head->getPerson()->getGender() === PersonGender::FEMALE) {
+            if (
+                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
+                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+            ) {
+                $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PREGNANT_OR_LACTATING_FEMALE)->getScore();
+            }
+        }
+
+        return $result;
+    }
+
+    public function vulnerabilityOfHouseholdMembers(Household $household, ScoringRule $rule): float
+    {
+        $chronicallyIllOrDisabled = false;
+        $lactatingOrPregnant = false;
+
+        foreach ($household->getBeneficiaries() as $householdMember) {
+            if ($householdMember->isHead()) {
+                continue;
+            }
+
+            if (
+                ($householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
+                $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL) &&
+                $householdMember->getAge() && $householdMember->getAge() < 60)
+            ) {
+                $chronicallyIllOrDisabled = true;
+            }
+
+            if ($householdMember->getPerson()->getGender() === PersonGender::FEMALE) {
+                if (
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+                ) {
+                    $lactatingOrPregnant = true;
+                }
+            }
+        }
+
+        $result = 0;
+
+        if ($chronicallyIllOrDisabled) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_ILL)->getScore();
+        } else {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_ILL)->getScore();
+        }
+
+        if ($lactatingOrPregnant) {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_PREGNANT)->getScore();
+        } else {
+            $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_HHM_NO_PREGNANT)->getScore();
+        }
+
+        return $result;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance\Scoring;
 
+use Component\Assistance\Scoring\Enum\ScoringSupportedHouseholdCoreFieldsEnum;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
@@ -69,6 +70,9 @@ final class ScoringResolver
                 case ScoringRuleType::ENUM:
                     $score = $this->computeEnum($household, $rule);
                     break;
+                case ScoringRuleType::CORE_HOUSEHOLD:
+                    $score = $this->computeCoreHousehold($household, $rule);
+                    break;
                 default:
                     continue 2;
             }
@@ -123,9 +127,8 @@ final class ScoringResolver
             'countryIso3' => $countryCode,
         ]);
 
+        // Country specific option does not exist
         if (!$countrySpecific instanceof CountrySpecific) {
-            //TODO zalogovat? dát někam vědět?
-
             return 0;
         }
 
@@ -162,6 +165,70 @@ final class ScoringResolver
                 if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
                     return $option->getScore();
                 }
+            }
+        }
+
+        return 0;
+    }
+
+    private function computeCoreHousehold(Household $household, ScoringRule $rule): float
+    {
+        switch ($rule->getFieldName()) {
+            case ScoringSupportedHouseholdCoreFieldsEnum::NOTES:
+                $value = $household->getNotes();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME:
+                $value = $household->getIncome();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::FOOD_CONSUMPTION_SCORE:
+                $value = $household->getFoodConsumptionScore();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::COPING_STRATEGIES_INDEX:
+                $value = $household->getCopingStrategiesIndex();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL:
+                $value = $household->getDebtLevel();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME_SPENT_ON_FOOD:
+                $value = $household->getIncomeSpentOnFood();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME:
+                $value = $household->getHouseholdIncome();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::ASSETS:
+                $value = $household->getAssets();
+                break;
+            case ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES:
+                $value = $household->getSupportReceivedTypes();
+                break;
+            default:
+                return 0;
+        }
+
+        if (is_null($value)) {
+            return 0;
+        }
+
+        //if value from Household is an array
+        if (is_array($value)) {
+            $score = 0;
+
+            foreach ($value as $valueItem) {
+                foreach ($rule->getOptions() as $option) {
+                    if ($option->getValue() === $valueItem) {
+                        $score += $option->getScore();
+                    }
+                }
+            }
+
+            return $score;
+        }
+
+        $value = (string) $value;
+
+        foreach ($rule->getOptions() as $option) {
+            if ($option->getValue() === $value) {
+                return $option->getScore();
             }
         }
 

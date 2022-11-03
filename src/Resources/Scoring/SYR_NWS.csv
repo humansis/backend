@@ -3,11 +3,11 @@ Rule type,Field Name,Title,Options,Points
 calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,1
 ,,,Male,0
 ,,,,
-calculation,vulnerabilityHeadOfHousehold,Vulnerability Head of Household,Chronically ill or Person with disability,1
+calculation,vulnerabilityHeadOfHouseholdNWS,Vulnerability Head of Household,Chronically ill or Person with disability,1
 ,,,Infant,1
 ,,,Elderly,4
 ,,,,
-calculation,dependencyRatioSyr,Dependency ratio,division by zero,1
+calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1
 ,,,<=1.5,0
 ,,,>1.5,1
 ,,,,

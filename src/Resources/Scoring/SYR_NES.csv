@@ -1,0 +1,73 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,4
+,,,Male,1
+,,,,
+calculation,vulnerabilityHeadOfHouseholdNES,Vulnerability Head of Household,Chronically ill,5
+,,,Person with disability,5
+,,,Infant,6
+,,,Elderly,4
+,,,Pregnant or lactating female,4
+,,,,
+calculation,vulnerabilityOfHouseholdMembers,Vulnerability of Household Members,Chronically ill or Person with disability & age < 60,2
+,,,NO: Chronically ill or Person with disability & age < 60,1
+,,,Pregnant or lactating female,2
+,,,NO: Pregnant or lactating female,1
+,,,,
+calculation,dependencyRatioSyrNES,Dependency ratio,division by zero,6
+,,,0,0
+,,,0< DR <= 1,1
+,,,1< DR <= 2,2
+,,,2< DR <= 3,3
+,,,3< DR <= 4,4
+,,,4< DR <= 5,5
+,,,5 < DR,6
+,,,,
+enum,HouseholdShelterStatus,Shelter type,Tent,5
+,,,Makeshift Shelter,4
+,,,Transitional Shelter,4
+,,,House/Apartment - Severely Damaged,5
+,,,House/Apartment - Moderately Damaged,2
+,,,House/Apartment - Not Damaged,1
+,,,Room or Space in Public Building,3
+,,,,
+countrySpecific,Residence Ownership,Residence Ownership,Owned,1
+,,,Rented,4
+,,,Hosted,4
+,,,Informally Occupied (Without Owner's Permission),6
+,,,,
+countrySpecific,Displacement status,Displacement status,Resident,1
+,,,Resident Hosting Refugees/IDPs,3
+,,,Refugees,4
+,,,Old IDPs,4
+,,,New IDPs,5
+,,,Returnees,3
+,,,,
+coreHousehold,debtLevel,Debt,1,1
+,,,2,2
+,,,3,3
+,,,4,4
+,,,5,5
+,,,,
+countrySpecific,Number of assets,Number of assets,1,-2
+,,,2,-3
+,,,3,-4
+,,,4,-5
+,,,x >= 5,-6
+,,,,
+coreHousehold,assets,Assets,A/C,-50
+,,,Car,-50
+,,,,
+calculation,incomeSpentOnFood,Income Spent on Food,0,6
+,,,Missing value low,0
+,,,Missing value high,6
+,,,">0,95",6
+,,,"0,81-0,95",5
+,,,"0,66-0,80",4
+,,,"0,51-0,65",3
+,,,"0,26-0,50",-50
+,,,"<0.25",-50
+,,,,
+countrySpecific,Enumerator comment,Enumerator comment,Most vulnerable,0.3
+,,,Moderately vulnerable,0.2
+,,,Low Vulnerability,0.1

@@ -8,17 +8,41 @@ calculation,dependencyRatioUkr,Dependency Ratio (number of family members only),
 ,,,>1 (hight dep.),1
 ,,,,
 calculation,noOfChronicallyIll,Chronical ilnesses and health issues,one,1
-,,,two and more,"1
-
-"
+,,,two and more,1
 calculation,genderOfHeadOfHousehold,Gender of Household head,Female,1
-,,,Male,"1
-"
-"calculation
-",vulnerabilityHeadOfHousehold,Vulnerability of head of household,Chronically ill or Person with disability,1
+,,,Male,1
+calculation,vulnerabilityHeadOfHouseholdNWS,Vulnerability of head of household,Chronically ill or Person with disability,1
 ,,,Infant,2
 ,,,Elderly,3
-calculation,dependencyRatioSyr,Dependency ratio,division by zero,"1
-"
+calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1
 ,,,<=1.5,2
 ,,,>1.5,3
+calculation,dependencyRatioSyrNES,Dependency ratio SYR NES,0,1
+,,,division by zero,2
+,,,0< DR <= 1,3
+,,,1< DR <= 2,4
+,,,2< DR <= 3,5
+,,,3< DR <= 4,6
+,,,4< DR <= 5,7
+,,,5 < DR,8
+calculation,incomeSpentOnFood,Income spent on food,0,0
+,,,Missing value low,0
+,,,Missing value high,1
+,,,<0.25,2
+,,,"0,26-0,50",3
+,,,"0,51-0,65",4
+,,,"0,66-0,80",5
+,,,"0,81-0,95",6
+,,,">0,95",7
+,,,,
+calculation,vulnerabilityHeadOfHouseholdNES,Vulnerability Head of Household,Chronically ill,5
+,,,Person with disability,5
+,,,Infant,6
+,,,Elderly,4
+,,,Pregnant or lactating female,4
+,,,,
+calculation,vulnerabilityOfHouseholdMembers,Vulnerability of Household Members,Chronically ill or Person with disability & age < 60,2
+,,,NO: Chronically ill or Person with disability & age < 60,1
+,,,Pregnant or lactating female,2
+,,,NO: Pregnant or lactating female,1
+,,,,

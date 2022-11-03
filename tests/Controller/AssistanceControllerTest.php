@@ -411,7 +411,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::HOUSEHOLD,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [$commodity['commodity']],
             'selectionCriteria' => [
                 [
@@ -501,7 +501,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::HOUSEHOLD,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
                 ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 100],
@@ -620,7 +620,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::INDIVIDUAL,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
@@ -691,7 +691,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::ACTIVITY,
             'target' => AssistanceTargetType::INDIVIDUAL,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
@@ -818,7 +818,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::INDIVIDUAL,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],
@@ -907,7 +907,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'scoringBlueprint' => null,
             'type' => AssistanceType::DISTRIBUTION,
             'target' => AssistanceTargetType::INDIVIDUAL,
-            'threshold' => 1,
+            'threshold' => null,
             'commodities' => [
                 ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
             ],

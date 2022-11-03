@@ -80,7 +80,7 @@ class SmartcardController extends AbstractOfflineAppController
         foreach ($smartcards as $smartcard) {
             try {
                 $smartcardService->change($smartcard, $changeSmartcardInputType);
-            } catch (SmartcardActivationDeactivatedException|SmartcardNotAllowedStateTransition $e) {
+            } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition $e) {
                 $doubledRequest = true;
             }
         }

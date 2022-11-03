@@ -18,7 +18,7 @@ final class Floats
      *
      * @return bool
      */
-    public static function compare(float $a, float $b, float $epsilon = self::EPSILON): bool
+    public static function equals(float $a, float $b, float $epsilon = self::EPSILON): bool
     {
         if (abs($a - $b) < $epsilon) {
             return true;

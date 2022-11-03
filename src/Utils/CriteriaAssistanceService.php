@@ -2,13 +2,13 @@
 
 namespace Utils;
 
+use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use Exception;
 use Exception\CsvParserException;
-use Model\Vulnerability\Resolver as OldResolver;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
@@ -28,9 +28,6 @@ class CriteriaAssistanceService
     /** @var EntityManagerInterface $em */
     private $em;
 
-    /** @var OldResolver */
-    private $oldResolver;
-
     /** @var ScoringFactory */
     private $scoringFactory;
 
@@ -44,20 +41,17 @@ class CriteriaAssistanceService
      * CriteriaAssistanceService constructor.
      *
      * @param EntityManagerInterface $entityManager
-     * @param OldResolver $oldResolver
      * @param ScoringResolver $resolver
      * @param ScoringBlueprintRepository $scoringBlueprintRepository
      * @throws Exception
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        OldResolver $oldResolver,
         ScoringFactory $scoringFactory,
         ScoringResolver $resolver,
         ScoringBlueprintRepository $scoringBlueprintRepository
     ) {
         $this->em = $entityManager;
-        $this->oldResolver = $oldResolver;
         $this->scoringFactory = $scoringFactory;
         $this->resolver = $resolver;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
@@ -103,6 +97,7 @@ class CriteriaAssistanceService
             $scoringBlueprintId,
             $project->getCountryIso3()
         );
+
         $scoring = isset($scoringBlueprint) ? $this->scoringFactory->buildScoring($scoringBlueprint) : null;
         foreach ($criteriaGroups as $group) {
             $selectableBeneficiaries = $this->em->getRepository(Beneficiary::class)
@@ -113,11 +108,7 @@ class CriteriaAssistanceService
                 $beneficiary = $this->em->getReference(Beneficiary::class, $bnf['id']);
 
                 if (!isset($scoring)) {
-                    $protocol = $this->oldResolver->compute(
-                        $beneficiary->getHousehold(),
-                        $project->getCountryIso3(),
-                        $sector
-                    );
+                    $protocol = new ScoringProtocol();
                 } else {
                     $protocol = $this->resolver->compute(
                         $beneficiary->getHousehold(),
@@ -126,7 +117,7 @@ class CriteriaAssistanceService
                     );
                 }
 
-                if (is_null($threshold) || $protocol->getTotalScore() >= $threshold) {
+                if (is_null($threshold) || $protocol->getTotalScore() > $threshold || Floats::equals($protocol->getTotalScore(), $threshold)) {
                     if (AssistanceTargetType::INDIVIDUAL === $targetType) {
                         $BNFId = $beneficiary->getId();
                         $reachedBeneficiaries[$BNFId] = $protocol;

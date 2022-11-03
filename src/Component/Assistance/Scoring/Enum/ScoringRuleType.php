@@ -9,6 +9,7 @@ final class ScoringRuleType
     public const COUNTRY_SPECIFIC = 'countrySpecific';
     public const CALCULATION = 'calculation';
     public const ENUM = 'enum';
+    public const CORE_HOUSEHOLD = 'coreHousehold';
 
     public static function values(): array
     {
@@ -16,6 +17,7 @@ final class ScoringRuleType
             self::COUNTRY_SPECIFIC,
             self::CALCULATION,
             self::ENUM,
+            self::CORE_HOUSEHOLD,
         ];
     }
 }

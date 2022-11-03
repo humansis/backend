@@ -7,6 +7,7 @@ namespace Component\Assistance\Scoring\Validator;
 use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
+use Component\Assistance\Scoring\Enum\ScoringSupportedHouseholdCoreFieldsEnum;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
@@ -35,6 +36,18 @@ final class ScoringValidator extends ConstraintValidator
                     )
                 )
                     ->addViolation();
+            }
+
+            if ($rule->getType() === ScoringRuleType::CORE_HOUSEHOLD) {
+                if (!in_array($rule->getFieldName(), ScoringSupportedHouseholdCoreFieldsEnum::values())) {
+                    $this->context->buildViolation(
+                        "Field name {$rule->getFieldName()} is not supported for rule coreHousehold. Supported values are: [" . implode(
+                            ', ',
+                            ScoringSupportedHouseholdCoreFieldsEnum::values()
+                        ) . ']'
+                    )
+                        ->addViolation();
+                }
             }
 
             if ($rule->getType() === ScoringRuleType::CALCULATION) {
