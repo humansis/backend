@@ -20,3 +20,4 @@ export command="sed -i -e \"s/${OLD_DB_NAME}/${DATABASE_NAME}/g\" /opt/humansis/
 ssh ec2-user@${ec2_host} $command
 ssh ec2-user@${ec2_host} "cd /opt/humansis && /opt/humansis/clear-cache.sh aggressive"
 ssh ec2-user@${ec2_host} "cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console doctrine:migrations:migrate -n'"
+ssh ec2-user@${ec2_host} "cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console app:default-credentials'"
