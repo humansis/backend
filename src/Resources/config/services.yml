@@ -884,6 +884,11 @@ services:
 
     Utils\HouseholdService: '@beneficiary.household_service'
 
+    Repository\RoleRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Role
+
     Repository\UserRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
