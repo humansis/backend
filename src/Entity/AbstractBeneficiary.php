@@ -34,13 +34,15 @@ abstract class AbstractBeneficiary
      *
      * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      */
-    private $distributionBeneficiaries;
+    private Collection | array $distributionBeneficiaries;
 
     /**
+     * @var AssistanceBeneficiary[]|Collection
+     *
      * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
-    private \Entity\AssistanceBeneficiary $assistanceBeneficiary;
+    private Collection | array $assistanceBeneficiary;
 
     /**
      * @ORM\Column(type="boolean", options={"default" : 0})
