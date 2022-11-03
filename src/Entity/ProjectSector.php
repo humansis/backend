@@ -38,9 +38,9 @@ class ProjectSector
      *
      * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="sectors")
      */
-    private $project;
+    private Project $project;
 
-    public function __construct(string $sector, Project $project, ?string $subSector = null)
+    public function __construct(string $sector, Project $project, string|null $subSector = null)
     {
         $this->sector = $sector;
         $this->subSector = $subSector;

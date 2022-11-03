@@ -4,7 +4,6 @@ namespace Entity;
 
 use BadMethodCallException;
 use DateTimeInterface;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -46,7 +45,7 @@ class Smartcard
      * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="smartcards")
      */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
-    private ?\Entity\Beneficiary $beneficiary = null;
+    private ?Beneficiary $beneficiary = null;
 
     /**
      * @var Collection|SmartcardDeposit[]
@@ -54,7 +53,7 @@ class Smartcard
      * @ORM\OneToMany(targetEntity="Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private \Doctrine\Common\Collections\Collection|array $deposites;
+    private Collection |array $deposites;
 
     /**
      * @var Collection|SmartcardPurchase[]
@@ -62,7 +61,7 @@ class Smartcard
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private \Doctrine\Common\Collections\Collection|array $purchases;
+    private Collection |array $purchases;
 
     /**
      * @see SmartcardStates::all()
@@ -81,17 +80,23 @@ class Smartcard
      * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
      */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
-    private ?\DateTimeInterface $disabledAt = null;
+    private ?DateTimeInterface $disabledAt = null;
 
     /**
      * @ORM\Column(name="registered_at", type="datetime", nullable=true)
      */
-    private ?\DateTimeInterface $registeredAt = null;
+    private ?DateTimeInterface $registeredAt = null;
+
+    /**
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(name="changed_at", type="datetime", nullable=true)
      */
-    private ?\DateTimeInterface $changedAt = null;
+    private ?DateTimeInterface $changedAt = null;
 
     /**
      * @ORM\Column(name="suspicious", type="boolean", nullable=false)
@@ -104,16 +109,14 @@ class Smartcard
     private ?string $suspiciousReason = null;
 
     public function __construct(
-        string $serialNumber, /**
-         * @ORM\Column(name="created_at", type="datetime", nullable=false)
-         */
-        #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
-        private DateTimeInterface $createdAt
+        string $serialNumber,
+        DateTimeInterface $createdAt,
     ) {
         if (!self::check($serialNumber)) {
             throw new InvalidArgumentException('Smartcard serial number ' . $serialNumber . 'is not valid');
         }
 
+        $this->createdAt = $createdAt;
         $this->serialNumber = strtoupper($serialNumber);
         $this->deposites = new ArrayCollection();
         $this->purchases = new ArrayCollection();
@@ -283,7 +286,7 @@ class Smartcard
     /**
      * @return Collection|SmartcardDeposit[]
      */
-    public function getDeposites(): \Doctrine\Common\Collections\Collection|array
+    public function getDeposites(): Collection |array
     {
         return $this->deposites;
     }

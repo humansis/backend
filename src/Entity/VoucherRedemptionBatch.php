@@ -19,29 +19,40 @@ class VoucherRedemptionBatch
     use StandardizedPrimaryKey;
 
     /**
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
+     */
+    private DateTime $redeemedAt;
+
+    /**
      * @var Collection|Voucher[]
      *
      * @ORM\OneToMany(targetEntity="Entity\Voucher", cascade={"persist"}, orphanRemoval=false, mappedBy="redemptionBatch")
      */
-    private \Doctrine\Common\Collections\Collection|array $vouchers;
+    private Collection | array $vouchers;
 
-    public function __construct(/**
-         *
-         * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-         * @ORM\JoinColumn(nullable=false)
-         */
-        private Vendor $vendor, /**
-         *
-         * @ORM\ManyToOne(targetEntity="Entity\User")
-         * @ORM\JoinColumn(name="redeemed_by", nullable=true)
-         */
-        private ?\Entity\User $redeemedBy,
-        array $vouchers, /**
-         * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-         */
-        private float $value
-    ) {
+    /**
+     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private Vendor $vendor;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\User")
+     * @ORM\JoinColumn(name="redeemed_by", nullable=true)
+     */
+    private ?\Entity\User $redeemedBy;
+
+    /**
+     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private float $value;
+
+    public function __construct(Vendor $vendor, User $redeemedBy, array $vouchers, float $value)
+    {
+        $this->vendor = $vendor;
         $this->redeemedAt = new DateTime();
+        $this->redeemedBy = $redeemedBy;
+        $this->value = $value;
         $this->vouchers = new ArrayCollection($vouchers);
     }
 
@@ -81,18 +92,12 @@ class VoucherRedemptionBatch
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
 
-    /**
-     * @return VoucherRedemptionBatch
-     */
-    public function setValue(mixed $value)
+    public function setValue(mixed $value): self
     {
         $this->value = $value;
 
@@ -102,7 +107,7 @@ class VoucherRedemptionBatch
     /**
      * @return Collection|Voucher[]
      */
-    public function getVouchers(): \Doctrine\Common\Collections\Collection|array
+    public function getVouchers(): Collection | array
     {
         return $this->vouchers;
     }
