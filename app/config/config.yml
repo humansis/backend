@@ -151,17 +151,21 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver: pdo_mysql
-        host: '%database_host%'
-        dbname: '%database_name%'
-        user: '%database_user%'
-        password: '%database_password%'
-        charset: UTF8
-        server_version: '8.0'
-        mapping_types:
-            enum: string
-        schema_filter: '~^(?!view_)~' # support views with prefix "view_"
-#            - '~^(?!messenger_messages)~'
+        default_connection: default
+        connections:
+            default:
+                # configure these for your database server
+                driver: pdo_mysql
+                host: '%database_host%'
+                dbname: '%database_name%'
+                user: '%database_user%'
+                password: '%database_password%'
+                charset: UTF8
+                server_version: '8.0.28'
+                mapping_types:
+                    enum: string
+                schema_filter: '~^(?!view_)~' # support views with prefix "view_"
+        #            - '~^(?!messenger_messages)~'
         types:
             enum_source_type: DBAL\SourceEnum
             enum_assistance_type: DBAL\AssistanceTypeEnum
@@ -186,32 +190,42 @@ doctrine:
             enum_assitance_commodity_division: DBAL\AssistanceCommodityDivisionEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        auto_mapping: true
-        dql:
-            string_functions:
-                 soundex:       DoctrineExtensions\Query\Mysql\Soundex
-                 date_format:   DoctrineExtensions\Query\Mysql\DateFormat
-                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
-                 quarter: DoctrineExtensions\Query\Mysql\Quarter
-                 month: DoctrineExtensions\Query\Mysql\Month
-                 year: DoctrineExtensions\Query\Mysql\Year
-                 any_value: DoctrineExtensions\Query\Mysql\AnyValue
+        entity_managers:
+            default:
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                auto_mapping: true
+                connection: default
+                mappings:
+                    Main:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'Entity'
+                        alias: Entity
+                dql:
+                    string_functions:
+                         soundex:       DoctrineExtensions\Query\Mysql\Soundex
+                         date_format:   DoctrineExtensions\Query\Mysql\DateFormat
+                         timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                         quarter: DoctrineExtensions\Query\Mysql\Quarter
+                         month: DoctrineExtensions\Query\Mysql\Month
+                         year: DoctrineExtensions\Query\Mysql\Year
+                         any_value: DoctrineExtensions\Query\Mysql\AnyValue
 
-            numeric_functions:
-                levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
-                levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
-        metadata_cache_driver:
-            type: pool
-            id: doctrine.system_cache_pool
-        result_cache_driver:
-            type: pool
-            id: doctrine.system_cache_pool
-        query_cache_driver:
-            type: pool
-            id: doctrine.system_cache_pool
-        hydrators:
-            plain_values_hydrator: Hydration\PlainValuesHydrator
+                    numeric_functions:
+                        levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
+                        levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
+                metadata_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                result_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                query_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                hydrators:
+                    plain_values_hydrator: Hydration\PlainValuesHydrator
 
 
 doctrine_migrations:
