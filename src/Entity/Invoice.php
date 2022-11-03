@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Entity\Helper\StandardizedPrimaryKey;
-use Entity\Project;
-use Entity\User;
 
 /**
  * Smartcard purchase batch for redemption feature.
@@ -23,6 +21,49 @@ use Entity\User;
 class Invoice implements JsonSerializable
 {
     use StandardizedPrimaryKey;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private Vendor $vendor;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\Entity\Project")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private Project | null $project;
+
+    /**
+     * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
+     */
+    private DateTimeInterface $invoicedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\User")
+     * @ORM\JoinColumn(name="redeemed_by", nullable=false)
+     */
+    private User $invoicedBy;
+
+    /**
+     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
+     */
+    private mixed $value;
+
+    /**
+     * @ORM\Column(name="currency", type="string", nullable=true)
+     */
+    private string $currency;
+
+    /**
+     * @ORM\Column(name="contract_no", type="string", nullable=true)
+     */
+    private string | null $contractNo;
+
+    /**
+     * @ORM\Column(name="vendor_no", type="string", nullable=true)
+     */
+    private string | null $vendorNo;
 
     /**
      * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
@@ -39,26 +80,34 @@ class Invoice implements JsonSerializable
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
      */
-    private \Doctrine\Common\Collections\Collection|array $purchases;
+    private Collection | array $purchases;
 
     /**
      * SmartcardPurchaseBatch constructor.
      */
     public function __construct(
-        private Vendor $vendor,
-        private ?\Entity\Project $project,
-        private DateTime $invoicedAt,
-        private User $invoicedBy,
-        private mixed $value,
-        private string $currency,
-        private ?string $contractNo,
-        private ?string $vendorNo,
-        array $purchases
+        Vendor $vendor,
+        ?Project $project,
+        DateTime $redeemedAt,
+        User $redeemedBy,
+        mixed $value,
+        string $currency,
+        ?string $contractNo,
+        ?string $vendorNo,
+        array $purchases,
     ) {
+        $this->vendor = $vendor;
+        $this->project = $project;
+        $this->invoicedAt = $redeemedAt;
+        $this->invoicedBy = $redeemedBy;
+        $this->value = $value;
+        $this->currency = $currency;
         $this->purchases = new ArrayCollection($purchases);
+        $this->contractNo = $contractNo;
+        $this->vendorNo = $vendorNo;
 
-        $this->projectInvoiceAddressLocal = $project->getProjectInvoiceAddressLocal();
-        $this->projectInvoiceAddressEnglish = $project->getProjectInvoiceAddressEnglish();
+        $this->projectInvoiceAddressLocal = $project?->getProjectInvoiceAddressLocal();
+        $this->projectInvoiceAddressEnglish = $project?->getProjectInvoiceAddressEnglish();
     }
 
     public function getVendor(): Vendor
@@ -125,7 +174,7 @@ class Invoice implements JsonSerializable
     /**
      * @param Collection|SmartcardPurchase[] $purchases
      */
-    public function setPurchases(\Doctrine\Common\Collections\Collection|array $purchases): void
+    public function setPurchases(Collection | array $purchases): void
     {
         $this->purchases = $purchases;
     }
