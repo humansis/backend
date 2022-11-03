@@ -23,7 +23,7 @@ final class PathConstructor
 
         if (!empty($matches[1])) {
             throw new InvalidArgumentException(
-                'Not all parameters for path were provided. Missing parameters: [' . join($matches[1], ' , ') . ']'
+                'Not all parameters for path were provided. Missing parameters: [' . join(' , ', $matches[1]) . ']'
             );
         }
 
