@@ -17,7 +17,6 @@ use Enum\HouseholdShelterStatus;
 use DBAL\LivelihoodEnum;
 use Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use Utils\CountrySpecificService;
 
 /**
  * Household
@@ -124,7 +123,7 @@ class Household extends AbstractBeneficiary
     /**
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
      */
-    private ?\DateTimeInterface $supportDateReceived = null;
+    private ?DateTimeInterface $supportDateReceived = null;
 
     /**
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
@@ -146,7 +145,7 @@ class Household extends AbstractBeneficiary
      * @ORM\OneToOne(targetEntity="Entity\Person")
      * @ORM\JoinColumn(name="proxy_id")
      */
-    private ?\Entity\Person $proxy = null;
+    private ?Person $proxy = null;
 
     /**
      * Constructor
@@ -390,7 +389,7 @@ class Household extends AbstractBeneficiary
      *
      * @return Collection|Beneficiary[]
      */
-    public function getBeneficiaries(bool $showArchived = false): \Doctrine\Common\Collections\Collection|array
+    public function getBeneficiaries(bool $showArchived = false): Collection |array
     {
         $criteria = Criteria::create();
         if (!$showArchived) {
