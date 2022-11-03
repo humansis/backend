@@ -29,7 +29,7 @@ class Voucher implements ExportableInterface
      * @ORM\JoinColumn(nullable=true)
      */
     #[SymfonyGroups(['FullVoucher'])]
-    private $voucherPurchase;
+    private ?VoucherPurchase $voucherPurchase;
 
     /**
      *
@@ -38,56 +38,45 @@ class Voucher implements ExportableInterface
      */
     private ?\Entity\VoucherRedemptionBatch $redemptionBatch = null;
 
-    public function __construct(
-        /**
-         * @ORM\Column(name="code", type="string", length=255, unique=true)
-         */
-        #[SymfonyGroups(['FullVoucher'])]
-        private string $code,
-        /**
-         * @ORM\Column(name="value", type="integer")
-         */
-        #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
-        private int $value,
-        /**
-         * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
-         * @ORM\JoinColumn(nullable=false)
-         */
-        #[SymfonyGroups(['FullVoucher'])]
-        private Booklet $booklet
-    ) {
-    }
+    /**
+     * @ORM\Column(name="code", type="string", length=255, unique=true)
+     */
+    #[SymfonyGroups(['FullVoucher'])]
+    private string $code;
 
     /**
-     * Get id.
-     *
-     * @return int
+     * @ORM\Column(name="value", type="integer")
      */
-    public function getId()
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+    private int $value;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    #[SymfonyGroups(['FullVoucher'])]
+    private Booklet $booklet;
+
+    public function __construct(string $code, int $value, Booklet $booklet)
+    {
+        $this->code = $code;
+        $this->value = $value;
+        $this->booklet = $booklet;
+    }
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set value.
-     *
-     * @param int $value
-     *
-     * @return Voucher
-     */
-    public function setValue($value)
+    public function setValue(int $value): self
     {
         $this->value = $value;
 
         return $this;
     }
 
-    /**
-     * Get individual value.
-     *
-     * @return int
-     */
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
@@ -121,26 +110,14 @@ class Voucher implements ExportableInterface
         return $this->getVoucherPurchase()->getCreatedAt();
     }
 
-    /**
-     * Set code.
-     *
-     * @param string $code
-     *
-     * @return Voucher
-     */
-    public function setCode($code)
+    public function setCode(string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    /**
-     * Get code.
-     *
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }

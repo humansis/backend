@@ -48,15 +48,12 @@ class ProductCategory
      *
      * @ORM\OneToMany(targetEntity="Entity\Product", mappedBy="productCategory")
      */
-    private \Doctrine\Common\Collections\Collection|array $products;
+    private Collection |array $products;
 
-    public function __construct(
-        private string $name,
-        private string $type,
-    ) {
+    public function __construct(string $name, string $type)
+    {
         $this->name = $name;
         $this->type = $type;
-
         $this->products = new ArrayCollection();
     }
 
@@ -73,7 +70,7 @@ class ProductCategory
     /**
      * @return Collection|Product[]
      */
-    public function getProducts(): \Doctrine\Common\Collections\Collection|array
+    public function getProducts(): Collection |array
     {
         return $this->products;
     }

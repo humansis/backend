@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
+use Entity\User;
 
 /**
  * @ORM\Table(name="role")
@@ -37,14 +38,14 @@ class Role
      *
      * @ORM\ManyToMany(targetEntity="Entity\Privilege", inversedBy="roles")
      */
-    private \Doctrine\Common\Collections\Collection|array $privileges;
+    private Collection |array $privileges;
 
     /**
      * @var Collection|User[]
      *
      * @ORM\ManyToMany(targetEntity="Entity\User", mappedBy="roles")
      */
-    private \Doctrine\Common\Collections\Collection|array $users;
+    private Collection |array $users;
 
     public function __construct()
     {
@@ -82,17 +83,26 @@ class Role
         $this->deletable = $deletable;
     }
 
-    public function getPrivileges(): \Doctrine\Common\Collections\Collection|array
+    /**
+     * @return Collection|Privilege[]
+     */
+    public function getPrivileges(): Collection |array
     {
         return $this->privileges;
     }
 
-    public function getUsers(): \Doctrine\Common\Collections\Collection|array
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection |array
     {
         return $this->users;
     }
 
-    public function setUsers(\Doctrine\Common\Collections\Collection|array $users): void
+    /**
+     * @param Collection|User[] $users
+     */
+    public function setUsers(Collection |array $users): void
     {
         $this->users = $users;
     }

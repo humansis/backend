@@ -43,7 +43,7 @@ abstract class SynchronizationBatch
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
-    private $violations;
+    private string $violations;
 
     /**
      * @ORM\Column(name="validated_at", type="datetime", nullable=true)
@@ -51,11 +51,9 @@ abstract class SynchronizationBatch
     private ?\DateTimeInterface $validatedAt = null;
 
     /**
-     * @var array
-     *
      * @ORM\Column(name="request_data", type="json", nullable=false)
      */
-    private $requestData;
+    private array $requestData;
 
     /**
      * @param array $requestData
