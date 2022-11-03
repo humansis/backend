@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace MapperDeprecated;
 
 use Entity\ProjectSector;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @deprecated

@@ -20,12 +20,15 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SmartcardPurchasedItemSpreadsheet
 {
-    public function __construct(private readonly SmartcardPurchasedItemRepository $repository, private readonly TranslatorInterface $translator, private readonly Countries $countries)
-    {
+    public function __construct(
+        private readonly SmartcardPurchasedItemRepository $repository,
+        private readonly TranslatorInterface $translator,
+        private readonly Countries $countries
+    ) {
     }
 
     public function export(string $countryIso3, string $filetype, SmartcardPurchasedItemFilterInputType $filter): string
