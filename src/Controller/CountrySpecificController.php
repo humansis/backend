@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Controller\ExportController;
@@ -23,7 +24,7 @@ use Utils\CountrySpecificService;
 
 class CountrySpecificController extends AbstractController
 {
-    public function __construct(private readonly CountrySpecificService $countrySpecificService)
+    public function __construct(private readonly CountrySpecificService $countrySpecificService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -77,7 +78,7 @@ class CountrySpecificController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $countrySpecifics = $this->getDoctrine()->getRepository(CountrySpecific::class)
+        $countrySpecifics = $this->managerRegistry->getRepository(CountrySpecific::class)
             ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($countrySpecifics);
@@ -94,8 +95,8 @@ class CountrySpecificController extends AbstractController
         $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
 
         try {
-            $this->getDoctrine()->getManager()->persist($countrySpecific);
-            $this->getDoctrine()->getManager()->flush();
+            $this->managerRegistry->getManager()->persist($countrySpecific);
+            $this->managerRegistry->getManager()->flush();
         } catch (UniqueConstraintViolationException) {
             return new JsonResponse(
                 "Country specific option with the same name already exists, please choose another name.",
@@ -118,8 +119,8 @@ class CountrySpecificController extends AbstractController
         $countrySpecific->setType($inputType->getType());
 
         try {
-            $this->getDoctrine()->getManager()->persist($countrySpecific);
-            $this->getDoctrine()->getManager()->flush();
+            $this->managerRegistry->getManager()->persist($countrySpecific);
+            $this->managerRegistry->getManager()->flush();
         } catch (UniqueConstraintViolationException) {
             return new JsonResponse(
                 "Country specific option with the same name already exists, please choose another name.",

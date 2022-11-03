@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Pagination\Paginator;
 use Entity\Assistance;
@@ -23,7 +24,7 @@ use Utils\TransactionService;
 
 class TransactionController extends AbstractController
 {
-    public function __construct(private readonly CodeListService $codeListService, private readonly LoggerInterface $logger, private readonly TransactionService $transactionService, private readonly SerializerInterface $serializer)
+    public function __construct(private readonly CodeListService $codeListService, private readonly LoggerInterface $logger, private readonly TransactionService $transactionService, private readonly SerializerInterface $serializer, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -35,7 +36,7 @@ class TransactionController extends AbstractController
     public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
     {
         /** @var TransactionRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Transaction::class);
+        $repository = $this->managerRegistry->getRepository(Transaction::class);
         $data = $repository->findByParams($filter);
 
         return $this->json($data);

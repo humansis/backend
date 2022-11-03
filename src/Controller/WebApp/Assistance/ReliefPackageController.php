@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\WebApp\Assistance;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ReliefPackageController extends AbstractWebAppController
 {
-    public function __construct(private readonly AssistanceDistributionService $assistanceDistributionService)
+    public function __construct(private readonly AssistanceDistributionService $assistanceDistributionService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -33,7 +34,7 @@ class ReliefPackageController extends AbstractWebAppController
         Request $request,
         ReliefPackageFilterInputType $filter
     ): JsonResponse {
-        $reliefPackages = $this->getDoctrine()->getRepository(ReliefPackage::class)->findByAssistance(
+        $reliefPackages = $this->managerRegistry->getRepository(ReliefPackage::class)->findByAssistance(
             $assistance,
             $filter
         );

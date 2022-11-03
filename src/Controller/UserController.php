@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Controller;
 
 use Controller\ExportController;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Exception\ConstraintViolationException;
@@ -24,7 +25,7 @@ use Utils\UserService;
 
 class UserController extends AbstractController
 {
-    public function __construct(private readonly UserService $userService)
+    public function __construct(private readonly UserService $userService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -61,7 +62,7 @@ class UserController extends AbstractController
         Pagination $pagination
     ): JsonResponse {
         /** @var UserRepository $userRepository */
-        $userRepository = $this->getDoctrine()->getRepository(User::class);
+        $userRepository = $this->managerRegistry->getRepository(User::class);
 
         $users = $userRepository->findByParams($userOderInputType, $userFilterInputType, $pagination);
 
@@ -142,8 +143,8 @@ class UserController extends AbstractController
             $user->setTwoFactorAuthentication($request->request->getBoolean('2fa'));
         }
 
-        $this->getDoctrine()->getManager()->persist($user);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($user);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($user);
     }
