@@ -67,7 +67,7 @@
 		"symfony/swiftmailer-bundle": "v3.5.2",
 		"symfony/symfony": "4.4.43",
 		"tecnickcom/tcpdf": "6.4.1",
-		"twig/twig": "2.14.4"
+		"twig/twig": "2.15.3"
 	},
 	"require-dev": {
 		"captainhook/captainhook": "^5.10",
