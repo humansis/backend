@@ -23,8 +23,12 @@ class FilterConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $errors = null;
-        $filter = $request->query->get('filter', []);
+        $filter = [];
+
+        if ($request->query->has('sort')) {
+            $filter = $request->query->get('filter');
+        }
+
         if (!is_array($filter)) {
             throw new BadRequestHttpException('Query parameter filter must be an array.');
         }
