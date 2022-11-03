@@ -19,7 +19,7 @@ class SmartcardInvoiceCreateInputType implements InputTypeInterface
      * )
      */
     #[Assert\Type('array')]
-    private $purchaseIds;
+    private array $purchaseIds;
 
     /**
      * @return int[]
@@ -32,7 +32,7 @@ class SmartcardInvoiceCreateInputType implements InputTypeInterface
     /**
      * @param int[] $purchaseIds
      */
-    public function setPurchaseIds(array $purchaseIds)
+    public function setPurchaseIds(array $purchaseIds): void
     {
         $this->purchaseIds = $purchaseIds;
     }
