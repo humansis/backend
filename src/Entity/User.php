@@ -2,15 +2,13 @@
 
 namespace Entity;
 
+use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
-use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -19,13 +17,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User implements ExportableInterface, UserInterface
+class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
-    final public const ROLE_DEFAULT = 'ROLE_USER';
-    final public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-
-    private ?\Doctrine\Persistence\ObjectManager $em = null;
-
     /**
      * @var int
      *
