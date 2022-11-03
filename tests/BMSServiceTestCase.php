@@ -345,8 +345,8 @@ class BMSServiceTestCase extends KernelTestCase
         $user->setUsername($username)
             ->setEmail($username)
             ->setPassword("");
-        $user->setPhoneNumber("")
-            ->setPhonePrefix("")
+        $user->setPhoneNumber(null)
+            ->setPhonePrefix(null)
             ->setTwoFactorAuthentication(0);
         $user->setChangePassword(0);
         $this->em->persist($user);
