@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Entity\SynchronizationBatch;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use DBAL\SynchronizationBatchValidationTypeEnum;
 use Entity\SynchronizationBatch;
-use Enum\SynchronizationBatchValidationType;
 use Entity\SmartcardDeposit;
 
 /**
@@ -19,7 +18,7 @@ class Deposits extends SynchronizationBatch
     /**
      * @var SmartcardDeposit[]
      */
-    private array $createdDeposits;
+    private Collection $createdDeposits;
 
     public function __construct(array $requestData)
     {
