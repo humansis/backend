@@ -23,7 +23,7 @@ class HouseholdHead
         return self::$values;
     }
 
-    public static function valueFromAPI($APIValue)
+    public static function valueFromAPI(bool $APIValue): bool
     {
         return (bool) self::parentValueFromAPI($APIValue);
     }

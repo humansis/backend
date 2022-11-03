@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace InputType\Beneficiary;
 
 use DateTimeInterface;
+use Entity\Referral;
 use Enum\ResidencyStatus;
 use Enum\HouseholdHead;
 use Enum\PersonGender;
@@ -81,7 +82,7 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $residencyStatus;
 
-    #[Assert\Choice(callback: ['\\' . \Entity\Referral::class, 'types'], strict: true, groups: ['Strict'])]
+    #[Assert\Choice(callback: ['\\' . Referral::class, 'types'], strict: true, groups: ['Strict'])]
     #[Assert\Length(max: 255)]
     private $referralType;
 
