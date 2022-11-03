@@ -8,11 +8,11 @@ use Doctrine\ORM\EntityRepository;
 
 class RoleRepository extends EntityRepository
 {
-    public function findByName($names)
+    public function findByCodes(array $codes)
     {
         return $this->createQueryBuilder('role')
-            ->andWhere('role.name IN (:names)')
-            ->setParameter('names', $names)
+            ->andWhere('role.code IN (:codes)')
+            ->setParameter('codes', $codes)
             ->getQuery()->getResult();
     }
 }
