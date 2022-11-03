@@ -24,9 +24,9 @@ class LocationControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-        $this->countries = self::$container->get(Countries::class);
-        $this->locationRepository = self::$container->get(LocationRepository::class);
+        $this->client = self::getContainer()->get('test.client');
+        $this->countries = self::getContainer()->get(Countries::class);
+        $this->locationRepository = self::getContainer()->get(LocationRepository::class);
     }
 
     public function testGetCountries()

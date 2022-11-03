@@ -23,7 +23,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -33,7 +33,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+        $organization = self::getContainer()->get('doctrine')->getRepository(Organization::class)->findBy(
             [],
             ['id' => 'asc']
         )[0];
@@ -64,7 +64,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdate()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+        $organization = self::getContainer()->get('doctrine')->getRepository(Organization::class)->findBy(
             [],
             ['id' => 'asc']
         )[0];
@@ -121,7 +121,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testListServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+        $services = self::getContainer()->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
             [],
             ['id' => 'asc']
         );
@@ -153,7 +153,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdateServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+        $services = self::getContainer()->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
             [],
             ['id' => 'asc']
         );

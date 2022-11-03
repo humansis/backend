@@ -24,12 +24,12 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
-        $assistanceRepository = self::$container->get(AssistanceRepository::class);
+        $assistanceRepository = self::getContainer()->get(AssistanceRepository::class);
         $filter = new AssistanceFilterInputType();
         $filter->setFilter(['modalityTypes' => ['Smartcard']]);
         $possible = $assistanceRepository->findByParams('SYR', $filter);
@@ -41,7 +41,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
             ->setMaxResults(1)
             ->getSingleResult();
 
-        $reliefPackageRepository = self::$container->get(ReliefPackageRepository::class);
+        $reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
         /** @var ReliefPackage $reliefPackage */
         $reliefPackage = $reliefPackageRepository->findByAssistance($assistance)
             ->getQuery()
@@ -141,7 +141,7 @@ class SynchronizationBatchControllerTest extends BMSServiceTestCase
      */
     public function testGetNotExists(int $id)
     {
-        $stateMachines = self::$container->get('workflow.registry');
+        $stateMachines = self::getContainer()->get('workflow.registry');
         $repository = $this->em->getRepository(SynchronizationBatch::class);
         $sync = $repository->find($id);
         $stateMachines->get($sync)->apply($sync, SynchronizationBatchTransitions::COMPLETE_VALIDATION);

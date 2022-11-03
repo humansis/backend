@@ -30,7 +30,7 @@ class AuthControllerTest extends BMSServiceTestCase
         // Configuration of BMSServiceTest
         parent::setUpFunctionnal();
 
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
         $this->userRepository = $this->em->getRepository(User::class);
         $this->user = $this->getUser();
     }

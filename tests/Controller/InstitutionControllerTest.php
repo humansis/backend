@@ -24,7 +24,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -36,7 +36,7 @@ class InstitutionControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var Location|null $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -105,9 +105,9 @@ class InstitutionControllerTest extends BMSServiceTestCase
     public function testUpdate(int $id)
     {
         /** @var Location|null $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $data = [
             'longitude' => 'test CHANGED',

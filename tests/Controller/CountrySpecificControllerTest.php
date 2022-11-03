@@ -18,7 +18,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
@@ -117,7 +117,7 @@ class CountrySpecificControllerTest extends BMSServiceTestCase
     public function testGetAnswer()
     {
         /** @var CountrySpecificAnswer $answer */
-        $answer = self::$container->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy(
+        $answer = self::getContainer()->get('doctrine')->getRepository(CountrySpecificAnswer::class)->findBy(
             [],
             ['id' => 'asc']
         )[0];

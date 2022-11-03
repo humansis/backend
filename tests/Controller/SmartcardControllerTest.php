@@ -33,7 +33,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     protected function tearDown(): void
@@ -83,7 +83,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
      */
     public function testRegisterSmartcardDuplicity(): void
     {
-        $smartcardService = self::$container->get(SmartcardService::class);
+        $smartcardService = self::getContainer()->get(SmartcardService::class);
         $code = '1111111';
         $createdAt = '2005-02-02T12:00:00Z';
         $this->removeSmartcards($code);
@@ -442,7 +442,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testChangeStateToInactive()
     {
-        $smartcardRepository = self::$container->get(SmartcardRepository::class);
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
@@ -463,7 +463,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testChangeStateToInactiveDoubled(): void
     {
-        $smartcardService = self::$container->get(SmartcardService::class);
+        $smartcardService = self::getContainer()->get(SmartcardService::class);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $date = '2005-02-02T12:00:00Z';
