@@ -63,7 +63,7 @@ class TranslationsDownloadCommand extends Command
         private readonly string $translationsDir
     ) {
         parent::__construct();
-        $this->client = HttpClient::create();
+        $this->client = new HttpClient();
     }
 
     protected function configure(): void
