@@ -11,8 +11,6 @@ use Exception;
 use Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Swift_Mailer;
-use Swift_Message;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -42,7 +40,6 @@ class TransactionService
         private readonly Environment $twig,
         private readonly LoggerInterface $logger,
         private readonly ExportService $exportService,
-        private readonly DefaultFinancialProvider $defaultFinancialProvider,
         private readonly KHMFinancialProvider $khmFinancialProvider
     ) {
         $this->email = $this->container->getParameter('email');
@@ -87,7 +84,7 @@ class TransactionService
             if ($countryISO3 === 'KHM') {
                 $provider = $this->khmFinancialProvider;
             } else {
-                $provider = $this->defaultFinancialProvider;
+                $provider = null;
             }
         } catch (Exception) {
             $provider = null;
