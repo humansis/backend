@@ -17,7 +17,12 @@ class SortConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $sort = $request->query->get('sort', []);
+        $sort = [];
+
+        if ($request->query->has('sort')) {
+            $sort = $request->query->get('sort');
+        }
+
         if (!is_array($sort)) {
             throw new BadRequestHttpException('Query parameter sort must be array.');
         }
