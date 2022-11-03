@@ -17,6 +17,7 @@ use Enum\HouseholdShelterStatus;
 use DBAL\LivelihoodEnum;
 use Enum\HouseholdSupportReceivedType;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+use Utils\CountrySpecificService;
 
 /**
  * Household
@@ -35,43 +36,45 @@ class Household extends AbstractBeneficiary
      *
      * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
      */
-    private $livelihood;
+    private ?string $livelihood;
 
     /**
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
      */
-    private array $assets;
+    private ?array $assets;
 
     /**
      * TODO: migrate to enum sometimes
      *
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
      */
-    private $shelterStatus;
+    private ?int $shelterStatus;
 
     /**
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      */
-    private string $notes;
+    private ?string $notes;
 
     /**
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      */
-    private string $latitude;
+    private ?string $latitude;
 
     /**
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
-    private string $longitude;
+    private ?string $longitude;
 
     /**
+     * @var Collection | CountrySpecific[]
+     *
      * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
      */
-    private \Entity\CountrySpecificAnswer $countrySpecificAnswers;
+    private Collection | array $countrySpecificAnswers;
 
     /**
      * @var Collection|Beneficiary[]
@@ -79,7 +82,7 @@ class Household extends AbstractBeneficiary
      * @ORM\OneToMany(targetEntity="Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
      */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullReceivers'])]
-    private $beneficiaries;
+    private array | Collection $beneficiaries;
 
     /**
      * @ORM\Column(name="income", type="integer", nullable=true)
