@@ -33,8 +33,6 @@ class VendorService
 
     /**
      * @throws EntityNotFoundException
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function create(VendorCreateInputType $inputType): Vendor
     {
@@ -79,8 +77,6 @@ class VendorService
 
     /**
      * @throws EntityNotFoundException
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): Vendor
     {
