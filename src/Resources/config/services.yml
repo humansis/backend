@@ -1200,7 +1200,6 @@ services:
         class: Doctrine\ORM\EntityRepository
         calls:
             - setLocationRepository: ['@Repository\LocationRepository']
-            - setPreliminaryInvoiceRepository: ['@Repository\Smartcard\PreliminaryInvoiceRepository']
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Vendor
@@ -1230,7 +1229,7 @@ services:
 
     voucher.vendor_service:
         class: Utils\VendorService
-        arguments: ['@doctrine.orm.entity_manager', '@pdf_service', '@Twig\Environment','@export_csv_service']
+        arguments: ['@pdf_service', '@Twig\Environment','@export_csv_service']
         public: true
 
     Utils\VendorService: '@voucher.vendor_service'
@@ -1379,6 +1378,12 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\OrganizationServices
+
+    Repository\VoucherPurchaseRepository:
+        class: Doctrine\ORM\EntityRepository
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\VoucherPurchase
 
     Serializer\ArrayNullableDenormalizer:
         tags: [ 'serializer.denormalizer' ]

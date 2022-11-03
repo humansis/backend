@@ -74,7 +74,9 @@ class SmartcardController extends AbstractOfflineAppController
         SmartcardRepository $smartcardRepository,
         SmartcardService $smartcardService
     ): Response {
-        $smartcards = $smartcardRepository->findBy(['serialNumber' => $serialNumber, 'state' => SmartcardStates::ACTIVE]);
+        $smartcards = $smartcardRepository->findBy(
+            ['serialNumber' => $serialNumber, 'state' => SmartcardStates::ACTIVE]
+        );
         $doubledRequest = count($smartcards) === 0;
 
         foreach ($smartcards as $smartcard) {

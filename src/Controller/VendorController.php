@@ -2,9 +2,10 @@
 
 namespace Controller;
 
-use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Enum\EnumValueNoFoundException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -12,7 +13,6 @@ use InputType\VendorCreateInputType;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InputType\VendorUpdateInputType;
-use Pagination\Paginator;
 use Repository\SmartcardPurchaseRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,24 +20,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Vendor;
-use Repository\VendorRepository;
 use Utils\VendorService;
 
 class VendorController extends AbstractController
 {
     /**
-     * @var VendorRepository
-     */
-    private $vendorRepository;
-
-    /**
      * @var VendorService
      */
     private $vendorService;
 
-    public function __construct(VendorRepository $vendorRepository, VendorService $vendorService)
+    public function __construct(VendorService $vendorService)
     {
-        $this->vendorRepository = $vendorRepository;
         $this->vendorService = $vendorService;
     }
 
@@ -79,7 +72,6 @@ class VendorController extends AbstractController
      * @param VendorFilterInputType $filter
      * @param Pagination $pagination
      * @param VendorOrderInputType $orderBy
-     * @param PreliminaryInvoiceService $preliminaryInvoiceService
      * @return JsonResponse
      * @throws EnumValueNoFoundException
      */
@@ -87,24 +79,15 @@ class VendorController extends AbstractController
         Request $request,
         VendorFilterInputType $filter,
         Pagination $pagination,
-        VendorOrderInputType $orderBy,
-        PreliminaryInvoiceService $preliminaryInvoiceService
+        VendorOrderInputType $orderBy
     ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $vendors = $this->vendorRepository->findByParams(
-            $request->headers->get('country'),
-            $filter,
-            $orderBy,
-            $pagination
+        return $this->json(
+            $this->vendorService->listVendors($request->headers->get('country'), $filter, $orderBy, $pagination)
         );
-        if ($filter->hasInvoicing()) {
-            $vendors = $preliminaryInvoiceService->filterVendorsByInvoicing($vendors, $filter->getInvoicing());
-        }
-
-        return $this->json(new Paginator($vendors));
     }
 
     /**
@@ -114,6 +97,8 @@ class VendorController extends AbstractController
      * @return JsonResponse
      *
      * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function create(VendorCreateInputType $inputType): JsonResponse
     {
@@ -129,6 +114,8 @@ class VendorController extends AbstractController
      * @param VendorUpdateInputType $inputType
      * @return JsonResponse
      * @throws EntityNotFoundException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): JsonResponse
     {
