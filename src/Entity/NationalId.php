@@ -9,6 +9,7 @@ use DBAL\NationalIdTypeEnum;
 use Entity\Helper\EnumTrait;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\NationalIdType;
+use Exception;
 use InputType\Beneficiary\NationalIdCardInputType;
 
 /**
@@ -53,7 +54,6 @@ class NationalId
     private $person;
 
     /**
-     * @param string $idNumber
      */
     public function __construct()
     {
@@ -67,7 +67,7 @@ class NationalId
      *
      * @return NationalId
      */
-    public function setIdNumber($idNumber)
+    public function setIdNumber(string $idNumber): NationalId
     {
         $this->idNumber = $idNumber;
 
@@ -79,7 +79,7 @@ class NationalId
      *
      * @return string
      */
-    public function getIdNumber()
+    public function getIdNumber(): string
     {
         return $this->idNumber;
     }
@@ -90,8 +90,9 @@ class NationalId
      * @param string $idType
      *
      * @return NationalId
+     * @throws Exception
      */
-    public function setIdType($idType)
+    public function setIdType(string $idType): NationalId
     {
         self::validateValue('idType', NationalIdType::class, $idType);
         $this->idType = NationalIdTypeEnum::valueToDB($idType);
@@ -103,8 +104,9 @@ class NationalId
      * Get idType.
      *
      * @return string
+     * @throws Exception
      */
-    public function getIdType()
+    public function getIdType(): string
     {
         return NationalIdTypeEnum::valueFromDB($this->idType);
     }
@@ -116,7 +118,7 @@ class NationalId
      *
      * @return NationalId
      */
-    public function setPerson(Person $person = null)
+    public function setPerson(Person $person = null): NationalId
     {
         $this->person = $person;
 
@@ -128,7 +130,7 @@ class NationalId
      *
      * @return Person|null
      */
-    public function getPerson()
+    public function getPerson(): ?Person
     {
         return $this->person;
     }
@@ -153,6 +155,7 @@ class NationalId
      * @param NationalIdCardInputType $inputType
      *
      * @return NationalId
+     * @throws Exception
      */
     public static function fromNationalIdInputType(NationalIdCardInputType $inputType): NationalId
     {

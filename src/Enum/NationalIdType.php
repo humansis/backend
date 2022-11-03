@@ -17,7 +17,6 @@ final class NationalIdType
     public const CAMP_ID = 'Camp ID';
     public const SOCIAL_SERVICE_ID = 'Social Service Card';
     public const OTHER = 'Other';
-    public const NONE = 'None';
     public const CIVIL_REGISTRATION_RECORD = 'Civil registration record';
 
     public static function values(): array
@@ -32,7 +31,6 @@ final class NationalIdType
             self::CAMP_ID,
             self::SOCIAL_SERVICE_ID,
             self::OTHER,
-            self::NONE,
             self::CIVIL_REGISTRATION_RECORD,
         ];
     }
