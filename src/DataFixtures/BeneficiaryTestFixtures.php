@@ -208,7 +208,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         }
         return json_decode($stringData, true);
     }
-    
+
 
     private function getHouseholdLocation(Location $location): HouseholdLocation
     {

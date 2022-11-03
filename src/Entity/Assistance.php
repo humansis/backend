@@ -117,11 +117,11 @@ class Assistance implements ExportableInterface
     private ?string $targetType = null;
 
     /**
-     * @var Commodity[]
+     * @var Collection | Commodity[]
      * @ORM\OneToMany(targetEntity="Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
-    private array $commodities;
+    private Collection | array $commodities;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
