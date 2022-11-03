@@ -26,7 +26,7 @@ class ClearCacheImportCommand extends Command
      * @return int|null|void
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln([
             '',
@@ -44,6 +44,7 @@ class ClearCacheImportCommand extends Command
         $output->writeln([
             'END',
         ]);
+        return 0;
     }
 
     /**

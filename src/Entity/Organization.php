@@ -37,7 +37,7 @@ class Organization
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullOrganization'])]
-    private string $logo;
+    private string|null $logo;
 
     /**
      * @ORM\Column(name="font", type="string", length=255)

@@ -56,10 +56,22 @@ class Location implements TreeInterface
      */
     private int $duplicityCount = 0;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     */
+    private $name;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     */
+    private $code;
+
     public function __construct(
-        string $countryIso3,
-        private ?string $name = null,
-        private ?string $code = null
+        string $countryIso3
     ) {
         $this->setCountryIso3($countryIso3);
     }
