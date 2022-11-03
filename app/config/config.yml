@@ -230,7 +230,7 @@ doctrine:
 
 doctrine_migrations:
     migrations_paths:
-        'Application\Migrations': "%kernel.project_dir%/DoctrineMigrations"
+        'Application\Migrations': "%kernel.project_dir%/app/DoctrineMigrations"
     storage:
         # Default (SQL table) metadata storage configuration
         table_storage:
