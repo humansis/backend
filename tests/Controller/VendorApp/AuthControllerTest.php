@@ -17,7 +17,7 @@ class AuthControllerTest extends BMSServiceTestCase
         $this->client = self::$container->get('test.client');
     }
 
-    public function testOfflineAppLogin(): never
+    public function testOfflineAppLogin(): void
     {
         $this->markTestSkipped('Support for JWT in test environment needs to be done first');
 

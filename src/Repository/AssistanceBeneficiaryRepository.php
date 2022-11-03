@@ -64,9 +64,10 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         match ($assistance->getTargetType()) {
             AssistanceTargetType::INDIVIDUAL, AssistanceTargetType::HOUSEHOLD => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Beneficiary::class)),
             AssistanceTargetType::COMMUNITY => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Community::class)),
-            AssistanceTargetType::INSTITUTION => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class)),
-            default => $qb->getQuery()->getResult(),
+            AssistanceTargetType::INSTITUTION => $qb->andWhere($qb->expr()->isInstanceOf('beneficiary', Institution::class))
         };
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

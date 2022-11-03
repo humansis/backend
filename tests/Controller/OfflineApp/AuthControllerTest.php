@@ -69,7 +69,7 @@ class AuthControllerTest extends BMSServiceTestCase
         parent::tearDown();
     }
 
-    public function testOfflineAppLogin(): never
+    public function testOfflineAppLogin(): void
     {
         $this->markTestSkipped('Support for JWT in test environment needs to be done first');
 

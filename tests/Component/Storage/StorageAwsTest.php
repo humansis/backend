@@ -49,7 +49,7 @@ class StorageAwsTest extends KernelTestCase
     /**
      * @throws FilesystemException
      */
-    public function testUploadFile(): never
+    public function testUploadFile(): void
     {
         $this->markTestSkipped('not on local');
 
