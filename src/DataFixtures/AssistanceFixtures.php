@@ -239,7 +239,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
      * @throws NonUniqueResultException
      * @throws ORMException
      */
-    private function loadSmartcardAssistance(Project $project, ?string $currency = null): Assistance
+    private function loadSmartcardAssistance(Project $project, ?string $currency = 'USD'): Assistance
     {
         $country = $this->countries->getCountry($project->getCountryIso3());
         $assistanceInputType = $this->buildAssistanceInputType($country, $project);
@@ -312,7 +312,6 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
             0 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD),
             1 => $divisionInputType->setCode(CommodityDivision::PER_HOUSEHOLD_MEMBER),
         };
-
         return $divisionInputType;
     }
 

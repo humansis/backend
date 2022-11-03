@@ -29,6 +29,21 @@ class ReliefPackage
     use LastModifiedAt;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
+     */
+    private string $state;
+
+    /**
+     * @var AssistanceBeneficiary
+     *
+     * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
+     */
+    private AssistanceBeneficiary $assistanceBeneficiary;
+
+
+    /**
      * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=false)
      */
     private string $modalityType;
@@ -51,6 +66,13 @@ class ReliefPackage
      * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2)
      */
     private string $amountSpent;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="unit", type="string", nullable=false)
+     */
+    private $unit;
 
     /**
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
@@ -83,11 +105,11 @@ class ReliefPackage
      * @param float|string|int $amountDistributed
      */
     public function __construct(
-        private AssistanceBeneficiary $assistanceBeneficiary,
+        AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
         $amountToDistribute,
-        private string $unit,
-        private string $state = ReliefPackageState::TO_DISTRIBUTE,
+        string $unit,
+        string $state = ReliefPackageState::TO_DISTRIBUTE,
         $amountDistributed = 0.0
     ) {
         if (!in_array($modalityType, ModalityType::values())) {
@@ -105,6 +127,9 @@ class ReliefPackage
                 "amountDistributed has to bee numeric. Provided value: '$amountDistributed'"
             );
         }
+        $this->assistanceBeneficiary = $assistanceBeneficiary;
+        $this->unit = $unit;
+        $this->state = $state;
         $this->modalityType = $modalityType;
         $this->amountToDistribute = (string) $amountToDistribute;
         $this->amountDistributed = (string) $amountDistributed;
