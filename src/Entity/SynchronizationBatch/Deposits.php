@@ -16,9 +16,9 @@ use Entity\SmartcardDeposit;
 class Deposits extends SynchronizationBatch
 {
     /**
-     * @var SmartcardDeposit[]
+     * @var Collection| SmartcardDeposit[]
      */
-    private Collection $createdDeposits;
+    private Collection|array $createdDeposits;
 
     public function __construct(array $requestData)
     {

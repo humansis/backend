@@ -288,17 +288,17 @@ services:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
 
-    Listener\AcceptHeaderListener:
+    Listener\AcceptHeaderEventSubscriber:
         arguments: [ '%app.locales%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-    Listener\VaryingListener:
+    Listener\VaryingEventSubscriber:
         arguments: [ '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.response }
 
-    Listener\ErrorResponseListener:
+    Listener\ErrorResponseEventSubscriber:
         arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
