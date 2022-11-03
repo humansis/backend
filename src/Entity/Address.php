@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use Entity\Helper\StandardizedPrimaryKey;
 use Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,14 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Address
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string|null
@@ -76,16 +70,6 @@ class Address
             ->setLocation($location);
 
         return $address;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

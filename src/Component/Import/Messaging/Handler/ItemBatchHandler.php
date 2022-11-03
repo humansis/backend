@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
 
+use Component\Auditor\AuditorService;
 use Component\Import\IdentityChecker;
 use Component\Import\ImportFinisher;
 use Component\Import\ImportQueueLoggerTrait;
@@ -42,12 +43,19 @@ class ItemBatchHandler implements MessageHandlerInterface
     private $finisher;
 
     /**
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
      * @param LoggerInterface $importLogger
      * @param ImportQueueRepository $queueRepository
+     * @param ImportRepository $importRepository
      * @param IntegrityChecker $integrityChecker
      * @param IdentityChecker $identityChecker
      * @param SimilarityChecker $similarityChecker
      * @param ImportFinisher $finisher
+     * @param AuditorService $auditorService
      */
     public function __construct(
         LoggerInterface $importLogger,
@@ -56,7 +64,8 @@ class ItemBatchHandler implements MessageHandlerInterface
         IntegrityChecker $integrityChecker,
         IdentityChecker $identityChecker,
         SimilarityChecker $similarityChecker,
-        ImportFinisher $finisher
+        ImportFinisher $finisher,
+        AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
         $this->queueRepository = $queueRepository;
@@ -65,10 +74,13 @@ class ItemBatchHandler implements MessageHandlerInterface
         $this->similarityChecker = $similarityChecker;
         $this->finisher = $finisher;
         $this->importRepository = $importRepository;
+        $this->auditorService = $auditorService;
     }
 
     public function __invoke(ItemBatch $batch): void
     {
+        $this->auditorService->disableAuditing();
+
         $import = $this->importRepository->find($batch->getImportId());
         switch ($batch->getCheckType()) {
             case ImportState::INTEGRITY_CHECKING:

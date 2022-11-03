@@ -2,7 +2,7 @@
 
 namespace Entity;
 
-use Entity\Location;
+use Entity\Helper\StandardizedPrimaryKey;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class HouseholdLocation
 {
+    use StandardizedPrimaryKey;
+
     public const LOCATION_GROUP_CURRENT = 'current';
     public const LOCATION_GROUP_RESIDENT = 'resident';
     public const LOCATION_TYPE_SETTLEMENT = 'temporary_settlement';
@@ -23,15 +25,6 @@ class HouseholdLocation
         self::LOCATION_TYPE_RESIDENCE,
         self::LOCATION_TYPE_SETTLEMENT,
     ];
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -63,16 +56,6 @@ class HouseholdLocation
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="householdLocations")
      */
     private $household;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set locationGroup.

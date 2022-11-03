@@ -46,7 +46,7 @@ class SmartcardController extends AbstractVendorAppController
         $this->smartcardService = $smartcardService;
         $this->logsDir = $logsDir;
     }
-    /** @var  */
+    /** @var */
     /**
      * //TODO whole endpoint should be removed after syncs of purchases
      *

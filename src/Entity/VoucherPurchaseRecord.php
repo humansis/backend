@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -13,15 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class VoucherPurchaseRecord
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var VoucherPurchase
@@ -66,14 +59,6 @@ class VoucherPurchaseRecord
         $entity->value = $value;
 
         return $entity;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

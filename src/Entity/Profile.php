@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Profile
@@ -12,14 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Profile
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -29,23 +23,13 @@ class Profile
     private $photo;
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set photo.
      *
      * @param string $photo
      *
      * @return Profile
      */
-    public function setPhoto($photo)
+    public function setPhoto(string $photo): Profile
     {
         $this->photo = $photo;
 
@@ -57,7 +41,7 @@ class Profile
      *
      * @return string
      */
-    public function getPhoto()
+    public function getPhoto(): string
     {
         return $this->photo;
     }

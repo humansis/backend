@@ -5,6 +5,7 @@ namespace Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 use Entity\User;
 
 /**
@@ -15,14 +16,7 @@ use Entity\User;
  */
 class HouseholdActivity
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Household
@@ -58,14 +52,6 @@ class HouseholdActivity
         $this->author = $author;
         $this->content = $content;
         $this->createdAt = new DateTime('now');
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

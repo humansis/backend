@@ -5,6 +5,7 @@ namespace Entity;
 use Doctrine\ORM\Mapping as ORM;
 use DBAL\SectorEnum;
 use DBAL\SubSectorEnum;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Sector
@@ -16,15 +17,7 @@ use DBAL\SubSectorEnum;
  */
 class ProjectSector
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -61,22 +54,6 @@ class ProjectSector
         $this->sector = $sector;
         $this->subSector = $subSector;
         $this->project = $project;
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     /**

@@ -108,7 +108,11 @@ class TransactionController extends AbstractController
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        $json = $this->serializer->serialize($response, 'json', ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']);
+        $json = $this->serializer->serialize(
+            $response,
+            'json',
+            ['groups' => ["ValidatedAssistance"], 'datetime_format' => 'd-m-Y H:m:i']
+        );
 
         return new Response($json);
     }

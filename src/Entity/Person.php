@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 use Exception;
 use DBAL\PersonGenderEnum;
 use Entity\Helper\EnumTrait;
@@ -22,15 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Person
 {
     use EnumTrait;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string|null
@@ -131,14 +124,6 @@ class Person
         $this->nationalIds = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
         //TODO check if updatedOn everytime
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**

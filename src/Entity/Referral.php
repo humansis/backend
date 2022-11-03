@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Referral
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Referral
 {
+    use StandardizedPrimaryKey;
+
     /**
      * Mapping of possible referral types
      */
@@ -22,25 +25,6 @@ class Referral
         '4' => 'Nutrition',
         '5' => 'Other',
     ];
-
-    public static function types(): array
-    {
-        $keys = [];
-        foreach (Referral::REFERRALTYPES as $key => $value) {
-            $keys[] = (string) $key;
-        }
-
-        return $keys;
-    }
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -57,23 +41,13 @@ class Referral
     private $comment;
 
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set type.
      *
      * @param string $type
      *
      * @return Referral
      */
-    public function setType($type)
+    public function setType(string $type): Referral
     {
         $this->type = $type;
 
@@ -85,7 +59,7 @@ class Referral
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -97,7 +71,7 @@ class Referral
      *
      * @return Referral
      */
-    public function setComment($comment)
+    public function setComment(string $comment): Referral
     {
         $this->comment = $comment;
 
@@ -109,8 +83,18 @@ class Referral
      *
      * @return string
      */
-    public function getComment()
+    public function getComment(): string
     {
         return $this->comment;
+    }
+
+    public static function types(): array
+    {
+        $keys = [];
+        foreach (Referral::REFERRALTYPES as $key => $value) {
+            $keys[] = (string) $key;
+        }
+
+        return $keys;
     }
 }

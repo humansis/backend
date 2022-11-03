@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
 
+use Component\Auditor\AuditorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\Messaging\Message\ImportCheck;
@@ -38,28 +39,38 @@ class ImportCheckHandler implements MessageHandlerInterface
     private $em;
 
     /**
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
      * @param LoggerInterface $importLogger
      * @param WorkflowInterface $importStateMachine
      * @param ImportRepository $importRepository
      * @param MessageBusInterface $messageBus
      * @param EntityManagerInterface $em
+     * @param AuditorService $auditorService
      */
     public function __construct(
         LoggerInterface $importLogger,
         WorkflowInterface $importStateMachine,
         ImportRepository $importRepository,
         MessageBusInterface $messageBus,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
         $this->importStateMachine = $importStateMachine;
         $this->importRepository = $importRepository;
         $this->messageBus = $messageBus;
         $this->em = $em;
+        $this->auditorService = $auditorService;
     }
 
     public function __invoke(ImportCheck $importCheck): void
     {
+        $this->auditorService->disableAuditing();
+
         $import = $this->importRepository->find($importCheck->getImportId());
         $this->logImportInfo($import, "Import check message");
 

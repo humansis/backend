@@ -105,7 +105,6 @@ class UserController extends AbstractController
      */
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
-
         $user = $this->userService->create($user, $inputType);
 
         return $this->json($user);
@@ -121,7 +120,6 @@ class UserController extends AbstractController
      */
     public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
-
         $updatedUser = $this->userService->update($user, $inputType);
 
         return $this->json($updatedUser);
@@ -143,7 +141,7 @@ class UserController extends AbstractController
         }
 
         if ($request->request->has('phoneNumber')) {
-            $user->setPhoneNumber($request->request->get('phoneNumber'));
+            $user->setPhoneNumber((int) $request->request->get('phoneNumber'));
 
             if ($request->request->has('phonePrefix')) {
                 $user->setPhonePrefix($request->request->get('phonePrefix'));

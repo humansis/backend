@@ -5,6 +5,7 @@ namespace Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CountryDependent;
 use Entity\Helper\NestedTreeTrait;
+use Entity\Helper\StandardizedPrimaryKey;
 use Entity\Helper\TreeInterface;
 use Enum\EnumTrait;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -29,16 +30,7 @@ class Location implements TreeInterface
 {
     use NestedTreeTrait;
     use CountryDependent;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullBeneficiary", "FullHousehold", "SmallHousehold", "FullAssistance", "SmallAssistance", "FullVendor"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Location|null
@@ -95,16 +87,6 @@ class Location implements TreeInterface
         $this->setCountryIso3($countryIso3);
         $this->name = $name;
         $this->code = $code;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     /**

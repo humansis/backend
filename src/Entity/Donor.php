@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
+use Entity\Helper\StandardizedPrimaryKey;
 use Utils\ExportableInterface;
 
 /**
@@ -21,16 +22,7 @@ class Donor implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -76,37 +68,6 @@ class Donor implements ExportableInterface
      * @ORM\Column(name="logo", type="string", length=255, nullable=true)
      */
     private $logo;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->projects = new ArrayCollection();
-    }
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id): Donor
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     /**
      * Set fullname.
@@ -202,6 +163,14 @@ class Donor implements ExportableInterface
     public function getNotes(): ?string
     {
         return $this->notes;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->projects = new ArrayCollection();
     }
 
     /**

@@ -2,11 +2,10 @@
 
 namespace Entity;
 
-use Entity\AssistanceBeneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Entity\Project;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * @ORM\Entity()
@@ -22,14 +21,7 @@ use Entity\Project;
  */
 abstract class AbstractBeneficiary
 {
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var Project[]|Collection
@@ -66,14 +58,6 @@ abstract class AbstractBeneficiary
     {
         $this->projects = new ArrayCollection();
         $this->distributionBeneficiaries = new ArrayCollection();
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     /**

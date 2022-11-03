@@ -3,6 +3,7 @@
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Phone
@@ -12,14 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Phone
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -55,16 +49,6 @@ class Phone
      * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="phones")
      */
     private $person;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set number.

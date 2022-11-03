@@ -1,6 +1,7 @@
 <?php
 
 use DependencyInjection\Compiler\MapperCompilerPass;
+use DH\AuditorBundle\DHAuditorBundle;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -48,6 +49,7 @@ class AppKernel extends Kernel
             new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
+            new DHAuditorBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['local', 'dev', 'test'], true)) {
@@ -67,6 +69,7 @@ class AppKernel extends Kernel
     {
         $confDir = $this->getProjectDir() . '/app/config';
         $loader->load($confDir . '/config' . self::CONFIG_EXTS, 'glob');
+        $loader->load($confDir . '/dh_auditor' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir . '/packages/*' . self::CONFIG_EXTS, 'glob');
         if (is_dir($confDir . '/packages/' . $this->environment)) {
             $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');

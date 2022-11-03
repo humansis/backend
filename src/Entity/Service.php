@@ -5,8 +5,8 @@ namespace Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Helper\StandardizedPrimaryKey;
 use JsonSerializable;
-use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Service
@@ -16,14 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Service implements JsonSerializable
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -52,16 +45,6 @@ class Service implements JsonSerializable
      * @ORM\OneToMany(targetEntity="Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      */
     private $organizationServices;
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name.

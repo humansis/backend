@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Import\Messaging\Handler;
 
+use Component\Auditor\AuditorService;
 use Component\Import\ImportLoggerTrait;
 use Component\Import\ImportQueueLoggerTrait;
 use Component\Import\Messaging\Message\ImportCheck;
@@ -30,21 +31,29 @@ class UploadImportHandler implements MessageHandlerInterface
     private $messageBus;
 
     /**
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
      * @param LoggerInterface $importLogger
      * @param ImportFileRepository $importFileRepository
      * @param UploadImportService $uploadImportService
      * @param MessageBusInterface $messageBus
+     * @param AuditorService $auditorService
      */
     public function __construct(
         LoggerInterface $importLogger,
         ImportFileRepository $importFileRepository,
         UploadImportService $uploadImportService,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
         $this->importFileRepository = $importFileRepository;
         $this->uploadImportService = $uploadImportService;
         $this->messageBus = $messageBus;
+        $this->auditorService = $auditorService;
     }
 
     /**
@@ -53,6 +62,8 @@ class UploadImportHandler implements MessageHandlerInterface
      */
     public function __invoke(UploadFileFinished $uploadFile): void
     {
+        $this->auditorService->disableAuditing();
+
         $importFile = $this->importFileRepository->find($uploadFile->getImportFileId());
         if ($importFile !== null) {
             try {

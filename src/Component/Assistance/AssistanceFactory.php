@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\Auditor\AuditorService;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
 use Exception\CsvParserException;
@@ -72,6 +73,11 @@ class AssistanceFactory
     private $scoringBlueprintRepository;
 
     /**
+     * @var AuditorService
+     */
+    private $auditorService;
+
+    /**
      * @param CacheInterface $cache
      * @param CriteriaAssistanceService $criteriaAssistanceService
      * @param SerializerInterface $serializer
@@ -85,6 +91,7 @@ class AssistanceFactory
      * @param AssistanceBeneficiaryRepository $targetRepository
      * @param SelectionCriteriaFactory $selectionCriteriaFactory
      * @param ScoringBlueprintRepository $scoringBlueprintRepository
+     * @param AuditorService $auditorService
      */
     public function __construct(
         CacheInterface $cache,
@@ -99,7 +106,8 @@ class AssistanceFactory
         Registry $workflowRegistry,
         AssistanceBeneficiaryRepository $targetRepository,
         SelectionCriteriaFactory $selectionCriteriaFactory,
-        ScoringBlueprintRepository $scoringBlueprintRepository
+        ScoringBlueprintRepository $scoringBlueprintRepository,
+        AuditorService $auditorService
     ) {
         $this->cache = $cache;
         $this->criteriaAssistanceService = $criteriaAssistanceService;
@@ -114,6 +122,7 @@ class AssistanceFactory
         $this->targetRepository = $targetRepository;
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
         $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+        $this->auditorService = $auditorService;
     }
 
     /**
@@ -125,6 +134,8 @@ class AssistanceFactory
      */
     public function create(AssistanceCreateInputType $inputType): Domain\Assistance
     {
+        $this->auditorService->disableAuditing();
+
         /** @var Project $project */
         $project = $this->projectRepository->find($inputType->getProjectId());
         if (!$project) {

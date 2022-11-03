@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use Entity\Helper\StandardizedPrimaryKey;
 use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +13,6 @@ use FOS\UserBundle\Model\User as BaseUser;
 use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Entity\Transaction;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
@@ -135,7 +135,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * @return ObjectManager
      */
-    private function getObjectManager()
+    private function getObjectManager(): ObjectManager
     {
         if (!$this->em instanceof ObjectManager) {
             throw new RuntimeException(
@@ -147,42 +147,17 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     }
 
     /**
-     * Set id.
-     *
-     * @param $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
      * Add country.
      *
      * @param UserCountry $country
      *
      * @return User
      */
-    public function addCountry(UserCountry $country)
+    public function addCountry(UserCountry $country): User
     {
         $this->countries->add($country);
 
         return $this;
-    }
-
-    /**
-     * Remove country.
-     *
-     * @param UserCountry $country
-     *
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeCountry(UserCountry $country)
-    {
-        return $this->countries->removeElement($country);
     }
 
     /**
@@ -196,32 +171,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     }
 
     /**
-     * Add userProject.
-     *
-     * @param UserProject $userProject
-     *
-     * @return User
-     */
-    public function addUserProject(UserProject $userProject)
-    {
-        $this->projects[] = $userProject;
-
-        return $this;
-    }
-
-    /**
-     * Remove userProject.
-     *
-     * @param UserProject $userProject
-     *
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeUserProject(UserProject $userProject)
-    {
-        return $this->projects->removeElement($userProject);
-    }
-
-    /**
      * Get projects.
      *
      * @return Collection
@@ -232,52 +181,15 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     }
 
     /**
-     * Get the value of Transaction
-     *
-     * @return Transaction
-     */
-    public function getTransactions()
-    {
-        return $this->transactions;
-    }
-
-    /**
      * Add a Transaction
      *
-     * @param Transaction transaction
+     * @param Transaction $transaction transaction
      *
      * @return self
      */
-    public function addTransaction(Transaction $transaction)
+    public function addTransaction(Transaction $transaction): User
     {
         $this->transactions[] = $transaction;
-
-        return $this;
-    }
-
-    /**
-     * Remove a Transaction
-     *
-     * @param Transaction $transaction
-     * @return self
-     */
-    public function removeTransaction(Transaction $transaction)
-    {
-        $this->transactions->removeElement($transaction);
-
-        return $this;
-    }
-
-    /**
-     * Set transactions
-     *
-     * @param $collection
-     *
-     * @return self
-     */
-    public function setPhones(Collection $collection = null)
-    {
-        $this->transactions = $collection;
 
         return $this;
     }
@@ -295,12 +207,12 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         ];
     }
 
-    public function getLanguage()
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
 
-    public function setLanguage($language)
+    public function setLanguage(?string $language): User
     {
         $this->language = $language;
 
@@ -314,7 +226,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return User
      */
-    public function setVendor(Vendor $vendor = null)
+    public function setVendor(Vendor $vendor = null): User
     {
         $this->vendor = $vendor;
 
@@ -326,7 +238,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return Vendor|null
      */
-    public function getVendor()
+    public function getVendor(): ?Vendor
     {
         return $this->vendor;
     }
@@ -334,11 +246,11 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Set phonePrefix.
      *
-     * @param string $phonePrefix
+     * @param string|null $phonePrefix
      *
      * @return User
      */
-    public function setPhonePrefix($phonePrefix)
+    public function setPhonePrefix(?string $phonePrefix): User
     {
         $this->phonePrefix = $phonePrefix;
 
@@ -348,9 +260,9 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * Get phonePrefix.
      *
-     * @return string
+     * @return string|null
      */
-    public function getPhonePrefix()
+    public function getPhonePrefix(): ?string
     {
         return $this->phonePrefix;
     }
@@ -362,7 +274,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return User
      */
-    public function setPhoneNumber($phoneNumber)
+    public function setPhoneNumber(?int $phoneNumber): User
     {
         $this->phoneNumber = $phoneNumber;
 
@@ -374,7 +286,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return int|null
      */
-    public function getPhoneNumber()
+    public function getPhoneNumber(): ?int
     {
         return $this->phoneNumber;
     }
@@ -384,7 +296,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return bool
      */
-    public function getChangePassword()
+    public function getChangePassword(): bool
     {
         return $this->changePassword;
     }
@@ -396,7 +308,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return User
      */
-    public function setChangePassword($changePassword)
+    public function setChangePassword(bool $changePassword): User
     {
         $this->changePassword = $changePassword;
 
@@ -408,7 +320,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return bool
      */
-    public function getTwoFactorAuthentication()
+    public function getTwoFactorAuthentication(): bool
     {
         return $this->twoFactorAuthentication;
     }
@@ -420,7 +332,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      *
      * @return User
      */
-    public function setTwoFactorAuthentication($twoFactorAuthentication)
+    public function setTwoFactorAuthentication(bool $twoFactorAuthentication): User
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
 
@@ -430,7 +342,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * {@inheritdoc}
      */
-    public function hasRole($roleName)
+    public function hasRole($roleName): bool
     {
         $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
             'code' => $roleName,
@@ -501,7 +413,7 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
      * {@inheritdoc}
      *
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return array_values(
             array_map(function (Role $role) {

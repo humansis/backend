@@ -4,6 +4,7 @@ namespace Entity;
 
 use DateTime;
 use DateTimeInterface;
+use Entity\Helper\StandardizedPrimaryKey;
 use Enum\Livelihood;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
@@ -25,18 +26,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class Assistance implements ExportableInterface
 {
-    public const NAME_HEADER_ID = "ID SYNC";
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
-     */
-    private $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -274,30 +264,6 @@ class Assistance implements ExportableInterface
         $this->setUpdatedOn(new DateTime());
         $this->allowedProductCategoryTypes = [];
         $this->smartcardPurchases = new ArrayCollection();
-    }
-
-    /**
-     * Set id.
-     *
-     * @param $id
-     *
-     * @return Assistance
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**
@@ -854,9 +820,8 @@ class Assistance implements ExportableInterface
         $valuescommodities = [];
 
         foreach ($this->getCommodities() as $commodity) {
-            $stringCommodity = $commodity->getModalityType()
-                . " " . $commodity->getValue()
-                . " " . $commodity->getUnit();
+            $stringCommodity = $commodity->getModalityType() . " " . $commodity->getValue() . " " . $commodity->getUnit(
+            );
             array_push($valuescommodities, $stringCommodity);
         }
         $valuescommodities = join(',', $valuescommodities);
