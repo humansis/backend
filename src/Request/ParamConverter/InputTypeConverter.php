@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -37,7 +38,7 @@ class InputTypeConverter implements ParamConverterInterface
             $this->getArrayDenormalizer(),
         ]);
         $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
-            ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
         ]);
 
         $errors = $this->validator->validate($inputType);
