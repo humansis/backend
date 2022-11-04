@@ -147,14 +147,11 @@ class BookletGenerator
                     s.val,
                     b.id,
                     -- code = {currency}{value}*{booklet_code}-{primary_id_of_current_voucher}-{password}
-                    CONCAT(b.currency, s.val, "*", b.code, "-ID_PLACEHOLDER", IF(b.password, CONCAT("-", b.password), ""))
+                    CONCAT(b.currency, s.val, "*", b.code, (@cnt := @cnt + 1), IF(b.password, CONCAT("-", b.password), ""))
                 FROM sequence s, booklet b
+                CROSS JOIN (SELECT @cnt := 0) AS dummy
                 WHERE b.id >= ?',
                 array_merge($values, [$bookletId])
             );
-
-        $this->em->getConnection()->executeQuery(
-            'UPDATE voucher SET code=REPLACE(code, "ID_PLACEHOLDER", id) WHERE id >= LAST_INSERT_ID()'
-        );
     }
 }
