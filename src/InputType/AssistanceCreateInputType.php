@@ -153,13 +153,13 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     #[Assert\Type('array')]
     private $allowedProductCategoryTypes;
 
-    #[Assert\IsTrue(groups: 'Strict', message: 'Expiration date must be greater than distribution date')]
+    #[Assert\IsTrue(groups: ['Strict'], message: 'Expiration date must be greater than distribution date')]
     public function isExpirationDateValid(): bool
     {
         return $this->getDateExpiration() == null || $this->getDateExpiration() >= $this->getDateDistribution();
     }
 
-    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'Please add BNF has valid card criterion for each group')]
+    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'Please add BNF has valid card criterion for each group')]
     public function isValidSmartcardForRemoteDistribution(): bool
     {
         if ($this->remoteDistributionAllowed) {
@@ -189,7 +189,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.')]
+    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.')]
     public function isNotNullRemoteDistributionWhenSmartcard(): bool
     {
         /** @var CommodityInputType $commodity */
@@ -202,7 +202,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->remoteDistributionAllowed === null;
     }
 
-    #[Assert\IsTrue(groups: 'AdditionalChecks', message: 'Assistance cannot have more than one smartcard commodity.')]
+    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'Assistance cannot have more than one smartcard commodity.')]
     public function hasMaxOneSmartcardCommodity(): bool
     {
         $smartcardCommodities = array_filter($this->commodities, fn(CommodityInputType $commodity) => $commodity->getModalityType() === ModalityType::SMART_CARD);
