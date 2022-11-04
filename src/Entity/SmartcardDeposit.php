@@ -29,7 +29,7 @@ class SmartcardDeposit
      *
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private int $id;
+    private ?int $id;
 
     /**
      *

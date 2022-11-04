@@ -80,8 +80,8 @@ class ResponseEventSubscriber implements \Symfony\Component\EventDispatcher\Even
                 $log = new Logs();
 
                 $log->setUrl($url)
-                    ->setIdUser('5')
-                    ->setMailUser('yo')
+                    ->setIdUser($idUser)
+                    ->setMailUser($mailUser)
                     ->setMethod($method)
                     ->setDate($date)
                     ->setHttpStatus($httpStatus)
@@ -108,12 +108,12 @@ class ResponseEventSubscriber implements \Symfony\Component\EventDispatcher\Even
     protected function getUser()
     {
         if (null === $token = $this->tokenStorage->getToken()) {
-            return;
+            return ['id' => 0, 'email' => 'no user'];
         }
 
         if (!is_object($user = $token->getUser())) {
             // e.g. anonymous authentication
-            return;
+            return ['id' => 0, 'email' => 'no user'];
         }
 
         return ['id' => $user->getId(), 'email' => $user->getEmail()];

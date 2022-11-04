@@ -22,7 +22,7 @@ class Logs
      *
      */
     #[SymfonyGroups(['FullLogs'])]
-    private int $id;
+    private ?int $id;
 
     /**
      *
