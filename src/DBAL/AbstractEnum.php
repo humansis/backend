@@ -10,19 +10,19 @@ abstract class AbstractEnum extends Type
 {
     abstract public static function all();
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         $values = array_map(fn($val) => "'" . $val . "'", $this::all());
 
         return "ENUM(" . implode(", ", $values) . ")";
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return $value;
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (null !== $value && !in_array($value, $this::all())) {
             $values = implode(', ', $this::all());
@@ -34,7 +34,7 @@ abstract class AbstractEnum extends Type
         return $value;
     }
 
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
     {
         return true;
     }

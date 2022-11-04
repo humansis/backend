@@ -42,14 +42,14 @@ abstract class DefaultFinancialProvider
     /**
      * Send request to financial API
      *
+     * @param Assistance $assistance
      * @param string $type type of the request ("GET", "POST", etc.)
      * @param string $route url of the request
-     * @param array $headers headers of the request (optional)
      * @param array $body body of the request (optional)
      * @return mixed $response
      * @throws Exception
      */
-    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = [])
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = []): mixed
     {
         throw new Exception("You need to define the financial provider for the country.");
     }

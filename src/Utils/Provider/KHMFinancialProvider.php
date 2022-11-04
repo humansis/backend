@@ -167,7 +167,7 @@ class KHMFinancialProvider extends DefaultFinancialProvider
      * @return mixed  response
      * @throws Exception
      */
-    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = [])
+    public function sendRequest(Assistance $assistance, string $type, string $route, array $body = []): mixed
     {
         $requestUnique = uniqid();
         $requestID = "Request#$requestUnique: ";
