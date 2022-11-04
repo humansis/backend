@@ -19,7 +19,7 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $this->em = $kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
     }

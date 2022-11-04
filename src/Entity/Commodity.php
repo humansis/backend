@@ -26,7 +26,7 @@ class Commodity
      * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=true)
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
-    private ?string $modalityType = null;
+    private string|null $modalityType = null;
 
     /**
      * @ORM\Column(name="unit", type="string", length=45)
@@ -50,20 +50,18 @@ class Commodity
      * @ORM\Column(name="description", type="string",length=511, nullable=true)
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
-    private string $description;
+    private string|null $description = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="division", type="enum_assitance_commodity_division", nullable=true)
      */
-    private $division;
+    private string|null $division = null;
 
     /**
      * @var DivisionGroup[]|Collection
      * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
      */
-    private \Doctrine\Common\Collections\Collection|array|null $divisionGroups = null;
+    private Collection |array|null $divisionGroups = null;
 
     /**
      * Set unit.
@@ -200,7 +198,7 @@ class Commodity
     /**
      * @return DivisionGroup[]|Collection
      */
-    public function getDivisionGroups(): array|\Doctrine\Common\Collections\Collection
+    public function getDivisionGroups(): array| Collection
     {
         return $this->divisionGroups;
     }

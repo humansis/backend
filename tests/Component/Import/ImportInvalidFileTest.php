@@ -34,10 +34,10 @@ class ImportInvalidFileTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        self::$importInvalidFileService = $kernel->getContainer()->get(ImportInvalidFileService::class);
-        self::$invalidFilesDirectory = $kernel->getContainer()->getParameter('import.invalidFilesDirectory');
-        self::$importUploadService = $kernel->getContainer()->get(UploadImportService::class);
+        self::$entityManager = self::getContainer()->get('doctrine')->getManager();
+        self::$importInvalidFileService = self::getContainer()->get(ImportInvalidFileService::class);
+        self::$invalidFilesDirectory = self::getContainer()->getParameter('import.invalidFilesDirectory');
+        self::$importUploadService = self::getContainer()->get(UploadImportService::class);
     }
 
     public function testCreateInvalidFileAndImportAgain()

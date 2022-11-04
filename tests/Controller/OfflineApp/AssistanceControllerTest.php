@@ -27,7 +27,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
     public function testAsisstancesByProject()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $projectId = $em->createQueryBuilder()

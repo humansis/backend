@@ -22,7 +22,7 @@ class IdentityCheckerTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        self::$entityManager = self::getContainer()->get('doctrine')->getManager();
     }
 
     public function testSelfCheck(): void

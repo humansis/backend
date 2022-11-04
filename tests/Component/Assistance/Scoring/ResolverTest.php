@@ -29,8 +29,8 @@ class ResolverTest extends KernelTestCase
 
         $kernel = $this->bootKernel();
 
-        $this->resolver = $kernel->getContainer()->get(ScoringResolver::class);
-        $this->objectManager = $kernel->getContainer()->get('doctrine.orm.default_entity_manager');
+        $this->resolver = self::getContainer()->get(ScoringResolver::class);
+        $this->objectManager = self::getContainer()->get('doctrine.orm.default_entity_manager');
     }
 
     public function testSimpleCountrySpecific(): void

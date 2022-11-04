@@ -95,7 +95,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
     public function testGetVulnerabilityCriterion()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/vulnerability-criteria');
 
