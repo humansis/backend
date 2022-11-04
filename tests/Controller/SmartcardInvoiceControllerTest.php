@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Controller;
 
+use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain\Assistance as AssistanceDomain;
+use Component\Smartcard\Deposit\DepositFactory;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\AssistanceBeneficiary;
@@ -20,6 +23,10 @@ use Tests\ComponentHelper\ProjectHelper;
 use Tests\ComponentHelper\SmartcardInvoiceHelper;
 use Tests\ComponentHelper\SmartcardPurchaseHelper;
 use Tests\ComponentHelper\VendorHelper;
+use Utils\HouseholdService;
+use Utils\ProjectService;
+use Utils\SmartcardService;
+use Utils\VendorService;
 
 class SmartcardInvoiceControllerTest extends BMSServiceTestCase
 {
@@ -53,7 +60,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             self::buildVendorInputType(
                 $this->location->getId(),
                 $this->getTestUser('Vendor for testing ' . time())->getId()
-            )
+            ),
+            self::getContainer()->get(VendorService::class)
         );
     }
 
@@ -68,7 +76,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
      */
     private function createSmartcardAssistance(): AssistanceDomain
     {
-        $project = $this->createProject($this->getTestUser(), self::getCreateInputType('SYR'));
+        $project = $this->createProject($this->getTestUser(), self::getContainer()->get(ProjectService::class), self::getCreateInputType('SYR'));
 
         $this->createHousehold(
             self::buildHouseholdInputType(
@@ -83,7 +91,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                     ),
                 ]
             ),
-            'SYR'
+            'SYR',
+            self::getContainer()->get(HouseholdService::class),
         );
         $this->em->flush();
 
@@ -93,7 +102,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $this->location,
                 [self::buildCommoditiesType('USD', ModalityType::SMART_CARD, 100)],
                 [self::buildSelectionCriteriaInputType()]
-            )
+            ),
+            self::getContainer()->get(AssistanceFactory::class)
         );
     }
 
@@ -122,7 +132,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(
@@ -189,13 +200,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -251,7 +264,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(
@@ -301,13 +315,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -369,20 +385,23 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
         $invoice = $this->createInvoice(
             $this->vendor,
             self::buildInvoiceCreateInputType([$purchase->getId()]),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(InvoiceFactory::class),
         );
 
         $this->request(
@@ -447,13 +466,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -510,7 +531,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(

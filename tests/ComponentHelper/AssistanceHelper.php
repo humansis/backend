@@ -20,6 +20,7 @@ use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
 use InputType\AssistanceCreateInputType;
 use Symfony\Component\DependencyInjection\Container;
+use Utils\AssistanceService;
 
 /**
  * @property Container $container
@@ -31,9 +32,10 @@ trait AssistanceHelper
      * @throws Exception
      */
     public function createAssistance(
-        AssistanceCreateInputType $assistanceCreateInputType
+        AssistanceCreateInputType $assistanceCreateInputType,
+        AssistanceFactory $assistanceFactory,
     ): Assistance {
-        $assistance = self::$container->get(AssistanceFactory::class)->create($assistanceCreateInputType);
+        $assistance = $assistanceFactory->create($assistanceCreateInputType);
         $this->em->getRepository(\Entity\Assistance::class)->save($assistance);
 
         return $assistance;
