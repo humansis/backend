@@ -28,7 +28,7 @@ class SelectionCriteria
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceSelection", inversedBy="selectionCriteria")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
-    private ?\Entity\AssistanceSelection $assistanceSelection = null;
+    private AssistanceSelection|null $assistanceSelection = null;
 
     /**
      * @ORM\Column(name="table_string", type="string", length=255)
@@ -64,7 +64,7 @@ class SelectionCriteria
      * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
-    private string $valueString;
+    private string|null $valueString = null;
 
     /**
      * @ORM\Column(name="weight", type="integer")
@@ -157,26 +157,14 @@ class SelectionCriteria
         return $this->fieldString;
     }
 
-    /**
-     * Set valueString.
-     *
-     * @param string $valueString
-     *
-     * @return SelectionCriteria
-     */
-    public function setValueString($valueString)
+    public function setValueString(string|null $valueString): self
     {
         $this->valueString = $valueString;
 
         return $this;
     }
 
-    /**
-     * Get valueString.
-     *
-     * @return string
-     */
-    public function getValueString()
+    public function getValueString(): string|null
     {
         return $this->valueString;
     }

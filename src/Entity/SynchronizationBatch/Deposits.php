@@ -10,7 +10,7 @@ use Entity\SynchronizationBatch;
 use Entity\SmartcardDeposit;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
  */
 class Deposits extends SynchronizationBatch
 {

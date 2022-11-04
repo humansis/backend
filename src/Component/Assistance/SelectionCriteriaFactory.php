@@ -32,7 +32,7 @@ class SelectionCriteriaFactory
         $criterium->setConditionString($input->getCondition());
         $criterium->setFieldString($input->getField());
         $criterium->setTarget($input->getTarget());
-        $criterium->setValueString($input->getValue());
+        $criterium->setValueString((string) $input->getValue());
         $criterium->setWeight($input->getWeight());
         $criterium->setGroupNumber($input->getGroup());
         $criterium->setTableString('Personnal');
@@ -60,7 +60,7 @@ class SelectionCriteriaFactory
                 }
 
                 $criterium->setFieldString(SelectionCriteriaField::CURRENT_LOCATION);
-                $criterium->setValueString($location->getId());
+                $criterium->setValueString((string) $location->getId());
 
                 return $criterium;
             }
