@@ -25,7 +25,7 @@ class UserCreateInputType implements InputTypeInterface
 
     #[Assert\Length(min: 2, max: 45)]
     #[Assert\Type('string')]
-    private ?int $phoneNumber = null;
+    private ?string $phoneNumber = null;
 
     /**
      * @Assert\All(
