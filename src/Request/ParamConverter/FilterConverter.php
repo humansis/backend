@@ -26,7 +26,7 @@ class FilterConverter implements ParamConverterInterface
         $filter = [];
 
         if ($request->query->has('sort')) {
-            $filter = $request->query->get('filter');
+            $filter = $request->query->all()['filter'];
         }
 
         if (!is_array($filter)) {
