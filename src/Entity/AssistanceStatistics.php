@@ -19,7 +19,7 @@ class AssistanceStatistics
      * @ORM\Column(name="assistance_id", type="integer")
      * @ORM\Id
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Assistance")

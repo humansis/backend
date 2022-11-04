@@ -22,7 +22,7 @@ class Voucher implements ExportableInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullVoucher'])]
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="vouchers")

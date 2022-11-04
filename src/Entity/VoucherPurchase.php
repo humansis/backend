@@ -25,7 +25,7 @@ class VoucherPurchase
      *
      */
     #[SymfonyGroups(['FullVoucher'])]
-    private int $id;
+    private ?int $id;
 
     /**
      *
