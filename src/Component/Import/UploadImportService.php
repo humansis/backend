@@ -21,7 +21,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadImportService
 {
-
     private readonly \Component\Import\DBAL\InsertQueryCollection $sqlCollection;
 
     public function __construct(

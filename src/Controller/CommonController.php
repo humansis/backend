@@ -69,7 +69,6 @@ class CommonController extends AbstractController
                     default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
                 };
             }
-
         }
 
         return $this->json(new Paginator($result));

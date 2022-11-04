@@ -37,7 +37,7 @@ abstract class AbstractSortInputType implements SortInputTypeInterface
             }
 
             if (!in_array($name, $validNames)) {
-                throw new BadRequestHttpException("Invalid sort name for ''{$name}" );
+                throw new BadRequestHttpException("Invalid sort name for '{$name}'");
             }
 
             $this->sort[$name] = $direction;

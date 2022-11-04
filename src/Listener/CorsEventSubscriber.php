@@ -8,8 +8,8 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class CorsEventSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
-    public function __construct(private array $corsConfiguration) {
-
+    public function __construct(private array $corsConfiguration)
+    {
     }
 
     public function onKernelRequest(RequestEvent $event)
@@ -36,10 +36,10 @@ class CorsEventSubscriber implements \Symfony\Component\EventDispatcher\EventSub
         $origin = $event->getRequest()->headers->get('Origin', null);
         if (in_array($origin, $this->corsConfiguration['allow_origin'])) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
-            $response->headers->set('Access-Control-Allow-Headers', join(', ',$this->corsConfiguration['allow_headers']));
+            $response->headers->set('Access-Control-Allow-Headers', join(', ', $this->corsConfiguration['allow_headers']));
             $response->headers->set('Access-Control-Expose-Headers', $this->corsConfiguration['expose_headers']);
             $response->headers->set('Access-Control-Allow-Credentials', $this->corsConfiguration['allow_credentials']);
-            $response->headers->set('Access-Control-Allow-Methods', join(', ',$this->corsConfiguration['allow_methods']));
+            $response->headers->set('Access-Control-Allow-Methods', join(', ', $this->corsConfiguration['allow_methods']));
             $response->headers->set('Access-Control-Max-Age', $this->corsConfiguration['max_age']);
         }
     }
