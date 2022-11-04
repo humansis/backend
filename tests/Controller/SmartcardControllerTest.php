@@ -654,6 +654,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $requestBody = [
             'products' => [
