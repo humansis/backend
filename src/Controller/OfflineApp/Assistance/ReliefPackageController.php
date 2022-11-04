@@ -29,9 +29,9 @@ class ReliefPackageController extends AbstractOfflineAppController
     ): Response {
         $distributionOutput = $this->assistanceDistributionService->distributeByReliefIds($packages, $this->getUser());
         if (count($distributionOutput->getAlreadyDistributed()) > 0) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response('', Response::HTTP_ACCEPTED);
         }
 
-        return Response::create();
+        return new Response();
     }
 }
