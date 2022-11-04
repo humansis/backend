@@ -229,7 +229,7 @@ class SmartcardServiceTest extends KernelTestCase
                     $registerInputType = SmartcardRegisterInputType::create(
                         $this->smartcardNumber,
                         $beneficiaryId,
-                        $date->format(DateTimeInterface::ATOM)
+                        $date,
                     );
                     try {
                         $this->smartcardService->register($registerInputType);
@@ -575,7 +575,7 @@ class SmartcardServiceTest extends KernelTestCase
                         $registerInputType = SmartcardRegisterInputType::create(
                             $serialNumber,
                             $beneficiaryId,
-                            $createdAt->format(DateTimeInterface::ATOM)
+                            $createdAt
                         );
                         try {
                             $this->smartcardService->register($registerInputType);

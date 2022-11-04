@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use DateTime;
 use DateTimeInterface;
 use Request\InputTypeInterface;
 use Validator\Constraints\Iso8601;
@@ -24,7 +25,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
      */
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    private ?\DateTime $createdAt = null;
+    private ?DateTime $createdAt = null;
 
     #[Assert\NotNull]
     #[Assert\Type('integer')]
@@ -65,18 +66,12 @@ class SmartcardPurchaseInputType implements InputTypeInterface
         // method must be declared to fullfill normalizer requirements
     }
 
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(?DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
