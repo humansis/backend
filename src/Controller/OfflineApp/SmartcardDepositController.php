@@ -53,8 +53,6 @@ class SmartcardDepositController extends AbstractOfflineAppController
 
     /**
      * @Rest\Get("/offline-app/v1/last-smartcard-deposit/{id}")
-     *
-     *
      */
     public function lastSmartcardDeposit(SmartcardDeposit $smartcardDeposit, Request $request): JsonResponse
     {
@@ -64,93 +62,6 @@ class SmartcardDepositController extends AbstractOfflineAppController
         $response->isNotModified($request);
 
         return $response;
-    }
-
-    /**
-     * Put money to smartcard. If smartcard does not exist, it will be created.
-     *
-     * @Rest\Post("/offline-app/v4/smartcards/{serialNumber}/deposit")
-     * @param DepositInputType $depositInputType
-     *
-     * @throws NonUniqueResultException
-     * @throws ORMException
-     * @throws InvalidArgumentException
-     * @throws DoubledDepositException
-     * @deprecated Use /offline-app/v5/smartcards/{serialNumber}/deposit instead (version with Relief package)
-     * @Security("is_granted('ROLE_BENEFICIARY_MANAGEMENT_WRITE') or is_granted('ROLE_FIELD_OFFICER') or is_granted('ROLE_ENUMERATOR')")
-     *
-     */
-    public function depositLegacy(
-        string $serialNumber,
-        Request $request,
-        DepositFactory $depositFactory,
-        ReliefPackageRepository $reliefPackageRepository,
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
-    ): Response {
-        $depositInputType = new DepositInputType();
-        $assistanceId = $request->request->getInt('assistanceId');
-        $beneficiaryId = $request->request->getInt('beneficiaryId');
-
-        try {
-            $assistanceBeneficiary = $assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary(
-                $assistanceId,
-                $beneficiaryId
-            );
-            if (null == $assistanceBeneficiary) {
-                throw new NotFoundHttpException("No beneficiary #$beneficiaryId in assistance #$assistanceId");
-            }
-
-            // try to find relief package with correct state
-            $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
-                $assistanceBeneficiary,
-                ReliefPackageState::TO_DISTRIBUTE
-            );
-            if (!$reliefPackage) {  // try to find relief package with incorrect state but created before distribution date
-                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
-                    $assistanceBeneficiary,
-                    null,
-                    $depositInputType->getCreatedAt()
-                );
-            }
-            if (!$reliefPackage) {  // try to find any relief package for distribution
-                $reliefPackage = $reliefPackageRepository->findForSmartcardByAssistanceBeneficiary(
-                    $assistanceBeneficiary
-                );
-            }
-
-            if (!$reliefPackage) {
-                $message = "Nothing to distribute for beneficiary #{$assistanceBeneficiary->getBeneficiary()->getId()} in assistance #{$assistanceBeneficiary->getAssistance()->getId()}";
-                throw new NotFoundHttpException($message);
-            }
-
-            $depositInputType->setCreatedAt($request->request->get('createdAt'));
-            $depositInputType->setValue($request->request->get('value'));
-            $depositInputType->setBalance($request->request->get('balanceBefore'));
-            $depositInputType->setReliefPackageId($reliefPackage->getId());
-            $deposit = $depositFactory->create($serialNumber, $depositInputType, $this->getUser());
-        } catch (DoubledDepositException $exception) {
-            return new Response('', Response::HTTP_ACCEPTED);
-        } catch (NotFoundHttpException $exception) {
-            $this->writeData(
-                'depositV4',
-                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
-                $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
-            );
-
-            // due to PIN-2943 was removed exception propagation
-            return new Response();
-        } catch (Exception $exception) {
-            $this->writeData(
-                'depositV4',
-                $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
-                $request->get('serialNumber', 'missing'),
-                json_encode($request->request->all(), JSON_THROW_ON_ERROR)
-            );
-            throw $exception;
-        }
-
-        return $this->json($deposit->getSmartcard());
     }
 
     /**
