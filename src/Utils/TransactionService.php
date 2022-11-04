@@ -11,11 +11,10 @@ use Exception;
 use Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Transaction;
-use Twig\Cache\FilesystemCache;
 use Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use Entity\User;
@@ -111,8 +110,10 @@ class TransactionService
         $code = random_int(100000, 999999);
 
         $id = $user->getId();
-        $cache = new FilesystemCache(sys_get_temp_dir());
-        $cache->set($assistance->getId() . '-' . $id . '-code_transaction_confirmation', $code);
+        $cache = new FilesystemAdapter();
+        $item = $cache->getItem($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+        $item->set($code);
+        $cache->save($item);
 
         $commodity = $assistance->getCommodities()->get(0);
         $numberOfBeneficiaries = count($assistance->getDistributionBeneficiaries());
@@ -148,18 +149,23 @@ class TransactionService
      */
     public function verifyCode(int $code, User $user, Assistance $assistance)
     {
-        $cache = new FilesystemCache(sys_get_temp_dir());
+        $cache = new FilesystemAdapter();
+        $item = $cache->getItem($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+        $item->set($code);
+        $cache->save($item);
 
         $checkedAgainst = '';
         $id = $user->getId();
-        if ($cache->has($assistance->getId() . '-' . $id . '-code_transaction_confirmation')) {
-            $checkedAgainst = $cache->get($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+        $key = $assistance->getId() . '-' . $id . '-code_transaction_confirmation';
+        if ($cache->hasItem($key)) {
+            $item = $cache->getItem($key);
+            $checkedAgainst = $item->get();
         }
 
         $result = ($code === intval($checkedAgainst));
 
         if ($result) {
-            $cache->delete($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+            $cache->delete($key);
         }
 
         return $result;
