@@ -31,12 +31,13 @@ abstract class AbstractSortInputType implements SortInputTypeInterface
                 [$name, $direction] = explode('.', (string) $value);
             }
 
+
             if (!in_array(strtolower($direction), ['asc', 'desc'])) {
-                throw new BadRequestHttpException('Invalid sort direction for ' . $value);
+                throw new BadRequestHttpException("Invalid sort direction for '{$direction}'");
             }
 
             if (!in_array($name, $validNames)) {
-                throw new BadRequestHttpException('Invalid sort name for ' . $value);
+                throw new BadRequestHttpException("Invalid sort name for ''{$name}" );
             }
 
             $this->sort[$name] = $direction;
