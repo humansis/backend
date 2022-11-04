@@ -34,27 +34,6 @@ class AssistanceBeneficiaryRepository extends EntityRepository
 {
     final public const SEARCH_CONTEXT_NOT_REMOVED = 'notRemoved';
 
-    public function findByAssistanceAndBeneficiary(int $assistanceId, int $beneficiaryId): ?AssistanceBeneficiary
-    {
-        return $this->findOneBy([
-            'assistance' => $assistanceId,
-            'beneficiary' => $beneficiaryId,
-        ], ['id' => 'asc']);
-    }
-
-    /**
-     * @return int
-     */
-    public function countActive(Assistance $assistance)
-    {
-        $result = $this->count([
-            'assistance' => $assistance,
-            'removed' => false,
-        ]);
-
-        return (int) $result;
-    }
-
     public function findByAssistance(Assistance $assistance): iterable
     {
         $qb = $this->createQueryBuilder('db')
