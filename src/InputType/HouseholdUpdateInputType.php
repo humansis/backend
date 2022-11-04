@@ -124,7 +124,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private ?DateTime $supportDateReceived = null;
 
     #[Assert\Type(['array', 'string'])]
-    private array|string $supportReceivedTypes = [];
+    private array|string|null $supportReceivedTypes = [];
 
     #[Assert\Type('string')]
     #[Assert\Length(max: 255)]
