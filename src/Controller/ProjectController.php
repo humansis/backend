@@ -46,11 +46,13 @@ class ProjectController extends AbstractController
         $repository = $this->managerRegistry->getRepository(Beneficiary::class);
 
         $result = [];
-        foreach ($request->query->get('code', []) as $code) {
-            $result[] = match ($code) {
-                'reached_beneficiaries' => ['code' => $code, 'value' => $repository->countAllInProject($project)],
-                default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
-            };
+        if ($request->query->has('code')) {
+            foreach ($request->query->all('code') as $code) {
+                $result[] = match ($code) {
+                    'reached_beneficiaries' => ['code' => $code, 'value' => $repository->countAllInProject($project)],
+                    default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
+                };
+            }
         }
 
         return $this->json(new Paginator($result));
