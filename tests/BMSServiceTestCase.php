@@ -221,8 +221,9 @@ class BMSServiceTestCase extends KernelTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ], (array) $headers);
-        $this->client->request($method, $uri, $body, $files, $headers);
+        $this->client->request($method, $uri, [], $files, $headers, content: json_encode($body));
     }
 
     public function setDefaultSerializerName($serializerName)
