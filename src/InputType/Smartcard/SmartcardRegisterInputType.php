@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace InputType\Smartcard;
 
 use DateTime;
-use DateTimeInterface;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Iso8601;
 
 class SmartcardRegisterInputType implements InputTypeInterface
 {
@@ -20,16 +20,15 @@ class SmartcardRegisterInputType implements InputTypeInterface
     private ?int $beneficiaryId = null;
 
     /**
-     * @var DateTimeInterface
+     * @Iso8601
      */
-    #[Assert\DateTime]
-    private $createdAt;
+    private ?DateTime $createdAt;
 
     /**
      *
      * @return static
      */
-    public static function create(string $serialNumber, int $beneficiaryId, string $createdAt): self
+    public static function create(string $serialNumber, int $beneficiaryId, DateTime $createdAt): self
     {
         $self = new self();
         $self->setSerialNumber($serialNumber);
@@ -59,13 +58,13 @@ class SmartcardRegisterInputType implements InputTypeInterface
         $this->beneficiaryId = $beneficiaryId;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(string $createdAt): void
+    public function setCreatedAt(?DateTime $createdAt): void
     {
-        $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);
+        $this->createdAt = $createdAt;
     }
 }

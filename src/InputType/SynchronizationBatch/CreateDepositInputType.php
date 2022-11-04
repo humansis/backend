@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\SynchronizationBatch;
 
+use DateTime;
 use DateTimeInterface;
 use Request\InputTypeInterface;
 use Utils\DateTime\Iso8601Converter;
@@ -23,7 +24,7 @@ class CreateDepositInputType implements InputTypeInterface
      */
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    private ?string $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[Assert\Type(type: 'string')]
     #[Assert\Length(max: 14)]
@@ -59,17 +60,17 @@ class CreateDepositInputType implements InputTypeInterface
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTime|null
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTime
     {
-        return Iso8601Converter::toDateTime($this->createdAt);
+        return $this->createdAt;
     }
 
     /**
-     * @param string $createdAt
+     * @param DateTime|null $createdAt
      */
-    public function setCreatedAt($createdAt): void
+    public function setCreatedAt(?DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
