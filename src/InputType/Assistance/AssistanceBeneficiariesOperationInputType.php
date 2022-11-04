@@ -42,14 +42,14 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     #[Assert\Type('array')]
     protected $beneficiaryIds = [];
 
-    #[Assert\IsTrue(groups: 'Strict', message: 'Only one array can have values.')]
+    #[Assert\IsTrue(groups: ['Strict'], message: 'Only one array can have values.')]
     public function isOneOfArraysNotEmpty(): bool
     {
         return (empty($this->beneficiaryIds) && !empty($this->documentNumbers))
             || (!empty($this->beneficiaryIds) && empty($this->documentNumbers));
     }
 
-    #[Assert\IsTrue(groups: 'Strict', message: 'You must choose type of ID when using document numbers')]
+    #[Assert\IsTrue(groups: ['Strict'], message: 'You must choose type of ID when using document numbers')]
     public function hasDocumentTypeWithPresentDocumentNumbers(): bool
     {
         if (empty($this->documentNumbers)) {
