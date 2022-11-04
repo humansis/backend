@@ -28,7 +28,6 @@ class BookletGenerator
         $code = $countryIso3 . '_' . $project->getName() . '_' . date('d-m-Y') . '_booklet';
 
         try {
-            $this->em->getConnection()->executeQuery('ALTER TABLE `voucher` DROP INDEX `UNIQ_1392A5D877153098`');
             $this->em->beginTransaction();
 
             $lastCode = $this->findBookletCode($code);
@@ -51,10 +50,6 @@ class BookletGenerator
         } catch (Exception $exception) {
             $this->em->rollback();
             throw $exception;
-        } finally {
-            $this->em->getConnection()->executeQuery(
-                'ALTER TABLE `voucher` ADD UNIQUE INDEX UNIQ_1392A5D877153098 (code)'
-            );
         }
     }
 
