@@ -10,27 +10,27 @@ use Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Assistance\ReliefPackage;
 use Entity\SynchronizationBatch;
-use Repository\SynchronizationBatchRepository;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Invoice;
 use Entity\Vendor;
-use Repository\SmartcardPurchaseRepository;
 use Repository\SmartcardInvoiceRepository;
+use Repository\SmartcardPurchaseRepository;
 use Repository\SmartcardRepository;
+use Repository\SynchronizationBatchRepository;
 
 class EventService
 {
-    private readonly \Repository\SmartcardPurchaseRepository $purchaseRepository;
+    private readonly SmartcardPurchaseRepository $purchaseRepository;
 
-    private readonly \Repository\SmartcardRepository $smartcardRepository;
+    private readonly SmartcardRepository $smartcardRepository;
 
-    private readonly \Repository\SynchronizationBatchRepository $purchaseSyncRepository;
+    private readonly SynchronizationBatchRepository $purchaseSyncRepository;
 
-    private readonly \Repository\SynchronizationBatchRepository $depositSyncRepository;
+    private readonly SynchronizationBatchRepository $depositSyncRepository;
 
-    private readonly \Repository\SmartcardInvoiceRepository $invoiceRepository;
+    private readonly SmartcardInvoiceRepository $invoiceRepository;
 
     public function __construct(EntityManagerInterface $entityManager)
     {

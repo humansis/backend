@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Entity\SynchronizationBatch;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\SynchronizationBatch;
-use Enum\SynchronizationBatchValidationType;
 use Entity\SmartcardPurchase;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
  */
 class Purchases extends SynchronizationBatch
 {
