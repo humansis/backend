@@ -88,7 +88,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $createdAt = '2005-02-02T12:00:00Z';
         $this->removeSmartcards($code);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
-        $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), $createdAt);
+        $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt));
         $smartcard = $smartcardService->register($registerInputType);
 
         $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
