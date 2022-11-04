@@ -48,7 +48,6 @@
 		"league/flysystem-aws-s3-v3": "2.1.0",
 		"lexik/jwt-authentication-bundle": "v2.16.0",
 		"mpdf/mpdf": "v8.1.2",
-		"nelmio/cors-bundle": "2.2.0",
 		"phpoffice/phpspreadsheet": "1.17.1",
 		"phpstan/phpstan": "1.8.11",
 		"prestashop/decimal": "^1.5",
