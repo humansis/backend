@@ -27,37 +27,6 @@ use Enum\SmartcardStates;
 
 class ReliefPackageRepository extends EntityRepository
 {
-    /**
-     *
-     * @throws NonUniqueResultException
-     */
-    public function findForSmartcardByAssistanceBeneficiary(
-        AssistanceBeneficiary $assistanceBeneficiary,
-        ?string $reliefPackageStatus = null,
-        ?DateTimeInterface $beforeDate = null
-    ): ?ReliefPackage {
-        $qb = $this->createQueryBuilder('rp')
-            ->andWhere('rp.modalityType = :smartcardModality')
-            ->andWhere('rp.assistanceBeneficiary = :ab')
-            ->setParameter('smartcardModality', ModalityType::SMART_CARD)
-            ->setParameter('ab', $assistanceBeneficiary);
-        if ($reliefPackageStatus) {
-            $qb->andWhere('rp.state = :state')
-                ->setParameter('state', $reliefPackageStatus);
-        }
-
-        if ($beforeDate) {
-            $qb->andWhere('rp.createdAt < :before')
-                ->setParameter('before', $beforeDate)
-                ->orderBy('rp.createdAt', 'DESC');
-        } else {
-            $qb->orderBy('rp.id', 'DESC');
-        }
-        $qb->setMaxResults(1);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
-
     public function getForVendor(Vendor $vendor, string $country): Paginator
     {
         $vendorLocation = $vendor->getLocation();

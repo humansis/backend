@@ -46,36 +46,6 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $this->em->flush();
     }
 
-    public function testDepositToSmartcard()
-    {
-        $ab = $this->assistanceBeneficiaryWithoutRelief();
-        $bnf = $ab->getBeneficiary();
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
-
-        $reliefPackage = $this->createReliefPackage($ab);
-
-        $this->request('POST', '/api/basic/offline-app/v4/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
-            'assistanceId' => $ab->getAssistance()->getId(),
-            'value' => 255.25,
-            'balanceBefore' => 260.00,
-            'balanceAfter' => 300.00,
-            'createdAt' => '2020-02-02T12:00:00Z',
-            'beneficiaryId' => $bnf->getId(),
-        ]);
-
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
-        );
-        $this->assertArrayHasKey('id', $smartcard);
-        $this->assertArrayHasKey('serialNumber', $smartcard);
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertArrayHasKey('currency', $smartcard);
-        $this->assertArrayHasKey('createdAt', $smartcard);
-    }
-
     public function testDepositToSmartcardV5(): void
     {
         $ab = $this->assistanceBeneficiaryWithoutRelief();
