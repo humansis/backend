@@ -6,6 +6,7 @@ namespace Entity;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
@@ -35,7 +36,7 @@ class ImportHouseholdDuplicity
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="householdDuplicity", cascade={"persist", "remove"})
      */
-    private array $beneficiaryDuplicities;
+    private Collection $beneficiaryDuplicities;
 
     /**
      * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
@@ -59,7 +60,7 @@ class ImportHouseholdDuplicity
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
-        $this->beneficiaryDuplicities = [];
+        $this->beneficiaryDuplicities = new ArrayCollection();
     }
 
     public function getOurs(): ImportQueue
@@ -73,9 +74,9 @@ class ImportHouseholdDuplicity
     }
 
     /**
-     * @return ArrayCollection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportBeneficiaryDuplicity[]
      */
-    public function getBeneficiaryDuplicities(): ArrayCollection | array
+    public function getBeneficiaryDuplicities(): Collection | array
     {
         return $this->beneficiaryDuplicities;
     }
