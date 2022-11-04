@@ -24,7 +24,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
      */
     #[Assert\NotNull]
     #[Assert\NotBlank]
-    private ?\DateTimeInterface $createdAt = null;
+    private ?\DateTime $createdAt = null;
 
     #[Assert\NotNull]
     #[Assert\Type('integer')]

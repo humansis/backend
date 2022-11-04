@@ -13,6 +13,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Entity\Smartcard;
+use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Utils\SmartcardService;
@@ -34,14 +39,21 @@ class SmartcardController extends AbstractVendorAppController
      */
     public function beneficiaries(Request $request): Response
     {
-        /** @var SmartcardPurchaseInputType $data */
-        $data = $this->serializer->deserialize(
-            $request->getContent(),
-            SmartcardPurchaseInputType::class,
-            'json'
-        );
+        $serializer = new Serializer([
+            new ObjectNormalizer(
+                null,
+                null,
+                null,
+                new ReflectionExtractor()
+            ),
+            new ArrayDenormalizer(),
+        ]);
 
-        $errors = $this->validator->validate($data);
+        $inputType = $serializer->denormalize($request->request->all(), SmartcardPurchaseInputType::class, null, [
+            AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+        ]);
+
+        $errors = $this->validator->validate($inputType);
 
         //TODO remove after syncs for purchases will be implemented
         if (count($errors) > 0) {
@@ -60,7 +72,7 @@ class SmartcardController extends AbstractVendorAppController
         }
 
         try {
-            $purchase = $this->smartcardService->purchase($request->get('serialNumber'), $data);
+            $purchase = $this->smartcardService->purchase($request->get('serialNumber'), $inputType);
         } catch (Exception $exception) {
             $this->writeData(
                 'purchaseV3',
