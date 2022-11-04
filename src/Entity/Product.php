@@ -30,7 +30,7 @@ class Product implements ExportableInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullProduct', 'ValidatedAssistance', 'FullVoucher'])]
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)

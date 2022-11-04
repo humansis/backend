@@ -18,7 +18,7 @@ class Phone
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="number", type="string", length=45)

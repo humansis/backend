@@ -38,7 +38,7 @@ class Project implements ExportableInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      *
      */
-    private int $id;
+    private ?int $id;
 
     /**
      *

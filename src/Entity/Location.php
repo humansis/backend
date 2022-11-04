@@ -38,7 +38,7 @@ class Location implements TreeInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullBeneficiary', 'FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'FullVendor'])]
-    private int $id;
+    private ?int $id;
 
     /**
      *

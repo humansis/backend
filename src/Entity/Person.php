@@ -29,7 +29,7 @@ class Person
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)

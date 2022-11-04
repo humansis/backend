@@ -20,7 +20,7 @@ class AssistanceSelection
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="threshold", type="integer", nullable=true)

@@ -18,7 +18,7 @@ class Profile
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="photo", type="string", length=255)

@@ -22,7 +22,7 @@ class Service implements JsonSerializable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)

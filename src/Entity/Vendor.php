@@ -23,7 +23,7 @@ class Vendor implements ExportableInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullVendor'])]
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="name", type="string", length=255)

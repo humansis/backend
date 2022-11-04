@@ -30,7 +30,7 @@ class HouseholdLocation
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="location_group", type="string", length=45)

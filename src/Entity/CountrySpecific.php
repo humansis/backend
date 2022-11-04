@@ -27,7 +27,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="field_string", type="string", length=45)

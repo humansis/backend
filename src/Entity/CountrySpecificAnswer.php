@@ -23,7 +23,7 @@ class CountrySpecificAnswer
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(name="answer", type="string", length=255, nullable=true)

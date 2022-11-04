@@ -20,7 +20,7 @@ class VoucherPurchaseRecord
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullVoucher'])]
-    private int $id;
+    private ?int $id;
 
     /**
      *

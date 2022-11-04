@@ -19,7 +19,7 @@ class UserProject
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private int $id;
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="projects", cascade={"persist"})
