@@ -70,7 +70,7 @@ class HouseholdDecoratorBuilder
         $household->setShelterStatus($this->householdLine->shelterStatus);
         if (!empty($this->householdLine->supportDateReceived)) {
             $household->setSupportDateReceived(
-                ImportDateConverter::toIso($this->householdLine->getSupportDateReceived())
+                $this->householdLine->getSupportDateReceived()
             );
         }
         $household->setSupportReceivedTypes($this->householdLine->supportReceivedTypes);
