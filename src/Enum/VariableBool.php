@@ -31,7 +31,7 @@ class VariableBool
         ];
     }
 
-    public static function valueFromAPI($APIValue)
+    public static function valueFromAPI(int|string|bool $APIValue): int|string|bool
     {
         return (bool) self::parentValueFromAPI($APIValue);
     }
