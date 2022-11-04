@@ -63,11 +63,9 @@ class ImportQueue implements ConcurrencyLockableInterface, Stringable
     private string $state;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="message", type="text", nullable=true)
      */
-    private string | null $message;
+    private ?string $message = null;
 
     private array $rawMessageData = [];
 
