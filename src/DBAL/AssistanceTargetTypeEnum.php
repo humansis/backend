@@ -8,7 +8,7 @@ use Enum\AssistanceTargetType;
 
 final class AssistanceTargetTypeEnum extends AbstractEnum
 {
-    public function getName()
+    public function getName(): string
     {
         return 'enum_assistance_target_type';
     }

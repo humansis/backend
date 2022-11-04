@@ -26,8 +26,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 {
     private const MAX_SMARTCARDS = 20;
 
-    public function __construct(private readonly string $environment, private readonly SmartcardService $smartcardService, private readonly PurchaseService $purchaseService, private readonly DepositFactory $depositFactory, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly SmartcardRepository $smartcardRepository)
-    {
+    public function __construct(
+        private readonly string $environment,
+        private readonly SmartcardService $smartcardService,
+        private readonly PurchaseService $purchaseService,
+        private readonly DepositFactory $depositFactory,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly SmartcardRepository $smartcardRepository
+    ) {
     }
 
     public function load(ObjectManager $manager)
@@ -48,13 +54,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePackages($manager, $ab, 'KHR');
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePackages($manager, $ab, 'USD');
-        }
+        //todo to not use XXX_USD until todo in AssistanceFixtures is resolved
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePackages($manager, $ab, 'USD');
+//        }
 
         foreach (
             $this->getReference(
@@ -64,13 +71,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePackages($manager, $ab, 'SYP');
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePackages($manager, $ab, 'USD');
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePackages($manager, $ab, 'USD');
+//        }
 
         $manager->flush();
 
@@ -82,13 +89,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+//        }
 
         foreach (
             $this->getReference(
@@ -98,13 +105,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+//        }
 
         $manager->flush();
 
@@ -116,13 +123,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+//        }
 
         foreach (
             $this->getReference(
@@ -132,13 +139,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+//        }
 
         $manager->flush();
     }

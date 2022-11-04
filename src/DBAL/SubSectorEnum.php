@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class SubSectorEnum extends AbstractEnum
 {
-    protected static $values = [
+    protected static array $values = [
         self::IN_KIND_FOOD,
         self::CASH_TRANSFERS,
         self::FOOD_VOUCHERS,
@@ -188,7 +188,7 @@ class SubSectorEnum extends AbstractEnum
     final public const DEFAULT_CAMP_MANAGEMENT = 'default_camp_management';
     final public const DEFAULT_EARLY_RECOVERY = 'default_early_recovery';
 
-    public function getName()
+    public function getName(): string
     {
         return 'enum_sub_sector';
     }

@@ -65,7 +65,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private function createSyrVendor(ObjectManager $manager)
+    private function createSyrVendor(ObjectManager $manager): Vendor
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
 
@@ -90,7 +90,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         return $vendor;
     }
 
-    private function createKhmVendor(ObjectManager $manager)
+    private function createKhmVendor(ObjectManager $manager): Vendor
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_KHM);
 

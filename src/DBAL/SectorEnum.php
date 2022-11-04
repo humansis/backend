@@ -6,7 +6,7 @@ namespace DBAL;
 
 class SectorEnum extends AbstractEnum
 {
-    protected static $values = [
+    protected static array $values = [
         self::FOOD_SECURITY,
         self::LIVELIHOODS,
         self::MULTIPURPOSE_CASH,
@@ -42,7 +42,7 @@ class SectorEnum extends AbstractEnum
     final public const CAMP_MANAGEMENT = 'Camp Coordination and Management';
     final public const EARLY_RECOVERY = 'Early Recovery';
 
-    public function getName()
+    public function getName(): string
     {
         return 'enum_sector';
     }
