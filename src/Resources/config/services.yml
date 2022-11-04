@@ -293,6 +293,11 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
+    Listener\CorsEventSubscriber:
+        arguments: [ '%cors%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 256 }
+
     Listener\VaryingEventSubscriber:
         arguments: [ '%kernel.debug%' ]
         tags:

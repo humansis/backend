@@ -87,6 +87,15 @@ parameters:
 
     app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
 
+    cors:
+        allow_credentials: 'true'
+        allow_origin: [ 'http://localhost:8080' ]
+        allow_headers: [ '*' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: []
+        max_age: 3600
+
+
 framework:
     #esi: ~
     mailer:
@@ -254,6 +263,8 @@ fos_rest:
     routing_loader: false
     serializer:
         serialize_null: true
+
+
 
 services:
     acme.aws_s3.client:
