@@ -12,6 +12,7 @@ use Component\Smartcard\Deposit\DepositFactory;
 use Entity\Assistance\ReliefPackage;
 use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
@@ -65,7 +66,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     public function testDoubledDeposit(): void
@@ -90,12 +91,12 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
-    private function getUnusedDepositDate(): DateTimeImmutable
+    private function getUnusedDepositDate(): DateTime
     {
-        $date = new DateTimeImmutable();
+        $date = new DateTime();
         do {
             $date = $date->modify('-1 second');
             $deposit = $this->em->getRepository(SmartcardDeposit::class)->findOneBy(['distributedAt' => $date]);
