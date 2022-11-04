@@ -29,9 +29,10 @@ trait BeneficiaryHelper
      */
     public function createHousehold(
         HouseholdCreateInputType $householdCreateInputType,
-        string $iso3
+        string $iso3,
+        HouseholdService $householdService,
     ): Household {
-        return self::$container->get(HouseholdService::class)->create($householdCreateInputType, $iso3);
+        return $householdService->create($householdCreateInputType, $iso3);
     }
 
     public static function buildBeneficiaryInputType(

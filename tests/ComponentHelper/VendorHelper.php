@@ -21,7 +21,7 @@ trait VendorHelper
     /**
      * @throws Exception
      */
-    public function createVendor(VendorCreateInputType $vendorCreateInputType): Vendor
+    public function createVendor(VendorCreateInputType $vendorCreateInputType, VendorService $vendorService): Vendor
     {
         /**
          * @var Vendor|null $vendor
@@ -30,7 +30,7 @@ trait VendorHelper
         if ($vendor) {
             return $vendor;
         } else {
-            return self::$container->get(VendorService::class)->create($vendorCreateInputType);
+            return $vendorService->create($vendorCreateInputType);
         }
     }
 

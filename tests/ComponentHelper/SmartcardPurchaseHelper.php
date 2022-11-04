@@ -25,9 +25,10 @@ trait SmartcardPurchaseHelper
      */
     public function createPurchase(
         string $serialNumber,
-        SmartcardPurchaseInputType $smartcardPurchaseInputType
+        SmartcardPurchaseInputType $smartcardPurchaseInputType,
+        SmartcardService $smartcardService,
     ): SmartcardPurchase {
-        return self::$container->get(SmartcardService::class)->purchase(
+        return $smartcardService->purchase(
             $serialNumber,
             $smartcardPurchaseInputType
         );

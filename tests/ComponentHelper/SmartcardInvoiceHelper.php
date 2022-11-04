@@ -25,9 +25,10 @@ trait SmartcardInvoiceHelper
     public function createInvoice(
         Vendor $vendor,
         SmartcardInvoiceCreateInputType $invoiceCreateInputType,
-        User $user
+        User $user,
+        InvoiceFactory $invoiceFactory,
     ): Invoice {
-        return self::$container->get(InvoiceFactory::class)->create($vendor, $invoiceCreateInputType, $user);
+        return $invoiceFactory->create($vendor, $invoiceCreateInputType, $user);
     }
 
     /**

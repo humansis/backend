@@ -26,15 +26,16 @@ trait DepositHelper
     public function createDeposit(
         string $smartcardNumber,
         DepositInputType $depositInputType,
-        User $user
+        User $user,
+        DepositFactory $depositFactory,
     ): SmartcardDeposit {
-        return self::$container->get(DepositFactory::class)->create($smartcardNumber, $depositInputType, $user);
+        return $depositFactory->create($smartcardNumber, $depositInputType, $user);
     }
 
     public static function buildDepositInputType(int $reliefPackageId, float $value): DepositInputType
     {
         $depositInputType = new DepositInputType();
-        $depositInputType->setCreatedAt((new DateTime())->format(DateTimeInterface::ATOM));
+        $depositInputType->setCreatedAt((new DateTime()));
         $depositInputType->setReliefPackageId($reliefPackageId);
         $depositInputType->setValue($value);
 
