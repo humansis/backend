@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="Repository\AssistanceStatisticsRepository")
+ * @ORM\Entity(repositoryClass="Repository\AssistanceStatisticsRepository", readOnly=true)
  * @ORM\Table(name="view_assistance_statistics")
  */
 class AssistanceStatistics
