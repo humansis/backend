@@ -40,9 +40,9 @@ class SmartcardController extends AbstractOfflineAppController
         try {
             $smartcardService->register($registerInputType);
 
-            return Response::create();
+            return new Response();
         } catch (SmartcardDoubledRegistrationException) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response('', Response::HTTP_ACCEPTED);
         }
     }
 
@@ -65,9 +65,9 @@ class SmartcardController extends AbstractOfflineAppController
         try {
             $smartcardService->change($smartcard, $changeSmartcardInputType);
 
-            return Response::create();
+            return new Response();
         } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response('', Response::HTTP_ACCEPTED);
         }
     }
 

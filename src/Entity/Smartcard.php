@@ -31,7 +31,7 @@ class Smartcard
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['SmartcardOverview', 'ValidatedAssistance'])]
-    private int $id = 0;
+    private ?int $id = 0;
 
     /**
      * @var string serial number / UID

@@ -467,7 +467,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $date = '2005-02-02T12:00:00Z';
-        $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, $date);
+        $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, DateTime::createFromFormat('Y-m-d\TH:i:sO', $date));
         $smartcardService->change($smartcard, $changeInputType);
 
         $this->request('PATCH', '/api/basic/offline-app/v1/smartcards/' . $smartcard->getSerialNumber(), [
