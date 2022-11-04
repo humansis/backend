@@ -22,10 +22,10 @@ trait ProjectHelper
     /**
      * @throws Exception
      */
-    public function createProject(User $user, ?ProjectCreateInputType $createInputType = null): Project
+    public function createProject(User $user, ProjectService $projectService, ?ProjectCreateInputType $createInputType = null): Project
     {
-        return self::$container->get(ProjectService::class)->create(
-            $createInputType ?? self::getCreateInputType(),
+        return $projectService->create(
+            $createInputType ?? self::getCreateInputType('SYR'),
             $user
         );
     }

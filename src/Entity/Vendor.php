@@ -36,30 +36,28 @@ class Vendor implements ExportableInterface
      * @ORM\Column(name="shop", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullVendor'])]
-    private ?string $shop = null;
+    private string|null $shop = null;
 
     /**
      * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullVendor'])]
-    private string $addressStreet;
+    private string|null $addressStreet;
 
     /**
      * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullVendor'])]
-    private string $addressNumber;
+    private string|null $addressNumber;
 
     /**
      * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullVendor'])]
-    private string $addressPostcode;
+    private string|null $addressPostcode;
 
     /**
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Location")
-     *
      */
     #[SymfonyGroups(['FullVendor'])]
     private ?\Entity\Location $location = null;
@@ -80,12 +78,12 @@ class Vendor implements ExportableInterface
     /**
      * @ORM\Column(name="vendor_no", type="string", nullable=true)
      */
-    private ?string $vendorNo = null;
+    private string|null $vendorNo = null;
 
     /**
      * @ORM\Column(name="contract_no", type="string", nullable=true)
      */
-    private ?string $contractNo = null;
+    private string|null $contractNo = null;
 
     /**
      * @ORM\Column(name="can_sell_food", type="boolean")
