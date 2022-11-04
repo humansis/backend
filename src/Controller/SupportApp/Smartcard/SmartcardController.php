@@ -8,8 +8,10 @@ use Controller\AbstractController;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Smartcard;
+use Enum\RoleType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
+use Repository\RoleRepository;
 use Repository\SmartcardRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -21,7 +23,11 @@ use Utils\SmartcardService;
  */
 class SmartcardController extends AbstractController
 {
-    public function __construct(private readonly SmartcardService $smartcardService, private readonly SmartcardRepository $smartcardRepository, private readonly TokenStorageInterface $tokenStorage)
+    public function __construct(
+        private readonly SmartcardService $smartcardService,
+        private readonly SmartcardRepository $smartcardRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly TokenStorageInterface $tokenStorage)
     {
     }
 
@@ -83,7 +89,11 @@ class SmartcardController extends AbstractController
     ): JsonResponse {
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if ($user->hasRole('ROLE_ADMIN')) {
+        $role = $this->roleRepository->findOneBy([
+            'code' => RoleType::ADMIN,
+        ]);
+
+        if ($role && $user->hasRole($role)) {
             $smartcard = $this->smartcardRepository->find($smartcard);
             $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
 

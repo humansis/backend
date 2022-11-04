@@ -37,7 +37,7 @@ class Institution extends AbstractBeneficiary
     /**
      * @ORM\Column(name="type", type="string", length=255)
      */
-    #[Assert\Choice(choices: Entity\Institution::TYPE_ALL)]
+    #[Assert\Choice(choices: Institution::TYPE_ALL)]
     private ?string $type = null;
 
     /**
