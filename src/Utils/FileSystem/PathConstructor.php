@@ -14,7 +14,7 @@ final class PathConstructor
 
         foreach ($parameters as $key => $value) {
             $paramPlaceholder = '<<' . $key . '>>';
-            $path = str_replace($paramPlaceholder, $value, $path);
+            $path = str_replace($paramPlaceholder, (string) $value, $path);
         }
 
         $matches = [];
