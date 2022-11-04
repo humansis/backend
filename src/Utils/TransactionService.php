@@ -150,12 +150,13 @@ class TransactionService
     public function verifyCode(int $code, User $user, Assistance $assistance)
     {
         $cache = new FilesystemAdapter();
+        $id = $user->getId();
         $item = $cache->getItem($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
         $item->set($code);
         $cache->save($item);
 
         $checkedAgainst = '';
-        $id = $user->getId();
+
         $key = $assistance->getId() . '-' . $id . '-code_transaction_confirmation';
         if ($cache->hasItem($key)) {
             $item = $cache->getItem($key);
