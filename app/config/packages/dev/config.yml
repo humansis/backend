@@ -47,7 +47,7 @@ monolog:
 parameters:
     frontendUrl: 'https://dev1.humansis.org'
     cors:
-        allow_origin: [ 'https://dev1.humansis.org', 'https://dev1-pin.humansis.org', 'https://dev2.humansis.org', 'https://dev2-pin.humansis.org', 'https://dev3.humansis.org', 'https://dev3-pin.humansis.org',  'http://localhost:8080' ]
+        allow_origin: [ 'https://dev.humansis.org', 'https://dev1.humansis.org', 'https://dev2.humansis.org', 'https://dev2-pin.humansis.org', 'https://dev3.humansis.org', 'https://dev3-pin.humansis.org',  'http://localhost:8080' ]
         allow_credentials: 'true'
         allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
         allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
