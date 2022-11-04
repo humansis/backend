@@ -49,7 +49,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
     #[Assert\NotBlank(allowNull: true)]
     private $noteToSave;
 
-    #[Assert\IsTrue(groups: 'Strict', message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
+    #[Assert\IsTrue(groups: ['Strict'], message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
     public function isValidExpirationDate(): bool
     {
         if (is_null($this->originalDateExpiration)) {
@@ -62,7 +62,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         return true;
     }
 
-    #[Assert\IsTrue(groups: 'Strict', message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
+    #[Assert\IsTrue(groups: ['Strict'], message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
     public function isValidDateDistribution(): bool
     {
         if (is_null($this->originalDateDistribution)) {
