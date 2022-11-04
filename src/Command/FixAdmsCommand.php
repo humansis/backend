@@ -111,7 +111,7 @@ class FixAdmsCommand extends Command
     {
         $conn->beginTransaction();
         $conn->executeQuery('INSERT INTO location VALUES (null)');
-        $id = $conn->fetchColumn('SELECT LAST_INSERT_ID()');
+        $id = $conn->fetchOne('SELECT LAST_INSERT_ID()');
         $conn->commit();
 
         return $id;

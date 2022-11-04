@@ -276,7 +276,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $numbers = [];
 
         for ($i = 1; $i < $count; $i++) {
-            $random = random_int(1, $max / ($count - $i));
+            $random = random_int(1, (int)($max / ($count - $i)));
             $numbers[] = $random;
             $max -= $random;
         }
