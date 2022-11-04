@@ -486,7 +486,7 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
 
     public function __unserialize($serialized): void
     {
-        $data = unserialize($serialized);
+        $data = $serialized;
 
         [
             $this->password,
