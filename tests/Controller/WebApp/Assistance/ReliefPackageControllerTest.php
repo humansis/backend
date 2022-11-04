@@ -138,21 +138,32 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         );
     }
 
-    public function testReliefPackageSum()
+    public function testReliefPackageSum(): void
     {
         $qb = $this->em->createQueryBuilder();
+
+        $vendorLocations = $qb->select('DISTINCT(IDENTITY(v.location))')
+            ->from(Vendor::class, 'v')
+            ->getQuery()->getArrayResult();
+
+        //todo no locations shared among vendors and relief packages -> update fixtures
         /** @var ReliefPackage $reliefPackage */
         $reliefPackage = $qb->select('r')
             ->from(ReliefPackage::class, 'r')
             ->where('r.amountSpent is not null')
+            ->join('r.assistanceBeneficiary', 'ab')
+            ->join('ab.assistance', 'a')
+            ->andWhere('IDENTITY(a.location) IN (:locations)')
+            ->setParameter('locations', array_column($vendorLocations, 1))
             ->andWhere('r.amountSpent < r.amountToDistribute')
             ->getQuery()
-            ->getResult()[0];
+            ->getSingleResult();
 
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
         $spent = (double) $reliefPackage->getAmountSpent();
         $amount = ceil(((double) $reliefPackage->getAmountToDistribute() - $spent) / 2);
         $product = $this->em->getRepository(Product::class)->findOneBy(['id' => 1]);
+        dump($assistance->getLocation());
         $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['location' => $assistance->getLocation()]);
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(
             ['serialNumber' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber()]
