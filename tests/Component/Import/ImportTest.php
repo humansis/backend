@@ -77,22 +77,22 @@ class ImportTest extends KernelTestCase
         $kernel = self::bootKernel();
         $this->application = new Application($kernel);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->importService = $kernel->getContainer()->get(ImportService::class);
+        $this->importService = self::getContainer()->get(ImportService::class);
 
-        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
-        $this->projectService = $kernel->getContainer()->get('project.project_service');
+        $this->uploadService = self::getContainer()->get(UploadImportService::class);
+        $this->projectService = self::getContainer()->get('project.project_service');
 
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
                 if ($bnf->getHousehold()) {
-                    $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                    self::getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
                 }
-                $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
+                self::getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
     }

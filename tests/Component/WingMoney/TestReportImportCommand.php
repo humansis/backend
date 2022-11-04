@@ -37,7 +37,7 @@ class TestReportImportCommand extends KernelTestCase
         $kernel = self::bootKernel();
         $this->application = new Application($kernel);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
     }

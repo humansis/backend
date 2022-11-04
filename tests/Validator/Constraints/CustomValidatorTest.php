@@ -23,7 +23,7 @@ class CustomValidatorTest extends KernelTestCase
         parent::setUp();
 
         $kernel = self::bootKernel();
-        $this->validator = $kernel->getContainer()->get('validator');
+        $this->validator = self::getContainer()->get('validator');
     }
 
     public function data(): iterable

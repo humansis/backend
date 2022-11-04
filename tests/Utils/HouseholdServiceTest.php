@@ -39,13 +39,13 @@ class HouseholdServiceTest extends KernelTestCase
         $kernel = self::bootKernel();
         // $this->application = new Application($kernel);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->householdService = $kernel->getContainer()->get('beneficiary.household_service');
-        $this->validator = $kernel->getContainer()->get('validator');
-        // $this->householdService = $kernel->getContainer()->get(HouseholdService::class);
+        $this->householdService = self::getContainer()->get('beneficiary.household_service');
+        $this->validator = self::getContainer()->get('validator');
+        // $this->householdService = self::getContainer()->get(HouseholdService::class);
     }
 
     public function testCreate()
