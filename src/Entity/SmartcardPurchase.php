@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Entity;
 
-use Entity\Beneficiary;
 use DateTime;
 use DateTimeInterface;
-use Entity\Assistance;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,7 +29,7 @@ class SmartcardPurchase
      *
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private ?\Entity\Smartcard $smartcard = null;
+    private Smartcard $smartcard;
 
     /**
      *
@@ -40,7 +38,7 @@ class SmartcardPurchase
      *
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private ?\Entity\Vendor $vendor = null;
+    private Vendor $vendor;
 
     /**
      * @var Collection|SmartcardPurchaseRecord[]
@@ -48,22 +46,20 @@ class SmartcardPurchase
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private \Doctrine\Common\Collections\Collection|array $records;
+    private Collection | array $records;
 
     /**
-     * @var DateTime
-     *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private $createdAt;
+    private DateTime $createdAt;
 
     /**
      *
      * @ORM\ManyToOne(targetEntity="Invoice", inversedBy="purchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?\Entity\Invoice $redemptionBatch = null;
+    private ?Invoice $redemptionBatch = null;
 
     /**
      * @ORM\Column(name="hash", type="text")
@@ -75,7 +71,7 @@ class SmartcardPurchase
      * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private ?\Entity\Assistance $assistance = null;
+    private ?Assistance $assistance = null;
 
     protected function __construct()
     {
@@ -85,7 +81,7 @@ class SmartcardPurchase
     public static function create(
         Smartcard $smartcard,
         Vendor $vendor,
-        DateTimeInterface $createdAt,
+        DateTime $createdAt,
         ?Assistance $assistance = null
     ): SmartcardPurchase {
         $entity = new self();
@@ -111,7 +107,7 @@ class SmartcardPurchase
     /**
      * @return Collection|SmartcardPurchaseRecord[]
      */
-    public function getRecords(): \Doctrine\Common\Collections\Collection|array
+    public function getRecords(): Collection | array
     {
         return $this->records;
     }
@@ -139,7 +135,7 @@ class SmartcardPurchase
     #[SymfonyGroups(['FullSmartcard'])]
     public function getRedeemedAt(): ?DateTimeInterface
     {
-        return $this->redemptionBatch ? $this->redemptionBatch->getInvoicedAt() : null;
+        return $this->redemptionBatch?->getInvoicedAt();
     }
 
     public function getRedemptionBatch(): ?Invoice
