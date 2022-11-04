@@ -17,14 +17,13 @@ class ImportFileValidator
         'Head',
     ];
 
-    private readonly \Component\Import\ImportParser $importParser;
-
     public function __construct(
         private readonly string $uploadDirectory,
         private readonly ImportTemplate $importTemplate,
+        private readonly ImportParser $importParser,
         private readonly EntityManagerInterface $em
     ) {
-        $this->importParser = new ImportParser();
+
     }
 
     public function validate(ImportFile $importFile): void

@@ -21,7 +21,6 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadImportService
 {
-    private readonly \Component\Import\ImportParser $parser;
 
     private readonly \Component\Import\DBAL\InsertQueryCollection $sqlCollection;
 
@@ -30,9 +29,9 @@ class UploadImportService
         private readonly EntityManagerInterface $em,
         private readonly ImportFileValidator $importFileValidator,
         private readonly Integrity\DuplicityService $integrityDuplicityService,
+        private readonly ImportParser $importParser,
         private readonly MessageBusInterface $messageBus
     ) {
-        $this->parser = new ImportParser();
         $this->sqlCollection = new InsertQueryCollection($em);
     }
 
@@ -51,7 +50,7 @@ class UploadImportService
         }
 
         $fileToImport = new File($this->uploadDirectory . '/' . $importFile->getSavedAsFilename());
-        $list = $this->parser->parse($fileToImport);
+        $list = $this->importParser->parse($fileToImport);
 
         $this->em->getConnection()->beginTransaction();
         try {
