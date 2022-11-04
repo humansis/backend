@@ -31,42 +31,37 @@ class Household extends AbstractBeneficiary
     use CountryDependent;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
      */
-    private ?string $livelihood;
+    private string|null $livelihood = null;
 
     /**
      * @var int[]
      *
      * @ORM\Column(name="assets", type="array", nullable=true)
      */
-    private ?array $assets;
+    private array|null $assets;
 
     /**
      * TODO: migrate to enum sometimes
-     *
-     * @var int|null
-     *
      * @ORM\Column(name="shelter_status", type="integer", nullable=true)
      */
-    private ?int $shelterStatus;
+    private int|null $shelterStatus = null;
 
     /**
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      */
-    private ?string $notes;
+    private string|null $notes = null;
 
     /**
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      */
-    private ?string $latitude;
+    private string|null $latitude = null;
 
     /**
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
-    private ?string $longitude;
+    private string|null $longitude = null;
 
     /**
      * @var Collection | CountrySpecific[]
@@ -86,17 +81,17 @@ class Household extends AbstractBeneficiary
     /**
      * @ORM\Column(name="income", type="integer", nullable=true)
      */
-    private ?int $income = null;
+    private int|null $income = null;
 
     /**
      * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
      */
-    private int $foodConsumptionScore;
+    private int|null $foodConsumptionScore = null;
 
     /**
      * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
      */
-    private int $copingStrategiesIndex;
+    private int|null $copingStrategiesIndex = null;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
@@ -106,7 +101,7 @@ class Household extends AbstractBeneficiary
     /**
      * @ORM\Column(name="debt_level", type="integer", nullable=true)
      */
-    private ?int $debtLevel = null;
+    private int|null $debtLevel = null;
 
     /**
      * @var int[]
@@ -118,7 +113,7 @@ class Household extends AbstractBeneficiary
     /**
      * @ORM\Column(name="support_organization_name", type="string", nullable=true)
      */
-    private ?string $supportOrganizationName = null;
+    private string|null $supportOrganizationName = null;
 
     /**
      * @ORM\Column(name="support_date_received", type="date", nullable=true)
@@ -128,17 +123,17 @@ class Household extends AbstractBeneficiary
     /**
      * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
      */
-    private ?int $incomeSpentOnFood = null;
+    private int|null $incomeSpentOnFood = null;
 
     /**
      * @ORM\Column(name="household_income", type="integer", nullable=true)
      */
-    private ?int $householdIncome = null;
+    private int|null $householdIncome = null;
 
     /**
      * @ORM\Column(name="enumerator_name", type="string", nullable=true)
      */
-    private ?string $enumeratorName = null;
+    private string|null $enumeratorName = null;
 
     /**
      *
