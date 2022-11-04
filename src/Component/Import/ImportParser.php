@@ -136,7 +136,7 @@ class ImportParser
      *
      * @return array|int -1 if end of file, data of row otherwise
      */
-    private function getContentRow(Worksheet $worksheet, array $headers, int $r)
+    private function getContentRow(Worksheet $worksheet, array $headers, int $r): int | array
     {
         $row = [];
         $stop = true;
@@ -199,7 +199,7 @@ class ImportParser
     private function getTemplateVersion(Worksheet $worksheet): int
     {
         $versionCell = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
-        return match ($versionCell->getValue()) {
+        return match ($versionCell?->getValue()) {
             self::VERSION_2_SRC => self::VERSION_2,
             default => self::VERSION_1,
         };
