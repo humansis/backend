@@ -20,7 +20,7 @@ class SortConverter implements ParamConverterInterface
         $sort = [];
 
         if ($request->query->has('sort')) {
-            $sort = $request->query->get('sort');
+            $sort = $request->query->all()['sort'];
         }
 
         if (!is_array($sort)) {
