@@ -449,6 +449,8 @@ services:
             - '%import.uploadedFilesDirectory%'
         public: true
 
+    Component\Import\ImportParser:
+
     Command\WingMoneyReportImportCommand:
 
     Component\WingMoney\ReportParser:
