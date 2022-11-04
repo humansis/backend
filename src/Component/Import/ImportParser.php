@@ -196,16 +196,13 @@ class ImportParser
         return DataType::TYPE_STRING;
     }
 
-    private function getTemplateVersion($worksheet): int
+    private function getTemplateVersion(Worksheet $worksheet): int
     {
-        $versionRawValue = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
-
-        $version = match ($versionRawValue) {
+        $versionCell = $worksheet->getCellByColumnAndRow(self::VERSION_COLUMN, self::VERSION_ROW, false);
+        return match ($versionCell->getValue()) {
             self::VERSION_2_SRC => self::VERSION_2,
             default => self::VERSION_1,
         };
-
-        return $version;
     }
 
     private function getStartContentColumn($worksheet): int
