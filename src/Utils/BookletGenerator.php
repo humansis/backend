@@ -28,8 +28,8 @@ class BookletGenerator
         $code = $countryIso3 . '_' . $project->getName() . '_' . date('d-m-Y') . '_booklet';
 
         try {
-            $this->em->beginTransaction();
             $this->em->getConnection()->executeQuery('ALTER TABLE `voucher` DROP INDEX `UNIQ_1392A5D877153098`');
+            $this->em->beginTransaction();
 
             $lastCode = $this->findBookletCode($code);
             $lastBatchNumber = $lastCode ? (int) substr($lastCode, strlen($code)) : 0;
