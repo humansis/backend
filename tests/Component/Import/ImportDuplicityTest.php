@@ -90,7 +90,7 @@ class ImportDuplicityTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
     }
 
-    public function testUpdateDuplicities()
+    public function testUpdateDuplicities(): void
     {
         $import = $this->makeIdentityCheckFailed(
             $this->project,

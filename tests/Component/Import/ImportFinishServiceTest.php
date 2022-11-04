@@ -475,7 +475,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertCount(0, $links, "There should be no link");
     }
 
-    public function testPlainCreate()
+    public function testPlainCreate(): void
     {
         $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_CREATE);
