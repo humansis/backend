@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace InputType\Smartcard;
 
 use DateTime;
-use DateTimeInterface;
 use Request\InputTypeInterface;
 use Validator\Constraints\Enum;
-use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Iso8601;
 
 class ChangeSmartcardInputType implements InputTypeInterface
 {
@@ -18,16 +17,15 @@ class ChangeSmartcardInputType implements InputTypeInterface
     private ?string $state = null;
 
     /**
-     * @var DateTimeInterface
+     * @Iso8601
      */
-    #[Assert\DateTime]
-    private $createdAt;
+    private ?DateTime $createdAt;
 
     /**
      *
      * @return static
      */
-    public static function create(string $state, string $createdAt): self
+    public static function create(string $state, DateTime $createdAt): self
     {
         $self = new self();
         $self->setState($state);
@@ -46,13 +44,13 @@ class ChangeSmartcardInputType implements InputTypeInterface
         $this->state = $state;
     }
 
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(string $createdAt): void
+    public function setCreatedAt(?DateTime $createdAt): void
     {
-        $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);
+        $this->createdAt = $createdAt;
     }
 }
