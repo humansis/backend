@@ -159,9 +159,9 @@ class BeneficiaryController extends AbstractController
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-            $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
-            if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+            if ($mimeTypeGuesser->isGuesserSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }

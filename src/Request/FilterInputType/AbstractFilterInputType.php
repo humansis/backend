@@ -56,7 +56,7 @@ abstract class AbstractFilterInputType implements FilterInputTypeInterface
             } else {
                 $value = (float) $value;
             }
-        } elseif (in_array(strtolower($value),['true', 'false'])) {
+        } elseif (is_string($value) && in_array(strtolower($value),['true', 'false'])) {
             $value = strtolower($value) === 'true';
         }
 
