@@ -31,7 +31,7 @@ class SelectionCriterionController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @return JsonResponse
      */
@@ -104,7 +104,7 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/selection-criteria")
      * @ParamConverter("assistance")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @param Assistance $assistance
      *

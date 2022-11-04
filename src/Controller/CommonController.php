@@ -111,7 +111,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/icons")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @return JsonResponse
      */
@@ -140,7 +140,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/languages")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @return JsonResponse
      */
@@ -160,7 +160,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/currencies")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @return JsonResponse
      */
@@ -180,7 +180,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/translations/{language}")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      * @param string $language
      *
@@ -207,7 +207,7 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/translations-xml")
-     * @Cache(expires="+5 days", public=true)
+     * @Cache(expires="+12 hours", public=true)
      *
      */
     public function getTranslationsXml(): BinaryFileResponse

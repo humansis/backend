@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 /**
- * @Cache(expires="+5 days", public=true)
+ * @Cache(expires="+12 hours", public=true)
  */
 class InstitutionCodelistController extends AbstractController
 {

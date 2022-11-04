@@ -17,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * @Cache(expires="+5 days", public=true)
+ * @Cache(expires="+12 hours", public=true)
  */
 class HouseholdCodelistController extends AbstractController
 {

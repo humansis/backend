@@ -21,7 +21,7 @@ use Entity\User;
 use Entity\UserCountry;
 
 /**
- * @Cache(expires="+5 days", public=true)
+ * @Cache(expires="+12 hours", public=true)
  */
 class LocationController extends AbstractController
 {
