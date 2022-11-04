@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
-use DateTimeInterface;
+use DateTime;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
@@ -17,10 +17,8 @@ use InputType\Beneficiary\NationalIdCardInputType;
 use InputType\Beneficiary\PhoneInputType;
 use InputType\Helper\EnumsBuilder;
 use Exception\MissingHouseholdHeadException;
-use InvalidArgumentException;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints\GroupSequence;
-use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
 use Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -69,7 +67,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     private ?string $livelihood = null;
 
     #[Assert\Type(['array', 'string'])]
-    private array|string|null $assets;
+    private array|string|null $assets = null;
 
     /**
      * @Enum(enumClass="Enum\HouseholdShelterStatus")
@@ -123,7 +121,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @Iso8601
      */
-    private ?DateTimeInterface $supportDateReceived = null;
+    private ?DateTime $supportDateReceived = null;
 
     #[Assert\Type(['array', 'string'])]
     private array|string $supportReceivedTypes = [];
@@ -348,16 +346,16 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $this->debtLevel = $debtLevel;
     }
 
-    public function getSupportDateReceived(): ?DateTimeInterface
+    public function getSupportDateReceived(): ?DateTime
     {
         if (!$this->supportDateReceived) {
             return null;
         }
 
-        return Iso8601Converter::toDateTime((string) $this->supportDateReceived) ?: null;
+        return $this->supportDateReceived;
     }
 
-    public function setSupportDateReceived(?string $supportDateReceived): void
+    public function setSupportDateReceived(?DateTime $supportDateReceived): void
     {
         $this->supportDateReceived = $supportDateReceived;
     }
@@ -382,14 +380,10 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
 
     public function setSupportReceivedTypes(array|string|null $supportReceivedTypes): void
     {
-        if (
-            is_string($supportReceivedTypes)
-            && in_array($supportReceivedTypes, HouseholdSupportReceivedType::values(), true)
-        ) {
-            $supportReceivedTypes = [$supportReceivedTypes];
-        } else {
-            throw new InvalidArgumentException('Invalid supportReceivedTypes value - ' . $supportReceivedTypes);
+        if (is_string($supportReceivedTypes)) {
+            $supportReceivedTypes = explode(',', $supportReceivedTypes);
         }
+
         $this->supportReceivedTypes = $supportReceivedTypes;
     }
 
