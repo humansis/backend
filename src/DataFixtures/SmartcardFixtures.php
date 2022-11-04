@@ -183,7 +183,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
                     $package->getId(),
                     $package->getAmountToDistribute(),
                     null,
-                    new DateTimeImmutable("now-${i} days")
+                    new \DateTime("now-${i} days")
                 ),
                 $this->randomEntity(User::class, $manager)
             );
