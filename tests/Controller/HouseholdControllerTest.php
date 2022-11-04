@@ -464,7 +464,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
     public function testAddHouseholdToProject()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
         $household = $em->getRepository(Household::class)->findOneBy([], ['id' => 'desc']);
 

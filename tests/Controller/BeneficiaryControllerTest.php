@@ -35,7 +35,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetBeneficiary()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/' . $beneficiary->getId());
@@ -71,7 +71,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetBeneficiaries()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $beneficiary = $em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries?filter[id][]=' . $beneficiary->getId());
@@ -138,7 +138,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetNationalId()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/' . $nationalId->getId());
@@ -161,7 +161,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetNationalIds()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $nationalId = $em->getRepository(NationalId::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids?filter[id][]=' . $nationalId->getId());
@@ -182,7 +182,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetPhone()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $phone = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/' . $phone->getId());
@@ -207,7 +207,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetPhones()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $phone1 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[0];
         $phone2 = $em->getRepository(Phone::class)->findBy([], ['id' => 'asc'])[1];
 
@@ -237,7 +237,7 @@ class BeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetBeneficiariesByProject()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $project = $em->getRepository(Project::class)->findOneBy([
             'archived' => false,
         ], ['id' => 'asc']);

@@ -29,7 +29,7 @@ class CommodityControllerTest extends BMSServiceTestCase
     public function testGetCommodities()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $commodity1 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[0];
         $commodity2 = $em->getRepository(Commodity::class)->findBy([], ['id' => 'asc'])[1];
 
@@ -74,7 +74,7 @@ class CommodityControllerTest extends BMSServiceTestCase
     public function testGetCommoditiesByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findBy(['archived' => 0], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/commodities');

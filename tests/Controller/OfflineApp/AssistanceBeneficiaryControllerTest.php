@@ -33,7 +33,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetAssistanceBeneficiariesByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -79,7 +79,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetAssistanceInstitutionsByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -127,7 +127,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetAssistanceCommunitiesByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -178,7 +178,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testAddBeneficiaryToAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
@@ -252,7 +252,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testAddInstitutionToAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
@@ -318,7 +318,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testAddCommunityToAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,

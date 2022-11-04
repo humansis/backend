@@ -76,15 +76,15 @@ class SmartcardServiceTest extends KernelTestCase
         self::bootKernel();
 
         //Preparing the EntityManager
-        $this->em = static::$kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
-        $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
-        $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
-        $this->roleRepository = static::$kernel->getContainer()->get(RoleRepository::class);
-        $this->preliminaryInvoiceRepository = static::$kernel->getContainer()->get(PreliminaryInvoiceRepository::class);
+        $this->smartcardService = self::getContainer()->get('smartcard_service');
+        $this->depositFactory = self::getContainer()->get(DepositFactory::class);
+        $this->invoiceFactory = self::getContainer()->get(InvoiceFactory::class);
+        $this->roleRepository = self::getContainer()->get(RoleRepository::class);
+        $this->preliminaryInvoiceRepository = self::getContainer()->get(PreliminaryInvoiceRepository::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);

@@ -20,7 +20,7 @@ class BookletGeneratorTest extends KernelTestCase
         self::bootKernel();
 
         //Preparing the EntityManager
-        $this->em = static::$kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
