@@ -20,8 +20,6 @@ class HouseholdCompareMapper implements MapperInterface
 
     private ?\Component\Import\ValueObject\HouseholdCompare $object = null;
 
-    private readonly \InputType\HouseholdCreateInputType $importingHousehold;
-
     public function __construct(private readonly HouseholdDecoratorBuilder $decoratorBuilder, private readonly LocationRepository $locationRepository, private readonly CountrySpecificRepository $countrySpecificsRepository)
     {
     }
