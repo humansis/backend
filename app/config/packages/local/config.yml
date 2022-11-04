@@ -47,9 +47,13 @@ monolog:
 services:
     Symfony\Component\HttpKernel\Profiler\Profiler: '@profiler'
 
-nelmio_cors:
-    defaults:
-        allow_origin: ['http://localhost:8080']
-
 parameters:
     frontendUrl: 'http://localhost:8080'
+    cors:
+        allow_origin: ['http://localhost:8080']
+        allow_credentials: 'true'
+        allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: [ ]
+        max_age: 3600
+
