@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="Repository\SmartcardPurchasedItemRepository")
+ * @ORM\Entity(repositoryClass="Repository\SmartcardPurchasedItemRepository", readOnly=true)
  * @ORM\Table(name="view_smartcard_purchased_item")
  */
 class SmartcardPurchasedItem

@@ -17,7 +17,7 @@ use Entity\Vendor;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="Repository\PurchasedItemRepository")
+ * @ORM\Entity(repositoryClass="Repository\PurchasedItemRepository", readOnly=true)
  * @ORM\Table(name="view_purchased_item")
  */
 class PurchasedItem

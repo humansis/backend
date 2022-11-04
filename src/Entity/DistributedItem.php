@@ -16,7 +16,7 @@ use Entity\User;
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="Repository\DistributedItemRepository")
+ * @ORM\Entity(repositoryClass="Repository\DistributedItemRepository", readOnly=true)
  * @ORM\Table(name="view_distributed_item")
  */
 class DistributedItem
