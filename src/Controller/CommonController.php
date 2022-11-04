@@ -44,29 +44,32 @@ class CommonController extends AbstractController
         }
 
         $result = [];
-        foreach ($request->query->get('code', []) as $code) {
-            $result[] = match ($code) {
-                'total_registrations' => [
-                    'code' => $code,
-                    'value' => $this->beneficiaryService->countAll($countryIso3),
-                ],
-                'active_projects' => [
-                    'code' => $code,
-                    'value' => $this->projectService->countActive($countryIso3),
-                ],
-                'enrolled_beneficiaries' => [
-                    'code' => $code,
-                    'value' => $this->managerRegistry->getRepository(Household::class)->countUnarchivedByCountry(
-                        $countryIso3
-                    ),
-                ],
-                'served_beneficiaries' => [
-                    'code' => $code,
-                    'value' => $this->beneficiaryService->countAllServed($countryIso3),
-                ],
-                'completed_assistances' => ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)],
-                default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
-            };
+        foreach ($request->query->all('code') as $code) {
+            if (!is_null($code)) {
+                $result[] = match ($code) {
+                    'total_registrations' => [
+                        'code' => $code,
+                        'value' => $this->beneficiaryService->countAll($countryIso3),
+                    ],
+                    'active_projects' => [
+                        'code' => $code,
+                        'value' => $this->projectService->countActive($countryIso3),
+                    ],
+                    'enrolled_beneficiaries' => [
+                        'code' => $code,
+                        'value' => $this->managerRegistry->getRepository(Household::class)->countUnarchivedByCountry(
+                            $countryIso3
+                        ),
+                    ],
+                    'served_beneficiaries' => [
+                        'code' => $code,
+                        'value' => $this->beneficiaryService->countAllServed($countryIso3),
+                    ],
+                    'completed_assistances' => ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)],
+                    default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
+                };
+            }
+
         }
 
         return $this->json(new Paginator($result));
