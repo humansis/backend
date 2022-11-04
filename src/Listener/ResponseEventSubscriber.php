@@ -99,7 +99,6 @@ class ResponseEventSubscriber implements \Symfony\Component\EventDispatcher\Even
                 $this->em->flush();
             }
         }
-
     }
 
     /**

@@ -10,12 +10,12 @@ use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
-class ArrayNullableDenormalizer  implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
+class ArrayNullableDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
 {
-
     private ArrayDenormalizer $denormalizer;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->denormalizer = new ArrayDenormalizer();
     }
 
@@ -29,7 +29,7 @@ class ArrayNullableDenormalizer  implements ContextAwareDenormalizerInterface, D
 
     public function hasCacheableSupportsMethod(): bool
     {
-       return $this->denormalizer->hasCacheableSupportsMethod();
+        return $this->denormalizer->hasCacheableSupportsMethod();
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
