@@ -2,6 +2,7 @@
 
 namespace Tests\Utils;
 
+use DateTime;
 use Entity\Household;
 use Entity\HouseholdLocation;
 use Enum\ResidencyStatus;
@@ -61,7 +62,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData->setFoodConsumptionScore(3);
         $createData->setShelterStatus('3');
         $createData->setDebtLevel(3);
-        $createData->setSupportDateReceived('1900-01-01');
+        $createData->setSupportDateReceived(new DateTime('1900-01-01'));
         $createData->setSupportOrganizationName('OSN');
         $createData->setIncomeSpentOnFood(100000);
         $createData->setIncome(3);
