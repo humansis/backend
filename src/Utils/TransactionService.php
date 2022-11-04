@@ -15,6 +15,7 @@ use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Transaction;
+use Twig\Cache\FilesystemCache;
 use Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use Entity\User;
@@ -110,7 +111,7 @@ class TransactionService
         $code = random_int(100000, 999999);
 
         $id = $user->getId();
-        $cache = new FilesystemCache();
+        $cache = new FilesystemCache(sys_get_temp_dir());
         $cache->set($assistance->getId() . '-' . $id . '-code_transaction_confirmation', $code);
 
         $commodity = $assistance->getCommodities()->get(0);
@@ -147,7 +148,7 @@ class TransactionService
      */
     public function verifyCode(int $code, User $user, Assistance $assistance)
     {
-        $cache = new FilesystemCache();
+        $cache = new FilesystemCache(sys_get_temp_dir());
 
         $checkedAgainst = '';
         $id = $user->getId();

@@ -441,16 +441,8 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
     /**
      * {@inheritdoc}
      */
-    public function hasRole($roleName)
+    public function hasRole(Role $role)
     {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
         return $this->roles->contains($role);
     }
 

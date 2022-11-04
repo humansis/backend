@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Deprecated;
 
+use Entity\Institution;
 use InputType\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -20,7 +21,7 @@ class UpdateInstitutionType implements InputTypeInterface
      * @var string|null
      */
     #[Assert\Length(max: 255)]
-    #[Assert\Choice(choices: Entity\Institution::TYPE_ALL)]
+    #[Assert\Choice(choices: Institution::TYPE_ALL)]
     protected $type;
 
     #[Assert\Valid]

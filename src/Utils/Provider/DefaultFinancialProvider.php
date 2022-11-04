@@ -13,6 +13,7 @@ use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Twig\Cache\FilesystemCache;
 
 /**
  * Class DefaultFinancialProvider
@@ -79,7 +80,7 @@ abstract class DefaultFinancialProvider
     public function sendMoneyToAll(Assistance $assistance, float $amount, string $currency, string $from)
     {
         // temporary variables to limit the amount of money that can be sent for one distribution to: 1000$
-        $cache = new FilesystemCache();
+        $cache = new FilesystemCache(sys_get_temp_dir());
         if (!$cache->has($assistance->getId() . '-amount_sent')) {
             $cache->set($assistance->getId() . '-amount_sent', 0);
         }
