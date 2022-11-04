@@ -27,8 +27,8 @@ class SmartcardController extends AbstractController
         private readonly SmartcardService $smartcardService,
         private readonly SmartcardRepository $smartcardRepository,
         private readonly RoleRepository $roleRepository,
-        private readonly TokenStorageInterface $tokenStorage)
-    {
+        private readonly TokenStorageInterface $tokenStorage
+    ) {
     }
 
     /**

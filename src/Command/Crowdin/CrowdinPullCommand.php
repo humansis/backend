@@ -28,9 +28,11 @@ use ZipArchive;
  */
 class CrowdinPullCommand extends Command
 {
-    protected static $defaultName = 'crowdin:pull';
     use CrowdinRequestTrait;
     use ZipError;
+
+    protected static $defaultName = 'crowdin:pull';
+
 
     /** @var HttpClient $client */
     private $client;

@@ -17,8 +17,10 @@ use ZipArchive;
 
 class TranslationsDownloadCommand extends Command
 {
-    protected static $defaultName = 'translations:download';
     use ZipError;
+
+    protected static $defaultName = 'translations:download';
+
 
     private readonly \Symfony\Component\HttpClient\HttpClient $client;
 

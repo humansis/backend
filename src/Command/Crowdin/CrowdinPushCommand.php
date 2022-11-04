@@ -24,8 +24,10 @@ use UnexpectedValueException;
  */
 class CrowdinPushCommand extends Command
 {
-    protected static $defaultName = 'crowdin:push';
     use CrowdinRequestTrait;
+
+    protected static $defaultName = 'crowdin:push';
+
 
     /** @var HttpClient $client */
     private $client;

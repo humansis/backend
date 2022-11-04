@@ -23,7 +23,6 @@ class ImportFileValidator
         private readonly ImportParser $importParser,
         private readonly EntityManagerInterface $em
     ) {
-
     }
 
     public function validate(ImportFile $importFile): void
