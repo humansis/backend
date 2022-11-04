@@ -21,19 +21,17 @@ class UpdateAssistanceInputType implements InputTypeInterface
     #[Assert\Type(type: 'bool')]
     private bool $completed = false;
 
-    #[Assert\DateTime]
     #[Assert\NotBlank(allowNull: true)]
-    private ?\DateTimeInterface $dateDistribution = null;
+    private ?string $dateDistribution = null;
 
     private ?string $originalDateDistribution = null;
 
-    private string|\DateTimeInterface|null $dateExpiration = self::UNSET_STRING;
+    private ?string $dateExpiration = self::UNSET_STRING;
 
     private ?string $originalDateExpiration = null;
 
-    #[Assert\DateTime]
     #[Assert\NotBlank(allowNull: true)]
-    private ?\DateTimeInterface $dateExpirationToSave = null;
+    private ?string $dateExpirationToSave = null;
 
     private string|int|null $round = self::UNSET_STRING;
 
@@ -97,24 +95,24 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     public function getDateDistribution(): ?DateTimeInterface
     {
-        return $this->dateDistribution;
+        return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
     }
 
-    public function setDateDistribution(?string $dateDistribution): void
+    public function setDateDistribution($dateDistribution): void
     {
         $this->originalDateDistribution = $dateDistribution;
-        $this->dateDistribution = $dateDistribution ? Iso8601Converter::toDateTime($dateDistribution) : null;
+        $this->dateDistribution = $dateDistribution;
     }
 
     public function getDateExpiration(): ?DateTimeInterface
     {
-        return $this->dateExpirationToSave;
+        return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
     }
 
-    public function setDateExpiration(?string $dateExpiration): void
+    public function setDateExpiration($dateExpiration): void
     {
         $this->originalDateExpiration = $dateExpiration;
-        $this->dateExpiration = $dateExpiration ? Iso8601Converter::toDateTime($dateExpiration) : null;
+        $this->dateExpiration = $dateExpiration;
         $this->dateExpirationToSave = $this->dateExpiration;
     }
 
