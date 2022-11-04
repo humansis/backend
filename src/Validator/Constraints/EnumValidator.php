@@ -14,7 +14,6 @@ use Utils\Objects\Reflection;
 
 class EnumValidator extends ConstraintValidator
 {
-
     use EnumTrait;
 
     /**
@@ -89,6 +88,6 @@ class EnumValidator extends ConstraintValidator
 
     public static function values(): array
     {
-        // Empty
+        return [];
     }
 }
