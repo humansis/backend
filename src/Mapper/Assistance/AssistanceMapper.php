@@ -101,10 +101,16 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceType();
     }
 
-    public function getLocationId(): Location
+    public function getLocation(): Location
     {
         return $this->object->getLocation();
     }
+
+    /** @deprecated use getLocation */
+//    public function getLocationId(): int
+//    {
+//        return $this->object->getLocation()->getId();
+//    }
 
     public function getAdm1(): ?Location
     {

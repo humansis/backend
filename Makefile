@@ -66,6 +66,9 @@ test: ## Run phpunit tests
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit'
 	docker-compose exec php bash -c 'vendor/bin/phpcs --standard=psr12 ./src ./tests'
 
+test-filter: ## Run single phpunit test
+	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit --filter $(c)'
+
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'
 

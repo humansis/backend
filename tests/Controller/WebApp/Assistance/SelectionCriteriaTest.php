@@ -269,7 +269,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             "dateDistribution": "*",
             "dateExpiration": null,
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
