@@ -20,7 +20,7 @@ final class SelectionCriteriaField
         LIVELIHOD = 'livelihood',
         FOOD_CONSUMPTION_SCORE = 'foodConsumptionScore',
         COPING_STRATEGIES_INDEX = 'copingStrategiesIndex',
-        INCOME_LEVEL = 'incomeLevel',
+        INCOME_LEVEL = 'income',
         HOUSEHOLD_SIZE = 'householdSize',
         CURRENT_LOCATION = 'location',
         LOCATION_TYPE = 'locationType',
