@@ -400,6 +400,27 @@ class Person
     }
 
     /**
+     * @return NationalId|null
+     */
+    public function getPrimaryNationalId(): ?NationalId
+    {
+        $minPriority = null;
+        $primaryNationalId = null;
+        foreach ($this->nationalIds as $nationalId) {
+            if (!$minPriority) {
+                $minPriority = $nationalId->getPriority();
+                $primaryNationalId = $nationalId;
+            }
+            if ($nationalId->getPriority() < $minPriority) {
+                $minPriority = $nationalId->getPriority();
+                $primaryNationalId = $nationalId;
+            }
+        }
+
+        return $primaryNationalId;
+    }
+
+    /**
      * Set profile.
      *
      * @param Profile|null $profile
