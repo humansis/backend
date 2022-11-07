@@ -3615,6 +3615,10 @@
         <source>Assistance Successfully Unvalidated</source>
         <target>Assistance Successfully Unvalidated</target>
       </trans-unit>
+      <trans-unit id="fnV91Cp" resname="Activity Progress">
+        <source>Activity Progress</source>
+        <target>Activity Progress</target>
+      </trans-unit>
       <trans-unit id="j7XpWOx" resname="Distribution Progress">
         <source>Distribution Progress</source>
         <target>Distribution Progress</target>
