@@ -455,7 +455,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "householdsTargeted": "*",
             "individualsTargeted": "*",
             "description": "*",
-            "commodityIds": ["*"],
+            "commodities": ["*"],
             "foodLimit": 10.99,
             "nonFoodLimit": null,
             "cashbackLimit": 1024,
@@ -626,7 +626,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => AssistanceTargetType::INDIVIDUAL,
             'threshold' => null,
             'commodities' => [
-                ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
+                ['modalityType' => $modalityType,
+                    'unit' => 'CZK',
+                    'value' => 1000,
+                    'division' => null
+                ],
             ],
             'selectionCriteria' => [
                 [
@@ -669,7 +673,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": null,
             "nonFoodLimit": null,
             "cashbackLimit": null,
-            "commodityIds": ["*"]
+            "commodities": ["*"]
         }',
             $this->client->getResponse()->getContent()
         );
@@ -734,7 +738,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
-            "commodityIds": "*"
+            "commodities": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -795,7 +799,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
-            "commodityIds": []
+            "commodities": []
         }',
             $this->client->getResponse()->getContent()
         );
@@ -884,7 +888,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": null,
             "nonFoodLimit": null,
             "cashbackLimit": null,
-            "commodityIds": ["*"]
+            "commodities": ["*"]
         }',
             $this->client->getResponse()->getContent()
         );

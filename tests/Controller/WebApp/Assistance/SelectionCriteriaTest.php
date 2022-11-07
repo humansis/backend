@@ -277,7 +277,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             "householdsTargeted": "*",
             "individualsTargeted": "*",
             "description": "*",
-            "commodityIds": ["*"],
+            "commodities": ["*"],
             "foodLimit": 10.99,
             "nonFoodLimit": null,
             "cashbackLimit": 1024,
