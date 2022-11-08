@@ -37,8 +37,6 @@ class VendorControllerTest extends BMSServiceTestCase
 
     /**
      * @return mixed
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function testCreate()
     {
@@ -122,8 +120,6 @@ class VendorControllerTest extends BMSServiceTestCase
      *
      * @param array $vendor
      * @return mixed
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function testUpdate(array $vendor)
     {
@@ -189,10 +185,8 @@ class VendorControllerTest extends BMSServiceTestCase
      *
      * @param int $id
      * @return int
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
-    public function testGet(int $id)
+    public function testGet(int $id): int
     {
         $this->request('GET', '/api/basic/web-app/v1/vendors/' . $id);
 
@@ -225,8 +219,6 @@ class VendorControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function testList()
     {

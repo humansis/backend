@@ -14,6 +14,7 @@ use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InputType\VendorUpdateInputType;
 use Repository\SmartcardPurchaseRepository;
+use Repository\VendorRepository;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,6 +73,7 @@ class VendorController extends AbstractController
      * @param VendorFilterInputType $filter
      * @param Pagination $pagination
      * @param VendorOrderInputType $orderBy
+     * @param VendorRepository $vendorRepository
      * @return JsonResponse
      * @throws EnumValueNoFoundException
      */
@@ -79,14 +81,15 @@ class VendorController extends AbstractController
         Request $request,
         VendorFilterInputType $filter,
         Pagination $pagination,
-        VendorOrderInputType $orderBy
+        VendorOrderInputType $orderBy,
+        VendorRepository $vendorRepository
     ): JsonResponse {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
         return $this->json(
-            $this->vendorService->listVendors($request->headers->get('country'), $filter, $orderBy, $pagination)
+            $vendorRepository->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination)
         );
     }
 

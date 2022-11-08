@@ -2,26 +2,20 @@
 
 namespace Utils;
 
-use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use DateTime;
 use Doctrine\ORM\EntityNotFoundException;
-use Enum\EnumValueNoFoundException;
 use Exception;
 use Exception\ExportNoDataException;
 use InputType\VendorCreateInputType;
-use InputType\VendorFilterInputType;
-use InputType\VendorOrderInputType;
 use InputType\VendorUpdateInputType;
 use InvalidArgumentException;
 use Repository\LocationRepository;
 use Repository\UserRepository;
 use Repository\VendorRepository;
 use Repository\VoucherPurchaseRepository;
-use Request\Pagination;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
@@ -62,11 +56,6 @@ class VendorService
     private $voucherPurchaseRepository;
 
     /**
-     * @var PreliminaryInvoiceService
-     */
-    private $preliminaryInvoiceService;
-
-    /**
      * UserService constructor.
      *
      * @param PdfService $pdfService
@@ -76,7 +65,6 @@ class VendorService
      * @param LocationRepository $locationRepository
      * @param VendorRepository $vendorRepository
      * @param VoucherPurchaseRepository $voucherPurchaseRepository
-     * @param PreliminaryInvoiceService $preliminaryInvoiceService
      */
     public function __construct(
         PdfService $pdfService,
@@ -85,8 +73,7 @@ class VendorService
         UserRepository $userRepository,
         LocationRepository $locationRepository,
         VendorRepository $vendorRepository,
-        VoucherPurchaseRepository $voucherPurchaseRepository,
-        PreliminaryInvoiceService $preliminaryInvoiceService
+        VoucherPurchaseRepository $voucherPurchaseRepository
     ) {
         $this->pdfService = $pdfService;
         $this->twig = $twig;
@@ -95,43 +82,6 @@ class VendorService
         $this->locationRepository = $locationRepository;
         $this->vendorRepository = $vendorRepository;
         $this->voucherPurchaseRepository = $voucherPurchaseRepository;
-        $this->preliminaryInvoiceService = $preliminaryInvoiceService;
-    }
-
-    /**
-     * @param string $countryIso3
-     * @param VendorFilterInputType $vendorFilterInputType
-     * @param VendorOrderInputType $vendorOrderInputType
-     * @param Pagination|null $pagination
-     * @return Paginator
-     * @throws EnumValueNoFoundException
-     */
-    public function listVendors(
-        string $countryIso3,
-        VendorFilterInputType $vendorFilterInputType,
-        VendorOrderInputType $vendorOrderInputType,
-        ?Pagination $pagination = null
-    ): Paginator {
-        if ($vendorFilterInputType->hasInvoicing()) {
-            $filteredVendors = $this->vendorRepository->findByParams(
-                $countryIso3,
-                $vendorFilterInputType,
-                $vendorOrderInputType
-            );
-            $vendorsInInvoicingState = $this->preliminaryInvoiceService->filterVendorsByInvoicing(
-                $filteredVendors->getQuery()->getResult(),
-                $vendorFilterInputType->getInvoicing()
-            );
-
-            return $this->vendorRepository->getVendorsPaginatorByEntityRoot($vendorsInInvoicingState, $pagination);
-        } else {
-            return $this->vendorRepository->findByParams(
-                $countryIso3,
-                $vendorFilterInputType,
-                $vendorOrderInputType,
-                $pagination
-            );
-        }
     }
 
     /**

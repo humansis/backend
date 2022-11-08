@@ -8,6 +8,8 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use Entity\Vendor;
+use Enum\EnumValueNoFoundException;
+use Enum\VendorInvoicingState;
 use Generator;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
@@ -36,28 +38,6 @@ class VendorRepository extends EntityRepository
         $this->locationRepository = $locationRepository;
     }
 
-    public function getVendorByUser(User $user)
-    {
-        $qb = $this->createQueryBuilder('v');
-        $q = $qb->where('v.user = :user')
-            ->setParameter('user', $user);
-
-        return $q->getQuery()->getResult();
-    }
-
-    public function getVendorCountry(User $user)
-    {
-        $qb = $this->createQueryBuilder('v');
-        $q = $qb->where('v.user = :user')
-            ->setParameter('user', $user)
-            ->leftJoin('v.location', 'l');
-
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->getCountry($q);
-
-        return $q->getQuery()->getSingleResult()['country'];
-    }
-
     public function findByCountry($countryISO3)
     {
         $qb = $this->createQueryBuilder('v')
@@ -76,6 +56,7 @@ class VendorRepository extends EntityRepository
      * @param Pagination|null $pagination
      *
      * @return Paginator
+     * @throws EnumValueNoFoundException
      */
     public function findByParams(
         ?string $iso3,
@@ -136,6 +117,21 @@ class VendorRepository extends EntityRepository
                         ->setParameter('locations', $locations);
                 }
             }
+
+            if ($filter->hasInvoicing()) {
+                $qb->leftJoin('v.preliminaryInvoices', 'pre');
+                switch ($filter->getInvoicing()) {
+                    case VendorInvoicingState::INVOICED:
+                        $qb->andHaving('count(pre.id) = 0');
+                        break;
+                    case VendorInvoicingState::TO_REDEEM:
+                        $qb->andHaving('count(pre.id) > 0 AND SUM(CASE WHEN pre.redeemable = 1 THEN 1 ELSE 0 END) > 0');
+                        break;
+                    case VendorInvoicingState::SYNC_REQUIRED:
+                        $qb->andHaving('count(pre.id) > 0 AND SUM(CASE WHEN pre.redeemable = 0 THEN 1 ELSE 0 END) > 0');
+                }
+                $qb->addGroupBy('pre.redeemable', 'v.id');
+            }
         }
 
         if ($pagination) {
@@ -144,6 +140,25 @@ class VendorRepository extends EntityRepository
         }
 
         if ($orderBy) {
+            if ($filter->hasInvoicing()) {
+                $qb->addGroupBy(
+                    'v.id',
+                    'v.name',
+                    'v.shop',
+                    'v.addressStreet',
+                    'v.addressNumber',
+                    'v.addressPostcode',
+                    'v.archived',
+                    'v.vendorNo',
+                    'v.contractNo',
+                    'v.canSellFood',
+                    'v.canSellNonFood',
+                    'v.canSellCashback',
+                    'l.countryIso3',
+                    'pre.id'
+                );
+            }
+
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case VendorOrderInputType::SORT_BY_ID:
