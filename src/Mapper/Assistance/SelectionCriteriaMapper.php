@@ -7,6 +7,8 @@ namespace Mapper\Assistance;
 use Component\Assistance\Domain\SelectionCriteria as SelectionCriteriaDomain;
 use Component\Assistance\SelectionCriteriaFactory;
 use Entity\Assistance\SelectionCriteria;
+use Enum\SelectionCriteriaField;
+use Enum\VulnerabilityCriteria;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
 
@@ -90,7 +92,9 @@ class SelectionCriteriaMapper implements MapperInterface
         if ($this->isGenderCriterium()) {
             return (1 == $this->object->getValueString()) ? 'M' : 'F';
         }
-
+        if ($this->object->getTableString() === SelectionCriteriaDomain::TABLE_VULNERABILITY_CRITERIA || in_array($this->object->getFieldString(), [SelectionCriteriaField::DISABLED_HEAD_OF_HOUSEHOLD, SelectionCriteriaField::HAS_VALID_SMARTCARD])) {
+            return '1' === $this->object->getValueString();
+        }
         return $this->criteriaDomain->getTypedValue();
     }
 

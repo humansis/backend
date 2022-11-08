@@ -10,6 +10,9 @@ use Entity\Assistance\SelectionCriteria as SelectionCriteriaEntity;
 
 class SelectionCriteria
 {
+    const TABLE_VULNERABILITY_CRITERIA = 'vulnerabilityCriteria';
+    const TABLE_COUNTRY_SPECIFIC = 'countrySpecific';
+
     /** @var SelectionCriteriaEntity */
     private $criteriaRoot;
 
@@ -87,7 +90,7 @@ class SelectionCriteria
 
     public function hasCountrySpecificType(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'countrySpecific';
+        return $this->criteriaRoot->getTableString() === self::TABLE_COUNTRY_SPECIFIC;
     }
 
     public function hasTableFieldType(): bool
@@ -102,7 +105,7 @@ class SelectionCriteria
 
     public function hasVulnerabilityCriteriaType(): bool
     {
-        return $this->criteriaRoot->getTableString() === 'vulnerabilityCriteria';
+        return $this->criteriaRoot->getTableString() === self::TABLE_VULNERABILITY_CRITERIA;
     }
 
     public function getTypedValue()
