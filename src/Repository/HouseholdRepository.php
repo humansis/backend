@@ -196,11 +196,7 @@ class HouseholdRepository extends EntityRepository
             ->leftJoin('b.vulnerabilityCriteria', 'vb')
             ->leftJoin('b.person', 'per')
             ->leftJoin('per.nationalIds', 'ni', Join::WITH, 'ni.priority = 1')
-            ->leftJoin('per.nationalIds', 'ni2', Join::WITH, 'ni2.priority = 2')
-            ->leftJoin('per.nationalIds', 'ni3', Join::WITH, 'ni3.priority = 3')
             ->leftJoin('per.referral', 'r')
-            ->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
-            ->leftJoin('head.person', 'headper')
             ->andWhere('hh.archived = 0')
             ->andWhere('hh.countryIso3 = :iso3')
             ->setParameter('iso3', $iso3);
@@ -216,6 +212,9 @@ class HouseholdRepository extends EntityRepository
         }
 
         if ($filter->hasFulltext()) {
+            $qb->leftJoin('per.nationalIds', 'ni2', Join::WITH, 'ni2.priority = 2')
+                ->leftJoin('per.nationalIds', 'ni3', Join::WITH, 'ni3.priority = 3');
+
             $this->getHouseholdLocation($qb);
 
             $qbl1 = $this->locationRepository->addParentLocationFulltextSubQueryBuilder(1, 'l', 'l1');
@@ -313,10 +312,14 @@ class HouseholdRepository extends EntityRepository
                         $qb->addGroupBy('l.id')->addOrderBy('l.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
-                        $qb->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
+                        $qb->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
+                            ->leftJoin('head.person', 'headper')
+                            ->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
-                        $qb->addGroupBy('headper.localFamilyName')->addOrderBy('headper.localFamilyName', $direction);
+                        $qb->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
+                            ->leftJoin('head.person', 'headper')
+                            ->addGroupBy('headper.localFamilyName')->addOrderBy('headper.localFamilyName', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_DEPENDENTS:
                         $qb->addOrderBy('COUNT(DISTINCT b)', $direction);
