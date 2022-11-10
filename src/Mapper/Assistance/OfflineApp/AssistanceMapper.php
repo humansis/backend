@@ -6,6 +6,7 @@ namespace Mapper\Assistance\OfflineApp;
 
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
+use Enum\ProductCategoryType;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
 
@@ -85,17 +86,23 @@ class AssistanceMapper implements MapperInterface
 
     public function getFoodLimit(): ?string
     {
-        return $this->object->getFoodLimit();
+        $isFoodAllowed = in_array(ProductCategoryType::FOOD, $this->object->getAllowedProductCategoryTypes());
+
+        return $isFoodAllowed ? $this->object->getFoodLimit() : '0.00';
     }
 
     public function getNonfoodLimit(): ?string
     {
-        return $this->object->getNonFoodLimit();
+        $isNonFoodAllowed = in_array(ProductCategoryType::NONFOOD, $this->object->getAllowedProductCategoryTypes());
+
+        return $isNonFoodAllowed ? $this->object->getNonfoodLimit() : '0.00';
     }
 
     public function getCashbackLimit(): ?string
     {
-        return $this->object->getCashbackLimit();
+        $isCashbackAllowed = in_array(ProductCategoryType::CASHBACK, $this->object->getAllowedProductCategoryTypes());
+
+        return $isCashbackAllowed ? $this->object->getCashbackLimit() : '0.00';
     }
 
     public function getRemoteDistributionAllowed(): bool
