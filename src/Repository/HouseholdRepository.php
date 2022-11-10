@@ -190,14 +190,9 @@ class HouseholdRepository extends EntityRepository
         ?Pagination $pagination = null
     ): Paginator {
         $qb = $this->createQueryBuilder('hh');
+        $joins = [];
 
-        $qb->leftJoin('hh.beneficiaries', 'b')
-            ->leftJoin('hh.projects', 'p')
-            ->leftJoin('b.vulnerabilityCriteria', 'vb')
-            ->leftJoin('b.person', 'per')
-            ->leftJoin('per.nationalIds', 'ni', Join::WITH, 'ni.priority = 1')
-            ->leftJoin('per.referral', 'r')
-            ->andWhere('hh.archived = 0')
+        $qb->andWhere('hh.archived = 0')
             ->andWhere('hh.countryIso3 = :iso3')
             ->setParameter('iso3', $iso3);
 
@@ -212,8 +207,13 @@ class HouseholdRepository extends EntityRepository
         }
 
         if ($filter->hasFulltext()) {
-            $qb->leftJoin('per.nationalIds', 'ni2', Join::WITH, 'ni2.priority = 2')
-                ->leftJoin('per.nationalIds', 'ni3', Join::WITH, 'ni3.priority = 3');
+            $joins['b'] = true;
+            $joins['per'] = true;
+            $joins['ni'] = 1;
+            $joins['ni2'] = 2;
+            $joins['ni3'] = 3;
+            $joins['vb'] = true;
+            $joins['p'] = true;
 
             $this->getHouseholdLocation($qb);
 
@@ -258,31 +258,43 @@ class HouseholdRepository extends EntityRepository
         }
 
         if ($filter->hasGender()) {
+            $joins['b'] = true;
+            $joins['per'] = true;
             $qb->andWhere('per.gender = :gender')
                 ->setParameter('gender', 'M' === $filter->getGender() ? 1 : 0);
         }
 
         if ($filter->hasProjects()) {
+            $joins['p'] = true;
             $qb->andWhere('p.id IN (:projects)')
                 ->setParameter('projects', $filter->getProjects());
         }
 
         if ($filter->hasVulnerabilities()) {
+            $joins['b'] = true;
+            $joins['vb'] = true;
             $qb->andWhere('vb.fieldString IN (:vulnerabilities)')
                 ->setParameter('vulnerabilities', $filter->getVulnerabilities());
         }
 
         if ($filter->hasNationalIds()) {
+            $joins['b'] = true;
+            $joins['per'] = true;
+            $joins['ni'] = 1;
             $qb->andWhere('ni.id IN (:nationalIds)')
                 ->setParameter('nationalIds', $filter->getNationalIds());
         }
 
         if ($filter->hasResidencyStatuses()) {
+            $joins['b'] = true;
             $qb->andWhere('b.residencyStatus IN (:residencyStatuses)')
                 ->setParameter('residencyStatuses', $filter->getResidencyStatuses());
         }
 
         if ($filter->hasReferralTypes()) {
+            $joins['b'] = true;
+            $joins['per'] = true;
+            $joins['r'] = true;
             $qb->andWhere('r.type IN (:referrals)')
                 ->setParameter('referrals', $filter->getReferralTypes());
         }
@@ -299,7 +311,7 @@ class HouseholdRepository extends EntityRepository
         }
 
         if ($filter->hasLocations()) {
-            $this->getHouseholdLocation($qb);
+            $joins['l'] = true;
             $qb->andWhere('l.id  IN (:locations)')
                 ->setParameter('locations', $filter->getLocations());
         }
@@ -308,29 +320,36 @@ class HouseholdRepository extends EntityRepository
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case HouseholdOrderInputType::SORT_BY_CURRENT_HOUSEHOLD_LOCATION:
-                        $this->getHouseholdLocation($qb);
+                        $joins['l'] = true;
                         $qb->addGroupBy('l.id')->addOrderBy('l.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FIRST_NAME:
-                        $qb->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
-                            ->leftJoin('head.person', 'headper')
-                            ->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
+                        $joins['head'] = true;
+                        $joins['headper'] = true;
+                        $qb->addGroupBy('headper.localGivenName')->addOrderBy('headper.localGivenName', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_LOCAL_FAMILY_NAME:
-                        $qb->leftJoin('hh.beneficiaries', 'head', Join::WITH, 'head.status = 1')
-                            ->leftJoin('head.person', 'headper')
-                            ->addGroupBy('headper.localFamilyName')->addOrderBy('headper.localFamilyName', $direction);
+                        $joins['head'] = true;
+                        $joins['headper'] = true;
+                        $qb->addGroupBy('headper.localFamilyName')->addOrderBy('headper.localFamilyName', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_DEPENDENTS:
+                        $joins['b'] = true;
                         $qb->addOrderBy('COUNT(DISTINCT b)', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_PROJECTS:
+                        $joins['p'] = true;
                         $qb->addGroupBy('p')->addOrderBy('p.name', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_VULNERABILITIES:
+                        $joins['b'] = true;
+                        $joins['vb'] = true;
                         $qb->addGroupBy('vb')->addOrderBy('vb.fieldString', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_NATIONAL_ID:
+                        $joins['b'] = true;
+                        $joins['per'] = true;
+                        $joins['ni'] = 1;
                         $qb->addGroupBy('ni')->addOrderBy('ni.idNumber', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_ID:
@@ -340,6 +359,40 @@ class HouseholdRepository extends EntityRepository
             }
 
             $qb->addGroupBy('hh.id');
+        }
+
+        foreach ($joins as $alias => $value) {
+            switch ($alias) {
+                case 'b':
+                    $qb->leftJoin('hh.beneficiaries', $alias);
+                    break;
+                case 'per':
+                    $qb->leftJoin('b.person', $alias);
+                    break;
+                case 'p':
+                    $qb->leftJoin('hh.projects', $alias);
+                    break;
+                case 'vb':
+                    $qb->leftJoin('b.vulnerabilityCriteria', $alias);
+                    break;
+                case 'ni':
+                case 'ni2':
+                case 'ni3':
+                    $qb->leftJoin('per.nationalIds', $alias, Join::WITH, $alias . '.priority = ' . $value);
+                    break;
+                case 'r':
+                    $qb->leftJoin('per.referral', $alias);
+                    break;
+                case 'l':
+                    $this->getHouseholdLocation($qb);
+                    break;
+                case 'head':
+                    $qb->leftJoin('hh.beneficiaries', $alias, Join::WITH, 'head.status = 1');
+                    break;
+                case 'headper':
+                    $qb->leftJoin('head.person', $alias);
+                    break;
+            }
         }
 
         return new Paginator($qb, false);
