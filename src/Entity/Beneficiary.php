@@ -272,23 +272,9 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         }
         $valuesCriteria = join(',', $valuesCriteria);
 
-        /** @var NationalId $primaryDocument */
-        $primaryDocument = null;
-        /** @var NationalId $secondaryDocument */
-        $secondaryDocument = null;
-        /** @var NationalId $tertiaryDocument */
-        $tertiaryDocument = null;
-        foreach ($this->getPerson()->getNationalIds()->getValues() as $value) {
-            if ($value->getPriority() === 1) {
-                $primaryDocument = $value;
-            }
-            if ($value->getPriority() === 2) {
-                $secondaryDocument = $value;
-            }
-            if ($value->getPriority() === 3) {
-                $tertiaryDocument = $value;
-            }
-        }
+        $primaryDocument = $this->getPerson()->getPrimaryNationalId();
+        $secondaryDocument = $this->getPerson()->getSecondaryNationalId();
+        $tertiaryDocument = $this->getPerson()->getTertiaryNationalId();
 
         //Recover country specifics for the household
         $valueCountrySpecific = [];
