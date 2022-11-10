@@ -133,7 +133,7 @@ class Person
      *
      * @return self
      */
-    public function setEnGivenName(?string $enGivenName)
+    public function setEnGivenName(?string $enGivenName): Person
     {
         $this->enGivenName = $enGivenName;
 
@@ -157,7 +157,7 @@ class Person
      *
      * @return self
      */
-    public function setEnFamilyName(?string $enFamilyName)
+    public function setEnFamilyName(?string $enFamilyName): Person
     {
         $this->enFamilyName = $enFamilyName;
 
@@ -181,7 +181,7 @@ class Person
      *
      * @return self
      */
-    public function setLocalGivenName(?string $localGivenName)
+    public function setLocalGivenName(?string $localGivenName): Person
     {
         $this->localGivenName = $localGivenName;
 
@@ -205,7 +205,7 @@ class Person
      *
      * @return self
      */
-    public function setLocalFamilyName(?string $localFamilyName)
+    public function setLocalFamilyName(?string $localFamilyName): Person
     {
         $this->localFamilyName = $localFamilyName;
 
@@ -228,10 +228,10 @@ class Person
      * @param string|null $gender
      *
      * @return self
+     * @throws Exception
      * @see PersonGender::values()
-     *
      */
-    public function setGender(?string $gender)
+    public function setGender(?string $gender): Person
     {
         self::validateValue('gender', PersonGender::class, $gender, true);
         $this->gender = PersonGenderEnum::valueToDB($gender);
@@ -243,8 +243,8 @@ class Person
      * Get gender.
      *
      * @return string|null
+     * @throws Exception
      * @see PersonGender::values()
-     *
      */
     public function getGender(): ?string
     {
@@ -258,7 +258,7 @@ class Person
      *
      * @return self
      */
-    public function setDateOfBirth(?DateTimeInterface $dateOfBirth)
+    public function setDateOfBirth(?DateTimeInterface $dateOfBirth): Person
     {
         $this->dateOfBirth = $dateOfBirth;
 
@@ -282,7 +282,7 @@ class Person
      *
      * @return self
      */
-    public function setUpdatedOn(?DateTimeInterface $updatedOn = null)
+    public function setUpdatedOn(?DateTimeInterface $updatedOn = null): Person
     {
         $this->updatedOn = $updatedOn;
 
@@ -306,7 +306,7 @@ class Person
      *
      * @return self
      */
-    public function addPhone(Phone $phone)
+    public function addPhone(Phone $phone): Person
     {
         $this->phones[] = $phone;
 
@@ -320,7 +320,7 @@ class Person
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removePhone(Phone $phone)
+    public function removePhone(Phone $phone): bool
     {
         return $this->phones->removeElement($phone);
     }
@@ -338,11 +338,11 @@ class Person
     /**
      * Set phones.
      *
-     * @param $collection
+     * @param Collection|null $collection
      *
      * @return self
      */
-    public function setPhones(Collection $collection = null)
+    public function setPhones(?Collection $collection = null): Person
     {
         $this->phones = $collection;
 
@@ -365,11 +365,11 @@ class Person
     /**
      * Set nationalId.
      *
-     * @param  $collection
+     * @param Collection|null $collection
      *
      * @return self
      */
-    public function setNationalIds(Collection $collection = null)
+    public function setNationalIds(?Collection $collection = null): Person
     {
         $this->nationalIds = $collection;
 
@@ -383,7 +383,7 @@ class Person
      *
      * @return self
      */
-    public function addNationalId(NationalId $nationalId)
+    public function addNationalId(NationalId $nationalId): Person
     {
         $this->nationalIds[] = $nationalId;
 
@@ -397,7 +397,7 @@ class Person
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
-    public function removeNationalId(NationalId $nationalId)
+    public function removeNationalId(NationalId $nationalId): bool
     {
         return $this->nationalIds->removeElement($nationalId);
     }
@@ -501,7 +501,7 @@ class Person
      *
      * @return self
      */
-    public function setProfile(Profile $profile = null)
+    public function setProfile(Profile $profile = null): Person
     {
         $this->profile = $profile;
 
@@ -513,7 +513,7 @@ class Person
      *
      * @return Profile|null
      */
-    public function getProfile()
+    public function getProfile(): ?Profile
     {
         return $this->profile;
     }
@@ -525,7 +525,7 @@ class Person
      *
      * @return self
      */
-    public function setReferral(Referral $referral = null)
+    public function setReferral(Referral $referral = null): Person
     {
         $this->referral = $referral;
 
@@ -537,7 +537,7 @@ class Person
      *
      * @return Referral|null
      */
-    public function getReferral()
+    public function getReferral(): ?Referral
     {
         return $this->referral;
     }
