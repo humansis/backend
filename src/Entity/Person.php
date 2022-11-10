@@ -421,6 +421,67 @@ class Person
     }
 
     /**
+     * @return NationalId|null
+     */
+    public function getSecondaryNationalId(): ?NationalId
+    {
+        $secondary = null;
+        $primary = $this->getPrimaryNationalId();
+        if (!$primary) {
+            return null;
+        }
+
+        $minPriority = $primary->getPriority() + 1;
+        foreach ($this->nationalIds as $nationalId) {
+            if ($nationalId->getId() === $primary->getId()) {
+                continue;
+            }
+            if ($nationalId->getPriority() > $primary->getPriority()) {
+                if (!$secondary) {
+                    $minPriority = $nationalId->getPriority();
+                    $secondary = $nationalId;
+                } elseif ($nationalId->getPriority() < $minPriority) {
+                    $minPriority = $nationalId->getPriority();
+                    $secondary = $nationalId;
+                }
+            }
+        }
+
+        return $secondary;
+    }
+
+    /**
+     * @return NationalId|null
+     */
+    public function getTertiaryNationalId(): ?NationalId
+    {
+        $tertiary = null;
+        $primary = $this->getPrimaryNationalId();
+        $secondary = $this->getSecondaryNationalId();
+        if (!$primary || !$secondary) {
+            return null;
+        }
+
+        $minPriority = $secondary->getPriority() + 1;
+        foreach ($this->nationalIds as $nationalId) {
+            if ($nationalId->getId() === $primary->getId() || $nationalId->getId() === $secondary->getId()) {
+                continue;
+            }
+            if ($nationalId->getPriority() > $secondary->getPriority()) {
+                if (!$tertiary) {
+                    $minPriority = $nationalId->getPriority();
+                    $tertiary = $nationalId;
+                } elseif ($nationalId->getPriority() < $minPriority) {
+                    $minPriority = $nationalId->getPriority();
+                    $tertiary = $nationalId;
+                }
+            }
+        }
+
+        return $tertiary;
+    }
+
+    /**
      * Set profile.
      *
      * @param Profile|null $profile
