@@ -48,6 +48,8 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testUpdate()
     {
+        $this->markTestSkipped('Functionality is not used.');
+
         $booklet = self::getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/booklets/' . $booklet->getId(), [
