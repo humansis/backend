@@ -349,6 +349,19 @@ class Person
         return $this;
     }
 
+    public function getFirstPhoneWithPrefix(): ?string
+    {
+        /**
+         * @var Phone|null $phone
+         */
+        $phone = $this->phones->first();
+        if ($phone) {
+            return $phone->getPrefix() . ' ' . $phone->getNumber();
+        }
+
+        return null;
+    }
+
     /**
      * Set nationalId.
      *
