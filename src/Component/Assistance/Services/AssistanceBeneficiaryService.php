@@ -81,7 +81,7 @@ class AssistanceBeneficiaryService
         $output = new AssistanceBeneficiaryOperationOutputType($this->translator, $documentNumbers, $documentType);
         $beneficiaryDocuments = [];
         foreach ($beneficiaries as $beneficiary) {
-            foreach ($beneficiary->getNationalIds() as $document) {
+            foreach ($beneficiary->getPerson()->getNationalIds() as $document) {
                 if ($document->getIdType() === $documentType) {
                     $key = strtolower($document->getIdNumber());
                     $beneficiaryDocuments[$key] = $document->getIdNumber();

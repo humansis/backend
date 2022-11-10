@@ -159,8 +159,8 @@ class PurchasedSummarySpreadsheetExport
                 'B' . $i,
                 $beneficiary->isHead() ? $this->translator->trans('Household') : $this->translator->trans('Individual')
             );
-            $worksheet->setCellValue('C' . $i, $beneficiary->getLocalGivenName());
-            $worksheet->setCellValue('D' . $i, $beneficiary->getLocalFamilyName());
+            $worksheet->setCellValue('C' . $i, $beneficiary->getPerson()->getLocalGivenName());
+            $worksheet->setCellValue('D' . $i, $beneficiary->getPerson()->getLocalFamilyName());
             $worksheet->setCellValue('E' . $i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('F' . $i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
             $worksheet->setCellValue('G' . $i, $purchasedItem->getProject()->getName());

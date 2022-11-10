@@ -404,7 +404,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(
             false,
             $beneficiary->isHead(),
-            "Beneficiary {$beneficiary->getLocalGivenName()} {$beneficiary->getLocalFamilyName()} shouldn't be head."
+            "Beneficiary {$beneficiary->getPerson()->getLocalGivenName()} {$beneficiary->getPerson()->getLocalFamilyName()} shouldn't be head."
         );
     }
 
@@ -413,7 +413,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(
             true,
             $beneficiary->isHead(),
-            "Beneficiary {$beneficiary->getLocalGivenName()} {$beneficiary->getLocalFamilyName()} should be head."
+            "Beneficiary {$beneficiary->getPerson()->getLocalGivenName()} {$beneficiary->getPerson()->getLocalFamilyName()} should be head."
         );
     }
 
@@ -422,7 +422,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(
             $expectedType,
             $household->getShelterStatus(),
-            "Shelter status doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName(
+            "Shelter status doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName(
             ) . " [{$household->getShelterStatus()}]"
         );
     }
@@ -432,7 +432,7 @@ class ImportTest extends KernelTestCase
         $this->assertEquals(
             $expectedLivelihood,
             $household->getLivelihood(),
-            "Livelihood doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName(
+            "Livelihood doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName(
             ) . " [{$household->getLivelihood()}]"
         );
     }
@@ -442,14 +442,14 @@ class ImportTest extends KernelTestCase
         $this->assertCount(
             count($expectedTypes),
             $household->getSupportReceivedTypes(),
-            "Support types count doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName()
+            "Support types count doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName()
         );
         $supportTypes = implode(', ', $household->getSupportReceivedTypes());
         foreach ($expectedTypes as $expectedAsset) {
             $this->assertContains(
                 $expectedAsset,
                 $household->getSupportReceivedTypes(),
-                "Support types doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName(
+                "Support types doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName(
                 ) . " [$supportTypes]"
             );
         }
@@ -460,14 +460,14 @@ class ImportTest extends KernelTestCase
         $this->assertCount(
             count($expectedAssets),
             $household->getAssets(),
-            "Asset count doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName()
+            "Asset count doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName()
         );
         $hhAssets = implode(', ', $household->getAssets());
         foreach ($expectedAssets as $expectedAsset) {
             $this->assertContains(
                 $expectedAsset,
                 $household->getAssets(),
-                "Assets doesn't fit for HH " . $household->getHouseholdHead()->getLocalFamilyName() . " [$hhAssets]"
+                "Assets doesn't fit for HH " . $household->getHouseholdHead()->getPerson()->getLocalFamilyName() . " [$hhAssets]"
             );
         }
     }

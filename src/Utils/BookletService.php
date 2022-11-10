@@ -360,7 +360,7 @@ class BookletService
     public function getPdfHtml(Booklet $booklet, string $voucherHtmlSeparation)
     {
         $name = $booklet->getAssistanceBeneficiary() ?
-            $booklet->getAssistanceBeneficiary()->getBeneficiary()->getLocalFamilyName() :
+            $booklet->getAssistanceBeneficiary()->getBeneficiary()->getPerson()->getLocalFamilyName() :
             '_______';
         $currency = $booklet->getCurrency();
         $bookletQrCode = $booklet->getCode();

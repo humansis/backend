@@ -26,11 +26,11 @@ class BeneficiaryMapper
 
         $bnfArray = [
             'id' => $beneficiary->getId(),
-            'local_given_name' => $beneficiary->getLocalGivenName(),
-            'local_family_name' => $beneficiary->getLocalFamilyName(),
+            'local_given_name' => $beneficiary->getPerson()->getLocalGivenName(),
+            'local_family_name' => $beneficiary->getPerson()->getLocalFamilyName(),
             'national_ids' => [],
             'referral' => null,
-            'status' => $beneficiary->getStatus(),
+            'status' => $beneficiary->isHead(),
             'vulnerability_criteria' => [],
         ];
 

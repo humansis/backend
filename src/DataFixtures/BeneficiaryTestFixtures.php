@@ -186,13 +186,13 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             $bnf->setHousehold($household);
             $birthDate = new DateTime();
             $birthDate->modify("-$age year");
-            $bnf->setDateOfBirth($birthDate);
-            $bnf->setEnFamilyName($bnfData['en_family_name']);
-            $bnf->setEnGivenName($bnfData['en_given_name']);
-            $bnf->setLocalFamilyName($bnfData['local_family_name']);
-            $bnf->setLocalGivenName($bnfData['local_given_name']);
-            $bnf->setGender(PersonGender::valueFromAPI($gender));
-            $bnf->setStatus(0 == $household->getBeneficiaries()->count());
+            $bnf->getPerson()->setDateOfBirth($birthDate);
+            $bnf->getPerson()->setEnFamilyName($bnfData['en_family_name']);
+            $bnf->getPerson()->setEnGivenName($bnfData['en_given_name']);
+            $bnf->getPerson()->setLocalFamilyName($bnfData['local_family_name']);
+            $bnf->getPerson()->setLocalGivenName($bnfData['local_given_name']);
+            $bnf->getPerson()->setGender(PersonGender::valueFromAPI($gender));
+            $bnf->setHead(0 == $household->getBeneficiaries()->count());
             $bnf->setResidencyStatus($bnfData['residency_status']);
 
             $household->addBeneficiary($bnf);
