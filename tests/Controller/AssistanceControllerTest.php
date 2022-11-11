@@ -53,7 +53,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": ' . $assistance->getId() . ',
             "name": "' . $assistance->getName() . '",
-            "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTime::ISO8601) . '",
+            "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTime::ATOM) . '",
             "dateExpiration": "*",
             "projectId": ' . $assistance->getProject()->getId() . ',
             "locationId": ' . $assistance->getLocation()->getId() . ',
@@ -561,7 +561,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $date = new DateTime();
 
         $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
-            'dateDistribution' => $date->format(DateTimeInterface::ISO8601),
+            'dateDistribution' => $date->format(DateTimeInterface::ATOM),
         ]);
 
         $this->assertTrue(
@@ -570,7 +570,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateDistribution']);
+        $this->assertEquals($date->format(DateTimeInterface::ATOM), $contentArray['dateDistribution']);
     }
 
     /**
@@ -646,8 +646,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": "*",
             "name": "*",
-            "dateDistribution": "2021-03-10T13:45:32+0000",
-            "dateExpiration": "2022-10-10T03:45:00+0000",
+            "dateDistribution": "2021-03-10T13:45:32+00:00",
+            "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
             "locationId": "*",
             "target": "*",
@@ -861,8 +861,8 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": "*",
             "name": "*",
-            "dateDistribution": "2021-03-10T13:45:32+0000",
-            "dateExpiration": "2022-10-10T03:45:00+0000",
+            "dateDistribution": "2021-03-10T13:45:32+00:00",
+            "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
             "locationId": "*",
             "target": "*",
