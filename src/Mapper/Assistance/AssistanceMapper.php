@@ -10,7 +10,6 @@ use Entity;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain;
 use InvalidArgumentException;
-use Utils\AssistanceService;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
 
@@ -71,13 +70,13 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format(DateTime::ISO8601);
+        return $this->object->getDateDistribution()->format(DateTime::ATOM);
     }
 
     public function getDateExpiration(): ?string
     {
         return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
-            DateTimeInterface::ISO8601
+            DateTimeInterface::ATOM
         ) : null;
     }
 

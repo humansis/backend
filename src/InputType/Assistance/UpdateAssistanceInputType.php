@@ -26,7 +26,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     private ?string $originalDateDistribution = null;
 
-    private ?string $dateExpiration = self::UNSET_STRING;
+    private string|null $dateExpiration = self::UNSET_STRING;
 
     private ?string $originalDateExpiration = null;
 
@@ -152,7 +152,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     public function hasDateExpiration(): bool
     {
-        return !is_string($this->dateExpiration);
+        return $this->dateExpiration !== self::UNSET_STRING;
     }
 
     public function hasNote(): bool
