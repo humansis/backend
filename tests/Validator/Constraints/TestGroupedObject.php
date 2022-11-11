@@ -16,16 +16,25 @@ class TestGroupedObject
     {
     }
 
+    /**
+     * @Iso8601(groups={"date", "iso", "isodate", "TestGroupedObject"})
+     */
     public function getIsoDate(): string
     {
         return $this->isoDate;
     }
 
+    /**
+     * @ImportDate(groups={"date", "importdate", "TestGroupedObject"})
+     */
     public function getImportDate(): string
     {
         return $this->importDate;
     }
 
+    /**
+     * @Country(groups={"country", "iso", "TestGroupedObject"})
+     */
     public function getCountryISO3(): string
     {
         return $this->countryISO3;

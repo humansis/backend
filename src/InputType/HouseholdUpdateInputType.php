@@ -72,7 +72,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @Enum(enumClass="Enum\HouseholdShelterStatus")
      */
-    private ?string $shelterStatus = null;
+    private int|string|null $shelterStatus = null;
 
     /**
      * @Assert\All(

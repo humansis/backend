@@ -3,11 +3,11 @@
 namespace Tests\Utils;
 
 use DateTime;
+use Doctrine\Persistence\ObjectManager;
 use Entity\Household;
 use Entity\HouseholdLocation;
 use Enum\ResidencyStatus;
 use Utils\HouseholdService;
-use Doctrine\Common\Persistence\ObjectManager;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\NationalIdType;

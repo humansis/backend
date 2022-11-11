@@ -14,16 +14,25 @@ class TestDummyObject
     {
     }
 
+    /**
+     * @Iso8601()
+     */
     public function getIsoDate(): string
     {
         return $this->isoDate;
     }
 
+    /**
+     * @ImportDate()
+     */
     public function getImportDate(): string
     {
         return $this->importDate;
     }
 
+    /**
+     * @Country()
+     */
     public function getCountryISO3(): string
     {
         return $this->countryISO3;
