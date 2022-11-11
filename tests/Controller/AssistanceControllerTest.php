@@ -585,7 +585,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $date = new DateTime('+1 year');
 
         $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
-            'dateExpiration' => $date->format(DateTimeInterface::ISO8601),
+            'dateExpiration' => $date->format(DateTimeInterface::ATOM),
         ]);
 
         $this->assertTrue(
@@ -594,7 +594,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals($date->format(DateTimeInterface::ISO8601), $contentArray['dateExpiration']);
+        $this->assertEquals($date->format(DateTimeInterface::ATOM), $contentArray['dateExpiration']);
     }
 
     public function testCreateDistributionWithExpirationDate()
