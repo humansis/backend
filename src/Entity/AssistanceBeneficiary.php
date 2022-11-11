@@ -88,12 +88,10 @@ class AssistanceBeneficiary
     }
 
     /**
-     *
      * @ORM\Column(name="justification", type="string", length=511, nullable=true)
-     *
      */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
-    private string $justification;
+    private string|null $justification = null;
 
     /**
      *
@@ -274,26 +272,14 @@ class AssistanceBeneficiary
         return $this;
     }
 
-    /**
-     * Set justification.
-     *
-     * @param string $justification
-     *
-     * @return self
-     */
-    public function setJustification($justification)
+    public function setJustification(string|null $justification): self
     {
         $this->justification = $justification;
 
         return $this;
     }
 
-    /**
-     * Get justification.
-     *
-     * @return string
-     */
-    public function getJustification()
+    public function getJustification(): string|null
     {
         return $this->justification;
     }

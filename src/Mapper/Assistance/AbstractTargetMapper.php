@@ -44,7 +44,7 @@ abstract class AbstractTargetMapper implements MapperInterface
         return (bool) $this->object->getRemoved();
     }
 
-    public function getJustification(): ?string
+    public function getJustification(): string|null
     {
         return $this->object->getJustification();
     }

@@ -50,8 +50,6 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestSkipped(
                 'You need to have at least one assistance with beneficiary in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request('GET', '/api/basic/offline-app/v2/assistances/' . $assistanceId . '/assistances-beneficiaries');
@@ -95,8 +93,6 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestSkipped(
                 'You need to have at least one assistance with institution in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request(
@@ -143,8 +139,6 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->markTestSkipped(
                 'You need to have at least one assistance with community in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request(
