@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Validator\Constraints;
 
-use Entity\Beneficiary;
-use Component\Import\ImportFileValidator;
-use Component\Import\ImportService;
-use Component\Import\UploadImportService;
-use Entity\Import;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

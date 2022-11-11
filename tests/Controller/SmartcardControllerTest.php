@@ -15,7 +15,6 @@ use Entity\Commodity;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
-use PhpParser\Node\Expr\AssignOp\Mod;
 use Tests\BMSServiceTestCase;
 use Entity\User;
 use Entity\Smartcard;
@@ -151,6 +150,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -216,6 +216,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -284,6 +285,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -352,6 +354,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -398,6 +401,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -515,6 +519,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
 
         $this->client->request(
