@@ -130,8 +130,6 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
 
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-communities")
-     *
-     *
      */
     public function assistanceCommunitiesByAssistance(
         Request $request,
