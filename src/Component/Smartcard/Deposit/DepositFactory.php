@@ -53,7 +53,7 @@ class DepositFactory
             $reliefPackage
         );
         $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew(
+        $smartcard = $this->smartcardService->getSmartcardForBeneficiaryBySerialNumber(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()

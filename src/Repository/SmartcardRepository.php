@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -40,6 +41,18 @@ class SmartcardRepository extends EntityRepository
         } catch (NoResultException) {
             return null;
         }
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     * @return void
+     * @throws ORMException
+     */
+    public function disable(Smartcard $smartcard): void
+    {
+        $smartcard->setState(SmartcardStates::INACTIVE);
+        $smartcard->setDisabledAt(new DateTimeImmutable());
+        $this->_em->persist($smartcard);
     }
 
     public function disableBySerialNumber(

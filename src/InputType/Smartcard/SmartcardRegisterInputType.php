@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace InputType\Smartcard;
 
 use DateTime;
+use DateTimeInterface;
+use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Iso8601;
@@ -15,9 +17,14 @@ class SmartcardRegisterInputType implements InputTypeInterface
     #[Assert\Type(type: 'string')]
     private ?string $serialNumber = null;
 
-    #[Assert\NotNull]
-    #[Assert\Type(type: 'int')]
-    private ?int $beneficiaryId = null;
+    /**
+     * @Assert\NotNull()
+     * @Assert\Type(type="int")
+     * @EntityExist(entity="Entity\Beneficiary")
+     *
+     * @var int
+     */
+    private $beneficiaryId;
 
     /**
      * @Iso8601
@@ -25,6 +32,9 @@ class SmartcardRegisterInputType implements InputTypeInterface
     private ?DateTime $createdAt;
 
     /**
+     * @param string $serialNumber
+     * @param int $beneficiaryId
+     * @param string $createdAt
      *
      * @return static
      */

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Utils;
 
-use DateTimeImmutable;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -107,22 +106,14 @@ class SmartcardService
     /**
      * @param SmartcardRegisterInputType $registerInputType
      *
-     * @return Smartcard
      * @throws SmartcardDoubledRegistrationException
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function registerSmartcardAndDisableOlds(SmartcardRegisterInputType $registerInputType): Smartcard
+    public function registerSmartcardAndDisableOlds(SmartcardRegisterInputType $registerInputType): void
     {
-        $assignedActiveSmartcards = $this->smartcardRepository->findBy(
-            ['beneficiary' => $registerInputType->getBeneficiaryId(), 'state' => SmartcardStates::activatedStates()]
-        );
-        foreach ($assignedActiveSmartcards as $smartcard) {
-            $this->disableSmartcard($smartcard);
-        }
-        $this->smartcardRepository->flush();
-
-        return $this->register($registerInputType);
+        $smartcard = $this->register($registerInputType);
+        $this->disableActiveBnfSmartcards($smartcard->getBeneficiary(), $smartcard);
     }
 
     /**
@@ -137,7 +128,7 @@ class SmartcardService
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getActualSmartcardOrCreateNew(
+        $smartcard = $this->getSmartcardForBeneficiaryBySerialNumber(
             $registerInputType->getSerialNumber(),
             $beneficiary,
             $registerInputType->getCreatedAt()
@@ -198,25 +189,37 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $data->getCreatedAt());
+        $smartcard = $this->getSmartcardForBeneficiaryBySerialNumber(
+            $serialNumber,
+            $beneficiary,
+            $data->getCreatedAt(),
+            false
+        );
         $this->smartcardRepository->persist($smartcard);
 
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
     /**
+     * Returns already assigned Smartcard for BNF or creates new one
+     *
      * @param string $serialNumber
      * @param Beneficiary|null $beneficiary
      * @param DateTimeInterface $dateOfEvent
+     * @param bool $disableOtherBnfCards
      * @return Smartcard
      * @throws ORMException
      */
-    public function getActualSmartcardOrCreateNew(
+    public function getSmartcardForBeneficiaryBySerialNumber(
         string $serialNumber,
-        ?Beneficiary $beneficiary,
-        DateTimeInterface $dateOfEvent
+        Beneficiary $beneficiary,
+        DateTimeInterface $dateOfEvent,
+        bool $disableOtherBnfCards = true
     ): Smartcard {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
+        if ($disableOtherBnfCards) {
+            $this->disableActiveBnfSmartcards($beneficiary, $smartcard);
+        }
 
         if (
             $smartcard
@@ -321,15 +324,23 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
+     * @param Beneficiary $beneficiary
+     * @param Smartcard|null $exceptSmartcard
      * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    private function disableSmartcard(Smartcard $smartcard): void
+    private function disableActiveBnfSmartcards(Beneficiary $beneficiary, ?Smartcard $exceptSmartcard = null): void
     {
-        $smartcard->setState(SmartcardStates::INACTIVE);
-        $smartcard->setDisabledAt(new DateTimeImmutable());
-        $this->smartcardRepository->persist($smartcard);
+        $assignedActiveSmartcards = $this->smartcardRepository->findBy(
+            ['beneficiary' => $beneficiary, 'state' => SmartcardStates::activatedStates()]
+        );
+        foreach ($assignedActiveSmartcards as $smartcardBnf) {
+            if ($exceptSmartcard && $exceptSmartcard->getId() === $smartcardBnf->getId()) {
+                continue;
+            }
+            $this->smartcardRepository->disable($smartcardBnf);
+        }
+        $this->smartcardRepository->flush();
     }
 }
