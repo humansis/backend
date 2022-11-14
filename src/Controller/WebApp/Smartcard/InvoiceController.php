@@ -153,7 +153,7 @@ class InvoiceController extends AbstractWebAppController
         Vendor $vendor,
         PreliminaryInvoiceRepository $preliminaryInvoiceRepository
     ): Response {
-        $preliminaryInvoices = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor, 'redeemable' => true]);
+        $preliminaryInvoices = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor, 'isRedeemable' => true]);
 
         return $this->json($preliminaryInvoices, 200, [], ['version' => 3]);
     }
