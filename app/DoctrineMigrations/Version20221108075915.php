@@ -28,7 +28,7 @@ final class Version20221108075915 extends AbstractMigration
                    SUM(spa.value)                           as value,
                    JSON_ARRAYAGG(spa.spaid)                 as purchase_ids,
                    count(spa.spaid)                         as purchase_count,
-                   IF(MIN(spa.redeemable) = 0, FALSE, TRUE) as is_redeemable
+                   IF(MIN(spa.is_redeemable) = 0, FALSE, TRUE) as is_redeemable
             FROM (SELECT spPre.spaid                                            as spaid,
                          spPre.sp_ass                                           as sp_ass,
                          spPre.value                                            as value,
