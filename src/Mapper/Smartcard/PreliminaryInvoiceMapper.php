@@ -49,7 +49,7 @@ class PreliminaryInvoiceMapper implements MapperInterface
         return array_values(array_map('intval', $this->object->getPurchaseIds()));
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->object->getValue();
     }
@@ -57,5 +57,10 @@ class PreliminaryInvoiceMapper implements MapperInterface
     public function getCurrency(): string
     {
         return $this->object->getCurrency();
+    }
+
+    public function getCanRedeem(): bool
+    {
+        return $this->object->isRedeemable();
     }
 }

@@ -64,6 +64,13 @@ class PreliminaryInvoice
     private $purchaseCount;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="is_redeemable", type="boolean")
+     */
+    private $isRedeemable;
+
+    /**
      * @return Project|null
      */
     public function getProject(): ?Project
@@ -109,5 +116,13 @@ class PreliminaryInvoice
     public function getPurchaseCount(): int
     {
         return $this->purchaseCount;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRedeemable(): bool
+    {
+        return $this->isRedeemable;
     }
 }

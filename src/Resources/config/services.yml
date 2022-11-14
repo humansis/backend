@@ -1409,8 +1409,6 @@ services:
     Component\Smartcard\Invoice\InvoiceFactory:
         public: true
 
-    Component\Smartcard\Invoice\PreliminaryInvoiceService:
-
     Component\Smartcard\Invoice\InvoiceChecker:
 
     Component\Auditor\AuditorService:

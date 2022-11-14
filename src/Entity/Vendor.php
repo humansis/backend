@@ -2,9 +2,10 @@
 
 namespace Entity;
 
-use Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Entity\Smartcard\PreliminaryInvoice;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Utils\ExportableInterface;
 
@@ -132,9 +133,17 @@ class Vendor implements ExportableInterface
      */
     private $canDoRemoteDistributions = false;
 
+    /**
+     * @var PreliminaryInvoice[]|Collection
+     *
+     * @ORM\OneToMany(targetEntity="Entity\Smartcard\PreliminaryInvoice", mappedBy="vendor")
+     */
+    private $preliminaryInvoices;
+
     public function __construct()
     {
         $this->archived = false;
+        $this->preliminaryInvoices = new ArrayCollection();
     }
 
     /**
@@ -477,5 +486,21 @@ class Vendor implements ExportableInterface
     public function setCanDoRemoteDistributions(bool $canDoRemoteDistributions): void
     {
         $this->canDoRemoteDistributions = $canDoRemoteDistributions;
+    }
+
+    /**
+     * @return Collection|PreliminaryInvoice[]
+     */
+    public function getPreliminaryInvoices(): Collection
+    {
+        return $this->preliminaryInvoices;
+    }
+
+    /**
+     * @param Collection|PreliminaryInvoice[] $preliminaryInvoices
+     */
+    public function setPreliminaryInvoices($preliminaryInvoices): void
+    {
+        $this->preliminaryInvoices = $preliminaryInvoices;
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Controller\WebApp\Smartcard;
 
 use Component\Smartcard\Invoice\InvoiceFactory;
-use Component\Smartcard\Invoice\PreliminaryInvoiceService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
@@ -15,6 +14,7 @@ use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
 use InputType\SmartcardInvoiceCreateInputType;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Repository\SmartcardInvoiceRepository;
 use Repository\OrganizationRepository;
 use Request\Pagination;
@@ -85,8 +85,11 @@ class InvoiceController extends AbstractWebAppController
      * @param SmartcardInvoiceRepository $smartcardInvoiceRepository
      * @return JsonResponse
      */
-    public function invoices(Vendor $vendor, Pagination $pagination, SmartcardInvoiceRepository $smartcardInvoiceRepository): JsonResponse
-    {
+    public function invoices(
+        Vendor $vendor,
+        Pagination $pagination,
+        SmartcardInvoiceRepository $smartcardInvoiceRepository
+    ): JsonResponse {
         $invoices = $smartcardInvoiceRepository->findByVendor($vendor, $pagination);
 
         return $this->json($invoices);
@@ -129,26 +132,28 @@ class InvoiceController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
-     * @param PreliminaryInvoiceService $preliminaryInvoiceService
+     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      * @return JsonResponse
      */
     public function preliminaryInvoices(
         Vendor $vendor,
-        PreliminaryInvoiceService $preliminaryInvoiceService
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
     ): JsonResponse {
-        return $this->json(new Paginator($preliminaryInvoiceService->getArrayOfPreliminaryInvoicesDtoByVendor($vendor)));
+        return $this->json(new Paginator($preliminaryInvoiceRepository->findBy(['vendor' => $vendor])));
     }
 
     /**
      * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
      * @param Vendor $vendor
-     * @param PreliminaryInvoiceService $preliminaryInvoiceService
+     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      * @return JsonResponse
      */
-    public function preliminariesForVendorApp(Vendor $vendor, PreliminaryInvoiceService $preliminaryInvoiceService): Response
-    {
-        $preliminaryInvoices = $preliminaryInvoiceService->getRedeemablePreliminaryInvoicesByVendor($vendor);
+    public function preliminariesForVendorApp(
+        Vendor $vendor,
+        PreliminaryInvoiceRepository $preliminaryInvoiceRepository
+    ): Response {
+        $preliminaryInvoices = $preliminaryInvoiceRepository->findBy(['vendor' => $vendor, 'isRedeemable' => true]);
 
         return $this->json($preliminaryInvoices, 200, [], ['version' => 3]);
     }

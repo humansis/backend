@@ -8,6 +8,8 @@ use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use Entity\Vendor;
+use Enum\EnumValueNoFoundException;
+use Enum\VendorInvoicingState;
 use Generator;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
@@ -36,28 +38,6 @@ class VendorRepository extends EntityRepository
         $this->locationRepository = $locationRepository;
     }
 
-    public function getVendorByUser(User $user)
-    {
-        $qb = $this->createQueryBuilder('v');
-        $q = $qb->where('v.user = :user')
-            ->setParameter('user', $user);
-
-        return $q->getQuery()->getResult();
-    }
-
-    public function getVendorCountry(User $user)
-    {
-        $qb = $this->createQueryBuilder('v');
-        $q = $qb->where('v.user = :user')
-            ->setParameter('user', $user)
-            ->leftJoin('v.location', 'l');
-
-        $locationRepository = $this->getEntityManager()->getRepository(Location::class);
-        $locationRepository->getCountry($q);
-
-        return $q->getQuery()->getSingleResult()['country'];
-    }
-
     public function findByCountry($countryISO3)
     {
         $qb = $this->createQueryBuilder('v')
@@ -76,6 +56,7 @@ class VendorRepository extends EntityRepository
      * @param Pagination|null $pagination
      *
      * @return Paginator
+     * @throws EnumValueNoFoundException
      */
     public function findByParams(
         ?string $iso3,
@@ -135,6 +116,23 @@ class VendorRepository extends EntityRepository
                     $qb->andWhere($qb->expr()->in('v.location', ':locations'))
                         ->setParameter('locations', $locations);
                 }
+            }
+
+            if ($filter->hasInvoicing()) {
+                switch ($filter->getInvoicing()) {
+                    case VendorInvoicingState::INVOICED:
+                        $qb->leftJoin('v.preliminaryInvoices', 'pre');
+                        $qb->andHaving('count(pre.id) = 0');
+                        break;
+                    case VendorInvoicingState::TO_REDEEM:
+                        $qb->innerJoin('v.preliminaryInvoices', 'pre');
+                        $qb->andHaving('MAX(pre.isRedeemable) = 1');
+                        break;
+                    case VendorInvoicingState::SYNC_REQUIRED:
+                        $qb->innerJoin('v.preliminaryInvoices', 'pre');
+                        $qb->andHaving('MAX(pre.isRedeemable) = 0');
+                }
+                $qb->addGroupBy('pre.isRedeemable', 'v.id');
             }
         }
 
