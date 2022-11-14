@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Export;
 
-use Entity\Beneficiary;
-use Entity\NationalId;
-use Entity\Phone;
 use Entity\Assistance;
 use Component\Country\Countries;
 use Component\Country\Country;
-use Enum\NationalIdType;
 use InputType\SmartcardPurchasedItemFilterInputType;
 use IntlDateFormatter;
 use InvalidArgumentException;
@@ -77,26 +73,31 @@ class SmartcardPurchasedItemSpreadsheet
         $worksheet->getColumnDimension('D')->setWidth(18.136);
         $worksheet->getColumnDimension('E')->setWidth(13.565);
         $worksheet->getColumnDimension('F')->setWidth(13.565);
-        $worksheet->getColumnDimension('G')->setWidth(12.565);
-        $worksheet->getColumnDimension('H')->setWidth(14.853);
-        $worksheet->getColumnDimension('I')->setWidth(14.853);
-        $worksheet->getColumnDimension('J')->setWidth(14.853);
-        $worksheet->getColumnDimension('K')->setWidth(14.853);
-        $worksheet->getColumnDimension('L')->setWidth(14.853);
+        $worksheet->getColumnDimension('G')->setWidth(13.565);
+        $worksheet->getColumnDimension('H')->setWidth(13.565);
+        $worksheet->getColumnDimension('I')->setWidth(13.565);
+        $worksheet->getColumnDimension('J')->setWidth(13.565);
+        $worksheet->getColumnDimension('K')->setWidth(13.565);
+        $worksheet->getColumnDimension('L')->setWidth(12.565);
         $worksheet->getColumnDimension('M')->setWidth(14.853);
-        $worksheet->getColumnDimension('N')->setWidth(19.136);
-        $worksheet->getColumnDimension('O')->setWidth(14.423);
-        $worksheet->getColumnDimension('P')->setWidth(14.423);
-        $worksheet->getColumnDimension('Q')->setWidth(08.837);
-        $worksheet->getColumnDimension('R')->setWidth(14.423);
-        $worksheet->getColumnDimension('S')->setWidth(14.423);
-        $worksheet->getColumnDimension('T')->setWidth(28.080);
+        $worksheet->getColumnDimension('N')->setWidth(14.853);
+        $worksheet->getColumnDimension('O')->setWidth(14.853);
+        $worksheet->getColumnDimension('P')->setWidth(14.853);
+        $worksheet->getColumnDimension('Q')->setWidth(14.853);
+        $worksheet->getColumnDimension('R')->setWidth(14.853);
+        $worksheet->getColumnDimension('S')->setWidth(19.136);
+        $worksheet->getColumnDimension('T')->setWidth(14.423);
         $worksheet->getColumnDimension('U')->setWidth(14.423);
-        $worksheet->getColumnDimension('V')->setWidth(14.423);
-        $worksheet->getColumnDimension('W')->setWidth(28.080);
+        $worksheet->getColumnDimension('V')->setWidth(08.837);
+        $worksheet->getColumnDimension('W')->setWidth(14.423);
+        $worksheet->getColumnDimension('X')->setWidth(14.423);
+        $worksheet->getColumnDimension('Y')->setWidth(28.080);
+        $worksheet->getColumnDimension('Z')->setWidth(14.423);
+        $worksheet->getColumnDimension('AA')->setWidth(14.423);
+        $worksheet->getColumnDimension('AB')->setWidth(28.080);
         $worksheet->getRowDimension(1)->setRowHeight(28.705);
         $worksheet->setRightToLeft('right-to-left' === Misc::getCharacterOrder($this->translator->getLocale()));
-        $worksheet->getStyle('A1:W1')->applyFromArray([
+        $worksheet->getStyle('A1:AB1')->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
                 'vertical' => Alignment::VERTICAL_CENTER,
@@ -118,25 +119,30 @@ class SmartcardPurchasedItemSpreadsheet
         $worksheet->setCellValue('B1', $this->translator->trans('Beneficiary ID'));
         $worksheet->setCellValue('C1', $this->translator->trans('Beneficiary First Name (local)'));
         $worksheet->setCellValue('D1', $this->translator->trans('Beneficiary Family Name (local)'));
-        $worksheet->setCellValue('E1', $this->translator->trans('ID Number'));
-        $worksheet->setCellValue('F1', $this->translator->trans('Phone'));
-        $worksheet->setCellValue('G1', $this->translator->trans('Project Name'));
-        $worksheet->setCellValue('H1', $this->translator->trans('Distribution Name'));
-        $worksheet->setCellValue('I1', $this->translator->trans('Round'));
-        $worksheet->setCellValue('J1', $this->translator->trans($country->getAdm1Name()));
-        $worksheet->setCellValue('K1', $this->translator->trans($country->getAdm2Name()));
-        $worksheet->setCellValue('L1', $this->translator->trans($country->getAdm3Name()));
-        $worksheet->setCellValue('M1', $this->translator->trans($country->getAdm4Name()));
-        $worksheet->setCellValue('N1', $this->translator->trans('Purchase Date & Time'));
-        $worksheet->setCellValue('O1', $this->translator->trans('Smartcard code'));
-        $worksheet->setCellValue('P1', $this->translator->trans('Item Purchased'));
-        $worksheet->setCellValue('Q1', $this->translator->trans('Unit'));
-        $worksheet->setCellValue('R1', $this->translator->trans('Total Cost'));
-        $worksheet->setCellValue('S1', $this->translator->trans('Currency'));
-        $worksheet->setCellValue('T1', $this->translator->trans('Vendor Name'));
-        $worksheet->setCellValue('U1', $this->translator->trans('Vendor Humansis ID'));
-        $worksheet->setCellValue('V1', $this->translator->trans('Vendor Nr.'));
-        $worksheet->setCellValue('W1', $this->translator->trans('Humansis Invoice Nr.'));
+        $worksheet->setCellValue('E1', 'Primary ID Type');
+        $worksheet->setCellValue('F1', 'Primary ID Number');
+        $worksheet->setCellValue('G1', 'Secondary ID Type');
+        $worksheet->setCellValue('H1', 'Secondary ID Number');
+        $worksheet->setCellValue('I1', 'Tertiary ID Type');
+        $worksheet->setCellValue('J1', 'Tertiary ID Number');
+        $worksheet->setCellValue('K1', $this->translator->trans('Phone'));
+        $worksheet->setCellValue('L1', $this->translator->trans('Project Name'));
+        $worksheet->setCellValue('M1', $this->translator->trans('Distribution Name'));
+        $worksheet->setCellValue('N1', $this->translator->trans('Round'));
+        $worksheet->setCellValue('O1', $this->translator->trans($country->getAdm1Name()));
+        $worksheet->setCellValue('P1', $this->translator->trans($country->getAdm2Name()));
+        $worksheet->setCellValue('Q1', $this->translator->trans($country->getAdm3Name()));
+        $worksheet->setCellValue('R1', $this->translator->trans($country->getAdm4Name()));
+        $worksheet->setCellValue('S1', $this->translator->trans('Purchase Date & Time'));
+        $worksheet->setCellValue('T1', $this->translator->trans('Smartcard code'));
+        $worksheet->setCellValue('U1', $this->translator->trans('Item Purchased'));
+        $worksheet->setCellValue('V1', $this->translator->trans('Unit'));
+        $worksheet->setCellValue('W1', $this->translator->trans('Total Cost'));
+        $worksheet->setCellValue('X1', $this->translator->trans('Currency'));
+        $worksheet->setCellValue('Y1', $this->translator->trans('Vendor Name'));
+        $worksheet->setCellValue('Z1', $this->translator->trans('Vendor Humansis ID'));
+        $worksheet->setCellValue('AA1', $this->translator->trans('Vendor Nr.'));
+        $worksheet->setCellValue('AB1', $this->translator->trans('Humansis Invoice Nr.'));
 
         $i = 1;
         foreach ($this->repository->findByParams($country->getIso3(), $filter) as $purchasedItem) {
@@ -144,65 +150,76 @@ class SmartcardPurchasedItemSpreadsheet
             $assistance = $purchasedItem->getAssistance();
             $datetime = $purchasedItem->getDatePurchase();
             $fullLocation = self::adms($assistance);
+            $primaryNationalId = $beneficiary->getPerson()->getPrimaryNationalId();
+            $secondaryNationalId = $beneficiary->getPerson()->getSecondaryNationalId();
+            $tertiaryNationalId = $beneficiary->getPerson()->getTertiaryNationalId();
 
             $i++;
             $worksheet->setCellValue('A' . $i, $purchasedItem->getHousehold()->getId());
             $worksheet->setCellValue('B' . $i, $beneficiary->getId());
             $worksheet->setCellValue('C' . $i, $beneficiary->getPerson()->getLocalGivenName());
             $worksheet->setCellValue('D' . $i, $beneficiary->getPerson()->getLocalFamilyName());
-            $worksheet->setCellValue('E' . $i, self::nationalId($beneficiary) ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('F' . $i, self::phone($beneficiary) ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('G' . $i, $purchasedItem->getProject()->getName());
-            $worksheet->setCellValue('H' . $i, $assistance->getName());
-            $worksheet->setCellValue('I' . $i, $assistance->getRound() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('J' . $i, $fullLocation[0]);
-            $worksheet->setCellValue('K' . $i, $fullLocation[1]);
-            $worksheet->setCellValue('L' . $i, $fullLocation[2]);
-            $worksheet->setCellValue('M' . $i, $fullLocation[3]);
             $worksheet->setCellValue(
-                'N' . $i,
+                'E' . $i,
+                $primaryNationalId ? $this->translator->trans(
+                    $primaryNationalId->getIdType()
+                ) : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'F' . $i,
+                $primaryNationalId ? $primaryNationalId->getIdNumber() : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'G' . $i,
+                $secondaryNationalId ? $this->translator->trans(
+                    $secondaryNationalId->getIdType()
+                ) : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'H' . $i,
+                $secondaryNationalId ? $secondaryNationalId->getIdNumber() : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'I' . $i,
+                $tertiaryNationalId ? $this->translator->trans(
+                    $tertiaryNationalId->getIdType()
+                ) : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'J' . $i,
+                $tertiaryNationalId ? $tertiaryNationalId->getIdNumber() : $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue(
+                'K' . $i,
+                $beneficiary->getPerson()->getFirstPhoneWithPrefix() ?? $this->translator->trans('N/A')
+            );
+            $worksheet->setCellValue('L' . $i, $purchasedItem->getProject()->getName());
+            $worksheet->setCellValue('M' . $i, $assistance->getName());
+            $worksheet->setCellValue('N' . $i, $assistance->getRound() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('O' . $i, $fullLocation[0]);
+            $worksheet->setCellValue('P' . $i, $fullLocation[1]);
+            $worksheet->setCellValue('Q' . $i, $fullLocation[2]);
+            $worksheet->setCellValue('R' . $i, $fullLocation[3]);
+            $worksheet->setCellValue(
+                'S' . $i,
                 $datetime ? $dateFormatter->format($datetime) : $this->translator->trans('N/A')
             );
-            $worksheet->setCellValue('O' . $i, $purchasedItem->getSmartcardCode() ?? $this->translator->trans('N/A'));
-            $worksheet->setCellValue('Q' . $i, $purchasedItem->getProduct()->getUnit());
-            $worksheet->setCellValue('P' . $i, $purchasedItem->getProduct()->getName());
-            $worksheet->setCellValue('R' . $i, $purchasedItem->getValue());
-            $worksheet->setCellValue('S' . $i, $purchasedItem->getCurrency());
+            $worksheet->setCellValue('T' . $i, $purchasedItem->getSmartcardCode() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('U' . $i, $purchasedItem->getProduct()->getName());
+            $worksheet->setCellValue('V' . $i, $purchasedItem->getProduct()->getUnit());
+            $worksheet->setCellValue('W' . $i, $purchasedItem->getValue());
+            $worksheet->setCellValue('X' . $i, $purchasedItem->getCurrency());
             $worksheet->setCellValue(
-                'T' . $i,
+                'Y' . $i,
                 $purchasedItem->getVendor()->getName() ?? $this->translator->trans('N/A')
             );
-            $worksheet->setCellValue('U' . $i, $purchasedItem->getVendor()->getId());
-            $worksheet->setCellValue('W' . $i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
+            $worksheet->setCellValue('Z' . $i, $purchasedItem->getVendor()->getId());
             $worksheet->setCellValue(
-                'V' . $i,
+                'AA' . $i,
                 $purchasedItem->getVendor()->getVendorNo() ?? $this->translator->trans('N/A')
             );
+            $worksheet->setCellValue('AB' . $i, $purchasedItem->getInvoiceNumber() ?? $this->translator->trans('N/A'));
         }
-    }
-
-    private static function phone(Beneficiary $beneficiary): ?string
-    {
-        /** @var Phone $phone */
-        foreach ($beneficiary->getPerson()->getPhones() as $phone) {
-            if (!$phone->getProxy()) {
-                return $phone->getPrefix() . ' ' . $phone->getNumber();
-            }
-        }
-
-        return null;
-    }
-
-    private static function nationalId(Beneficiary $beneficiary): ?string
-    {
-        /** @var NationalId $nationalId */
-        foreach ($beneficiary->getPerson()->getNationalIds() as $nationalId) {
-            if (NationalIdType::NATIONAL_ID === $nationalId->getIdType()) {
-                return $nationalId->getIdNumber();
-            }
-        }
-
-        return null;
     }
 
     //TODO: fullLocationNames - move to a helper class?

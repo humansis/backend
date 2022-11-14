@@ -203,7 +203,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         if ($documentNumbers === null || $documentType === null) {
             return null;
         }
-        foreach ($beneficiary->getNationalIds() as $document) {
+        foreach ($beneficiary->getPerson()->getNationalIds() as $document) {
             $normalizedDocumentNumber = strtolower($document->getIdNumber());
             if ($document->getIdType() === $documentType && in_array($normalizedDocumentNumber, $documentNumbers)) {
                 return $document->getIdNumber();

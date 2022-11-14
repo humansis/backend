@@ -349,7 +349,7 @@ class Booklet implements ExportableInterface
             $this->getAssistanceBeneficiary()->getAssistance()->getName() :
             null;
         $beneficiary = $this->getAssistanceBeneficiary() ?
-            $this->getAssistanceBeneficiary()->getBeneficiary()->getLocalGivenName() :
+            $this->getAssistanceBeneficiary()->getBeneficiary()->getPerson()->getLocalGivenName() :
             null;
 
         $finalArray = [
