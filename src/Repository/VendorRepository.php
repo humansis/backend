@@ -119,18 +119,20 @@ class VendorRepository extends EntityRepository
             }
 
             if ($filter->hasInvoicing()) {
-                $qb->leftJoin('v.preliminaryInvoices', 'pre');
                 switch ($filter->getInvoicing()) {
                     case VendorInvoicingState::INVOICED:
+                        $qb->leftJoin('v.preliminaryInvoices', 'pre');
                         $qb->andHaving('count(pre.id) = 0');
                         break;
                     case VendorInvoicingState::TO_REDEEM:
-                        $qb->andHaving('count(pre.id) > 0 AND SUM(CASE WHEN pre.redeemable = 1 THEN 1 ELSE 0 END) > 0');
+                        $qb->innerJoin('v.preliminaryInvoices', 'pre');
+                        $qb->andHaving('MAX(pre.isRedeemable) = 1');
                         break;
                     case VendorInvoicingState::SYNC_REQUIRED:
-                        $qb->andHaving('count(pre.id) > 0 AND SUM(CASE WHEN pre.redeemable = 0 THEN 1 ELSE 0 END) > 0');
+                        $qb->innerJoin('v.preliminaryInvoices', 'pre');
+                        $qb->andHaving('MAX(pre.isRedeemable) = 0');
                 }
-                $qb->addGroupBy('pre.redeemable', 'v.id');
+                $qb->addGroupBy('pre.isRedeemable', 'v.id');
             }
         }
 
@@ -140,25 +142,6 @@ class VendorRepository extends EntityRepository
         }
 
         if ($orderBy) {
-            if ($filter->hasInvoicing()) {
-                $qb->addGroupBy(
-                    'v.id',
-                    'v.name',
-                    'v.shop',
-                    'v.addressStreet',
-                    'v.addressNumber',
-                    'v.addressPostcode',
-                    'v.archived',
-                    'v.vendorNo',
-                    'v.contractNo',
-                    'v.canSellFood',
-                    'v.canSellNonFood',
-                    'v.canSellCashback',
-                    'l.countryIso3',
-                    'pre.id'
-                );
-            }
-
             foreach ($orderBy->toArray() as $name => $direction) {
                 switch ($name) {
                     case VendorOrderInputType::SORT_BY_ID:

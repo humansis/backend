@@ -66,9 +66,9 @@ class PreliminaryInvoice
     /**
      * @var bool
      *
-     * @ORM\Column(name="redeemable", type="boolean")
+     * @ORM\Column(name="is_redeemable", type="boolean")
      */
-    private $redeemable;
+    private $isRedeemable;
 
     /**
      * @return Project|null
@@ -123,6 +123,6 @@ class PreliminaryInvoice
      */
     public function isRedeemable(): bool
     {
-        return $this->redeemable;
+        return $this->isRedeemable;
     }
 }

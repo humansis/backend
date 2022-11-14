@@ -17,7 +17,7 @@ FROM (SELECT spPre.spaid                                            as spaid,
              spPre.currency                                         as currency,
              spPre.vendor_id                                        as vendor_id,
              IF(SUM(IF(arp.state = 'To distribute', 1, 0)) = 0 AND
-                SUM(IF(arp.state = 'Distributed', 1, 0)) > 0, 1, 0) as redeemable
+                SUM(IF(arp.state = 'Distributed', 1, 0)) > 0, 1, 0) as is_redeemable
       FROM (SELECT sp.id            as spaid,
                    sp.assistance_id as sp_ass,
                    SUM(spr.value)   as value,
