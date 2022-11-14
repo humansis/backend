@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Utils;
 
+use DateTimeImmutable;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Entity\Beneficiary;
 use DateTimeInterface;
 use Entity\AssistanceBeneficiary;
-use Doctrine\ORM\EntityManager;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
@@ -24,11 +24,9 @@ use InputType\Smartcard\UpdateSmartcardInputType;
 use InvalidArgumentException;
 use LogicException;
 use Repository\BeneficiaryRepository;
-use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\Smartcard;
 use Entity\SmartcardPurchase;
-use Entity\Vendor;
 use Enum\SmartcardStates;
 use InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use Model\PurchaseService;
@@ -36,12 +34,15 @@ use Repository\SmartcardRepository;
 
 class SmartcardService
 {
-    public function __construct(private readonly EntityManager $em, private readonly PurchaseService $purchaseService, private readonly SmartcardRepository $smartcardRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
+    public function __construct(private readonly PurchaseService $purchaseService, private readonly SmartcardRepository $smartcardRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
     {
     }
 
     /**
+     * @param Smartcard $smartcard
+     * @param ChangeSmartcardInputType $changeSmartcardInputType
      *
+     * @return void
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
@@ -68,7 +69,10 @@ class SmartcardService
     }
 
     /**
+     * @param Smartcard $smartcard
+     * @param UpdateSmartcardInputType $updateSmartcardInputType
      *
+     * @return Smartcard
      * @throws SmartcardNotAllowedStateTransition
      * @throws ORMException
      * @throws OptimisticLockException
@@ -101,7 +105,30 @@ class SmartcardService
     }
 
     /**
+     * @param SmartcardRegisterInputType $registerInputType
      *
+     * @return Smartcard
+     * @throws SmartcardDoubledRegistrationException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function registerSmartcardAndDisableOlds(SmartcardRegisterInputType $registerInputType): Smartcard
+    {
+        $assignedActiveSmartcards = $this->smartcardRepository->findBy(
+            ['beneficiary' => $registerInputType->getBeneficiaryId(), 'state' => SmartcardStates::activatedStates()]
+        );
+        foreach ($assignedActiveSmartcards as $smartcard) {
+            $this->disableSmartcard($smartcard);
+        }
+        $this->smartcardRepository->flush();
+
+        return $this->register($registerInputType);
+    }
+
+    /**
+     * @param SmartcardRegisterInputType $registerInputType
+     *
+     * @return Smartcard
      * @throws SmartcardDoubledRegistrationException
      * @throws ORMException
      * @throws OptimisticLockException
@@ -131,7 +158,10 @@ class SmartcardService
     }
 
     /**
+     * @param Smartcard $smartcard
+     * @param DateTimeInterface $registrationDateTime
      *
+     * @return void
      * @throws SmartcardDoubledRegistrationException
      */
     private function checkSmartcardRegistrationDuplicity(
@@ -147,8 +177,10 @@ class SmartcardService
     }
 
     /**
+     * @param string $serialNumber
      * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
      *
+     * @return SmartcardPurchase
      * @throws EntityNotFoundException
      * @throws ORMException
      */
@@ -167,11 +199,18 @@ class SmartcardService
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
         $smartcard = $this->getActualSmartcardOrCreateNew($serialNumber, $beneficiary, $data->getCreatedAt());
-        $this->em->persist($smartcard);
+        $this->smartcardRepository->persist($smartcard);
 
         return $this->purchaseService->purchaseSmartcard($smartcard, $data);
     }
 
+    /**
+     * @param string $serialNumber
+     * @param Beneficiary|null $beneficiary
+     * @param DateTimeInterface $dateOfEvent
+     * @return Smartcard
+     * @throws ORMException
+     */
     public function getActualSmartcardOrCreateNew(
         string $serialNumber,
         ?Beneficiary $beneficiary,
@@ -187,16 +226,11 @@ class SmartcardService
             $eventWasBeforeDisable = $smartcard->getDisabledAt()
                 && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
 
-            if (
-                SmartcardStates::ACTIVE === $smartcard->getState()
-                || $eventWasBeforeDisable
-            ) {
-                return $smartcard;
-            } else {
+            if (SmartcardStates::ACTIVE !== $smartcard->getState() && !$eventWasBeforeDisable) {
                 $smartcard->setSuspicious(true, "Using disabled card");
-
-                return $smartcard;
             }
+
+            return $smartcard;
         }
 
         $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
@@ -205,7 +239,7 @@ class SmartcardService
         $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setSuspicious(true, "Smartcard made adhoc");
-        $this->em->persist($smartcard);
+        $this->smartcardRepository->persist($smartcard);
 
         return $smartcard;
     }
@@ -225,6 +259,9 @@ class SmartcardService
     }
 
     /**
+     * @param Smartcard $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
      * @return void
      * @throws ORMException
      */
@@ -235,6 +272,12 @@ class SmartcardService
         $this->smartcardRepository->save($smartcard);
     }
 
+    /**
+     * @param Smartcard $smartcard
+     * @param ReliefPackage $reliefPackage
+     *
+     * @return void
+     */
     private function setMissingCurrencyToSmartcard(Smartcard $smartcard, ReliefPackage $reliefPackage): void
     {
         if (null === $smartcard->getCurrency()) {
@@ -243,6 +286,9 @@ class SmartcardService
     }
 
     /**
+     * @param Smartcard $smartcard
+     *
+     * @return void
      * @throws ORMException
      */
     private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
@@ -251,16 +297,17 @@ class SmartcardService
             foreach ($purchase->getRecords() as $record) {
                 if (null === $record->getCurrency()) {
                     $record->setCurrency($smartcard->getCurrency());
-                    $this->em->persist($record);
+                    $this->smartcardRepository->persist($record);
                 }
             }
         }
     }
 
     /**
+     * @param string $smartcardCode
      *
+     * @return Smartcard|object
      * @retrun Smartcard
-     * @throws ORMException
      */
     public function getSmartcardByCode(string $smartcardCode)
     {
@@ -271,5 +318,18 @@ class SmartcardService
         }
 
         return $smartcard;
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     * @return void
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    private function disableSmartcard(Smartcard $smartcard): void
+    {
+        $smartcard->setState(SmartcardStates::INACTIVE);
+        $smartcard->setDisabledAt(new DateTimeImmutable());
+        $this->smartcardRepository->persist($smartcard);
     }
 }

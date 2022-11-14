@@ -1339,8 +1339,6 @@ services:
     smartcard_service:
         class: Utils\SmartcardService
         autowire: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
         public: true
 
     Mapper\VoucherRedemptionBatchMapper:

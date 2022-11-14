@@ -117,4 +117,24 @@ class SmartcardRepository extends EntityRepository
         $this->_em->persist($smartcard);
         $this->_em->flush();
     }
+
+    /**
+     * @param Smartcard $smartcard
+     * @return void
+     * @throws ORMException
+     */
+    public function persist(Smartcard $smartcard): void
+    {
+        $this->_em->persist($smartcard);
+    }
+
+    /**
+     * @return void
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function flush(): void
+    {
+        $this->_em->flush();
+    }
 }
