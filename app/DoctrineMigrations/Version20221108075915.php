@@ -35,7 +35,7 @@ final class Version20221108075915 extends AbstractMigration
                          spPre.currency                                         as currency,
                          spPre.vendor_id                                        as vendor_id,
                          IF(SUM(IF(arp.state = 'To distribute', 1, 0)) = 0 AND
-                            SUM(IF(arp.state = 'Distributed', 1, 0)) > 0, 1, 0) as redeemable
+                            SUM(IF(arp.state = 'Distributed', 1, 0)) > 0, 1, 0) as is_redeemable
                   FROM (SELECT sp.id            as spaid,
                                sp.assistance_id as sp_ass,
                                SUM(spr.value)   as value,
@@ -56,7 +56,7 @@ final class Version20221108075915 extends AbstractMigration
                   GROUP BY spPre.spaid, spPre.currency) spa
                      LEFT JOIN assistance a ON spa.sp_ass = a.id
             GROUP BY currency, project_id, vendor_id
-            ORDER BY currency, project_id, vendor_id;
+            ORDER BY currency, project_id, vendor_id
             SQL
         );
     }

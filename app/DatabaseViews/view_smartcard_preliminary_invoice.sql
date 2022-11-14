@@ -10,7 +10,7 @@ SELECT IF(
        SUM(spa.value)                           as value,
        JSON_ARRAYAGG(spa.spaid)                 as purchase_ids,
        count(spa.spaid)                         as purchase_count,
-       IF(MIN(spa.redeemable) = 0, FALSE, TRUE) as redeemable
+       IF(MIN(spa.redeemable) = 0, FALSE, TRUE) as is_redeemable
 FROM (SELECT spPre.spaid                                            as spaid,
              spPre.sp_ass                                           as sp_ass,
              spPre.value                                            as value,
