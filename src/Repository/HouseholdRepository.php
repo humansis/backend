@@ -311,9 +311,12 @@ class HouseholdRepository extends EntityRepository
         }
 
         if ($filter->hasLocations()) {
+            $location = $this->locationRepository->find($filter->getLocations()[0]);
             $joins['l'] = true;
-            $qb->andWhere('l.id  IN (:locations)')
-                ->setParameter('locations', $filter->getLocations());
+            $qb->andWhere('l.lft >= :lft')
+                ->andWhere('l.rgt <= :rgt')
+                ->setParameter('lft', $location->getLft())
+                ->setParameter('rgt', $location->getRgt());
         }
 
         if ($orderBy) {
