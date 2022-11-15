@@ -33,11 +33,11 @@ class SmartcardController extends AbstractOfflineAppController
      * @param SmartcardRegisterInputType $registerInputType
      * @param SmartcardService $smartcardService
      *
+     * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
-     * @deprecated use self::register() instead
      */
-    public function registerDeprecated(
+    public function register(
         SmartcardRegisterInputType $registerInputType,
         SmartcardService $smartcardService
     ): Response {
@@ -51,30 +51,7 @@ class SmartcardController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Post("/offline-app/v2/smartcards")
-     *
-     * @param SmartcardRegisterInputType $registerInputType
-     * @param SmartcardService $smartcardService
-     *
-     * @return Response
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function register(
-        SmartcardRegisterInputType $registerInputType,
-        SmartcardService $smartcardService
-    ): Response {
-        try {
-            $smartcardService->registerSmartcardAndDisableOlds($registerInputType);
-
-            return new Response();
-        } catch (SmartcardDoubledRegistrationException) {
-            return new Response('', Response::HTTP_ACCEPTED);
-        }
-    }
-
-    /**
-     * Update smartcard, typically its state.
+     * Deactivate Smartcard
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @param string $serialNumber
