@@ -137,7 +137,11 @@ class PurchasedItemRepository extends EntityRepository
                     throw new InvalidArgumentException("Location not found or in different country");
                 }
 
-                $qbr = $locationRepository->joinChildrenLocationsQueryBuilder($qbr, $location, 'pi', 'l', true);
+                $qbr->join('pi.location', 'l')
+                    ->andWhere('l.lft >= :lft')
+                    ->andWhere('l.rgt <= :rgt')
+                    ->setParameter('lft', $location->getLft())
+                    ->setParameter('rgt', $location->getRgt());
             }
             if ($filter->hasModalityTypes()) {
                 $qbr->andWhere('pi.modalityType IN (:modalityTypes)')

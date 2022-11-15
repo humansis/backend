@@ -106,18 +106,6 @@ class LocationRepository extends EntityRepository
     /**
      * @param Location $location
      *
-     * @return Location[]
-     */
-    public function getChildrenLocations(Location $location): array
-    {
-        return $this->getChildrenLocationsQueryBuilder($location)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * @param Location $location
-     *
      * @return QueryBuilder
      */
     public function getChildrenLocationsQueryBuilder(Location $location): QueryBuilder
@@ -150,33 +138,6 @@ class LocationRepository extends EntityRepository
         bool $withParent = false
     ): QueryBuilder {
         $qb = $this->createQueryBuilder($childAlias);
-
-        return $this->inChildrenLocationsQueryBuilder(
-            $qb,
-            $ancestor,
-            $childAlias,
-            $withParent,
-        );
-    }
-
-    /**
-     * add join for children locations to query in param
-     *
-     * @param QueryBuilder $qb
-     * @param Location $ancestor
-     * @param string $joinAlias
-     * @param string $childAlias
-     * @param bool $withParent
-     * @return QueryBuilder
-     */
-    public function joinChildrenLocationsQueryBuilder(
-        QueryBuilder $qb,
-        Location $ancestor,
-        string $joinAlias,
-        string $childAlias = 'subqChildLoc',
-        bool $withParent = false
-    ): QueryBuilder {
-        $qb->join($joinAlias . '.location', $childAlias);
 
         return $this->inChildrenLocationsQueryBuilder(
             $qb,

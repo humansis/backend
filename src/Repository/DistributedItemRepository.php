@@ -79,7 +79,11 @@ class DistributedItemRepository extends EntityRepository
                     throw new InvalidArgumentException("Location not found or in different country");
                 }
 
-                $qbr = $locationRepository->joinChildrenLocationsQueryBuilder($qbr, $location, 'di', 'l', true);
+                $qbr->join('di.location', 'l')
+                    ->andWhere('l.lft >= :lft')
+                    ->andWhere('l.rgt <= :rgt')
+                    ->setParameter('lft', $location->getLft())
+                    ->setParameter('rgt', $location->getRgt());
             }
             if ($filter->hasModalityTypes()) {
                 $qbr->andWhere('di.modalityType IN (:modalityTypes)')

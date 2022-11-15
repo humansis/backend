@@ -10,12 +10,10 @@ use Entity\Location;
 use Entity\Vendor;
 use Enum\EnumValueNoFoundException;
 use Enum\VendorInvoicingState;
-use Generator;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InvalidArgumentException;
 use Request\Pagination;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\User;
 
 /**
@@ -94,28 +92,12 @@ class VendorRepository extends EntityRepository
                     ->setParameter('fulltext', '%' . $filter->getFulltext() . '%');
             }
 
-            $locations = [];
-
             if ($filter->hasLocations()) {
-                foreach ($filter->getLocations() as $locationKey => $locationId) {
-                    /** @var Location|null $location */
-                    $location = $this->locationRepository->find($locationId);
-                    if (is_null($location)) {
-                        throw new NotFoundHttpException("Location $locationId was not found");
-                    }
-                    $locations = array_unique(
-                        array_merge(
-                            $locations,
-                            iterator_to_array($this->getChildrenLocationIdListByLocation($location))
-                        ),
-                        SORT_REGULAR
-                    );
-                }
-
-                if (count($locations) > 0) {
-                    $qb->andWhere($qb->expr()->in('v.location', ':locations'))
-                        ->setParameter('locations', $locations);
-                }
+                $location = $this->locationRepository->find($filter->getLocations()[0]);
+                $qb->andWhere('l.lft >= :lft')
+                    ->andWhere('l.rgt <= :rgt')
+                    ->setParameter('lft', $location->getLft())
+                    ->setParameter('rgt', $location->getRgt());
             }
 
             if ($filter->hasInvoicing()) {
@@ -196,19 +178,6 @@ class VendorRepository extends EntityRepository
         $qb->setMaxResults($pagination->getLimit());
 
         return new Paginator($qb);
-    }
-
-    /**
-     * @param Location $location
-     *
-     * @return Generator
-     */
-    private function getChildrenLocationIdListByLocation(Location $location): Generator
-    {
-        $children = $this->locationRepository->getChildrenLocations($location);
-        foreach ($children as $childKey => $child) {
-            yield $child->getId();
-        }
     }
 
     /**

@@ -3,14 +3,12 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Entity\Beneficiary;
 use Entity\Location;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use DateTime;
 use Entity\Assistance;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use DBAL\PersonGenderEnum;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use InputType\AssistanceByProjectOfflineAppFilterInputType;
@@ -247,9 +245,14 @@ class AssistanceRepository extends EntityRepository
                     ->setParameter('projects', $filter->getProjects());
             }
             if ($filter->hasLocations()) {
-                $this->createQueryBuilder('l')
-                    ->andWhere('dd.location IN (:locations)')
-                    ->setParameter('locations', $filter->getLocations());
+                $locationRepository = $this->_em->getRepository(Location::class);
+                $location = $locationRepository->find($filter->getLocations()[0]);
+
+                $qb->join('dd.location', 'l')
+                    ->andWhere('l.lft >= :lft')
+                    ->andWhere('l.rgt <= :rgt')
+                    ->setParameter('lft', $location->getLft())
+                    ->setParameter('rgt', $location->getRgt());
             }
             if ($filter->hasModalityTypes()) {
                 $qb->andWhere('c.modalityType IN (:modalityTypes)')
