@@ -490,6 +490,10 @@ class AssistanceSpreadsheetExport
         $assistanceBeneficiaries = $assistance->getDistributionBeneficiaries()->toArray();
 
         usort($assistanceBeneficiaries, function (AssistanceBeneficiary $a, AssistanceBeneficiary $b) {
+            if (strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalFamilyName()), strtolower($b->getBeneficiary()->getPerson()->getLocalFamilyName())) === 0) {
+                return strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalGivenName()), strtolower($b->getBeneficiary()->getPerson()->getLocalGivenName()));
+            }
+
             return strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalFamilyName()), strtolower($b->getBeneficiary()->getPerson()->getLocalFamilyName()));
         });
 
