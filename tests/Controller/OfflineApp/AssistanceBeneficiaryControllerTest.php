@@ -169,7 +169,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testAddBeneficiaryToAssistance()
+    public function testAddBeneficiaryToAssistanceByIds()
     {
         /** @var EntityManagerInterface $em */
         $em = self::getContainer()->get('doctrine')->getManager();
@@ -195,7 +195,6 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             [
                 'beneficiaryIds' => [$beneficiary->getId()],
                 'justification' => 'test',
-                'added' => true,
             ]
         );
 
@@ -208,16 +207,15 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testAddBeneficiaryToAssistance
+     * @depends testAddBeneficiaryToAssistanceByIds
      */
-    public function testRemoveBeneficiaryFromAssistance($data)
+    public function testRemoveBeneficiaryFromAssistanceByIds(array $data)
     {
         [$assistanceId, $beneficiaryId] = $data;
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $assistanceId . '/assistances-beneficiaries', [
+        $this->request('DELETE', '/api/basic/web-app/v1/assistances/' . $assistanceId . '/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiaryId],
             'justification' => 'test',
-            'removed' => true,
         ]);
 
         $this->assertTrue(

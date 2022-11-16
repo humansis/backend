@@ -78,7 +78,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $date = $this->getUnusedDepositDate();
         $depositFactory = self::getContainer()->get(DepositFactory::class);
         $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
-        $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser(self::USER_TESTER));
+        $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser());
 
         $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
@@ -91,7 +91,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
     }
 
     private function getUnusedDepositDate(): DateTime

@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
-use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Enum\ReliefPackageState;
 use InputType\Smartcard\DepositInputType;
 use InputType\SmartcardDepositFilterInputType;
-use Repository\Assistance\ReliefPackageRepository;
-use Repository\AssistanceBeneficiaryRepository;
 use Psr\Cache\InvalidArgumentException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,14 +76,14 @@ class SmartcardDepositController extends AbstractOfflineAppController
     ): Response {
         try {
             $depositFactory->create($serialNumber, $depositInputType, $this->getUser());
-        } catch (NotFoundHttpException $e) {
+        } catch (NotFoundHttpException) {
             $this->writeData(
                 'depositV5',
                 $this->getUser() ? $this->getUser()->getUsername() : 'nouser',
                 $request->get('serialNumber', 'missing'),
                 json_encode($request->request->all(), JSON_THROW_ON_ERROR)
             );
-        } catch (DoubledDepositException $e) {
+        } catch (DoubledDepositException) {
             return new Response('', Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             $this->writeData(
