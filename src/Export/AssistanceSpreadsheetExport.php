@@ -486,9 +486,20 @@ class AssistanceSpreadsheetExport
             ->getRight()
             ->setBorderStyle(Border::BORDER_THICK);
 
+        /** @var AssistanceBeneficiary[] $assistanceBeneficiaries */
+        $assistanceBeneficiaries = $assistance->getDistributionBeneficiaries()->toArray();
+
+        usort($assistanceBeneficiaries, function (AssistanceBeneficiary $a, AssistanceBeneficiary $b) {
+            if (strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalFamilyName()), strtolower($b->getBeneficiary()->getPerson()->getLocalFamilyName())) === 0) {
+                return strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalGivenName()), strtolower($b->getBeneficiary()->getPerson()->getLocalGivenName()));
+            }
+
+            return strcmp(strtolower($a->getBeneficiary()->getPerson()->getLocalFamilyName()), strtolower($b->getBeneficiary()->getPerson()->getLocalFamilyName()));
+        });
+
         $rowNumber = 27;
         $rowIndex = 1;
-        foreach ($assistance->getDistributionBeneficiaries() as $id => $distributionBeneficiary) {
+        foreach ($assistanceBeneficiaries as $distributionBeneficiary) {
             if (!$distributionBeneficiary->getRemoved()) {
                 $rowNumber = $this->createBeneficiaryRow(
                     $worksheet,
