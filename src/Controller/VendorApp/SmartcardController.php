@@ -16,6 +16,7 @@ use Entity\Smartcard;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -40,6 +41,7 @@ class SmartcardController extends AbstractVendorAppController
     public function beneficiaries(Request $request): Response
     {
         $serializer = new Serializer([
+            new DateTimeNormalizer(),
             new ObjectNormalizer(
                 null,
                 null,
