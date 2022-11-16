@@ -121,7 +121,6 @@ class AssistanceBeneficiaryController extends AbstractController
 
     /**
      * @Rest\Delete("/web-app/v1/assistances/{id}/assistances-beneficiaries")
-     *
      */
     public function removeAssistanceBeneficiaries(
         Entity\Assistance $assistanceRoot,
