@@ -93,7 +93,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->completed = $completed;
     }
 
-    public function getDateDistribution(): ?DateTimeInterface
+    public function getDateDistribution()
     {
         return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
     }
@@ -104,7 +104,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->dateDistribution = $dateDistribution;
     }
 
-    public function getDateExpiration(): ?DateTimeInterface
+    public function getDateExpiration()
     {
         return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
     }

@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -29,6 +30,7 @@ class InputTypeConverter implements ParamConverterInterface
     public function apply(Request $request, ParamConverter $configuration): bool
     {
         $serializer = new Serializer([
+            new DateTimeNormalizer(),
             new ObjectNormalizer(
                 null,
                 null,
@@ -64,7 +66,7 @@ class InputTypeConverter implements ParamConverterInterface
         return in_array(InputTypeInterface::class, class_implements($class));
     }
 
-    protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
+    protected function getArrayDenormalizer(): DenormalizerInterface
     {
         return new ArrayDenormalizer();
     }
