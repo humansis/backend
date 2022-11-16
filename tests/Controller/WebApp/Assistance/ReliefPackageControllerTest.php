@@ -6,6 +6,7 @@ namespace Tests\Controller\WebApp\Assistance;
 
 use DataHelper\UserDataHelper;
 use DateTimeImmutable;
+use Doctrine\ORM\Query\Expr\Join;
 use Entity\Assistance;
 use Entity\Assistance\ReliefPackage;
 use Entity\DistributedItem;
@@ -14,6 +15,7 @@ use Entity\Smartcard;
 use Entity\SmartcardPurchase;
 use Entity\SmartcardPurchaseRecord;
 use Entity\Vendor;
+use Enum\SmartcardStates;
 use Exception;
 use Tests\BMSServiceTestCase;
 use Tests\ComponentHelper\VendorHelper;
@@ -153,8 +155,12 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         /** @var ReliefPackage $reliefPackage */
         $reliefPackage = $qb->select('r')
             ->from(ReliefPackage::class, 'r')
-            ->where('r.amountSpent is not null')
+            ->innerJoin('r.assistanceBeneficiary', 'ab')
+            ->innerJoin(Smartcard::class, 's', Join::WITH, 's.beneficiary = ab.beneficiary')
+            ->andWhere('r.amountSpent is not null')
+            ->andWhere('s.state = :activeState')
             ->andWhere('r.amountSpent < r.amountToDistribute')
+            ->setParameter('activeState', SmartcardStates::ACTIVE)
             ->getQuery()
             ->getResult()[0];
 
