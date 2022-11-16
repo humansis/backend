@@ -1230,6 +1230,10 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\AssistanceBankReportTransformData:
+        class: Utils\AssistanceBankReportTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
