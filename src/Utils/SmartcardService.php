@@ -317,7 +317,7 @@ class SmartcardService
             ['beneficiary' => $lastUsedSmartcard->getBeneficiary(), 'state' => SmartcardStates::activatedStates()]
         );
         foreach ($activeBnfSmartcards as $smartcardBnf) {
-            if ($lastUsedSmartcard && $lastUsedSmartcard->getId() === $smartcardBnf->getId()) {
+            if ($lastUsedSmartcard->getId() === $smartcardBnf->getId()) {
                 continue;
             }
             $this->smartcardRepository->disable($smartcardBnf);
