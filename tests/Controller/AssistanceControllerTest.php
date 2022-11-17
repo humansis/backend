@@ -4,6 +4,7 @@ namespace Tests\Controller;
 
 use DBAL\SectorEnum;
 use Doctrine\Common\Collections\Criteria;
+use Entity\AssistanceBeneficiary;
 use Entity\Commodity;
 use Entity\Community;
 use Entity\Location;
@@ -953,16 +954,29 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
 
+        /** @var AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository */
+        $assistanceBeneficiaryRepository = self::$container->get('doctrine')->getRepository(AssistanceBeneficiary::class);
+
         $commodityData = [
             'value' => 1,
             'unit' => 'USD',
             'modality_type' => ModalityType::CASH,
             'description' => 'Note',
         ];
+        $qb = $assistanceBeneficiaryRepository->createQueryBuilder('db')
+            ->select('assistance.id')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->leftJoin('db.assistance', 'assistance')
+            ->andWhere('relief.modalityType = :modalityType')
+            ->andWhere('assistance.validatedBy != :validatedBy')
+            ->setParameter('modalityType', 'Cash')
+            ->setParameter('validatedBy', 'null')
+            ->setMaxResults(1);
+        $assistanceId = $qb->getQuery()->getResult()[0]['id'];
+
         /** @var Assistance $assistance */
-        $assistance = $assistanceRepository->matching(
-            Criteria::create()->where(Criteria::expr()->neq('validatedBy', null))
-        )->first();
+        $assistance = $assistanceRepository->find($assistanceId);
+
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
