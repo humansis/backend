@@ -16,10 +16,6 @@ final class Floats
      */
     public static function equals(float $a, float $b, float $epsilon = self::EPSILON): bool
     {
-        if (abs($a - $b) < $epsilon) {
-            return true;
-        }
-
-        return false;
+        return abs($a - $b) < $epsilon;
     }
 }
