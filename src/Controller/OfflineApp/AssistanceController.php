@@ -20,9 +20,6 @@ class AssistanceController extends AbstractOfflineAppController
 
     /**
      * @Rest\Get("/offline-app/{version}/projects/{id}/distributions")
-     *
-     *
-     * @return void
      */
     public function projectAssistances(string $version, Project $project): Response
     {

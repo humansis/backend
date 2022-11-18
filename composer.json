@@ -33,7 +33,7 @@
 		"ext-zip": "*",
 		"aws/aws-sdk-php": "3.240.8",
 		"beberlei/doctrineextensions": "v1.3.0",
-        "damienharper/auditor-bundle": "^4.2",
+		"damienharper/auditor-bundle": "^5.1",
 		"doctrine/doctrine-bundle": "2.7.1",
 		"doctrine/doctrine-fixtures-bundle": "3.4.2",
 		"doctrine/doctrine-migrations-bundle": "3.2.2",

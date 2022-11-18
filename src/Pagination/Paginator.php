@@ -9,11 +9,7 @@ use JsonSerializable;
 
 class Paginator implements JsonSerializable
 {
-    /**
-     * @var int|null
-     */
-    private $totalCount;
-
+    private int|null $totalCount;
     private readonly int $page;
 
     /**
