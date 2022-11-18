@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
-use Entity\User;
 
 /**
  * @ORM\Table(name="role")
@@ -21,12 +20,12 @@ class Role
     /**
      * @ORM\Column(name="code", type="string", nullable=false, unique=true)
      */
-    private ?string $code = null;
+    private string|null $code = null;
 
     /**
      * @ORM\Column(name="name", type="string", nullable=false)
      */
-    private ?string $name = null;
+    private string|null $name = null;
 
     /**
      * @ORM\Column(name="deletable", type="boolean", nullable=false)

@@ -9,7 +9,6 @@ use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,14 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
@@ -412,11 +404,6 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
             $this->id,
             $this->email,
         ] = $data;
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
     }
 
     public function getEmail(): string

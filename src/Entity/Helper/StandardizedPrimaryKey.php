@@ -9,15 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
 trait StandardizedPrimaryKey
 {
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private int|null $id = null;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }

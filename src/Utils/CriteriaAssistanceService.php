@@ -3,11 +3,10 @@
 namespace Utils;
 
 use Component\Assistance\Scoring\Model\ScoringProtocol;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
-use Exception;
 use Exception\CsvParserException;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,13 +24,12 @@ use Entity\Project;
  */
 class CriteriaAssistanceService
 {
-    /**
-     * CriteriaAssistanceService constructor.
-     *
-     * @throws Exception
-     */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly OldResolver $oldResolver, private readonly ScoringFactory $scoringFactory, private readonly ScoringResolver $resolver, private readonly ScoringBlueprintRepository $scoringBlueprintRepository)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ScoringFactory $scoringFactory,
+        private readonly ScoringResolver $resolver,
+        private readonly ScoringBlueprintRepository $scoringBlueprintRepository
+    ) {
     }
 
     /**

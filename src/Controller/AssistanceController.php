@@ -42,15 +42,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
-use Symfony\Component\Serializer\SerializerInterface;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
 
 class AssistanceController extends AbstractController
 {
-    public function __construct(private readonly VulnerabilityScoreExport $vulnerabilityScoreExport, private readonly AssistanceService $assistanceService, private readonly AssistanceBankReportExport $assistanceBankReportExport, private readonly SerializerInterface $serializer, private readonly ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private readonly VulnerabilityScoreExport $vulnerabilityScoreExport,
+        private readonly AssistanceService $assistanceService,
+        private readonly AssistanceBankReportExport $assistanceBankReportExport,
+        private readonly ManagerRegistry $managerRegistry,
+    ) {
     }
 
     /**

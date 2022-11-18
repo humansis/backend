@@ -2,8 +2,6 @@
 
 namespace Utils;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Location;
 use DateTime;
 use Doctrine\ORM\EntityNotFoundException;
@@ -27,7 +25,15 @@ class VendorService
     /**
      * UserService constructor.
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly PdfService $pdfService, private readonly Environment $twig, private readonly ExportService $exportService)
+    public function __construct(
+        private readonly PdfService $pdfService,
+        private readonly Environment $twig,
+        private readonly ExportService $exportService,
+        private readonly VendorRepository $vendorRepository,
+        private readonly LocationRepository $locationRepository,
+        private readonly UserRepository $userRepository,
+        private readonly VoucherPurchaseRepository $voucherPurchaseRepository,
+    )
     {
     }
 
@@ -139,62 +145,56 @@ class VendorService
 
     public function printInvoice(Vendor $vendor): BinaryFileResponse
     {
-        try {
-            $voucherPurchases = $this->voucherPurchaseRepository->findByVendor($vendor);
-            if (0 === (is_countable($voucherPurchases) ? count($voucherPurchases) : 0)) {
-                throw new Exception('This vendor has no voucher. Try syncing with the server.');
-            }
-            $totalValue = 0;
-            foreach ($voucherPurchases as $voucherPurchase) {
-                foreach ($voucherPurchase->getRecords() as $record) {
-                    $totalValue += $record->getValue();
-                }
-            }
-
-            $location = $vendor->getLocation();
-            $locationCountry = $location ? $location->getCountryIso3() : null;
-            $locationNames = [
-                'adm1' => null,
-                'adm2' => null,
-                'adm3' => null,
-                'adm4' => null,
-            ];
-
-            while ($location !== null) {
-                $locationNames['adm' . $location->getLvl()] = $location->getName();
-                $location = $location->getParent();
-            }
-
-            $html = $this->twig->render(
-                '@Voucher/Pdf/invoice.html.twig',
-                array_merge(
-                    [
-                        'name' => $vendor->getName(),
-                        'shop' => $vendor->getShop(),
-                        'addressStreet' => $vendor->getAddressStreet(),
-                        'addressPostcode' => $vendor->getAddressPostcode(),
-                        'addressNumber' => $vendor->getAddressNumber(),
-                        'vendorNo' => $vendor->getVendorNo(),
-                        'contractNo' => $vendor->getContractNo(),
-                        'addressVillage' => $locationNames['adm4'],
-                        'addressCommune' => $locationNames['adm3'],
-                        'addressDistrict' => $locationNames['adm2'],
-                        'addressProvince' => $locationNames['adm1'],
-                        'addressCountry' => $locationCountry,
-                        'date' => (new DateTime())->format('d-m-Y'),
-                        'voucherPurchases' => $voucherPurchases,
-                        'totalValue' => $totalValue,
-                    ],
-                    $this->pdfService->getInformationStyle()
-                )
-            );
-
-            $response = $this->pdfService->printPdf($html, 'portrait', 'invoice');
-
-            return $response;
-        } catch (Exception $e) {
-            throw $e;
+        $voucherPurchases = $this->voucherPurchaseRepository->findByVendor($vendor);
+        if (0 === (is_countable($voucherPurchases) ? count($voucherPurchases) : 0)) {
+            throw new Exception('This vendor has no voucher. Try syncing with the server.');
         }
+        $totalValue = 0;
+        foreach ($voucherPurchases as $voucherPurchase) {
+            foreach ($voucherPurchase->getRecords() as $record) {
+                $totalValue += $record->getValue();
+            }
+        }
+
+        $location = $vendor->getLocation();
+        $locationCountry = $location ? $location->getCountryIso3() : null;
+        $locationNames = [
+            'adm1' => null,
+            'adm2' => null,
+            'adm3' => null,
+            'adm4' => null,
+        ];
+
+        while ($location !== null) {
+            $locationNames['adm' . $location->getLvl()] = $location->getName();
+            $location = $location->getParent();
+        }
+
+        $html = $this->twig->render(
+            '@Voucher/Pdf/invoice.html.twig',
+            array_merge(
+                [
+                    'name' => $vendor->getName(),
+                    'shop' => $vendor->getShop(),
+                    'addressStreet' => $vendor->getAddressStreet(),
+                    'addressPostcode' => $vendor->getAddressPostcode(),
+                    'addressNumber' => $vendor->getAddressNumber(),
+                    'vendorNo' => $vendor->getVendorNo(),
+                    'contractNo' => $vendor->getContractNo(),
+                    'addressVillage' => $locationNames['adm4'],
+                    'addressCommune' => $locationNames['adm3'],
+                    'addressDistrict' => $locationNames['adm2'],
+                    'addressProvince' => $locationNames['adm1'],
+                    'addressCountry' => $locationCountry,
+                    'date' => (new DateTime())->format('d-m-Y'),
+                    'voucherPurchases' => $voucherPurchases,
+                    'totalValue' => $totalValue,
+                ],
+                $this->pdfService->getInformationStyle()
+            )
+        );
+
+        return $this->pdfService->printPdf($html, 'portrait', 'invoice');
     }
 
     /**

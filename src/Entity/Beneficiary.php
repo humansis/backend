@@ -42,12 +42,12 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      */
-    private ?\DateTime $updatedOn;
+    private ?DateTime $updatedOn;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="beneficiaries")
      */
-    private ?\Entity\Household $household = null;
+    private ?Household $household = null;
 
     /**
      * @var VulnerabilityCriterion
@@ -61,14 +61,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @var Collection|Smartcard[]
      */
-    private \Doctrine\Common\Collections\Collection|array $smartcards;
+    private Collection |array $smartcards;
 
     /**
      * @var ImportBeneficiary[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
-    private array|\Doctrine\Common\Collections\Collection $importBeneficiaries;
+    private array| Collection $importBeneficiaries;
 
     /**
      * Constructor.
@@ -485,7 +485,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     {
         if ($this->person->getDateOfBirth()) {
             try {
-                return $this->person->getDateOfBirthObject()->diff(new DateTime('now'))->y;
+                return $this->person->getDateOfBirth()->diff(new DateTime('now'))->y;
             } catch (Exception) {
                 return null;
             }
@@ -519,7 +519,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @return Collection|ImportBeneficiary[]
      */
-    public function getImportBeneficiaries(): \Doctrine\Common\Collections\Collection|array
+    public function getImportBeneficiaries(): Collection |array
     {
         return $this->importBeneficiaries;
     }

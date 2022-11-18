@@ -28,14 +28,7 @@ use Entity\User;
  */
 class VendorRepository extends EntityRepository
 {
-    private ?\Repository\LocationRepository $locationRepository = null;
-
-    private ?\Repository\Smartcard\PreliminaryInvoiceRepository $preliminaryInvoiceRepository = null;
-
-    public function setPreliminaryInvoiceRepository(PreliminaryInvoiceRepository $preliminaryInvoiceRepository): void
-    {
-        $this->preliminaryInvoiceRepository = $preliminaryInvoiceRepository;
-    }
+    private ?LocationRepository $locationRepository = null;
 
     public function setLocationRepository(LocationRepository $locationRepository)
     {
@@ -54,8 +47,6 @@ class VendorRepository extends EntityRepository
     }
 
     /**
-     *
-     * @return Paginator
      * @throws EnumValueNoFoundException
      */
     public function findByParams(
@@ -182,11 +173,6 @@ class VendorRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param array $vendors
-     * @param Pagination $pagination
-     * @return Paginator
-     */
     public function getVendorsPaginatorByEntityRoot(array $vendors, Pagination $pagination): Paginator
     {
         $qb = $this->createQueryBuilder('v');
@@ -206,12 +192,6 @@ class VendorRepository extends EntityRepository
         }
     }
 
-    /**
-     * @param Vendor $vendor
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function save(Vendor $vendor): void
     {
         $this->_em->persist($vendor);
