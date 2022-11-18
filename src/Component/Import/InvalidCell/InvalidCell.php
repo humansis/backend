@@ -23,7 +23,7 @@ final class InvalidCell
 
     public function __construct(
         private readonly string $columnName,
-        private float|int|string|null $cellValue,
+        private float|int|string|bool|null $cellValue,
         private string $cellDataType,
         private readonly ?array $cellErrors = null
     ) {
@@ -37,7 +37,7 @@ final class InvalidCell
         $this->callCustomValueCallback();
     }
 
-    public function getCellValue(): float|int|string|null
+    public function getCellValue(): float|int|string|bool|null
     {
         return $this->cellValue;
     }
