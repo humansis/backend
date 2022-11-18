@@ -111,7 +111,7 @@ class BeneficiaryInputType implements InputTypeInterface
      * @return DateTimeInterface
      */
     #[Assert\NotNull]
-    public function getDateOfBirth(): ?DateTimeInterface
+    public function getDateOfBirth()
     {
         if (!$this->dateOfBirth) {
             return null;
