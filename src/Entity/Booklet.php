@@ -299,12 +299,8 @@ class Booklet implements ExportableInterface
         }
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';
-        $distribution = $this->getAssistanceBeneficiary() ?
-            $this->getAssistanceBeneficiary()->getAssistance()->getName() :
-            null;
-        $beneficiary = $this->getAssistanceBeneficiary() ?
-            $this->getAssistanceBeneficiary()->getBeneficiary()->getPerson()->getLocalGivenName() :
-            null;
+        $distribution = $this->getAssistanceBeneficiary()?->getAssistance()->getName();
+        $beneficiary = $this->getAssistanceBeneficiary()?->getBeneficiary()->getPerson()->getLocalGivenName();
 
         $finalArray = [
             'Code' => $this->getCode(),

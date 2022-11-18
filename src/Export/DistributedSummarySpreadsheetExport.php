@@ -130,8 +130,7 @@ class DistributedSummarySpreadsheetExport
             $assistance = $distributedItem->getAssistance();
             $commodity = $distributedItem->getCommodity();
             $datetime = $distributedItem->getDateDistribution();
-            $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail(
-            ) : null;
+            $fieldOfficerEmail = $distributedItem->getFieldOfficer()?->getEmail();
             $primaryNationalId = $beneficiary->getPerson()->getPrimaryNationalId();
             $secondaryNationalId = $beneficiary->getPerson()->getSecondaryNationalId();
             $tertiaryNationalId = $beneficiary->getPerson()->getTertiaryNationalId();

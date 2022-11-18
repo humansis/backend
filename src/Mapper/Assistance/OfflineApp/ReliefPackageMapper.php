@@ -89,6 +89,6 @@ class ReliefPackageMapper implements MapperInterface
     {
         $distributionDate = $this->object->getDistributedAt();
 
-        return $distributionDate ? $distributionDate->format(DateTimeInterface::ATOM) : null;
+        return $distributionDate?->format(DateTimeInterface::ATOM);
     }
 }

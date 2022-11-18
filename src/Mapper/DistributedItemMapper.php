@@ -101,6 +101,6 @@ class DistributedItemMapper implements MapperInterface
 
     public function getFieldOfficerId(): ?int
     {
-        return $this->object->getFieldOfficer() ? $this->object->getFieldOfficer()->getId() : null;
+        return $this->object->getFieldOfficer()?->getId();
     }
 }

@@ -139,7 +139,7 @@ class SmartcardPurchase
     #[SymfonyGroups(['FullSmartcard'])]
     public function getRedeemedAt(): ?DateTimeInterface
     {
-        return $this->redemptionBatch ? $this->redemptionBatch->getInvoicedAt() : null;
+        return $this->redemptionBatch?->getInvoicedAt();
     }
 
     public function getRedemptionBatch(): ?Invoice

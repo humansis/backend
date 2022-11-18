@@ -227,9 +227,7 @@ class Location implements TreeInterface
     {
         $location = $this->getLocationByLevel($level);
 
-        return $location
-            ? $location->getId()
-            : null;
+        return $location?->getId();
     }
     //endregion
 }

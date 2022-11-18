@@ -26,9 +26,7 @@ class AuthController extends AbstractController
      */
     public function getTokenUser(?Profiler $profiler)
     {
-        if (null !== $profiler) {
-            $profiler->disable();
-        }
+        $profiler?->disable();
 
         /** @var User $user */
         $user = $this->getUser();

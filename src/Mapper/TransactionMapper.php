@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mapper;
 
 use DateTime;
+use DateTimeInterface;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Transaction;
@@ -59,12 +60,12 @@ class TransactionMapper implements MapperInterface
 
     public function getDateSent(): string
     {
-        return $this->object->getDateSent()->format(DateTime::ATOM);
+        return $this->object->getDateSent()->format(DateTimeInterface::ATOM);
     }
 
     public function getDatePickedUp(): ?string
     {
-        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(DateTime::ATOM) : null;
+        return $this->object->getPickupDate()?->format(DateTimeInterface::ATOM);
     }
 
     public function getStatus(): string

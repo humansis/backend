@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mapper;
 
 use DateTime;
+use DateTimeInterface;
 use Entity\GeneralReliefItem;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
@@ -46,6 +47,6 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ATOM) : null;
+        return $this->object->getDistributedAt()?->format(DateTimeInterface::ATOM);
     }
 }

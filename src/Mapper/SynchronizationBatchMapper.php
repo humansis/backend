@@ -94,8 +94,8 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getValidatedAt(): ?string
     {
-        return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(
+        return $this->object->getValidatedAt()?->format(
             DateTimeInterface::ATOM
-        ) : null;
+        );
     }
 }
