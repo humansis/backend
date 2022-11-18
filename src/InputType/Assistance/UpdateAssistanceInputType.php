@@ -53,11 +53,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         if (is_null($this->originalDateExpiration)) {
             return true;
         }
-        if (is_null(Iso8601Converter::toDateTime($this->originalDateExpiration))) {
-            return false;
-        }
-
-        return true;
+        return !is_null(Iso8601Converter::toDateTime($this->originalDateExpiration));
     }
 
     #[Assert\IsTrue(groups: ['Strict'], message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
@@ -66,11 +62,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         if (is_null($this->originalDateDistribution)) {
             return true;
         }
-        if (is_null(Iso8601Converter::toDateTime($this->originalDateDistribution))) {
-            return false;
-        }
-
-        return true;
+        return !is_null(Iso8601Converter::toDateTime($this->originalDateDistribution));
     }
 
     public function getValidated(): ?bool
