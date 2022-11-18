@@ -60,20 +60,12 @@ class InstitutionMapper implements MapperInterface
 
     public function getContactGivenName(): ?string
     {
-        if (null === $this->object->getContact()) {
-            return null;
-        }
-
-        return $this->object->getContact()->getEnGivenName();
+        return $this->object->getContact()?->getEnGivenName();
     }
 
     public function getContactFamilyName(): ?string
     {
-        if (null === $this->object->getContact()) {
-            return null;
-        }
-
-        return $this->object->getContact()->getEnFamilyName();
+        return $this->object->getContact()?->getEnFamilyName();
     }
 
     public function getType(): string
@@ -83,11 +75,7 @@ class InstitutionMapper implements MapperInterface
 
     public function getAddressId(): ?int
     {
-        if (null === $this->object->getAddress()) {
-            return null;
-        }
-
-        return $this->object->getAddress()->getId();
+        return $this->object->getAddress()?->getId();
     }
 
     public function getNationalId(): ?int

@@ -26,9 +26,7 @@ class AuthController extends AbstractVendorAppController
      */
     public function loginVendorApp(?Profiler $profiler): Response
     {
-        if (null !== $profiler) {
-            $profiler->disable();
-        }
+        $profiler?->disable();
 
         /** @var User $user */
         $user = $this->getUser();

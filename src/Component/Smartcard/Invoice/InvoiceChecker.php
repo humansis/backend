@@ -84,9 +84,7 @@ class InvoiceChecker
     {
         $projectFromPurchase = null;
         $assistance = $smartcardPurchase->getAssistance();
-        if ($assistance) {
-            $projectFromPurchase = $assistance->getProject();
-        }
+        $projectFromPurchase = $assistance?->getProject();
         if (!$projectFromPurchase) {
             throw new NotRedeemableInvoiceException("Purchase #{$smartcardPurchase->getId()} has no project.");
         }

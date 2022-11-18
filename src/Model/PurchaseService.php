@@ -125,7 +125,7 @@ class PurchaseService
 
     public function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
     {
-        $stringToHash = ($beneficiary ? $beneficiary->getId() : null) . $vendor->getId() . $createdAt->getTimestamp();
+        $stringToHash = ($beneficiary?->getId()) . $vendor->getId() . $createdAt->getTimestamp();
 
         return md5($stringToHash);
     }

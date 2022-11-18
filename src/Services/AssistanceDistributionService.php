@@ -156,7 +156,7 @@ class AssistanceDistributionService
         Beneficiary $beneficiary = null,
         $idNumber = null
     ) {
-        $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : null;
+        $beneficiaryId = $beneficiary?->getId();
         if ($reliefPackage->isFullyDistributed()) {
             $output = $distributeReliefPackageOutputType->addAlreadyDistributed(
                 $reliefPackage->getId(),

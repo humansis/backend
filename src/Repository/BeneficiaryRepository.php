@@ -273,7 +273,7 @@ class BeneficiaryRepository extends EntityRepository
             ->andWhere('id.idNumber = :idNumber OR countrySpecificAnswer.answer = :idNumber')
             ->setParameter('idNumber', $idNumber)
             ->setParameter('assistance', $assistance)
-            ->setParameter('countrySpecificId', $countrySpecific ? $countrySpecific->getId() : null);
+            ->setParameter('countrySpecificId', $countrySpecific?->getId());
 
         return $qb->getQuery()
             ->getResult();

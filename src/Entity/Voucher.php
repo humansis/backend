@@ -103,11 +103,7 @@ class Voucher implements ExportableInterface
 
     public function getUsedAtDate(): ?DateTimeInterface
     {
-        if (!$this->getVoucherPurchase()) {
-            return null;
-        }
-
-        return $this->getVoucherPurchase()->getCreatedAt();
+        return $this->getVoucherPurchase()?->getCreatedAt();
     }
 
     public function setCode(string $code): self

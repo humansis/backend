@@ -20,9 +20,7 @@ class AuthController extends AbstractOfflineAppController
      */
     public function loginFieldApp(?Profiler $profiler): \Symfony\Component\HttpFoundation\JsonResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if (null !== $profiler) {
-            $profiler->disable();
-        }
+        $profiler?->disable();
 
         /** @var User $user */
         $user = $this->getUser();

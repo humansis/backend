@@ -40,7 +40,7 @@ class PreliminaryInvoiceVersion3Mapper implements MapperInterface
 
     public function getProjectId(): ?int
     {
-        return $this->object->getProject() ? $this->object->getProject()->getId() : null;
+        return $this->object->getProject()?->getId();
     }
 
     public function getValue(): string

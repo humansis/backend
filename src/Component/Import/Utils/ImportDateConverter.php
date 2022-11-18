@@ -40,10 +40,6 @@ class ImportDateConverter
 
     public static function toIso(?DateTimeInterface $dateTime): ?string
     {
-        if (!$dateTime) {
-            return null;
-        }
-
-        return $dateTime->format(DateTimeInterface::ATOM);
+        return $dateTime?->format(DateTimeInterface::ATOM);
     }
 }

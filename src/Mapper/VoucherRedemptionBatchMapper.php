@@ -68,11 +68,7 @@ class VoucherRedemptionBatchMapper implements MapperInterface
     {
         $redeemedBy = $this->object->getRedeemedBy();
 
-        if (null !== $redeemedBy) {
-            return $redeemedBy->getId();
-        }
-
-        return null;
+        return $redeemedBy?->getId();
     }
 
     public function getVoucherIds(): array
