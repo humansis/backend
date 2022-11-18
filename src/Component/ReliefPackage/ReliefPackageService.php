@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Component\ReliefPackage;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Assistance\ReliefPackage;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;

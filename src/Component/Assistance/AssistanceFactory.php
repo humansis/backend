@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\Assistance;
 
 use Component\Auditor\AuditorService;
+use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
 use Exception\CsvParserException;
@@ -19,7 +20,6 @@ use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Component\Assistance\Domain;
 use InputType\AssistanceCreateInputType;
 use Repository\AssistanceStatisticsRepository;

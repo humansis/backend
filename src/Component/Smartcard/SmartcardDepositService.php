@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Smartcard;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\AssistanceBeneficiary;
 use Entity\SmartcardDeposit;
 use Entity\User;
@@ -11,7 +12,6 @@ use Enum\ReliefPackageState;
 use InputType\RequestConverter;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Entity\Assistance\ReliefPackage;

@@ -2,6 +2,7 @@
 
 namespace Utils;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
 use Entity\User;
 use Enum\ModalityType;
@@ -22,7 +23,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Exception;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\SelectionCriteriaFactory;

@@ -3,8 +3,8 @@
 namespace Repository;
 
 use DateTimeInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;

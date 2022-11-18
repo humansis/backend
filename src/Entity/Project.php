@@ -538,7 +538,7 @@ class Project implements ExportableInterface
      */
     public function updateNumberOfHouseholds(LifecycleEventArgs $args)
     {
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         /** @var Project $entity */
         $entity = $args->getObject();
 
@@ -554,7 +554,7 @@ class Project implements ExportableInterface
     {
         /** @var Project $project */
         $project = $args->getObject();
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $lastModifiedBnf = $em->getRepository(Beneficiary::class)->getLastModifiedByProject($project);
         if ($lastModifiedBnf) {
             $totalLastModified = $lastModifiedBnf > $project->getLastModifiedAt(

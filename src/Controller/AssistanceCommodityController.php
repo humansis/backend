@@ -3,9 +3,9 @@
 namespace Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Exception\CsvParserException;
 use Pagination\Paginator;
 use Entity\Assistance;

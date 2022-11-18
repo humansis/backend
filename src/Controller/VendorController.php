@@ -3,9 +3,9 @@
 namespace Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Enum\EnumValueNoFoundException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;

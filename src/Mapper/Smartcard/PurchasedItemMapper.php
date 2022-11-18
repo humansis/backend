@@ -90,7 +90,7 @@ class PurchasedItemMapper implements MapperInterface
 
     public function getDatePurchase(): string
     {
-        return $this->object->getDatePurchase()->format(DateTimeInterface::ISO8601);
+        return $this->object->getDatePurchase()->format(DateTimeInterface::ATOM);
     }
 
     public function getSmartcardCode(): string

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\Organization;
 use Entity\OrganizationServices;
 use Repository\OrganizationRepository;
 use Repository\OrganizationServicesRepository;
 use Utils\OrganizationService;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\OrganizationUpdateInputType;
