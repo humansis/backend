@@ -64,7 +64,7 @@ class SynchronizationBatchMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 
     public function getCreatedBy(): int
@@ -95,7 +95,7 @@ class SynchronizationBatchMapper implements MapperInterface
     public function getValidatedAt(): ?string
     {
         return $this->object->getValidatedAt() ? $this->object->getValidatedAt()->format(
-            DateTimeInterface::ISO8601
+            DateTimeInterface::ATOM
         ) : null;
     }
 }

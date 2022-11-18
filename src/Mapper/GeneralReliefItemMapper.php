@@ -51,7 +51,7 @@ class GeneralReliefItemMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ISO8601) : null;
+        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ATOM) : null;
     }
 
     public function getNote(): ?string

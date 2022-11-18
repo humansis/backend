@@ -17,7 +17,6 @@ use Enum\ReliefPackageState;
 use JsonException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
-use Entity\Transaction;
 use Entity\Booklet;
 use Entity\SmartcardDeposit;
 

@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
@@ -20,7 +21,6 @@ use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Enum\EnumApiValueNoFoundException;
 use Enum\PersonGender;

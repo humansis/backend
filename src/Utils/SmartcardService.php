@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Utils;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use DateTimeInterface;
 use Entity\AssistanceBeneficiary;

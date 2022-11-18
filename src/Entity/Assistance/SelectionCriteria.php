@@ -88,7 +88,7 @@ class SelectionCriteria
     {
         if ($this->tableString === SelectionCriteriaField::COUNTRY_SPECIFIC) {
             $iso3 = $this->assistanceSelection->getAssistance()->getProject()->getCountryIso3();
-            $this->deprecated = $lifecycleEventArgs->getEntityManager()
+            $this->deprecated = $lifecycleEventArgs->getObjectManager()
                     ->getRepository(CountrySpecific::class)
                     ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
         } elseif ($this->tableString === SelectionCriteriaField::VULNERABILITY_CRITERIA) {

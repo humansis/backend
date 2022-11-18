@@ -59,12 +59,12 @@ class TransactionMapper implements MapperInterface
 
     public function getDateSent(): string
     {
-        return $this->object->getDateSent()->format(DateTime::ISO8601);
+        return $this->object->getDateSent()->format(DateTime::ATOM);
     }
 
     public function getDatePickedUp(): ?string
     {
-        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(DateTime::ISO8601) : null;
+        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(DateTime::ATOM) : null;
     }
 
     public function getStatus(): string

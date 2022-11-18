@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Enum\SmartcardStates;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;

@@ -82,18 +82,18 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 
     public function getLastModifiedAt(): string
     {
-        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ATOM);
     }
 
     public function getDistributedAt(): ?string
     {
         $distributionDate = $this->object->getDistributedAt();
 
-        return $distributionDate ? $distributionDate->format(DateTimeInterface::ISO8601) : null;
+        return $distributionDate ? $distributionDate->format(DateTimeInterface::ATOM) : null;
     }
 }

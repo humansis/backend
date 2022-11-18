@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Mapper\Assistance;
 
 use Entity\AssistanceBeneficiary;
-use Entity\GeneralReliefItem;
 use Entity\Assistance\ReliefPackage;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Entity\Booklet;
 
 abstract class AbstractTargetMapper implements MapperInterface
 {

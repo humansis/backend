@@ -4,7 +4,6 @@ namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use Entity\Vendor;

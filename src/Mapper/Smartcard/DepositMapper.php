@@ -79,7 +79,7 @@ class DepositMapper implements MapperInterface
     public function getDateOfDistribution(): ?string
     {
         return $this->object instanceof SmartcardDeposit ? $this->object->getDistributedAt()->format(
-            DateTimeInterface::ISO8601
+            DateTimeInterface::ATOM
         ) : null;
     }
 }

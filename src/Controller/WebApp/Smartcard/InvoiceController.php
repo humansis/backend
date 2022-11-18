@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Controller\WebApp\Smartcard;
 
 use Component\Smartcard\Invoice\InvoiceFactory;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
 use Export\SmartcardInvoiceExport;
 use Export\SmartcardInvoiceLegacyExport;

@@ -121,6 +121,6 @@ class ReliefPackageMapper implements MapperInterface
     {
         $expirationDate = $this->object->getAssistanceBeneficiary()->getAssistance()->getDateExpiration();
 
-        return $expirationDate ? $expirationDate->format(DateTimeInterface::ISO8601) : null;
+        return $expirationDate ? $expirationDate->format(DateTimeInterface::ATOM) : null;
     }
 }

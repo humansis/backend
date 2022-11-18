@@ -72,7 +72,7 @@ class TargetExpandedMapper implements MapperInterface
     public function getDistributedAt(): ?string
     {
         return $this->object->getSmartcardDistributedAt()
-            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ISO8601)
+            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ATOM)
             : null;
     }
 

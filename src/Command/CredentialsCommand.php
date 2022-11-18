@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
 use Entity\Role;
 use Entity\User;
@@ -32,7 +32,6 @@ class CredentialsCommand extends Command
         private readonly RoleRepository $roleRepository,
         private readonly UserCountryRepository $userCountryRepository,
         private readonly Countries $countries,
-        private readonly EntityManagerInterface $entityManager
     ) {
         parent::__construct();
     }

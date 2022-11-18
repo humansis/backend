@@ -69,6 +69,6 @@ class InvoiceMapper implements MapperInterface
 
     public function getDate(): string
     {
-        return $this->object->getInvoicedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getInvoicedAt()->format(DateTimeInterface::ATOM);
     }
 }

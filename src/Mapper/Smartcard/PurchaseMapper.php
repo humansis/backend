@@ -63,6 +63,6 @@ class PurchaseMapper implements MapperInterface
 
     public function getDateOfPurchase(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 }

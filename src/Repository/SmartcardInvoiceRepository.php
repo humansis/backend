@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Request\Pagination;
 use Entity\Invoice;

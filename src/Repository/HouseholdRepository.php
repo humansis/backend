@@ -120,7 +120,7 @@ class HouseholdRepository extends EntityRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true, 600);
+        $query->enableResultCache(600);
 
         return $query->getResult();
     }
@@ -160,7 +160,7 @@ class HouseholdRepository extends EntityRepository
             ->orderBy("levenshtein", "ASC");
 
         $query = $q->getQuery();
-        $query->useResultCache(true, 600);
+        $query->enableResultCache(600);
 
         return $query->getResult();
     }
