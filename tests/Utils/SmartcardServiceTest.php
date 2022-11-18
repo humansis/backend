@@ -6,7 +6,6 @@ use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
 use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
-use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -96,15 +95,15 @@ class SmartcardServiceTest extends KernelTestCase
 
     public function validSmartcardCashflows(): array
     {
+        //TODO rely on IDs is REALLY BAD PRACTICE
         $projectA = 3;
         $projectB = 10;
         $assistanceA1 = 51; // USD
-        $assistanceA2 = 241; // SYP
-        $assistanceB1 = 242; // USD
+        $assistanceA2 = 240; // SYP
+        $assistanceB1 = 170; // USD
         $beneficiaryA1 = 2;
         $beneficiaryA2 = 4;
         $beneficiaryB1 = 250;
-        $beneficiaryB2 = 252;
 
         return [
             'vendor has nothing' => [
@@ -267,6 +266,11 @@ class SmartcardServiceTest extends KernelTestCase
                         'assistance' => $assistance,
                         'beneficiary' => $beneficiary,
                     ], ['id' => 'asc']);
+
+                    if (is_null($assistanceBeneficiary)) {
+                        var_dump($assistance->getId());
+                        var_dump($beneficiary->getId());
+                    }
 
                     $reliefPackage = new ReliefPackage(
                         $assistanceBeneficiary,
