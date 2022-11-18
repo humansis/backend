@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Controller\WebApp\Assistance;
 
+use DataHelper\UserDataHelper;
 use DateTimeImmutable;
 use Entity\Assistance;
 use Entity\Assistance\ReliefPackage;
@@ -15,9 +16,15 @@ use Entity\SmartcardPurchaseRecord;
 use Entity\Vendor;
 use Exception;
 use Tests\BMSServiceTestCase;
+use Tests\ComponentHelper\VendorHelper;
+use Utils\VendorService;
 
 class ReliefPackageControllerTest extends BMSServiceTestCase
 {
+    use VendorHelper;
+
+    private UserDataHelper $userHelper;
+
     /**
      * @throws Exception
      */
@@ -29,6 +36,8 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         // Get a Client instance for simulate a browser
         $this->client = self::getContainer()->get('test.client');
+
+        $this->userHelper = self::getContainer()->get(UserDataHelper::class);
     }
 
     public function testGetOne()
@@ -150,10 +159,16 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
             ->getResult()[0];
 
         $assistance = $reliefPackage->getAssistanceBeneficiary()->getAssistance();
+
         $spent = (double) $reliefPackage->getAmountSpent();
         $amount = ceil(((double) $reliefPackage->getAmountToDistribute() - $spent) / 2);
+
         $product = $this->em->getRepository(Product::class)->findOneBy(['id' => 1]);
-        $vendor = $this->em->getRepository(Vendor::class)->findOneBy(['location' => $assistance->getLocation()]);
+
+        $user = $this->userHelper->createDummy();
+        $vendorInputType = $this->buildVendorInputType($assistance->getLocation()->getId(), $user->getId());
+        $vendor = $this->createVendor($vendorInputType, self::getContainer()->get(VendorService::class));
+
         $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(
             ['serialNumber' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber()]
         );
@@ -178,18 +193,11 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
 
         $this->em->flush();
 
+        /** @var DistributedItem $item */
         $item = $this->em->getRepository(DistributedItem::class)->findOneBy([
             'assistance' => $assistance,
             'beneficiary' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
         ]);
-
-//        dump(
-//            $reliefPackage->getId(),
-//            $item->getSpent(),
-//            $spent,
-//            (double)$reliefPackage->getAmountToDistribute(),
-//            $amount
-//        );
 
         $this->assertEquals($item->getSpent(), $spent + $amount);
     }

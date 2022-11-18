@@ -1429,3 +1429,6 @@ services:
     Component\Smartcard\Invoice\InvoiceChecker:
 
     Component\Auditor\AuditorService:
+
+    DataHelper\UserDataHelper:
+        public: true
