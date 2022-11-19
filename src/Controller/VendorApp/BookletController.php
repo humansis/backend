@@ -14,8 +14,8 @@ use Utils\BookletService;
 
 class BookletController extends AbstractVendorAppController
 {
-    public function __construct(private readonly BookletService $bookletService, private readonly SerializerInterface $serializer, private readonly LoggerInterface $logger
-    ){
+    public function __construct(private readonly BookletService $bookletService, private readonly SerializerInterface $serializer, private readonly LoggerInterface $logger)
+    {
     }
 
     /**
