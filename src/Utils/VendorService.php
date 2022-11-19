@@ -33,8 +33,7 @@ class VendorService
         private readonly LocationRepository $locationRepository,
         private readonly UserRepository $userRepository,
         private readonly VoucherPurchaseRepository $voucherPurchaseRepository,
-    )
-    {
+    ) {
     }
 
     /**
@@ -171,7 +170,7 @@ class VendorService
         }
 
         $html = $this->twig->render(
-            '@Voucher/Pdf/invoice.html.twig',
+            'Pdf/invoice.html.twig',
             array_merge(
                 [
                     'name' => $vendor->getName(),

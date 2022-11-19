@@ -324,7 +324,7 @@ class VoucherService
 
         try {
             $html = $this->twig->render(
-                '@Voucher/Pdf/codes.html.twig',
+                'Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],
                     $this->pdfService->getInformationStyle()

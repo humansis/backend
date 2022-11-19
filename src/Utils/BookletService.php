@@ -328,7 +328,7 @@ class BookletService
         }
 
         $bookletHtml = $this->twig->render(
-            '@Voucher/Pdf/booklet.html.twig',
+            'Pdf/booklet.html.twig',
             array_merge(
                 [
                     'name' => $name,
@@ -347,7 +347,7 @@ class BookletService
             $voucherQrCode = $voucher->getCode();
 
             $voucherHtml = $this->twig->render(
-                '@Voucher/Pdf/voucher.html.twig',
+                'Pdf/voucher.html.twig',
                 [
                     'name' => $name,
                     'value' => $voucher->getValue(),
