@@ -209,8 +209,8 @@ class SmartcardInvoiceExport
         $worksheet->setCellValue("I$row1", $invoice->getInvoicedAt()->format(self::DATE_FORMAT));
         self::undertranslatedSmallHeadline($worksheet, $translator, "Invoice Date", "H", $row1);
         // style
-        $worksheet->getRowDimension("$row1")->setRowHeight(25);
-        $worksheet->getRowDimension("$row2")->setRowHeight(25);
+        $worksheet->getRowDimension($row1)->setRowHeight(25);
+        $worksheet->getRowDimension($row2)->setRowHeight(25);
         $worksheet->getStyle("C$row1")->getAlignment()->setWrapText(true);
         $worksheet->getStyle("E$row1")->getAlignment()->setWrapText(true);
         $worksheet->getStyle("B$row1")->getAlignment()->setWrapText(true);
