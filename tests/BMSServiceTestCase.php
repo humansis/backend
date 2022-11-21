@@ -27,7 +27,7 @@ class BMSServiceTestCase extends KernelTestCase
     final public const USER_PHPUNIT = 'phpunit';
     final public const USER_TESTER = 'test@example.org';
     final public const USER_TESTER_VENDOR = 'vendor.eth@example.org';
-    // SERVICES
+    final public const USER_ADMIN = 'admin@example.org';
 
     /** @var EntityManager $em */
     protected $em;
@@ -219,7 +219,7 @@ class BMSServiceTestCase extends KernelTestCase
     {
         $headers = array_merge([
             'HTTP_COUNTRY' => 'KHM',
-            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_USER' => self::USER_ADMIN,
             'PHP_AUTH_PW' => 'pin1234',
             'CONTENT_TYPE' => 'application/json',
         ], (array) $headers);

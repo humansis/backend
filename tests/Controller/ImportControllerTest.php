@@ -40,26 +40,27 @@ class ImportControllerTest extends BMSServiceTestCase
      * @return int
      * @throws Exception
      */
-    public function testCreate()
+    public function testCreate(): int
     {
         /** @var Project|null $projects */
-        $projects = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
-        if (is_null($projects)) {
+        if (is_null($project)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
         }
 
         $this->request('POST', '/api/basic/web-app/v1/imports', [
             'title' => 'test',
             'description' => 'test',
-            'projects' => [$projects->getId()],
+            'projects' => [$project->getId()],
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
+        $content = $this->client->getResponse()->getContent();
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
+            'Request failed: ' . $content
         );
 
         $this->assertIsArray($result);
@@ -70,6 +71,14 @@ class ImportControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('status', $result);
         $this->assertArrayHasKey('createdBy', $result);
         $this->assertArrayHasKey('createdAt', $result);
+
+        $contentDecoded = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        $this->assertEquals($project->getId(), $contentDecoded['projects'][0]['id']);
+        $this->assertEquals($project->getName(), $contentDecoded['projects'][0]['name']);
+
+        $user = $this->getTestUser(self::USER_ADMIN);
+        $this->assertEquals($user->getId(), $contentDecoded['createdBy']['id']);
+        $this->assertEquals($user->getEmail(), $contentDecoded['createdBy']['email']);
 
         return $result['id'];
     }

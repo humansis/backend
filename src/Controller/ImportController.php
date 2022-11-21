@@ -6,6 +6,8 @@ namespace Controller;
 
 use Controller\ExportController;
 use Doctrine\DBAL\ConnectionException;
+use InputType\Import\FilterInputType;
+use InputType\Import\OrderInputType;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Pagination\Paginator;

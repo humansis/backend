@@ -53,7 +53,10 @@ class ImportMapper implements MapperInterface
     public function getProjects(): array
     {
         return array_values(
-            array_map(fn(Project $project) => $project->getId(), $this->object->getProjects()->toArray())
+            array_map(fn(Project $project) => [
+                'id' => $project->getId(),
+                'name' => $project->getName(),
+            ], $this->object->getProjects()->toArray())
         );
     }
 
@@ -62,9 +65,12 @@ class ImportMapper implements MapperInterface
         return $this->object->getState();
     }
 
-    public function getCreatedBy(): int
+    public function getCreatedBy(): array
     {
-        return $this->object->getCreatedBy()->getId();
+        return [
+            'id' => $this->object->getCreatedBy()->getId(),
+            'email' => $this->object->getCreatedBy()->getEmail(),
+        ];
     }
 
     public function getCreatedAt(): string
