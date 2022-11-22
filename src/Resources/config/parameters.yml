@@ -1,0 +1,86 @@
+parameters:
+        import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
+        import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
+        cache.import_duplicity_hashmap: '%kernel.project_dir%/var/imports/identities-hashmap-import-<<importId>>.json'
+        import.maxFileSizeToLoad: 5 #in MB
+        organization.allowed_mime_types:
+                - image/gif
+                - image/jpeg
+                - image/png
+
+#From DistributionBundle:
+        distribution.criteria: {
+                gender: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                dateOfBirth: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                residencyStatus: {
+                        type: table_field,
+                        target: Beneficiary
+                },
+                hasNotBeenInDistributionsSince: {
+                        type: other,
+                        target: Beneficiary
+                },
+                disabledHeadOfHousehold: {
+                        type: other,
+                        target: Head
+                },
+                hasValidSmartcard: {
+                        type: other,
+                        target: Head
+                },
+                headOfHouseholdDateOfBirth: {
+                        type: table_field,
+                        target: Head
+                },
+                headOfHouseholdGender: {
+                        type: table_field,
+                        target: Head
+                },
+                livelihood: {
+                        type: table_field,
+                        target: Household
+                },
+                foodConsumptionScore: {
+                        type: table_field,
+                        target: Household
+                },
+                copingStrategiesIndex: {
+                        type: table_field,
+                        target: Household
+                },
+                income: {
+                        type: table_field,
+                        target: Household
+                },
+                householdSize: {
+                        type: other,
+                        target: Household
+                },
+                location: {
+                        type: other,
+                        target: Household,
+                        valueTransformer: !php/const Component\SelectionCriteria\Enum\CriteriaValueTransformerEnum::CONVERT_TO_INT
+                },
+                locationType: {
+                        type: other,
+                        target: Household
+                },
+                campName: {
+                        type: other,
+                        target: Household
+                },
+                vulnerabilityCriteria: {
+                        type: Entity\VulnerabilityCriterion,
+                        target: Beneficiary
+                },
+                countrySpecific: {
+                        type: Entity\CountrySpecific,
+                        target: Household
+                }
+        }

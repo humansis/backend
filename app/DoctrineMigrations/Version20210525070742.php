@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,14 +12,15 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20210525070742 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         // change ID to be unique as purchase record is
         $this->addSql('DROP VIEW view_purchased_item');
-        $this->addSql('CREATE VIEW view_purchased_item AS
+        $this->addSql(
+            'CREATE VIEW view_purchased_item AS
             SELECT
                 CASE
                     WHEN sd.id  IS NOT NULL THEN CONCAT("SC_", spr.id)
@@ -88,16 +91,18 @@ final class Version20210525070742 extends AbstractMigration
             LEFT JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
 
             WHERE (spr.id IS NOT NULL OR vpr.id IS NOT NULL)
-        ');
+        '
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP VIEW view_purchased_item');
-        $this->addSql('CREATE VIEW view_purchased_item AS
+        $this->addSql(
+            'CREATE VIEW view_purchased_item AS
             SELECT
                 CASE
                     WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id, "_", spr.product_id)
@@ -168,6 +173,7 @@ final class Version20210525070742 extends AbstractMigration
             LEFT JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
 
             WHERE (spr.id IS NOT NULL OR vpr.id IS NOT NULL)
-        ');
+        '
+        );
     }
 }

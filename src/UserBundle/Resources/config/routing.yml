@@ -1,4 +1,0 @@
-user:
-    type:     annotation
-    defaults: { _format: 'json' }
-    resource: '@UserBundle/Controller'

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,13 +12,15 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220804085019 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('START TRANSACTION');
-        $this->addSql("INSERT INTO `user` (`id`, `username`, `username_canonical`, `email`, `email_canonical`, `enabled`, `salt`, `password`, `last_login`, `confirmation_token`, `password_requested_at`, `language`, `vendor_id`, `changePassword`, `phonePrefix`, `phoneNumber`, `twoFactorAuthentication`) VALUES (NULL, 'Migration Validation user', 'Migration Validation user', 'migration.validation.user@example.org', 'migration.validation.user@example.org', '0', NULL, '', NULL, NULL, NULL, NULL, NULL, '0', NULL, NULL, '0')");
+        $this->addSql(
+            "INSERT INTO `user` (`id`, `username`, `username_canonical`, `email`, `email_canonical`, `enabled`, `salt`, `password`, `last_login`, `confirmation_token`, `password_requested_at`, `language`, `vendor_id`, `changePassword`, `phonePrefix`, `phoneNumber`, `twoFactorAuthentication`) VALUES (NULL, 'Migration Validation user', 'Migration Validation user', 'migration.validation.user@example.org', 'migration.validation.user@example.org', '0', NULL, '', NULL, NULL, NULL, NULL, NULL, '0', NULL, NULL, '0')"
+        );
         $this->addSql('SET @last_id = LAST_INSERT_ID()');
         $this->addSql('CREATE TEMPORARY TABLE validated_migration SELECT a.id FROM assistance a WHERE a.validated = 1');
         $this->addSql('ALTER TABLE assistance ADD validated_by_id INT DEFAULT NULL, DROP validated');
@@ -26,7 +30,7 @@ final class Version20220804085019 extends AbstractMigration
         $this->addSql('COMMIT');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

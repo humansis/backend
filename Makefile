@@ -14,6 +14,12 @@ stop: ## Docker: Stop containers
 start: ## Docker: Start containers
 	docker-compose start
 
+up: ## Docker: Start containers
+	docker-compose up -d
+
+down: ## Docker: Stop and remove containers
+	docker-compose down
+
 restart: ## Docker: Restart containers
 	docker-compose restart
 
@@ -23,15 +29,28 @@ recreate: ## Docker: Stop and remove all containers and start it again
 	docker-compose up -d --force-recreate --build
 
 	#wait for initialize database
-	sleep 20;
+	sleep 30;
 
-	$(MAKE) cache clean
+	$(MAKE) cache fixtures
 
 migrate: ## Migrate database
 	docker-compose exec php bash -c 'bin/console doctrine:migrations:migrate --no-interaction'
 
 diff: ## Generate diff migration
 	docker-compose exec php bash -c 'bin/console doctrine:migrations:diff'
+
+translation-keys: ## generate new translation keys
+	docker-compose exec php bash -c 'bin/console cache:clear'
+	docker-compose exec php bash -c 'bin/console translation:update --force en'
+
+translation-get: ## get translations from remote env
+	docker-compose exec php bash -c 'bin/console translations:download $(c)'
+
+crowdin-push: ## push translations to crowdin
+	docker-compose exec php bash -c 'bin/console crowdin:push'
+
+crowdin-pull: ## get translations from crowdin
+	docker-compose exec php bash -c 'bin/console crowdin:pull'
 
 cleanAndTest: ## Recreate DB, migrate migrations, load fixtures, clean cache of import CSV, start cron service and run unit tests
 	docker-compose exec php bash cleanAndTest
@@ -45,6 +64,10 @@ cron-launch: ## Start the cron service
 test: ## Run phpunit tests
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/'
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit'
+	docker-compose exec php bash -c 'vendor/bin/phpcs --standard=psr12 ./src ./tests'
 
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'
+
+fixtures: ## Run fixtures
+	docker-compose exec php bash -c 'bin/console doctrine:fixtures:load  --no-interaction'

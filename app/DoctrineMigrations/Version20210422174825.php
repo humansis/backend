@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -42,9 +44,11 @@ final class Version20210422174825 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX UNIQ_57698A6A5E237E06 ON role');
-        $this->addSql('ALTER TABLE role
+        $this->addSql(
+            'ALTER TABLE role
                             RENAME COLUMN name TO code,
-                            ADD name VARCHAR(255) NOT NULL');
+                            ADD name VARCHAR(255) NOT NULL'
+        );
         $this->addSql('CREATE UNIQUE INDEX UNIQ_57698A6A77153098 ON role (code)');
 
         foreach (self::ROLES as $code => $name) {

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -86,6 +88,8 @@ final class Version20210218152846 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE project_sector CHANGE project_id project_id INT NOT NULL, CHANGE sector sector ENUM(\'food_security\', \'livelihoods\', \'multipurpose_cash\', \'shelter\', \'wash\', \'protection\', \'education\', \'emergency_telco\', \'health\', \'logistics\', \'nutrition\', \'mine\', \'drr_resilience\', \'non_sector\', \'camp_management\', \'early_recovery\') CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci` COMMENT \'(DC2Type:enum_sector)\', CHANGE subsector subsector VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`');
+        $this->addSql(
+            'ALTER TABLE project_sector CHANGE project_id project_id INT NOT NULL, CHANGE sector sector ENUM(\'food_security\', \'livelihoods\', \'multipurpose_cash\', \'shelter\', \'wash\', \'protection\', \'education\', \'emergency_telco\', \'health\', \'logistics\', \'nutrition\', \'mine\', \'drr_resilience\', \'non_sector\', \'camp_management\', \'early_recovery\') CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci` COMMENT \'(DC2Type:enum_sector)\', CHANGE subsector subsector VARCHAR(255) CHARACTER SET utf8 DEFAULT NULL COLLATE `utf8_unicode_ci`'
+        );
     }
 }

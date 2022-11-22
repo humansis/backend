@@ -1,9 +1,0 @@
-parameters:
-        import.invalidFilesDirectory: '%kernel.project_dir%/var/imports/invalid'
-        import.uploadedFilesDirectory: '%kernel.project_dir%/var/imports/uploaded'
-        cache.import_duplicity_hashmap: '%kernel.project_dir%/var/imports/identities-hashmap-import-<<importId>>.json'
-        import.maxFileSizeToLoad: 5 #in MB
-        organization.allowed_mime_types:
-                - image/gif
-                - image/jpeg
-                - image/png

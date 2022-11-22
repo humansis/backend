@@ -13,7 +13,8 @@ final class Version20201104114548 extends AbstractMigration
     {
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE household
+        $this->addSql(
+            'ALTER TABLE household
         CHANGE livelihood livelihood ENUM(
             \'daily_labour\',
             \'farming_agriculture\',
@@ -23,7 +24,8 @@ final class Version20201104114548 extends AbstractMigration
             \'trading\',
             \'own_business\',
             \'textiles\'
-        ) DEFAULT NULL COMMENT \'(DC2Type:enum_livelihood)\'');
+        ) DEFAULT NULL COMMENT \'(DC2Type:enum_livelihood)\''
+        );
     }
 
     public function down(Schema $schema): void

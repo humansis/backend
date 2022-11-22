@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220427143727 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -19,7 +21,8 @@ final class Version20220427143727 extends AbstractMigration
         $this->addSql('ALTER TABLE assistance_relief_package RENAME INDEX idx_181280cd3049e54a TO IDX_C491CA273049E54A');
 
         // all validated GRI assistances must have one relief package
-        $this->addSql("INSERT INTO assistance_relief_package (
+        $this->addSql(
+            "INSERT INTO assistance_relief_package (
                                 assistance_beneficiary_id,
                                 state,
                                 modality_type,
@@ -50,13 +53,14 @@ final class Version20220427143727 extends AbstractMigration
                                     mt.name!='Smartcard'
                             GROUP BY db.id, mt.name, gri.id
                             ;
-        ");
+        "
+        );
 
         $this->addSql('UPDATE assistance_relief_package arp SET arp.state=\'Distribution in progress\' WHERE amount_distributed > 0 AND amount_distributed<arp.amount_to_distribute');
         $this->addSql('UPDATE assistance_relief_package arp SET arp.state=\'Distributed\' WHERE amount_distributed>=arp.amount_to_distribute');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf(true, 'Cant be downgraded.');
     }

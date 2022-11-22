@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -15,7 +17,8 @@ final class Version20200415083057 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE voucher_record (
                 id INT AUTO_INCREMENT NOT NULL,
                 voucher_id INT DEFAULT NULL,
@@ -31,9 +34,11 @@ final class Version20200415083057 extends AbstractMigration
                     REFERENCES voucher (id),
                 CONSTRAINT FK_5A90396C4584665A FOREIGN KEY (product_id)
                     REFERENCES product (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             INSERT INTO voucher_record(voucher_id, product_id, `used_at`, `value`)
                 SELECT vp.voucher_id, vp.product_id, v.used_at, vv.`value`
                 FROM voucher_product vp
@@ -43,7 +48,8 @@ final class Version20200415083057 extends AbstractMigration
                     FROM voucher_product vp_i
                     LEFT JOIN voucher v_i ON v_i.id=vp_i.voucher_id
                     GROUP BY vp_i.voucher_id
-                ) AS vv ON vv.voucher_id=vp.voucher_id AND vv.product_id=vp.product_id');
+                ) AS vv ON vv.voucher_id=vp.voucher_id AND vv.product_id=vp.product_id'
+        );
 
         $schema->getTable('voucher_product')->setComment('deprecated');
         $schema->getTable('voucher')->getColumn('value')->setComment('deprecated');

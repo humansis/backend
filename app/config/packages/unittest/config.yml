@@ -6,9 +6,9 @@ framework:
         collect: false
     messenger:
         routing:
-            'NewApiBundle\Component\Import\Messaging\Message\ImportCheck': sync
-            'NewApiBundle\Component\Import\Messaging\Message\ItemBatch': sync
-            'NewApiBundle\Component\Import\Messaging\Message\UploadFileFinished': sync
+            'Component\Import\Messaging\Message\ImportCheck': sync
+            'Component\Import\Messaging\Message\ItemBatch': sync
+            'Component\Import\Messaging\Message\UploadFileFinished': sync
 
 swiftmailer:
     disable_delivery: true

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -11,7 +13,8 @@ final class Version20210502210413 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('CREATE VIEW view_location_recursive AS
+        $this->addSql(
+            'CREATE VIEW view_location_recursive AS
             SELECT
                 adm1.countryISO3 AS countryiso3,
                 NULL AS parent_location_id,
@@ -43,7 +46,8 @@ final class Version20210502210413 extends AbstractMigration
                 adm4.code AS code,
                 adm4.name AS name
             FROM adm4 JOIN adm3 ON adm4.adm3_id = adm3.id JOIN adm2 ON adm3.adm2_id = adm2.id JOIN adm1 ON adm2.adm1_id = adm1.id
-        ');
+        '
+        );
     }
 
     public function down(Schema $schema): void

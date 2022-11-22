@@ -14,7 +14,8 @@ final class Version20200504164401 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE smartcard (
                 id INT AUTO_INCREMENT NOT NULL,
                 beneficiary_id INT NOT NULL,
@@ -27,9 +28,11 @@ final class Version20200504164401 extends AbstractMigration
                 CONSTRAINT FK_34E0B48FECCAAFA0 FOREIGN KEY (beneficiary_id)
                     REFERENCES beneficiary (id)
             ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB
-         ');
+         '
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE smartcard_record (
                 id INT AUTO_INCREMENT NOT NULL,
                 smartcard_id INT DEFAULT NULL,
@@ -44,7 +47,8 @@ final class Version20200504164401 extends AbstractMigration
                 CONSTRAINT FK_CA9F1B434584665A FOREIGN KEY (product_id)
                     REFERENCES product (id)
             ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB
-         ');
+         '
+        );
     }
 
     public function down(Schema $schema): void

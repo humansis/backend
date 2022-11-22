@@ -1,0 +1,29 @@
+Rule type,Field Name,Title,Options,Points
+,,,,
+calculation,genderOfHeadOfHousehold,Gender of Head of Household,Female,1
+,,,Male,0
+,,,,
+calculation,vulnerabilityHeadOfHouseholdNWS,Vulnerability Head of Household,Chronically ill or Person with disability,1
+,,,Infant,1
+,,,Elderly,4
+,,,,
+calculation,dependencyRatioSyrNWS,Dependency ratio,division by zero,1
+,,,<=1.5,0
+,,,>1.5,1
+,,,,
+enum,HouseholdShelterStatus,Shelter type,Tent,1
+,,,Makeshift Shelter,1
+,,,Transitional Shelter,1
+,,,House/Apartment - Severely Damaged,1
+,,,House/Apartment - Moderately Damaged,1
+,,,House/Apartment - Not Damaged,0
+,,,Room or Space in Public Building,1
+,,,,
+countrySpecific,Enumerator comment,Enumerator comment,Most vulnerable,0.3
+,,,Moderately vulnerable,0.2
+,,,Low Vulnerability,0.1
+,,,,
+countrySpecific,Number of orphants,Number of orphants,0,0
+,,,x > 0,0.1
+,,,,
+countrySpecific,Washington criteria - difficulty in HH,Washington criteria - difficulty in HH,1,0.1

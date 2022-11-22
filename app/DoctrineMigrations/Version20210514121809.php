@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -11,7 +13,8 @@ final class Version20210514121809 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE import (
                 id INT AUTO_INCREMENT NOT NULL,
                 project_id INT DEFAULT NULL,
@@ -26,8 +29,10 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES project (id),
                 CONSTRAINT FK_9D4ECE1DB03A8386 FOREIGN KEY (created_by_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE import_file (
                 id INT AUTO_INCREMENT NOT NULL,
                 import_id INT DEFAULT NULL,
@@ -40,8 +45,10 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES import (id),
                 CONSTRAINT FK_61B3D890A76ED395 FOREIGN KEY (user_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE import_queue (
                 id INT AUTO_INCREMENT NOT NULL,
                 import_id INT DEFAULT NULL,
@@ -56,8 +63,10 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES import (id),
                 CONSTRAINT FK_92A8D0AD93CB796C FOREIGN KEY (file_id)
                     REFERENCES import_file (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE import_beneficiary (
                 id INT AUTO_INCREMENT NOT NULL,
                 import_id INT DEFAULT NULL,
@@ -74,8 +83,10 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES beneficiary (id),
                 CONSTRAINT FK_FEC38F8AB03A8386 FOREIGN KEY (created_by_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE import_queue_duplicity (
                 id INT AUTO_INCREMENT NOT NULL,
                 ours_id INT DEFAULT NULL,
@@ -93,8 +104,10 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES import_queue (id),
                 CONSTRAINT FK_C977685A72083D6 FOREIGN KEY (decide_by_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
+        $this->addSql(
+            '
             CREATE TABLE import_beneficiary_duplicity (
                 id INT AUTO_INCREMENT NOT NULL,
                 ours_id INT DEFAULT NULL,
@@ -112,7 +125,8 @@ final class Version20210514121809 extends AbstractMigration
                     REFERENCES beneficiary (id),
                 CONSTRAINT FK_CD6A7AF7A72083D6 FOREIGN KEY (decide_by_id)
                     REFERENCES `user` (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB'
+        );
     }
 
     public function down(Schema $schema): void

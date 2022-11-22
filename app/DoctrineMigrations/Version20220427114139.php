@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220427114139 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -20,7 +22,8 @@ final class Version20220427114139 extends AbstractMigration
         $this->addSql('DROP VIEW view_distributed_item');
         $this->addSql('DROP VIEW view_purchased_item');
         $this->addSql('DROP VIEW view_smartcard_purchased_item');
-        $this->addSql('CREATE VIEW view_assistance_statistics AS
+        $this->addSql(
+            'CREATE VIEW view_assistance_statistics AS
 SELECT
     assistance_id,
     COUNT(beneficiary)                             AS number_of_beneficiaries,
@@ -88,8 +91,10 @@ FROM (
              WHERE b.distribution_beneficiary_id IS NOT NULL
              GROUP BY b.id, b.distribution_beneficiary_id
          ) AS b ON b.distribution_beneficiary_id=db.id
-     ) AS counts GROUP BY assistance_id');
-        $this->addSql('CREATE VIEW view_distributed_item AS
+     ) AS counts GROUP BY assistance_id'
+        );
+        $this->addSql(
+            'CREATE VIEW view_distributed_item AS
 SELECT
     CASE
         WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id)
@@ -165,8 +170,10 @@ FROM distribution_beneficiary db
 
 WHERE (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL OR b.id IS NOT NULL)
   AND (sd.distributed_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.id)
-');
-        $this->addSql('CREATE VIEW view_purchased_item AS
+'
+        );
+        $this->addSql(
+            'CREATE VIEW view_purchased_item AS
 SELECT
     CASE
         WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id, "_", spr.product_id)
@@ -238,8 +245,10 @@ FROM distribution_beneficiary db
          LEFT JOIN voucher_purchase_record vpr ON vpr.voucher_purchase_id=vp.id
 
 WHERE (spr.id IS NOT NULL OR vpr.id IS NOT NULL)
-');
-        $this->addSql('CREATE VIEW view_smartcard_purchased_item AS
+'
+        );
+        $this->addSql(
+            'CREATE VIEW view_smartcard_purchased_item AS
 SELECT
     spr.id,
     s.beneficiary_id as beneficiary_id,
@@ -275,10 +284,11 @@ FROM smartcard_purchase_record spr
                 LIMIT 1
             )
          LEFT JOIN assistance a ON db.assistance_id = a.id
-');
+'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf(true, 'Cannot be downgraded');

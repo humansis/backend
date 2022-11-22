@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,10 +12,11 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220413063504 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->addSql('DROP VIEW view_distributed_item');
-        $this->addSql('CREATE VIEW view_distributed_item AS
+        $this->addSql(
+            'CREATE VIEW view_distributed_item AS
             SELECT
                 CASE
                     WHEN sd.id  IS NOT NULL THEN CONCAT(db.id, "_", sd.id)
@@ -89,11 +92,11 @@ final class Version20220413063504 extends AbstractMigration
 
             WHERE (sd.id IS NOT NULL OR gri.id IS NOT NULL OR t.id IS NOT NULL OR b.id IS NOT NULL)
               AND (sd.distributed_at IS NOT NULL OR t.pickup_date IS NOT NULL OR gri.distributedAt IS NOT NULL OR b.id)
-        ');
-
+        '
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf(true, 'Cant be downgraded');
     }

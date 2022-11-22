@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,12 +12,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200408150346 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE institution (
                 id INT AUTO_INCREMENT NOT NULL,
                 address_id INT DEFAULT NULL,
@@ -32,10 +35,11 @@ final class Version20200408150346 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_3A9F98E5F5B7AF75 FOREIGN KEY (address_id)
                     REFERENCES address (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

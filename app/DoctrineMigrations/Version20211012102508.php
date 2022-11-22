@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,7 +12,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20211012102508 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -27,7 +29,8 @@ final class Version20211012102508 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_FD5785451E8DF071 ON smartcard_deposit (relief_package_id)');
 
         // all validated SC assistances must have one ABC
-        $this->addSql("INSERT INTO relief_package (
+        $this->addSql(
+            "INSERT INTO relief_package (
                                 assistance_beneficiary_id,
                                 state,
                                 modality_type,
@@ -54,14 +57,15 @@ final class Version20211012102508 extends AbstractMigration
                                 mt.name='Smartcard'
                             GROUP BY db.id, c.id
                             ;
-        ");
+        "
+        );
 
         $this->addSql('UPDATE smartcard_deposit sd SET relief_package_id=(SELECT id FROM relief_package WHERE assistance_beneficiary_id=sd.distribution_beneficiary_id), distributed_at=used_at;');
 
         $this->addSql('ALTER TABLE smartcard_deposit DROP distribution_beneficiary_id');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf(true, 'Cant be downgraded.');

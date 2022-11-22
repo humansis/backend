@@ -20,7 +20,6 @@ final class Version20200703094828 extends AbstractMigration
         $this->addSql('ALTER TABLE smartcard_deposit DROP FOREIGN KEY FK_FD5785456EB6DDB5');
         $this->addSql('DROP INDEX IDX_FD5785456EB6DDB5 ON smartcard_deposit');
         $this->addSql('ALTER TABLE smartcard_deposit DROP distribution_id');
-
     }
 
     public function down(Schema $schema): void

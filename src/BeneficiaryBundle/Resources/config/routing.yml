@@ -1,4 +1,0 @@
-beneficiary:
-    type:     annotation
-    defaults: { _format: 'json' }
-    resource: '@BeneficiaryBundle/Controller'

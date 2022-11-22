@@ -1,13 +1,5 @@
 imports:
-    - { resource: ../../src/BeneficiaryBundle/Resources/config/services.yml }
-    - { resource: ../../src/DistributionBundle/Resources/config/services.yml }
-    - { resource: ../../src/ProjectBundle/Resources/config/services.yml }
-    - { resource: ../../src/UserBundle/Resources/config/services.yml }
-    - { resource: ../../src/ReportingBundle/Resources/config/services.yml }
-    - { resource: ../../src/CommonBundle/Resources/config/services.yml }
-    - { resource: ../../src/TransactionBundle/Resources/config/services.yml }
-    - { resource: ../../src/VoucherBundle/Resources/config/services.yml }
-    - { resource: ../../src/NewApiBundle/Resources/config/services.yml }
+    - { resource: ../../src/Resources/config/services.yml }
 
 services:
     monolog.gelf_handler:
@@ -38,10 +30,6 @@ services:
         class: Twig\Loader\FilesystemLoader
         public: false
         calls:
-            - addPath: ['%kernel.project_dir%/src/VoucherBundle/Resources/views/', "Voucher"]
-            - addPath: ['%kernel.project_dir%/src/CommonBundle/Resources/views/', "Common"]
-            - addPath: ['%kernel.project_dir%/src/DistributionBundle/Resources/views/', "Distribution"]
-            - addPath: ['%kernel.project_dir%/src/TransactionBundle/Resources/views/', "Transaction"]
             - addPath: ['%kernel.project_dir%/app/Resources/views/']
 
     Twig\Environment:

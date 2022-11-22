@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Application\Migrations;
@@ -13,7 +14,8 @@ final class Version20201029153221 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE assistance
+        $this->addSql(
+            'ALTER TABLE assistance
             ADD sector ENUM(
                 \'food_security\', \'livelihoods\', \'multipurpose_cash\', \'shelter\', \'wash\', \'protection\',
                 \'education\', \'emergency_telco\', \'health\', \'logistics\', \'nutrition\', \'mine\',
@@ -29,7 +31,8 @@ final class Version20201029153221 extends AbstractMigration
                 \'individual_protection_assistance\', \'community_based_interventions\', \'protection_advocacy\', \'child_protection\',
                 \'gender_based_violence_activities\', \'teacher_incentive_payments\', \'teacher_training\', \'learning_materials\',
                 \'education_psychosocial_support\', \'education_services\'
-            ) DEFAULT NULL COMMENT \'(DC2Type:enum_sub_sector)\'');
+            ) DEFAULT NULL COMMENT \'(DC2Type:enum_sub_sector)\''
+        );
     }
 
     public function down(Schema $schema): void

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,15 +12,17 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220210140108 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE import_beneficiary_duplicity ADD id INT AUTO_INCREMENT NOT NULL, CHANGE queue_id queue_id INT DEFAULT NULL, CHANGE beneficiary_id beneficiary_id INT DEFAULT NULL, DROP PRIMARY KEY, ADD PRIMARY KEY (id)');
+        $this->addSql(
+            'ALTER TABLE import_beneficiary_duplicity ADD id INT AUTO_INCREMENT NOT NULL, CHANGE queue_id queue_id INT DEFAULT NULL, CHANGE beneficiary_id beneficiary_id INT DEFAULT NULL, DROP PRIMARY KEY, ADD PRIMARY KEY (id)'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

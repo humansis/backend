@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,12 +12,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220523125420 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('UPDATE assistance_relief_package rp
+        $this->addSql(
+            'UPDATE assistance_relief_package rp
                             INNER JOIN general_relief_item gri on rp.assistance_beneficiary_id = gri.distribution_beneficiary_id
                             SET rp.distributedAt=(
                                 SELECT MAX(gri2.distributedAt)
@@ -27,10 +30,11 @@ final class Version20220523125420 extends AbstractMigration
                               AND rp.modality_type!=\'QR Code Voucher\'
                               AND rp.modality_type!=\'Paper Voucher\'
                               AND rp.distributedAt IS NULL
-        ;');
+        ;'
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf(true, 'No downgrade');

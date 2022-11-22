@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -12,13 +14,15 @@ final class Version20200327165724 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             ALTER TABLE household
                 ADD assets LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:array)\',
                 ADD shelter_status INT DEFAULT NULL,
                 ADD dept_level INT DEFAULT NULL,
                 ADD support_received_types LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:array)\',
-                ADD support_date_received DATETIME DEFAULT NULL');
+                ADD support_date_received DATETIME DEFAULT NULL'
+        );
     }
 
     public function down(Schema $schema): void

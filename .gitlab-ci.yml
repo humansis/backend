@@ -10,7 +10,9 @@ variables:
 
 stages:
   - static_analysis
+  - code_analysis
   - test
+  - upload_crowdin
   - backup_db
   - deploy_dev
   - deploy_test
@@ -43,18 +45,7 @@ stages:
   tags:
     - dind
 
-static_analysis:
-  image: php:7.3-fpm
-  stage: static_analysis
-  script:
-    - apt-get update
-    - apt install -y curl git unzip
-    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
-    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
-
-test:
-  stage: test
+.test-setup:
   image: artifactory.quanti.cz/docker/pin-php-test
   services:
     - name: mysql:8.0.21
@@ -67,6 +58,7 @@ test:
     GELF_SERVER_NAME: "test"
     GELF_HOST: 10.0.0.1
     GELF_PORT: 10001
+    ENVIRONMENT: unittest
   before_script:
     - sudo composer self-update
     - cp app/config/parameters.yml.test app/config/parameters.yml
@@ -75,14 +67,48 @@ test:
     - php bin/console doctrine:migrations:migrate -n --env=test
     - php bin/console doctrine:fixtures:load -n --env=dev
     - echo "Current import batch size is $IMPORT_BATCH_SIZE"
-  script:
-    - ./vendor/bin/phpunit
   except:
     - tags
   cache:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - vendor/
+
+static_analysis:
+  image: php:7.3-fpm
+  stage: static_analysis
+  script:
+    - apt-get update
+    - apt install -y curl git unzip
+    - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
+    - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
+
+code_analysis:
+  image: php:7.3-fpm
+  stage: code_analysis
+  script:
+  - apt-get update
+  - apt install -y curl git unzip
+  - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  - php /usr/local/bin/composer install -o --ignore-platform-reqs --no-scripts
+  - php vendor/bin/phpcs --config-set show_warnings 0
+  - php -d memory_limit=-1 vendor/bin/phpcs -p --standard=psr12 src/ tests/
+
+test:
+  stage: test
+  extends: .test-setup
+  script:
+    - ./vendor/bin/phpunit
+
+upload crowdin:
+  stage: upload_crowdin
+  extends: .test-setup
+  script:
+    - php bin/console translation:update --force en
+    - php bin/console crowdin:push
+  only:
+    - develop
 
 aws-db-snapshot:
   stage: backup_db
@@ -127,15 +153,28 @@ deploy dev2:
   extends: .deploy
   when: manual
 
-deploy dev3:
-  stage: deploy_dev
+deploy dev3 - keep db:
+  stage: deploy_test
+  environment:
+    name: dev3
+    url: https://apidev3.humansis.org
+  variables:
+    ENVIRONMENT: dev3
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy dev3 - clean fixtures:
+  stage: deploy_test
   environment:
     name: dev3
     url: https://apidev3.humansis.org
   variables:
     ENVIRONMENT: dev3
     CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
+    LOAD_FIXTURES: "test"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
   when: manual
@@ -229,7 +268,7 @@ deploy demo  - keep db:
     - /^v.*$/
   when: manual
 
-deploy test - anonymized db:
+deploy demo - anonymized db:
   stage: deploy_demo
   image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:

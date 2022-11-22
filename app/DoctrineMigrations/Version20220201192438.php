@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,9 +12,10 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220201192438 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
-        $this->addSql('
+        $this->addSql(
+            '
             UPDATE smartcard_purchase sp
             JOIN smartcard s ON s.id = sp.smartcard_id
             JOIN smartcard_deposit sd ON sd.id = (
@@ -26,11 +29,11 @@ final class Version20220201192438 extends AbstractMigration
             LEFT JOIN distribution_beneficiary db ON db.id = rp.assistance_beneficiary_id
             LEFT JOIN assistance a ON a.id = db.assistance_id
             SET sp.assistance_id = a.id
-        ');
-
+        '
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->addSql('UPDATE smartcard_purchase sp SET sp.assistance_id = NULL');
     }

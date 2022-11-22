@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,11 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20220524061226 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE VIEW view_smartcard_preliminary_invoice AS
                 SELECT IF(a.project_id IS NOT NULL, CONCAT(sp.vendor_id, "_", spr.currency, "_", a.project_id),
                           CONCAT(sp.vendor_id, "_", spr.currency, "_", "NULL")) AS id,
@@ -32,10 +35,11 @@ final class Version20220524061226 extends AbstractMigration
                   AND currency IS NOT NULL
                 GROUP BY spr.currency, a.project_id, sp.vendor_id
                 ORDER BY spr.currency, a.project_id, sp.vendor_id;
-        ');
+        '
+        );
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 

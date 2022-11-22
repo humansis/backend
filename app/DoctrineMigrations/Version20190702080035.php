@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Application\Migrations;
 
@@ -10,12 +12,13 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20190702080035 extends AbstractMigration
 {
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE address (id INT AUTO_INCREMENT NOT NULL,
                 location_id INT DEFAULT NULL,
                 number VARCHAR(45) DEFAULT NULL,
@@ -25,9 +28,11 @@ final class Version20190702080035 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_D4E6F8164D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE camp (
                 id INT AUTO_INCREMENT NOT NULL,
                 location_id INT DEFAULT NULL,
@@ -36,9 +41,11 @@ final class Version20190702080035 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_C194423064D218E FOREIGN KEY (location_id)
                     REFERENCES location (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE camp_address (
                 id INT AUTO_INCREMENT NOT NULL,
                 camp_id INT DEFAULT NULL,
@@ -47,9 +54,11 @@ final class Version20190702080035 extends AbstractMigration
                 PRIMARY KEY(id),
                 CONSTRAINT FK_7DDD2CEF77075ABB FOREIGN KEY (camp_id)
                     REFERENCES camp (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
 
-        $this->addSql('
+        $this->addSql(
+            '
             CREATE TABLE household_location (
                 id INT AUTO_INCREMENT NOT NULL,
                 address_id INT DEFAULT NULL,
@@ -67,30 +76,33 @@ final class Version20190702080035 extends AbstractMigration
                     REFERENCES camp_address (id),
                 CONSTRAINT FK_822570EEE79FF843 FOREIGN KEY (household_id)
                     REFERENCES household (id)
-            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB');
+            ) DEFAULT CHARACTER SET UTF8 COLLATE UTF8_unicode_ci ENGINE = InnoDB'
+        );
     }
 
-    public function postUp(Schema $schema) : void
+    public function postUp(Schema $schema): void
     {
         $households = $this->connection->fetchAll('SELECT id, address_street, address_number, address_postcode, location_id FROM household');
         foreach ($households as $household) {
-            $this->connection->insert('address',
+            $this->connection->insert(
+                'address',
                 [
                     'location_id' => $household['location_id'],
                     'number' => $household['address_number'],
                     'street' => $household['address_street'],
-                    'postcode' => $household['address_postcode']
+                    'postcode' => $household['address_postcode'],
                 ]
             );
 
             $max = $this->connection->fetchAssoc('SELECT MAX(id) as max FROM address');
 
-            $this->connection->insert('household_location',
+            $this->connection->insert(
+                'household_location',
                 [
                     'address_id' => $max['max'],
                     'household_id' => $household['id'],
                     'location_group' => 'current',
-                    'type' => 'residence'
+                    'type' => 'residence',
                 ]
             );
         }
@@ -101,7 +113,7 @@ final class Version20190702080035 extends AbstractMigration
         $this->connection->executeQuery('ALTER TABLE household DROP location_id, DROP address_street, DROP address_number, DROP address_postcode');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -113,7 +125,9 @@ final class Version20190702080035 extends AbstractMigration
         $this->addSql('DROP TABLE address');
         $this->addSql('DROP TABLE camp_address');
         $this->addSql('DROP TABLE camp');
-        $this->addSql('ALTER TABLE household ADD location_id INT DEFAULT NULL, ADD address_street VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD address_number VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD address_postcode VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci');
+        $this->addSql(
+            'ALTER TABLE household ADD location_id INT DEFAULT NULL, ADD address_street VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD address_number VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD address_postcode VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci'
+        );
         $this->addSql('ALTER TABLE household ADD CONSTRAINT FK_54C32FC064D218E FOREIGN KEY (location_id) REFERENCES location (id)');
         $this->addSql('CREATE INDEX IDX_54C32FC064D218E ON household (location_id)');
     }
