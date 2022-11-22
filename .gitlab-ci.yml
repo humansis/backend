@@ -46,7 +46,7 @@ stages:
     - dind
 
 .test-setup:
-  image: artifactory.quanti.cz/docker/pin-php-test
+  image: artifactory.quanti.cz/docker/pin-php-test:8.1
   services:
     - name: mysql:8.0.21
       alias: db
