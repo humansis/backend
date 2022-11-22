@@ -115,7 +115,7 @@ class SmartcardService
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getActualSmartcardOrCreateNew(
+        $smartcard = $this->getOrCreateSmartcardForBeneficiary(
             $registerInputType->getSerialNumber(),
             $beneficiary,
             $registerInputType->getCreatedAt()
@@ -131,7 +131,6 @@ class SmartcardService
         }
 
         $this->smartcardRepository->save($smartcard);
-        $this->disableBnfSmartcardsExceptLastUsed($smartcard);
 
         return $smartcard;
     }
@@ -177,7 +176,7 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getActualSmartcardOrCreateNew(
+        $smartcard = $this->getOrCreateSmartcardForBeneficiary(
             $serialNumber,
             $beneficiary,
             $data->getCreatedAt()
@@ -196,28 +195,53 @@ class SmartcardService
      * @return Smartcard
      * @throws ORMException
      */
-    public function getActualSmartcardOrCreateNew(
+    public function getOrCreateSmartcardForBeneficiary(
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
     ): Smartcard {
+        $smartcard = $this->getSmartcardForBeneficiary($serialNumber, $beneficiary, $dateOfEvent);
+        if ($smartcard) {
+            return $smartcard;
+        }
+
+        return $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $dateOfEvent);
+    }
+
+    /**
+     * @param string $serialNumber
+     * @param Beneficiary $beneficiary
+     * @param DateTimeInterface $dateOfEvent
+     * @return Smartcard|null
+     */
+    private function getSmartcardForBeneficiary(
+        string $serialNumber,
+        Beneficiary $beneficiary,
+        DateTimeInterface $dateOfEvent
+    ): ?Smartcard {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
-
-        if (
-            $smartcard
-            && $smartcard->getBeneficiary()
-            && $smartcard->getBeneficiary()->getId() === $beneficiary->getId()
-        ) {
-            $eventWasBeforeDisable = $smartcard->getDisabledAt()
-                && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
-
-            if (SmartcardStates::ACTIVE !== $smartcard->getState() && !$eventWasBeforeDisable) {
-                $smartcard->setSuspicious(true, "Using disabled card");
-            }
+        if ($smartcard) {
+            $this->checkAndMarkDisabledSmartcardAsSuspicious($smartcard, $dateOfEvent);
 
             return $smartcard;
         }
 
+        return null;
+    }
+
+    /**
+     * @param string $serialNumber
+     * @param DateTimeInterface $dateOfEvent
+     * @param Beneficiary $beneficiary
+     * @return Smartcard
+     * @throws ORMException
+     */
+    private function createSmartcardForBeneficiary(
+        string $serialNumber,
+        Beneficiary $beneficiary,
+        DateTimeInterface $dateOfEvent
+    ): Smartcard {
+        // disable all Smartcars with same serial number
         $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
 
         $smartcard = new Smartcard($serialNumber, $dateOfEvent);
@@ -226,7 +250,27 @@ class SmartcardService
         $smartcard->setSuspicious(true, "Smartcard made adhoc");
         $this->smartcardRepository->persist($smartcard);
 
+        // disable other Beneficiary Smartcards
+        $this->disableBnfSmartcardsExceptLastUsed($smartcard);
+
         return $smartcard;
+    }
+
+    /**
+     * @param Smartcard $smartcard
+     * @param DateTimeInterface $dateOfEvent
+     * @return void
+     */
+    private function checkAndMarkDisabledSmartcardAsSuspicious(
+        Smartcard $smartcard,
+        DateTimeInterface $dateOfEvent
+    ): void {
+        $eventWasBeforeDisable = $smartcard->getDisabledAt()
+            && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
+
+        if (SmartcardStates::ACTIVE !== $smartcard->getState() && !$eventWasBeforeDisable) {
+            $smartcard->setSuspicious(true, "Using disabled card");
+        }
     }
 
     private static function findCurrency(AssistanceBeneficiary $assistanceBeneficiary): string
@@ -311,8 +355,12 @@ class SmartcardService
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function disableBnfSmartcardsExceptLastUsed(Smartcard $lastUsedSmartcard): void
+    private function disableBnfSmartcardsExceptLastUsed(Smartcard $lastUsedSmartcard): void
     {
+        if (!$lastUsedSmartcard->getBeneficiary()) {
+            return;
+        }
+
         $activeBnfSmartcards = $this->smartcardRepository->findBy(
             ['beneficiary' => $lastUsedSmartcard->getBeneficiary(), 'state' => SmartcardStates::activatedStates()]
         );
@@ -322,6 +370,5 @@ class SmartcardService
             }
             $this->smartcardRepository->disable($smartcardBnf);
         }
-        $this->smartcardRepository->flush();
     }
 }

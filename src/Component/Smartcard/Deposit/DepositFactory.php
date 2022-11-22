@@ -53,12 +53,11 @@ class DepositFactory
             $reliefPackage
         );
         $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew(
+        $smartcard = $this->smartcardService->getOrCreateSmartcardForBeneficiary(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()
         );
-        $this->smartcardService->disableBnfSmartcardsExceptLastUsed($smartcard);
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
         $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
