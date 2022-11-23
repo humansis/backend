@@ -69,7 +69,6 @@ stages:
     - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   except:
     - tags
-  when: manual
   cache:
     key: $CI_COMMIT_REF_SLUG
     paths:
