@@ -41,7 +41,7 @@ diff: ## Generate diff migration
 
 translation-keys: ## generate new translation keys
 	docker-compose exec php bash -c 'bin/console cache:clear'
-	docker-compose exec php bash -c 'bin/console translation:update --force en'
+	docker-compose exec php bash -c 'bin/console translation:extract --force en'
 
 translation-get: ## get translations from remote env
 	docker-compose exec php bash -c 'bin/console translations:download $(c)'
