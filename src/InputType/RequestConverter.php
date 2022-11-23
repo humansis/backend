@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -15,17 +16,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestConverter implements ParamConverterInterface
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
     /**
      * RequestConverter constructor.
-     *
-     * @param ValidatorInterface $validator
      */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -68,9 +63,7 @@ class RequestConverter implements ParamConverterInterface
             return $value->__toString();
         }
         if (is_array($value)) {
-            $values = array_map(function ($subvalue) {
-                return $this->toString($subvalue);
-            }, $value);
+            $values = array_map(fn($subvalue) => $this->toString($subvalue), $value);
 
             return '[' . implode(', ', $values) . ']';
         }
@@ -80,7 +73,7 @@ class RequestConverter implements ParamConverterInterface
 
     public static function normalizeInputType($data, $class): object
     {
-        $serializer = new Serializer([new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
+        $serializer = new Serializer([new DateTimeNormalizer(), new ObjectNormalizer(null, null, null, new ReflectionExtractor())]);
 
         return $serializer->denormalize($data, $class);
     }

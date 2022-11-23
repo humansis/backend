@@ -12,8 +12,7 @@ use Entity\Project;
 
 class ImportMapper implements MapperInterface
 {
-    /** @var Import */
-    private $object;
+    private ?\Entity\Import $object = null;
 
     /**
      * {@inheritdoc}
@@ -32,7 +31,7 @@ class ImportMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Import::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Import::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -54,9 +53,7 @@ class ImportMapper implements MapperInterface
     public function getProjects(): array
     {
         return array_values(
-            array_map(function (Project $project) {
-                return $project->getId();
-            }, $this->object->getProjects()->toArray())
+            array_map(fn(Project $project) => $project->getId(), $this->object->getProjects()->toArray())
         );
     }
 
@@ -72,6 +69,6 @@ class ImportMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 }

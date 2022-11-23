@@ -27,10 +27,10 @@ class Transaction
      *
      * @var bool
      */
-    public const FAILURE = 0;
-    public const SUCCESS = 1;
-    public const NO_PHONE = 2;
-    public const CANCELED = 3;
+    final public const FAILURE = 0;
+    final public const SUCCESS = 1;
+    final public const NO_PHONE = 2;
+    final public const CANCELED = 3;
 
     public static function statuses()
     {
@@ -43,99 +43,87 @@ class Transaction
     }
 
     /**
-     * @var ReliefPackage|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage")
      * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $reliefPackage;
+    private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
 
     /**
      * @var string
      *
      * @ORM\Column(name="transaction_id", type="string", length=45)
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance'])]
     private $transactionId;
 
     /**
      * @var string
      *
      * @ORM\Column(name="amount_sent", type="string")
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance'])]
     private $amountSent;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(name="date_sent", type="datetime")
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
-    private $dateSent;
+    #[SymfonyGroups(['ValidatedAssistance'])]
+    private ?\DateTime $dateSent = null;
 
     /**
      * @var int
      *
      * @ORM\Column(name="transaction_status", type="smallint")
-     *
-     * @SymfonyGroups({"ValidatedAssistance", "FullReceivers", "FullAssistance", "SmallAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance', 'FullReceivers', 'FullAssistance', 'SmallAssistance'])]
     private $transactionStatus;
 
     /**
      * @var string
      *
      * @ORM\Column(name="message", type="string", length=255, nullable=true)
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance'])]
     private $message;
 
     /**
      * @var bool
      *
      * @ORM\Column(name="money_received", type="boolean", nullable=true)
-     *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
+    #[SymfonyGroups(['ValidatedAssistance'])]
     private $moneyReceived;
 
     /**
-     * @var DateTime
      *
      * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
-    private $pickupDate;
+    #[SymfonyGroups(['ValidatedAssistance'])]
+    private ?\DateTime $pickupDate = null;
 
     /**
-     * @var AssistanceBeneficiary
      *
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
      * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
-    private $assistanceBeneficiary;
+    private ?\Entity\AssistanceBeneficiary $assistanceBeneficiary = null;
 
     /**
-     * @var DateTime|null
      *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      *
-     * @SymfonyGroups({"ValidatedAssistance"})
      */
-    private $updatedOn;
+    #[SymfonyGroups(['ValidatedAssistance'])]
+    private ?\DateTime $updatedOn;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="transactions", cascade={"persist"})
      */
-    private $sentBy;
+    private ?\Entity\User $sentBy = null;
 
     /**
      * Constructor
@@ -145,19 +133,11 @@ class Transaction
         $this->setUpdatedOn(new DateTime());
     }
 
-    /**
-     * @return ReliefPackage|null
-     */
     public function getReliefPackage(): ?ReliefPackage
     {
         return $this->reliefPackage;
     }
 
-    /**
-     * @param ReliefPackage|null $reliefPackage
-     *
-     * @return Transaction
-     */
     public function setReliefPackage(?ReliefPackage $reliefPackage): Transaction
     {
         $this->reliefPackage = $reliefPackage;

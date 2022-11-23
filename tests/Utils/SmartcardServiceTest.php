@@ -6,7 +6,6 @@ use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
 use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
-use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -26,6 +25,7 @@ use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\RoleRepository;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
@@ -38,7 +38,7 @@ use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
 {
-    public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
+    final public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
     /** @var ObjectManager|null */
     private $em;
@@ -46,11 +46,9 @@ class SmartcardServiceTest extends KernelTestCase
     /** @var SmartcardService */
     private $smartcardService;
 
-    /** @var Vendor */
-    private $vendor;
+    private ?\Entity\Vendor $vendor = null;
 
-    /** @var string */
-    private $smartcardNumber = '';
+    private string $smartcardNumber = '';
 
     /** @var DepositFactory */
     private $depositFactory;
@@ -60,29 +58,32 @@ class SmartcardServiceTest extends KernelTestCase
      */
     private $invoiceFactory;
 
-    /**
-     * @var User
-     */
-    private $user;
+    private ?\Entity\User $user = null;
 
     /**
      * @var PreliminaryInvoiceRepository
      */
     private $preliminaryInvoiceRepository;
 
+    /**
+     * @var RoleRepository
+     */
+    private $roleRepository;
+
     protected function setUp(): void
     {
         self::bootKernel();
 
         //Preparing the EntityManager
-        $this->em = static::$kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->smartcardService = static::$kernel->getContainer()->get('smartcard_service');
-        $this->depositFactory = static::$kernel->getContainer()->get(DepositFactory::class);
-        $this->invoiceFactory = static::$kernel->getContainer()->get(InvoiceFactory::class);
-        $this->preliminaryInvoiceRepository = static::$kernel->getContainer()->get(PreliminaryInvoiceRepository::class);
+        $this->smartcardService = self::getContainer()->get('smartcard_service');
+        $this->depositFactory = self::getContainer()->get(DepositFactory::class);
+        $this->invoiceFactory = self::getContainer()->get(InvoiceFactory::class);
+        $this->roleRepository = self::getContainer()->get(RoleRepository::class);
+        $this->preliminaryInvoiceRepository = self::getContainer()->get(PreliminaryInvoiceRepository::class);
 
         $this->createTempVendor($this->em);
         $this->em->persist($this->vendor);
@@ -94,15 +95,15 @@ class SmartcardServiceTest extends KernelTestCase
 
     public function validSmartcardCashflows(): array
     {
+        //TODO rely on IDs is REALLY BAD PRACTICE
         $projectA = 3;
         $projectB = 10;
         $assistanceA1 = 51; // USD
-        $assistanceA2 = 241; // SYP
-        $assistanceB1 = 242; // USD
+        $assistanceA2 = 240; // SYP
+        $assistanceB1 = 170; // USD
         $beneficiaryA1 = 2;
         $beneficiaryA2 = 4;
         $beneficiaryB1 = 250;
-        $beneficiaryB2 = 252;
 
         return [
             'vendor has nothing' => [
@@ -201,8 +202,6 @@ class SmartcardServiceTest extends KernelTestCase
     /**
      * @dataProvider validSmartcardCashflows
      *
-     * @param array $actions
-     * @param array $expectedResults
      *
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
@@ -229,11 +228,11 @@ class SmartcardServiceTest extends KernelTestCase
                     $registerInputType = SmartcardRegisterInputType::create(
                         $this->smartcardNumber,
                         $beneficiaryId,
-                        $date->format(DateTimeInterface::ATOM)
+                        $date,
                     );
                     try {
                         $this->smartcardService->register($registerInputType);
-                    } catch (SmartcardDoubledRegistrationException $e) {
+                    } catch (SmartcardDoubledRegistrationException) {
                     }
                     break;
                 case 'purchase':
@@ -267,6 +266,11 @@ class SmartcardServiceTest extends KernelTestCase
                         'assistance' => $assistance,
                         'beneficiary' => $beneficiary,
                     ], ['id' => 'asc']);
+
+                    if (is_null($assistanceBeneficiary)) {
+                        var_dump($assistance->getId());
+                        var_dump($beneficiary->getId());
+                    }
 
                     $reliefPackage = new ReliefPackage(
                         $assistanceBeneficiary,
@@ -510,9 +514,6 @@ class SmartcardServiceTest extends KernelTestCase
     /**
      * @dataProvider validSmartcardReuseFlows
      *
-     * @param array $actions
-     * @param array $expectedBeneficiaryResults
-     * @param array $expectedVendorResults
      *
      * @throws EntityNotFoundException
      * @throws ORMException
@@ -578,11 +579,11 @@ class SmartcardServiceTest extends KernelTestCase
                         $registerInputType = SmartcardRegisterInputType::create(
                             $serialNumber,
                             $beneficiaryId,
-                            $createdAt->format(DateTimeInterface::ATOM)
+                            $createdAt
                         );
                         try {
                             $this->smartcardService->register($registerInputType);
-                        } catch (SmartcardDoubledRegistrationException $e) {
+                        } catch (SmartcardDoubledRegistrationException) {
                         }
                         break;
                     case 'deposit':
@@ -712,15 +713,14 @@ class SmartcardServiceTest extends KernelTestCase
             ['id' => 'asc']
         );
 
+        $roles = $this->roleRepository->findByCodes(['ROLE_ADMIN']);
+
         $this->user = new User();
-        $this->user->injectObjectManager($em);
         $this->user->setEnabled(1)
             ->setEmail($id . self::VENDOR_USERNAME)
-            ->setEmailCanonical($id . self::VENDOR_USERNAME)
             ->setUsername($id . self::VENDOR_USERNAME)
-            ->setUsernameCanonical($id . self::VENDOR_USERNAME)
             ->setSalt('')
-            ->setRoles(['ROLE_ADMIN'])
+            ->setRoles($roles)
             ->setChangePassword(0)
             ->setPassword('');
 
@@ -733,6 +733,6 @@ class SmartcardServiceTest extends KernelTestCase
             ->setArchived(false)
             ->setUser($this->user)
             ->setLocation($adm2);
-        $this->vendor->setName("Test Vendor for " . __CLASS__);
+        $this->vendor->setName("Test Vendor for " . self::class);
     }
 }

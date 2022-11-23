@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class Pagination
 {
-    public const DEFAULT_SIZE = PHP_INT_MAX;
+    final public const DEFAULT_SIZE = PHP_INT_MAX;
 
     /** @var int|null */
     private $page;

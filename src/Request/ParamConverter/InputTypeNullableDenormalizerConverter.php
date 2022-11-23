@@ -7,7 +7,7 @@ namespace Request\ParamConverter;
 use Request\InputTypeNullableDenormalizer;
 use Serializer\ArrayNullableDenormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class InputTypeNullableDenormalizerConverter extends InputTypeConverter
 {
@@ -24,10 +24,7 @@ class InputTypeNullableDenormalizerConverter extends InputTypeConverter
         return in_array(InputTypeNullableDenormalizer::class, class_implements($class));
     }
 
-    /**
-     * @return ContextAwareDenormalizerInterface
-     */
-    protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
+    protected function getArrayDenormalizer(): DenormalizerInterface
     {
         return new ArrayNullableDenormalizer();
     }

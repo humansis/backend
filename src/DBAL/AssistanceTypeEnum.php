@@ -6,7 +6,7 @@ use Enum\AssistanceType;
 
 class AssistanceTypeEnum extends AbstractEnum
 {
-    public function getName()
+    public function getName(): string
     {
         return 'enum_assistance_type';
     }

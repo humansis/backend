@@ -10,7 +10,6 @@ use Happyr\Validator\Constraint\EntityExist;
 trait ProjectFilterTrait
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"}),
@@ -19,6 +18,7 @@ trait ProjectFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $projects;
 
     public function hasProjects(): bool

@@ -24,39 +24,29 @@ class ImportQueueDuplicity
     use EnumTrait;
 
     /**
-     * @var ImportQueue
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
      */
-    private $ours;
+    private ImportQueue $ours;
 
     /**
-     * @var ImportQueue
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
      */
-    private $theirs;
+    private ImportQueue $theirs;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
      */
-    private $state;
+    private string $state;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User")
      */
-    private $decideBy;
+    private ?\Entity\User $decideBy = null;
 
     /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
-    private $decideAt;
+    private ?\DateTimeInterface $decideAt = null;
 
     public function __construct(ImportQueue $ours, ImportQueue $theirs)
     {
@@ -65,17 +55,11 @@ class ImportQueueDuplicity
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
     }
 
-    /**
-     * @return ImportQueue
-     */
     public function getOurs(): ImportQueue
     {
         return $this->ours;
     }
 
-    /**
-     * @return ImportQueue
-     */
     public function getTheirs(): ImportQueue
     {
         return $this->theirs;
@@ -99,33 +83,21 @@ class ImportQueueDuplicity
         $this->state = $state;
     }
 
-    /**
-     * @param User $decideBy
-     */
     public function setDecideBy(User $decideBy): void
     {
         $this->decideBy = $decideBy;
     }
 
-    /**
-     * @return User
-     */
     public function getDecideBy(): User
     {
         return $this->decideBy;
     }
 
-    /**
-     * @param DateTimeInterface $dateTime
-     */
     public function setDecideAt(DateTimeInterface $dateTime): void
     {
         $this->decideAt = $dateTime;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getDecideAt(): DateTimeInterface
     {
         return $this->decideAt;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Referral;
 use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
@@ -21,18 +22,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class BeneficiaryCodelistController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/types")
-     *
-     * @return JsonResponse
      */
     public function getTypes(): JsonResponse
     {
@@ -43,8 +38,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/referral-types")
-     *
-     * @return JsonResponse
      */
     public function getReferralTypes(): JsonResponse
     {
@@ -55,8 +48,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/residency-statuses")
-     *
-     * @return JsonResponse
      */
     public function getResidencyStatuses(): JsonResponse
     {
@@ -67,12 +58,10 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/vulnerability-criteria")
-     *
-     * @return JsonResponse
      */
     public function getVulnerabilityCriterion(): JsonResponse
     {
-        $criterion = $this->getDoctrine()->getRepository(VulnerabilityCriterion::class)
+        $criterion = $this->managerRegistry->getRepository(VulnerabilityCriterion::class)
             ->findAllActive();
 
         return $this->json(new Paginator($this->codeListService->mapCriterion($criterion)));
@@ -80,8 +69,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids/types")
-     *
-     * @return JsonResponse
      */
     public function getNationalIdTypes(): JsonResponse
     {
@@ -92,8 +79,6 @@ class BeneficiaryCodelistController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/phones/types")
-     *
-     * @return JsonResponse
      */
     public function getPhoneTypes(): JsonResponse
     {

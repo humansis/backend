@@ -22,10 +22,6 @@ use Request\Pagination;
 class PurchasedItemRepository extends EntityRepository
 {
     /**
-     * @param string $countryIso3
-     * @param PurchasedItemFilterInputType|null $filter
-     * @param PurchasedItemOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|PurchasedItem[]
      */
@@ -163,16 +159,11 @@ class PurchasedItemRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE:
-                        $qbr->addOrderBy('pi.datePurchase', $direction);
-                        break;
-                    case PurchasedItemOrderInputType::SORT_BY_VALUE:
-                        $qbr->addOrderBy('pi.value', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE => $qbr->addOrderBy('pi.datePurchase', $direction),
+                    PurchasedItemOrderInputType::SORT_BY_VALUE => $qbr->addOrderBy('pi.value', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 
@@ -187,8 +178,6 @@ class PurchasedItemRepository extends EntityRepository
     }
 
     /**
-     * @param Beneficiary $beneficiary
-     *
      * @return Paginator|DistributedItem[]
      */
     public function findByBeneficiary(Beneficiary $beneficiary): Paginator
@@ -203,8 +192,6 @@ class PurchasedItemRepository extends EntityRepository
     }
 
     /**
-     * @param Household $household
-     *
      * @return Paginator|DistributedItem[]
      */
     public function findByHousehold(Household $household): Paginator

@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class DistributedItemMapper implements MapperInterface
 {
-    /** @var DistributedItem */
-    private $object;
+    private ?\Entity\DistributedItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,7 @@ class DistributedItemMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . DistributedItem::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . DistributedItem::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -57,9 +54,9 @@ class DistributedItemMapper implements MapperInterface
 
     public function getDateDistribution(): ?string
     {
-        return $this->object->getDateDistribution() ? $this->object->getDateDistribution()->format(
-            DateTimeInterface::ISO8601
-        ) : null;
+        return $this->object->getDateDistribution()?->format(
+            DateTimeInterface::ATOM
+        );
     }
 
     public function getCommodityId(): int
@@ -104,6 +101,6 @@ class DistributedItemMapper implements MapperInterface
 
     public function getFieldOfficerId(): ?int
     {
-        return $this->object->getFieldOfficer() ? $this->object->getFieldOfficer()->getId() : null;
+        return $this->object->getFieldOfficer()?->getId();
     }
 }

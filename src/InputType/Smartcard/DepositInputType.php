@@ -4,32 +4,29 @@ declare(strict_types=1);
 
 namespace InputType\Smartcard;
 
-use DateTimeImmutable;
-use DateTimeInterface;
 use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Iso8601;
 
 final class DepositInputType implements InputTypeInterface
 {
     /**
-     * @var int
-     * @Assert\NotBlank
      * @EntityExist(entity="Entity\Assistance\ReliefPackage")
      */
-    private $reliefPackageId;
+    #[Assert\NotBlank]
+    private ?int $reliefPackageId = null;
 
     private $value = null;
 
     private $balance = null;
 
     /**
-     * @var DateTimeInterface
-     * @Assert\DateTime
+     * @Iso8601
      */
-    private $createdAt;
+    private ?\DateTime $createdAt;
 
-    public static function create(int $reliefPackageId, $value, $balance, DateTimeInterface $createdAt): self
+    public static function create(int $reliefPackageId, $value, $balance, \DateTime $createdAt): self
     {
         $self = new self();
         $self->reliefPackageId = $reliefPackageId;
@@ -48,10 +45,7 @@ final class DepositInputType implements InputTypeInterface
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
     }
@@ -64,41 +58,26 @@ final class DepositInputType implements InputTypeInterface
         return $this->balance;
     }
 
-    /**
-     * @param mixed $balance
-     */
-    public function setBalance($balance): void
+    public function setBalance(mixed $balance): void
     {
         $this->balance = $balance;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
-    public function setCreatedAt(string $createdAt): void
+    public function setCreatedAt(?\DateTime $createdAt): void
     {
-        $this->createdAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ISO8601, $createdAt);
+        $this->createdAt = $createdAt;
     }
 
-    /**
-     * @return int|null
-     */
     public function getReliefPackageId(): ?int
     {
         return $this->reliefPackageId;
     }
 
-    /**
-     * @param int|null $reliefPackageId
-     */
     public function setReliefPackageId(?int $reliefPackageId): void
     {
         $this->reliefPackageId = $reliefPackageId;

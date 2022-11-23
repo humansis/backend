@@ -3,8 +3,8 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\UserCountry;
 
 /**
@@ -16,9 +16,7 @@ use Entity\UserCountry;
 class UserCountryRepository extends EntityRepository
 {
     /**
-     * @param UserCountry $userCountry
      *
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */

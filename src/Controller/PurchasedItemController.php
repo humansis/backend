@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
 use Export\PurchasedSummarySpreadsheetExport;
@@ -26,32 +27,20 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class PurchasedItemController extends AbstractController
 {
-    /** @var SmartcardPurchasedItemSpreadsheet */
-    private $smartcardPurchasedItemSpreadsheet;
-
-    /** @var PurchasedSummarySpreadsheetExport */
-    private $purchasedSummarySpreadsheetExport;
-
-    public function __construct(
-        SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet,
-        PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport
-    ) {
-        $this->smartcardPurchasedItemSpreadsheet = $smartcardPurchasedItemSpreadsheet;
-        $this->purchasedSummarySpreadsheetExport = $purchasedSummarySpreadsheetExport;
+    public function __construct(private readonly SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet, private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}/purchased-items")
      * @ParamConverter("beneficiary")
      *
-     * @param Beneficiary $beneficiary
      *
-     * @return JsonResponse
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByBeneficiary($beneficiary);
 
@@ -62,14 +51,12 @@ class PurchasedItemController extends AbstractController
      * @Rest\Get("/web-app/v1/households/{id}/purchased-items")
      * @ParamConverter("household")
      *
-     * @param Household $household
      *
-     * @return JsonResponse
      */
     public function listByHousehold(Household $household): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByHousehold($household);
 
@@ -79,7 +66,6 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/purchased-items")
      *
-     * @return JsonResponse
      *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
@@ -94,7 +80,7 @@ class PurchasedItemController extends AbstractController
         }
 
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
 
@@ -104,10 +90,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/purchased-items/exports")
      *
-     * @param Request $request
-     * @param PurchasedItemFilterInputType $filter
      *
-     * @return Response
      *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
@@ -124,7 +107,7 @@ class PurchasedItemController extends AbstractController
         );
 
         $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $filename));
 
         return $response;
     }
@@ -132,13 +115,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items")
      *
-     * @param Request $request
-     * @param SmartcardPurchasedItemFilterInputType $filterInputType
-     * @param PurchasedItemOrderInputType $order
-     * @param SmartcardPurchasedItemRepository $purchasedItemRepository
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function listSmartcardItems(
         Request $request,
@@ -164,10 +141,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items/exports")
      *
-     * @param Request $request
-     * @param SmartcardPurchasedItemFilterInputType $filter
      *
-     * @return Response
      */
     public function exportSmartcardItems(Request $request, SmartcardPurchasedItemFilterInputType $filter): Response
     {

@@ -9,7 +9,6 @@ use InputType\DataTableType;
 use InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\User;
 use DTO\RedemptionVoucherBatchCheck;
@@ -21,51 +20,16 @@ use InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**@var PdfService */
-    private $pdfService;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
-     * @param ExportService $exportService
-     * @param Environment $twig
-     * @param PdfService $pdfService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        ExportService $exportService,
-        Environment $twig,
-        PdfService $pdfService
-    ) {
-        $this->em = $entityManager;
-        $this->container = $container;
-        $this->exportService = $exportService;
-        $this->twig = $twig;
-        $this->pdfService = $pdfService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly Environment $twig, private readonly PdfService $pdfService)
+    {
     }
 
     /**
      * Creates a new Voucher entity
      *
-     * @param array $vouchersData
-     * @param bool $flush
      *
      * @return array
      * @throws Exception
@@ -104,8 +68,6 @@ class VoucherService
     /**
      * Generate a new random code for a voucher
      *
-     * @param array $voucherData
-     * @param int $voucherId
      * @return string
      */
     public function generateCode(array $voucherData, int $voucherId)
@@ -121,13 +83,6 @@ class VoucherService
         return $fullCode;
     }
 
-    /**
-     * @param VoucherRedemptionBatch $batch
-     *
-     * @param Vendor|null $vendor
-     *
-     * @return RedemptionVoucherBatchCheck
-     */
     public function checkBatch(VoucherRedemptionBatch $batch, ?Vendor $vendor = null): RedemptionVoucherBatchCheck
     {
         $ids = $batch->getVouchers();
@@ -226,8 +181,6 @@ class VoucherService
     /**
      * Deletes a voucher from the database
      *
-     * @param Voucher $voucher
-     * @param bool $removeVoucher
      * @return bool
      * @throws Exception
      */
@@ -244,11 +197,9 @@ class VoucherService
     }
 
     // =============== DELETE A BATCH OF VOUCHERS ===============
-
     /**
      * Deletes all the vouchers of the given booklet
      *
-     * @param Booklet $booklet
      * @return bool
      * @throws Exception
      */
@@ -266,8 +217,6 @@ class VoucherService
     /**
      * Export all vouchers in a CSV file
      *
-     * @param string $type
-     * @param string $countryIso3
      * @param array $ids
      * @param array $filters
      * @return mixed
@@ -285,7 +234,7 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                $booklets = $this->getAllBooklets(
                     new Country($countryIso3),
                     $dataTableFilter
                 )[1];
@@ -335,7 +284,6 @@ class VoucherService
      * Export all vouchers in a pdf
      *
      * @param array $ids
-     * @param string $countryIso3
      * @param array $filters
      * @return mixed
      */
@@ -350,7 +298,7 @@ class VoucherService
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
+                $booklets = $this->getAllBooklets(
                     new Country($countryIso3),
                     $dataTableFilter
                 )[1];
@@ -376,7 +324,7 @@ class VoucherService
 
         try {
             $html = $this->twig->render(
-                '@Voucher/Pdf/codes.html.twig',
+                'Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],
                     $this->pdfService->getInformationStyle()
@@ -419,10 +367,31 @@ class VoucherService
             }
             fclose($csv);
         });
-        $response->setStatusCode(200);
+        $response->setStatusCode(\Symfony\Component\HttpFoundation\Response::HTTP_OK);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
 
         return $response;
+    }
+
+    /**
+     * copy&paste Utils\BookletService::getAll()
+     * @deprecated
+     */
+    private function getAllBooklets(Country $countryISO3, DataTableType $filter): array
+    {
+        $limitMinimum = $filter->pageIndex * $filter->pageSize;
+
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy(
+            $countryISO3->getIso3(),
+            $limitMinimum,
+            $filter->pageSize,
+            $filter->getSort(),
+            $filter->getFilter()
+        );
+        $length = $booklets[0];
+        $booklets = $booklets[1];
+
+        return [$length, $booklets];
     }
 }

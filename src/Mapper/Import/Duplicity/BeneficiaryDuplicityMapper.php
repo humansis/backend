@@ -14,18 +14,10 @@ use Serializer\MapperInterface;
 
 class BeneficiaryDuplicityMapper implements MapperInterface
 {
-    /** @var ImportBeneficiaryDuplicity */
-    private $object;
+    private ?\Entity\ImportBeneficiaryDuplicity $object = null;
 
-    /** @var ImportLineFactory */
-    private $importLineFactory;
-
-    /**
-     * @param ImportLineFactory $importLineFactory
-     */
-    public function __construct(ImportLineFactory $importLineFactory)
+    public function __construct(private readonly ImportLineFactory $importLineFactory)
     {
-        $this->importLineFactory = $importLineFactory;
     }
 
     /**
@@ -48,9 +40,7 @@ class BeneficiaryDuplicityMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ImportBeneficiaryDuplicity::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . ImportBeneficiaryDuplicity::class . ', ' . $object::class . ' given.'
         );
     }
 

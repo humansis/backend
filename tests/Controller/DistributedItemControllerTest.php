@@ -19,7 +19,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testFindByHousehold()
@@ -34,7 +34,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no household in distibuted items.");
         }
 
@@ -84,7 +84,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no beneficiary in distibuted items.");
         }
 

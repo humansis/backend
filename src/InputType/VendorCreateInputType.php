@@ -6,10 +6,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class VendorCreateInputType extends VendorUpdateInputType
 {
-    /**
-     * @Assert\Type("integer")
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\NotNull]
     private $userId;
 
     /**

@@ -9,39 +9,27 @@ use Entity\User;
 
 abstract class AbstractHouseholdChange
 {
-    private $activity;
-
-    private $previousActivity;
-
-    public function __construct(HouseholdActivity $activity, HouseholdActivity $previousActivity)
+    public function __construct(private readonly HouseholdActivity $activity, private readonly HouseholdActivity $previousActivity)
     {
-        $this->activity = $activity;
-        $this->previousActivity = $previousActivity;
     }
 
-    /**
-     * @SymfonyGroups({"HouseholdChanges"})
-     */
+    #[SymfonyGroups(['HouseholdChanges'])]
     public function getAuthor(): ?User
     {
         return $this->activity->getAuthor();
     }
 
-    /**
-     * @SymfonyGroups({"HouseholdChanges"})
-     */
+    #[SymfonyGroups(['HouseholdChanges'])]
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->activity->getCreatedAt();
     }
 
-    /**
-     * @SymfonyGroups({"HouseholdChanges"})
-     */
+    #[SymfonyGroups(['HouseholdChanges'])]
     public function getChanges(): array
     {
-        $new = json_decode($this->activity->getContent(), true);
-        $old = json_decode($this->previousActivity->getContent(), true);
+        $new = json_decode($this->activity->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $old = json_decode($this->previousActivity->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         return $this->diff($new, $old);
     }

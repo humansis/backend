@@ -24,7 +24,7 @@ class CommunityControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -36,7 +36,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var Location|null $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $location) {
             $this->markTestSkipped('There needs to be at least one location in system to complete this test');
@@ -69,7 +69,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -99,7 +99,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     public function testCreate2()
     {
         /** @var Location|null $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/communities', [
             'address' => [
@@ -112,7 +112,7 @@ class CommunityControllerTest extends BMSServiceTestCase
             ],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +134,6 @@ class CommunityControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testCreate
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -143,9 +142,9 @@ class CommunityControllerTest extends BMSServiceTestCase
     public function testUpdate(int $id)
     {
         /** @var Location|null $location */
-        $location = self::$container->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
         /** @var Project $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $data = [
             'longitude' => 'test CHANGED',
@@ -176,7 +175,7 @@ class CommunityControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/web-app/v1/communities/' . $id, $data);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -203,7 +202,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -212,7 +210,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/communities/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -244,7 +242,7 @@ class CommunityControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/communities?sort[]=id.asc&filter[fulltext]=test');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -258,7 +256,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      *
-     * @param int $id
      * @return int
      * @throws ORMException
      * @throws OptimisticLockException
@@ -275,7 +272,6 @@ class CommunityControllerTest extends BMSServiceTestCase
     /**
      * @depends testDelete
      *
-     * @param int $id
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -294,7 +290,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped('There is no Community to be tested');
         }
 

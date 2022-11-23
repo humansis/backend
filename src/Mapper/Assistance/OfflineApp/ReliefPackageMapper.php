@@ -12,8 +12,7 @@ use Serializer\MapperInterface;
 
 class ReliefPackageMapper implements MapperInterface
 {
-    /** @var ReliefPackage */
-    private $object;
+    private ?\Entity\Assistance\ReliefPackage $object = null;
 
     /**
      * {@inheritdoc}
@@ -37,7 +36,7 @@ class ReliefPackageMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -78,18 +77,18 @@ class ReliefPackageMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 
     public function getLastModifiedAt(): string
     {
-        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ATOM);
     }
 
     public function getDistributedAt(): ?string
     {
         $distributionDate = $this->object->getDistributedAt();
 
-        return $distributionDate ? $distributionDate->format(DateTimeInterface::ISO8601) : null;
+        return $distributionDate?->format(DateTimeInterface::ATOM);
     }
 }

@@ -9,41 +9,26 @@ use JsonSerializable;
 
 class Paginator implements JsonSerializable
 {
-    /**
-     * @var array
-     */
-    private $data;
+    private int|null $totalCount;
+    private readonly int $page;
 
     /**
-     * @var int|null
-     */
-    private $totalCount;
-
-    /**
-     * @var int
-     */
-    private $page;
-
-    /**
-     * @param iterable $data
      * @param int|null $totalCount
      * @param int $page
      */
-    public function __construct(iterable $data, ?int $totalCount = null, int $page = 1)
+    public function __construct(private readonly iterable $data, ?int $totalCount = null, int $page = 1)
     {
         if ($page <= 0) {
             throw new InvalidArgumentException('Page must be greater than zero');
         }
-
-        $this->data = $data;
-        $this->totalCount = null === $totalCount ? count($data) : $totalCount;
+        $this->totalCount = $totalCount ?? count($data);
         $this->page = $page;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'totalCount' => $this->totalCount,

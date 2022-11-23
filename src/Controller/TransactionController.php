@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use Pagination\Paginator;
 use Entity\Assistance;
@@ -23,42 +24,19 @@ use Utils\TransactionService;
 
 class TransactionController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var TransactionService */
-    private $transactionService;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(
-        CodeListService $codeListService,
-        LoggerInterface $mobileLogger,
-        TransactionService $transactionService,
-        SerializerInterface $serializer
-    ) {
-        $this->codeListService = $codeListService;
-        $this->logger = $mobileLogger;
-        $this->transactionService = $transactionService;
-        $this->serializer = $serializer;
+    public function __construct(private readonly CodeListService $codeListService, private readonly LoggerInterface $logger, private readonly TransactionService $transactionService, private readonly SerializerInterface $serializer, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/transactions")
      *
-     * @param Request $request
-     * @param TransactionFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
     {
         /** @var TransactionRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Transaction::class);
+        $repository = $this->managerRegistry->getRepository(Transaction::class);
         $data = $repository->findByParams($filter);
 
         return $this->json($data);
@@ -67,8 +45,6 @@ class TransactionController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/assistances/{id}/transactions")
      *
-     * @param Assistance $assistance
-     * @param Request $request
      *
      * @return JsonResponse
      * @throws \Psr\Cache\InvalidArgumentException
@@ -121,9 +97,7 @@ class TransactionController extends AbstractController
      * @Rest\Post("/web-app/v1/assistances/{id}/transactions/emails")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
      *
-     * @param Assistance $assistance
      *
-     * @return JsonResponse
      */
     public function sendEmail(Assistance $assistance): JsonResponse
     {
@@ -134,8 +108,6 @@ class TransactionController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/transactions/statuses")
-     *
-     * @return JsonResponse
      */
     public function statuses(): JsonResponse
     {

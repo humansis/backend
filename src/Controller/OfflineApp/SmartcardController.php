@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Enum\SmartcardStates;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
@@ -23,21 +23,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class SmartcardController extends AbstractOfflineAppController
 {
-    /** @var SerializerInterface */
-    private $serializer;
-
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(private readonly SerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
     }
 
     /**
      * @Rest\Post("/offline-app/v1/smartcards")
      *
-     * @param SmartcardRegisterInputType $registerInputType
-     * @param SmartcardService $smartcardService
      *
-     * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -48,9 +41,9 @@ class SmartcardController extends AbstractOfflineAppController
         try {
             $smartcardService->register($registerInputType);
 
-            return Response::create();
-        } catch (SmartcardDoubledRegistrationException $e) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response();
+        } catch (SmartcardDoubledRegistrationException) {
+            return new Response('', Response::HTTP_ACCEPTED);
         }
     }
 
@@ -59,12 +52,7 @@ class SmartcardController extends AbstractOfflineAppController
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      *
-     * @param string $serialNumber
-     * @param ChangeSmartcardInputType $changeSmartcardInputType
-     * @param SmartcardRepository $smartcardRepository
-     * @param SmartcardService $smartcardService
      *
-     * @return Response
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -82,15 +70,15 @@ class SmartcardController extends AbstractOfflineAppController
         foreach ($smartcards as $smartcard) {
             try {
                 $smartcardService->change($smartcard, $changeSmartcardInputType);
-            } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition $e) {
+            } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition) {
                 $doubledRequest = true;
             }
         }
 
         if ($doubledRequest) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response('', Response::HTTP_ACCEPTED);
         } else {
-            return Response::create();
+            return new Response();
         }
     }
 
@@ -100,10 +88,7 @@ class SmartcardController extends AbstractOfflineAppController
      * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
      * @ParamConverter("smartcard")
      *
-     * @param Smartcard $smartcard
-     * @param Request $request
      *
-     * @return Response
      */
     public function info(Smartcard $smartcard, Request $request): Response
     {

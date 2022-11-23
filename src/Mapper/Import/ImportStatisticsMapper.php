@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class ImportStatisticsMapper implements MapperInterface
 {
-    /** @var ImportStatisticsValueObject */
-    private $object;
+    private ?\Component\Import\ValueObject\ImportStatisticsValueObject $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,9 +32,7 @@ class ImportStatisticsMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ImportStatisticsValueObject::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . ImportStatisticsValueObject::class . ', ' . $object::class . ' given.'
         );
     }
 

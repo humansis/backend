@@ -7,8 +7,8 @@ namespace Component\Smartcard\Invoice;
 use Component\Smartcard\Invoice\Exception\CanNotCreateInvoiceHttpException;
 use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use DateTime;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Invoice;
 use Entity\SmartcardPurchase;
 use Entity\User;
@@ -19,36 +19,11 @@ use Repository\SmartcardPurchaseRepository;
 
 class InvoiceFactory
 {
-    /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
-     * @var SmartcardInvoiceRepository
-     */
-    private $smartcardInvoiceRepository;
-
-    /**
-     * @var InvoiceChecker
-     */
-    private $invoiceChecker;
-
-    public function __construct(
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
-        SmartcardInvoiceRepository $smartcardInvoiceRepository,
-        InvoiceChecker $invoiceChecker
-    ) {
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
-        $this->smartcardInvoiceRepository = $smartcardInvoiceRepository;
-        $this->invoiceChecker = $invoiceChecker;
+    public function __construct(private readonly SmartcardPurchaseRepository $smartcardPurchaseRepository, private readonly SmartcardInvoiceRepository $smartcardInvoiceRepository, private readonly InvoiceChecker $invoiceChecker)
+    {
     }
 
     /**
-     * @param Vendor $vendor
-     * @param SmartcardInvoiceCreateInputType $invoiceInputType
-     * @param User $redeemedBy
-     * @return Invoice
      * @throws ORMException
      * @throws OptimisticLockException
      */

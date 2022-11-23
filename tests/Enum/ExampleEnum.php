@@ -10,10 +10,10 @@ class ExampleEnum
 {
     use EnumTrait;
 
-    public const HORSE = 'příliš žluťoučký kůň pěl ďábelské ódy';
-    public const AAA = 'AAA';
-    public const OBFUSCATE = 'A - B - C/D_E';
-    public const YES = true;
+    final public const HORSE = 'příliš žluťoučký kůň pěl ďábelské ódy';
+    final public const AAA = 'AAA';
+    final public const OBFUSCATE = 'A - B - C/D_E';
+    final public const YES = true;
 
     public static function values(): array
     {

@@ -14,15 +14,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class FilterConverter implements ParamConverterInterface
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**
@@ -30,7 +23,12 @@ class FilterConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $filter = $request->query->get('filter', []);
+        $filter = [];
+
+        if ($request->query->has('filter')) {
+            $filter = $request->query->all()['filter'];
+        }
+
         if (!is_array($filter)) {
             throw new BadRequestHttpException('Query parameter filter must be an array.');
         }
@@ -41,7 +39,7 @@ class FilterConverter implements ParamConverterInterface
         $object->setFilter($filter);
 
         $errors = $this->validator->validate($object);
-        if (count($errors) > 0) {
+        if (($errors === null ? 0 : count($errors)) > 0) {
             throw new ConstraintViolationException($errors);
         }
 

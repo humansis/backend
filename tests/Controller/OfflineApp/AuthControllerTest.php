@@ -17,11 +17,9 @@ class AuthControllerTest extends BMSServiceTestCase
     private const PASSWORD = 'pin1234';
     private const USER = 'test-no-vendor@test.org';
 
-    /** @var EntityRepository|ObjectRepository|UserRepository */
-    private $userRepository;
+    private \Doctrine\ORM\EntityRepository|\Doctrine\Persistence\ObjectRepository|\Repository\UserRepository $userRepository;
 
-    /** @var User */
-    private $user;
+    private \Entity\User $user;
 
     /**
      * @throws OptimisticLockException
@@ -32,13 +30,12 @@ class AuthControllerTest extends BMSServiceTestCase
         // Configuration of BMSServiceTest
         parent::setUpFunctionnal();
 
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
         $this->userRepository = $this->em->getRepository(User::class);
         $this->user = $this->getUser();
     }
 
     /**
-     * @return User
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -48,9 +45,7 @@ class AuthControllerTest extends BMSServiceTestCase
         if (is_null($user)) {
             $user = new User();
             $user->setUsername('test-no-vendor@test.org');
-            $user->setUsernameCanonical('test-no-vendor@test.org');
             $user->setEmail('test-no-vendor@test.org');
-            $user->setEmailCanonical('test-no-vendor@test.org');
             $user->setSalt('fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9');
             $user->setPassword(
                 'WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw=='
@@ -83,9 +78,9 @@ class AuthControllerTest extends BMSServiceTestCase
             'password' => self::PASSWORD,
         ];
 
-        $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body));
+        $this->client->request('POST', '/api/jwt/offline-app/v2/login', [], [], [], json_encode($body, JSON_THROW_ON_ERROR));
 
-        $responseBody = json_decode($this->client->getResponse()->getContent(), true);
+        $responseBody = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             "Request failed: " . $this->client->getResponse()->getContent()

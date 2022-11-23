@@ -14,6 +14,8 @@ use Utils\Objects\Reflection;
 
 class EnumValidator extends ConstraintValidator
 {
+    use EnumTrait;
+
     /**
      * {@inheritdoc}
      * @throws ReflectionException
@@ -68,11 +70,9 @@ class EnumValidator extends ConstraintValidator
         }
 
         foreach ($values as $value) {
-            $valueNormalized = EnumTrait::normalizeValue($value);
+            $valueNormalized = $this->normalizeValue($value);
 
-            $allowedValuesNormalized = array_map(function ($value) {
-                return EnumTrait::normalizeValue($value);
-            }, $allowedValues);
+            $allowedValuesNormalized = array_map(fn($value) => $this->normalizeValue($value), $allowedValues);
 
             if (!in_array($valueNormalized, $allowedValuesNormalized)) {
                 $this->context->buildViolation($constraint->message)
@@ -84,5 +84,10 @@ class EnumValidator extends ConstraintValidator
                 break;
             }
         }
+    }
+
+    public static function values(): array
+    {
+        return [];
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Component\ReliefPackage;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Assistance\ReliefPackage;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
@@ -15,34 +15,11 @@ use Repository\SmartcardDepositRepository;
 
 class ReliefPackageService
 {
-    /**
-     * @var Registry
-     */
-    private $workflowRegistry;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
-
-    public function __construct(
-        Registry $registry,
-        LoggerInterface $logger,
-        SmartcardDepositRepository $smartcardDepositRepository
-    ) {
-        $this->workflowRegistry = $registry;
-        $this->logger = $logger;
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
+    public function __construct(private readonly Registry $workflowRegistry, private readonly LoggerInterface $logger, private readonly SmartcardDepositRepository $smartcardDepositRepository)
+    {
     }
 
     /**
-     * @param ReliefPackage $reliefPackage
-     * @param SmartcardDeposit $deposit
      *
      * @return void
      * @throws ORMException
@@ -55,12 +32,6 @@ class ReliefPackageService
         $this->smartcardDepositRepository->save($deposit);
     }
 
-    /**
-     * @param ReliefPackage $reliefPackage
-     * @param string $transition
-     *
-     * @return void
-     */
     private function checkAndApplyWorkflow(ReliefPackage $reliefPackage, string $transition): void
     {
         $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
@@ -69,12 +40,6 @@ class ReliefPackageService
         }
     }
 
-    /**
-     * @param ReliefPackage $reliefPackage
-     * @param SmartcardDeposit $deposit
-     *
-     * @return void
-     */
     private function addDistributedAmount(ReliefPackage $reliefPackage, SmartcardDeposit $deposit): void
     {
         $reliefPackage->addDistributedAmount($deposit->getValue());

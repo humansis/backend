@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\Assistance;
@@ -22,27 +23,14 @@ use Utils\BookletService;
 
 class BookletController extends AbstractOfflineAppController
 {
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(BookletService $bookletService, LoggerInterface $logger)
+    public function __construct(private readonly BookletService $bookletService, private readonly LoggerInterface $logger, private readonly ManagerRegistry $managerRegistry)
     {
-        $this->bookletService = $bookletService;
-        $this->logger = $logger;
     }
 
     /**
      * @Rest\Get("/offline-app/v1/booklets")
      *
-     * @param Request $request
-     * @param BookletFilterInputType $filter
-     * @param Pagination $pagination
-     * @param BookletOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -50,12 +38,12 @@ class BookletController extends AbstractOfflineAppController
         Pagination $pagination,
         BookletOrderInputType $orderBy
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(Booklet::class)
+        $list = $this->managerRegistry->getRepository(Booklet::class)
             ->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         $response = $this->json($list);
@@ -75,9 +63,6 @@ class BookletController extends AbstractOfflineAppController
      * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
      * @return Response
      */
     public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
@@ -92,6 +77,6 @@ class BookletController extends AbstractOfflineAppController
             return new Response($exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response(json_encode($return));
+        return new Response(json_encode($return, JSON_THROW_ON_ERROR));
     }
 }

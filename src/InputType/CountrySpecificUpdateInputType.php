@@ -9,19 +9,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CountrySpecificUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $field;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     * @Assert\Choice({"number", "text"})
-     */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    #[Assert\Choice(['number', 'text'])]
     private $type;
 
     /**
@@ -29,7 +25,7 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
      */
     public function getField()
     {
-        return trim($this->field);
+        return trim((string) $this->field);
     }
 
     public function setField($field)

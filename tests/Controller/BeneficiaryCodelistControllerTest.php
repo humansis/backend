@@ -24,7 +24,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -76,7 +76,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/residency-statuses');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -95,11 +95,11 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
     public function testGetVulnerabilityCriterion()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/vulnerability-criteria');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -111,7 +111,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertIsArray($result['data']);
 
         $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAllActive();
-        $this->assertEquals(count($criterion), $result['totalCount']);
+        $this->assertEquals(is_countable($criterion) ? count($criterion) : 0, $result['totalCount']);
     }
 
     /**
@@ -121,7 +121,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/national-ids/types');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -141,7 +141,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/beneficiaries/phones/types');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

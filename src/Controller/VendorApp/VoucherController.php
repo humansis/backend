@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Model\PurchaseService;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -18,30 +17,10 @@ use InputType\VoucherPurchase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Utils\SmartcardService;
 
-class VoucherController extends Controller
+class VoucherController extends AbstractVendorAppController
 {
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /** @var PurchaseService */
-    private $purchaseService;
-
-    public function __construct(
-        SerializerInterface $serializer,
-        ValidatorInterface $validator,
-        LoggerInterface $logger,
-        PurchaseService $purchaseService
-    ) {
-        $this->serializer = $serializer;
-        $this->validator = $validator;
-        $this->logger = $logger;
-        $this->purchaseService = $purchaseService;
+    public function __construct(private readonly SerializerInterface $serializer, private readonly ValidatorInterface $validator, private readonly LoggerInterface $logger, private readonly PurchaseService $purchaseService)
+    {
     }
 
     /**
@@ -50,7 +29,6 @@ class VoucherController extends Controller
      *
      * @Rest\Post("/vendor-app/v1/vouchers/purchase")
      *
-     * @param Request $request
      *
      * @return Response
      */
@@ -74,7 +52,7 @@ class VoucherController extends Controller
                 $this->purchaseService->purchase($item);
             }
 
-            return new Response(json_encode(true));
+            return new Response(json_encode(true, JSON_THROW_ON_ERROR));
         } catch (EntityNotFoundException $ex) {
             $this->logger->error('Entity not found: ', [$ex->getMessage()]);
 

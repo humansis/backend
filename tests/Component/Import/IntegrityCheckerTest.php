@@ -44,11 +44,11 @@ class IntegrityCheckerTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
-        self::$integrityChecker = $kernel->getContainer()->get(IntegrityChecker::class);
-        self::$importInvalidFileService = $kernel->getContainer()->get(ImportInvalidFileService::class);
-        self::$invalidFilesDirectory = $kernel->getContainer()->getParameter('import.invalidFilesDirectory');
-        self::$integrityDuplicityService = $kernel->getContainer()->get(DuplicityService::class);
+        self::$entityManager = self::getContainer()->get('doctrine')->getManager();
+        self::$integrityChecker = self::getContainer()->get(IntegrityChecker::class);
+        self::$importInvalidFileService = self::getContainer()->get(ImportInvalidFileService::class);
+        self::$invalidFilesDirectory = self::getContainer()->getParameter('import.invalidFilesDirectory');
+        self::$integrityDuplicityService = self::getContainer()->get(DuplicityService::class);
     }
 
     public function testParseEmpty()
@@ -202,7 +202,7 @@ class IntegrityCheckerTest extends KernelTestCase
         $this->assertEquals('ERROR', $beneficiariesData[0][ImportTemplate::ROW_NAME_STATUS]['value']);
         $this->assertGreaterThan(
             0,
-            count(explode("\n", $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value']))
+            count(explode("\n", (string) $beneficiariesData[0][ImportTemplate::ROW_NAME_MESSAGES]['value']))
         );
     }
 

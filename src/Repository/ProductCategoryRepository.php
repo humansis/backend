@@ -59,16 +59,11 @@ class ProductCategoryRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case ProductCategoryOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('c.id', $direction);
-                        break;
-                    case ProductCategoryOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('c.name', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order directive ' . $name);
-                }
+                match ($name) {
+                    ProductCategoryOrderInputType::SORT_BY_ID => $qb->orderBy('c.id', $direction),
+                    ProductCategoryOrderInputType::SORT_BY_NAME => $qb->orderBy('c.name', $direction),
+                    default => throw new InvalidArgumentException('Invalid order directive ' . $name),
+                };
             }
         }
 

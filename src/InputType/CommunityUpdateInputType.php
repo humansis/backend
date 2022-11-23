@@ -18,7 +18,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CommunityUpdateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -26,61 +25,34 @@ class CommunityUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projectIds = [];
+    #[Assert\Type('array')]
+    private array $projectIds = [];
 
-    /**
-     * @var string|null $longitude
-     *
-     * @Assert\Length(max="45")
-     * @Assert\Type("string")
-     */
-    private $longitude;
+    #[Assert\Length(max: 45)]
+    #[Assert\Type('string')]
+    private ?string $longitude = null;
 
-    /**
-     * @var string|null $latitude
-     *
-     * @Assert\Length(max="45")
-     * @Assert\Type("string")
-     */
-    private $latitude;
+    #[Assert\Length(max: 45)]
+    #[Assert\Type('string')]
+    private ?string $latitude = null;
 
-    /**
-     * @var string $contactGivenName
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $contactGivenName;
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $contactGivenName = null;
 
-    /**
-     * @var string $contactFamilyName
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $contactFamilyName;
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $contactFamilyName = null;
 
-    /**
-     * @var AddressInputType $address
-     *
-     * @Assert\Valid
-     * @Assert\NotNull
-     */
-    private $address;
+    #[Assert\Valid]
+    #[Assert\NotNull]
+    private ?\InputType\Beneficiary\AddressInputType $address = null;
 
-    /**
-     * @var NationalIdCardInputType $nationalIdCard
-     *
-     * @Assert\Valid
-     */
-    private $nationalIdCard;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\NationalIdCardInputType $nationalIdCard = null;
 
-    /**
-     * @var PhoneInputType $phone
-     *
-     * @Assert\Valid
-     */
-    private $phone;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\PhoneInputType $phone = null;
 
     /**
      * @return int[]
@@ -170,9 +142,6 @@ class CommunityUpdateInputType implements InputTypeInterface
         return $this->address;
     }
 
-    /**
-     * @param AddressInputType $address
-     */
     public function setAddress(AddressInputType $address)
     {
         $this->address = $address;
@@ -186,9 +155,6 @@ class CommunityUpdateInputType implements InputTypeInterface
         return $this->nationalIdCard;
     }
 
-    /**
-     * @param NationalIdCardInputType|null $nationalIdCard
-     */
     public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
@@ -202,9 +168,6 @@ class CommunityUpdateInputType implements InputTypeInterface
         return $this->phone;
     }
 
-    /**
-     * @param PhoneInputType|null $phone
-     */
     public function setPhone(?PhoneInputType $phone): void
     {
         $this->phone = $phone;

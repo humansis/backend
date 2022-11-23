@@ -14,13 +14,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Institution extends AbstractBeneficiary
 {
-    public const TYPE_SCHOOL = 'school';
-    public const TYPE_HEALTH_CENTER = 'health';
-    public const TYPE_COMMUNITY_CENTER = 'community_center';
-    public const TYPE_GOVERNMENT = 'government';
-    public const TYPE_PRODUCTION = 'production';
-    public const TYPE_COMMERCE = 'commerce';
-    public const TYPE_ALL = [
+    final public const TYPE_SCHOOL = 'school';
+    final public const TYPE_HEALTH_CENTER = 'health';
+    final public const TYPE_COMMUNITY_CENTER = 'community_center';
+    final public const TYPE_GOVERNMENT = 'government';
+    final public const TYPE_PRODUCTION = 'production';
+    final public const TYPE_COMMERCE = 'commerce';
+    final public const TYPE_ALL = [
         self::TYPE_SCHOOL,
         self::TYPE_HEALTH_CENTER,
         self::TYPE_COMMUNITY_CENTER,
@@ -30,26 +30,21 @@ class Institution extends AbstractBeneficiary
     ];
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=255)
-     * @Assert\Choice(choices=Entity\Institution::TYPE_ALL)
      */
-    private $type;
+    #[Assert\Choice(choices: Institution::TYPE_ALL)]
+    private ?string $type = null;
 
     /**
-     * @var Person|null
      * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
      */
-    private $contact;
+    private ?\Entity\Person $contact;
 
     /**
      * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
@@ -57,18 +52,14 @@ class Institution extends AbstractBeneficiary
     private $address;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
      */
-    private $latitude;
+    private ?string $latitude = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
      */
-    private $longitude;
+    private ?string $longitude = null;
 
     /**
      * Institution constructor.
@@ -79,17 +70,11 @@ class Institution extends AbstractBeneficiary
         $this->contact = new Person();
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
@@ -97,8 +82,6 @@ class Institution extends AbstractBeneficiary
 
     /**
      * Set type.
-     *
-     * @param string $type
      */
     public function setType(string $type): void
     {
@@ -107,65 +90,42 @@ class Institution extends AbstractBeneficiary
 
     /**
      * Get type.
-     *
-     * @return string|null
      */
     public function getType(): ?string
     {
         return $this->type;
     }
 
-    /**
-     * @return Person|null
-     */
     public function getContact(): ?Person
     {
         return $this->contact;
     }
 
-    /**
-     * @param Person|null $contact
-     */
     public function setContact(?Person $contact): void
     {
         $this->contact = $contact;
     }
 
-    /**
-     * @return string|null
-     */
     public function getContactName(): ?string
     {
         return $this->contact->getEnGivenName();
     }
 
-    /**
-     * @param string|null $contactName
-     */
     public function setContactName(?string $contactName): void
     {
         $this->contact->setEnGivenName($contactName);
     }
 
-    /**
-     * @return string|null
-     */
     public function getContactFamilyName(): ?string
     {
         return $this->contact->getEnFamilyName();
     }
 
-    /**
-     * @param string|null $contactFamilyName
-     */
     public function setContactFamilyName(?string $contactFamilyName): void
     {
         $this->contact->setEnFamilyName($contactFamilyName);
     }
 
-    /**
-     * @return Phone|null
-     */
     public function getPhone(): ?Phone
     {
         if ($this->contact->getPhones()->count() === 0) {
@@ -175,9 +135,6 @@ class Institution extends AbstractBeneficiary
         return $this->contact->getPhones()->current();
     }
 
-    /**
-     * @param Phone|null $phone
-     */
     public function setPhone(?Phone $phone): void
     {
         if ($phone) {
@@ -188,9 +145,6 @@ class Institution extends AbstractBeneficiary
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhoneNumber(): ?string
     {
         if ($this->getPhone()) {
@@ -200,9 +154,6 @@ class Institution extends AbstractBeneficiary
         return null;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhonePrefix(): ?string
     {
         if (!$this->getPhone()) {
@@ -212,9 +163,6 @@ class Institution extends AbstractBeneficiary
         return $this->getPhone()->getPrefix();
     }
 
-    /**
-     * @return NationalId|null
-     */
     public function getNationalId(): ?NationalId
     {
         if ($this->contact->getNationalIds()->count() === 0) {
@@ -224,9 +172,6 @@ class Institution extends AbstractBeneficiary
         return $this->contact->getNationalIds()->current();
     }
 
-    /**
-     * @param NationalId|null $nationalId
-     */
     public function setNationalId(?NationalId $nationalId): void
     {
         if ($nationalId) {
@@ -237,9 +182,6 @@ class Institution extends AbstractBeneficiary
         }
     }
 
-    /**
-     * @return Address|null
-     */
     public function getAddress(): ?Address
     {
         return $this->address;
@@ -256,7 +198,6 @@ class Institution extends AbstractBeneficiary
     /**
      * Set lat.
      *
-     * @param string|null $latitude
      *
      * @return self
      */
@@ -269,8 +210,6 @@ class Institution extends AbstractBeneficiary
 
     /**
      * Get lat.
-     *
-     * @return string|null
      */
     public function getLatitude(): ?string
     {
@@ -280,7 +219,6 @@ class Institution extends AbstractBeneficiary
     /**
      * Set long.
      *
-     * @param string|null $longitude
      *
      * @return self
      */
@@ -291,9 +229,6 @@ class Institution extends AbstractBeneficiary
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLongitude(): ?string
     {
         return $this->longitude;

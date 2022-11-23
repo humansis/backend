@@ -21,19 +21,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class SelectionCriterionController extends AbstractController
 {
-    /** @var CodeListService */
-    private $codeListService;
-
-    public function __construct(CodeListService $codeListService)
+    public function __construct(private readonly CodeListService $codeListService)
     {
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets")
      * @Cache(expires="+12 hours", public=true)
-     *
-     * @return JsonResponse
      */
     public function targets(): JsonResponse
     {
@@ -45,11 +39,7 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields")
      *
-     * @param Request $request
-     * @param string $targetCode
-     * @param SelectionCriterionService $selectionCriterionService
      *
-     * @return JsonResponse
      */
     public function fields(
         Request $request,
@@ -60,8 +50,8 @@ class SelectionCriterionController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -72,12 +62,7 @@ class SelectionCriterionController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
-     * @param Request $request
-     * @param string $targetCode
-     * @param string $fieldCode
-     * @param SelectionCriterionService $selectionCriterionService
      *
-     * @return JsonResponse
      */
     public function conditions(
         Request $request,
@@ -85,8 +70,8 @@ class SelectionCriterionController extends AbstractController
         string $fieldCode,
         SelectionCriterionService $selectionCriterionService
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -106,9 +91,7 @@ class SelectionCriterionController extends AbstractController
      * @ParamConverter("assistance")
      * @Cache(expires="+12 hours", public=true)
      *
-     * @param Assistance $assistance
      *
-     * @return JsonResponse
      */
     public function selectionCriteriaByAssistance(Assistance $assistance): JsonResponse
     {

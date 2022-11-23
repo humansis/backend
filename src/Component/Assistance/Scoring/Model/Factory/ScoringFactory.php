@@ -21,24 +21,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 final class ScoringFactory
 {
-    /**
-     * @var ScoringCsvParser
-     */
-    private $parser;
+    private readonly \Component\Assistance\Scoring\ScoringCsvParser $parser;
 
-    /** @var ValidatorInterface */
-    private $validator;
-
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
         $this->parser = new ScoringCsvParser();
-        $this->validator = $validator;
     }
 
     /**
-     * @param ScoringBlueprint $scoringBlueprint
      *
-     * @return Scoring
      *
      * @throws CsvParserException
      * @throws Exception
@@ -51,10 +42,7 @@ final class ScoringFactory
     }
 
     /**
-     * @param string $name
      * @param ScoringRule[] $scoringRules
-     *
-     * @return Scoring
      * @throws ScoreValidationException
      */
     public function createScoring(string $name, array $scoringRules): Scoring

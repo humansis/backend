@@ -14,17 +14,10 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
-class ErrorResponseListener
+class ErrorResponseEventSubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
 {
-    /** @var LoggerInterface */
-    protected $logger;
-
-    protected $debug;
-
-    public function __construct(LoggerInterface $logger, $debug = false)
+    public function __construct(protected LoggerInterface $logger, protected $debug = false)
     {
-        $this->logger = $logger;
-        $this->debug = $debug;
     }
 
     public function onKernelException(ExceptionEvent $event)
@@ -83,6 +76,13 @@ class ErrorResponseListener
 
         $this->logger->error($exception->getMessage(), $flattenException->toArray());
 
-        $event->setResponse(JsonResponse::create($data, $data['code']));
+        $event->setResponse(new JsonResponse($data, $data['code']));
+    }
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [\Symfony\Component\HttpKernel\KernelEvents::EXCEPTION => ['onKernelException', -100]];
     }
 }

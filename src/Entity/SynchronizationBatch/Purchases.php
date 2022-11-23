@@ -4,26 +4,24 @@ declare(strict_types=1);
 
 namespace Entity\SynchronizationBatch;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\SynchronizationBatch;
-use Enum\SynchronizationBatchValidationType;
 use Entity\SmartcardPurchase;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
  */
 class Purchases extends SynchronizationBatch
 {
     /**
      * @var SmartcardPurchase[]
      */
-    private $createdPurchases;
+    private array $createdPurchases;
 
     public function __construct(array $requestData)
     {
         parent::__construct($requestData);
-        $this->createdPurchases = new ArrayCollection();
+        $this->createdPurchases = [];
     }
 
     /**
@@ -42,9 +40,6 @@ class Purchases extends SynchronizationBatch
         $this->createdPurchases = $createdPurchases;
     }
 
-    /**
-     * @param SmartcardPurchase $createdDeposit
-     */
     public function addCreatedDeposit(SmartcardPurchase $createdDeposit): void
     {
         $this->createdPurchases[] = $createdDeposit;

@@ -82,9 +82,7 @@ class ImportQueueRepository extends EntityRepository
         $results = $builder->getQuery()->getArrayResult();
 
         return array_values(
-            array_map(function ($item) {
-                return $item['id'];
-            }, $results)
+            array_map(fn($item) => $item['id'], $results)
         );
     }
 
@@ -105,9 +103,6 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
-     * @param string $state
-     * @return int
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
@@ -152,8 +147,6 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
-     *
      * @return ImportQueue[]
      */
     public function getInvalidEntries(Import $import): array
@@ -168,8 +161,6 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param string $string
-     *
      * @return ImportQueue[]
      */
     public function findInContent(Import $import, string $string)
@@ -183,9 +174,7 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
-     *
      * @return ImportQueue[]
      */
     public function getItemsToIntegrityCheck(Import $import, ?int $batchSize = null): iterable
@@ -205,9 +194,7 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
-     *
      * @return ImportQueue[]
      */
     public function getItemsToIdentityCheck(Import $import, ?int $batchSize = null): iterable
@@ -229,9 +216,7 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
-     *
      * @return ImportQueue[]
      */
     public function getItemsToSimilarityCheck(Import $import, ?int $batchSize = null): iterable
@@ -257,9 +242,7 @@ class ImportQueueRepository extends EntityRepository
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
-     *
      * @return ImportQueue[]
      */
     public function getSuspiciousItemsToUserCheck(Import $import, ?int $batchSize = null): iterable

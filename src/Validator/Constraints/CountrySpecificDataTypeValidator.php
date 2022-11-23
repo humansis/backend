@@ -13,11 +13,8 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class CountrySpecificDataTypeValidator extends ConstraintValidator
 {
-    private $propertyAccessor;
-
-    public function __construct(PropertyAccessorInterface $propertyAccessor = null)
+    public function __construct(private ?\Symfony\Component\PropertyAccess\PropertyAccessorInterface $propertyAccessor = null)
     {
-        $this->propertyAccessor = $propertyAccessor;
     }
 
     public function validate($object, Constraint $constraint)

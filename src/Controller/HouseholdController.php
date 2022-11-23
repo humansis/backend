@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Household;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -26,45 +27,14 @@ use Utils\ProjectService;
 
 class HouseholdController extends AbstractController
 {
-    /** @var HouseholdService */
-    private $householdService;
-
-    /** @var HouseholdRepository */
-    private $householdRepository;
-
-    /** @var BeneficiaryService */
-    private $beneficiaryService;
-
-    /** @var ProjectService */
-    private $projectService;
-
-    /**
-     * @param HouseholdService $householdService
-     * @param HouseholdRepository $householdRepository
-     * @param BeneficiaryService $beneficiaryService
-     * @param ProjectService $projectService
-     */
-    public function __construct(
-        HouseholdService $householdService,
-        HouseholdRepository $householdRepository,
-        BeneficiaryService $beneficiaryService,
-        ProjectService $projectService
-    ) {
-        $this->householdService = $householdService;
-        $this->householdRepository = $householdRepository;
-        $this->beneficiaryService = $beneficiaryService;
-        $this->projectService = $projectService;
+    public function __construct(private readonly HouseholdService $householdService, private readonly HouseholdRepository $householdRepository, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/households/exports")
      *
-     * @param Request $request
-     * @param HouseholdFilterInputType $filter
-     * @param Pagination $pagination
-     * @param HouseholdOrderInputType $order
      *
-     * @return Response
      */
     public function exports(
         Request $request,
@@ -115,9 +85,7 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/households/{id}")
      *
-     * @param Household $household
      *
-     * @return JsonResponse
      */
     public function item(Household $household): JsonResponse
     {
@@ -131,12 +99,7 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/households")
      *
-     * @param Request $request
-     * @param HouseholdFilterInputType $filter
-     * @param Pagination $pagination
-     * @param HouseholdOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -161,16 +124,13 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/households")
      *
-     * @param Request $request
-     * @param HouseholdCreateInputType $inputType
      *
-     * @return JsonResponse
      * @throws Exception
      */
     public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
         $household = $this->householdService->create($inputType, $this->getCountryCode($request));
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($household);
     }
@@ -178,17 +138,13 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/households/{id}")
      *
-     * @param Request $request
-     * @param Household $household
-     * @param HouseholdUpdateInputType $inputType
      *
-     * @return JsonResponse
      * @throws Exception
      */
     public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
         $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($object);
     }
@@ -196,9 +152,7 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/households/{id}")
      *
-     * @param Household $household
      *
-     * @return JsonResponse
      */
     public function delete(Household $household): JsonResponse
     {
@@ -210,11 +164,8 @@ class HouseholdController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/projects/{id}/households")
      *
-     * @param Project $project
      *
-     * @param AddHouseholdsToProjectInputType $inputType
      *
-     * @return JsonResponse
      */
     public function addHouseholdsToProject(Project $project, AddHouseholdsToProjectInputType $inputType): JsonResponse
     {

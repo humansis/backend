@@ -23,8 +23,7 @@ class BeneficiaryCompareMapper implements MapperInterface
 {
     use CompareTrait;
 
-    /** @var BeneficiaryCompare */
-    private $object;
+    private ?\Component\Import\ValueObject\BeneficiaryCompare $object = null;
 
     /**
      * {@inheritdoc}
@@ -46,9 +45,7 @@ class BeneficiaryCompareMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . BeneficiaryCompare::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . BeneficiaryCompare::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -133,9 +130,7 @@ class BeneficiaryCompareMapper implements MapperInterface
         $importPhones[] = trim(
             $this->object->getImportLine()->prefixPhone2 . $this->object->getImportLine()->numberPhone2
         );
-        $importPhones = array_filter($importPhones, function ($number) {
-            return !empty($number);
-        });
+        $importPhones = array_filter($importPhones, fn($number) => !empty($number));
 
         return $this->compareLists($databasePhones, $importPhones);
     }

@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class GeneralReliefItemMapper implements MapperInterface
 {
-    /** @var GeneralReliefItem */
-    private $object;
+    private ?\Entity\GeneralReliefItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,9 +35,7 @@ class GeneralReliefItemMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -54,7 +51,7 @@ class GeneralReliefItemMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ISO8601) : null;
+        return $this->object->getDistributedAt()?->format(DateTime::ATOM);
     }
 
     public function getNote(): ?string

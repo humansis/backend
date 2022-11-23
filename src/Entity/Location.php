@@ -2,6 +2,7 @@
 
 namespace Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CountryDependent;
 use Entity\Helper\NestedTreeTrait;
@@ -33,73 +34,50 @@ class Location implements TreeInterface
     use StandardizedPrimaryKey;
 
     /**
-     * @var Location|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Location", inversedBy="childLocations")
      * @ORM\JoinColumn(name="parent_location_id", nullable=true)
      */
-    private $parentLocation;
+    private ?\Entity\Location $parentLocation = null;
 
     /**
-     * @var Location[]
+     * @var Collection|null
      *
      * @ORM\OneToMany(targetEntity="Entity\Location", mappedBy="parentLocation")
      */
-    private $childLocations;
+    private ?Collection $childLocations = null;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
-    private $name;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="code", type="string", length=255, nullable=true)
-     */
-    private $code;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false)
      */
-    private $enumNormalizedName;
+    private ?string $enumNormalizedName = null;
 
-    /** @var int
-     *
+    /**
      * @ORM\Column(name="duplicity_count", type="integer", nullable=false)
      */
-    private $duplicityCount = 0;
+    private int $duplicityCount = 0;
 
     /**
-     * @param string $countryIso3
-     * @param string|null $name
-     * @param string|null $code
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
+    private string $name;
+
+    /**
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
+     */
+    private string|null $code;
+
     public function __construct(
-        string $countryIso3,
-        ?string $name = null,
-        ?string $code = null
+        string $countryIso3
     ) {
         $this->setCountryIso3($countryIso3);
-        $this->name = $name;
-        $this->code = $code;
     }
 
-    /**
-     * @return Location|null
-     */
     public function getParentLocation(): ?Location
     {
         return $this->parentLocation;
     }
 
-    /**
-     * @param Location|null $parentLocation
-     */
     public function setParentLocation(?Location $parentLocation): void
     {
         $this->parentLocation = $parentLocation;
@@ -114,24 +92,18 @@ class Location implements TreeInterface
     }
 
     /**
-     * @param Location[] $childLocations
+     * @param Collection|Location[] $childLocations
      */
     public function setChildLocations(array $childLocations): void
     {
         $this->childLocations = $childLocations;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
@@ -176,9 +148,6 @@ class Location implements TreeInterface
         return $this->getChildLocations();
     }
 
-    /**
-     * @return string
-     */
     public function getEnumNormalizedName(): string
     {
         return $this->enumNormalizedName;
@@ -189,10 +158,6 @@ class Location implements TreeInterface
         return $this->duplicityCount;
     }
 
-    /**
-     * @param string $separator
-     * @return string
-     */
     public function getFullPathNames(string $separator = ', '): string
     {
         $names = [];
@@ -262,9 +227,7 @@ class Location implements TreeInterface
     {
         $location = $this->getLocationByLevel($level);
 
-        return $location
-            ? $location->getId()
-            : null;
+        return $location?->getId();
     }
     //endregion
 }

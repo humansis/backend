@@ -20,7 +20,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testFindByHousehold()
@@ -35,7 +35,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no household in purchased items.");
         }
 
@@ -66,7 +66,7 @@ class PurchasedItemControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $exception) {
+        } catch (NoResultException) {
             $this->markTestSkipped("There is no beneficiary in purchased items.");
         }
 

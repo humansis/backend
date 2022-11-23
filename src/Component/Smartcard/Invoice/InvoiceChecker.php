@@ -14,44 +14,23 @@ use Repository\SmartcardPurchaseRepository;
 
 class InvoiceChecker
 {
-    /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
-
-    public function __construct(
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
-        SmartcardDepositRepository $smartcardDepositRepository
-    ) {
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
+    public function __construct(private readonly SmartcardPurchaseRepository $smartcardPurchaseRepository, private readonly SmartcardDepositRepository $smartcardDepositRepository)
+    {
     }
 
-    /**
-     * @param Vendor $vendor
-     * @param array $purchaseIds
-     * @return bool
-     */
     public function isInvoiceable(Vendor $vendor, array $purchaseIds): bool
     {
         try {
             $this->checkIfPurchasesCanBeInvoiced($vendor, $purchaseIds);
 
             return true;
-        } catch (AlreadyRedeemedInvoiceException | NotRedeemableInvoiceException $e) {
+        } catch (AlreadyRedeemedInvoiceException | NotRedeemableInvoiceException) {
             return false;
         }
     }
 
     /**
-     * @param Vendor $vendor
      * @param int[] $purchaseIds
-     * @return void
      * @throws AlreadyRedeemedInvoiceException
      * @throws NotRedeemableInvoiceException
      */
@@ -83,8 +62,6 @@ class InvoiceChecker
     }
 
     /**
-     * @param SmartcardPurchase $smartcardPurchase
-     * @return void
      * @throws NotRedeemableInvoiceException
      */
     private function checkDeposits(SmartcardPurchase $smartcardPurchase): void
@@ -101,18 +78,13 @@ class InvoiceChecker
     }
 
     /**
-     * @param SmartcardPurchase $smartcardPurchase
-     * @param Project $project
-     * @return void
      * @throws NotRedeemableInvoiceException
      */
     private function checkProjectConsistency(SmartcardPurchase $smartcardPurchase, Project $project): void
     {
         $projectFromPurchase = null;
         $assistance = $smartcardPurchase->getAssistance();
-        if ($assistance) {
-            $projectFromPurchase = $assistance->getProject();
-        }
+        $projectFromPurchase = $assistance?->getProject();
         if (!$projectFromPurchase) {
             throw new NotRedeemableInvoiceException("Purchase #{$smartcardPurchase->getId()} has no project.");
         }
@@ -124,9 +96,6 @@ class InvoiceChecker
     }
 
     /**
-     * @param SmartcardPurchase $smartcardPurchase
-     * @param string $currency
-     * @return void
      * @throws NotRedeemableInvoiceException
      */
     private function checkCurrencyConsistency(SmartcardPurchase $smartcardPurchase, string $currency): void
@@ -139,8 +108,6 @@ class InvoiceChecker
     }
 
     /**
-     * @param SmartcardPurchase $smartcardPurchase
-     * @return void
      * @throws AlreadyRedeemedInvoiceException
      */
     private function checkIfPurchaseWasNotRedeemed(SmartcardPurchase $smartcardPurchase): void
@@ -151,9 +118,6 @@ class InvoiceChecker
     }
 
     /**
-     * @param SmartcardPurchase $smartcardPurchase
-     * @param Vendor $vendor
-     * @return void
      * @throws NotRedeemableInvoiceException
      */
     private function checkVendorConsistency(SmartcardPurchase $smartcardPurchase, Vendor $vendor): void

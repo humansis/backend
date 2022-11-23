@@ -13,7 +13,7 @@ class PlainValuesHydrator extends AbstractHydrator
     protected function hydrateAllData()
     {
         $result = [];
-        foreach ($this->_stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        foreach ($this->_stmt->fetchAllAssociative(PDO::FETCH_ASSOC) as $row) {
             $result[] = reset($row);
         }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>{{ source('@Common/Pdf/main.css') }}</style>
+        <style>{{ source('Pdf/main.css') }}</style>
         <style>
 
             body {
@@ -45,7 +45,7 @@
     </head>
     <body>
         {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
-        {% include('@Common/Pdf/header.html.twig') with vars %}
+        {% include('Pdf/header.html.twig') with vars %}
         <main>
             <div class="row">
                     <div class="column-left">
@@ -81,7 +81,7 @@
                 <tr>
                     <th>Date</th>
                     <th>Voucher's code</th>
-                    <th>Value</th> 
+                    <th>Value</th>
                 </tr>
 
                 {% for voucherPurchase in voucherPurchases %}

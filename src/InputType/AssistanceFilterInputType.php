@@ -18,14 +18,10 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     use LocationFilterTrait;
     use ModalityTypeFilterTrait;
 
-    /**
-     * @Assert\Type("boolean")
-     */
+    #[Assert\Type('boolean')]
     protected $upcoming;
 
-    /**
-     * @Assert\Choice(callback={"Enum\AssistanceType", "values"})
-     */
+    #[Assert\Choice(callback: [\Enum\AssistanceType::class, 'values'])]
     protected $type;
 
     public function hasUpcomingOnly(): bool

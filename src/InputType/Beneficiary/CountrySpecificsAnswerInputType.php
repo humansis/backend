@@ -11,18 +11,14 @@ use Validator\Constraints\CountrySpecificDataType;
 
 class CountrySpecificsAnswerInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $countrySpecificId;
 
-    /**
-     * @Assert\Type(type={"string", "numeric"}, message="Value '{{ value }}' should be of type {{ type }}")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type(type: ['string', 'numeric'], message: "Value '{{ value }}' should be of type {{ type }}")]
+    #[Assert\Length(max: 255)]
     private $answer;
 
     /**

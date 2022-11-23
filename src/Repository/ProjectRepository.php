@@ -21,10 +21,7 @@ use Entity\User;
  */
 class ProjectRepository extends EntityRepository
 {
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $security;
+    private ?\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface $security = null;
 
     public function injectSecurity(AuthorizationCheckerInterface $security)
     {
@@ -64,15 +61,6 @@ class ProjectRepository extends EntityRepository
         return $qbr->getQuery()->getResult();
     }
 
-    /**
-     * @param User|null $user
-     * @param string|null $iso3
-     * @param ProjectFilterInputType|null $filter
-     * @param ProjectOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     *
-     * @return Paginator
-     */
     public function findByParams(
         ?User $user,
         ?string $iso3,
@@ -122,39 +110,21 @@ class ProjectRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case ProjectOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('p.id', $direction);
-                        break;
-                    case ProjectOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('p.name', $direction);
-                        break;
-                    case ProjectOrderInputType::SORT_BY_INTERNAL_ID:
-                        $qb->orderBy('p.internalId', $direction);
-                        break;
-                    case ProjectOrderInputType::SORT_BY_START_DATE:
-                        $qb->orderBy('p.startDate', $direction);
-                        break;
-                    case ProjectOrderInputType::SORT_BY_END_DATE:
-                        $qb->orderBy('p.endDate', $direction);
-                        break;
-                    case ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS:
-                        $qb->orderBy('SIZE(p.households)', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    ProjectOrderInputType::SORT_BY_ID => $qb->orderBy('p.id', $direction),
+                    ProjectOrderInputType::SORT_BY_NAME => $qb->orderBy('p.name', $direction),
+                    ProjectOrderInputType::SORT_BY_INTERNAL_ID => $qb->orderBy('p.internalId', $direction),
+                    ProjectOrderInputType::SORT_BY_START_DATE => $qb->orderBy('p.startDate', $direction),
+                    ProjectOrderInputType::SORT_BY_END_DATE => $qb->orderBy('p.endDate', $direction),
+                    ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS => $qb->orderBy('SIZE(p.households)', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 
         return new Paginator($qb);
     }
 
-    /**
-     * @param User $user
-     *
-     * @return array
-     */
     public function getProjectCountriesByUser(User $user): array
     {
         return $this->createQueryBuilder('p')

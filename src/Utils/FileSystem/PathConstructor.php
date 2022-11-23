@@ -8,19 +8,13 @@ use InvalidArgumentException;
 
 final class PathConstructor
 {
-    /**
-     * @param string $pathTemplate
-     * @param array $parameters
-     *
-     * @return string
-     */
     public static function construct(string $pathTemplate, array $parameters): string
     {
         $path = $pathTemplate;
 
         foreach ($parameters as $key => $value) {
             $paramPlaceholder = '<<' . $key . '>>';
-            $path = str_replace($paramPlaceholder, $value, $path);
+            $path = str_replace($paramPlaceholder, (string) $value, $path);
         }
 
         $matches = [];
@@ -29,7 +23,7 @@ final class PathConstructor
 
         if (!empty($matches[1])) {
             throw new InvalidArgumentException(
-                'Not all parameters for path were provided. Missing parameters: [' . join($matches[1], ' , ') . ']'
+                'Not all parameters for path were provided. Missing parameters: [' . join(' , ', $matches[1]) . ']'
             );
         }
 

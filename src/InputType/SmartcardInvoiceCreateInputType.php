@@ -7,13 +7,10 @@ namespace InputType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"SmartcardInvoiceCreateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['SmartcardInvoiceCreateInputType', 'Strict'])]
 class SmartcardInvoiceCreateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -21,7 +18,8 @@ class SmartcardInvoiceCreateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $purchaseIds;
+    #[Assert\Type('array')]
+    private array $purchaseIds;
 
     /**
      * @return int[]
@@ -34,7 +32,7 @@ class SmartcardInvoiceCreateInputType implements InputTypeInterface
     /**
      * @param int[] $purchaseIds
      */
-    public function setPurchaseIds(array $purchaseIds)
+    public function setPurchaseIds(array $purchaseIds): void
     {
         $this->purchaseIds = $purchaseIds;
     }

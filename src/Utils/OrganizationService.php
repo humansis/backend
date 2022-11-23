@@ -10,23 +10,13 @@ use RuntimeException;
 
 class OrganizationService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
     /**
      * OrganizationService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em = $entityManager;
     }
 
-    /**
-     * @param Organization $organization
-     * @param OrganizationUpdateInputType $inputType
-     */
     public function update(Organization $organization, OrganizationUpdateInputType $inputType)
     {
         $organization

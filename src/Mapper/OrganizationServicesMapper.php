@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class OrganizationServicesMapper implements MapperInterface
 {
-    /** @var OrganizationServices */
-    private $object;
+    private ?\Entity\OrganizationServices $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -27,9 +26,7 @@ class OrganizationServicesMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . OrganizationServices::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . OrganizationServices::class . ', ' . $object::class . ' given.'
         );
     }
 

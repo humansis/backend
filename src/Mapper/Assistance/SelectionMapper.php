@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class SelectionMapper implements MapperInterface
 {
-    /** @var AssistanceSelection */
-    private $object;
+    private ?\Entity\AssistanceSelection $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,9 +32,7 @@ class SelectionMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceSelection::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceSelection::class . ', ' . $object::class . ' given.'
         );
     }
 

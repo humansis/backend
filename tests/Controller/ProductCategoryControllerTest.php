@@ -24,13 +24,13 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+        $productCategory = self::getContainer()->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
             ['type' => ProductCategoryType::FOOD],
             ['id' => 'asc']
         );
@@ -49,7 +49,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -83,7 +83,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -109,7 +109,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/product-categories/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +134,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -204,7 +204,7 @@ class ProductCategoryControllerTest extends BMSServiceTestCase
             '/api/basic/vendor-app/v1/product-categories?sort[]=name.asc&filter[vendors][]=' . $vendor->getId()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

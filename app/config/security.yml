@@ -1,6 +1,6 @@
 security:
-    encoders:
-        FOS\UserBundle\Model\UserInterface: sha512
+    password_hashers:
+        Entity\User: sha512
 
     providers:
         our_db_provider:
@@ -22,7 +22,6 @@ security:
 
         basic_auth:
             pattern: ^/api/basic/
-            anonymous: false
             http_basic:
                 realm: Secured Areaa
                 provider: basic-auth-provider
@@ -30,7 +29,6 @@ security:
         jwt_login_web_app:
             pattern: ^/api/jwt/web-app/v[0-9]+/login
             stateless: true
-            anonymous: true
             provider: jwt_provider
             json_login:
                 check_path: /api/jwt/web-app/v1/login
@@ -39,7 +37,6 @@ security:
         jwt_login_offline_app:
             pattern: ^/api/jwt/offline-app/v[0-9]+/login
             stateless: true
-            anonymous: true
             provider: jwt_provider
             json_login:
                 check_path: /api/jwt/offline-app/v2/login
@@ -48,7 +45,6 @@ security:
         jwt_login_vendor_app:
             pattern: ^/api/jwt/vendor-app/v[0-9]+/login
             stateless: true
-            anonymous: true
             provider: jwt_provider
             json_login:
                 check_path: /api/jwt/vendor-app/v2/login
@@ -57,7 +53,6 @@ security:
         jwt_login_support_app:
             pattern: ^/api/jwt/support-app/v[0-9]+/login
             stateless: true
-            anonymous: true
             provider: jwt_provider
             json_login:
                 check_path: /api/jwt/support-app/v1/login
@@ -66,25 +61,21 @@ security:
         jwt_salt:
             pattern: ^/api/jwt/(web-app|vendor-app|offline-app|support-app)/v[0-9]+/users/salt
             stateless: true
-            anonymous: true
 
         jwt:
             pattern: ^/api/jwt/(web-app|vendor-app|offline-app|support-app)/v[0-9]+/
             stateless: true
-            anonymous: false
             provider: jwt_provider
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+            jwt: ~
 
     access_control:
         # Login
-        - { path: ^/login$,    role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register,  role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/imports/cli/[0-9]+, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/jwt/web-app/v[0-9]+/login,      role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/jwt/web-app/v[0-9]+/users/salt, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login$,    role: PUBLIC_ACCESS }
+        - { path: ^/register,  role: PUBLIC_ACCESS }
+        - { path: ^/resetting, role: PUBLIC_ACCESS }
+        - { path: ^/imports/cli/[0-9]+, role: PUBLIC_ACCESS }
+        - { path: ^/api/jwt/web-app/v[0-9]+/login,      role: PUBLIC_ACCESS }
+        - { path: ^/api/jwt/web-app/v[0-9]+/users/salt, role: PUBLIC_ACCESS }
         - { path: ^/api/jwt/web-app/v[0-9]+,            role: IS_AUTHENTICATED_FULLY }
 
     access_decision_manager:

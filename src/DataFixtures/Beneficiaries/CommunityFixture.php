@@ -21,7 +21,7 @@ use Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    public const COMMUNITIES = [
+    final public const COMMUNITIES = [
         [
             'longitude' => '20,254871',
             'latitude' => '45,47854425',
@@ -96,42 +96,14 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         ],
     ];
 
-    /** @var string */
-    private $environment;
-
-    /** @var Countries */
-    private $countries;
-
-    /** @var CommunityService */
-    private $communityService;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
     /**
      * CommunityFixture constructor.
-     *
-     * @param string $environment
-     * @param Countries $countries
-     * @param CommunityService $communityService
-     * @param ProjectRepository $projectRepository
      */
-    public function __construct(
-        string $environment,
-        Countries $countries,
-        CommunityService $communityService,
-        ProjectRepository $projectRepository
-    ) {
-        $this->countries = $countries;
-        $this->environment = $environment;
-        $this->communityService = $communityService;
-        $this->projectRepository = $projectRepository;
+    public function __construct(private readonly string $environment, private readonly Countries $countries, private readonly CommunityService $communityService, private readonly ProjectRepository $projectRepository)
+    {
     }
 
     /**
-     * @param ObjectManager $manager
      *
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException
@@ -190,16 +162,12 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * @param string $iso3
-     *
      * @return int[]
      */
     private function getProjectsIds(string $iso3): array
     {
         $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
-        return array_map(function (Project $project) {
-            return $project->getId();
-        }, $projects);
+        return array_map(fn(Project $project) => $project->getId(), $projects);
     }
 }

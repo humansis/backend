@@ -6,7 +6,7 @@ namespace Enum;
 
 class CacheTarget
 {
-    public const ASSISTANCE = 'assistance';
+    final public const ASSISTANCE = 'assistance';
 
     public static function assistanceId(int $id): string
     {

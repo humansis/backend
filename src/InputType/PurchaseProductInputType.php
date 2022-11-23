@@ -9,39 +9,23 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class PurchaseProductInputType implements InputTypeInterface
 {
-    /**
-     * @var int
-     *
-     * @Assert\NotNull
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan(0)
-     */
-    private $id;
+    #[Assert\NotNull]
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    private ?int $id = null;
 
-    /**
-     * @var float|int|string|null
-     *
-     * @Assert\Type("numeric")
-     * @Assert\GreaterThanOrEqual(0) //TODO Is it correct to allow 0?
-     */
-    private $quantity;
+    #[Assert\Type('numeric')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private float|int|string|null $quantity = null;
 
-    /**
-     * @var float|int|string
-     *
-     * @Assert\NotNull
-     * @Assert\Type("numeric")
-     * @Assert\GreaterThanOrEqual(0) //TODO Is it correct to allow 0?
-     */
-    private $value;
+    #[Assert\NotNull]
+    #[Assert\Type('numeric')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private float|int|string|null $value = null;
 
-    /**
-     * @var string
-     *
-     * @Assert\NotNull
-     * @Assert\Type("string") //TODO check, if string is valid currency (we need to have proper currencies enum)
-     */
-    private $currency;
+    #[Assert\NotNull]
+    #[Assert\Type('string')]
+    private ?string $currency = null;
 
     /**
      * @return int
@@ -59,10 +43,7 @@ class PurchaseProductInputType implements InputTypeInterface
         $this->id = $id;
     }
 
-    /**
-     * @return float|int|string
-     */
-    public function getQuantity()
+    public function getQuantity(): float|int|string
     {
         if (null === $this->quantity) {
             return 1;
@@ -79,18 +60,12 @@ class PurchaseProductInputType implements InputTypeInterface
         $this->quantity = $quantity;
     }
 
-    /**
-     * @return float|int|string
-     */
-    public function getValue()
+    public function getValue(): float|int|string
     {
         return $this->value;
     }
 
-    /**
-     * @param float|int|string $value
-     */
-    public function setValue($value)
+    public function setValue(float|int|string $value)
     {
         $this->value = $value;
     }

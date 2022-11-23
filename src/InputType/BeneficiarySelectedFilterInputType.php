@@ -11,10 +11,8 @@ class BeneficiarySelectedFilterInputType extends AbstractFilterInputType
 {
     private const EXCLUDE_ASSISTANCE = "excludeAssistance";
 
-    /**
-     * @Assert\Type("int")
-     * @Assert\Positive()
-     */
+    #[Assert\Type('int')]
+    #[Assert\Positive]
     protected $excludeAssistance;
 
     public function getExcludeAssistance()

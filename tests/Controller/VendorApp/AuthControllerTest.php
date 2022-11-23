@@ -14,7 +14,7 @@ class AuthControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testOfflineAppLogin(): void
@@ -26,9 +26,9 @@ class AuthControllerTest extends BMSServiceTestCase
             'password' => 'pin1234',
         ];
 
-        $this->client->request('POST', '/api/jwt/vendor-app/v2/login', [], [], [], json_encode($body));
+        $this->client->request('POST', '/api/jwt/vendor-app/v2/login', [], [], [], json_encode($body, JSON_THROW_ON_ERROR));
 
-        $responseBody = json_decode($this->client->getResponse()->getContent(), true);
+        $responseBody = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             "Request failed: " . $this->client->getResponse()->getContent()

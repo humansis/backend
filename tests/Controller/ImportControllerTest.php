@@ -33,7 +33,7 @@ class ImportControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -43,7 +43,7 @@ class ImportControllerTest extends BMSServiceTestCase
     public function testCreate()
     {
         /** @var Project|null $projects */
-        $projects = self::$container->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+        $projects = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
 
         if (is_null($projects)) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -55,7 +55,7 @@ class ImportControllerTest extends BMSServiceTestCase
             'projects' => [$projects->getId()],
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -108,7 +108,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         // $this->request('GET', "/api/basic/web-app/v1/imports/$id/files");
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         if ($expectingViolation) {
             $this->assertIsArray($result['data'][0]['violations']);
@@ -122,7 +122,6 @@ class ImportControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreate
      *
-     * @param int $id
      *
      * @return int
      */
@@ -130,7 +129,7 @@ class ImportControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/imports/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -156,7 +155,7 @@ class ImportControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/imports?page=1&size=10&sort[]=project.desc');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -189,8 +188,6 @@ class ImportControllerTest extends BMSServiceTestCase
      * @depends      testCreate
      * @dataProvider patchDataProvider
      *
-     * @param int $id
-     * @param string $parameter
      * @param        $value
      */
     public function testPatch(string $parameter, $value, int $id)
@@ -210,7 +207,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/imports/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertEquals($value, $result[$parameter]);
     }
@@ -261,7 +258,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->request('GET', "/api/basic/web-app/v1/imports/$importId/statistics");
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -292,7 +289,7 @@ class ImportControllerTest extends BMSServiceTestCase
 
         $this->request('GET', "/api/basic/web-app/v1/imports/queue/$importQueueId");
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -346,8 +343,6 @@ class ImportControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return int
-     *
      * @depends testUploadFile
      */
     public function testListValidImportedFiles(): int
@@ -394,7 +389,6 @@ class ImportControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return int
      *
      * @depends testUploadFile
      * @throws NonUniqueResultException
@@ -408,7 +402,7 @@ class ImportControllerTest extends BMSServiceTestCase
                 ->where('if.structureViolations IS NOT NULL and if.isLoaded = true')
                 ->setMaxResults(1)
                 ->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped('There needs to be at least one import invalid file in system.');
         }
 
@@ -480,8 +474,6 @@ class ImportControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testListInvalidFiles
-     *
-     * @param int $id
      */
     public function testGetInvalidFile(int $id)
     {

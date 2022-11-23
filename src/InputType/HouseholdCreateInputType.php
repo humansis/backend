@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-/**
- * @Assert\GroupSequenceProvider()
- */
+#[Assert\GroupSequenceProvider]
 class HouseholdCreateInputType extends HouseholdUpdateInputType implements GroupSequenceProviderInterface
 {
-    public function getGroupSequence()
+    public function getGroupSequence(): array|GroupSequence
     {
         $commonSequence = [
             'HouseholdCreateInputType',

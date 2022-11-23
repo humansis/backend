@@ -21,28 +21,19 @@ use Utils\SmartcardService;
 trait SmartcardPurchaseHelper
 {
     /**
-     * @param string $serialNumber
-     * @param SmartcardPurchaseInputType $smartcardPurchaseInputType
-     * @return SmartcardPurchase
      * @throws Exception
      */
     public function createPurchase(
         string $serialNumber,
-        SmartcardPurchaseInputType $smartcardPurchaseInputType
+        SmartcardPurchaseInputType $smartcardPurchaseInputType,
+        SmartcardService $smartcardService,
     ): SmartcardPurchase {
-        return self::$container->get(SmartcardService::class)->purchase(
+        return $smartcardService->purchase(
             $serialNumber,
             $smartcardPurchaseInputType
         );
     }
 
-    /**
-     * @param int $assistanceId
-     * @param int $beneficiaryId
-     * @param int $vendorId
-     * @param PurchaseProductInputType $productInputType
-     * @return SmartcardPurchaseInputType
-     */
     public static function buildSmartcardPurchaseInputType(
         int $assistanceId,
         int $beneficiaryId,

@@ -9,14 +9,8 @@ use Entity\SmartcardDeposit;
 
 class DepositException extends Exception
 {
-    /**
-     * @var SmartcardDeposit
-     */
-    private $deposit;
-
-    public function __construct(SmartcardDeposit $deposit, string $message = '')
+    public function __construct(private readonly SmartcardDeposit $deposit, string $message = '')
     {
-        $this->deposit = $deposit;
         parent::__construct($message);
     }
 

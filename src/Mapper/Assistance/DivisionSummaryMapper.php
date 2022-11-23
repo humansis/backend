@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class DivisionSummaryMapper implements MapperInterface
 {
-    /** @var DivisionSummary */
-    private $object;
+    private ?\Component\Assistance\DTO\DivisionSummary $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,7 @@ class DivisionSummaryMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . DivisionSummary::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . DivisionSummary::class . ', ' . $object::class . ' given.'
         );
     }
 

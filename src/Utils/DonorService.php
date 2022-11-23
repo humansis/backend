@@ -16,24 +16,11 @@ use Entity\Donor;
  */
 class DonorService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * DonorService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    {
     }
 
     public function create(DonorCreateInputType $inputType): Donor
@@ -64,7 +51,6 @@ class DonorService
     }
 
     /**
-     * @param Donor $donor
      * @return bool
      */
     public function delete(Donor $donor)
@@ -72,7 +58,7 @@ class DonorService
         try {
             $this->em->remove($donor);
             $this->em->flush();
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return false;
         }
 
@@ -82,7 +68,6 @@ class DonorService
     /**
      * Export all the donors in the CSV file
      *
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv(string $type)

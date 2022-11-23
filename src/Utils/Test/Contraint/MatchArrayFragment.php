@@ -8,14 +8,13 @@ use PHPUnit\Framework\Constraint\Constraint;
 
 class MatchArrayFragment extends Constraint
 {
-    private $additionalFailureMessage = '';
+    private string $additionalFailureMessage = '';
 
-    /** @var array */
-    private $expected;
-
-    public function __construct($expectedArray)
+    /**
+     * @param mixed[] $expectedArray
+     */
+    public function __construct(private $expected)
     {
-        $this->expected = $expectedArray;
     }
 
     protected function matches($actual): bool

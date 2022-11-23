@@ -9,25 +9,11 @@ use JsonSerializable;
 
 final class UnexpectedError implements JsonSerializable
 {
-    /** @var string */
-    private $finishAction;
-
-    /** @var string */
-    private $errorMessage;
-
-    /** @var string[] */
-    private $stackTrace;
-
     /**
-     * @param string $finishAction
-     * @param string $errorMessage
      * @param string[] $stackTrace
      */
-    private function __construct(string $finishAction, string $errorMessage, array $stackTrace)
+    private function __construct(private readonly string $finishAction, private readonly string $errorMessage, private readonly array $stackTrace)
     {
-        $this->finishAction = $finishAction;
-        $this->errorMessage = $errorMessage;
-        $this->stackTrace = $stackTrace;
     }
 
     public static function create(string $finishAction, Exception $exception): self

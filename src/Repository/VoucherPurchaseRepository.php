@@ -11,7 +11,6 @@ class VoucherPurchaseRepository extends EntityRepository
     /**
      * Returns list of purchases in given vendor.
      *
-     * @param Vendor $vendor
      *
      * @return VoucherPurchase[]
      */

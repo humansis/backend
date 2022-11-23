@@ -9,8 +9,7 @@ use Tests\BMSServiceTestCase;
 
 class ProjectControllerTest extends BMSServiceTestCase
 {
-    /** @var string */
-    private $projectName;
+    private readonly string $projectName;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -29,7 +28,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
@@ -54,7 +53,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -91,7 +90,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/projects/' . $id . '/summaries?code[]=reached_beneficiaries');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -134,7 +133,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -172,7 +171,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/projects/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -208,7 +207,7 @@ class ProjectControllerTest extends BMSServiceTestCase
             '/api/basic/web-app/v1/projects?filter[id][]=' . $id . '&filter[fulltext]=' . $this->projectName
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

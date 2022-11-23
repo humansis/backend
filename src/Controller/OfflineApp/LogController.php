@@ -15,21 +15,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 
 class LogController extends AbstractOfflineAppController
 {
-    /**
-     * @var LogsStorageService
-     */
-    private $logsStorageService;
-
-    public function __construct(LogsStorageService $logsStorageService)
+    public function __construct(private readonly LogsStorageService $logsStorageService)
     {
-        $this->logsStorageService = $logsStorageService;
     }
 
     /**
      * @Rest\Post("/offline-app/v1/users/{id}/logs")
      *
-     * @param User $user
-     * @param Request $request
      *
      * @return JsonResponse
      * @throws FilesystemException

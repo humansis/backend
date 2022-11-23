@@ -12,9 +12,7 @@ use InputType\FilterFragment\ProjectFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"HouseholdFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['HouseholdFilterInputType', 'Strict'])]
 class HouseholdFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
@@ -22,13 +20,10 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     use ProjectFilterTrait;
     use LocationFilterTrait;
 
-    /**
-     * @Assert\Choice({"M", "F"})
-     */
+    #[Assert\Choice(['M', 'F'])]
     protected $gender;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
@@ -36,10 +31,10 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $vulnerabilities;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -47,10 +42,10 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $nationalIds;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Enum\ResidencyStatus", "all"})
@@ -58,10 +53,10 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $residencyStatuses;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Entity\Referral", "types"})
@@ -69,10 +64,10 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $referralTypes;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *        @Assert\Choice(callback={"Enum\Livelihood", "values"}, strict=true)
@@ -80,6 +75,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $livelihoods;
 
     public static function vulnerabilities(): array

@@ -22,10 +22,10 @@ class IdentityCheckerTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$entityManager = $kernel->getContainer()->get('doctrine')->getManager();
+        self::$entityManager = self::getContainer()->get('doctrine')->getManager();
     }
 
-    public function testSelfCheck()
+    public function testSelfCheck(): void
     {
         $this->markTestSkipped('Self check is disabled for this time');
         $import = self::$entityManager->getRepository(Import::class)->findBy(
@@ -34,7 +34,7 @@ class IdentityCheckerTest extends KernelTestCase
         )[0];
         $import->setState(ImportState::IDENTITY_CHECKING);
 
-        $checker = self::$container->get(IdentityChecker::class);
+        $checker = self::getContainer()->get(IdentityChecker::class);
         $checker->check($import);
 
         $count = self::$entityManager->createQueryBuilder()

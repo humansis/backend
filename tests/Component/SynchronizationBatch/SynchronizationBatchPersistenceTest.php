@@ -26,15 +26,14 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
     /** @var EntityRepository */
     private $syncRepo;
 
-    /** @var Deposits */
-    private $sync;
+    private \Entity\SynchronizationBatch\Deposits $sync;
 
     protected function setUp(): void
     {
         parent::setUp();
         self::bootKernel();
 
-        $container = self::$kernel->getContainer();
+        $container = self::getContainer();
         $this->manager = $container->get('doctrine.orm.default_entity_manager');
         $this->syncRepo = $this->manager->getRepository(SynchronizationBatch::class);
         $this->sync = new Deposits(['test' => 'xyz', 'array' => [1, 2, 5, 1024], 0 => 0, false => true]);

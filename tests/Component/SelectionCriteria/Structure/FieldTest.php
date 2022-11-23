@@ -29,7 +29,7 @@ class FieldTest extends TestCase
             new Field('field', 'Text label', [1], $type);
 
             $this->assertTrue(true);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail($type . ' is not valid type');
         }
     }
@@ -45,7 +45,7 @@ class FieldTest extends TestCase
             new Field('field', 'Text label', [1], 'integer', $callback);
 
             $this->assertTrue(true);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Invalid callback');
         }
     }
@@ -64,7 +64,7 @@ class FieldTest extends TestCase
     {
         return [
             ['is_bool'],
-            [[self::class, 'callbackProvider']],
+            [self::callbackProvider(...)],
             [null],
         ];
     }

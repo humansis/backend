@@ -9,20 +9,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CampInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type(type={"string", "numeric"})
-     * @Assert\Length(max="45")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type(type: ['string', 'numeric'])]
+    #[Assert\Length(max: 45)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $name;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $locationId;
 
     /**

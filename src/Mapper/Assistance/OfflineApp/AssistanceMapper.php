@@ -12,8 +12,7 @@ use Serializer\MapperInterface;
 
 class AssistanceMapper implements MapperInterface
 {
-    /** @var Assistance */
-    private $object;
+    private ?\Entity\Assistance $object = null;
 
     /** @var string */
     public $date_distribution;
@@ -53,7 +52,7 @@ class AssistanceMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Assistance::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -69,14 +68,11 @@ class AssistanceMapper implements MapperInterface
 
     public function getType(): int
     {
-        switch ($this->object->getTargetType()) {
-            case AssistanceTargetType::INDIVIDUAL:
-                return 1;
-            case AssistanceTargetType::HOUSEHOLD:
-                return 0;
-        }
-
-        return -1;
+        return match ($this->object->getTargetType()) {
+            AssistanceTargetType::INDIVIDUAL => 1,
+            AssistanceTargetType::HOUSEHOLD => 0,
+            default => - 1,
+        };
     }
 
     public function getCommodities(): array

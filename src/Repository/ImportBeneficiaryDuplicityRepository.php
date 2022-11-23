@@ -10,11 +10,6 @@ use Entity\Import;
 
 class ImportBeneficiaryDuplicityRepository extends EntityRepository
 {
-    /**
-     * @param Import $import
-     *
-     * @return int
-     */
     public function getTotalByImport(Import $import): int
     {
         try {
@@ -25,7 +20,7 @@ class ImportBeneficiaryDuplicityRepository extends EntityRepository
                 ->setParameter('import', $import)
                 ->getQuery()
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return 0;
         }
     }

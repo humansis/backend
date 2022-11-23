@@ -27,40 +27,21 @@ class IdentityChecker
 {
     use ImportLoggerTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportLineFactory */
-    private $importLineFactory;
-
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var WorkflowInterface */
-    private $importQueueStateMachine;
+    private readonly \Repository\ImportQueueRepository $queueRepository;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        Integrity\ImportLineFactory $importLineFactory
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly Integrity\ImportLineFactory $importLineFactory
     ) {
-        $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->importLineFactory = $importLineFactory;
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
-     *
      * @throws EnumValueNoFoundException
      */
     public function check(Import $import, ?int $batchSize = null)
@@ -74,9 +55,7 @@ class IdentityChecker
     }
 
     /**
-     * @param Import $import
      * @param ImportQueue[] $batch
-     *
      * @throws EnumValueNoFoundException
      */
     public function checkBatch(Import $import, iterable $items)
@@ -133,9 +112,6 @@ class IdentityChecker
         }
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     protected function checkOne(ImportQueue $item): void
     {
         $duplicities = $this->validateItemDuplicities($item);
@@ -152,10 +128,7 @@ class IdentityChecker
     }
 
     /**
-     * @param ImportQueue $item
-     * @param NationalIdHashSet $hashSet
      *
-     * @return void
      * @throws EnumValueNoFoundException
      */
     private function extractItemIDs(ImportQueue $item, NationalIdHashSet $hashSet): void
@@ -171,8 +144,6 @@ class IdentityChecker
     }
 
     /**
-     * @param ImportQueue $item
-     *
      * @return Beneficiary[]
      */
     protected function validateItemDuplicities(ImportQueue $item): array
@@ -210,10 +181,10 @@ class IdentityChecker
             $item->getImport()->getCountryIso3()
         );
 
-        if (count($bnfDuplicities) > 0) {
+        if ((is_countable($bnfDuplicities) ? count($bnfDuplicities) : 0) > 0) {
             $this->logImportInfo(
                 $item->getImport(),
-                "Found " . count($bnfDuplicities) . " duplicities for $idType $idNumber"
+                "Found " . (is_countable($bnfDuplicities) ? count($bnfDuplicities) : 0) . " duplicities for $idType $idNumber"
             );
         } else {
             $this->logImportDebug($item->getImport(), "Found no duplicities");
@@ -229,11 +200,6 @@ class IdentityChecker
         }
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
     public function isImportQueueUnresolvedSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)
@@ -264,8 +230,6 @@ class IdentityChecker
     }
 
     /**
-     * @param ImportQueue $current
-     *
      * @return ImportQueue[]
      */
     private function findInQueue(ImportQueue $current)

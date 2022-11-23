@@ -16,27 +16,12 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DistributedSummarySpreadsheetExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var Countries */
-    private $countries;
-
-    /** @var DistributedItemRepository */
-    private $repository;
-
-    public function __construct(
-        TranslatorInterface $translator,
-        Countries $countries,
-        DistributedItemRepository $repository
-    ) {
-        $this->translator = $translator;
-        $this->countries = $countries;
-        $this->repository = $repository;
+    public function __construct(private readonly TranslatorInterface $translator, private readonly Countries $countries, private readonly DistributedItemRepository $repository)
+    {
     }
 
     /**
@@ -145,8 +130,7 @@ class DistributedSummarySpreadsheetExport
             $assistance = $distributedItem->getAssistance();
             $commodity = $distributedItem->getCommodity();
             $datetime = $distributedItem->getDateDistribution();
-            $fieldOfficerEmail = $distributedItem->getFieldOfficer() ? $distributedItem->getFieldOfficer()->getEmail(
-            ) : null;
+            $fieldOfficerEmail = $distributedItem->getFieldOfficer()?->getEmail();
             $primaryNationalId = $beneficiary->getPerson()->getPrimaryNationalId();
             $secondaryNationalId = $beneficiary->getPerson()->getSecondaryNationalId();
             $tertiaryNationalId = $beneficiary->getPerson()->getTertiaryNationalId();

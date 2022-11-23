@@ -11,17 +11,10 @@ use Entity\Vendor;
 
 class VendorLoginMapper implements MapperInterface
 {
-    /** @var Vendor */
-    private $object;
+    private ?\Entity\Vendor $object = null;
 
-    /**
-     * @var JWTTokenManagerInterface
-     */
-    private $JWTTokenManager;
-
-    public function __construct(JWTTokenManagerInterface $JWTTokenManager)
+    public function __construct(private readonly JWTTokenManagerInterface $JWTTokenManager)
     {
-        $this->JWTTokenManager = $JWTTokenManager;
     }
 
     public function supports(object $object, $format = null, array $context = null): bool
@@ -40,7 +33,7 @@ class VendorLoginMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Vendor::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Vendor::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -56,7 +49,7 @@ class VendorLoginMapper implements MapperInterface
 
     public function getUsername(): string
     {
-        return $this->object->getUser()->getUsername();
+        return $this->object->getUser()->getUserIdentifier();
     }
 
     public function getToken(): string

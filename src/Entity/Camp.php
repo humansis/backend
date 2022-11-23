@@ -16,11 +16,9 @@ class Camp
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=45)
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Location")

@@ -6,13 +6,10 @@ namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"AddRemoveCommunityToAssistanceInputType", "Strict"})
- */
+#[Assert\GroupSequence(['AddRemoveCommunityToAssistanceInputType', 'Strict'])]
 class AddRemoveCommunityToAssistanceInputType extends AddRemoveAbstractBeneficiaryToAssistanceInputType
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
@@ -20,6 +17,7 @@ class AddRemoveCommunityToAssistanceInputType extends AddRemoveAbstractBeneficia
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $communityIds;
 
     public function setCommunityIds($communityIds)

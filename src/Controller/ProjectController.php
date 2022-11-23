@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Controller\ExportController;
 use Entity\UserCountry;
@@ -27,29 +28,14 @@ use Utils\ProjectService;
 
 class ProjectController extends AbstractController
 {
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /** @var ProjectService */
-    private $projectService;
-
-    public function __construct(
-        ProjectRepository $projectRepository,
-        ProjectService $projectService
-    ) {
-        $this->projectRepository = $projectRepository;
-        $this->projectService = $projectService;
+    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/summaries")
      *
-     * @param Request $request
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function summaries(Request $request, Project $project): JsonResponse
     {
@@ -57,16 +43,15 @@ class ProjectController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $repository = $this->getDoctrine()->getRepository(Beneficiary::class);
+        $repository = $this->managerRegistry->getRepository(Beneficiary::class);
 
         $result = [];
-        foreach ($request->query->get('code', []) as $code) {
-            switch ($code) {
-                case 'reached_beneficiaries':
-                    $result[] = ['code' => $code, 'value' => $repository->countAllInProject($project)];
-                    break;
-                default:
-                    throw new BadRequestHttpException('Invalid query parameter code.' . $code);
+        if ($request->query->has('code')) {
+            foreach ($request->query->all('code') as $code) {
+                $result[] = match ($code) {
+                    'reached_beneficiaries' => ['code' => $code, 'value' => $repository->countAllInProject($project)],
+                    default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
+                };
             }
         }
 
@@ -76,9 +61,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/exports")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function exports(Request $request): Response
     {
@@ -91,9 +74,7 @@ class ProjectController extends AbstractController
      * @Rest\Get("/web-app/v1/projects/{id}")
      * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function item(Project $project): JsonResponse
     {
@@ -107,12 +88,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects")
      *
-     * @param Request $request
-     * @param ProjectFilterInputType $filter
-     * @param ProjectOrderInputType $orderBy
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -120,8 +96,8 @@ class ProjectController extends AbstractController
         ProjectOrderInputType $orderBy,
         Pagination $pagination
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -139,9 +115,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/projects")
      *
-     * @param ProjectCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(ProjectCreateInputType $inputType): JsonResponse
     {
@@ -153,10 +127,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/projects/{id}")
      *
-     * @param Project $project
-     * @param ProjectUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Project $project, ProjectUpdateInputType $inputType): JsonResponse
     {
@@ -172,9 +143,7 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/projects/{id}")
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function delete(Project $project): JsonResponse
     {
@@ -186,17 +155,13 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/users/{id}/projects")
      *
-     * @param User $user
      *
-     * @return JsonResponse
      */
     public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {
             $projects = array_values(
-                array_map(function (UserProject $item) {
-                    return $item->getProject();
-                }, $user->getProjects()->toArray())
+                array_map(fn(UserProject $item) => $item->getProject(), $user->getProjects()->toArray())
             );
 
             return $this->json(new Paginator($projects));
@@ -204,9 +169,7 @@ class ProjectController extends AbstractController
 
         if ($user->getCountries()->count() > 0) {
             $countries = array_values(
-                array_map(function (UserCountry $item) {
-                    return $item->getId();
-                }, $user->getCountries()->toArray())
+                array_map(fn(UserCountry $item) => $item->getId(), $user->getCountries()->toArray())
             );
 
             $data = $this->projectRepository->findByCountries($countries);

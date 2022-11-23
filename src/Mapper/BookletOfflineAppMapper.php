@@ -13,8 +13,7 @@ class BookletOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 
-    /** @var Booklet */
-    private $object;
+    private ?\Entity\Booklet $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,7 +35,7 @@ class BookletOfflineAppMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Booklet::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Booklet::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -62,28 +61,24 @@ class BookletOfflineAppMapper implements MapperInterface
 
     public function getVoucherValues(): array
     {
-        $fn = function (Voucher $item) {
-            return $item->getValue();
-        };
+        $fn = fn(Voucher $item) => $item->getValue();
 
         return array_values(array_map($fn, $this->object->getVouchers()->toArray()));
     }
 
     public function getProjectId(): ?int
     {
-        return $this->object->getProject() ? $this->object->getProject()->getId() : null;
+        return $this->object->getProject()?->getId();
     }
 
     public function getBeneficiaryId(): ?int
     {
-        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getBeneficiary(
-        )->getId() : null;
+        return $this->object->getAssistanceBeneficiary()?->getBeneficiary()->getId();
     }
 
     public function getAssistanceId(): ?int
     {
-        return $this->object->getAssistanceBeneficiary() ? $this->object->getAssistanceBeneficiary()->getAssistance(
-        )->getId() : null;
+        return $this->object->getAssistanceBeneficiary()?->getAssistance()->getId();
     }
 
     public function getDeletable(): bool

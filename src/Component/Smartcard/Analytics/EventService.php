@@ -10,36 +10,28 @@ use Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Assistance\ReliefPackage;
 use Entity\SynchronizationBatch;
-use Repository\SynchronizationBatchRepository;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Invoice;
 use Entity\Vendor;
-use Repository\SmartcardPurchaseRepository;
 use Repository\SmartcardInvoiceRepository;
+use Repository\SmartcardPurchaseRepository;
 use Repository\SmartcardRepository;
+use Repository\SynchronizationBatchRepository;
 
 class EventService
 {
-    /** @var SmartcardPurchaseRepository */
-    private $purchaseRepository;
+    private readonly SmartcardPurchaseRepository $purchaseRepository;
 
-    /** @var SmartcardRepository $smartcardRepository */
-    private $smartcardRepository;
+    private readonly SmartcardRepository $smartcardRepository;
 
-    /** @var SynchronizationBatchRepository */
-    private $purchaseSyncRepository;
+    private readonly SynchronizationBatchRepository $purchaseSyncRepository;
 
-    /** @var SynchronizationBatchRepository */
-    private $depositSyncRepository;
+    private readonly SynchronizationBatchRepository $depositSyncRepository;
 
-    /** @var SmartcardInvoiceRepository */
-    private $invoiceRepository;
+    private readonly SmartcardInvoiceRepository $invoiceRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->purchaseRepository = $entityManager->getRepository(SmartcardPurchase::class);
@@ -139,11 +131,6 @@ class EventService
         return $collector->getSortedEvents();
     }
 
-    /**
-     * @param EventCollector $collector
-     * @param SmartcardPurchase $purchase
-     * @param bool $extractInvoices
-     */
     protected function collectPurchaseEvents(
         EventCollector $collector,
         SmartcardPurchase $purchase,
@@ -170,10 +157,7 @@ class EventService
     }
 
     /**
-     * @param string $syncType
-     * @param EventCollector $collector
      * @param                $sync
-     * @param Vendor $vendor
      */
     protected function collectSynchronizationBatchEvents(
         string $syncType,
@@ -196,10 +180,8 @@ class EventService
     }
 
     /**
-     * @param EventCollector $collector
      * @param ReliefPackage[] $reliefPackages
      * @param Assistance|null $assistance
-     * @param AssistanceBeneficiary $assistanceBeneficiary
      */
     private function collectAssistanceEvents(
         EventCollector $collector,
@@ -234,12 +216,6 @@ class EventService
         }
     }
 
-    /**
-     * @param EventCollector $collector
-     * @param SmartcardDeposit $deposit
-     * @param Assistance $assistance
-     * @param Smartcard $smartcard
-     */
     private function collectDepositEvents(
         EventCollector $collector,
         SmartcardDeposit $deposit,

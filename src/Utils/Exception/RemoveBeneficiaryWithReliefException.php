@@ -10,23 +10,18 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 class RemoveBeneficiaryWithReliefException extends InvalidArgumentException implements ConstraintViolationInterface
 {
-    /** @var Beneficiary */
-    protected $beneficiary;
-
     protected $atPath;
 
-    public function __construct(Beneficiary $beneficiary)
+    public function __construct(protected Beneficiary $beneficiary)
     {
         parent::__construct();
-
-        $this->beneficiary = $beneficiary;
         $this->message = strtr($this->getMessageTemplate(), $this->getParameters());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMessageTemplate()
+    public function getMessageTemplate(): string
     {
         return 'Beneficiary {{ name }} can\'t be removed from assistance. He has already received a relief.';
     }
@@ -34,7 +29,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return [
             '{{ name }}' => $this->beneficiary->getPerson()->getLocalGivenName() . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName(),
@@ -44,7 +39,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getPlural()
+    public function getPlural(): int
     {
         return 1;
     }
@@ -52,7 +47,7 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getRoot()
+    public function getRoot(): Beneficiary
     {
         return $this->beneficiary;
     }
@@ -60,15 +55,15 @@ class RemoveBeneficiaryWithReliefException extends InvalidArgumentException impl
     /**
      * {@inheritdoc}
      */
-    public function getPropertyPath()
+    public function getPropertyPath(): string
     {
-        return null;
+        return '';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getInvalidValue()
+    public function getInvalidValue(): Beneficiary
     {
         return $this->beneficiary;
     }

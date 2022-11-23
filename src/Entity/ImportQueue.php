@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Entity;
 
 use DateTimeInterface;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,108 +15,90 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
 use Enum\ImportQueueState;
 use InvalidArgumentException;
+use Stringable;
 use Utils\Concurrency\ConcurrencyLockableInterface;
 use Utils\Concurrency\ConcurrencyLockTrait;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportQueueRepository")
  */
-class ImportQueue implements ConcurrencyLockableInterface
+class ImportQueue implements ConcurrencyLockableInterface, Stringable
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
     use ConcurrencyLockTrait;
 
     /**
-     * @var Import
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importQueue")
      */
-    private $import;
+    private Import $import;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Entity\ImportFile", inversedBy="importQueues")
+     */
+    private ImportFile $file;
+
+    /**
+     * @ORM\Column(name="content", type="json", nullable=false)
+     */
+    private array $content;
 
     /**
      * @var ImportHouseholdDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"persist", "remove"})
      */
-    private $householdDuplicities;
+    private array | Collection $householdDuplicities;
 
     /**
      * @var ImportBeneficiaryDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="queue", cascade={"persist", "remove"})
      */
-    private $beneficiaryDuplicities;
+    private array | Collection $beneficiaryDuplicities;
 
     /**
-     * @var ImportFile
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\ImportFile", inversedBy="importQueues")
-     */
-    private $file;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="content", type="json", nullable=false)
-     */
-    private $content;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_import_queue_state", nullable=false)
      */
-    private $state;
+    private string $state;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="message", type="text", nullable=true)
      */
-    private $message;
+    private ?string $message = null;
 
-    private $rawMessageData = [];
+    private array $rawMessageData = [];
 
     /**
      * @var ImportHouseholdDuplicity[]|Collection
      *
      * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"remove"})
      */
-    private $importBeneficiaryDuplicities;
+    private array | Collection $importBeneficiaryDuplicities;
 
     /**
-     * @var ImportQueueDuplicity
-     *
+     * @var Collection|ImportQueueDuplicity[]
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="ours", cascade={"remove"})
      */
-    private $importQueueDuplicitiesOurs;
+    private array | Collection $importQueueDuplicitiesOurs;
 
     /**
-     * @var ImportQueueDuplicity
-     *
+     * @var Collection|ImportQueueDuplicity[]
      * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="theirs", cascade={"remove"})
      */
-    private $importQueueDuplicitiesTheirs;
+    private array | Collection $importQueueDuplicitiesTheirs;
 
     /**
-     * @var DateTimeInterface|null
-     *
      * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
      */
-    private $identityCheckedAt;
+    private ?DateTimeInterface $identityCheckedAt = null;
 
     /**
-     * @var DateTimeInterface|null
-     *
      * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
      */
-    private $similarityCheckedAt;
+    private ?DateTimeInterface $similarityCheckedAt = null;
 
-    /**
-     * @var array
-     */
-    private $violatedColumns = [];
+    private array $violatedColumns = [];
 
     public function __construct(Import $import, ImportFile $file, array $content)
     {
@@ -128,13 +109,10 @@ class ImportQueue implements ConcurrencyLockableInterface
         $this->householdDuplicities = new ArrayCollection();
         $this->beneficiaryDuplicities = new ArrayCollection();
         $this->importBeneficiaryDuplicities = new ArrayCollection();
-        $this->importQueueDuplicitiesOurs = new ArrayCollection();
-        $this->importQueueDuplicitiesTheirs = new ArrayCollection();
+        $this->importQueueDuplicitiesOurs = [];
+        $this->importQueueDuplicitiesTheirs = [];
     }
 
-    /**
-     * @return Import
-     */
     public function getImport(): Import
     {
         return $this->import;
@@ -148,9 +126,6 @@ class ImportQueue implements ConcurrencyLockableInterface
         return $this->householdDuplicities;
     }
 
-    /**
-     * @return ImportHouseholdDuplicity|null
-     */
     public function getAcceptedDuplicity(): ?ImportHouseholdDuplicity
     {
         foreach ($this->getHouseholdDuplicities() as $duplicityCandidate) {
@@ -165,9 +140,6 @@ class ImportQueue implements ConcurrencyLockableInterface
         return null;
     }
 
-    /**
-     * @return ImportFile
-     */
     public function getFile(): ImportFile
     {
         return $this->file;
@@ -215,9 +187,6 @@ class ImportQueue implements ConcurrencyLockableInterface
         $this->state = $state;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMessage(): ?string
     {
         return $this->message;
@@ -232,9 +201,6 @@ class ImportQueue implements ConcurrencyLockableInterface
         return !empty($this->rawMessageData);
     }
 
-    /**
-     * @param QueueViolation $queueViolation
-     */
     public function addViolation(QueueViolation $queueViolation): void
     {
         $this->rawMessageData[$queueViolation->getLineIndex()][] = [
@@ -243,7 +209,7 @@ class ImportQueue implements ConcurrencyLockableInterface
             'value' => $queueViolation->getValue(),
         ];
 
-        $this->message = json_encode($this->rawMessageData);
+        $this->message = json_encode($this->rawMessageData, JSON_THROW_ON_ERROR);
         $this->violatedColumns[$queueViolation->getLineIndex()][] = $queueViolation->getColumn();
     }
 
@@ -251,23 +217,17 @@ class ImportQueue implements ConcurrencyLockableInterface
     {
         $this->rawMessageData[-1] = $error->jsonSerialize();
 
-        $this->message = json_encode($this->rawMessageData);
+        $this->message = json_encode($this->rawMessageData, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param int $index
-     * @param string $column
-     *
-     * @return bool
-     */
     public function hasColumnViolation(int $index, string $column): bool
     {
         return key_exists($index, $this->violatedColumns) && in_array($column, $this->violatedColumns[$index]);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return "ImportQueue#{$this->getId()}";
+        return (string) "ImportQueue#{$this->getId()}";
     }
 
     public function addDuplicity(int $index, Beneficiary $beneficiary, array $reasons): void
@@ -304,21 +264,18 @@ class ImportQueue implements ConcurrencyLockableInterface
     /**
      * @return Collection|ImportBeneficiaryDuplicity[]
      */
-    public function getBeneficiaryDuplicities()
+    public function getBeneficiaryDuplicities(): Collection | array
     {
         return $this->beneficiaryDuplicities;
     }
 
-    /**
-     * @return ImportQueueDuplicity
-     */
     public function getImportQueueDuplicitiesOurs(): ImportQueueDuplicity
     {
         return $this->importQueueDuplicitiesOurs;
     }
 
     /**
-     * @return ImportQueueDuplicity
+     * @return Collection|ImportQueueDuplicity[]
      */
     public function getImportQueueDuplicitiesTheirs()
     {
@@ -328,38 +285,26 @@ class ImportQueue implements ConcurrencyLockableInterface
     /**
      * @return Collection|ImportHouseholdDuplicity[]
      */
-    public function getImportBeneficiaryDuplicities()
+    public function getImportBeneficiaryDuplicities(): Collection | array
     {
         return $this->importBeneficiaryDuplicities;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getIdentityCheckedAt(): ?DateTimeInterface
     {
         return $this->identityCheckedAt;
     }
 
-    /**
-     * @param DateTimeInterface|null $identityCheckedAt
-     */
     public function setIdentityCheckedAt(?DateTimeInterface $identityCheckedAt): void
     {
         $this->identityCheckedAt = $identityCheckedAt;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getSimilarityCheckedAt(): ?DateTimeInterface
     {
         return $this->similarityCheckedAt;
     }
 
-    /**
-     * @param DateTimeInterface|null $similarityCheckedAt
-     */
     public function setSimilarityCheckedAt(?DateTimeInterface $similarityCheckedAt): void
     {
         $this->similarityCheckedAt = $similarityCheckedAt;

@@ -23,7 +23,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -33,7 +33,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testGet()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+        $organization = self::getContainer()->get('doctrine')->getRepository(Organization::class)->findBy(
             [],
             ['id' => 'asc']
         )[0];
@@ -44,7 +44,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/organizations/' . $organization->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -64,7 +64,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdate()
     {
         /** @var Organization|null $organization */
-        $organization = self::$container->get('doctrine')->getRepository(Organization::class)->findBy(
+        $organization = self::getContainer()->get('doctrine')->getRepository(Organization::class)->findBy(
             [],
             ['id' => 'asc']
         )[0];
@@ -78,7 +78,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
             'footerContent' => 'Some text.',
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -103,7 +103,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/organizations');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -121,7 +121,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testListServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+        $services = self::getContainer()->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
             [],
             ['id' => 'asc']
         );
@@ -135,7 +135,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
             '/api/basic/web-app/v1/organizations/' . $services[0]->getOrganization()->getId() . '/services'
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -153,7 +153,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
     public function testUpdateServices()
     {
         /** @var Organization[] $service */
-        $services = self::$container->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
+        $services = self::getContainer()->get('doctrine')->getRepository(OrganizationServices::class)->findBy(
             [],
             ['id' => 'asc']
         );
@@ -172,7 +172,7 @@ class OrganizationControllerTest extends BMSServiceTestCase
             $data
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

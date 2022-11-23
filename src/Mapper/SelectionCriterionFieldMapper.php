@@ -7,19 +7,14 @@ namespace Mapper;
 use Component\SelectionCriteria\Structure\Field;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SelectionCriterionFieldMapper implements MapperInterface
 {
-    /** @var Field */
-    private $object;
+    private ?\Component\SelectionCriteria\Structure\Field $object = null;
 
-    /** @var TranslatorInterface */
-    private $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     /**
@@ -42,7 +37,7 @@ class SelectionCriterionFieldMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Field::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Field::class . ', ' . $object::class . ' given.'
         );
     }
 

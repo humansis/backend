@@ -9,29 +9,23 @@ use Request\InputTypeNullableDenormalizer;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequence({"DivisionInputType", "Primary", "Secondary", "Tertiary"})
- */
+#[Assert\GroupSequence(['DivisionInputType', 'Primary', 'Secondary', 'Tertiary'])]
 class DivisionInputType implements InputTypeNullableDenormalizer
 {
     /**
-     * @var string
-     * @Assert\Type("string")
      * @Enum(enumClass="Component\Assistance\Enum\CommodityDivision")
      */
-    private $code;
+    #[Assert\Type('string')]
+    private ?string $code = null;
 
     /**
      * @var DivisionGroupInputType[]|null
-     * @Assert\Valid()
-     * @Assert\NotBlank(allowNull=true)
      */
-    private $quantities;
+    #[Assert\Valid]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?array $quantities = null;
 
-    /**
-     * @Assert\IsTrue(groups="Primary", message="For selection 'Per Household Members' should be defined at least one group.")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Primary'], message: "For selection 'Per Household Members' should be defined at least one group.")]
     public function isSetQuantitiesForGroups(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -45,10 +39,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    /**
-     * @Assert\IsTrue(groups="Primary", message="Property 'quantities' must be null for no-groups selection.")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Primary'], message: "Property 'quantities' must be null for no-groups selection.")]
     public function isNotSetQuantities(): bool
     {
         if ($this->code === CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -62,10 +53,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    /**
-     * @Assert\IsTrue(groups="Secondary", message="For selection 'Per Household Members' should be defined one starting group from 1 Member")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Secondary'], message: "For selection 'Per Household Members' should be defined one starting group from 1 Member")]
     public function isStartingGroupExists(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -86,10 +74,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    /**
-     * @Assert\IsTrue(groups="Secondary", message="For selection 'Per Household Members' should be defined one Group which ends with null")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Secondary'], message: "For selection 'Per Household Members' should be defined one Group which ends with null")]
     public function isEndingGroupExists(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -110,10 +95,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    /**
-     * @Assert\IsTrue(groups="Secondary", message="Groups must not overlap.")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Secondary'], message: 'Groups must not overlap.')]
     public function isGroupsOverlapping(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -149,10 +131,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    /**
-     * @Assert\IsTrue(groups="Tertiary", message="Groups ranges must follow up.")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Tertiary'], message: 'Groups ranges must follow up.')]
     public function isGroupsFollowing(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -174,17 +153,11 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @param string $code
-     */
     public function setCode(string $code): void
     {
         $this->code = $code;
@@ -198,22 +171,11 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         return $this->quantities;
     }
 
-    /**
-     *
-     * @param DivisionGroupInputType $divisionGroupInputType
-     *
-     * @return void
-     */
     public function addQuantity(DivisionGroupInputType $divisionGroupInputType): void
     {
         $this->quantities[] = $divisionGroupInputType;
     }
 
-    /**
-     * @param DivisionGroupInputType $divisionGroupInputType
-     *
-     * @return void
-     */
     public function removeQuantity(DivisionGroupInputType $divisionGroupInputType): void
     {
         // method must be declared to fulfill normalizer requirements

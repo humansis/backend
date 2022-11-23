@@ -25,30 +25,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class ScoringBlueprintController extends AbstractController
 {
-    /** @var ScoringBlueprintService $scoringBlueprintService */
-    private $scoringBlueprintService;
-
-    /** @var ScoringBlueprintRepository $scoringBlueprintRepository */
-    private $scoringBlueprintRepository;
-
-    /**
-     * @param ScoringBlueprintService $scoringBlueprintService
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
-     */
-    public function __construct(
-        ScoringBlueprintService $scoringBlueprintService,
-        ScoringBlueprintRepository $scoringBlueprintRepository
-    ) {
-        $this->scoringBlueprintService = $scoringBlueprintService;
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
+    public function __construct(private readonly ScoringBlueprintService $scoringBlueprintService, private readonly ScoringBlueprintRepository $scoringBlueprintRepository)
+    {
     }
 
     /**
      * @Rest\Get()
-     * @param Request $request
-     * @param ScoringBlueprintFilterInputType $scoringFilterInputType
      *
-     * @return JsonResponse
      */
     public function list(Request $request, ScoringBlueprintFilterInputType $scoringFilterInputType): JsonResponse
     {
@@ -63,10 +46,7 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Post()
-     * @param Request $request
-     * @param ScoringInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(Request $request, ScoringInputType $inputType): JsonResponse
     {
@@ -82,9 +62,7 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Get("/{id}")
-     * @param ScoringBlueprint $scoringBlueprint
      *
-     * @return JsonResponse
      */
     public function single(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
@@ -93,10 +71,7 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Patch("/{id}")
-     * @param ScoringBlueprint $scoringBlueprint
-     * @param ScoringPatchInputType $inputType
      *
-     * @return JsonResponse
      */
     public function patch(ScoringBlueprint $scoringBlueprint, ScoringPatchInputType $inputType): JsonResponse
     {
@@ -107,9 +82,7 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Delete("/{id}")
-     * @param ScoringBlueprint $scoringBlueprint
      *
-     * @return JsonResponse
      */
     public function archive(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
@@ -120,19 +93,17 @@ class ScoringBlueprintController extends AbstractController
 
     /**
      * @Rest\Get("/{id}/content")
-     * @param ScoringBlueprint $scoringBlueprint
      *
-     * @return StreamedResponse
      */
     public function getContent(ScoringBlueprint $scoringBlueprint): StreamedResponse
     {
         $stream = $scoringBlueprint->getStream();
         $filename = "scoring-" . $scoringBlueprint->getName() . ".csv";
 
-        return new StreamedResponse(function () use ($stream) {
+        return new StreamedResponse(function () use ($stream): never {
             fpassthru($stream);
             exit();
-        }, 200, [
+        }, \Symfony\Component\HttpFoundation\Response::HTTP_OK, [
             'Content-Transfer-Encoding',
             'binary',
             'Content-Type' => 'text/csv',

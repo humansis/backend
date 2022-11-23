@@ -11,14 +11,9 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportDateConverter
 {
-    public const STRING_DATE_FORMAT = 'd-m-Y';
+    final public const STRING_DATE_FORMAT = 'd-m-Y';
 
-    /**
-     * @param string|int|float $value
-     *
-     * @return DateTime
-     */
-    public static function toDatetime($value): DateTime
+    public static function toDatetime(string|int|float $value): DateTime
     {
         if (is_string($value)) {
             $datetime = DateTime::createFromFormat(self::STRING_DATE_FORMAT, $value);
@@ -45,10 +40,6 @@ class ImportDateConverter
 
     public static function toIso(?DateTimeInterface $dateTime): ?string
     {
-        if (!$dateTime) {
-            return null;
-        }
-
-        return $dateTime->format(DateTimeInterface::ISO8601);
+        return $dateTime?->format(DateTimeInterface::ATOM);
     }
 }

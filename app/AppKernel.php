@@ -2,51 +2,43 @@
 
 use DependencyInjection\Compiler\MapperCompilerPass;
 use DH\AuditorBundle\DHAuditorBundle;
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Routing\RouteCollectionBuilder;
 
 class AppKernel extends Kernel
 {
     use MicroKernelTrait;
 
-    public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    final public const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    public function getRootDir()
+    public function getRootDir(): string
     {
         return __DIR__;
     }
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         return dirname(__DIR__) . '/var/cache/' . $this->getEnvironment();
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         return dirname(__DIR__) . '/var/logs';
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Symfony\Bundle\MonologBundle\MonologBundle(),
-            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
             new FOS\RestBundle\FOSRestBundle(),
-            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
-            new Nelmio\CorsBundle\NelmioCorsBundle(),
-            new RA\RequestValidatorBundle\RARequestValidatorBundle(),
-            new Jrk\LevenshteinBundle\JrkLevenshteinBundle(),
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new DHAuditorBundle(),
@@ -56,10 +48,6 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
-
-            if ('dev' === $this->getEnvironment()) {
-                $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
-            }
         }
 
         return $bundles;
@@ -78,22 +66,9 @@ class AppKernel extends Kernel
         $loader->load($confDir . '/services_' . $this->environment . self::CONFIG_EXTS, 'glob');
 
         $containerBuilder->addCompilerPass(new MapperCompilerPass());
-
-        $mappings = [
-            realpath(__DIR__ . '/../src/Resources/config/doctrine/model') => 'FOS\UserBundle\Model',
-        ];
-
-        //Compiler pass added for overriding user-bundle User entity mapping of roles.
-        $containerBuilder->addCompilerPass(
-            DoctrineOrmMappingsPass::createXmlMappingDriver(
-                $mappings,
-                ['fos_user.model_manager_name'],
-                false
-            )
-        );
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    protected function configureRoutes(\Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator $routes)
     {
         $routes->import($this->getRootDir() . '/config/routing.yml');
         $environmentRoutingConfig = $this->getRootDir() . '/config/routing/' . $this->getEnvironment() . '/routing.yml';

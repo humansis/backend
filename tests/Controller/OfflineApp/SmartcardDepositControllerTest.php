@@ -12,6 +12,7 @@ use Component\Smartcard\Deposit\DepositFactory;
 use Entity\Assistance\ReliefPackage;
 use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
@@ -24,7 +25,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     protected function tearDown(): void
@@ -46,36 +47,6 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $this->em->flush();
     }
 
-    public function testDepositToSmartcard()
-    {
-        $ab = $this->assistanceBeneficiaryWithoutRelief();
-        $bnf = $ab->getBeneficiary();
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
-
-        $reliefPackage = $this->createReliefPackage($ab);
-
-        $this->request('POST', '/api/basic/offline-app/v4/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
-            'assistanceId' => $ab->getAssistance()->getId(),
-            'value' => 255.25,
-            'balanceBefore' => 260.00,
-            'balanceAfter' => 300.00,
-            'createdAt' => '2020-02-02T12:00:00Z',
-            'beneficiaryId' => $bnf->getId(),
-        ]);
-
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request failed: ' . $this->client->getResponse()->getContent()
-        );
-        $this->assertArrayHasKey('id', $smartcard);
-        $this->assertArrayHasKey('serialNumber', $smartcard);
-        $this->assertArrayHasKey('state', $smartcard);
-        $this->assertArrayHasKey('currency', $smartcard);
-        $this->assertArrayHasKey('createdAt', $smartcard);
-    }
-
     public function testDepositToSmartcardV5(): void
     {
         $ab = $this->assistanceBeneficiaryWithoutRelief();
@@ -95,7 +66,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
     }
 
     public function testDoubledDeposit(): void
@@ -105,9 +76,9 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $reliefPackage = $this->createReliefPackage($ab);
         $date = $this->getUnusedDepositDate();
-        $depositFactory = self::$container->get(DepositFactory::class);
+        $depositFactory = self::getContainer()->get(DepositFactory::class);
         $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
-        $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser(self::USER_TESTER));
+        $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser());
 
         $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
@@ -120,12 +91,12 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
     }
 
-    private function getUnusedDepositDate(): DateTimeImmutable
+    private function getUnusedDepositDate(): DateTime
     {
-        $date = new DateTimeImmutable();
+        $date = new DateTime();
         do {
             $date = $date->modify('-1 second');
             $deposit = $this->em->getRepository(SmartcardDeposit::class)->findOneBy(['distributedAt' => $date]);

@@ -21,7 +21,7 @@ use Repository\ProjectRepository;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
-    public const INSTITUTIONS = [
+    final public const INSTITUTIONS = [
         [
             'name' => 'Local mayor office',
             'type' => Institution::TYPE_GOVERNMENT,
@@ -93,42 +93,14 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         ],
     ];
 
-    /** @var string */
-    private $environment;
-
-    /** @var InstitutionService */
-    private $institutionService;
-
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
     /**
      * InstitutionFixture constructor.
-     *
-     * @param string $environment
-     * @param Countries $countries
-     * @param InstitutionService $institutionService
-     * @param ProjectRepository $projectRepository
      */
-    public function __construct(
-        string $environment,
-        Countries $countries,
-        InstitutionService $institutionService,
-        ProjectRepository $projectRepository
-    ) {
-        $this->environment = $environment;
-        $this->institutionService = $institutionService;
-        $this->countries = $countries;
-        $this->projectRepository = $projectRepository;
+    public function __construct(private readonly string $environment, private readonly Countries $countries, private readonly InstitutionService $institutionService, private readonly ProjectRepository $projectRepository)
+    {
     }
 
     /**
-     * @param ObjectManager $manager
      *
      * @return void
      * @throws EntityNotFoundException
@@ -198,8 +170,6 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
     {
         $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
-        return array_map(function (Project $project) {
-            return $project->getId();
-        }, $projects);
+        return array_map(fn(Project $project) => $project->getId(), $projects);
     }
 }

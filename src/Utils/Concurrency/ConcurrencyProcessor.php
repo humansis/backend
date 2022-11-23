@@ -8,8 +8,7 @@ use Exception;
 
 class ConcurrencyProcessor
 {
-    /** @var int */
-    private $batchSize = 10;
+    private int $batchSize = 10;
 
     /** @var callable */
     private $countAllCallback;
@@ -26,14 +25,8 @@ class ConcurrencyProcessor
     /** @var callable */
     private $batchCleanupCallback;
 
-    /** @var int */
-    private $maxResultsToProcess;
+    private ?int $maxResultsToProcess = null;
 
-    /**
-     * @param int $batchSize
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setBatchSize(int $batchSize): ConcurrencyProcessor
     {
         $this->batchSize = $batchSize;
@@ -41,11 +34,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $countAllCallback
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setCountAllCallback(callable $countAllCallback): ConcurrencyProcessor
     {
         $this->countAllCallback = $countAllCallback;
@@ -53,11 +41,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $lockBatchCallback
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setLockBatchCallback(callable $lockBatchCallback): ConcurrencyProcessor
     {
         $this->lockBatchCallback = $lockBatchCallback;
@@ -65,11 +48,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $batchItemsCallback
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setBatchItemsCallback(callable $batchItemsCallback): ConcurrencyProcessor
     {
         $this->batchItemsCallback = $batchItemsCallback;
@@ -77,11 +55,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $batchUnlockCallback
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setUnlockItemsCallback(callable $batchUnlockCallback): ConcurrencyProcessor
     {
         $this->batchUnlockCallback = $batchUnlockCallback;
@@ -89,11 +62,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $batchCleanupCallback
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setBatchCleanupCallback(callable $batchCleanupCallback): ConcurrencyProcessor
     {
         $this->batchCleanupCallback = $batchCleanupCallback;
@@ -101,11 +69,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param int $maxResultsToProcess
-     *
-     * @return ConcurrencyProcessor
-     */
     public function setMaxResultsToProcess(int $maxResultsToProcess): ConcurrencyProcessor
     {
         $this->maxResultsToProcess = $maxResultsToProcess;
@@ -113,10 +76,6 @@ class ConcurrencyProcessor
         return $this;
     }
 
-    /**
-     * @param callable $processItemCallback
-     *
-     */
     public function processItems(callable $processItemCallback): void
     {
         $allItemCountCallback = $this->countAllCallback;
@@ -140,7 +99,7 @@ class ConcurrencyProcessor
             foreach ($itemsToProceed as $item) {
                 try {
                     $processItemCallback($item);
-                } catch (Exception $ex) {
+                } catch (Exception) {
                     $batchUnlockCallback($runCode);
                     break;
                 }

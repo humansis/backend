@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Controller;
 
 use Controller\ExportController;
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\ProductCreateInputType;
@@ -23,26 +24,14 @@ use Utils\ProductService;
 
 class ProductController extends AbstractController
 {
-    /** @var UploadService */
-    private $uploadService;
-
-    /** @var ProductService */
-    private $productService;
-
-    public function __construct(
-        UploadService $uploadService,
-        ProductService $productService
-    ) {
-        $this->uploadService = $uploadService;
-        $this->productService = $productService;
+    public function __construct(private readonly UploadService $uploadService, private readonly ProductService $productService, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/products/exports")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function exports(Request $request): Response
     {
@@ -60,9 +49,7 @@ class ProductController extends AbstractController
      * @Rest\Get("/web-app/v1/products/{id}")
      * @Cache(lastModified="product.getLastModifiedAt()", public=true)
      *
-     * @param Product $product
      *
-     * @return JsonResponse
      */
     public function item(Product $product): JsonResponse
     {
@@ -77,12 +64,7 @@ class ProductController extends AbstractController
      * @Rest\Get("/web-app/v1/products")
      * @Rest\Get("/vendor-app/v2/products")
      *
-     * @param Request $request
-     * @param ProductFilterInputType $filter
-     * @param Pagination $pagination
-     * @param ProductOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -95,7 +77,7 @@ class ProductController extends AbstractController
         }
 
         /** @var ProductRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(Product::class);
+        $repository = $this->managerRegistry->getRepository(Product::class);
         $data = $repository->findByCountry($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
@@ -104,9 +86,7 @@ class ProductController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/products")
      *
-     * @param ProductCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(ProductCreateInputType $inputType): JsonResponse
     {
@@ -118,10 +98,7 @@ class ProductController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/products/{id}")
      *
-     * @param Product $product
-     * @param ProductUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Product $product, ProductUpdateInputType $inputType): JsonResponse
     {
@@ -133,9 +110,7 @@ class ProductController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/products/images")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function uploadImage(Request $request): JsonResponse
     {
@@ -155,9 +130,7 @@ class ProductController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/products/{id}")
      *
-     * @param Product $product
      *
-     * @return JsonResponse
      */
     public function delete(Product $product): JsonResponse
     {

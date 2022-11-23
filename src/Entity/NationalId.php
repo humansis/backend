@@ -26,11 +26,9 @@ class NationalId
     use EnumTrait;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="id_number", type="string", length=255)
      */
-    private $idNumber;
+    private string $idNumber;
 
     /**
      * @var string
@@ -40,18 +38,14 @@ class NationalId
     private $idType;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="priority", type="integer")
      */
-    private $priority;
+    private int $priority;
 
     /**
-     * @var Person
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="nationalIds")
      */
-    private $person;
+    private ?\Entity\Person $person = null;
 
     /**
      */
@@ -135,28 +129,16 @@ class NationalId
         return $this->person;
     }
 
-    /**
-     * @return int
-     */
     public function getPriority(): int
     {
         return $this->priority;
     }
 
-    /**
-     * @param int $priority
-     */
     public function setPriority(int $priority): void
     {
         $this->priority = $priority;
     }
 
-    /**
-     * @param NationalIdCardInputType $inputType
-     *
-     * @return NationalId
-     * @throws Exception
-     */
     public static function fromNationalIdInputType(NationalIdCardInputType $inputType): NationalId
     {
         $nationalId = new NationalId();

@@ -24,57 +24,17 @@ class ItemBatchHandler implements MessageHandlerInterface
 {
     use ImportQueueLoggerTrait;
 
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportRepository */
-    private $importRepository;
-
-    /** @var IntegrityChecker */
-    private $integrityChecker;
-
-    /** @var IdentityChecker */
-    private $identityChecker;
-
-    /** @var SimilarityChecker */
-    private $similarityChecker;
-
-    /** @var ImportFinisher */
-    private $finisher;
-
-    /**
-     * @var AuditorService
-     */
-    private $auditorService;
-
-    /**
-     * @param LoggerInterface $importLogger
-     * @param ImportQueueRepository $queueRepository
-     * @param ImportRepository $importRepository
-     * @param IntegrityChecker $integrityChecker
-     * @param IdentityChecker $identityChecker
-     * @param SimilarityChecker $similarityChecker
-     * @param ImportFinisher $finisher
-     * @param AuditorService $auditorService
-     */
     public function __construct(
         LoggerInterface $importLogger,
-        ImportQueueRepository $queueRepository,
-        ImportRepository $importRepository,
-        IntegrityChecker $integrityChecker,
-        IdentityChecker $identityChecker,
-        SimilarityChecker $similarityChecker,
-        ImportFinisher $finisher,
-        AuditorService $auditorService
+        private readonly ImportQueueRepository $queueRepository,
+        private readonly ImportRepository $importRepository,
+        private readonly IntegrityChecker $integrityChecker,
+        private readonly IdentityChecker $identityChecker,
+        private readonly SimilarityChecker $similarityChecker,
+        private readonly ImportFinisher $finisher,
+        private readonly AuditorService $auditorService
     ) {
         $this->logger = $importLogger;
-        $this->queueRepository = $queueRepository;
-        $this->integrityChecker = $integrityChecker;
-        $this->identityChecker = $identityChecker;
-        $this->similarityChecker = $similarityChecker;
-        $this->finisher = $finisher;
-        $this->importRepository = $importRepository;
-        $this->auditorService = $auditorService;
     }
 
     public function __invoke(ItemBatch $batch): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\DonorCreateInputType;
@@ -21,26 +22,14 @@ use Utils\DonorService;
 
 class DonorController extends AbstractController
 {
-    /** @var UploadService */
-    private $uploadService;
-
-    /**
-     * @var DonorService
-     */
-    private $donorService;
-
-    public function __construct(UploadService $uploadService, DonorService $donorService)
+    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService, private readonly ManagerRegistry $managerRegistry)
     {
-        $this->uploadService = $uploadService;
-        $this->donorService = $donorService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/donors/exports")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function exports(Request $request): Response
     {
@@ -53,9 +42,7 @@ class DonorController extends AbstractController
      * @Rest\Get("/web-app/v1/donors/{id}")
      * @Cache(lastModified="donor.getLastModifiedAt()", public=true)
      *
-     * @param Donor $donor
      *
-     * @return JsonResponse
      */
     public function item(Donor $donor): JsonResponse
     {
@@ -65,18 +52,14 @@ class DonorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/donors")
      *
-     * @param Pagination $pagination
-     * @param DonorOrderInputType $orderBy
-     * @param DonorFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function list(
         Pagination $pagination,
         DonorOrderInputType $orderBy,
         DonorFilterInputType $filter
     ): JsonResponse {
-        $countrySpecifics = $this->getDoctrine()->getRepository(Donor::class)
+        $countrySpecifics = $this->managerRegistry->getRepository(Donor::class)
             ->findByParams($orderBy, $pagination, $filter);
 
         return $this->json($countrySpecifics);
@@ -85,9 +68,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/donors")
      *
-     * @param DonorCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(DonorCreateInputType $inputType): JsonResponse
     {
@@ -99,10 +80,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/donors/{id}")
      *
-     * @param Donor $donor
-     * @param DonorUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
     {
@@ -114,9 +92,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/donors/{id}")
      *
-     * @param Donor $object
      *
-     * @return JsonResponse
      */
     public function delete(Donor $object): JsonResponse
     {
@@ -128,10 +104,7 @@ class DonorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/donors/{id}/images")
      *
-     * @param Donor $donor
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function uploadImage(Donor $donor, Request $request): JsonResponse
     {
@@ -147,8 +120,8 @@ class DonorController extends AbstractController
 
         $donor->setLogo($url);
 
-        $this->getDoctrine()->getManager()->persist($donor);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($donor);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json(['url' => $url]);
     }

@@ -12,18 +12,10 @@ final class Floats
      * Compares two floats. The comparison is done only approximately! because of hardware implementation of float type.
      * See warning about floating point precision here for more details: https://www.php.net/manual/en/language.types.float.php
      *
-     * @param float $a
-     * @param float $b
-     * @param float $epsilon
      *
-     * @return bool
      */
     public static function equals(float $a, float $b, float $epsilon = self::EPSILON): bool
     {
-        if (abs($a - $b) < $epsilon) {
-            return true;
-        }
-
-        return false;
+        return abs($a - $b) < $epsilon;
     }
 }

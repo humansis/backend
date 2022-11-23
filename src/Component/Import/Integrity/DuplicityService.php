@@ -12,20 +12,8 @@ use Utils\FileSystem\PathConstructor;
 
 class DuplicityService
 {
-    /** @var ImportLineFactory */
-    private $lineFactory;
-
-    /** @var string */
-    private $cacheFilePath;
-
-    /**
-     * @param ImportLineFactory $lineFactory
-     * @param string $cacheFilePath
-     */
-    public function __construct(ImportLineFactory $lineFactory, string $cacheFilePath)
+    public function __construct(private readonly ImportLineFactory $lineFactory, private readonly string $cacheFilePath)
     {
-        $this->lineFactory = $lineFactory;
-        $this->cacheFilePath = $cacheFilePath;
     }
 
     public function buildIdentityTable(Import $import): void
@@ -48,7 +36,7 @@ class DuplicityService
             }
         }
         $fileName = $this->getFileName($import);
-        if (false === file_put_contents($fileName, json_encode($identities))) {
+        if (false === file_put_contents($fileName, json_encode($identities, JSON_THROW_ON_ERROR))) {
             throw new RuntimeException("File $fileName couldn't be written");
         }
     }
@@ -60,14 +48,14 @@ class DuplicityService
         if ($identityData === false) {
             throw new RuntimeException("File $fileName missing");
         }
-        $identities = json_decode($identityData, true);
+        $identities = json_decode($identityData, true, 512, JSON_THROW_ON_ERROR);
         $identity = self::serializeIDCard($idCard->getOriginalType(), $idCard->getNumber());
 
         if (isset($identities[$identity])) {
             // TODO: count subduplicity
 
             // COUNT RECURSIVE could not get exact results but should be faster than iteration
-            return count($identities[$identity], COUNT_RECURSIVE) - 1;
+            return (is_countable($identities[$identity]) ? count($identities[$identity], COUNT_RECURSIVE) : 0) - 1;
         }
 
         return 0;

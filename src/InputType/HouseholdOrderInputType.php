@@ -8,14 +8,14 @@ use Request\OrderInputType\AbstractSortInputType;
 
 class HouseholdOrderInputType extends AbstractSortInputType
 {
-    public const SORT_BY_ID = 'id';
-    public const SORT_BY_NATIONAL_ID = 'nationalId';
-    public const SORT_BY_VULNERABILITIES = 'vulnerabilities';
-    public const SORT_BY_PROJECTS = 'projects';
-    public const SORT_BY_DEPENDENTS = 'dependents';
-    public const SORT_BY_LOCAL_FIRST_NAME = 'localFirstName';
-    public const SORT_BY_LOCAL_FAMILY_NAME = 'localFamilyName';
-    public const SORT_BY_CURRENT_HOUSEHOLD_LOCATION = 'currentHouseholdLocation';
+    final public const SORT_BY_ID = 'id';
+    final public const SORT_BY_NATIONAL_ID = 'nationalId';
+    final public const SORT_BY_VULNERABILITIES = 'vulnerabilities';
+    final public const SORT_BY_PROJECTS = 'projects';
+    final public const SORT_BY_DEPENDENTS = 'dependents';
+    final public const SORT_BY_LOCAL_FIRST_NAME = 'localFirstName';
+    final public const SORT_BY_LOCAL_FAMILY_NAME = 'localFamilyName';
+    final public const SORT_BY_CURRENT_HOUSEHOLD_LOCATION = 'currentHouseholdLocation';
 
     protected function getValidNames(): array
     {

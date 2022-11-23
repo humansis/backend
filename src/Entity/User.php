@@ -2,18 +2,14 @@
 
 namespace Entity;
 
+use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Entity\Helper\StandardizedPrimaryKey;
 use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
-use FOS\UserBundle\Model\User as BaseUser;
-use InvalidArgumentException;
-use RuntimeException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 
 /**
  * User
@@ -21,36 +17,31 @@ use Doctrine\Common\Persistence\ObjectManagerAware;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User extends BaseUser implements ExportableInterface, ObjectManagerAware
+class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
-    /** @var ObjectManager|null */
-    private $em;
-
-    /**
-     * @var int
-     *
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use StandardizedPrimaryKey;
 
     /**
      * @var string
-     * @Assert\NotBlank(message="Username can't be empty")
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 50,
-     *      minMessage = "Your username must be at least {{ limit }} characters long",
-     *      maxMessage = "Your username cannot be longer than {{ limit }} characters"
-     * )
+     * @ORM\Column(name="username", type="string")
      */
+    #[Assert\NotBlank(message: "Username can't be empty")]
+    #[Assert\Length(min: 2, max: 50, minMessage: 'Your username must be at least {{ limit }} characters long', maxMessage: 'Your username cannot be longer than {{ limit }} characters')]
     protected $username;
 
     /**
      * @var string
+     * @ORM\Column(name="password", type="string", nullable=false)
      */
     protected $password;
+
+    /**
+     * The salt to use for hashing.
+     *
+     * @var string|null
+     * @ORM\Column(name="salt", type="string", nullable=true)
+     */
+    protected $salt;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
@@ -64,9 +55,16 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var string
-     * @Assert\NotBlank(message="Email can't be empty")
+     * @ORM\Column(name="email", type="string")
      */
+    #[Assert\NotBlank(message: "Email can't be empty")]
     protected $email;
+
+    /**
+     * @var bool
+     * @ORM\Column(name="enabled", type="boolean")
+     */
+    protected $enabled;
 
     /**
      * @var Collection|Role[]
@@ -76,7 +74,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * @var Transaction
-     *
      * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="sentBy")
      */
     private $transactions;
@@ -121,35 +118,16 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     public function __construct()
     {
-        parent::__construct();
+        $this->enabled = false;
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
     }
 
-    public function injectObjectManager(ObjectManager $objectManager, ?ClassMetadata $classMetadata = null)
-    {
-        $this->em = $objectManager;
-    }
-
-    /**
-     * @return ObjectManager
-     */
-    private function getObjectManager(): ObjectManager
-    {
-        if (!$this->em instanceof ObjectManager) {
-            throw new RuntimeException(
-                'You need to call injectObjectManager() first to use entity manager inside entity.'
-            );
-        }
-
-        return $this->em;
-    }
 
     /**
      * Add country.
      *
-     * @param UserCountry $country
      *
      * @return User
      */
@@ -196,8 +174,6 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -291,6 +267,38 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
         return $this->phoneNumber;
     }
 
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled($boolean): self
+    {
+        $this->enabled = (bool) $boolean;
+
+        return $this;
+    }
+
+    /**
+     * Returns the password used to authenticate the user.
+     *
+     * This should be the encoded password. On authentication, a plain-text
+     * password will be salted, encoded, and then compared to this value.
+     *
+     * @return string|null The encoded password if any
+     */
+    public function getSalt(): ?string
+    {
+        return $this->salt;
+    }
+
+    public function setSalt(string $salt = null): self
+    {
+        $this->salt = $salt;
+
+        return $this;
+    }
+
     /**
      * Get changePassword.
      *
@@ -342,68 +350,21 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     /**
      * {@inheritdoc}
      */
-    public function hasRole($roleName): bool
+    public function hasRole(Role $role): bool
     {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
         return $this->roles->contains($role);
     }
 
     /**
-     * {@inheritdoc}
+     * @param Role[] $roles
+     * @return $this
      */
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): self
     {
         $this->roles->clear();
 
         foreach ($roles as $role) {
-            $this->addRole($role);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addRole($roleName)
-    {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
-        if (!$this->roles->contains($role)) {
             $this->roles->add($role);
-        }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function removeRole($roleName)
-    {
-        $role = $this->getObjectManager()->getRepository(Role::class)->findOneBy([
-            'code' => $roleName,
-        ]);
-
-        if (!$role instanceof Role) {
-            throw new InvalidArgumentException('Role with code ' . $roleName . ' does not exist.');
-        }
-
-        if (!$this->roles->contains($role)) {
-            $this->roles->removeElement($role);
         }
 
         return $this;
@@ -416,9 +377,78 @@ class User extends BaseUser implements ExportableInterface, ObjectManagerAware
     public function getRoles(): array
     {
         return array_values(
-            array_map(function (Role $role) {
-                return $role->getCode();
-            }, $this->roles->toArray())
+            array_map(fn(Role $role) => $role->getCode(), $this->roles->toArray())
         );
+    }
+
+
+    public function __serialize(): array
+    {
+        return [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ];
+    }
+
+    public function __unserialize($serialized): void
+    {
+        $data = $serialized;
+
+        [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ] = $data;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->username;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user (like a password in plaintext), clear it here
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 }

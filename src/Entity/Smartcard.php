@@ -4,7 +4,6 @@ namespace Entity;
 
 use BadMethodCallException;
 use DateTimeInterface;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,122 +19,105 @@ use Enum\SmartcardStates;
  */
 class Smartcard
 {
-    public const STATE_UNASSIGNED = 'unassigned';
-    public const STATE_ACTIVE = 'active';
-    public const STATE_INACTIVE = 'inactive';
-    public const STATE_CANCELLED = 'cancelled';
+    final public const STATE_UNASSIGNED = 'unassigned';
+    final public const STATE_ACTIVE = 'active';
+    final public const STATE_INACTIVE = 'inactive';
+    final public const STATE_CANCELLED = 'cancelled';
 
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"SmartcardOverview", "ValidatedAssistance"})
      */
-    private $id = 0;
+    #[SymfonyGroups(['SmartcardOverview', 'ValidatedAssistance'])]
+    private ?int $id = 0;
 
     /**
      * @var string serial number / UID
      *
      * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard", "ValidatedAssistance"})
      */
-    private $serialNumber;
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard', 'ValidatedAssistance'])]
+    private string $serialNumber;
 
     /**
-     * @var Beneficiary
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="smartcards")
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $beneficiary;
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private ?Beneficiary $beneficiary = null;
 
     /**
      * @var Collection|SmartcardDeposit[]
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $deposites;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private Collection |array $deposites;
 
     /**
      * @var Collection|SmartcardPurchase[]
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $purchases;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private Collection |array $purchases;
 
     /**
-     * @var string
      * @see SmartcardStates::all()
-     *
      * @ORM\Column(name="state", type="string", length=10, nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $state;
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private string $state;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="currency", type="string", length=3, nullable=true)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $currency;
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private ?string $currency = null;
 
     /**
-     * @var DateTimeInterface
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
-     */
-    private $createdAt;
-
-    /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
      */
-    private $disabledAt;
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private ?DateTimeInterface $disabledAt = null;
 
     /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="registered_at", type="datetime", nullable=true)
      */
-    private $registeredAt;
+    private ?DateTimeInterface $registeredAt = null;
 
     /**
-     * @var DateTimeInterface
-     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    private DateTimeInterface $createdAt;
+
+    /**
      * @ORM\Column(name="changed_at", type="datetime", nullable=true)
      */
-    private $changedAt;
+    private ?DateTimeInterface $changedAt = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="suspicious", type="boolean", nullable=false)
      */
-    private $suspicious = false;
+    private bool $suspicious = false;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="suspicious_reason", type="string", nullable=true)
      */
-    private $suspiciousReason;
+    private ?string $suspiciousReason = null;
 
-    public function __construct(string $serialNumber, DateTimeInterface $createdAt)
-    {
+    public function __construct(
+        string $serialNumber,
+        DateTimeInterface $createdAt,
+    ) {
         if (!self::check($serialNumber)) {
             throw new InvalidArgumentException('Smartcard serial number ' . $serialNumber . 'is not valid');
         }
 
-        $this->serialNumber = strtoupper($serialNumber);
         $this->createdAt = $createdAt;
+        $this->serialNumber = strtoupper($serialNumber);
         $this->deposites = new ArrayCollection();
         $this->purchases = new ArrayCollection();
 
@@ -157,27 +139,16 @@ class Smartcard
         return preg_match('~^[A-F0-9]+$~i', $serialNumber);
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getSerialNumber(): string
     {
         return $this->serialNumber;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     *
-     * @return self
-     */
     public function setBeneficiary(Beneficiary $beneficiary): self
     {
         $this->beneficiary = $beneficiary;
@@ -201,9 +172,6 @@ class Smartcard
         return $this->purchases;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
@@ -212,8 +180,6 @@ class Smartcard
     /**
      * Currency used in smartcard.
      * Currency is defined after deposit money into card.
-     *
-     * @return string|null
      */
     public function getCurrency(): ?string
     {
@@ -221,8 +187,6 @@ class Smartcard
     }
 
     /**
-     * @param string $currency
-     *
      * @return $this
      */
     public function setCurrency(string $currency): self
@@ -237,8 +201,6 @@ class Smartcard
     }
 
     /**
-     * @param string $state
-     *
      * @return $this
      */
     public function setState(string $state): self
@@ -280,11 +242,7 @@ class Smartcard
         return $this->suspiciousReason;
     }
 
-    /**
-     * @return float
-     *
-     * @SymfonyGroups({"SmartcardOverview", "FullSmartcard"})
-     */
+    #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
     public function getValue(): float
     {
         $sum = 0.0;
@@ -306,17 +264,11 @@ class Smartcard
         return $this->createdAt;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDisabledAt(): ?DateTimeInterface
     {
         return $this->disabledAt;
     }
 
-    /**
-     * @param DateTimeInterface $disabledAt
-     */
     public function setDisabledAt(DateTimeInterface $disabledAt): void
     {
         $this->disabledAt = $disabledAt;
@@ -334,7 +286,7 @@ class Smartcard
     /**
      * @return Collection|SmartcardDeposit[]
      */
-    public function getDeposites()
+    public function getDeposites(): Collection |array
     {
         return $this->deposites;
     }
@@ -356,33 +308,21 @@ class Smartcard
         return self::STATE_ACTIVE === $this->state;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getRegisteredAt(): ?DateTimeInterface
     {
         return $this->registeredAt;
     }
 
-    /**
-     * @param DateTimeInterface $registeredAt
-     */
     public function setRegisteredAt(DateTimeInterface $registeredAt): void
     {
         $this->registeredAt = $registeredAt;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getChangedAt(): ?DateTimeInterface
     {
         return $this->changedAt;
     }
 
-    /**
-     * @param DateTimeInterface $changedAt
-     */
     public function setChangedAt(DateTimeInterface $changedAt): void
     {
         $this->changedAt = $changedAt;

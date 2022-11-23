@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\GeneralReliefItem;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\GeneralReliefFilterInputType;
@@ -16,12 +17,13 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class GeneralReliefItemController extends AbstractController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/web-app/v1/general-relief-items/{id}")
      *
-     * @param GeneralReliefItem $object
      *
-     * @return JsonResponse
      */
     public function item(GeneralReliefItem $object): JsonResponse
     {
@@ -31,8 +33,6 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v2/general-relief-items/{id}")
      *
-     * @param GeneralReliefItem $object
-     * @param GeneralReliefPatchInputType $inputType
      *
      * @return JsonResponse
      */
@@ -44,8 +44,6 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/general-relief-items/{id}")
      *
-     * @param Request $request
-     * @param GeneralReliefItem $object
      *
      * @return JsonResponse
      * @deprecated Use self::patchV2() instead
@@ -58,20 +56,16 @@ class GeneralReliefItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/general-relief-items")
      *
-     * @param Request $request
-     * @param GeneralReliefFilterInputType $filter
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function list(Request $request, GeneralReliefFilterInputType $filter, Pagination $pagination): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(GeneralReliefItem::class)
+        $list = $this->managerRegistry->getRepository(GeneralReliefItem::class)
             ->findByParams($filter, $pagination);
 
         return $this->json($list);

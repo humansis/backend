@@ -6,5 +6,5 @@ namespace Component\Import\CellError;
 
 class ErrorTypes
 {
-    public const FORMULA_ERROR = 'FormulaError';
+    final public const FORMULA_ERROR = 'FormulaError';
 }

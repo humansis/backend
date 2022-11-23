@@ -9,54 +9,34 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class DivisionGroupInputType implements InputTypeInterface
 {
-    /**
-     * @var int
-     * @Assert\Type("int")
-     * @Assert\Range(min="1", max="1000", notInRangeMessage="Supported range is from {{ min }} to {{ max }} members.")
-     */
-    private $rangeFrom;
+    #[Assert\Type('int')]
+    #[Assert\Range(min: 1, max: 1000, notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.')]
+    private ?int $rangeFrom = null;
 
-    /**
-     * @var int|null
-     * @Assert\Type(type="int")
-     * @Assert\Range(min="1", max="1000", notInRangeMessage="Supported range is from {{ min }} to {{ max }} members.")
-     * @Assert\NotBlank(allowNull=true)
-     */
-    private $rangeTo;
+    #[Assert\Type(type: 'int')]
+    #[Assert\Range(min: 1, max: 1000, notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.')]
+    #[Assert\NotBlank(allowNull: true)]
+    private ?int $rangeTo = null;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $value;
 
-    /**
-     * @return int
-     */
     public function getRangeFrom(): int
     {
         return $this->rangeFrom;
     }
 
-    /**
-     * @param int $rangeFrom
-     */
     public function setRangeFrom(int $rangeFrom): void
     {
         $this->rangeFrom = $rangeFrom;
     }
 
-    /**
-     * @return int|null
-     */
     public function getRangeTo(): ?int
     {
         return $this->rangeTo;
     }
 
-    /**
-     * @param int|null $rangeTo
-     */
     public function setRangeTo(?int $rangeTo): void
     {
         $this->rangeTo = $rangeTo;
@@ -70,10 +50,7 @@ class DivisionGroupInputType implements InputTypeInterface
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value): void
+    public function setValue(mixed $value): void
     {
         $this->value = $value;
     }

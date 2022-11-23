@@ -288,17 +288,22 @@ services:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
 
-    Listener\AcceptHeaderListener:
+    Listener\AcceptHeaderEventSubscriber:
         arguments: [ '%app.locales%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-    Listener\VaryingListener:
+    Listener\CorsEventSubscriber:
+        arguments: [ '%cors%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 256 }
+
+    Listener\VaryingEventSubscriber:
         arguments: [ '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.response }
 
-    Listener\ErrorResponseListener:
+    Listener\ErrorResponseEventSubscriber:
         arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
@@ -443,6 +448,8 @@ services:
         arguments:
             - '%import.uploadedFilesDirectory%'
         public: true
+
+    Component\Import\ImportParser:
 
     Command\WingMoneyReportImportCommand:
 
@@ -781,7 +788,7 @@ services:
 
     user.user_service:
         class: Utils\UserService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@export_csv_service', '@security.role_hierarchy','@security.helper']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service', '@security.role_hierarchy','@security.helper']
         public: true
 
     Utils\UserService: '@user.user_service'
@@ -884,6 +891,11 @@ services:
 
     Utils\HouseholdService: '@beneficiary.household_service'
 
+    Repository\RoleRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Role
+
     Repository\UserRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
@@ -913,7 +925,7 @@ services:
         tags:
             - { name: 'console.command' }
         arguments:
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
 
     logger:
         alias: monolog.logger
@@ -958,7 +970,7 @@ services:
     ##                                     LISTENER                                      ##
     #######################################################################################
 
-    Listener\ResponseListener:
+    Listener\ResponseEventSubscriber:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
@@ -1013,10 +1025,10 @@ services:
     DataFixtures\UserFixtures:
         public: true
         arguments:
-            - "@fos_user.user_manager"
-            - "@security.encoder_factory"
             - "@kernel"
             - "@user.user_service"
+            - "@validator"
+            - '@Repository\UserRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1132,9 +1144,6 @@ services:
 
     DataFixtures\ServiceFixtures:
         public: true
-        arguments:
-            - "@fos_user.user_manager"
-            - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1252,7 +1261,12 @@ services:
 
     voucher.voucher_service:
         class: Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager','@service_container', '@export_csv_service', '@Twig\Environment','@pdf_service']
+        arguments: [
+            '@doctrine.orm.entity_manager',
+            '@export_csv_service',
+            '@Twig\Environment',
+            '@pdf_service'
+        ]
         public: true
 
     Utils\ProductService:
@@ -1306,7 +1320,6 @@ services:
             - '@cache.app'
             - '@Twig\Environment'
             - '@monolog.logger'
-            - '@swiftmailer.mailer.default'
             - '@export_csv_service'
 
     transaction.default_financial_provider:
@@ -1317,7 +1330,9 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@monolog.logger'
             - '@security.token_storage'
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
+            -
+    Utils\Provider\DefaultFinancialProvider: '@transaction.default_financial_provider'
 
     transaction.khm_financial_provider:
         class: Utils\Provider\KHMFinancialProvider
@@ -1325,6 +1340,8 @@ services:
         autowire: false
         autoconfigure: false
         public: true
+
+    Utils\Provider\KHMFinancialProvider: '@transaction.khm_financial_provider'
 
     Export\DistributedSummarySpreadsheetExport:
         alias: export.distributed_summary.spreadsheet
@@ -1412,3 +1429,6 @@ services:
     Component\Smartcard\Invoice\InvoiceChecker:
 
     Component\Auditor\AuditorService:
+
+    DataHelper\UserDataHelper:
+        public: true

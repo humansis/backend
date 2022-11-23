@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class IsBase64Validator extends ConstraintValidator
 {
-    public const BASE64_REGEXP = "/^[a-zA-Z0-9\/\r\n+]*={0,2}$/";
+    final public const BASE64_REGEXP = "/^[a-zA-Z0-9\/\r\n+]*={0,2}$/";
 
     /**
      * {@inheritdoc}

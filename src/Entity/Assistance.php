@@ -29,180 +29,154 @@ class Assistance implements ExportableInterface
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="assistance_type", type="enum_assistance_type")
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
-    private $assistanceType = AssistanceType::DISTRIBUTION;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'FullBooklet', 'AssistanceOverview'])]
+    private string $assistanceType = AssistanceType::DISTRIBUTION;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="name", type="string", length=45)
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "FullBooklet", "AssistanceOverview"})
      */
-    private $name;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'FullBooklet', 'AssistanceOverview'])]
+    private string $name;
 
     /**
-     * @var DateTime
-     *
      * @ORM\Column(name="UpdatedOn", type="datetime")
      */
-    private $updatedOn;
+    private DateTimeInterface $updatedOn;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(name="date_distribution", type="date")
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
     private $dateDistribution;
 
     /**
      * @var DateTime|null
      *
      * @ORM\Column(name="date_expiration", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
     private $dateExpiration;
 
     /**
-     * @var Location
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Location")
      */
-    private $location;
+    private ?\Entity\Location $location = null;
 
     /**
-     * @var Project
      *
      * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="distributions")
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $project;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?\Entity\Project $project = null;
 
     /**
-     * @var AssistanceSelection
      *
      * @ORM\OneToOne(targetEntity="Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance", fetch="EAGER")
      * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
      */
-    private $assistanceSelection;
+    private \Entity\AssistanceSelection $assistanceSelection;
 
     /**
-     * @var bool
      *
      * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $archived = 0;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private int|bool $archived = 0;
 
     /**
-     * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\User", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $validatedBy = null;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?\Entity\User $validatedBy = null;
 
     /**
-     * @var string
      *
      * @ORM\Column(name="target_type", type="enum_assistance_target_type")
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
-    private $targetType;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    private ?string $targetType = null;
 
     /**
-     * @var Commodity[]
+     * @var Collection | Commodity[]
      * @ORM\OneToMany(targetEntity="Entity\Commodity", mappedBy="assistance", cascade={"persist"})
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      */
-    private $commodities;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    private Collection | array $commodities;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
-     *
-     * @SymfonyGroups({"FullAssistance", "FullProject"})
      */
+    #[SymfonyGroups(['FullAssistance', 'FullProject'])]
     private $distributionBeneficiaries;
 
     /**
-     * @var bool
      *
      * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $completed = 0;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private int|bool $completed = 0;
 
     /**
-     * @var string
      *
      * @see SectorEnum
-     *
      * @ORM\Column(name="sector", type="enum_sector", nullable=false)
      */
-    private $sector;
+    private ?string $sector = null;
 
     /**
-     * @var string|null
      *
      * @see SubSectorEnum
-     *
      * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
      */
-    private $subSector;
+    private ?string $subSector = null;
 
     /**
-     * @var ScoringBlueprint|null
      * @ORM\ManyToOne(targetEntity="Entity\ScoringBlueprint")
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $scoringBlueprint;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?\Entity\ScoringBlueprint $scoringBlueprint = null;
 
     /**
-     * @var string|null
      *
      * @ORM\Column(name="description", type="text", nullable=true)
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $description;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?string $description = null;
 
     /**
-     * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $householdsTargeted;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?int $householdsTargeted = null;
 
     /**
-     * @var int|null
      *
      * @ORM\Column(type="integer", nullable=true)
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      */
-    private $individualsTargeted;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private ?int $individualsTargeted = null;
 
     /**
-     * @var bool|null
-     *
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $remoteDistributionAllowed;
+    private ?bool $remoteDistributionAllowed = null;
 
     /**
      * @var numeric|null
@@ -226,18 +200,16 @@ class Assistance implements ExportableInterface
     private $cashbackLimit;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="round", type="smallint", nullable=true)
      */
-    private $round;
+    private ?int $round = null;
 
     /**
      * @var string[]
      *
      * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
-    private $allowedProductCategoryTypes;
+    private array $allowedProductCategoryTypes;
 
     /**
      * @var SmartcardPurchase[]|Collection
@@ -247,11 +219,9 @@ class Assistance implements ExportableInterface
     private $smartcardPurchases;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="note", type="text", length=65535, nullable=true)
      */
-    private $note;
+    private ?string $note = null;
 
     /**
      * Constructor
@@ -266,19 +236,11 @@ class Assistance implements ExportableInterface
         $this->smartcardPurchases = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
     public function getAssistanceType(): string
     {
         return $this->assistanceType;
     }
 
-    /**
-     * @param string $assistanceType
-     *
-     * @return Assistance
-     */
     public function setAssistanceType(string $assistanceType): Assistance
     {
         $this->assistanceType = $assistanceType;
@@ -313,7 +275,6 @@ class Assistance implements ExportableInterface
     /**
      * Set updatedOn.
      *
-     * @param DateTimeInterface $updatedOn
      *
      * @return Assistance
      */
@@ -326,10 +287,9 @@ class Assistance implements ExportableInterface
 
     /**
      * Get updatedOn.
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
-     * @return string
      */
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
     public function getUpdatedOn(): string
     {
         return $this->updatedOn->format('Y-m-d H:i:s');
@@ -343,9 +303,7 @@ class Assistance implements ExportableInterface
     /**
      * Set archived.
      *
-     * @param bool $archived
      *
-     * @return Assistance
      */
     public function setArchived(bool $archived): Assistance
     {
@@ -367,9 +325,7 @@ class Assistance implements ExportableInterface
     /**
      * Set validated.
      *
-     * @param User|null $validatedBy
      *
-     * @return Assistance
      */
     public function setValidatedBy(?User $validatedBy): Assistance
     {
@@ -380,8 +336,6 @@ class Assistance implements ExportableInterface
 
     /**
      * Get validated.
-     *
-     * @return User|null
      */
     public function getValidatedBy(): ?User
     {
@@ -391,9 +345,7 @@ class Assistance implements ExportableInterface
     /**
      * Set completed.
      *
-     * @param bool $completed
      *
-     * @return Assistance
      */
     public function setCompleted(bool $completed = true): Assistance
     {
@@ -415,9 +367,7 @@ class Assistance implements ExportableInterface
     /**
      * Set type.
      *
-     * @param string $targetType
      *
-     * @return self
      */
     public function setTargetType(string $targetType): Assistance
     {
@@ -434,8 +384,6 @@ class Assistance implements ExportableInterface
 
     /**
      * Get type.
-     *
-     * @return string
      */
     public function getTargetType(): string
     {
@@ -493,7 +441,6 @@ class Assistance implements ExportableInterface
     /**
      * Add selectionCriterion.
      *
-     * @param SelectionCriteria $selectionCriterion
      *
      * @return Assistance
      */
@@ -508,7 +455,6 @@ class Assistance implements ExportableInterface
     /**
      * Remove selectionCriterion.
      *
-     * @param SelectionCriteria $selectionCriterion
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -520,11 +466,11 @@ class Assistance implements ExportableInterface
     /**
      * Get selectionCriteria.
      *
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      *
      * @return Collection|SelectionCriteria[]
      */
-    public function getSelectionCriteria()
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    public function getSelectionCriteria(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->getAssistanceSelection()->getSelectionCriteria();
     }
@@ -537,7 +483,6 @@ class Assistance implements ExportableInterface
     /**
      * Add commodity.
      *
-     * @param Commodity $commodity
      *
      * @return Assistance
      */
@@ -552,7 +497,6 @@ class Assistance implements ExportableInterface
     /**
      * Remove commodity.
      *
-     * @param Commodity $commodity
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -566,7 +510,7 @@ class Assistance implements ExportableInterface
      *
      * @return Collection|Commodity[]
      */
-    public function getCommodities()
+    public function getCommodities(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->commodities;
     }
@@ -574,7 +518,6 @@ class Assistance implements ExportableInterface
     /**
      * Add assistanceBeneficiary.
      *
-     * @param AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return Assistance
      */
@@ -591,7 +534,6 @@ class Assistance implements ExportableInterface
     /**
      * Remove assistanceBeneficiary.
      *
-     * @param AssistanceBeneficiary $assistanceBeneficiary
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -605,7 +547,7 @@ class Assistance implements ExportableInterface
      *
      * @return Collection|AssistanceBeneficiary[]
      */
-    public function getDistributionBeneficiaries()
+    public function getDistributionBeneficiaries(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->distributionBeneficiaries;
     }
@@ -613,7 +555,6 @@ class Assistance implements ExportableInterface
     /**
      * Set dateDistribution.
      *
-     * @param DateTimeInterface $dateDistribution
      *
      * @return Assistance
      */
@@ -626,41 +567,27 @@ class Assistance implements ExportableInterface
 
     /**
      * Get dateDistribution.
-     *
-     * @return DateTimeInterface
      */
     public function getDateDistribution(): DateTimeInterface
     {
         return $this->dateDistribution;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpiration;
     }
 
-    /**
-     * @param DateTimeInterface|null $dateExpiration
-     */
     public function setDateExpiration(?DateTimeInterface $dateExpiration): void
     {
         $this->dateExpiration = $dateExpiration;
     }
 
-    /**
-     * @return string
-     */
     public function getSector(): string
     {
         return $this->sector;
     }
 
-    /**
-     * @param string $sector
-     */
     public function setSector(string $sector): void
     {
         if (!in_array($sector, SectorEnum::all())) {
@@ -670,27 +597,16 @@ class Assistance implements ExportableInterface
         $this->sector = $sector;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSubSector(): ?string
     {
         return $this->subSector;
     }
 
-    /**
-     * @return ScoringBlueprint|null
-     */
     public function getScoringBlueprint(): ?ScoringBlueprint
     {
         return $this->scoringBlueprint;
     }
 
-    /**
-     * @param ScoringBlueprint|null $scoringBlueprint
-     *
-     * @return Assistance
-     */
     public function setScoringBlueprint(?ScoringBlueprint $scoringBlueprint): Assistance
     {
         $this->scoringBlueprint = $scoringBlueprint;
@@ -698,11 +614,6 @@ class Assistance implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @param string|null $description
-     *
-     * @return $this
-     */
     public function setDescription(?string $description): Assistance
     {
         $this->description = $description;
@@ -710,65 +621,41 @@ class Assistance implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @return int|null
-     */
     public function getHouseholdsTargeted(): ?int
     {
         return $this->householdsTargeted;
     }
 
-    /**
-     * @param int|null $householdsTargeted
-     */
     public function setHouseholdsTargeted(?int $householdsTargeted): void
     {
         $this->householdsTargeted = $householdsTargeted;
     }
 
-    /**
-     * @return int|null
-     */
     public function getIndividualsTargeted(): ?int
     {
         return $this->individualsTargeted;
     }
 
-    /**
-     * @param int|null $individualsTargeted
-     */
     public function setIndividualsTargeted(?int $individualsTargeted): void
     {
         $this->individualsTargeted = $individualsTargeted;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNote(): ?string
     {
         return $this->note;
     }
 
-    /**
-     * @param string|null $note
-     */
     public function setNote(?string $note): void
     {
         $this->note = $note;
     }
 
-    /**
-     * @param string|null $subSector
-     */
     public function setSubSector(?string $subSector): void
     {
         if (null !== $subSector && !in_array($subSector, SubSectorEnum::all())) {
@@ -901,9 +788,6 @@ class Assistance implements ExportableInterface
         return floor($sent);
     }
 
-    /**
-     * @return bool|null
-     */
     public function isRemoteDistributionAllowed(): ?bool
     {
         return $this->remoteDistributionAllowed;
@@ -917,9 +801,6 @@ class Assistance implements ExportableInterface
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoodLimit(): ?string
     {
         return $this->foodLimit;
@@ -941,9 +822,6 @@ class Assistance implements ExportableInterface
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getNonFoodLimit(): ?string
     {
         return $this->nonFoodLimit;
@@ -965,9 +843,6 @@ class Assistance implements ExportableInterface
         }
     }
 
-    /**
-     * @return string|null
-     */
     public function getCashbackLimit(): ?string
     {
         return $this->cashbackLimit;
@@ -1013,25 +888,16 @@ class Assistance implements ExportableInterface
         return $this->smartcardPurchases;
     }
 
-    /**
-     * @param Collection $smartcardPurchases
-     */
     public function setSmartcardPurchases(Collection $smartcardPurchases): void
     {
         $this->smartcardPurchases = $smartcardPurchases;
     }
 
-    /**
-     * @return int|null
-     */
     public function getRound(): ?int
     {
         return $this->round;
     }
 
-    /**
-     * @param int|null $round
-     */
     public function setRound(?int $round): void
     {
         $this->round = $round;
@@ -1041,8 +907,6 @@ class Assistance implements ExportableInterface
      * Returns if assistance has at least one commodity with given modality type
      *
      * @param string $modalityType - You can use Enum\ModalityType
-     *
-     * @return bool
      */
     public function hasModalityTypeCommodity(string $modalityType): bool
     {

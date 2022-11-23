@@ -6,20 +6,8 @@ namespace Component\Assistance\Scoring\Model;
 
 final class ScoringRuleOption
 {
-    /**
-     * @var string
-     */
-    private $value;
-
-    /**
-     * @var float
-     */
-    private $score;
-
-    public function __construct(string $value, float $score)
+    public function __construct(private readonly string $value, private readonly float $score)
     {
-        $this->value = $value;
-        $this->score = $score;
     }
 
     public function getValue(): string

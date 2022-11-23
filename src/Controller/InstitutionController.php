@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Institution;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,20 +20,14 @@ use Utils\InstitutionService;
 
 class InstitutionController extends AbstractController
 {
-    /** @var InstitutionService */
-    private $institutionService;
-
-    public function __construct(InstitutionService $institutionService)
+    public function __construct(private readonly InstitutionService $institutionService, private readonly ManagerRegistry $managerRegistry)
     {
-        $this->institutionService = $institutionService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
      *
-     * @return JsonResponse
      */
     public function item(Institution $institution): JsonResponse
     {
@@ -46,12 +41,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/institutions")
      *
-     * @param Request $request
-     * @param Pagination $pagination
-     * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -63,7 +53,7 @@ class InstitutionController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $this->getDoctrine()->getRepository(Institution::class)
+        $data = $this->managerRegistry->getRepository(Institution::class)
             ->findByParams($request->headers->get('country'), $filter, $orderBy, $pagination);
 
         return $this->json($data);
@@ -72,9 +62,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/institutions")
      *
-     * @param InstitutionCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
@@ -86,10 +74,7 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
-     * @param InstitutionUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
     {
@@ -101,7 +86,6 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/institutions/{id}")
      *
-     * @param Institution $institution
      *
      * @return JsonResponse
      */
@@ -115,13 +99,11 @@ class InstitutionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/institutions")
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function institutionsByProject(Project $project): JsonResponse
     {
-        $institutions = $this->getDoctrine()->getRepository(Institution::class)->findByProject($project);
+        $institutions = $this->managerRegistry->getRepository(Institution::class)->findByProject($project);
 
         return $this->json($institutions);
     }

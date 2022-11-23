@@ -2,16 +2,13 @@
 
 namespace InputType;
 
-use DateTimeInterface;
+use DateTime;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Iso8601;
 
 class VoucherPurchase
 {
     /**
-     * @var array
-     *
-     * @Assert\Valid()
-     * @Assert\NotBlank()
      * @Assert\All({
      *      @Assert\Collection(fields={
      *          "id" = @Assert\Type("int"),
@@ -20,95 +17,70 @@ class VoucherPurchase
      *      })
      * })
      */
-    private $products;
+    #[Assert\Valid]
+    #[Assert\NotBlank]
+    private ?array $products = null;
 
     /**
      * @var int[]
      *
-     * @Assert\Valid()
-     * @Assert\NotBlank()
      * @Assert\All({
      *     @Assert\Type("int")
      * })
      */
+    #[Assert\Valid]
+    #[Assert\NotBlank]
     private $vouchers;
 
     /**
      * @var int ID of vendor/seller
-     *
-     * @Assert\Type("int")
-     * @Assert\NotBlank()
      */
-    private $vendorId;
+    #[Assert\Type('int')]
+    #[Assert\NotBlank]
+    private ?int $vendorId = null;
 
     /**
-     * @var DateTimeInterface
-     *
-     * @Assert\DateTime()
-     * @Assert\NotBlank()
+     * @Iso8601
      */
-    private $createdAt;
+    #[Assert\NotBlank]
+    private ?DateTime $createdAt = null;
 
-    /**
-     * @return array
-     */
     public function getProducts(): array
     {
         return $this->products;
     }
 
-    /**
-     * @param array $products
-     */
     public function setProducts(array $products): void
     {
         $this->products = $products;
     }
 
-    /**
-     * @return array
-     */
     public function getVouchers(): array
     {
         return $this->vouchers;
     }
 
-    /**
-     * @param array $vouchers
-     */
     public function setVouchers(array $vouchers): void
     {
         $this->vouchers = $vouchers;
     }
 
-    /**
-     * @return int
-     */
     public function getVendorId(): int
     {
         return $this->vendorId;
     }
 
-    /**
-     * @param int $vendorId
-     */
     public function setVendorId(int $vendorId): void
     {
         $this->vendorId = $vendorId;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param DateTimeInterface $createdAt
-     */
-    public function setCreatedAt(DateTimeInterface $createdAt): void
+    public function setCreatedAt(?DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

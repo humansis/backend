@@ -8,26 +8,18 @@ use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @Assert\Callback({"InputType\AddRemoveBeneficiaryToAssistanceInputType", "validate"})
- */
+#[Assert\Callback([\InputType\AddRemoveBeneficiaryToAssistanceInputType::class, 'validate'])]
 class AddRemoveAbstractBeneficiaryToAssistanceInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("boolean")
-     */
+    #[Assert\Type('boolean')]
     protected $added;
 
-    /**
-     * @Assert\Type("boolean")
-     */
+    #[Assert\Type('boolean')]
     protected $removed;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     protected $justification;
 
     public static function validate($object, ExecutionContextInterface $context, $payload)

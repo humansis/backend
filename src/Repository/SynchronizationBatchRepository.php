@@ -60,19 +60,12 @@ class SynchronizationBatchRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case SynchronizationBatch\OrderInputType::SORT_BY_ID:
-                        $qb->orderBy('s.id', $direction);
-                        break;
-                    case SynchronizationBatch\OrderInputType::SORT_BY_SOURCE:
-                        $qb->orderBy('s.source', $direction);
-                        break;
-                    case SynchronizationBatch\OrderInputType::SORT_BY_DATE:
-                        $qb->orderBy('s.createdAt', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    SynchronizationBatch\OrderInputType::SORT_BY_ID => $qb->orderBy('s.id', $direction),
+                    SynchronizationBatch\OrderInputType::SORT_BY_SOURCE => $qb->orderBy('s.source', $direction),
+                    SynchronizationBatch\OrderInputType::SORT_BY_DATE => $qb->orderBy('s.createdAt', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 

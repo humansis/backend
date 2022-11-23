@@ -9,30 +9,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductCategoryInputType implements InputTypeInterface
 {
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\NotBlank()
-     * @Assert\Length(max="255")
-     */
-    private $name;
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    private ?string $name = null;
 
-    /**
-     * @var string
-     *
-     * @Assert\Type("string")
-     * @Assert\NotBlank()
-     * @Assert\Choice(callback={"Enum\ProductCategoryType", "values"})
-     */
-    private $type;
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    #[Assert\Choice(callback: [\Enum\ProductCategoryType::class, 'values'])]
+    private ?string $type = null;
 
-    /**
-     * @var string|null
-     *
-     * @Assert\Type("string")
-     */
-    private $image;
+    #[Assert\Type('string')]
+    private ?string $image = null;
 
     /**
      * @return string

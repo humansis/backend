@@ -10,8 +10,8 @@ class HouseholdHead
         valueFromAPI as private parentValueFromAPI;
     }
 
-    public const TRUE = 1;
-    public const FALSE = 0;
+    final public const TRUE = 1;
+    final public const FALSE = 0;
 
     protected static $values = [
         1 => self::TRUE,
@@ -23,7 +23,7 @@ class HouseholdHead
         return self::$values;
     }
 
-    public static function valueFromAPI($APIValue)
+    public static function valueFromAPI(int|string|bool $APIValue): int|string|bool
     {
         return (bool) self::parentValueFromAPI($APIValue);
     }

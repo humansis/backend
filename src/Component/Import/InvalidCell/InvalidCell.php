@@ -17,47 +17,16 @@ final class InvalidCell
     ];
 
     /**
-     * @var string
-     */
-    private $columnName;
-
-    /**
-     * @var float|int|string
-     */
-    private $cellValue;
-
-    /**
-     * @var string
-     */
-    private $cellDataType;
-
-    /**
-     * @var array|null
-     */
-    private $cellErrors;
-
-    /**
      * @var ColumnSpecific[]
      */
-    private $columnsSpecific = [];
+    private array $columnsSpecific = [];
 
-    /**
-     * @param string $columnName
-     * @param string|int|float $cellValue
-     * @param string $cellDataType
-     * @param array|null $cellErrors
-     */
     public function __construct(
-        string $columnName,
-        $cellValue,
-        string $cellDataType,
-        ?array $cellErrors = null
+        private readonly string $columnName,
+        private float|int|string|bool|null $cellValue,
+        private string $cellDataType,
+        private readonly ?array $cellErrors = null
     ) {
-        $this->columnName = $columnName;
-        $this->cellValue = $cellValue;
-        $this->cellDataType = $cellDataType;
-        $this->cellErrors = $cellErrors;
-
         foreach (self::COLUMNS_SPECIFIC as $columnSpecific) {
             /** @var ColumnSpecific $columnSpecificClass */
             $columnSpecificClass = new $columnSpecific();
@@ -68,17 +37,11 @@ final class InvalidCell
         $this->callCustomValueCallback();
     }
 
-    /**
-     * @return float|int|string
-     */
-    public function getCellValue()
+    public function getCellValue(): float|int|string|bool|null
     {
         return $this->cellValue;
     }
 
-    /**
-     * @return string
-     */
     public function getCellDataType(): string
     {
         return $this->cellDataType;

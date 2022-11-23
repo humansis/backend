@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Controller;
 
 use Serializer\MapperInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-abstract class AbstractController extends Controller
+abstract class AbstractController extends SymfonyAbstractController
 {
     /**
      * {@inheritdoc}
@@ -24,15 +24,10 @@ abstract class AbstractController extends Controller
         return parent::json($data, $status, $headers, $context);
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return string
-     */
     protected function getCountryCode(Request $request): string
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 

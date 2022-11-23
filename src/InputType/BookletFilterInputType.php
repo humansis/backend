@@ -10,16 +10,13 @@ use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Entity\Booklet;
 
-/**
- * @Assert\GroupSequence({"BookletFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['BookletFilterInputType', 'Strict'])]
 class BookletFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback="bookletStatuses", strict=true)
@@ -27,10 +24,10 @@ class BookletFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $statuses;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -38,10 +35,10 @@ class BookletFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $currencies;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -49,10 +46,10 @@ class BookletFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $distributions;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -60,6 +57,7 @@ class BookletFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $beneficiaries;
 
     public static function bookletStatuses()

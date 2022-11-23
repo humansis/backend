@@ -23,20 +23,13 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureInterface//, FixtureGroupInterface
 {
-    private $distributionService;
-
-    private $kernel;
-
-    public function __construct(Kernel $kernel, AssistanceService $distributionService)
+    public function __construct(private readonly Kernel $kernel, private readonly AssistanceService $distributionService)
     {
-        $this->distributionService = $distributionService;
-        $this->kernel = $kernel;
     }
 
     /**
      * Load data fixtures with the passed EntityManager.
      *
-     * @param ObjectManager $manager
      *
      * @throws ValidationException
      */
@@ -97,7 +90,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     private function addBNFsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $BNFs = $manager->getRepository(Beneficiary::class)->getUnarchivedByProject($project);
-        echo "(" . count($BNFs) . ") ";
+        echo "(" . (is_countable($BNFs) ? count($BNFs) : 0) . ") ";
         $count = 0;
         foreach ($BNFs as $beneficiary) {
             $bnf = (new AssistanceBeneficiary())
@@ -116,7 +109,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     private function addHHsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $HHs = $manager->getRepository(Household::class)->getUnarchivedByProject($project)->getQuery()->getResult();
-        echo "(" . count($HHs) . ") ";
+        echo "(" . (is_countable($HHs) ? count($HHs) : 0) . ") ";
         $count = 0;
         /** @var Household $household */
         foreach ($HHs as $household) {
@@ -140,7 +133,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     private function addInstsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $institutions = $manager->getRepository(Institution::class)->getUnarchivedByProject($project);
-        echo "(" . count($institutions) . ") ";
+        echo "(" . (is_countable($institutions) ? count($institutions) : 0) . ") ";
         $count = 0;
         foreach ($institutions as $institution) {
             $bnf = (new AssistanceBeneficiary())
@@ -159,7 +152,7 @@ class AssistanceBeneficiaryFixtures extends Fixture implements DependentFixtureI
     private function addCommsToAssistance(ObjectManager $manager, Assistance $assistance, Project $project): void
     {
         $communities = $manager->getRepository(Community::class)->getUnarchivedByProject($project);
-        echo "(" . count($communities) . ") ";
+        echo "(" . (is_countable($communities) ? count($communities) : 0) . ") ";
         $count = 0;
         foreach ($communities as $community) {
             $bnf = (new AssistanceBeneficiary())

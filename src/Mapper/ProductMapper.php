@@ -10,8 +10,7 @@ use Entity\Product;
 
 class ProductMapper implements MapperInterface
 {
-    /** @var Product */
-    private $object;
+    private ?\Entity\Product $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,7 +32,7 @@ class ProductMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Product::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Product::class . ', ' . $object::class . ' given.'
         );
     }
 

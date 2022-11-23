@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class AddressMapper implements MapperInterface
 {
-    /** @var Address */
-    private $object;
+    private ?\Entity\Address $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,7 +32,7 @@ class AddressMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Address::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Address::class . ', ' . $object::class . ' given.'
         );
     }
 

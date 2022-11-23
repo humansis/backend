@@ -23,36 +23,10 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class IdentitySubscriber implements EventSubscriberInterface
 {
-    public const GUARD_CODE_NOT_COMPLETE = '99a555c7-6ab3-4fa8-9c42-705b4c70931c';
+    final public const GUARD_CODE_NOT_COMPLETE = '99a555c7-6ab3-4fa8-9c42-705b4c70931c';
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var IdentityChecker
-     */
-    private $identityChecker;
-
-    /**
-     * @var ImportQueueRepository
-     */
-    private $queueRepository;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        IdentityChecker $identityChecker,
-        MessageBusInterface $messageBus,
-        ImportQueueRepository $queueRepository
-    ) {
-        $this->entityManager = $entityManager;
-        $this->identityChecker = $identityChecker;
-        $this->messageBus = $messageBus;
-        $this->queueRepository = $queueRepository;
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly IdentityChecker $identityChecker, private readonly MessageBusInterface $messageBus, private readonly ImportQueueRepository $queueRepository)
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -112,9 +86,6 @@ class IdentitySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardAnySuspiciousItem(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -125,9 +96,6 @@ class IdentitySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardNoSuspiciousItem(GuardEvent $guardEvent): void
     {
         /** @var Import $import */

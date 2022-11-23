@@ -5,24 +5,20 @@ declare(strict_types=1);
 namespace MapperDeprecated;
 
 use Entity\ProjectSector;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @deprecated
  */
 class SectorMapper
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
     /**
      * SectorMapper constructor.
      *
      * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     private function getLabel(string $enumValue): string

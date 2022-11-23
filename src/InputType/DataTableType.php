@@ -8,16 +8,16 @@ class DataTableType implements InputTypeInterface
 {
     /**
      * @var int
-     * @Assert\NotBlank()
-     * @Assert\GreaterThanOrEqual(0)
      */
+    #[Assert\NotBlank]
+    #[Assert\GreaterThanOrEqual(0)]
     public $pageIndex = 0;
 
     /**
      * @var int
-     * @Assert\NotBlank()
-     * @Assert\GreaterThan(0)
      */
+    #[Assert\NotBlank]
+    #[Assert\GreaterThan(0)]
     public $pageSize = 30;
 
     /**
@@ -53,17 +53,11 @@ class DataTableType implements InputTypeInterface
         return $this->pageIndex * $this->pageSize;
     }
 
-    /**
-     * @return int
-     */
     public function getPageIndex(): int
     {
         return $this->pageIndex;
     }
 
-    /**
-     * @return int
-     */
     public function getPageSize(): int
     {
         return $this->pageSize;

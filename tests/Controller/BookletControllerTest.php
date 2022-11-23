@@ -23,12 +23,12 @@ class BookletControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('POST', '/api/basic/web-app/v1/booklets/batches', [
             'iso3' => 'KHM',
@@ -48,7 +48,9 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testUpdate()
     {
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
+        $this->markTestSkipped('Functionality is not used.');
+
+        $booklet = self::getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('PUT', '/api/basic/web-app/v1/booklets/' . $booklet->getId(), [
             'quantityOfVouchers' => 2,
@@ -68,11 +70,11 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testGet()
     {
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
+        $booklet = self::getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/booklets/' . $booklet->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -100,7 +102,7 @@ class BookletControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/booklets?sort[]=value.asc&filter[fulltext]=KHM');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -116,7 +118,7 @@ class BookletControllerTest extends BMSServiceTestCase
      */
     public function testDelete()
     {
-        $booklet = self::$container->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
+        $booklet = self::getContainer()->get('doctrine')->getRepository(Booklet::class)->findBy([], ['id' => 'desc'], 1)[0];
 
         $this->request('DELETE', '/api/basic/web-app/v1/booklets/' . $booklet->getId());
 
@@ -125,7 +127,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToBeneficiary()
     {
-        $doctrine = self::$container->get('doctrine');
+        $doctrine = self::getContainer()->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -137,7 +139,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one beneficiary assigned to an assistance to complete this test'
             );
@@ -166,7 +168,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToCommunity()
     {
-        $doctrine = self::$container->get('doctrine');
+        $doctrine = self::getContainer()->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -178,7 +180,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one community assigned to an assistance to complete this test'
             );
@@ -207,7 +209,7 @@ class BookletControllerTest extends BMSServiceTestCase
 
     public function testAssignToInstitution()
     {
-        $doctrine = self::$container->get('doctrine');
+        $doctrine = self::getContainer()->get('doctrine');
 
         try {
             $result = $this->em->createQueryBuilder()
@@ -219,7 +221,7 @@ class BookletControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'There needs to be at least one institution assigned to an assistance to complete this test'
             );

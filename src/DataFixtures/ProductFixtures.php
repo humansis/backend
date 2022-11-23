@@ -12,7 +12,7 @@ use Entity\Product;
 
 class ProductFixtures extends Fixture implements DependentFixtureInterface
 {
-    private $data = [
+    private array $data = [
         [
             'soap',
             'Unit',
@@ -103,20 +103,12 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
     ];
 
-    /**
-     * @var Countries
-     */
-    private $countries;
-
-    public function __construct(Countries $countries)
+    public function __construct(private readonly Countries $countries)
     {
-        $this->countries = $countries;
     }
 
     /**
      * Load data fixtures with the passed EntityManager
-     *
-     * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
     {
@@ -149,8 +141,6 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * @param ObjectManager $manager
-     * @param string $type
      *
      * @return ProductCategory
      */

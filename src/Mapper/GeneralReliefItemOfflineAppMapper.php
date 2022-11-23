@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mapper;
 
 use DateTime;
+use DateTimeInterface;
 use Entity\GeneralReliefItem;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
@@ -13,8 +14,7 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
 {
     use MapperContextTrait;
 
-    /** @var GeneralReliefItem */
-    private $object;
+    private ?\Entity\GeneralReliefItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,9 +36,7 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . GeneralReliefItem::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -49,6 +47,6 @@ class GeneralReliefItemOfflineAppMapper implements MapperInterface
 
     public function getDateOfDistribution(): ?string
     {
-        return $this->object->getDistributedAt() ? $this->object->getDistributedAt()->format(DateTime::ISO8601) : null;
+        return $this->object->getDistributedAt()?->format(DateTimeInterface::ATOM);
     }
 }

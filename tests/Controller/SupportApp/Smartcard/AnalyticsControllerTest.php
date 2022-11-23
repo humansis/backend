@@ -20,7 +20,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testBeneficiaryAnalytics()
@@ -34,7 +34,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -50,7 +50,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -66,7 +66,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);
@@ -82,7 +82,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
         $this->assertArrayHasKey('data', $result);

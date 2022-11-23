@@ -29,57 +29,11 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportLineFactory */
-    private $importLineFactory;
-
-    /** @var Finishing\HouseholdDecoratorBuilder */
-    private $householdDecoratorBuilder;
-
-    /** @var Finishing\BeneficiaryDecoratorBuilder */
-    private $beneficiaryDecoratorBuilder;
-
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var WorkflowInterface */
-    private $importQueueStateMachine;
-
-    /** @var DuplicityService */
-    private $duplicityService;
-
-    public function __construct(
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        Integrity\ImportLineFactory $importLineFactory,
-        Integrity\DuplicityService $duplicityService,
-        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
-        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
-        ImportQueueRepository $queueRepository
-    ) {
-        $this->validator = $validator;
-        $this->entityManager = $entityManager;
-        $this->queueRepository = $queueRepository;
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->importLineFactory = $importLineFactory;
-        $this->duplicityService = $duplicityService;
-        $this->householdDecoratorBuilder = $householdDecoratorBuilder;
-        $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
+    public function __construct(private readonly ValidatorInterface $validator, private readonly EntityManagerInterface $entityManager, private readonly WorkflowInterface $importStateMachine, private readonly WorkflowInterface $importQueueStateMachine, private readonly Integrity\ImportLineFactory $importLineFactory, private readonly Integrity\DuplicityService $duplicityService, private readonly Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder, private readonly Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder, private readonly ImportQueueRepository $queueRepository)
+    {
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
      * @deprecated This was reworked to queues if you want to use this beaware of flush at checkOne method
      */
@@ -104,9 +58,6 @@ class IntegrityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     public function checkOne(ImportQueue $item): void
     {
         if (in_array($item->getState(), [ImportQueueState::INVALID, ImportQueueState::VALID])) {
@@ -126,9 +77,6 @@ class IntegrityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     private function validateItem(ImportQueue $item): void
     {
         $householdLine = $this->importLineFactory->create($item, 0);
@@ -188,7 +136,7 @@ class IntegrityChecker
                 foreach ($violations as $violation) {
                     $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
                 }
-            } catch (MissingHouseholdHeadException $e) {
+            } catch (MissingHouseholdHeadException) {
                 $item->addViolation(
                     Integrity\QueueViolation::create(
                         0,
@@ -258,11 +206,6 @@ class IntegrityChecker
         );
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
     private function hasImportValidFile(Import $import): bool
     {
         return (0 != $this->entityManager->getRepository(ImportFile::class)->count([
@@ -271,13 +214,6 @@ class IntegrityChecker
             ]));
     }
 
-    /**
-     * @param ImportQueue $importQueue
-     * @param int $index
-     * @param BeneficiaryInputType $beneficiaryInputType
-     *
-     * @return void
-     */
     private function checkFileDuplicity(
         ImportQueue $importQueue,
         int $index,

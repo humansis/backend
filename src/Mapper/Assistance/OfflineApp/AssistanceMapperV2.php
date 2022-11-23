@@ -12,8 +12,7 @@ use Serializer\MapperInterface;
 
 class AssistanceMapperV2 implements MapperInterface
 {
-    /** @var Assistance */
-    private $object;
+    private ?\Entity\Assistance $object = null;
 
     /**
      * {@inheritdoc}
@@ -36,7 +35,7 @@ class AssistanceMapperV2 implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Assistance::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Assistance::class . ', ' . $object::class . ' given.'
         );
     }
 

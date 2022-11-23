@@ -10,7 +10,6 @@ trait PrimaryIdFilterTrait
 {
     /**
      * @var int[]
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
@@ -18,11 +17,9 @@ trait PrimaryIdFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $id;
 
-    /**
-     * @return bool
-     */
     public function hasIds(): bool
     {
         return $this->has('id');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Community;
 use Repository\CommunityRepository;
 use Utils\CommunityService;
@@ -27,20 +28,14 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CommunityController extends AbstractController
 {
-    /** @var CommunityService */
-    private $communityService;
-
-    public function __construct(CommunityService $communityService)
+    public function __construct(private readonly CommunityService $communityService, private readonly ManagerRegistry $managerRegistry)
     {
-        $this->communityService = $communityService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/communities/{id}")
      *
-     * @param Community $object
      *
-     * @return JsonResponse
      */
     public function item(Community $object): JsonResponse
     {
@@ -54,12 +49,7 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/communities")
      *
-     * @param Request $request
-     * @param CommunityOrderInputType $communityOrderInputType
-     * @param CommunityFilterType $communityFilterType
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -72,7 +62,7 @@ class CommunityController extends AbstractController
         }
 
         /** @var CommunityRepository $communityRepository */
-        $communityRepository = $this->getDoctrine()->getRepository(Community::class);
+        $communityRepository = $this->managerRegistry->getRepository(Community::class);
 
         $communitiesPerCountry = $communityRepository->findByParams(
             $request->headers->get('country'),
@@ -87,9 +77,7 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/communities")
      *
-     * @param CommunityCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(CommunityCreateInputType $inputType): JsonResponse
     {
@@ -101,10 +89,7 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/communities/{id}")
      *
-     * @param Community $community
-     * @param CommunityUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Community $community, CommunityUpdateInputType $inputType): JsonResponse
     {
@@ -116,9 +101,7 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/communities/{id}")
      *
-     * @param Community $project
      *
-     * @return JsonResponse
      */
     public function delete(Community $project): JsonResponse
     {
@@ -130,13 +113,11 @@ class CommunityController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/communities")
      *
-     * @param Project $project
      *
-     * @return JsonResponse
      */
     public function communitiesByProject(Project $project): JsonResponse
     {
-        $communities = $this->getDoctrine()->getRepository(Community::class)->findByProject($project);
+        $communities = $this->managerRegistry->getRepository(Community::class)->findByProject($project);
 
         return $this->json($communities);
     }

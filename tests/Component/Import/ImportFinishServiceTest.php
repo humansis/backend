@@ -27,9 +27,9 @@ class ImportFinishServiceTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    final public const TEST_COUNTRY = 'KHM';
     // json copied from KHM-Import-2HH-3HHM.ods
-    public const TEST_QUEUE_ITEM = '[
+    final public const TEST_QUEUE_ITEM = '[
   {
     "Adm1": {
       "value": "Banteay Meanchey",
@@ -190,7 +190,7 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
-    public const TEST_WRONG_QUEUE_ITEM = '[
+    final public const TEST_WRONG_QUEUE_ITEM = '[
   {
     "Adm1": {
       "value": "some wrong value",
@@ -326,7 +326,7 @@ class ImportFinishServiceTest extends KernelTestCase
     }
   }
 ]';
-    public const TEST_MINIMAL_QUEUE_ITEM = '[
+    final public const TEST_MINIMAL_QUEUE_ITEM = '[
   {
     "Local given name": {
       "value": "John",
@@ -397,17 +397,13 @@ class ImportFinishServiceTest extends KernelTestCase
     /** @var Application */
     private $application;
 
-    /** @var Project */
-    private $project;
+    private \Entity\Project $project;
 
-    /** @var Entity\Import */
-    private $import;
+    private \Entity\Import $import;
 
-    /** @var Household */
-    private $originHousehold;
+    private \Entity\Household $originHousehold;
 
-    /** @var Entity\ImportFile */
-    private $importFile;
+    private \Entity\ImportFile $importFile;
 
     /** @var ProjectService */
     private $projectService;
@@ -418,29 +414,29 @@ class ImportFinishServiceTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
         $this->application = new Application($kernel);
 
-        $this->importService = $kernel->getContainer()->get(ImportService::class);
-        $this->projectService = $kernel->getContainer()->get('project.project_service');
+        $this->importService = self::getContainer()->get(ImportService::class);
+        $this->projectService = self::getContainer()->get('project.project_service');
 
         // clean all import
         foreach ($this->entityManager->getRepository(Entity\Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
                 if ($bnf->getHousehold()) {
-                    $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                    self::getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
                 }
-                $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
+                self::getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
 
         $this->project = new Project();
         $this->project->setName(uniqid());
-        $this->project->setNotes(get_class($this));
+        $this->project->setNotes($this::class);
         $this->project->setStartDate(new DateTime());
         $this->project->setEndDate(new DateTime());
         $this->project->setCountryIso3(self::TEST_COUNTRY);
@@ -479,7 +475,7 @@ class ImportFinishServiceTest extends KernelTestCase
         $this->assertCount(0, $links, "There should be no link");
     }
 
-    public function testPlainCreate()
+    public function testPlainCreate(): void
     {
         $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
         $queueItem->setState(ImportQueueState::TO_CREATE);
@@ -620,7 +616,7 @@ class ImportFinishServiceTest extends KernelTestCase
         try {
             $this->userStartedFinishing($this->import);
             $this->fail('Finishing import with undecided duplicities must fail.');
-        } catch (BadRequestHttpException $badRequestHttpException) {
+        } catch (BadRequestHttpException) {
         }
 
         $bnfCount = $this->entityManager->getRepository(Beneficiary::class)->countAllInProject($this->project);

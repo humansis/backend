@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
@@ -20,7 +21,6 @@ use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Enum\EnumApiValueNoFoundException;
 use Enum\PersonGender;
@@ -45,51 +45,14 @@ use Export\AssistanceSpreadsheetExport;
 
 class BeneficiaryController extends AbstractController
 {
-    /**
-     * @var AssistanceSpreadsheetExport
-     */
-    private $assistanceSpreadsheetExport;
-
-    /**
-     * @var AssistanceService
-     */
-    private $assistanceService;
-
-    /**
-     * @var BeneficiaryService
-     */
-    private $beneficiaryService;
-
-    /**
-     * @var ScoringService
-     */
-    private $scoringService;
-
-    /**
-     * @param AssistanceSpreadsheetExport $assistanceSpreadsheetExport
-     * @param AssistanceService $assistanceService
-     * @param BeneficiaryService $beneficiaryService
-     * @param ScoringService $scoringService
-     */
-    public function __construct(
-        AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
-        AssistanceService $assistanceService,
-        BeneficiaryService $beneficiaryService,
-        ScoringService $scoringService
-    ) {
-        $this->assistanceSpreadsheetExport = $assistanceSpreadsheetExport;
-        $this->scoringService = $scoringService;
-        $this->assistanceService = $assistanceService;
-        $this->beneficiaryService = $beneficiaryService;
+    public function __construct(private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly ScoringService $scoringService)
+    {
     }
 
     /**
      * @Rest\Post("/web-app/v1/assistances/beneficiaries")
      *
-     * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      * @throws EntityNotFoundException
      */
     public function precalculateBeneficiaries(
@@ -104,10 +67,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
      *
-     * @param AssistanceCreateInputType $inputType
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      * @throws EntityNotFoundException
      * @throws CsvParserException
      * @throws NoResultException
@@ -123,10 +83,6 @@ class BeneficiaryController extends AbstractController
 
     /**
      * @Rest\Post("/web-app/v2/assistances/vulnerability-scores")
-     *
-     * @param VulnerabilityScoreInputType $vulnerabilityScoreInputType
-     * @param Request $request
-     * @return JsonResponse
      */
     public function vulnerabilityScores(
         VulnerabilityScoreInputType $vulnerabilityScoreInputType,
@@ -147,11 +103,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/exports")
      *
-     * @param Request $request
-     * @param BeneficiaryExportFilterInputType $inputType
-     * @param BeneficiaryRepository $beneficiaryRepository
      *
-     * @return Response
      * @throws EntityNotFoundException
      * @throws EnumApiValueNoFoundException
      */
@@ -190,11 +142,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports")
      *
-     * @param Assistance $assistance
-     * @param Request $request
-     * @param OrganizationRepository $organizationRepository
      *
-     * @return Response
      */
     public function exportsByAssistance(
         Assistance $assistance,
@@ -211,9 +159,9 @@ class BeneficiaryController extends AbstractController
             $response = new BinaryFileResponse(getcwd() . '/' . $filename);
 
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $filename);
-            $mimeTypeGuesser = new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser();
-            if ($mimeTypeGuesser->isSupported()) {
-                $response->headers->set('Content-Type', $mimeTypeGuesser->guess(getcwd() . '/' . $filename));
+            $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
+            if ($mimeTypeGuesser->isGuesserSupported()) {
+                $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $filename));
             } else {
                 $response->headers->set('Content-Type', 'text/plain');
             }
@@ -231,10 +179,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports-raw")
      *
-     * @param Assistance $assistance
-     * @param Request $request
      *
-     * @return Response
      */
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
@@ -260,10 +205,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids")
      *
-     * @param NationalIdFilterInputType $filter
-     * @param NationalIdRepository $nationalIdRepository
      *
-     * @return JsonResponse
      */
     public function nationalIds(
         NationalIdFilterInputType $filter,
@@ -277,9 +219,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/national-ids/{id}")
      *
-     * @param NationalId $nationalId
      *
-     * @return JsonResponse
      */
     public function nationalId(NationalId $nationalId): JsonResponse
     {
@@ -289,10 +229,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/phones")
      *
-     * @param PhoneFilterInputType $filter
-     * @param PhoneRepository $phoneRepository
      *
-     * @return JsonResponse
      */
     public function phones(PhoneFilterInputType $filter, PhoneRepository $phoneRepository): JsonResponse
     {
@@ -304,9 +241,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/phones/{id}")
      *
-     * @param Phone $phone
      *
-     * @return JsonResponse
      */
     public function phone(Phone $phone): JsonResponse
     {
@@ -316,9 +251,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}")
      *
-     * @param Beneficiary $beneficiary
      *
-     * @return JsonResponse
      */
     public function beneficiary(Beneficiary $beneficiary): JsonResponse
     {
@@ -332,10 +265,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/beneficiaries/{id}")
      *
-     * @param Beneficiary $beneficiary
-     * @param BenefciaryPatchInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType): JsonResponse
     {
@@ -351,10 +281,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/beneficiaries")
      *
-     * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryRepository $beneficiaryRepository
      *
-     * @return JsonResponse
      */
     public function beneficiaries(
         BeneficiaryFilterInputType $filter,
@@ -368,13 +295,7 @@ class BeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
      *
-     * @param Project $project
-     * @param string $target
-     * @param BeneficiarySelectedFilterInputType $filter
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceRepository $assistanceRepository
      *
-     * @return JsonResponse
      */
     public function getBeneficiaries(
         Project $project,

@@ -41,13 +41,14 @@ monolog:
         #    type: chromephp
         #    level: info
 
-#swiftmailer:
-#    delivery_addresses: ['me@example.com']
-
-nelmio_cors:
-    defaults:
-        allow_origin: ['https://dev\d.humansis.org', 'https://dev\d-pin.humansis.org', 'http://localhost:8080']
-        origin_regex: true
 
 parameters:
+    mailer_dsn: 'null://null'
     frontendUrl: 'https://dev1.humansis.org'
+    cors:
+        allow_origin: [ 'https://dev.humansis.org', 'https://dev1.humansis.org', 'https://dev2.humansis.org', 'https://dev2-pin.humansis.org', 'https://dev3.humansis.org', 'https://dev3-pin.humansis.org',  'http://localhost:8080' ]
+        allow_credentials: 'true'
+        allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: [ ]
+        max_age: 3600

@@ -5,43 +5,30 @@ declare(strict_types=1);
 namespace InputType\Smartcard;
 
 use DateTime;
-use DateTimeInterface;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\Iso8601;
 
 class SmartcardRegisterInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\NotNull()
-     * @Assert\Type(type="string")
-     *
-     * @var string
-     */
-    private $serialNumber;
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'string')]
+    private ?string $serialNumber = null;
+
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'int')]
+    private ?int $beneficiaryId = null;
 
     /**
-     * @Assert\NotNull()
-     * @Assert\Type(type="int")
-     *
-     * @var int
+     * @Iso8601
      */
-    private $beneficiaryId;
+    private ?DateTime $createdAt;
 
     /**
-     * @Assert\DateTime()
-     *
-     * @var DateTimeInterface
-     */
-    private $createdAt;
-
-    /**
-     * @param string $serialNumber
-     * @param int $beneficiaryId
-     * @param string $createdAt
      *
      * @return static
      */
-    public static function create(string $serialNumber, int $beneficiaryId, string $createdAt): self
+    public static function create(string $serialNumber, int $beneficiaryId, DateTime $createdAt): self
     {
         $self = new self();
         $self->setSerialNumber($serialNumber);
@@ -51,51 +38,33 @@ class SmartcardRegisterInputType implements InputTypeInterface
         return $self;
     }
 
-    /**
-     * @return string
-     */
     public function getSerialNumber(): string
     {
         return $this->serialNumber;
     }
 
-    /**
-     * @param string $serialNumber
-     */
     public function setSerialNumber(string $serialNumber): void
     {
         $this->serialNumber = strtoupper($serialNumber);
     }
 
-    /**
-     * @return int
-     */
     public function getBeneficiaryId(): int
     {
         return $this->beneficiaryId;
     }
 
-    /**
-     * @param int $beneficiaryId
-     */
     public function setBeneficiaryId(int $beneficiaryId): void
     {
         $this->beneficiaryId = $beneficiaryId;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt(): DateTimeInterface
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
-    public function setCreatedAt(string $createdAt): void
+    public function setCreatedAt(?DateTime $createdAt): void
     {
-        $this->createdAt = DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt);
+        $this->createdAt = $createdAt;
     }
 }

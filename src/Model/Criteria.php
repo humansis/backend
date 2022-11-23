@@ -8,16 +8,16 @@ class Criteria
 {
     /**
      * @var string $tableString
-     * @SymfonyGroups({"Criteria"})
      *
      */
+    #[SymfonyGroups(['Criteria'])]
     protected $tableString;
 
     /**
      * @var string $target
-     * @SymfonyGroups({"Criteria"})
      *
      */
+    #[SymfonyGroups(['Criteria'])]
     protected $target;
 
     /**
@@ -29,7 +29,6 @@ class Criteria
     }
 
     /**
-     * @param string $tableString
      * @return Criteria
      */
     public function setTableString(string $tableString)
@@ -48,7 +47,6 @@ class Criteria
     }
 
     /**
-     * @param string $target
      * @return Criteria
      */
     public function setTarget(string $target)

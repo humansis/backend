@@ -15,12 +15,13 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportState;
 use Entity\Project;
 use Entity\User;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Import
+class Import implements Stringable
 {
     use StandardizedPrimaryKey;
     use CreatedBy;
@@ -33,14 +34,14 @@ class Import
      *
      * @ORM\Column(name="title", type="string", nullable=false)
      */
-    private $title;
+    private string $title;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="notes", type="string", nullable=true)
      */
-    private $notes;
+    private string|null $notes;
 
     /**
      * @var Project[]|Collection
@@ -51,45 +52,48 @@ class Import
      *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}
      * )
      */
-    private $projects;
+    private array| Collection $projects;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_import_state", nullable=false)
      */
-    private $state;
+    private string $state;
 
     /**
      * @var ImportQueue[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="import", cascade={"remove"})
      */
-    private $importQueue;
+    private array| Collection $importQueue;
 
     /**
      * @var ImportFile[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportFile", mappedBy="import", cascade={"persist", "remove"})
      */
-    private $importFiles;
+    private array| Collection $importFiles;
 
     /**
      * @var ImportBeneficiary[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="import", cascade={"persist", "remove"})
      */
-    private $importBeneficiaries;
+    private array| Collection $importBeneficiaries;
 
     /**
      * @var ImportInvalidFile[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportInvalidFile", mappedBy="import", cascade={"remove"})
      */
-    private $importInvalidFiles;
+    private array| Collection $importInvalidFiles;
 
-    public function __construct(string $countryIso3, string $title, ?string $notes, array $projects, User $creator)
-    {
+    public function __construct(
+        string $countryIso3,
+        string $title,
+        ?string $notes,
+        array $projects,
+        User $creator,
+    ) {
         $this->countryIso3 = $countryIso3;
         $this->title = $title;
         $this->notes = $notes;
@@ -102,9 +106,6 @@ class Import
         $this->importInvalidFiles = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
@@ -152,20 +153,20 @@ class Import
     /**
      * @return Collection|ImportQueue[]
      */
-    public function getImportQueue()
+    public function getImportQueue(): Collection |array
     {
         return $this->importQueue;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return "Import#{$this->getId()} ({$this->getTitle()})";
+        return (string) "Import#{$this->getId()} ({$this->getTitle()})";
     }
 
     /**
      * @return Collection|ImportFile[]
      */
-    public function getImportFiles()
+    public function getImportFiles(): Collection |array
     {
         return $this->importFiles;
     }
@@ -173,7 +174,7 @@ class Import
     /**
      * @return Collection|ImportBeneficiary[]
      */
-    public function getImportBeneficiaries()
+    public function getImportBeneficiaries(): Collection |array
     {
         return $this->importBeneficiaries;
     }
@@ -181,22 +182,16 @@ class Import
     /**
      * @return Collection|ImportInvalidFile[]
      */
-    public function getImportInvalidFiles()
+    public function getImportInvalidFiles(): Collection |array
     {
         return $this->importInvalidFiles;
     }
 
-    /**
-     * @param string|null $notes
-     */
     public function setNotes(?string $notes): void
     {
         $this->notes = $notes;
     }
 
-    /**
-     * @param string $title
-     */
     public function setTitle(string $title): void
     {
         $this->title = $title;

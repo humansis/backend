@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Household;
 use Pagination\Paginator;
 use Punic\Language;
@@ -26,83 +27,47 @@ use ZipArchive;
 
 class CommonController extends AbstractController
 {
-    /** @var Countries */
-    private $countries;
-
-    /** @var string */
-    private $translationsDir;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /** @var BeneficiaryService */
-    private $beneficiaryService;
-
-    /** @var ProjectService */
-    private $projectService;
-
-    public function __construct(
-        Countries $countries,
-        string $translationsDir,
-        TranslatorInterface $translator,
-        BeneficiaryService $beneficiaryService,
-        ProjectService $projectService
-    ) {
-        $this->countries = $countries;
-        $this->translationsDir = $translationsDir;
-        $this->translator = $translator;
-        $this->beneficiaryService = $beneficiaryService;
-        $this->projectService = $projectService;
+    public function __construct(private readonly Countries $countries, private readonly string $translationsDir, private readonly TranslatorInterface $translator, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/summaries")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function summaries(Request $request, AssistanceRepository $assistanceRepository): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
         $result = [];
-        foreach ($request->query->get('code', []) as $code) {
-            switch ($code) {
-                case 'total_registrations':
-                    $result[] = [
+        foreach ($request->query->all('code') as $code) {
+            if (!is_null($code)) {
+                $result[] = match ($code) {
+                    'total_registrations' => [
                         'code' => $code,
                         'value' => $this->beneficiaryService->countAll($countryIso3),
-                    ];
-                    break;
-                case 'active_projects':
-                    $result[] = [
+                    ],
+                    'active_projects' => [
                         'code' => $code,
                         'value' => $this->projectService->countActive($countryIso3),
-                    ];
-                    break;
-                case 'enrolled_beneficiaries':
-                    $result[] = [
+                    ],
+                    'enrolled_beneficiaries' => [
                         'code' => $code,
-                        'value' => $this->getDoctrine()->getRepository(Household::class)->countUnarchivedByCountry(
+                        'value' => $this->managerRegistry->getRepository(Household::class)->countUnarchivedByCountry(
                             $countryIso3
                         ),
-                    ];
-                    break;
-                case 'served_beneficiaries':
-                    $result[] = [
+                    ],
+                    'served_beneficiaries' => [
                         'code' => $code,
                         'value' => $this->beneficiaryService->countAllServed($countryIso3),
-                    ];
-                    break;
-                case 'completed_assistances':
-                    $result[] = ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)];
-                    break;
-                default:
-                    throw new BadRequestHttpException('Invalid query parameter code.' . $code);
+                    ],
+                    'completed_assistances' => ['code' => $code, 'value' => $assistanceRepository->countCompleted($countryIso3)],
+                    default => throw new BadRequestHttpException('Invalid query parameter code.' . $code),
+                };
             }
         }
 
@@ -112,8 +77,6 @@ class CommonController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/icons")
      * @Cache(expires="+12 hours", public=true)
-     *
-     * @return JsonResponse
      */
     public function icons(): JsonResponse
     {
@@ -141,8 +104,6 @@ class CommonController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/languages")
      * @Cache(expires="+12 hours", public=true)
-     *
-     * @return JsonResponse
      */
     public function languages(): JsonResponse
     {
@@ -161,8 +122,6 @@ class CommonController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/currencies")
      * @Cache(expires="+12 hours", public=true)
-     *
-     * @return JsonResponse
      */
     public function currencies(): JsonResponse
     {
@@ -182,9 +141,7 @@ class CommonController extends AbstractController
      * @Rest\Get("/web-app/v1/translations/{language}")
      * @Cache(expires="+12 hours", public=true)
      *
-     * @param string $language
      *
-     * @return JsonResponse
      */
     public function translations(string $language): JsonResponse
     {
@@ -243,14 +200,12 @@ class CommonController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adms")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function adms(Request $request): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 

@@ -18,39 +18,33 @@ class Role
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="code", type="string", nullable=false, unique=true)
      */
-    private $code;
+    private string|null $code = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", nullable=false)
      */
-    private $name;
+    private string|null $name = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="deletable", type="boolean", nullable=false)
      */
-    private $deletable = true;
+    private bool $deletable = true;
 
     /**
      * @var Collection|Privilege[]
      *
      * @ORM\ManyToMany(targetEntity="Entity\Privilege", inversedBy="roles")
      */
-    private $privileges;
+    private Collection |array $privileges;
 
     /**
      * @var Collection|User[]
      *
      * @ORM\ManyToMany(targetEntity="Entity\User", mappedBy="roles")
      */
-    private $users;
+    private Collection |array $users;
 
     public function __construct()
     {
@@ -58,49 +52,31 @@ class Role
         $this->users = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
     public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @param string $code
-     */
     public function setCode(string $code): void
     {
         $this->code = $code;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return bool
-     */
     public function isDeletable(): bool
     {
         return $this->deletable;
     }
 
-    /**
-     * @param bool $deletable
-     */
     public function setDeletable(bool $deletable): void
     {
         $this->deletable = $deletable;
@@ -109,7 +85,7 @@ class Role
     /**
      * @return Collection|Privilege[]
      */
-    public function getPrivileges()
+    public function getPrivileges(): Collection |array
     {
         return $this->privileges;
     }
@@ -117,7 +93,7 @@ class Role
     /**
      * @return Collection|User[]
      */
-    public function getUsers()
+    public function getUsers(): Collection |array
     {
         return $this->users;
     }
@@ -125,7 +101,7 @@ class Role
     /**
      * @param Collection|User[] $users
      */
-    public function setUsers($users): void
+    public function setUsers(Collection |array $users): void
     {
         $this->users = $users;
     }

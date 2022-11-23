@@ -25,25 +25,16 @@ use Utils\ValueGenerator\ValueGenerator;
 trait BeneficiaryHelper
 {
     /**
-     * @param HouseholdCreateInputType $householdCreateInputType
-     * @param string $iso3
-     * @return Household
      * @throws Exception
      */
     public function createHousehold(
         HouseholdCreateInputType $householdCreateInputType,
-        string $iso3
+        string $iso3,
+        HouseholdService $householdService,
     ): Household {
-        return self::$container->get(HouseholdService::class)->create($householdCreateInputType, $iso3);
+        return $householdService->create($householdCreateInputType, $iso3);
     }
 
-    /**
-     * @param bool $isHead
-     * @param int $gender
-     * @param NationalIdCardInputType|null $nationalIdCardInputType
-     * @param PhoneInputType|null $phoneInputType
-     * @return BeneficiaryInputType
-     */
     public static function buildBeneficiaryInputType(
         bool $isHead,
         int $gender,
@@ -83,16 +74,13 @@ trait BeneficiaryHelper
     {
         return PhoneInputType::create(
             (string) ValueGenerator::int(400, 500),
-            (string) ValueGenerator::int(100000000, 999999999),
+            (string) ValueGenerator::int(100_000_000, 999_999_999),
             ValueGenerator::fromEnum(PhoneTypes::class)
         );
     }
 
     /**
-     * @param array $projectIds
-     * @param ResidenceAddressInputType $residenceAddressInputType
      * @param BeneficiaryInputType[]|null $beneficiaryInputTypes
-     * @return HouseholdCreateInputType
      */
     public static function buildHouseholdInputType(
         array $projectIds,
@@ -114,10 +102,6 @@ trait BeneficiaryHelper
         return $inputType;
     }
 
-    /**
-     * @param int $locationId
-     * @return ResidenceAddressInputType
-     */
     public static function buildResidencyAddressInputType(int $locationId): ResidenceAddressInputType
     {
         $residencyInputType = new ResidenceAddressInputType();

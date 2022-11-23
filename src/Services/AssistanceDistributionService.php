@@ -26,55 +26,15 @@ use Entity\User;
  */
 class AssistanceDistributionService
 {
-    public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    final public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
 
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var CountrySpecificRepository
-     */
-    private $countrySpecificRepository;
-
-    private $logger;
-
-    /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
-     * @param ReliefPackageRepository $reliefPackageRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param CountrySpecificRepository $countrySpecificRepository
-     * @param Registry $registry
-     */
-    public function __construct(
-        ReliefPackageRepository $reliefPackageRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        CountrySpecificRepository $countrySpecificRepository,
-        LoggerInterface $logger,
-        Registry $registry
-    ) {
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->countrySpecificRepository = $countrySpecificRepository;
-        $this->registry = $registry;
-        $this->logger = $logger;
+    public function __construct(private readonly ReliefPackageRepository $reliefPackageRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly LoggerInterface $logger, private readonly Registry $registry)
+    {
     }
 
     /**
      * @param DistributeReliefPackagesInputType[] $packages
-     * @param User $distributor
      *
-     * @return DistributeReliefPackagesOutputType
      */
     public function distributeByReliefIds(array $packages, User $distributor): DistributeReliefPackagesOutputType
     {
@@ -83,8 +43,7 @@ class AssistanceDistributionService
             try {
                 /** @var ReliefPackage $reliefPackage */
                 $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
-                $amountToDistribute = $packageUpdate->getAmountDistributed(
-                ) === null ? $reliefPackage->getCurrentUndistributedAmount() : $packageUpdate->getAmountDistributed();
+                $amountToDistribute = $packageUpdate->getAmountDistributed() ?? $reliefPackage->getCurrentUndistributedAmount();
 
                 $result = $this->distributeSinglePackage(
                     $distributeReliefPackageOutputType,
@@ -105,10 +64,7 @@ class AssistanceDistributionService
 
     /**
      * @param DistributeBeneficiaryReliefPackagesInputType[] $inputPackages
-     * @param Assistance $assistance
-     * @param User $distributor
      *
-     * @return DistributeReliefPackagesOutputType
      * @throws NonUniqueResultException
      */
     public function distributeByBeneficiaryIdAndAssistanceId(
@@ -146,13 +102,13 @@ class AssistanceDistributionService
             $assistance,
             $countrySpecific
         );
-        if (count($beneficiaries) === 0) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) === 0) {
             return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
         }
-        if (count($beneficiaries) > 1) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) > 1) {
             return $distributeReliefPackageOutputType->addConflictId($packageData->getIdNumber(), $beneficiaries);
         }
-        if (count($beneficiaries) === 1) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) === 1) {
             $beneficiary = array_shift($beneficiaries);
             /** @var ReliefPackage[] $packages */
             $packages = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistance, $beneficiary);
@@ -200,7 +156,7 @@ class AssistanceDistributionService
         Beneficiary $beneficiary = null,
         $idNumber = null
     ) {
-        $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : null;
+        $beneficiaryId = $beneficiary?->getId();
         if ($reliefPackage->isFullyDistributed()) {
             $output = $distributeReliefPackageOutputType->addAlreadyDistributed(
                 $reliefPackage->getId(),

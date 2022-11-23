@@ -8,22 +8,13 @@ use JsonSerializable;
 
 class ImportFileViolation implements JsonSerializable
 {
-    /** @var string[]|null */
-    private $columns;
-
-    /** @var string */
-    private $message;
-
     /**
      * HeaderColumnReview constructor.
      *
-     * @param string $message
      * @param string[] $columns
      */
-    public function __construct(string $message, ?array $columns = null)
+    public function __construct(private readonly string $message, private readonly ?array $columns = null)
     {
-        $this->message = $message;
-        $this->columns = $columns;
     }
 
     /**
@@ -34,9 +25,6 @@ class ImportFileViolation implements JsonSerializable
         return $this->columns;
     }
 
-    /**
-     * @return string
-     */
     public function getMessage(): string
     {
         return $this->message;

@@ -36,7 +36,7 @@ class RulesComputationTest extends KernelTestCase
 
         static::bootKernel();
 
-        $container = self::$kernel->getContainer()->get('test.service_container');
+        $container = self::getContainer();
 
         $this->rulesCalculation = $container->get(RulesCalculation::class);
         $this->rulesEnum = $container->get(RulesEnum::class);

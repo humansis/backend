@@ -10,7 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  */
 class FilteredHouseholdChange extends AbstractHouseholdChange
 {
-    public const ALLOWED_FIELDS = [
+    final public const ALLOWED_FIELDS = [
         'income',
         'debt_level',
         'food_consumption_score',
@@ -23,9 +23,7 @@ class FilteredHouseholdChange extends AbstractHouseholdChange
         parent::__construct($activity, $previousActivity);
     }
 
-    /**
-     * @SymfonyGroups({"HouseholdChanges"})
-     */
+    #[SymfonyGroups(['HouseholdChanges'])]
     public function getChanges(): array
     {
         $diff = parent::getChanges();

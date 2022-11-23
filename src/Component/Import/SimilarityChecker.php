@@ -20,33 +20,19 @@ class SimilarityChecker
 {
     use ImportLoggerTrait;
 
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var WorkflowInterface */
-    private $importQueueStateMachine;
+    private readonly \Repository\ImportQueueRepository $queueRepository;
 
     public function __construct(
-        EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         LoggerInterface $logger,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine
     ) {
-        $this->entityManager = $entityManager;
         $this->logger = $logger;
         $this->queueRepository = $this->entityManager->getRepository(ImportQueue::class);
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
      */
     public function check(Import $import, ?int $batchSize = null)
@@ -66,9 +52,6 @@ class SimilarityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     public function checkOne(ImportQueue $item): void
     {
         // similarity check missing, it will be implemented later
@@ -79,9 +62,6 @@ class SimilarityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param Import $import
-     */
     public function postCheck(Import $import): void
     {
         // $newCheckedImportQueues = $this->entityManager->getRepository(ImportQueue::class)
@@ -99,11 +79,6 @@ class SimilarityChecker
         // $this->logImportDebug($import, "Ended with status ".$import->getState());
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
     public function isImportQueueSuspicious(Import $import): bool
     {
         $queue = $this->entityManager->getRepository(ImportQueue::class)

@@ -17,39 +17,21 @@ class ImportFileValidator
         'Head',
     ];
 
-    /** @var ImportParser */
-    private $importParser;
-
-    /** @var string */
-    private $uploadDirectory;
-
-    /** @var ImportTemplate */
-    private $importTemplate;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
     public function __construct(
-        string $uploadDirectory,
-        ImportTemplate $importTemplate,
-        EntityManagerInterface $entityManager
+        private readonly string $uploadDirectory,
+        private readonly ImportTemplate $importTemplate,
+        private readonly ImportParser $importParser,
+        private readonly EntityManagerInterface $em
     ) {
-        $this->importParser = new ImportParser();
-        $this->importTemplate = $importTemplate;
-        $this->uploadDirectory = $uploadDirectory;
-        $this->em = $entityManager;
     }
 
-    /**
-     * @param ImportFile $importFile
-     */
     public function validate(ImportFile $importFile): void
     {
         $file = new File($this->uploadDirectory . '/' . $importFile->getSavedAsFilename());
 
         try {
             $fileHeaders = $this->importParser->parseHeadersOnly($file);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $violation = new ImportFileViolation(
                 'Unable to read provided file. File is malformed or it has unsupported format.'
             );
@@ -66,7 +48,7 @@ class ImportFileValidator
 
         //remove empty cells
         foreach ($templateHeaders as $key => $header) {
-            if (strlen(trim($header)) === 0) {
+            if (strlen(trim((string) $header)) === 0) {
                 unset($templateHeaders[$key]);
             }
         }

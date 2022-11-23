@@ -4,26 +4,20 @@ namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class Country implements InputTypeInterface
+class Country implements InputTypeInterface, \Stringable
 {
-    public const HEADER_KEY = 'country';
-    public const REQUEST_KEY = '__country';
-
-    /**
-     * @var string
-     * @Assert\NotBlank()
-     * @Assert\Regex("/^[A-Z][A-Z][A-Z]$/i")
-     */
-    private $iso3Code;
+    final public const HEADER_KEY = 'country';
+    final public const REQUEST_KEY = '__country';
 
     /**
      * Country constructor.
      *
      * @param $iso3Code
      */
-    public function __construct(string $iso3Code)
+    public function __construct(#[Assert\NotBlank]
+    #[Assert\Regex('/^[A-Z][A-Z][A-Z]$/i')]
+    private readonly string $iso3Code)
     {
-        $this->iso3Code = $iso3Code;
     }
 
     /**
@@ -34,7 +28,7 @@ class Country implements InputTypeInterface
         return $this->iso3Code;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->iso3Code;
     }

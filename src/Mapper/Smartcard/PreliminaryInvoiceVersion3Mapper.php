@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class PreliminaryInvoiceVersion3Mapper implements MapperInterface
 {
-    /** @var PreliminaryInvoice */
-    private $object;
+    private ?\Entity\Smartcard\PreliminaryInvoice $object = null;
 
     /**
      * {@inheritdoc}
@@ -35,15 +34,13 @@ class PreliminaryInvoiceVersion3Mapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . PreliminaryInvoice::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . PreliminaryInvoice::class . ', ' . $object::class . ' given.'
         );
     }
 
     public function getProjectId(): ?int
     {
-        return $this->object->getProject() ? $this->object->getProject()->getId() : null;
+        return $this->object->getProject()?->getId();
     }
 
     public function getValue(): string

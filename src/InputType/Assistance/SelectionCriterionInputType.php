@@ -13,44 +13,32 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class SelectionCriterionInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $group;
 
-    /**
-     * @Assert\Choice(callback={"Enum\SelectionCriteriaTarget", "values"})
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Choice(callback: [\Enum\SelectionCriteriaTarget::class, 'values'])]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $target;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $field;
 
-    /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $condition;
 
-    /**
-     * @Assert\NotNull
-     */
+    #[Assert\NotNull]
     private $value;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan("0")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $weight;
 
     /**
@@ -109,10 +97,7 @@ class SelectionCriterionInputType implements InputTypeInterface
         return $this->condition;
     }
 
-    /**
-     * @param mixed $condition
-     */
-    public function setCondition($condition)
+    public function setCondition(mixed $condition)
     {
         $this->condition = $condition;
     }
@@ -125,10 +110,7 @@ class SelectionCriterionInputType implements InputTypeInterface
         return $this->value;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function setValue($value)
+    public function setValue(mixed $value)
     {
         $this->value = $value;
     }

@@ -7,7 +7,7 @@ namespace Component\Smartcard\Analytics;
 class EventCollector
 {
     /** @var Event[] */
-    private $events = [];
+    private array $events = [];
 
     public function collect(EventProviderInterface $eventProvider): void
     {
@@ -24,9 +24,7 @@ class EventCollector
      */
     public function getSortedEvents(): iterable
     {
-        usort($this->events, function (Event $a, Event $b) {
-            return $a->getWhen()->getTimestamp() - $b->getWhen()->getTimestamp();
-        });
+        usort($this->events, fn(Event $a, Event $b) => $a->getWhen()->getTimestamp() - $b->getWhen()->getTimestamp());
 
         return $this->events;
     }
