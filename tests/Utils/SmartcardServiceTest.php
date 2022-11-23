@@ -21,12 +21,15 @@ use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Entity\Assistance\ReliefPackage;
 use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
+use Enum\SmartcardStates;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
 use Repository\RoleRepository;
+use Repository\BeneficiaryRepository;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
+use Repository\SmartcardRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
@@ -34,10 +37,13 @@ use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\Vendor;
 use InputType\SmartcardPurchase;
+use Tests\ComponentHelper\SmartcardHelper;
 use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
 {
+    use SmartcardHelper;
+
     final public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
     /** @var ObjectManager|null */
@@ -703,6 +709,31 @@ class SmartcardServiceTest extends KernelTestCase
                 $this->fail("Wrong test data.");
             }
         }
+    }
+
+    public function testDepositToNotActivatedSmartcard(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $beneficiaryRepository = self::getContainer()->get(BeneficiaryRepository::class);
+        $beneficiary = $beneficiaryRepository->findOneBy([]);
+        $this->getSmartcardForBeneficiary('AAA123AAA', $beneficiary);
+
+        $newSmartcard = $this->smartcardService->getOrCreateSmartcardForBeneficiary('BBB123BBB', $beneficiary, new \DateTimeImmutable('-2 days'));
+        $this->em->flush();
+
+        $numberOfActiveSmartcards2 = count($smartcardRepository->findBy(['beneficiary' => $beneficiary, 'state' => SmartcardStates::ACTIVE]));
+        $this->assertEquals(1, $numberOfActiveSmartcards2);
+
+        /**
+         * @var Smartcard|null $activeSmartcard
+         */
+        $activeSmartcard = $smartcardRepository->findOneBy(['beneficiary' => $beneficiary, 'state' => SmartcardStates::ACTIVE]);
+        $this->assertNotNull($activeSmartcard);
+        $this->assertEquals($newSmartcard->getSerialNumber(), $activeSmartcard->getSerialNumber());
+
+        $this->em->rollback();
     }
 
     private function createTempVendor(EntityManagerInterface $em): void

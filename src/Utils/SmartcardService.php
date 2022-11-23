@@ -131,6 +131,7 @@ class SmartcardService
         }
 
         $this->smartcardRepository->save($smartcard);
+        $this->disableBnfSmartcardsExceptLastUsed($smartcard);
 
         return $smartcard;
     }
@@ -213,8 +214,6 @@ class SmartcardService
      * @param Beneficiary $beneficiary
      * @param DateTimeInterface $dateOfEvent
      * @return Smartcard|null
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     private function getSmartcardForBeneficiaryBySerialNumber(
         string $serialNumber,
@@ -224,7 +223,7 @@ class SmartcardService
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
         if ($smartcard) {
             $this->checkAndMarkDisabledSmartcardAsSuspicious($smartcard, $dateOfEvent);
-            $this->disableBnfSmartcardsExceptLastUsed($smartcard);
+
             return $smartcard;
         }
 
