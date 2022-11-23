@@ -1,7 +1,5 @@
 framework:
     test: ~
-    mailer:
-        dsn: 'null://null'
     session:
         storage_factory_id: session.storage.factory.mock_file
     profiler:
@@ -22,4 +20,5 @@ monolog:
             channels: [import]
 
 parameters:
+    mailer_dsn: 'null://null'
     frontendUrl: 'http://localhost:8080'

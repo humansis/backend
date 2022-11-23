@@ -14,6 +14,7 @@ parameters:
     mailer_password: '%env(SES_PASSWORD)%'
     mailer_port: 587
     mailer_encryption: tls
+    mailer_dsn: '%mailer_transport%://%mailer_user%:%mailer_password%@%mailer_host%:%mailer_port%'
 
     secret: '%env(SYMFONY_SECRET)%'
     aws_access_key_id: '%env(AWS_ACCESS_KEY)%'

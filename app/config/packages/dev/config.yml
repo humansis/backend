@@ -1,7 +1,5 @@
 framework:
     profiler: { only_exceptions: false }
-    mailer:
-        dsn: 'null://null'
 
 web_profiler:
     toolbar: true
@@ -45,6 +43,7 @@ monolog:
 
 
 parameters:
+    mailer_dsn: 'null://null'
     frontendUrl: 'https://dev1.humansis.org'
     cors:
         allow_origin: [ 'https://dev.humansis.org', 'https://dev1.humansis.org', 'https://dev2.humansis.org', 'https://dev2-pin.humansis.org', 'https://dev3.humansis.org', 'https://dev3-pin.humansis.org',  'http://localhost:8080' ]

@@ -99,7 +99,7 @@ parameters:
 framework:
     #esi: ~
     mailer:
-        dsn: '%mailer_transport%://%mailer_user%:%mailer_password%@%mailer_host%:%mailer_port%'
+        dsn: '%mailer_dsn%'
     translator:
         fallbacks: ['%locale%']
         default_path: '%app.translations_dir%'

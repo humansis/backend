@@ -1,7 +1,5 @@
 framework:
     profiler: { only_exceptions: false }
-    mailer:
-        dsn: 'null://null'
 
 web_profiler:
     toolbar: true
@@ -48,6 +46,7 @@ services:
     Symfony\Component\HttpKernel\Profiler\Profiler: '@profiler'
 
 parameters:
+    mailer_dsn: 'null://null'
     frontendUrl: 'http://localhost:8080'
     cors:
         allow_origin: ['http://localhost:8080']
