@@ -100,7 +100,7 @@ test:
   stage: test
   extends: .test-setup
   script:
-    - ./vendor/bin/phpunit
+    - php -d memory_limit=-1 ./vendor/bin/phpunit
 
 upload crowdin:
   stage: upload_crowdin
