@@ -5,6 +5,10 @@ web_profiler:
     toolbar: true
     intercept_redirects: false
 
+sentry:
+    dsn: '%sentry.dsn%'
+    register_error_listener: false # Disables the ErrorListener to avoid duplicated log in sentry
+
 monolog:
     channels: [ 'exception', 'mobile', 'import' ]
     handlers:
@@ -40,6 +44,10 @@ monolog:
         #chromephp:
         #    type: chromephp
         #    level: info
+        sentry:
+            type: sentry
+            level: !php/const Monolog\Logger::ERROR
+            hub_id: Sentry\State\HubInterface
 
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']

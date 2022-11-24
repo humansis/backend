@@ -4,6 +4,10 @@
 #        result_cache_driver: apc
 #        query_cache_driver: apc
 
+sentry:
+    dsn: '%sentry.dsn%'
+    register_error_listener: false # Disables the ErrorListener to avoid duplicated log in sentry
+
 monolog:
     channels: [ 'exception', 'mobile', 'import' ]
     handlers:
@@ -28,6 +32,10 @@ monolog:
             path: '%kernel.logs_dir%/imports.log'
             level: info
             channels: [ import ]
+        sentry:
+            type: sentry
+            level: !php/const Monolog\Logger::ERROR
+            hub_id: Sentry\State\HubInterface
 
 nelmio_cors:
     defaults:

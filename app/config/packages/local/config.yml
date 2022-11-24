@@ -6,6 +6,8 @@ web_profiler:
     intercept_redirects: false
 
 sentry:
+    #do not log on localhost
+    dsn: ''
     register_error_listener: false # Disables the ErrorListener to avoid duplicated log in sentry
 
 monolog:
