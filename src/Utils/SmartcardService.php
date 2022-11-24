@@ -242,16 +242,12 @@ class SmartcardService
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
     ): Smartcard {
-        // disable all Smartcars with same serial number
         $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
-
         $smartcard = new Smartcard($serialNumber, $dateOfEvent);
         $smartcard->setState(SmartcardStates::ACTIVE);
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setSuspicious(true, "Smartcard made adhoc");
         $this->smartcardRepository->persist($smartcard);
-
-        // disable other Beneficiary Smartcards
         $this->disableBnfSmartcardsExceptLastUsed($smartcard);
 
         return $smartcard;
