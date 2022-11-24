@@ -5362,6 +5362,126 @@ the donation of the below specified items from People in Need.</target>
         <source>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
         <target>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
       </trans-unit>
+      <trans-unit id="FCU8AXo" resname="Temporary Invoice No.">
+        <source>Temporary Invoice No.</source>
+        <target>Temporary Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="9OgGJ_d" resname="Humansis Invoice No.">
+        <source>Humansis Invoice No.</source>
+        <target>Humansis Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="8i3zpZb" resname="Invoice No.">
+        <source>Invoice No.</source>
+        <target>Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="vzdjODq" resname="Customer">
+        <source>Customer</source>
+        <target>Customer</target>
+      </trans-unit>
+      <trans-unit id="cuLwM2f" resname="Supplier">
+        <source>Supplier</source>
+        <target>Supplier</target>
+      </trans-unit>
+      <trans-unit id="DyT8_zW" resname="Invoice Date">
+        <source>Invoice Date</source>
+        <target>Invoice Date</target>
+      </trans-unit>
+      <trans-unit id="_JpOF1V" resname="Payment Method">
+        <source>Payment Method</source>
+        <target>Payment Method</target>
+      </trans-unit>
+      <trans-unit id="cWZZc6D" resname="Cheque">
+        <source>Cheque</source>
+        <target>Cheque</target>
+      </trans-unit>
+      <trans-unit id="Z2xHG8j" resname="Bank">
+        <source>Bank</source>
+        <target>Bank</target>
+      </trans-unit>
+      <trans-unit id="FPYkjXF" resname="Unit Price">
+        <source>Unit Price</source>
+        <target>Unit Price</target>
+      </trans-unit>
+      <trans-unit id="bx8xXJ1" resname="Total Amount per Item">
+        <source>Total Amount per Item</source>
+        <target>Total Amount per Item</target>
+      </trans-unit>
+      <trans-unit id="iVACXl9" resname="SmartCards redemption payment - Food Items">
+        <source>SmartCards redemption payment - Food Items</source>
+        <target>SmartCards redemption payment - Food Items</target>
+      </trans-unit>
+      <trans-unit id="T1bIpID" resname="SmartCards redemption payment - Non-Food Items">
+        <source>SmartCards redemption payment - Non-Food Items</source>
+        <target>SmartCards redemption payment - Non-Food Items</target>
+      </trans-unit>
+      <trans-unit id="y3uJPMX" resname="SmartCards redemption payment - Cashback">
+        <source>SmartCards redemption payment - Cashback</source>
+        <target>SmartCards redemption payment - Cashback</target>
+      </trans-unit>
+      <trans-unit id="TpAHNBr" resname="Itemized breakdown in Annex I">
+        <source>Itemized breakdown in Annex I</source>
+        <target>Itemized breakdown in Annex I</target>
+      </trans-unit>
+      <trans-unit id="fjMO2la" resname="Total Amount to be Paid">
+        <source>Total Amount to be Paid</source>
+        <target>Total Amount to be Paid</target>
+      </trans-unit>
+      <trans-unit id="bOI4yzA" resname="Signature/Name">
+        <source>Signature/Name</source>
+        <target>Signature/Name</target>
+      </trans-unit>
+      <trans-unit id="6HpzzpM" resname="Signature/Name/Position">
+        <source>Signature/Name/Position</source>
+        <target>Signature/Name/Position</target>
+      </trans-unit>
+      <trans-unit id="S2jJDBu" resname="Supplier's Signature">
+        <source>Supplier's Signature</source>
+        <target>Supplier's Signature</target>
+      </trans-unit>
+      <trans-unit id="HGvEdQl" resname="People in Need">
+        <source>People in Need</source>
+        <target>People in Need</target>
+      </trans-unit>
+      <trans-unit id="hX1F.g1" resname="People In Need">
+        <source>People In Need</source>
+        <target>People In Need</target>
+      </trans-unit>
+      <trans-unit id="jdIi7eN" resname="People in Need Signature">
+        <source>People in Need Signature</source>
+        <target>People in Need Signature</target>
+      </trans-unit>
+      <trans-unit id="y2TT4el" resname="People In Need Signature">
+        <source>People In Need Signature</source>
+        <target>People In Need Signature</target>
+      </trans-unit>
+      <trans-unit id="o9H.Yk6" resname="Period Start">
+        <source>Period Start</source>
+        <target>Period Start</target>
+      </trans-unit>
+      <trans-unit id="EXNIfID" resname="Period End">
+        <source>Period End</source>
+        <target>Period End</target>
+      </trans-unit>
+      <trans-unit id="t7dX3uK" resname="Annex I">
+        <source>Annex I</source>
+        <target>Annex I</target>
+      </trans-unit>
+      <trans-unit id="9KbiF2F" resname="Itemized Breakdown">
+        <source>Itemized Breakdown</source>
+        <target>Itemized Breakdown</target>
+      </trans-unit>
+      <trans-unit id="ZSvMOke" resname="Item">
+        <source>Item</source>
+        <target>Item</target>
+      </trans-unit>
+      <trans-unit id="W3HFRsa" resname="Item type">
+        <source>Item type</source>
+        <target>Item type</target>
+      </trans-unit>
+      <trans-unit id="DmpcFnm" resname="Total per Vendor and Period">
+        <source>Total per Vendor and Period</source>
+        <target>Total per Vendor and Period</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
