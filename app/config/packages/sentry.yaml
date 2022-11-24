@@ -4,3 +4,5 @@ sentry:
         capture_soft_fails: true # captures exceptions marked for retry too
     options:
         environment: '%kernel.environment%'
+        # Specify a fixed sample rate:
+        traces_sample_rate: 0.2
