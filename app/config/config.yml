@@ -137,8 +137,6 @@ framework:
             'Component\Import\Messaging\Message\UploadFileFinished': incoming_big_data
 
 sensio_framework_extra:
-    psr_message:
-        enabled: false
     router:
         annotations: false
 
