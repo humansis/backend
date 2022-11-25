@@ -63,7 +63,7 @@ class CommodityMapper implements MapperInterface
         return $this->object->getValue();
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->object->getDescription();
     }

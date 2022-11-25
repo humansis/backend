@@ -7,6 +7,7 @@ namespace Controller;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\Household;
 use Pagination\Paginator;
+use Psr\Log\LoggerInterface;
 use Punic\Language;
 use Repository\AssistanceRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -27,7 +28,15 @@ use ZipArchive;
 
 class CommonController extends AbstractController
 {
-    public function __construct(private readonly Countries $countries, private readonly string $translationsDir, private readonly TranslatorInterface $translator, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(
+        private readonly Countries $countries, 
+        private readonly string $translationsDir, 
+        private readonly TranslatorInterface $translator, 
+        private readonly BeneficiaryService $beneficiaryService, 
+        private readonly ProjectService $projectService, 
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly LoggerInterface $logger
+        )
     {
     }
 
@@ -149,11 +158,25 @@ class CommonController extends AbstractController
             throw $this->createNotFoundException('Locale ' . $language . ' does not exists.');
         }
 
+        $this->logger->info('[translations] Loading translations for ' . $language);
+        $this->logger->info('[translations] Translations dir ' . $this->translationsDir);
+
+        $transFiles = glob($this->translationsDir . '/*');
+
+        if ($transFiles !== false) {
+            $this->logger->info('[translations] Translations files ' . implode(', ', $transFiles));
+        } else {
+            $this->logger->info('[translations] Translations files not found (glob over translations dir failed)');
+        }
+
         $data = [];
 
         $domains = $this->translator->getCatalogue($language)->getDomains();
 
+        $this->logger->info('[translations] Domains: ' . implode(', ', $domains));
+
         foreach ($domains as $domain) {
+            $this->logger->info("[translations] Domain $domain contains " . count($this->translator->getCatalogue($language)->all($domain)) . ' translations.');
             foreach ($this->translator->getCatalogue($language)->all($domain) as $key => $value) {
                 $data[$key] = $value;
             }
