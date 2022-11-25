@@ -3099,6 +3099,7 @@
                 <adm4 name="Abu Kahf" code="C1757"/>
                 <adm4 name="Abu Mandil" code="C1740"/>
                 <adm4 name="Abu Tawil" code="C1751"/>
+                <adm4 name="Al-Barid" code="C6800-1"/>
                 <adm4 name="Al Khataf" code="C8198"/>
                 <adm4 name="Al Mustarihah" code="C8111"/>
                 <adm4 name="Al Sarb" code="C8197"/>
@@ -3264,6 +3265,7 @@
                 <adm4 name="Al-khadr" code="C6979"/>
                 <adm4 name="Al-Maroudah" code="C6896"/>
                 <adm4 name="Al-Sharah" code="C6858"/>
+                <adm4 name="Al-Thawra" code="C6797-1"/>
                 <adm4 name="Alajeyah" code="C6976"/>
                 <adm4 name="Alrawda" code="C6898"/>
                 <adm4 name="Alsamhania" code="C6975"/>
@@ -3273,6 +3275,7 @@
                 <adm4 name="Atarah" code="C6864"/>
                 <adm4 name="Atshana" code="C5690"/>
                 <adm4 name="Ayuj" code="C5697"/>
+                <adm4 name="Batani" code="C6795-1"/>
                 <adm4 name="Ber-hmad" code="C6860"/>
                 <adm4 name="Berani" code="C5684"/>
                 <adm4 name="Bghilan" code="C6959"/>
@@ -3346,6 +3349,7 @@
                 <adm4 name="Safyan" code="C5711"/>
                 <adm4 name="Sahl" code="C5719"/>
                 <adm4 name="Sahl Al-Khashab" code="C6851"/>
+                <adm4 name="Salhiyeh" code="C6796-1"/>
                 <adm4 name="Saran" code="C6994"/>
                 <adm4 name="Shajar Qwayr" code="C6958"/>
                 <adm4 name="Shanina" code="C6736"/>
@@ -3449,6 +3453,7 @@
             <adm3 name="Al-Thawrah" code="SY110300">
                 <adm4 name="Al-Thawrah" code="C5929"/>
                 <adm4 name="Ayed Saghir" code="C6847"/>
+                <adm4 name="Southern Rafideyn" code="C6798-1"/>
             </adm3>
             <adm3 name="Jurneyyeh" code="SY110302">
                 <adm4 name="Abdullah Hamidi Al Masoud" code="C6934"/>
