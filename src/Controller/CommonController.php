@@ -29,15 +29,14 @@ use ZipArchive;
 class CommonController extends AbstractController
 {
     public function __construct(
-        private readonly Countries $countries, 
-        private readonly string $translationsDir, 
-        private readonly TranslatorInterface $translator, 
-        private readonly BeneficiaryService $beneficiaryService, 
-        private readonly ProjectService $projectService, 
+        private readonly Countries $countries,
+        private readonly string $translationsDir,
+        private readonly TranslatorInterface $translator,
+        private readonly BeneficiaryService $beneficiaryService,
+        private readonly ProjectService $projectService,
         private readonly ManagerRegistry $managerRegistry,
         private readonly LoggerInterface $logger
-        )
-    {
+    ) {
     }
 
     /**
