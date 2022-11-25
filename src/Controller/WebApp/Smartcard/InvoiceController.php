@@ -47,7 +47,7 @@ class InvoiceController extends AbstractWebAppController
     ): Response {
         $country = $countries->getCountry($invoice->getProject()->getCountryIso3());
 
-        $logger->debug('[translations] Print invoice #' . $invoice->getId() . ' in language: ' . $country->getLanguage());
+        $logger->info('[translations] Print invoice #' . $invoice->getId() . ' in language: ' . $country->getLanguage());
 
         // todo find organisation by relation to smartcard
         $organization = $organizationRepository->findOneBy([]);

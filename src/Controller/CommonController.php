@@ -198,25 +198,25 @@ class CommonController extends AbstractController
             throw $this->createNotFoundException('Locale ' . $language . ' does not exists.');
         }
 
-        $this->logger->debug('[translations] Loading translations for ' . $language);
-        $this->logger->debug('[translations] Translations dir ' . $this->translationsDir);
+        $this->logger->info('[translations] Loading translations for ' . $language);
+        $this->logger->info('[translations] Translations dir ' . $this->translationsDir);
 
         $transFiles = glob($this->translationsDir . '/*');
 
         if ($transFiles !== false) {
-            $this->logger->debug('[translations] Translations files ' . implode(', ', $transFiles));
+            $this->logger->info('[translations] Translations files ' . implode(', ', $transFiles));
         } else {
-            $this->logger->debug('[translations] Translations files not found (glob over translations dir failed)');
+            $this->logger->info('[translations] Translations files not found (glob over translations dir failed)');
         }
 
         $data = [];
 
         $domains = $this->translator->getCatalogue($language)->getDomains();
 
-        $this->logger->debug('[translations] Domains: ' . implode(', ', $domains));
+        $this->logger->info('[translations] Domains: ' . implode(', ', $domains));
 
         foreach ($domains as $domain) {
-            $this->logger->debug("[translations] Domain $domain contains " . count($this->translator->getCatalogue($language)->all($domain)) . ' translations.');
+            $this->logger->info("[translations] Domain $domain contains " . count($this->translator->getCatalogue($language)->all($domain)) . ' translations.');
             foreach ($this->translator->getCatalogue($language)->all($domain) as $key => $value) {
                 $data[$key] = $value;
             }
