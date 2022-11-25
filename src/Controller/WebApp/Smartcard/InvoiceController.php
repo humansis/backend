@@ -14,6 +14,7 @@ use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\WebApp\AbstractWebAppController;
 use InputType\SmartcardInvoiceCreateInputType;
+use Psr\Log\LoggerInterface;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Repository\SmartcardInvoiceRepository;
 use Repository\OrganizationRepository;
@@ -41,9 +42,12 @@ class InvoiceController extends AbstractWebAppController
         Invoice $invoice,
         Countries $countries,
         SmartcardInvoiceExport $smartcardInvoiceExport,
-        OrganizationRepository $organizationRepository
+        OrganizationRepository $organizationRepository,
+        LoggerInterface $logger
     ): Response {
         $country = $countries->getCountry($invoice->getProject()->getCountryIso3());
+
+        $logger->debug('[translations] Print invoice #' . $invoice->getId() . ' in language: ' . $country->getLanguage());
 
         // todo find organisation by relation to smartcard
         $organization = $organizationRepository->findOneBy([]);
