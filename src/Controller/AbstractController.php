@@ -15,8 +15,12 @@ abstract class AbstractController extends SymfonyAbstractController
     /**
      * {@inheritdoc}
      */
-    protected function json($data, $status = 200, $headers = [], $context = []): JsonResponse
-    {
+    protected function json(
+        $data,
+        $status = 200,
+        $headers = [],
+        $context = []
+    ): JsonResponse {
         if (!isset($context[MapperInterface::NEW_API])) {
             $context[MapperInterface::NEW_API] = true;
         }

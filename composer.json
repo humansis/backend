@@ -48,6 +48,7 @@
         "league/flysystem-aws-s3-v3": "3.10.3",
         "lexik/jwt-authentication-bundle": "v2.16.0",
         "mpdf/mpdf": "v8.1.2",
+        "openspout/openspout": "3.7.4",
         "phpoffice/phpspreadsheet": "1.25.2",
         "phpstan/phpstan": "1.8.11",
         "prestashop/decimal": "^1.5",

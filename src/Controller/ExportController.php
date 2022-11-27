@@ -71,16 +71,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
                     return $this->assistanceService->exportToPdf($idProject);
                 }
                 $filename = $this->assistanceService->exportToOfficialCsv($idProject, $type);
-            } elseif ($request->query->get('beneficiaries')) {
-                $countryIso3 = $request->request->get("__country");
-                $filters = $request->request->get('filters');
-                $ids = $request->request->get('ids');
-                $filename = $this->beneficiaryService->exportToCsvDeprecated(
-                    $type,
-                    $countryIso3,
-                    $filters,
-                    $ids
-                );
             } elseif ($request->query->get('users')) {
                 $filename = $this->userService->exportToCsv($type);
             } elseif ($request->query->get('countries')) {
@@ -166,9 +156,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
             } elseif ($request->query->get('products')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->productService->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('vendors')) {
-                $countryIso3 = $request->request->get("__country");
-                $filename = $this->vendorService->exportToCsv($type, $countryIso3);
             } else {
                 return new JsonResponse('No export selected', Response::HTTP_BAD_REQUEST);
             }
