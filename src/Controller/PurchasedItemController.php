@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Component\Country\Countries;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
+use Entity\SmartcardPurchasedItem;
 use Export\PurchasedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Entity\SmartcardPurchasedItem;
-use Export\SmartcardPurchasedItemSpreadsheet;
 use InputType\PurchasedItemFilterInputType;
 use InputType\PurchasedItemOrderInputType;
 use InputType\SmartcardPurchasedItemFilterInputType;
@@ -24,10 +24,12 @@ use Entity\PurchasedItem;
 use Repository\PurchasedItemRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Utils\ExportTableServiceInterface;
+use Utils\SmartcardPurchasedItemTransformData;
 
 class PurchasedItemController extends AbstractController
 {
-    public function __construct(private readonly SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet, private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry, private readonly Countries $countries, private readonly SmartcardPurchasedItemTransformData $smartcardPurchasedItemTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -148,16 +150,11 @@ class PurchasedItemController extends AbstractController
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
+        $repository = $this->managerRegistry->getRepository(SmartcardPurchasedItem::class);
+        $country = $this->countries->getCountry($request->headers->get('country'));
+        $purchasedItems = $repository->findByParams($country->getIso3(), $filter);
+        $exportableTable  = $this->smartcardPurchasedItemTransformData->transformData($purchasedItems, $country);
 
-        $filename = $this->smartcardPurchasedItemSpreadsheet->export(
-            $request->headers->get('country'),
-            $request->get('type'),
-            $filter
-        );
-
-        $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-        return $response;
+        return $this->exportTableService->export($exportableTable, 'purchased_items', $request->get('type'), false, true);
     }
 }
