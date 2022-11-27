@@ -4,8 +4,9 @@ namespace Tests\Controller;
 
 use Entity\Beneficiary;
 use Exception;
-use Utils\ExportService;
+use Utils\BeneficiaryTransformData;
 use Tests\BMSServiceTestCase;
+use Utils\OpenSpoutExportService;
 
 /**
  * @deprecated This does not belong to Controller, for sure
@@ -23,18 +24,16 @@ class ExportBeneficiaryTest extends BMSServiceTestCase
      */
     public function testExport()
     {
-        $array = [];
-        $exportservice = new ExportService($this->em, self::getContainer());
-        $exportableTable = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
+        $exportTableService = new OpenSpoutExportService();
+        $beneficiaryTransformData = new BeneficiaryTransformData();
+        $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'], 10);
+        $exportableTable = $beneficiaryTransformData->transformData($beneficiaries);
+        $response = $exportTableService->export($exportableTable, 'beneficiaryhousehoulds', 'xlsx');
 
-        $array[0] = $exportableTable;
-        $filename = $exportservice->export($array, 'actual', 'csv');
-        $path = getcwd() . '/' . $filename;
 
-        $this->assertEquals($filename, 'actual.csv');
-        $this->assertFileExists($path);
-        $this->assertFileIsReadable($path);
-
-        unlink($path);
+        $this->assertEquals(
+            $response->headers->get('Content-Disposition'),
+            'attachment; filename=beneficiaryhousehoulds.xlsx'
+        );
     }
 }

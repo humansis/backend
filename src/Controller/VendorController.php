@@ -21,11 +21,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Vendor;
+use Utils\ExportTableServiceInterface;
 use Utils\VendorService;
+use Utils\VendorTransformData;
 
 class VendorController extends AbstractController
 {
-    public function __construct(private readonly VendorService $vendorService)
+    public function __construct(private readonly VendorService $vendorService, private readonly VendorRepository $vendorRepository, private readonly VendorTransformData $vendorTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -37,10 +39,10 @@ class VendorController extends AbstractController
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['vendors' => true]);
-        $request->request->add(['__country' => $request->headers->get('country')]);
+        $vendors = $this->vendorRepository->findByCountry($request->headers->get('country'));
+        $exportableTable = $this->vendorTransformData->transformData($vendors);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        return $this->exportTableService->export($exportableTable, 'vendors', $request->query->get('type'));
     }
 
     /**

@@ -15,7 +15,7 @@ use Utils\ExportableInterface;
  * @ORM\Table(name="vendor")
  * @ORM\Entity(repositoryClass="Repository\VendorRepository")
  */
-class Vendor implements ExportableInterface
+class Vendor
 {
     /**
      *
@@ -321,28 +321,6 @@ class Vendor implements ExportableInterface
         return $this->user;
     }
 
-    public function getMappedValueForExport(): array
-    {
-        $adm1 = $this->getLocation() ? $this->getLocation()->getAdm1Name() : null;
-        $adm2 = $this->getLocation() ? $this->getLocation()->getAdm2Name() : null;
-        $adm3 = $this->getLocation() ? $this->getLocation()->getAdm3Name() : null;
-        $adm4 = $this->getLocation() ? $this->getLocation()->getAdm4Name() : null;
-
-        return [
-            "Vendor's name" => $this->getUser()->getUserIdentifier(),
-            "Shop's name" => $this->getName(),
-            "Shop's type" => $this->getShop(),
-            "Address number" => $this->getAddressNumber(),
-            "Address street" => $this->getAddressStreet(),
-            "Address postcode" => $this->getAddressPostcode(),
-            'Contract No.' => $this->getContractNo(),
-            'Vendor No.' => $this->getVendorNo(),
-            "adm1" => $adm1,
-            "adm2" => $adm2,
-            "adm3" => $adm3,
-            "adm4" => $adm4,
-        ];
-    }
 
     public function getVendorNo(): ?string
     {
