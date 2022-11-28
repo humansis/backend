@@ -17,7 +17,7 @@ use Utils\ExportableInterface;
  * @ORM\Entity(repositoryClass="Repository\ProductRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Product implements ExportableInterface
+class Product
 {
     use CreatedAt;
     use LastModifiedAt;
@@ -159,16 +159,6 @@ class Product implements ExportableInterface
         return $this->image;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     */
-    public function getMappedValueForExport(): array
-    {
-        return [
-            'Name' => $this->getName(),
-            'Unit' => $this->getUnit(),
-        ];
-    }
 
     public function getProductCategory(): ?ProductCategory
     {
