@@ -138,7 +138,7 @@ When a feature branch is merged into devel, new keys are extracted and uploaded 
 When any environment is deployed, translations are downloaded from crowdin.
 
 ### Update translations on production
-It is possible to update translations on production without deploying the whole application, ask admin to run `bin/console crowdin:pull` on production environment.
+It is possible to update translations on production without deploying the whole application, ask admin to run `bin/console crowdin:pull` and `bin/console cache:clear` on production environment.
 
 ### Add new key
 1. Either use `$translator->trans('Your new key')` in code, or add new translation to `/app/Resources/translations/messages.en.xlf` file:
