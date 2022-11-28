@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Utils;
 
 use Symfony\Component\HttpFoundation\StreamedResponse;

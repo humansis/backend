@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="Repository\VoucherRepository")
  */
-class Voucher implements ExportableInterface
+class Voucher
 {
     /**
      *
@@ -145,16 +145,6 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export.
-     */
-    public function getMappedValueForExport(): array
-    {
-        return [
-            'Booklet Number' => $this->getBooklet()->getCode(),
-            'Voucher Codes' => $this->getCode(),
-        ];
-    }
 
     public function getRedemptionBatch(): ?VoucherRedemptionBatch
     {

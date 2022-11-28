@@ -1230,6 +1230,10 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\VoucherTransformData:
+        class: Utils\VoucherTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
@@ -1288,8 +1292,7 @@ services:
     voucher.voucher_service:
         class: Utils\VoucherService
         arguments: [
-            '@doctrine.orm.entity_manager',
-            '@export_csv_service',
+            '@doctrine.orm.entity_manager',,
             '@Twig\Environment',
             '@pdf_service'
         ]
@@ -1427,6 +1430,16 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\VoucherPurchase
+
+    Repository\VoucherRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Voucher
+
+    Repository\BookletRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Booklet
 
     Serializer\ArrayNullableDenormalizer:
         tags: [ 'serializer.denormalizer' ]
