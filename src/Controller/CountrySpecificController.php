@@ -7,7 +7,6 @@ namespace Controller;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
-use Controller\ExportController;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -19,12 +18,15 @@ use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Utils\CountrySpecificService;
+use Utils\CountrySpecificTransformData;
+use Utils\ExportTableServiceInterface;
 
 class CountrySpecificController extends AbstractController
 {
-    public function __construct(private readonly CountrySpecificService $countrySpecificService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly CountrySpecificService $countrySpecificService, private readonly ManagerRegistry $managerRegistry, private readonly CountrySpecificTransformData $countrySpecificTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -33,14 +35,16 @@ class CountrySpecificController extends AbstractController
      *
      *
      */
-    public function exports(Request $request): JsonResponse
+    public function exports(Request $request): StreamedResponse
     {
-        $request->query->add([
-            'countries' => true,
-            '__country' => $request->headers->get('country'),
-        ]);
+        $countrySpecificRepository = $this->managerRegistry->getRepository(CountrySpecific::class);
+        $countryIso3 = $request->headers->get('country');
+        $type = $request->query->get('type');
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $countries = $countrySpecificRepository->findBy(['countryIso3' => $countryIso3], ['id' => 'asc']);
+        $exportableTable = $this->countrySpecificTransformData->transformData($countries);
+
+        return $this->exportTableService->export($exportableTable, 'country', $type);
     }
 
     /**
