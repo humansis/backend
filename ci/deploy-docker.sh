@@ -97,6 +97,15 @@ if [[ ! -f docker-compose.consumer.yml ]]; then
   ssh $ec2_user@$ec2_host $stop_consumer
 fi
 
+# clear cache
+# normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
+# aggressive: normal + rm ./var/cache/* + docker restart php_container
+echo "Clearing cache"
+scp ./ci/clear-cache.sh $ec2_user@$ec2_host:/opt/humansis
+cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
+ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
+echo "...done"
+
 # clean database
 if [[ $2 == "true" ]]; then
   echo "Cleaning database"
@@ -137,15 +146,6 @@ if [[ $3 != "false" ]]; then
     ssh $ec2_user@$ec2_host $load_fixtures
   fi
 fi
-echo "...done"
-
-# clear cache
-# normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
-# aggressive: normal + rm ./var/cache/* + docker restart php_container
-echo "Clearing cache"
-scp ./ci/clear-cache.sh $ec2_user@$ec2_host:/opt/humansis
-cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
-ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
 
 echo "Downloading crowdin translations"
