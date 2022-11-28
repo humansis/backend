@@ -147,7 +147,6 @@ class CommonController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/translations/{language}")
-     * @Cache(expires="+12 hours", public=true)
      *
      *
      */
@@ -163,12 +162,16 @@ class CommonController extends AbstractController
         $transFiles = glob($this->translationsDir . '/*');
 
         if ($transFiles !== false) {
-            $this->logger->info('[translations] Translations files ' . implode(', ', $transFiles));
+            foreach ($transFiles as $transFile) {
+                $this->logger->info('[translations] Translations file ' . $transFile . ' is' . (is_readable($transFile) ? ' readable' : 'NOT readable'));
+            }
         } else {
             $this->logger->info('[translations] Translations files not found (glob over translations dir failed)');
         }
 
         $data = [];
+
+        $this->logger->info('[translations] sample translate:  ' . $this->translator->trans('Active Projects', [], 'messages', $language));
 
         $domains = $this->translator->getCatalogue($language)->getDomains();
 
