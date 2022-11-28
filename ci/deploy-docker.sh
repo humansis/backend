@@ -151,6 +151,8 @@ echo "...done"
 echo "Downloading crowdin translations"
 crowdin_pull="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console crowdin:pull'"
 ssh $ec2_user@$ec2_host "$crowdin_pull" || exit 1
+crowdin_cache="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console cache:clear'"
+ssh $ec2_user@$ec2_host "$crowdin_cache" || exit 1
 echo "...done"
 
 # create default admin user
