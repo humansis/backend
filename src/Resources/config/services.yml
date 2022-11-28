@@ -207,13 +207,6 @@ services:
         arguments:
             - '@Export\VulnerabilityScoreExport'
             - '@distribution.assistance_service'
-            - '@Export\AssistanceBankReportExport'
-            - '@serializer'
-            - '@Repository\ProjectRepository'
-            - '@Repository\AssistanceRepository'
-            - '@Utils\ProjectAssistancesTransformData'
-            - '@Utils\ExportTableServiceInterface'
-
 
     Controller\CommonController:
         arguments:
