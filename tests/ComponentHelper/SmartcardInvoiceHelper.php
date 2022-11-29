@@ -11,10 +11,8 @@ use Entity\User;
 use Entity\Vendor;
 use Exception;
 use InputType\SmartcardInvoiceCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait SmartcardInvoiceHelper

@@ -5,23 +5,31 @@ declare(strict_types=1);
 namespace Tests\ComponentHelper;
 
 use Component\Smartcard\Deposit\DepositFactory;
+use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\SmartcardDeposit;
 use Entity\User;
-use Exception;
 use InputType\Smartcard\DepositInputType;
-use Symfony\Component\DependencyInjection\Container;
+use Psr\Cache\InvalidArgumentException;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait DepositHelper
 {
     /**
-     * @throws Exception
+     * @param string $smartcardNumber
+     * @param DepositInputType $depositInputType
+     * @param User $user
+     * @param DepositFactory $depositFactory
+     * @return SmartcardDeposit
+     * @throws DoubledDepositException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      */
     public function createDeposit(
         string $smartcardNumber,

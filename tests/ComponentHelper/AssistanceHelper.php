@@ -19,11 +19,8 @@ use Exception;
 use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
 use InputType\AssistanceCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
-use Utils\AssistanceService;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait AssistanceHelper

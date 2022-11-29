@@ -15,13 +15,9 @@ use InputType\Beneficiary\BeneficiaryInputType;
 use InputType\Beneficiary\NationalIdCardInputType;
 use InputType\Beneficiary\PhoneInputType;
 use InputType\HouseholdCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\HouseholdService;
 use Utils\ValueGenerator\ValueGenerator;
 
-/**
- * @property Container $container
- */
 trait BeneficiaryHelper
 {
     /**
