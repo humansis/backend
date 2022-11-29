@@ -3,6 +3,8 @@
 namespace Controller;
 
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\Persistence\ManagerRegistry;
+use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
@@ -42,10 +44,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Export\AssistanceSpreadsheetExport;
+use Utils\ExportTableServiceInterface;
+use Utils\ReliefBeneficiaryTransformData;
 
 class BeneficiaryController extends AbstractController
 {
-    public function __construct(private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly ScoringService $scoringService)
+    public function __construct(private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly ScoringService $scoringService, private readonly ManagerRegistry $managerRegistry, private readonly ReliefBeneficiaryTransformData $reliefBeneficiaryTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -183,23 +187,20 @@ class BeneficiaryController extends AbstractController
      */
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
-        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv(
-            $assistance,
-            $request->query->get('type')
-        );
-
-        $response = new BinaryFileResponse(getcwd() . '/' . $file);
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
-        } else {
-            $response->headers->set('Content-Type', 'text/plain');
+        $assistanceBeneficiaryRepository = $this->managerRegistry->getRepository(AssistanceBeneficiary::class);
+        $reliefPackageRepository = $this->managerRegistry->getRepository(Assistance\ReliefPackage::class);
+        $type = $request->query->get('type');
+        $distributionBeneficiaries = $assistanceBeneficiaryRepository->findByAssistance($assistance);
+        $packages = [];
+        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+            $relief = $reliefPackageRepository->findOneByAssistanceBeneficiary($distributionBeneficiary);
+            if ($relief) {
+                $packages[] = $relief;
+            }
         }
-        $response->deleteFileAfterSend(true);
 
-        return $response;
+        $exportableTable = $this->reliefBeneficiaryTransformData->transformData($packages);
+        return $this->exportTableService->export($exportableTable, 'relief', $type);
     }
 
     /**

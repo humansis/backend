@@ -5,7 +5,6 @@ namespace Utils;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
 use Entity\User;
-use Enum\ModalityType;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -26,7 +25,6 @@ use Doctrine\ORM\NoResultException;
 use Exception;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\SelectionCriteriaFactory;
-use Entity\Assistance\ReliefPackage;
 use Enum\CacheTarget;
 use Enum\PersonGender;
 use InputType\AssistanceCreateInputType;
@@ -53,7 +51,7 @@ class AssistanceService
      *
      * @param FilesystemAdapter $cache
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly CriteriaAssistanceService $criteriaAssistanceService, private readonly Environment $twig, private readonly CacheInterface $cache, private readonly AssistanceFactory $assistanceFactory, private readonly AssistanceRepository $assistanceRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory, private readonly TranslatorInterface $translator, private readonly ProjectRepository $projectRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly ExportService $exportService, private readonly PdfService $pdfService)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly CriteriaAssistanceService $criteriaAssistanceService, private readonly Environment $twig, private readonly CacheInterface $cache, private readonly AssistanceFactory $assistanceFactory, private readonly AssistanceRepository $assistanceRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory, private readonly TranslatorInterface $translator, private readonly ProjectRepository $projectRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly ExportService $exportService, private readonly PdfService $pdfService)
     {
     }
 
@@ -491,53 +489,6 @@ class AssistanceService
         $this->em->flush();
     }
 
-    /**
-     *
-     * @throws ExportNoDataException
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     * @deprecated old form of exports, will be removed after export system refactoring
-     */
-    public function exportGeneralReliefDistributionToCsv(Assistance $assistance, string $type): string
-    {
-        $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
-            ->findByAssistance($assistance);
-
-        /** @var ReliefPackage[] $packages */
-        $packages = [];
-        $exportableTable = [];
-        foreach ($distributionBeneficiaries as $db) {
-            $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($db);
-
-            if ($relief) {
-                $packages[] = $relief;
-            }
-        }
-
-        foreach ($packages as $relief) {
-            $beneficiary = $relief->getAssistanceBeneficiary()->getBeneficiary();
-            $commodityNames = $relief->getModalityType();
-
-            $commonFields = $beneficiary->getCommonExportFields();
-
-            $exportableTable[] = array_merge($commonFields, [
-                $this->translator->trans("Commodity") => $commodityNames,
-                $this->translator->trans("To Distribute") => $relief->getAmountToDistribute(),
-                $this->translator->trans("Spent") => $relief->getAmountSpent() ?? '0',
-                $this->translator->trans("Unit") => $relief->getUnit(),
-                $this->translator->trans("Distributed At") => $relief->getLastModifiedAt(),
-                $this->translator->trans("Notes Distribution") => $relief->getNotes(),
-                $this->translator->trans("Removed") => $relief->getAssistanceBeneficiary()->getRemoved()
-                    ? 'Yes'
-                    : 'No',
-                $this->translator->trans("Justification for adding/removing") => $relief
-                    ->getAssistanceBeneficiary()
-                    ->getJustification(),
-            ]);
-        }
-
-        return $this->exportService->export($exportableTable, 'relief', $type);
-    }
 
     /**
      *
