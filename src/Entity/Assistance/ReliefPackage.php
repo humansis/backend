@@ -58,9 +58,9 @@ class ReliefPackage
     /**
      *
      * controlled by database triggers on smartcard_payment_record table
-     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2)
+     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2, nullable=true)
      */
-    private string $amountSpent;
+    private string|null $amountSpent = null;
 
     /**
      * @ORM\Column(name="unit", type="string", nullable=false)
@@ -212,10 +212,7 @@ class ReliefPackage
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
     }
 
-    /**
-     * @return string
-     */
-    public function getAmountSpent(): ?string
+    public function getAmountSpent(): string|null
     {
         return $this->amountSpent;
     }
