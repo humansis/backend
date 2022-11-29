@@ -44,9 +44,9 @@ class SmartcardController extends AbstractOfflineAppController
         try {
             $smartcardService->register($registerInputType);
 
-            return Response::create();
+            return new Response();
         } catch (SmartcardDoubledRegistrationException $e) {
-            return Response::create('', Response::HTTP_ACCEPTED);
+            return new Response('', Response::HTTP_ACCEPTED);
         }
     }
 
