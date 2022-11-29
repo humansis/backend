@@ -20,7 +20,7 @@ class UserTransformData
         foreach ($users as $user) {
             $exportableTable [] = [
                 'email' => $user->getEmail(),
-                'role' => $user->getRoles()[0],
+                'role' => $user->getRoles() ? $user->getRoles()[0] : '',
             ];
         }
 

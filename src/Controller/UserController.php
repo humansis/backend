@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -21,11 +20,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolation;
 use Entity\User;
 use Repository\UserRepository;
+use Utils\ExportTableServiceInterface;
 use Utils\UserService;
+use Utils\UserTransformData;
 
 class UserController extends AbstractController
 {
-    public function __construct(private readonly UserService $userService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly UserService $userService, private readonly ManagerRegistry $managerRegistry, private readonly UserTransformData $userTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -36,9 +37,11 @@ class UserController extends AbstractController
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['users' => true]);
-
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $type = $request->query->get('type');
+        $userRepository = $this->managerRegistry->getRepository(User::class);
+        $users = $userRepository->findAll();
+        $exportableTable = $this->userTransformData->transformData($users);
+        return $this->exportTableService->export($exportableTable, 'users', $type);
     }
 
     /**

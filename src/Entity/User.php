@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="`user")
  * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
-class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenticatedUserInterface
+class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     use StandardizedPrimaryKey;
 
@@ -172,16 +172,6 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
         return $this;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     */
-    public function getMappedValueForExport(): array
-    {
-        return [
-            'email' => $this->getEmail(),
-            'role' => $this->getRoles()[0],
-        ];
-    }
 
     public function getLanguage(): ?string
     {
