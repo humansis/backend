@@ -33,8 +33,11 @@ use Repository\SmartcardRepository;
 
 class SmartcardService
 {
-    public function __construct(private readonly PurchaseService $purchaseService, private readonly SmartcardRepository $smartcardRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository)
-    {
+    public function __construct(
+        private readonly PurchaseService $purchaseService,
+        private readonly SmartcardRepository $smartcardRepository,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+    ) {
     }
 
     /**
@@ -163,8 +166,10 @@ class SmartcardService
      * @throws EntityNotFoundException
      * @throws ORMException
      */
-    public function purchase(string $serialNumber, SmartcardPurchaseInput|\InputType\SmartcardPurchaseInputType $data): SmartcardPurchase
-    {
+    public function purchase(
+        string $serialNumber,
+        SmartcardPurchaseInput | \InputType\SmartcardPurchaseInputType $data
+    ): SmartcardPurchase {
         if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
             throw new InvalidArgumentException(
                 'Argument 2 must be of type ' . SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class
