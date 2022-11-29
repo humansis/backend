@@ -1230,6 +1230,10 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\DonorTransformData:
+        class: Utils\DonorTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
@@ -1258,6 +1262,11 @@ services:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - Entity\Smartcard
+
+    Repository\DonorRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Donor
 
     Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository

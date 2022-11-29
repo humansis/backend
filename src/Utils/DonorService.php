@@ -64,16 +64,4 @@ class DonorService
 
         return true;
     }
-
-    /**
-     * Export all the donors in the CSV file
-     *
-     * @return mixed
-     */
-    public function exportToCsv(string $type)
-    {
-        $exportableTable = $this->em->getRepository(Donor::class)->findAll();
-
-        return $this->exportService->export($exportableTable, 'donors', $type);
-    }
 }
