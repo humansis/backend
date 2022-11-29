@@ -958,10 +958,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
 
         /** @var AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository */
-        $assistanceBeneficiaryRepository = self::$container->get('doctrine')->getRepository(AssistanceBeneficiary::class);
+        $assistanceBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(AssistanceBeneficiary::class);
 
         /** @var ReliefPackageRepository $reliefPackageRepository */
-        $reliefPackageRepository = self::$container->get('doctrine')->getRepository(ReliefPackage::class);
+        $reliefPackageRepository = self::getContainer()->get('doctrine')->getRepository(ReliefPackage::class);
 
         $commodityData = [
             'value' => 1,

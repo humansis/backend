@@ -6,6 +6,8 @@ namespace Controller;
 
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Entity\AssistanceBeneficiary;
+use Entity\CountrySpecific;
 use Entity\User;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -15,6 +17,7 @@ use Entity\Assistance;
 use Enum\AssistanceType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
+use Utils\AssistanceBankReportTransformData;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -25,7 +28,6 @@ use Component\Assistance\AssistanceQuery;
 use Entity\AssistanceStatistics;
 use Enum\ModalityType;
 use Exception\CsvParserException;
-use Export\AssistanceBankReportExport;
 use Export\VulnerabilityScoreExport;
 use InputType\AssistanceCreateInputType;
 use InputType\AssistanceFilterInputType;
@@ -44,16 +46,21 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
+use Utils\ExportTableServiceInterface;
 
 class AssistanceController extends AbstractController
 {
     public function __construct(
         private readonly VulnerabilityScoreExport $vulnerabilityScoreExport,
         private readonly AssistanceService $assistanceService,
-        private readonly AssistanceBankReportExport $assistanceBankReportExport,
         private readonly ManagerRegistry $managerRegistry,
+        private readonly AssistanceBankReportTransformData $assistanceBankReportTransformData,
+        private readonly ExportTableServiceInterface $exportTableService
     ) {
     }
+
+    public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    public const COUNTRY_SPECIFIC_ID_TYPE = 'Secondary ID Type';
 
     /**
      * @Rest\Get("/web-app/v1/assistances/statistics")
@@ -214,19 +221,23 @@ class AssistanceController extends AbstractController
         if (!$assistance->hasModalityTypeCommodity(ModalityType::CASH)) {
             throw new BadRequestHttpException('Bank export is allowed only for assistance with Cash commodity.');
         }
-        $filename = $this->assistanceBankReportExport->export($assistance, $type);
-        try {
-            $response = new BinaryFileResponse($filename);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-            $response->deleteFileAfterSend(true);
-
-            return $response;
-        } catch (\Exception $exception) {
-            return new JsonResponse(
-                $exception->getMessage(),
-                $exception->getCode() >= 200 ? $exception->getCode() : Response::HTTP_BAD_REQUEST
-            );
-        }
+        $countrySpecificRepository = $this->managerRegistry->getRepository(CountrySpecific::class);
+        $assistanceBeneficiaryRepository = $this->managerRegistry->getRepository(AssistanceBeneficiary::class);
+        $countrySpecific1 = $countrySpecificRepository->findOneBy(
+            [
+                'fieldString' => self::COUNTRY_SPECIFIC_ID_TYPE,
+                'countryIso3' => $assistance->getProject()->getCountryIso3(),
+            ]
+        );
+        $countrySpecific2 = $countrySpecificRepository->findOneBy(
+            [
+                'fieldString' => self::COUNTRY_SPECIFIC_ID_NUMBER,
+                'countryIso3' => $assistance->getProject()->getCountryIso3(),
+            ]
+        );
+        $distributions = $assistanceBeneficiaryRepository->getBeneficiaryReliefCompilation($assistance, $countrySpecific1, $countrySpecific2);
+        $exportableTable = $this->assistanceBankReportTransformData->transformData($distributions);
+        return $this->exportTableService->export($exportableTable, 'bank-report', $type, false, true);
     }
 
     /**

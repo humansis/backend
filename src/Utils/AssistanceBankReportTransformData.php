@@ -8,12 +8,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssistanceBankReportTransformData
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     /**
@@ -33,9 +29,9 @@ class AssistanceBankReportTransformData
                 $this->translator->trans('Recipient’s surname (Local family name)') => $distribution['localFamilyName'],
                 $this->translator->trans('Recipient’s name (Local given name)') => $distribution['localGivenName'],
                 $this->translator->trans('Recipient’s patronymic (Local parent’s name)') => $distribution['localParentsName'],
-                $this->translator->trans('Recipient’s RNTRC (Tax Number)') => $distribution['idNumber'],
-                $this->translator->trans('Document type') => $distribution['countrySpecificValue1'],
-                $this->translator->trans('Document number') => $distribution['countrySpecificValue2'],
+                $this->translator->trans('Recipient’s RNTRC (Tax Number)') => $distribution['taxNumber'],
+                $this->translator->trans('Document type') => $distribution['idType'],
+                $this->translator->trans('Document number') => $distribution['idNumber'],
                 $this->translator->trans('Remittance purpose') => 'Благодійна допомога',
                 $this->translator->trans('Remittance amount') => $distribution['amountToDistribute'],
                 $this->translator->trans('Remittance currency') => $distribution['currency'],

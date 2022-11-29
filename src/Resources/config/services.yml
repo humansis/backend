@@ -483,7 +483,6 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\SmartcardPurchasedItem")'
 
-    Export\AssistanceBankReportExport:
 
     workflow.import.integrity_subscriber:
         class: Event\Subscriber\Import\IntegritySubscriber
