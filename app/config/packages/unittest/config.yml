@@ -9,6 +9,9 @@ framework:
             'Component\Import\Messaging\Message\ImportCheck': sync
             'Component\Import\Messaging\Message\ItemBatch': sync
             'Component\Import\Messaging\Message\UploadFileFinished': sync
+sentry:
+    #do not log during unit tests
+    dsn: ''
 
 swiftmailer:
     disable_delivery: true
