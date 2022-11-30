@@ -139,6 +139,9 @@ framework:
 sensio_framework_extra:
     router:
         annotations: false
+    #todo remove before merging to devel
+    psr_message:
+        enabled: false
 
 # Twig Configuration
 twig:
