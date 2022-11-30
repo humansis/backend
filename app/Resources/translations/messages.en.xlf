@@ -5228,6 +5228,14 @@ Size</source>
         <source>label_sector_default_early_recovery</source>
         <target>Default Early Recovery</target>
       </trans-unit>
+      <trans-unit id="ug_oAAz" resname="label_sector_cash_for_winterization">
+        <source>label_sector_cash_for_winterization</source>
+        <target>Cash for winterization</target>
+      </trans-unit>
+      <trans-unit id="9dSv7zh" resname="label_sector_cash_for_protection">
+        <source>label_sector_cash_for_protection</source>
+        <target>Cash for protection</target>
+      </trans-unit>
       <trans-unit id="E.tnzx9" resname="Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.">
         <source>Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</source>
         <target>Unfortunately, another import is running now and this import cannot start. This import will be returned to Identity check, when the other import is completed. Then, you can finish this import.</target>

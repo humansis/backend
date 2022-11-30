@@ -54,7 +54,7 @@ class SectorService
         return $this->codeListService->mapEnum($data);
     }
 
-    public function findBySubSector($subSectorName): ?Sector
+    public function findBySubSector(string $subSectorName): ?Sector
     {
         $sector = $this->findSector($subSectorName);
         if (!$sector) {
@@ -63,14 +63,22 @@ class SectorService
         switch ($sector->getSubSectorName()) {
             case SubSectorEnum::IN_KIND_FOOD:
             case SubSectorEnum::CASH_TRANSFERS:
+            case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
+            case SubSectorEnum::HYGIENE_KITS:
             case SubSectorEnum::FOOD_VOUCHERS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed();
-            case SubSectorEnum::FOOD_CASH_FOR_WORK:
-                return $sector->setActivityAllowed()
-                    ->setBeneficiaryAllowed();
             case SubSectorEnum::SKILLS_TRAINING:
+            case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
+            case SubSectorEnum::INDIVIDUAL_PROTECTION_ASSISTANCE:
+            case SubSectorEnum::PROTECTION_PSYCHOSOCIAL_SUPPORT:
+            case SubSectorEnum::TEACHER_TRAINING:
+            case SubSectorEnum::PARENT_SESSIONS:
+            case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
+            case SubSectorEnum::LEARNING_SUPPORT:
+            case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
+            case SubSectorEnum::FOOD_CASH_FOR_WORK:
                 return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed();
             case SubSectorEnum::TECHNICAL_SUPPORT:
@@ -80,11 +88,14 @@ class SectorService
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed();
             case SubSectorEnum::PROVISION_OF_INPUTS:
+            case SubSectorEnum::CASH_FOR_PROTECTION:
+            case SubSectorEnum::CASH_FOR_WINTERIZATION:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed()
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed();
+            case SubSectorEnum::LEARNING_MATERIALS:
             case SubSectorEnum::BUSINESS_GRANTS:
                 return $sector->setDistributionAllowed()
                     ->setBeneficiaryAllowed()
@@ -94,13 +105,6 @@ class SectorService
                     ->setHouseholdAllowed()
                     ->setBeneficiaryAllowed()
                     ->setInstitutionAllowed();
-            case SubSectorEnum::LIVELIHOOD_CASH_FOR_WORK:
-                return $sector->setActivityAllowed()
-                    ->setBeneficiaryAllowed();
-            case SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE:
-                return $sector->setDistributionAllowed()
-                    ->setHouseholdAllowed()
-                    ->setBeneficiaryAllowed();
             case SubSectorEnum::REHABILITATION:
             case SubSectorEnum::CONSTRUCTION:
                 return $sector->setActivityAllowed()
@@ -111,16 +115,14 @@ class SectorService
                 return $sector->setActivityAllowed()
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed();
+            case SubSectorEnum::CASH_FOR_SHELTER:
+            case SubSectorEnum::NFI_KITS:
+            case SubSectorEnum::SHELTER_KITS:
             case SubSectorEnum::WINTERIZATION_KITS:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed();
             case SubSectorEnum::WINTERIZATION_UPGRADES:
                 return $sector->setActivityAllowed()
-                    ->setHouseholdAllowed();
-            case SubSectorEnum::SHELTER_KITS:
-            case SubSectorEnum::NFI_KITS:
-            case SubSectorEnum::CASH_FOR_SHELTER:
-                return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed();
             case SubSectorEnum::WATER_POINT_REHABILITATION:
             case SubSectorEnum::WATER_POINT_CONSTRUCTION:
@@ -138,18 +140,10 @@ class SectorService
                     ->setHouseholdAllowed()
                     ->setCommunityAllowed()
                     ->setInstitutionAllowed();
-            case SubSectorEnum::HYGIENE_KITS:
-                return $sector->setDistributionAllowed()
-                    ->setHouseholdAllowed()
-                    ->setBeneficiaryAllowed();
             case SubSectorEnum::OPERATIONAL_SUPPLIES:
                 return $sector->setDistributionAllowed()
                     ->setHouseholdAllowed()
                     ->setInstitutionAllowed();
-            case SubSectorEnum::PROTECTION_PSYCHOSOCIAL_SUPPORT:
-            case SubSectorEnum::INDIVIDUAL_PROTECTION_ASSISTANCE:
-                return $sector->setActivityAllowed()
-                    ->setBeneficiaryAllowed();
             case SubSectorEnum::COMMUNITY_BASED_INTERVENTIONS:
                 return $sector->setActivityAllowed()
                     ->setCommunityAllowed();
@@ -169,19 +163,6 @@ class SectorService
                     ->setHouseholdAllowed();
             case SubSectorEnum::TEACHER_INCENTIVE_PAYMENTS:
                 return $sector->setDistributionAllowed()
-                    ->setBeneficiaryAllowed();
-            case SubSectorEnum::TEACHER_TRAINING:
-                return $sector->setActivityAllowed()
-                    ->setBeneficiaryAllowed();
-            case SubSectorEnum::LEARNING_MATERIALS:
-                return $sector->setDistributionAllowed()
-                    ->setBeneficiaryAllowed()
-                    ->setInstitutionAllowed();
-            case SubSectorEnum::EDUCATION_PSYCHOSOCIAL_SUPPORT:
-            case SubSectorEnum::LEARNING_SUPPORT:
-            case SubSectorEnum::EDUCATION_CASH_FOR_WORK:
-            case SubSectorEnum::PARENT_SESSIONS:
-                return $sector->setActivityAllowed()
                     ->setBeneficiaryAllowed();
             case SubSectorEnum::DEFAULT_EMERGENCY_TELCO:
             case SubSectorEnum::DEFAULT_HEALTH:
@@ -206,12 +187,7 @@ class SectorService
         }
     }
 
-    /**
-     * @param $subSectorName
-     *
-     * @return Sector|null
-     */
-    private function findSector($subSectorName): ?Sector
+    private function findSector(string $subSectorName): ?Sector
     {
         switch ($subSectorName) {
             case SubSectorEnum::IN_KIND_FOOD:
@@ -239,6 +215,7 @@ class SectorService
             case SubSectorEnum::SHELTER_KITS:
             case SubSectorEnum::NFI_KITS:
             case SubSectorEnum::CASH_FOR_SHELTER:
+            case SubSectorEnum::CASH_FOR_WINTERIZATION:
                 return new Sector(SectorEnum::SHELTER, $subSectorName);
 
             case SubSectorEnum::WATER_POINT_REHABILITATION:
@@ -259,6 +236,7 @@ class SectorService
             case SubSectorEnum::PROTECTION_ADVOCACY:
             case SubSectorEnum::CHILD_PROTECTION:
             case SubSectorEnum::GENDER_BASED_VIOLENCE_ACTIVITIES:
+            case SubSectorEnum::CASH_FOR_PROTECTION:
                 return new Sector(SectorEnum::PROTECTION, $subSectorName);
 
             case SubSectorEnum::TEACHER_INCENTIVE_PAYMENTS:
