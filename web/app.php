@@ -3,7 +3,7 @@
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $environment = getenv('ENVIRONMENT');
 if ($environment === 'local') {
@@ -26,4 +26,4 @@ if (in_array($environment, ['prod',  'demo', 'stage'])) {
 $request = Request::createFromGlobals();
 $response = $kernel->handle($request);
 $response->send();
-$kernel->terminate($request, $response);
+//$kernel->terminate($request, $response);
