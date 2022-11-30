@@ -31,6 +31,7 @@ class SubSectorEnum extends AbstractEnum
         self::SHELTER_KITS,
         self::NFI_KITS,
         self::CASH_FOR_SHELTER,
+        self::CASH_FOR_WINTERIZATION,
 
         self::WATER_POINT_REHABILITATION,
         self::WATER_POINT_CONSTRUCTION,
@@ -51,6 +52,7 @@ class SubSectorEnum extends AbstractEnum
         self::PROTECTION_ADVOCACY,
         self::CHILD_PROTECTION,
         self::GENDER_BASED_VIOLENCE_ACTIVITIES,
+        self::CASH_FOR_PROTECTION,
 
         self::TEACHER_INCENTIVE_PAYMENTS,
         self::TEACHER_TRAINING,
@@ -95,6 +97,7 @@ class SubSectorEnum extends AbstractEnum
         self::SHELTER_KITS => 'Shelter Kits',
         self::NFI_KITS => 'NFI Kits',
         self::CASH_FOR_SHELTER => 'Cash for Shelter',
+        self::CASH_FOR_WINTERIZATION => 'Cash for winterization',
 
         self::WATER_POINT_REHABILITATION => 'Water Point Rehabilitation',
         self::WATER_POINT_CONSTRUCTION => 'Water Point Construction',
@@ -115,6 +118,7 @@ class SubSectorEnum extends AbstractEnum
         self::PROTECTION_ADVOCACY => 'Protection Advocacy',
         self::CHILD_PROTECTION => 'Child Protection',
         self::GENDER_BASED_VIOLENCE_ACTIVITIES => 'Gender Based Violence Activities',
+        self::CASH_FOR_PROTECTION => 'Cash for protection',
 
         self::TEACHER_INCENTIVE_PAYMENTS => 'Teacher Incentive Payments',
         self::TEACHER_TRAINING => 'Teacher Training',
@@ -187,6 +191,8 @@ class SubSectorEnum extends AbstractEnum
     final public const DEFAULT_NON_SECTOR = 'default_non_sector';
     final public const DEFAULT_CAMP_MANAGEMENT = 'default_camp_management';
     final public const DEFAULT_EARLY_RECOVERY = 'default_early_recovery';
+    final public const CASH_FOR_WINTERIZATION = 'cash_for_winterization';
+    final public const CASH_FOR_PROTECTION = 'cash_for_protection';
 
     public function getName(): string
     {
