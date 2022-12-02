@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Component\Assistance\Domain;
 
+use Component\ReliefPackage\ReliefPackageService;
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Entity\Household;
@@ -14,12 +16,9 @@ use Entity\AssistanceBeneficiary;
 use Entity\User;
 use Enum\AssistanceTargetType;
 use Entity\DivisionGroup;
-use JsonException;
 use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NoResultException;
 use Component\Assistance\CommodityAssignBuilder;
 use Component\Assistance\DTO\CommoditySummary;
@@ -35,14 +34,19 @@ use Repository\AssistanceStatisticsRepository;
 use Workflow\ReliefPackageTransitions;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 class Assistance
 {
-    public function __construct(private readonly Entity\Assistance $assistanceRoot, private readonly CacheInterface $cache, private readonly AssistanceStatisticsRepository $assistanceStatisticRepository, private readonly Registry $workflowRegistry, private readonly AssistanceBeneficiaryRepository $targetRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory)
-    {
+    public function __construct(
+        private readonly Entity\Assistance $assistanceRoot,
+        private readonly CacheInterface $cache,
+        private readonly AssistanceStatisticsRepository $assistanceStatisticRepository,
+        private readonly AssistanceBeneficiaryRepository $targetRepository,
+        private readonly SelectionCriteriaFactory $selectionCriteriaFactory,
+        private readonly ReliefPackageService $reliefPackageService
+    ) {
     }
 
     /**
@@ -252,12 +256,15 @@ class Assistance
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $this->getTargets() as $target) {
-                    $reliefPackage = $target->setCommodityToDistribute(
+                    $reliefPackage = $target->getOrCreateReliefPackage(
                         $modalityName,
                         $unit,
                         $commodityBuilder->getValue($target, $modalityName, $unit)
                     );
-                    $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::REUSE);
+                    $this->reliefPackageService->applyReliefPackageTransition(
+                        $reliefPackage,
+                        ReliefPackageTransitions::REUSE
+                    );
                 }
             }
         }
@@ -271,7 +278,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::EXPIRE);
+                $this->reliefPackageService->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::EXPIRE);
             }
         }
     }
@@ -295,7 +302,7 @@ class Assistance
         foreach ($targets ?? $this->getTargets() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::CANCEL);
+                $this->reliefPackageService->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::CANCEL);
             }
         }
     }
@@ -414,12 +421,12 @@ class Assistance
     /**
      * Get all active beneficiaries (not removed or archived)
      */
-    public function getBeneficiaries(): ArrayCollection
+    public function getBeneficiaries(): Collection
     {
-        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(fn($item) => /**
-             * @var AssistanceBeneficiary $item
-             */
-($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false));
+        return $this->getAssistanceRoot()->getDistributionBeneficiaries()->filter(
+            fn(AssistanceBeneficiary $item) =>
+                ($item->getBeneficiary()->getArchived() === false) && ($item->getRemoved() === false)
+        );
     }
 
     public function addSelectionCriteria(SelectionCriteria $selectionCriteria): void
@@ -445,30 +452,6 @@ class Assistance
         }
         foreach ($selectionCriteria as $groupNumber => $criteria) {
             yield new CriteriaGroup($groupNumber, $criteria);
-        }
-    }
-
-    /**
-     * @param ReliefPackage $reliefPackage
-     * @param string $transition
-     *
-     * @return void
-     */
-    private function applyReliefPackageTransition(ReliefPackage $reliefPackage, string $transition): void
-    {
-        if (!in_array($transition, ReliefPackageTransitions::getAll())) {
-            throw new LogicException(
-                sprintf(
-                    'Transition %s is not defined in Relief Package transitions list. Allowed transitions are (%s).',
-                    $transition,
-                    implode(',', ReliefPackageTransitions::getAll())
-                )
-            );
-        }
-
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-        if ($reliefPackageWorkflow->can($reliefPackage, $transition)) {
-            $reliefPackageWorkflow->apply($reliefPackage, $transition);
         }
     }
 }

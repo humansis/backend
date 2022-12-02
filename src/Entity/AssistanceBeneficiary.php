@@ -398,23 +398,25 @@ class AssistanceBeneficiary
         return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->notIn('state', $states)));
     }
 
-    /**
-     * @param                       $value
-     *
-     * @return ReliefPackage
-     */
-    public function setCommodityToDistribute(string $modalityName, string $unit, $value): ReliefPackage
+    public function getOrCreateReliefPackage(string $modalityName, string $unit, float|string|int $value): ReliefPackage
     {
         foreach ($this->reliefPackages as $package) {
-            if (!$package->isOnStartupState() && !$package->isSameModalityAndUnit($modalityName, $unit)) {
+            $isSameModalityAndUnit = $package->isSameModalityAndUnit($modalityName, $unit);
+            if (!$package->isOnStartupState() && !$isSameModalityAndUnit) {
                 continue;
             }
-            if ($package->isSameModalityAndUnit($modalityName, $unit)) {
+            if ($isSameModalityAndUnit) {
                 $package->setAmountToDistribute($value);
 
                 return $package;
             }
         }
+
+        return $this->addReliefPackage($modalityName, $unit, $value);
+    }
+
+    private function addReliefPackage(string $modalityName, string $unit, float|string|int $value): ReliefPackage
+    {
         $reliefPackage = new ReliefPackage(
             $this,
             $modalityName,

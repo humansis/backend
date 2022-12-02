@@ -7,6 +7,7 @@ namespace Component\Assistance\Services;
 use Component\Assistance\CommodityAssignBuilder;
 use Component\Assistance\Enum\CommodityDivision;
 use Component\Assistance\Scoring\Model\ScoringProtocol;
+use Component\ReliefPackage\ReliefPackageService;
 use DateTime;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
@@ -34,8 +35,13 @@ use Workflow\ReliefPackageTransitions;
 
 class AssistanceBeneficiaryService
 {
-    public function __construct(private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository, private readonly CacheInterface $cache, private readonly Registry $workflowRegistry, private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        private readonly CacheInterface $cache,
+        private readonly Registry $workflowRegistry,
+        private readonly TranslatorInterface $translator,
+        private readonly ReliefPackageService $reliefPackageService,
+    ) {
     }
 
     /**
@@ -83,9 +89,12 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Beneficiary[] $beneficiaries
-     *
-     * @return void
+     * @param AssistanceBeneficiaryOperationOutputType $output
+     * @param Assistance $assistance
+     * @param array $beneficiaries
+     * @param string|null $justification
+     * @param ScoringProtocol|null $vulnerabilityScore
+     * @return AssistanceBeneficiaryOperationOutputType
      */
     public function addBeneficiariesToAssistance(
         AssistanceBeneficiaryOperationOutputType $output,
@@ -180,9 +189,11 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param Beneficiary[] $beneficiaries
-     *
-     * @return void
+     * @param AssistanceBeneficiaryOperationOutputType $output
+     * @param Assistance $assistance
+     * @param array $beneficiaries
+     * @param string $justification
+     * @return AssistanceBeneficiaryOperationOutputType
      */
     public function removeBeneficiariesFromAssistance(
         AssistanceBeneficiaryOperationOutputType $output,
@@ -313,10 +324,14 @@ class AssistanceBeneficiaryService
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $assistance->getDistributionBeneficiaries() as $target) {
-                    $target->setCommodityToDistribute(
+                    $reliefPackage = $target->getOrCreateReliefPackage(
                         $modalityName,
                         $unit,
                         $commodityBuilder->getValue($target, $modalityName, $unit)
+                    );
+                    $this->reliefPackageService->applyReliefPackageTransition(
+                        $reliefPackage,
+                        ReliefPackageTransitions::REUSE
                     );
                 }
             }
