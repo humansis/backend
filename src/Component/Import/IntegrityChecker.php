@@ -13,8 +13,6 @@ use Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Finishing;
 use Component\Import\Integrity;
-use Component\Import\Integrity\DuplicityService;
-use Component\Import\Integrity\ImportLineFactory;
 use Entity\Import;
 use Entity\ImportFile;
 use Entity\ImportQueue;
@@ -30,8 +28,17 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
-    public function __construct(private readonly ValidatorInterface $validator, private readonly EntityManagerInterface $entityManager, private readonly WorkflowInterface $importStateMachine, private readonly WorkflowInterface $importQueueStateMachine, private readonly Integrity\ImportLineFactory $importLineFactory, private readonly Integrity\DuplicityService $duplicityService, private readonly Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder, private readonly Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder, private readonly ImportQueueRepository $queueRepository)
-    {
+    public function __construct(
+        private readonly ValidatorInterface $validator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly Integrity\ImportLineFactory $importLineFactory,
+        private readonly Integrity\DuplicityService $duplicityService,
+        private readonly Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        private readonly Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
+        private readonly ImportQueueRepository $queueRepository
+    ) {
     }
 
     /**
@@ -84,7 +91,10 @@ class IntegrityChecker
         $violations = $this->validator->validate($householdLine, null, ["household"]);
 
         foreach ($violations as $violation) {
-            $item->addViolation($this->buildErrorMessage($violation, 0));
+            $queueViolations = $this->buildErrorMessage($violation, 0);
+            foreach ($queueViolations as $queueViolation) {
+                $item->addViolation($queueViolation);
+            }
         }
 
         $index = 1;
@@ -93,7 +103,10 @@ class IntegrityChecker
             $violations = $this->validator->validate($hhm, null, ["member"]);
 
             foreach ($violations as $violation) {
-                $item->addViolation($this->buildErrorMessage($violation, $index));
+                $queueViolations = $this->buildErrorMessage($violation, $index);
+                foreach ($queueViolations as $queueViolation) {
+                    $item->addViolation($queueViolation);
+                }
             }
             $index++;
         }
@@ -169,10 +182,15 @@ class IntegrityChecker
         return $queueSize == 0;
     }
 
+    /**
+     * @param ConstraintViolationInterface $violation
+     * @param int $lineIndex
+     * @return Integrity\QueueViolation[]
+     */
     private function buildErrorMessage(
         ConstraintViolationInterface $violation,
         int $lineIndex
-    ): Integrity\QueueViolation {
+    ): array {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
         static $mapping;
@@ -185,14 +203,21 @@ class IntegrityChecker
                 )] = $countrySpecific->getFieldString();
             }
         }
-        $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
 
-        return Integrity\QueueViolation::create(
-            $lineIndex,
-            $column,
-            $violation->getMessage(),
-            $violation->getInvalidValue()
-        );
+        $properties = is_array($property) ? $property : [$property];
+        $queueViolations = [];
+        foreach ($properties as $property) {
+            $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
+
+            $queueViolations[] = Integrity\QueueViolation::create(
+                $lineIndex,
+                $column,
+                $violation->getMessage(),
+                $violation->getInvalidValue()
+            );
+        }
+
+        return $queueViolations;
     }
 
     private function buildNormalizedErrorMessage(

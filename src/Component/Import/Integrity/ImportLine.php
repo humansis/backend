@@ -14,6 +14,7 @@ use Component\Import\CellError\CellError;
 use Component\Import\CellParameters;
 use Component\Import\Utils\ImportDateConverter;
 use Enum\EnumTrait;
+use Utils\Phone\PrefixChecker;
 use Validator\Constraints\EmptyCountrySpecifics;
 use Validator\Constraints\ImportDate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -346,14 +347,76 @@ class ImportLine
         }
     }
 
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', payload: ['propertyPath' => 'prefixPhone1'], groups: ['household', 'member'])]
+    #[Assert\IsTrue(message: 'All required columns for Phone 1 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone1', 'prefixPhone1', 'typePhone1']])]
+    public function isPhone1Complete(): bool
+    {
+        $phone1Set = [
+            $this->prefixPhone1,
+            $this->numberPhone1,
+            $this->typePhone1,
+        ];
+        if ($this->isOneFromListNonEmpty($phone1Set)) {
+            return $this->isAllFromListNonEmpty($phone1Set);
+        }
+
+        return true;
+    }
+
+    #[Assert\IsTrue(message: 'All required columns for Phone 2 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone2', 'prefixPhone2', 'typePhone2']])]
+    public function isPhone2Complete(): bool
+    {
+        $phone2Set = [
+            $this->prefixPhone2,
+            $this->numberPhone2,
+            $this->typePhone2,
+        ];
+        if ($this->isOneFromListNonEmpty($phone2Set)) {
+            return $this->isAllFromListNonEmpty($phone2Set);
+        }
+
+        return true;
+    }
+
+    #[Assert\IsTrue(message: 'Prefix should start with symbol "+" and match any valid country prefix', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => 'prefixPhone1'])]
     public function isPrefixPhone1Valid(): bool
+    {
+        if (!empty($this->prefixPhone1)) {
+            return PrefixChecker::isPrefixValid($this->prefixPhone1);
+        }
+
+        return true;
+    }
+
+    #[Assert\IsTrue(message: 'Prefix should start with symbol "+" and match any valid country prefix', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => 'prefixPhone2'])]
+    public function isPrefixPhone2Valid(): bool
+    {
+        if (!empty($this->prefixPhone2)) {
+            return PrefixChecker::isPrefixValid($this->prefixPhone2);
+        }
+
+        return true;
+    }
+
+    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', groups: ['household', 'member'], payload: ['propertyPath' => 'prefixPhone1'])]
+    public function isSetPrefixPhone1(): bool
     {
         return !$this->numberPhone1 || $this->prefixPhone1;
     }
 
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', payload: ['propertyPath' => 'prefixPhone2'], groups: ['household', 'member'])]
-    public function isPrefixPhone2Valid(): bool
+    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', groups: ['household', 'member'], payload: ['propertyPath' => 'prefixPhone2'])]
+    public function isSetPrefixPhone2(): bool
     {
         return !$this->numberPhone2 || $this->prefixPhone2;
     }
@@ -680,5 +743,27 @@ class ImportLine
         }
 
         return $filledIds;
+    }
+
+    private function isOneFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (!empty($item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isAllFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (empty($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
