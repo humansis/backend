@@ -6,8 +6,6 @@ namespace Utils;
 
 use Entity\HouseholdLocation;
 use Enum\EnumApiValueNoFoundException;
-use Enum\HouseholdAssets;
-use Enum\HouseholdSupportReceivedType;
 use Enum\PersonGender;
 
 class BeneficiaryTransformData
@@ -52,7 +50,12 @@ class BeneficiaryTransformData
             $tertiaryDocument = $beneficiary->getPerson()->getTertiaryNationalId();
 
             //Recover country specifics for the household
-            $valueCountrySpecific = [];
+            $valueCountrySpecific = [
+                "IDPoor" => "",
+                "equityCardNo" => "",
+                "CSO float property" => ""
+            ];
+
             foreach ($beneficiary->getHousehold()->getCountrySpecificAnswers()->getValues() as $value) {
                 $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
             }
@@ -126,7 +129,10 @@ class BeneficiaryTransformData
             if ($beneficiary->getHousehold()->getShelterStatus()) {
                 $shelterStatus = $beneficiary->getHousehold()->getShelterStatus() ?: '';
             }
-
+            $date = "";
+            if ($beneficiary->getPerson()->getDateOfBirth()) {
+                $date = date_format($beneficiary->getPerson()->getDateOfBirth(), "m/d/Y");
+            }
             $tempBenef = [
                 "beneficiary ID" => $beneficiary->getId(),
                 "localGivenName" => $beneficiary->getPerson()->getLocalGivenName(),
@@ -136,7 +142,7 @@ class BeneficiaryTransformData
                 "gender" => $valueGender,
                 "head" => $beneficiary->isHead() ? "true" : "false",
                 "residencyStatus" => $beneficiary->getResidencyStatus(),
-                "dateOfBirth" => $beneficiary->getPerson()->getDateOfBirth(),
+                "dateOfBirth" => $date,
                 "vulnerabilityCriteria" => $valuesCriteria,
                 "type phone 1" => $phoneTypes[0],
                 "prefix phone 1" => $phonePrefix[0],
