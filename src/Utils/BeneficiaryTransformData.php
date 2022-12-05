@@ -41,6 +41,7 @@ class BeneficiaryTransformData
             $phoneValues = ["", ""];
             $phoneProxies = ["", ""];
 
+            $valueCountrySpecific = [];
             foreach ($cso as $value) {
                 $valueCountrySpecific[$value['cso']] = "";
             }
