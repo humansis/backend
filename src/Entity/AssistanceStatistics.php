@@ -41,21 +41,6 @@ class AssistanceStatistics
     private float $amountDistributed;
 
     /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?float $amountUsed = null;
-
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?float $amountSent = null;
-
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private ?float $amountPickedUp = null;
-
-    /**
      * @ORM\Column(name="beneficiaries_deleted", type="integer")
      */
     private $beneficiariesDeleted;
