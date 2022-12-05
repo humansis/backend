@@ -14,7 +14,6 @@ use Component\Import\CellError\CellError;
 use Component\Import\CellParameters;
 use Component\Import\Utils\ImportDateConverter;
 use Enum\EnumTrait;
-use Utils\Phone\PrefixChecker;
 use Validator\Constraints\EmptyCountrySpecifics;
 use Validator\Constraints\ImportDate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -23,6 +22,7 @@ use Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Validator\Constraints\CountrySpecificDataType;
+use Validator\Constraints\PhonePrefix;
 
 class ImportLine
 {
@@ -146,7 +146,7 @@ class ImportLine
      */
     public $typePhone1;
 
-    #[Assert\Type('scalar', groups: ['household', 'member'])]
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone1;
 
     #[Assert\Type('numeric', groups: ['household', 'member'])]
@@ -162,7 +162,7 @@ class ImportLine
      */
     public $typePhone2;
 
-    #[Assert\Type('scalar', groups: ['household', 'member'])]
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone2;
 
     #[Assert\Type('numeric', groups: ['household', 'member'])]
@@ -378,32 +378,6 @@ class ImportLine
         ];
         if ($this->isOneFromListNonEmpty($phone2Set)) {
             return $this->isAllFromListNonEmpty($phone2Set);
-        }
-
-        return true;
-    }
-
-    #[Assert\IsTrue(message: 'Prefix should start with symbol "+" and match any valid country prefix', groups: [
-        'household',
-        'member',
-    ], payload: ['propertyPath' => 'prefixPhone1'])]
-    public function isPrefixPhone1Valid(): bool
-    {
-        if (!empty($this->prefixPhone1)) {
-            return PrefixChecker::isPrefixValid($this->prefixPhone1);
-        }
-
-        return true;
-    }
-
-    #[Assert\IsTrue(message: 'Prefix should start with symbol "+" and match any valid country prefix', groups: [
-        'household',
-        'member',
-    ], payload: ['propertyPath' => 'prefixPhone2'])]
-    public function isPrefixPhone2Valid(): bool
-    {
-        if (!empty($this->prefixPhone2)) {
-            return PrefixChecker::isPrefixValid($this->prefixPhone2);
         }
 
         return true;
