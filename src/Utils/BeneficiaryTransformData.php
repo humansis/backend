@@ -5,22 +5,34 @@ declare(strict_types=1);
 namespace Utils;
 
 use Entity\HouseholdLocation;
-use Enum\EnumApiValueNoFoundException;
 use Enum\PersonGender;
+use Repository\CountrySpecificRepository;
 
 class BeneficiaryTransformData
 {
+    public function __construct(readonly private CountrySpecificRepository $countrySpecificRepository)
+    {
+    }
+
     /**
      * Returns an array representation of beneficiaries in order to prepare the export
      *
      * @param $beneficiaries
+     * @param $country
      *
      * @return array
-     * @throws EnumApiValueNoFoundException
      */
-    public function transformData($beneficiaries): array
+    public function transformData($beneficiaries, $country): array
     {
         $exportableTable = [];
+
+        $cso = $this->countrySpecificRepository->createQueryBuilder('db')
+            ->select('db.fieldString as cso')
+            ->Where('db.countryIso3 = :country')
+            ->setParameter('country', $country)
+            ->distinct('cso')
+            ->getQuery()
+            ->getResult();
 
         foreach ($beneficiaries as $beneficiary) {
             // Recover the phones of the beneficiary
@@ -28,6 +40,10 @@ class BeneficiaryTransformData
             $phonePrefix = ["", ""];
             $phoneValues = ["", ""];
             $phoneProxies = ["", ""];
+
+            foreach ($cso as $value) {
+                $valueCountrySpecific[$value['cso']] = "";
+            }
 
             $index = 0;
             foreach ($beneficiary->getPerson()->getPhones()->getValues() as $value) {
@@ -49,12 +65,6 @@ class BeneficiaryTransformData
             $secondaryDocument = $beneficiary->getPerson()->getSecondaryNationalId();
             $tertiaryDocument = $beneficiary->getPerson()->getTertiaryNationalId();
 
-            //Recover country specifics for the household
-            $valueCountrySpecific = [
-                "IDPoor" => "",
-                "equityCardNo" => "",
-                "CSO float property" => ""
-            ];
 
             foreach ($beneficiary->getHousehold()->getCountrySpecificAnswers()->getValues() as $value) {
                 $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
