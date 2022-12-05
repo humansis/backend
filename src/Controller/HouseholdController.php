@@ -57,7 +57,7 @@ class HouseholdController extends AbstractController
             $pagination,
             $order
         );
-        $exportableTable = $this->beneficiaryTransformData->transformData($beneficiaries);
+        $exportableTable = $this->beneficiaryTransformData->transformData($beneficiaries, $request->headers->get('country'));
 
         return $this->exportTableService->export(
             $exportableTable,
