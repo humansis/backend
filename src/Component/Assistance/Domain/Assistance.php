@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance\Domain;
 
+use Component\Assistance\Services\AssistanceBeneficiaryService;
 use Component\ReliefPackage\ReliefPackageService;
 use DateTime;
 use DateTimeImmutable;
@@ -45,7 +46,8 @@ class Assistance
         private readonly AssistanceStatisticsRepository $assistanceStatisticRepository,
         private readonly AssistanceBeneficiaryRepository $targetRepository,
         private readonly SelectionCriteriaFactory $selectionCriteriaFactory,
-        private readonly ReliefPackageService $reliefPackageService
+        private readonly ReliefPackageService $reliefPackageService,
+        private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
     ) {
     }
 
@@ -256,14 +258,11 @@ class Assistance
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $this->getTargets() as $target) {
-                    $reliefPackage = $target->getOrCreateReliefPackage(
+                    $this->assistanceBeneficiaryService->prepareReliefPackageForDistribution(
+                        $target,
                         $modalityName,
                         $unit,
                         $commodityBuilder->getValue($target, $modalityName, $unit)
-                    );
-                    $this->reliefPackageService->applyReliefPackageTransition(
-                        $reliefPackage,
-                        ReliefPackageTransitions::REUSE
                     );
                 }
             }

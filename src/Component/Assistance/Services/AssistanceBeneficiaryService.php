@@ -44,6 +44,27 @@ class AssistanceBeneficiaryService
     ) {
     }
 
+    public function prepareReliefPackageForDistribution(
+        AssistanceBeneficiary $assistanceBeneficiary,
+        string $modalityName,
+        string $unit,
+        string | int | float $value,
+        bool $tryToReuseReliefPackage = false
+    ): void {
+        $alreadyGeneratedReliefPackage = $assistanceBeneficiary->getDistributableReliefPackage($modalityName, $unit);
+        if ($alreadyGeneratedReliefPackage) {
+            $alreadyGeneratedReliefPackage->setAmountToDistribute($value);
+            if ($tryToReuseReliefPackage) {
+                $this->reliefPackageService->applyReliefPackageTransition(
+                    $alreadyGeneratedReliefPackage,
+                    ReliefPackageTransitions::REUSE
+                );
+            }
+        } else {
+            $assistanceBeneficiary->addReliefPackage($modalityName, $unit, $value);
+        }
+    }
+
     /**
      * @param Beneficiary[] $beneficiaries
      *
@@ -324,14 +345,12 @@ class AssistanceBeneficiaryService
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $assistance->getDistributionBeneficiaries() as $target) {
-                    $reliefPackage = $target->getOrCreateReliefPackage(
+                    $this->prepareReliefPackageForDistribution(
+                        $target,
                         $modalityName,
                         $unit,
-                        $commodityBuilder->getValue($target, $modalityName, $unit)
-                    );
-                    $this->reliefPackageService->applyReliefPackageTransition(
-                        $reliefPackage,
-                        ReliefPackageTransitions::REUSE
+                        $commodityBuilder->getValue($target, $modalityName, $unit),
+                        true
                     );
                 }
             }

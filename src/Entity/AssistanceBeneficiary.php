@@ -3,8 +3,6 @@
 namespace Entity;
 
 use DateTimeInterface;
-use Entity\AbstractBeneficiary;
-use Entity\Beneficiary;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -17,8 +15,6 @@ use Enum\ReliefPackageState;
 use JsonException;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
-use Entity\Booklet;
-use Entity\SmartcardDeposit;
 
 /**
  * AssistanceBeneficiary.
@@ -398,24 +394,19 @@ class AssistanceBeneficiary
         return $this->getReliefPackages(Criteria::create()->where(Criteria::expr()->notIn('state', $states)));
     }
 
-    public function getOrCreateReliefPackage(string $modalityName, string $unit, float|string|int $value): ReliefPackage
+    public function getDistributableReliefPackage(string $modalityName, string $unit): ?ReliefPackage
     {
         foreach ($this->reliefPackages as $package) {
-            $isSameModalityAndUnit = $package->isSameModalityAndUnit($modalityName, $unit);
-            if (!$package->isOnStartupState() && !$isSameModalityAndUnit) {
+            if (!$package->isInDistributableState() || !$package->isSameModalityAndUnit($modalityName, $unit)) {
                 continue;
             }
-            if ($isSameModalityAndUnit) {
-                $package->setAmountToDistribute($value);
-
-                return $package;
-            }
+            return $package;
         }
 
-        return $this->addReliefPackage($modalityName, $unit, $value);
+        return null;
     }
 
-    private function addReliefPackage(string $modalityName, string $unit, float|string|int $value): ReliefPackage
+    public function addReliefPackage(string $modalityName, string $unit, float | string | int $value): ReliefPackage
     {
         $reliefPackage = new ReliefPackage(
             $this,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\Assistance\Services\AssistanceBeneficiaryService;
 use Component\Auditor\AuditorService;
 use Component\ReliefPackage\ReliefPackageService;
 use Doctrine\ORM\Exception\ORMException;
@@ -46,6 +47,7 @@ class AssistanceFactory
         private readonly ScoringBlueprintRepository $scoringBlueprintRepository,
         private readonly AuditorService $auditorService,
         private readonly ReliefPackageService $reliefPackageService,
+        private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
     ) {
     }
 
@@ -177,7 +179,8 @@ class AssistanceFactory
             $this->assistanceStatisticRepository,
             $this->targetRepository,
             $this->selectionCriteriaFactory,
-            $this->reliefPackageService
+            $this->reliefPackageService,
+            $this->assistanceBeneficiaryService
         );
     }
 
