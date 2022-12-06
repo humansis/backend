@@ -383,18 +383,6 @@ class ImportLine
         return true;
     }
 
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', groups: ['household', 'member'], payload: ['propertyPath' => 'prefixPhone1'])]
-    public function isSetPrefixPhone1(): bool
-    {
-        return !$this->numberPhone1 || $this->prefixPhone1;
-    }
-
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', groups: ['household', 'member'], payload: ['propertyPath' => 'prefixPhone2'])]
-    public function isSetPrefixPhone2(): bool
-    {
-        return !$this->numberPhone2 || $this->prefixPhone2;
-    }
-
     #[Assert\IsTrue(message: 'Camp must have defined both Tent number and Camp name', payload: ['propertyPath' => 'campName'], groups: ['household', 'member'])]
     public function isCampValidOrEmpty(): bool
     {

@@ -5518,6 +5518,18 @@ the donation of the below specified items from People in Need.</target>
         <source>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</source>
         <target>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</target>
       </trans-unit>
+      <trans-unit id="ApRCWbj" resname="Phone prefix should match any of the valid country prefix">
+        <source>Phone prefix should match any of the valid country prefix</source>
+        <target>Phone prefix should match any of the valid country prefix</target>
+      </trans-unit>
+      <trans-unit id="2xMVINM" resname="All required columns for Phone 2 should be set">
+        <source>All required columns for Phone 2 should be set</source>
+        <target>All required columns for Phone 2 should be set</target>
+      </trans-unit>
+      <trans-unit id="L9ptjmS" resname="All required columns for Phone 1 should be set">
+        <source>All required columns for Phone 1 should be set</source>
+        <target>All required columns for Phone 1 should be set</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

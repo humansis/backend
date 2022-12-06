@@ -32,7 +32,7 @@ class PhonePrefixValidator extends ConstraintValidator
                 ->addViolation();
         } else {
             if (!PrefixChecker::isPrefixValid($value)) {
-                $this->context->buildViolation('Phone prefix should match any valid country prefix.')
+                $this->context->buildViolation('Phone prefix should match any of the valid country prefix')
                     ->addViolation();
             }
         }
