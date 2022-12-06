@@ -82,6 +82,22 @@ class Assistance
         $this->selectionCriteriaFactory = $selectionCriteriaFactory;
     }
 
+    /**
+     * @return int[]
+     *
+     * @throws InvalidArgumentException
+     */
+    public function getCommodityIds(): array
+    {
+        $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new') . '-commodities';
+
+        return $this->cache->get($key, function (ItemInterface $item) {
+            return array_map(function (Entity\Commodity $commodity) {
+                return $commodity->getId();
+            }, $this->getAssistanceRoot()->getCommodities()->toArray());
+        });
+    }
+
     public function getStatistics(?string $countryIso3 = null): array
     {
         $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new');

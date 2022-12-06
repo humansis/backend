@@ -149,12 +149,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getCommodityIds(): array
     {
-        $result = [];
-        foreach ($this->object->getCommodities() as $commodity) {
-            $result[] = $commodity->getId();
-        }
-
-        return $result;
+        return $this->domainObject->getCommodityIds();
     }
 
     public function getDescription(): ?string
