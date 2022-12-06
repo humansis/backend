@@ -13,6 +13,9 @@ use Utils\OpenSpoutExportService;
  */
 class ExportBeneficiaryTest extends BMSServiceTestCase
 {
+    /** @var BeneficiaryTransformData $beneficiaryTransformData */
+    protected $beneficiaryTransformData;
+
     public function setUp(): void
     {
         parent::setUpFunctionnal();
@@ -25,9 +28,9 @@ class ExportBeneficiaryTest extends BMSServiceTestCase
     public function testExport()
     {
         $exportTableService = new OpenSpoutExportService();
-        $beneficiaryTransformData = new BeneficiaryTransformData();
+        $this->beneficiaryTransformData = $this->getContainer()->get('Utils\BeneficiaryTransformData');
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'], 10);
-        $exportableTable = $beneficiaryTransformData->transformData($beneficiaries,$this->iso3);
+        $exportableTable = $this->beneficiaryTransformData->transformData($beneficiaries, $this->iso3);
         $response = $exportTableService->export($exportableTable, 'beneficiaryhousehoulds', 'xlsx');
 
 
