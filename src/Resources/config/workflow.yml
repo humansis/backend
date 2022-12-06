@@ -176,6 +176,7 @@ framework:
         !php/const Workflow\ImportTransitions::CANCEL:
           from:
             - !php/const Enum\ImportState::NEW
+            - !php/const Enum\ImportState::UPLOADING
             - !php/const Enum\ImportState::UPLOAD_FAILED
             - !php/const Enum\ImportState::INTEGRITY_CHECKING
             - !php/const Enum\ImportState::INTEGRITY_CHECK_CORRECT
