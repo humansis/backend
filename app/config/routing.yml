@@ -7,3 +7,28 @@ rest:
 dh_auditor:
     resource: "@DHAuditorBundle/Controller/"
     type: auditor
+
+
+api_login_web_app:
+    path: /api/jwt/web-app/v1/login
+
+api_refresh_token_web_app:
+    path: /api/jwt/web-app/v1/login/token/refresh
+
+api_login_vendor_app:
+    path: /api/jwt/vendor-app/v2/login
+
+api_refresh_token_vendor_app:
+    path: /api/jwt/vendor-app/v2/login/token/refresh
+
+api_login_offline_app:
+    path: /api/jwt/offline-app/v2/login
+
+api_refresh_token_offline_app:
+    path: /api/jwt/offline-app/v2/login/token/refresh
+
+api_login_support_app:
+    path: /api/jwt/support-app/v1/login
+
+api_refresh_token_support_app:
+    path: /api/jwt/support-app/v1/login/token/refresh

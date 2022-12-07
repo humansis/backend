@@ -106,25 +106,6 @@ class UserService
         return $this->exportService->export($exportableTable, 'users', $type);
     }
 
-    public function getCountries(User $user): array
-    {
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return ['KHM', 'SYR', 'UKR', "ETH", "MNG", "ARM", "ZMB"];
-        }
-
-        $countries = [];
-        foreach ($user->getCountries() as $country) {
-            $countries[$country->getIso3()] = true;
-        }
-
-        foreach ($user->getProjects() as $userProject) {
-            /** @var UserProject $userProject */
-            $countries[$userProject->getProject()->getCountryIso3()] = true;
-        }
-
-        return array_keys($countries);
-    }
-
     public function create(User $initializedUser, UserCreateInputType $inputType): User
     {
         /** @var UserRepository $userRepository */

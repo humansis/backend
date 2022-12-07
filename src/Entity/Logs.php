@@ -71,7 +71,7 @@ class Logs
      * @ORM\Column(name="controller", type="string", length=255)
      */
     #[SymfonyGroups(['FullLogs'])]
-    private string $controller;
+    private ?string $controller = '';
 
     /**
      * @var array
@@ -238,13 +238,13 @@ class Logs
     /**
      * Set controller.
      *
-     * @param string $controller
+     * @param null $controller
      *
      * @return Logs
      */
-    public function setController($controller)
+    public function setController(?string $controller)
     {
-        $this->controller = $controller;
+        $this->controller = $controller || '';
 
         return $this;
     }
