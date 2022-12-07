@@ -14,7 +14,6 @@ use Utils\VendorService;
 
 class AuthenticationSuccessListener
 {
-
     private array $methods = [];
 
     public function __construct(
@@ -69,7 +68,6 @@ class AuthenticationSuccessListener
                 'User does not have assigned vendor. You cannot log-in into vendor app.'
             );
         }
-
     }
 
     private function getDataForFieldApp($user): array
@@ -94,5 +92,4 @@ class AuthenticationSuccessListener
     {
         return [];
     }
-
 }
