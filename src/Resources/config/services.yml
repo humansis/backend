@@ -143,19 +143,6 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Project")'
         tags: [ 'app.mapper' ]
 
-    Mapper\VendorLoginMapper:
-        public: true
-        tags: [ 'app.mapper' ]
-        arguments:
-            - '@lexik_jwt_authentication.jwt_manager'
-
-    Mapper\OfflineLoginMapper:
-        public: true
-        tags: [ 'app.mapper' ]
-        arguments:
-            - '@lexik_jwt_authentication.jwt_manager'
-            - '@user.user_service'
-
     Repository\Assistance\ReliefPackageRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
@@ -307,6 +294,15 @@ services:
         arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
+
+    Listener\AuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
+    Listener\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
 
     generator.household:
         class: Component\SelectionCriteria\Generator\HouseholdFieldGenerator
