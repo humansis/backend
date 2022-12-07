@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
@@ -22,9 +21,6 @@ use Repository\ImportQueueRepository;
 use Repository\ImportRepository;
 use Request\Pagination;
 use RuntimeException;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,12 +30,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Entity\User;
+use Utils\ExportTableServiceInterface;
+use Utils\HouseholdExportCSVService;
 
 class ImportController extends AbstractController
 {
     final public const DISABLE_CRON = 'disable-cron-fast-forward';
 
-    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo, private readonly ManagerRegistry $managerRegistry, private readonly HouseholdExportCSVService $householdExportCSVService, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -51,10 +49,10 @@ class ImportController extends AbstractController
      */
     public function template(Request $request): Response
     {
-        $request->query->add(['householdsTemplate' => true]);
-        $request->request->add(['__country' => $request->headers->get('country')]);
-
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $countryIso3 = $request->headers->get('country');
+        $type = $request->query->get('type');
+        $exportableTable = $this->householdExportCSVService->getHeaders($countryIso3);
+        return $this->exportTableService->export($exportableTable, 'pattern_household_' . $countryIso3, $type, true);
     }
 
     /**
