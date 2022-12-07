@@ -1,0 +1,7 @@
+gesdinet_jwt_refresh_token:
+    ttl: 604800 # One weak expiration
+    refresh_token_class: Entity\RefreshToken
+    token_parameter_name: refreshToken
+    return_expiration: true
+    return_expiration_parameter_name: refreshTokenExpiration
+    single_use: true
