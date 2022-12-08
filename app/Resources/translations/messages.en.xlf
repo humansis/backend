@@ -5498,6 +5498,18 @@ the donation of the below specified items from People in Need.</target>
         <source>Total per Vendor and Period</source>
         <target>Total per Vendor and Period</target>
       </trans-unit>
+      <trans-unit id="6ROr5qP" resname="It is not possible to remove a beneficiary from validated and locked assistance">
+        <source>It is not possible to remove a beneficiary from validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="80VoLBb" resname="It is not possible to add a beneficiary to validated and locked assistance">
+        <source>It is not possible to add a beneficiary to validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="YJgpGvn" resname="Beneficiary %name% can't be removed from assistance. He has already received a relief.">
+        <source>Beneficiary %name% can't be removed from assistance. He has already received a relief.</source>
+        <target>Beneficiary %name% can't be removed from assistance. He has already received a relief.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

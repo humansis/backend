@@ -20,6 +20,7 @@ use Enum\AssistanceTargetType;
 use Entity\DivisionGroup;
 use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\ORM\NoResultException;
 use Component\Assistance\CommodityAssignBuilder;
@@ -49,6 +50,7 @@ class Assistance
         private readonly SelectionCriteriaFactory $selectionCriteriaFactory,
         private readonly ReliefPackageService $reliefPackageService,
         private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -308,7 +310,7 @@ class Assistance
     ): self {
         if ($this->assistanceRoot->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException(
-                "It is not possible to add a beneficiary to validated and locked assistance"
+                $this->translator->trans('It is not possible to add a beneficiary to validated and locked assistance')
             );
         }
 
@@ -342,7 +344,7 @@ class Assistance
     {
         if ($this->assistanceRoot->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException(
-                'It is not possible to remove a beneficiary from validated and locked assistance'
+                $this->translator->trans('It is not possible to remove a beneficiary from validated and locked assistance')
             );
         }
 
@@ -355,7 +357,7 @@ class Assistance
         }
 
         if ($target->hasDistributionStarted()) {
-            throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary());
+            throw new RemoveBeneficiaryWithReliefException($target->getBeneficiary(), $this->translator);
         }
         $target->setRemoved(true)
             ->setJustification($justification);

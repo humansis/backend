@@ -273,7 +273,7 @@ class AssistanceBeneficiaryService
                 throw new BeneficiaryAlreadyRemovedException();
             }
             if ($assistanceBeneficiary->hasDistributionStarted()) {
-                throw new RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary());
+                throw new RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary(), $this->translator);
             }
             $assistanceBeneficiary->setRemoved(true)
                 ->setJustification($justification);

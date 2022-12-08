@@ -6,22 +6,25 @@ namespace Utils\Exception;
 
 use Entity\Beneficiary;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RemoveBeneficiaryWithReliefException extends HttpException
 {
-    public function __construct(private readonly Beneficiary $beneficiary)
-    {
+    public function __construct(
+        private readonly Beneficiary $beneficiary,
+        private readonly TranslatorInterface $translator,
+    ) {
         parent::__construct(400, $this->message());
     }
 
     private function message(): string
     {
-        return "Beneficiary {$this->getBeneficiaryName()} can\'t be removed from assistance. He has already received a relief.";
-    }
-
-    private function getBeneficiaryName(): string
-    {
-        return $this->beneficiary->getPerson()->getLocalGivenName() . ' ' . $this->beneficiary->getPerson(
-        )->getLocalFamilyName();
+        return $this->translator->trans(
+            "Beneficiary %name% can't be removed from assistance. He has already received a relief.",
+            [
+                '%name%' => $this->beneficiary->getPerson()->getLocalGivenName()
+                    . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName()
+            ],
+        );
     }
 }
