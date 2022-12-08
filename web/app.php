@@ -3,7 +3,7 @@
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 $environment = getenv('ENVIRONMENT');
 if ($environment === 'local') {

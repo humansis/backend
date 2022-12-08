@@ -115,7 +115,7 @@ framework:
     trusted_hosts: ~
     session:
         # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id: session.handler.native_file
+        handler_id: null
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
     http_method_override: true
     assets: ~

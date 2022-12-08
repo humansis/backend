@@ -42,6 +42,7 @@ class AppKernel extends Kernel
             new Knp\Bundle\GaufretteBundle\KnpGaufretteBundle(),
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new DHAuditorBundle(),
+            new Sentry\SentryBundle\SentryBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['local', 'dev', 'test'], true)) {
