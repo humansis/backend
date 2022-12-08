@@ -241,7 +241,7 @@ class AssistanceBeneficiaryService
             } catch (AssistanceTargetMismatchException $ex) {
                 $output->addBeneficiaryMismatch($beneficiary);
             } catch (BeneficiaryAlreadyRemovedException $ex) {
-                $output->addBeneficiaryAlreadyRemoved($beneficiary);
+                $output->addBeneficiaryAlreadyProcessed($beneficiary);
             } catch (Throwable $ex) {
                 $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
             }

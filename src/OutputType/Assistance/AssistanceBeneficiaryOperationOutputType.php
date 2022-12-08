@@ -16,13 +16,10 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 
     private array $success = [];
 
-    private array $alreadyRemoved = [];
+    private array $alreadyProcessed = [];
 
     private array $failed = [];
 
-    /**
-     * @param array|null $documentNumbers
-     */
     public function __construct(
         private readonly TranslatorInterface $translator,
         array $documentNumbers = [],
@@ -154,15 +151,15 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return null;
     }
 
-    public function getAlreadyRemoved(): array
+    public function getAlreadyProcessed(): array
     {
-        return $this->alreadyRemoved;
+        return $this->alreadyProcessed;
     }
 
-    public function addBeneficiaryAlreadyRemoved(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
+    public function addBeneficiaryAlreadyProcessed(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
         $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
-        $this->alreadyRemoved[] = [
+        $this->alreadyProcessed[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
@@ -186,9 +183,9 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    public function setAlreadyRemoved(array $alreadyRemoved): AssistanceBeneficiaryOperationOutputType
+    public function setAlreadyProcessed(array $alreadyProcessed): AssistanceBeneficiaryOperationOutputType
     {
-        $this->alreadyRemoved = $alreadyRemoved;
+        $this->alreadyProcessed = $alreadyProcessed;
 
         return $this;
     }

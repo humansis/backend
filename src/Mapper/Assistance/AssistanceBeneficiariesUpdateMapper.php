@@ -43,8 +43,8 @@ class AssistanceBeneficiariesUpdateMapper implements MapperInterface
         return $this->object->getFailed();
     }
 
-    public function getAlreadyRemoved(): array
+    public function getAlreadyProcessed(): array
     {
-        return $this->object->getAlreadyRemoved();
+        return $this->object->getAlreadyProcessed();
     }
 }
