@@ -104,7 +104,7 @@ framework:
     trusted_hosts: ~
     session:
         # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id: session.handler.native_file
+        handler_id: null
         save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
     http_method_override: true
     assets: ~
@@ -139,6 +139,9 @@ framework:
 sensio_framework_extra:
     router:
         annotations: false
+    #todo remove before merging to devel
+    psr_message:
+        enabled: false
 
 # Twig Configuration
 twig:
