@@ -47,6 +47,8 @@ parameters:
     logs.fieldAppPath: 'field_app/%environment%/user-<<email>>_<<userId>>/<<datetime>>/'
     logs.lifetime: 42 #in days. (6 weeks)
 
+    sentry.dsn: 'https://b2fe07770e3f4d40b0fdc55f4843bd5a@o4504248570609664.ingest.sentry.io/4504248600625152'
+
     default_account: admin@example.org
     default_account_encoded_password: '%env(DEFAULT_ACCOUNT_PASSWORD)%'
     default_account_salt: '%env(DEFAULT_ACCOUNT_SALT)%'
