@@ -18,6 +18,7 @@ use Repository\LocationRepository;
 use Entity;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -48,6 +49,7 @@ class AssistanceFactory
         private readonly AuditorService $auditorService,
         private readonly ReliefPackageService $reliefPackageService,
         private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -180,7 +182,8 @@ class AssistanceFactory
             $this->targetRepository,
             $this->selectionCriteriaFactory,
             $this->reliefPackageService,
-            $this->assistanceBeneficiaryService
+            $this->assistanceBeneficiaryService,
+            $this->translator,
         );
     }
 
