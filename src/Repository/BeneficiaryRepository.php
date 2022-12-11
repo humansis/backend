@@ -6,6 +6,7 @@ use DateInterval;
 use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Entity\Household;
