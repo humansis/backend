@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\Import;
 
 use BadMethodCallException;
+use Component\Import\Enum\ImportCsoEnum;
 use Entity\CountrySpecific;
 use Exception\MissingHouseholdHeadException;
 use InvalidArgumentException;
@@ -178,8 +179,10 @@ class IntegrityChecker
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
             foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
-                $mapping['countrySpecifics[' . $countrySpecific->getId() . ']'] = $countrySpecific->getFieldString();
-                $mapping['countrySpecifics.' . $countrySpecific->getId()] = $countrySpecific->getFieldString();
+                $mapping[ImportCsoEnum::MappingKey->value . '[' . $countrySpecific->getId(
+                ) . ']'] = $countrySpecific->getFieldString();
+                $mapping[ImportCsoEnum::MappingKey->value . '.' . $countrySpecific->getId(
+                )] = $countrySpecific->getFieldString();
             }
         }
         $column = key_exists($property, $mapping) ? $mapping[$property] : $property;

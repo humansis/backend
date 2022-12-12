@@ -20,9 +20,13 @@ use Request\Pagination;
  */
 class CountrySpecificRepository extends EntityRepository
 {
-    public function findForCriteria(string $countryISO3)
+    /**
+     * @param string $countryISO3
+     * @return CountrySpecific[]
+     */
+    public function findForCriteria(string $countryISO3): array
     {
-        return $this->findBy(['countryIso3' => $countryISO3]);
+        return $this->findBy(['countryIso3' => $countryISO3], ['id' => 'asc']);
     }
 
     public function findByParams(

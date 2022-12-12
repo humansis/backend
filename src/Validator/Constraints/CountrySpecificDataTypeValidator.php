@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Validator\Constraints;
 
+use Component\Import\Enum\ImportCsoEnum;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Validator\Constraint;
@@ -27,26 +28,23 @@ class CountrySpecificDataTypeValidator extends ConstraintValidator
             return;
         }
 
-        $path = 'countrySpecific';
-        $valuePath = 'value';
-
-        if (!key_exists($path, $object)) {
+        if (!key_exists(ImportCsoEnum::ImportLineEntityKey->value, $object)) {
             throw new ConstraintDefinitionException(
-                sprintf('Invalid property path "%s" provided to "%s" constraint: ', $path, get_debug_type($constraint)),
+                sprintf('Invalid property path "%s" provided to "%s" constraint: ', ImportCsoEnum::ImportLineEntityKey->value, get_debug_type($constraint)),
                 0
             );
         }
-        if (!key_exists($valuePath, $object)) {
+        if (!key_exists(ImportCsoEnum::ImportLineValueKey->value, $object)) {
             throw new ConstraintDefinitionException(
                 sprintf(
                     'Invalid property path "%s" provided to "%s" constraint: ',
-                    $valuePath,
+                    ImportCsoEnum::ImportLineValueKey->value,
                     get_debug_type($constraint)
                 ),
                 0
             );
         }
-        $countrySpecific = $object[$path];
+        $countrySpecific = $object[ImportCsoEnum::ImportLineEntityKey->value];
         if (!$this->hasValueCorrectNumberType($countrySpecific, $object['value'])) {
             $violationBuilder = $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $object['value'])
