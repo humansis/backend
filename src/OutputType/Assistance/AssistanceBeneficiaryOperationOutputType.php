@@ -170,13 +170,13 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     public function addBeneficiaryMismatch(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
         $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
-        $this->notFound[] = [
+        $this->failed[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
                 . $this->translator->trans(
-                    'cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.'
+                    'cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.'
                 ),
         ];
 

@@ -5514,6 +5514,10 @@ the donation of the below specified items from People in Need.</target>
         <source>Beneficiary %name% can't be added to assistance. His relief is not in appropriate state.</source>
         <target>messages</target>
       </trans-unit>
+      <trans-unit id="MjdvTAf" resname="cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.">
+        <source>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
+        <target>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
