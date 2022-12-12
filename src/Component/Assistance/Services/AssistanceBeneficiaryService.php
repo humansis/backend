@@ -149,6 +149,7 @@ class AssistanceBeneficiaryService
             }
         }
 
+        $this->transitReliefPackages($assistance, ReliefPackageTransitions::RETURN, $targets);
         $this->recountReliefPackages($assistance, $targets);
         $assistance->setUpdatedOn(new DateTime());
         $this->cleanCache($assistance);
@@ -182,20 +183,6 @@ class AssistanceBeneficiaryService
             $assistance->addAssistanceBeneficiary($assistanceBeneficiary);
         } elseif ($assistanceBeneficiary->getRemoved()) {
             $assistanceBeneficiary->setRemoved(false);
-
-            foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
-                if (
-                    (double)$reliefPackage->getAmountDistributed() === 0.0
-                    && (
-                        $reliefPackage->getState() === ReliefPackageState::CANCELED
-                        || $reliefPackage->getState() === ReliefPackageState::EXPIRED
-                    )
-                ) {
-                    $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
-                } else {
-                    throw new AddBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary(), $this->translator);
-                }
-            }
         } else {
             throw new BeneficiaryAlreadyAddedException();
         }
@@ -264,7 +251,7 @@ class AssistanceBeneficiaryService
         }
 
         $assistance->setUpdatedOn(new DateTime());
-        $this->cancelUnusedReliefPackages($assistance, $targets);
+        $this->transitReliefPackages($assistance, ReliefPackageTransitions::CANCEL, $targets);
         $this->cleanCache($assistance);
 
         return $output;
@@ -311,16 +298,19 @@ class AssistanceBeneficiaryService
         $this->removeBeneficiariesFromAssistance($output, $assistance, [$beneficiary], $justification);
     }
 
-    private function cancelUnusedReliefPackages(Assistance $assistance, ?array $targets = null): void
-    {
+    private function transitReliefPackages(
+        Assistance $assistance,
+        $transitionState,
+        ?array $targets = null
+    ): void {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
         foreach ($targets ?? $assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
+                if ($reliefPackageWorkflow->can($reliefPackage, $transitionState)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, $transitionState);
                 }
             }
         }

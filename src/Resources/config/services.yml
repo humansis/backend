@@ -513,6 +513,9 @@ services:
             - { name: kernel.event_subscriber }
 
     Component\Assistance\ReliefPackageSubscriber:
+#        arguments:
+#            - '@cache.app'
+#            - '@translator'
         tags:
             - { name: kernel.event_subscriber }
 
