@@ -195,19 +195,4 @@ class VendorService
 
         return $this->pdfService->printPdf($html, 'portrait', 'invoice');
     }
-
-    /**
-     * Export all vendors in a CSV file
-     *
-     * @return string
-     * @throws ExportNoDataException
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
-    public function exportToCsv(string $type, string $countryISO3): string
-    {
-        $exportableTable = $this->vendorRepository->findByCountry($countryISO3);
-
-        return $this->exportService->export($exportableTable, 'vendors', $type);
-    }
 }

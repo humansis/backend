@@ -14,7 +14,10 @@ use InputType\HouseholdUpdateInputType;
 use Repository\HouseholdRepository;
 use Request\Pagination;
 use Entity\Project;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Utils\BeneficiaryService;
+use Utils\BeneficiaryTransformData;
+use Utils\ExportTableServiceInterface;
 use Utils\HouseholdService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,7 +30,7 @@ use Utils\ProjectService;
 
 class HouseholdController extends AbstractController
 {
-    public function __construct(private readonly HouseholdService $householdService, private readonly HouseholdRepository $householdRepository, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly HouseholdService $householdService, private readonly HouseholdRepository $householdRepository, private readonly BeneficiaryService $beneficiaryService, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry, private readonly BeneficiaryTransformData $beneficiaryTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -41,45 +44,26 @@ class HouseholdController extends AbstractController
         HouseholdFilterInputType $filter,
         Pagination $pagination,
         HouseholdOrderInputType $order
-    ): Response {
+    ): StreamedResponse {
         if (!$request->query->has('type')) {
             throw $this->createNotFoundException('Missing query attribute type');
         }
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
+        $beneficiaries = $this->beneficiaryService->findBeneficiaries(
+            $request->headers->get('country'),
+            $filter,
+            $pagination,
+            $order
+        );
+        $exportableTable = $this->beneficiaryTransformData->transformData($beneficiaries, $request->headers->get('country'));
 
-        try {
-            $filename = $this->beneficiaryService->exportToCsv(
-                $request->query->get('type'),
-                $request->headers->get('country'),
-                $filter,
-                $pagination,
-                $order
-            );
-        } catch (BadRequestHttpException $e) {
-            return new JsonResponse([
-                'code' => 400,
-                'errors' => [
-                    [
-                        'message' => $e->getMessage(),
-                    ],
-                ],
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
-        $response = new BinaryFileResponse(getcwd() . '/' . $filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, '$filename');
-        $response->deleteFileAfterSend(true);
-
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($filename));
-        } else {
-            $response->headers->set('Content-Type', 'text/plain');
-        }
-
-        return $response;
+        return $this->exportTableService->export(
+            $exportableTable,
+            'beneficiaryhousehoulds',
+            $request->query->get('type')
+        );
     }
 
     /**
