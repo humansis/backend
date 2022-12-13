@@ -11,7 +11,7 @@ use Controller\WebApp\AbstractWebAppController;
 use Entity\Assistance\ReliefPackage;
 use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
-use InputType\Assistance\ReliefPackageFilterInputType;
+use InputType\Assistance\VendorReliefPackageFilterInputType;
 use Services\AssistanceDistributionService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -32,7 +32,7 @@ class ReliefPackageController extends AbstractWebAppController
     public function packages(
         Assistance $assistance,
         Request $request,
-        ReliefPackageFilterInputType $filter
+        VendorReliefPackageFilterInputType $filter
     ): JsonResponse {
         $reliefPackages = $this->managerRegistry->getRepository(ReliefPackage::class)->findByAssistance(
             $assistance,
