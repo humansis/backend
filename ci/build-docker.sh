@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -e
+export PLATFORM=${1:-amd64}
+USER=$2
+PASSWORD=$3
+echo "building Docker image for platform ${PLATFORM}"
 # get app version
 echo "Getting application information"
 ./ci/get-info.sh
 echo "...done"
 
 case ${ENVIRONMENT} in
-  dev|dev1|dev2|dev3) export dockerfile="docker/prod/php/Dockerfile";
+  dev|dev1|dev2|dev3|arm) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=dev ;;
   test) export dockerfile="docker/prod/php/Dockerfile";
     sed -i -e "s|^memory_limit = 256M|memory_limit = 4096M|g" docker/dev/php/php.ini # TEMPORARY, REMOVE AFTER instance is downgraded again
@@ -23,6 +27,27 @@ esac
 
 cat docker/Dockerfile >> "$dockerfile"
 
+docker login -u ${USER} -p ${PASSWORD} ${REPOSITORY_URL}
+# select builder
+docker buildx use pin
 # build docker image
-docker build -f $dockerfile --build-arg ENV -t build_image .
-docker build -f docker/nginx.Dockerfile --build-arg ENV -t nginx_build_image .
+if [[ ${ENVIRONMENT} == "production" ]]; then
+  VERSION=`git describe --tags`
+
+  if [[ $CI_COMMIT_TAG =~ ^v.*$ ]]; then
+    VERSION=$CI_COMMIT_TAG
+  fi
+  docker buildx build -f $dockerfile --build-arg ENV --pull --push --platform linux/amd64,linux/arm64/v8 \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${ENVIRONMENT} \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:latest \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${VERSION} .
+  docker buildx build -f docker/nginx.Dockerfile --build-arg ENV --pull --push --platform linux/amd64,linux/arm64/v8 \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:${ENVIRONMENT} \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:latest \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:${VERSION} .
+else
+  docker buildx build -f $dockerfile --build-arg ENV --pull --push --platform linux/amd64,linux/arm64/v8 \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${IMAGE_NAME}:${ENVIRONMENT} .
+  docker buildx build -f docker/nginx.Dockerfile --build-arg ENV --pull --push --platform linux/amd64,linux/arm64/v8 \
+    -t ${REPOSITORY_URL}/${REPOSITORY_NAME}/${NGINX_IMAGE_NAME}:${ENVIRONMENT} .
+fi

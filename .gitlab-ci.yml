@@ -7,6 +7,7 @@ variables:
   NGINX_IMAGE_NAME: humansis-nginx
   REPOSITORY_NAME: pin-docker-local
   REPOSITORY_URL: ${ARTIFACTORY_URL}
+  DOCKER_ARCH: "amd64"
 
 stages:
   - static_analysis
@@ -31,11 +32,10 @@ stages:
     - aws configure set default.region eu-central-1
 
 .deploy:
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind-buildx
   before_script: *prepare_ssh_aws
   script:
-    - ./ci/build-docker.sh
-    - ./ci/upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./ci/build-docker.sh ${DOCKER_ARCH} ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./ci/report-slack.sh start ${ENVIRONMENT}
     - ./ci/deploy-docker.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
     - echo "Current import batch size is $IMPORT_BATCH_SIZE"
@@ -189,6 +189,21 @@ deploy dev3 - clean fixtures:
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: "test"
     CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy arm:
+  stage: deploy_dev
+  environment:
+    name: arm
+    url: https://apiarm.humansis.org
+  variables:
+    ENVIRONMENT: arm
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+    DOCKER_ARCH: "arm/v8"
+    DOCKER_DEFAULT_PLATFORM: linux/arm/v8
   extends: .deploy
   when: manual
 
