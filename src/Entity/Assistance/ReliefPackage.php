@@ -260,9 +260,9 @@ class ReliefPackage
         $this->distributedBy = $distributedBy;
     }
 
-    public function isOnStartupState(): bool
+    public function isInDistributableState(): bool
     {
-        return in_array($this->state, ReliefPackageState::startupValues());
+        return in_array($this->state, ReliefPackageState::distributableStates());
     }
 
     public function isSameModalityAndUnit(string $modalityName, string $unit): bool

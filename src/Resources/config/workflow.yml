@@ -30,6 +30,10 @@ framework:
         !php/const Workflow\ReliefPackageTransitions::CANCEL:
           from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
           to: !php/const Enum\ReliefPackageState::CANCELED
+        !php/const Workflow\ReliefPackageTransitions::REUSE:
+          from: !php/const Enum\ReliefPackageState::CANCELED
+          to: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
+
     synchronizationBatch:
       type: 'state_machine'
       marking_store:

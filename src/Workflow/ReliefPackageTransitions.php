@@ -11,4 +11,17 @@ final class ReliefPackageTransitions
     public const DISTRIBUTE = 'Distribute everything';
     public const EXPIRE = 'Expire';
     public const CANCEL = 'Cancel';
+    public const REUSE = 'Reuse';
+
+    public static function getAll(): array
+    {
+        return [
+            self::START_PARTIAL_DISTRIBUTION,
+            self::FINISH_PARTIAL_DISTRIBUTION,
+            self::DISTRIBUTE,
+            self::EXPIRE,
+            self::CANCEL,
+            self::REUSE,
+        ];
+    }
 }
