@@ -30,7 +30,7 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
             // every successful change state
             'workflow.reliefPackage.entered' => ['clearAssistanceStatisticCache'],
             'workflow.reliefPackage.entered.' . ReliefPackageState::DISTRIBUTED => ['markAsDistributed'],
-            'workflow.reliefPackage.guard.' . ReliefPackageTransitions::RETURN => [
+            'workflow.reliefPackage.guard.' . ReliefPackageTransitions::REUSE => [
                 ['guardNotDistributed', 0],
             ],
         ];

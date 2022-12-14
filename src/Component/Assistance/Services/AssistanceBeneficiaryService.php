@@ -149,7 +149,7 @@ class AssistanceBeneficiaryService
             }
         }
 
-        $this->transitReliefPackages($assistance, ReliefPackageTransitions::RETURN, $targets);
+        $this->transitReliefPackages($assistance, ReliefPackageTransitions::REUSE, $targets);
         $this->recountReliefPackages($assistance, $targets);
         $assistance->setUpdatedOn(new DateTime());
         $this->cleanCache($assistance);
