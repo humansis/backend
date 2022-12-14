@@ -21,6 +21,7 @@ use Entity\DivisionGroup;
 use LogicException;
 use Repository\AssistanceBeneficiaryRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Utils\Exception\AddBeneficiaryWithReliefException;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Doctrine\ORM\NoResultException;
 use Component\Assistance\CommodityAssignBuilder;
@@ -326,6 +327,8 @@ class Assistance
             if (!is_null($vulnerabilityScore)) {
                 $target->setVulnerabilityScores($vulnerabilityScore);
             }
+        } elseif ($target->hasDistributionStarted()) {
+            throw new AddBeneficiaryWithReliefException($target->getBeneficiary(), $this->translator);
         } else {
             $target->setRemoved(false);
         }

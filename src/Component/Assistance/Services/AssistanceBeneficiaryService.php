@@ -181,6 +181,8 @@ class AssistanceBeneficiaryService
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(false);
             $assistance->addAssistanceBeneficiary($assistanceBeneficiary);
+        } elseif ($assistanceBeneficiary->hasDistributionStarted()) {
+            throw new AddBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary(), $this->translator);
         } elseif ($assistanceBeneficiary->getRemoved()) {
             $assistanceBeneficiary->setRemoved(false);
         } else {
