@@ -140,7 +140,7 @@ deploy dev1:
   extends: .deploy
   when: manual
 
-deploy dev2:
+deploy dev2 - clean db:
   stage: deploy_dev
   environment:
     name: dev2
@@ -149,6 +149,19 @@ deploy dev2:
     ENVIRONMENT: dev2
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+  deploy dev2 - keep db:
+  stage: deploy_dev
+  environment:
+    name: dev2
+    url: https://apidev2.humansis.org
+  variables:
+    ENVIRONMENT: dev2
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
   when: manual
