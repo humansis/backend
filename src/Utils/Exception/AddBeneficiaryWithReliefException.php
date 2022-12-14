@@ -16,7 +16,7 @@ class AddBeneficiaryWithReliefException extends InvalidArgumentException
     ) {
         parent::__construct();
         $this->message = $this->translator->trans(
-            "Beneficiary %name% can't be added to assistance. His relief is not in appropriate state.",
+            "Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.",
             [
                 '%name%' => $this->beneficiary->getPerson()->getLocalGivenName()
                     . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName()

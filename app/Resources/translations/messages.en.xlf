@@ -5506,17 +5506,17 @@ the donation of the below specified items from People in Need.</target>
         <source>It is not possible to add a beneficiary to validated and locked assistance</source>
         <target>messages</target>
       </trans-unit>
-      <trans-unit id="YJgpGvn" resname="Beneficiary %name% can't be removed from assistance. He has already received a relief.">
-        <source>Beneficiary %name% can't be removed from assistance. He has already received a relief.</source>
-        <target>Beneficiary %name% can't be removed from assistance. He has already received a relief.</target>
-      </trans-unit>
-      <trans-unit id="TO.u5Wd" resname="Beneficiary %name% can't be added to assistance. His relief is not in appropriate state.">
-        <source>Beneficiary %name% can't be added to assistance. His relief is not in appropriate state.</source>
-        <target>messages</target>
-      </trans-unit>
       <trans-unit id="MjdvTAf" resname="cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.">
         <source>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
         <target>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
+      <trans-unit id="GJ08G1a" resname="Beneficiary %name% can't be removed from assistance. He has already received a relief package.">
+        <source>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</source>
+        <target>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</target>
+      </trans-unit>
+      <trans-unit id="wnSoDHM" resname="Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.">
+        <source>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</source>
+        <target>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</target>
       </trans-unit>
     </body>
   </file>

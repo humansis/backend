@@ -20,7 +20,7 @@ class RemoveBeneficiaryWithReliefException extends HttpException
     private function message(): string
     {
         return $this->translator->trans(
-            "Beneficiary %name% can't be removed from assistance. He has already received a relief.",
+            "Beneficiary %name% can't be removed from assistance. He has already received a relief package.",
             [
                 '%name%' => $this->beneficiary->getPerson()->getLocalGivenName()
                     . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName()

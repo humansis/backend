@@ -34,4 +34,12 @@ final class ReliefPackageState
             self::CANCELED,
         ];
     }
+
+    public static function distributionStartedStates(): array
+    {
+        return [
+            self::DISTRIBUTION_IN_PROGRESS,
+            self::DISTRIBUTED,
+        ];
+    }
 }

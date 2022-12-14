@@ -60,9 +60,7 @@ class ReliefPackageSubscriber implements EventSubscriberInterface
         /** @var ReliefPackage $reliefPackage */
         $reliefPackage = $guardEvent->getSubject();
 
-        $hasDistributedMoney = (double)$reliefPackage->getAmountDistributed() > 0.0;
-
-        if ($hasDistributedMoney) {
+        if ($reliefPackage->hasDistributedMoney()) {
             $guardEvent->addTransitionBlocker(
                 new TransitionBlocker('Relief package has money distributed already', static::GUARD_CODE_NOT_COMPLETE)
             );
