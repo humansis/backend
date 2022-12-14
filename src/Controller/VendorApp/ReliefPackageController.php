@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Controller\VendorApp;
 
 use Entity\Assistance\ReliefPackage;
+use InputType\Assistance\VendorReliefPackageFilterInputType;
+use Repository\Assistance\ReliefPackageRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -20,7 +22,7 @@ class ReliefPackageController extends AbstractVendorAppController
      *
      * @return JsonResponse
      */
-    public function beneficiaries(Vendor $vendor, Request $request): JsonResponse
+    public function beneficiaries(Vendor $vendor, VendorReliefPackageFilterInputType $filterInputType, Request $request): JsonResponse
     {
         if (!$vendor->canDoRemoteDistributions()) {
             throw $this->createAccessDeniedException(
@@ -30,7 +32,7 @@ class ReliefPackageController extends AbstractVendorAppController
 
         $reliefPackages = $this->getDoctrine()
             ->getRepository(ReliefPackage::class)
-            ->getForVendor($vendor, $this->getCountryCode($request));
+            ->getForVendor($vendor, $this->getCountryCode($request), $filterInputType);
 
         $response = $this->json($reliefPackages);
         $response->setEtag(md5($response->getContent()));
