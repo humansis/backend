@@ -402,4 +402,27 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
         $this->assertEquals(99, $score);
     }
+
+    public function testNumberOfChildren()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::NUMBER_OF_CHILDREN_IN_HOUSEHOLD, 'Dep. ratio syr nes');
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::ONE_CHILD, 1));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::TWO_CHILDREN, 2));
+        $scoringRule->addOption(new ScoringRuleOption(ScoringRuleCalculationOptionsEnum::THREE_OR_MORE_CHILDREN, 3));
+
+        $household = new Household();
+
+        $child = new Beneficiary();
+        $child->getPerson()->setDateOfBirth((new DateTime())->modify('-10 years'));
+
+        $household->addBeneficiary($child);
+
+        $score = $this->rulesCalculation->numberOfChildrenInHousehold($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $household->addBeneficiary(clone($child));
+
+        $score = $this->rulesCalculation->numberOfChildrenInHousehold($household, $scoringRule);
+        $this->assertEquals(2, $score);
+    }
 }

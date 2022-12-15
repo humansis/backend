@@ -57,6 +57,10 @@ final class ScoringRuleCalculationOptionsEnum
     public const VULNERABILITY_HHM_PREGNANT = 'Pregnant or lactating female';
     public const VULNERABILITY_HHM_NO_PREGNANT = 'NO: Pregnant or lactating female';
 
+    public const ONE_CHILD = '1';
+    public const TWO_CHILDREN = '2';
+    public const THREE_OR_MORE_CHILDREN = '>=3';
+
     public const SUPPORTED = [
         ScoringRulesCalculationsEnum::SINGLE_PARENT_HEADED => [
             self::VULNERABILITY_SOLO_PARENT,
@@ -130,5 +134,11 @@ final class ScoringRuleCalculationOptionsEnum
             self::VULNERABILITY_HHM_PREGNANT,
             self::VULNERABILITY_HHM_NO_PREGNANT,
         ],
+
+        ScoringRulesCalculationsEnum::NUMBER_OF_CHILDREN_IN_HOUSEHOLD => [
+            self::ONE_CHILD,
+            self::TWO_CHILDREN,
+            self::THREE_OR_MORE_CHILDREN,
+        ]
     ];
 }
