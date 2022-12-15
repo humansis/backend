@@ -153,7 +153,7 @@ deploy dev2 - clean db:
   extends: .deploy
   when: manual
 
-  deploy dev2 - keep db:
+deploy dev2 - keep db:
   stage: deploy_dev
   environment:
     name: dev2
