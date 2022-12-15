@@ -330,4 +330,4 @@ lexik_jwt_authentication:
     secret_key: '%kernel.project_dir%/app/config/jwt/private.pem'
     public_key: '%kernel.project_dir%/app/config/jwt/public.pem'
     pass_phrase: '%jwt_passphrase%'
-    token_ttl: 10800 # = 10 hours
+    token_ttl: 3600 # = 10 hours
