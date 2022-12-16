@@ -486,7 +486,6 @@ services:
             - '@Repository\Assistance\ReliefPackageRepository'
             - '@cache.app'
             - '@Component\ReliefPackage\ReliefPackageService'
-            - '@logger'
 
 
     Export\AssistanceBankReportExport:

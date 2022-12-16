@@ -3,17 +3,17 @@
 namespace Entity;
 
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Assistance\ReliefPackage;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use Entity\User;
 
 /**
  * Smartcard deposit.
  *
- * @ORM\Table(name="smartcard_deposit")
+ * @ORM\Table(name="smartcard_deposit", uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="unique_deposit_hash", columns={"hash"})
+ * })
  * @ORM\Entity(repositoryClass="Repository\SmartcardDepositRepository")
  * @ORM\HasLifecycleCallbacks
  */
@@ -38,30 +38,29 @@ class SmartcardDeposit
      *
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private ?\Entity\Smartcard $smartcard = null;
+    private Smartcard $smartcard;
 
     /**
      *
      * @ORM\ManyToOne(targetEntity="Entity\User")
      * @ORM\JoinColumn(nullable=false)
-     *
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private ?\Entity\User $distributedBy = null;
+    private User $distributedBy;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(name="distributed_at", type="datetime", nullable=true)
      */
-    private $distributedAt;
+    private DateTime $distributedAt;
 
     /**
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage", inversedBy="smartcardDeposits")
      * @ORM\JoinColumn(name="relief_package_id")
      */
-    private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
+    private ReliefPackage $reliefPackage;
 
     /**
      * @var float
@@ -69,7 +68,7 @@ class SmartcardDeposit
      * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private $value;
+    private float $value;
 
     /**
      * @var float
@@ -77,58 +76,48 @@ class SmartcardDeposit
      * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    private $balance;
+    private float $balance;
 
     /**
      * @ORM\Column(name="suspicious", type="boolean", options={"default": false})
      */
-    private ?bool $suspicious = null;
+    private bool $suspicious;
 
     /**
      * @var array|null
      *
      * @ORM\Column(name="message", type="simple_array", nullable=true, options={"default": null})
      */
-    private $message;
+    private ?array $message;
 
     /**
-     * @ORM\Column(name="hash", type="string", nullable=true)
+     * @ORM\Column(name="hash", type="string", nullable=false, unique=true)
      */
-    private ?string $hash = null;
+    private string $hash;
 
-    public static function create(
+    public function __construct(
         Smartcard $smartcard,
         User $distributedBy,
         ReliefPackage $reliefPackage,
         $value,
         $balance,
-        DateTimeInterface $distributedAt,
-        string $hash,
+        DateTime $distributedAt,
         bool $suspicious = false,
         ?array $message = null
-    ): SmartcardDeposit {
-        $entity = new self();
-        $entity->distributedBy = $distributedBy;
-        $entity->distributedAt = $distributedAt;
-        $entity->reliefPackage = $reliefPackage;
-        $entity->value = $value;
-        $entity->balance = $balance;
-        $entity->smartcard = $smartcard;
-        $entity->suspicious = $suspicious;
-        $entity->hash = $hash;
-        $entity->message = $message;
+    ) {
+        $this->smartcard = $smartcard;
+        $this->distributedBy = $distributedBy;
+        $this->reliefPackage = $reliefPackage;
+        $this->value = $value;
+        $this->balance = $balance;
+        $this->distributedAt = $distributedAt;
+        $this->suspicious = $suspicious;
+        $this->message = $message;
 
-        $smartcard->addDeposit($entity);
-
-        return $entity;
+        $this->generateHash();
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -198,13 +187,26 @@ class SmartcardDeposit
         $this->message[] = $message;
     }
 
-    public function getHash(): ?string
+    public function getHash(): string
     {
         return $this->hash;
     }
 
-    public function setHash(?string $hash): void
+    public function setHash(string $hash): void
     {
         $this->hash = $hash;
+    }
+
+    private function generateHash(): void
+    {
+        $this->hash = md5(
+            $this->smartcard->getSerialNumber() .
+            '-' .
+            $this->value .
+            '-' .
+            $this->getReliefPackage()->getUnit() .
+            '-' .
+            $this->getReliefPackage()->getId()
+        );
     }
 }

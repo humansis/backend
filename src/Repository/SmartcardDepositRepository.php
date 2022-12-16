@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance;
-use Entity\Assistance\ReliefPackage;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
@@ -49,15 +46,12 @@ class SmartcardDepositRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @return object|SmartcardDeposit|null
-     */
     public function findByHash(string $hash): ?SmartcardDeposit
     {
         return $this->findOneBy(['hash' => $hash]);
     }
 
-    public function save(SmartcardDeposit $deposit)
+    public function save(SmartcardDeposit $deposit): void
     {
         $this->_em->persist($deposit);
         $this->_em->flush();

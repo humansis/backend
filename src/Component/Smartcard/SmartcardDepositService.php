@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Entity\Assistance\ReliefPackage;
 use Entity\SynchronizationBatch\Deposits;
 use InputType\Smartcard\DepositInputType;
 use InputType\SynchronizationBatch\CreateDepositInputType;
@@ -31,38 +30,23 @@ use Repository\SmartcardDepositRepository;
 
 class SmartcardDepositService
 {
-    public function __construct(private readonly EntityManager $em, private readonly Registry $workflowRegistry, private readonly ValidatorInterface $validator, private readonly DepositFactory $depositFactory, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly LoggerInterface $logger, private readonly SmartcardDepositRepository $smartcardDepositRepository)
-    {
+    public function __construct(
+        private readonly EntityManager $em,
+        private readonly Registry $workflowRegistry,
+        private readonly ValidatorInterface $validator,
+        private readonly DepositFactory $depositFactory,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly LoggerInterface $logger,
+        private readonly SmartcardDepositRepository $smartcardDepositRepository
+    ) {
     }
 
     /**
-     * @param               $value
-     *
-     */
-    public static function generateDepositHash(
-        string $smartcardSerialNumber,
-        int $timestamp,
-        $value,
-        ReliefPackage $reliefPackage
-    ): string {
-        return md5(
-            $smartcardSerialNumber .
-            '-' .
-            $timestamp .
-            '-' .
-            $value .
-            '-' .
-            $reliefPackage->getUnit() .
-            '-' .
-            $reliefPackage->getId()
-        );
-    }
-
-    /**
-     *
+     * @param Deposits $deposits
+     * @throws InvalidArgumentException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws InvalidArgumentException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function validateSync(Deposits $deposits): void
     {
@@ -150,12 +134,14 @@ class SmartcardDepositService
 
     /**
      *
+     * @param CreateDepositInputType $input
+     * @param User $user
      * @return void
      * @throws InvalidArgumentException
-     * @throws ORMException
      * @throws OptimisticLockException
+     * @throws \Doctrine\ORM\ORMException
      */
-    private function deposit(CreateDepositInputType $input, User $user)
+    private function deposit(CreateDepositInputType $input, User $user): void
     {
         $reliefPackage = $this->reliefPackageRepository->find($input->getReliefPackageId());
         if (null == $reliefPackage) {

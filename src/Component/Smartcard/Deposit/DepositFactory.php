@@ -6,7 +6,6 @@ namespace Component\Smartcard\Deposit;
 
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Component\Smartcard\SmartcardDepositService;
 use Entity\Assistance\ReliefPackage;
 use Entity\User;
 use Enum\CacheTarget;
@@ -47,20 +46,20 @@ class DepositFactory
         CreationContext | null $context = null,
     ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
-        $hash = SmartcardDepositService::generateDepositHash(
-            $smartcardSerialNumber,
-            $depositInputType->getCreatedAt()->getTimestamp(),
-            $depositInputType->getValue(),
-            $reliefPackage
-        );
-        $this->checkDepositDuplicity($hash);
         $smartcard = $this->smartcardService->getOrCreateActiveSmartcardForBeneficiary(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()
         );
-        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
-        $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
+        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType);
+
+        try {
+            $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
+        } catch (UniqueConstraintViolationException) {
+            // TODO log to table
+            throw new DoubledDepositException($this->smartcardDepositRepository->findByHash($deposit->getHash()));
+        }
+
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
@@ -108,16 +107,14 @@ class DepositFactory
         User $user,
         ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,
-        string $hash
     ): SmartcardDeposit {
-        $deposit = SmartcardDeposit::create(
+        $deposit = new SmartcardDeposit(
             $smartcard,
             $user,
             $reliefPackage,
             (float) $depositInputType->getValue(),
             (float) $depositInputType->getBalance(),
-            $depositInputType->getCreatedAt(),
-            $hash,
+            $depositInputType->getCreatedAt()
         );
 
         $smartcard->addDeposit($deposit);
@@ -127,20 +124,5 @@ class DepositFactory
         }
 
         return $deposit;
-    }
-
-    /**
-     * @throws DoubledDepositException
-     */
-    private function checkDepositDuplicity(string $hash): void
-    {
-        $deposit = $this->smartcardDepositRepository->findByHash($hash);
-
-        if ($deposit) {
-            $this->logger->info(
-                "Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}"
-            );
-            throw new DoubledDepositException($deposit);
-        }
     }
 }

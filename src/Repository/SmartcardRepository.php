@@ -4,8 +4,6 @@ namespace Repository;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
@@ -73,7 +71,7 @@ class SmartcardRepository extends EntityRepository
      *
      * @return string[] list of smartcard serial numbers
      */
-    public function findBlocked(string $countryCode)
+    public function findBlocked(string $countryCode): array
     {
         $qb = $this->createQueryBuilder('s')
             ->distinct(true)
