@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Component\Assistance\Scoring;
+namespace Component\Assistance\Scoring;
 
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
@@ -13,9 +13,7 @@ use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
-use Component\Assistance\Scoring\RulesCalculation;
 use Component\Assistance\Scoring\Model\ScoringRule;
-use Component\Assistance\Scoring\RulesEnum;
 use Entity\VulnerabilityCriterion;
 use Enum\HouseholdShelterStatus;
 use Enum\PersonGender;

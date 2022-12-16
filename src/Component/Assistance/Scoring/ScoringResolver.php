@@ -116,13 +116,13 @@ final class ScoringResolver
 
     private function computeSimpleCalculation(Household $household, ScoringRule $rule): float
     {
-        $simpleCalculationReflection = new ReflectionClass(SimpleCalculations::class);
+        $simpleCalculationReflection = new ReflectionClass(ScoringComputedValues::class);
 
         if (!$simpleCalculationReflection->hasMethod($rule->getFieldName())) {
             return 0;
         }
 
-        $simpleCalculation = new SimpleCalculations();
+        $simpleCalculation = new ScoringComputedValues();
 
         $value = $simpleCalculation->{$rule->getFieldName()}($household);
 

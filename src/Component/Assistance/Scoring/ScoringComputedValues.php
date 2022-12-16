@@ -6,7 +6,7 @@ namespace Component\Assistance\Scoring;
 
 use Entity\Household;
 
-final class SimpleCalculations
+final class ScoringComputedValues
 {
     public function numberOfChildrenInHousehold(Household $household): int|string|null
     {
@@ -23,7 +23,7 @@ final class SimpleCalculations
 
     public function incomePerMember(Household $household): int|string|null
     {
-        if ($household->getIncome() == null) {
+        if ($household->getIncome() == null || $household->getBeneficiaries()->count() == 0) {
             return null;
         }
 
