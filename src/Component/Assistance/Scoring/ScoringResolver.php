@@ -19,8 +19,12 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class ScoringResolver
 {
-    public function __construct(private readonly RulesCalculation $customComputation, private readonly RulesEnum $enumResolver, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly CountrySpecificAnswerRepository $countrySpecificAnswerRepository)
-    {
+    public function __construct(
+        private readonly RulesCalculation $customComputation,
+        private readonly RulesEnum $enumResolver,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly CountrySpecificAnswerRepository $countrySpecificAnswerRepository
+    ) {
     }
 
     public function compute(Household $household, Scoring $scoring, string $countryCode): ScoringProtocol
@@ -69,7 +73,6 @@ final class ScoringResolver
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
         if (!$customComputationReflection->hasMethod($rule->getFieldName())) {
-            //TODO zalogovat? dát někam vědět?
             return 0;
         }
 

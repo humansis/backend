@@ -402,4 +402,40 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->dependencyRatioSyrNES($household, $scoringRule);
         $this->assertEquals(99, $score);
     }
+
+    public function testVulnerabilityCriterion()
+    {
+        $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_CRITERION, 'Vulnerability criterion');
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL, 1));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_DISABLED, 2));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_PREGNANT, 3));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_LACTATING, 4));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES, 5));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_SOLO_PARENT, 6));
+
+        $household = new Household();
+
+        $member = new Beneficiary();
+        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
+        $household->addBeneficiary($member);
+
+        $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
+        $this->assertEquals(1, $score);
+        $household->addBeneficiary(clone($member));
+
+        $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
+        $this->assertEquals(1, $score);
+
+        $member2 = new Beneficiary();
+        $member2->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+        $household->addBeneficiary($member2);
+
+        $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
+        $this->assertEquals(3, $score);
+
+        $member2->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_SOLO_PARENT));
+
+        $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
+        $this->assertEquals(9, $score);
+    }
 }

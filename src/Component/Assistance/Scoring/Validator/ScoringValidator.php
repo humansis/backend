@@ -30,10 +30,10 @@ final class ScoringValidator extends ConstraintValidator
         foreach ($value->getRules() as $rule) {
             if (!in_array($rule->getType(), ScoringRuleType::values())) {
                 $this->context->buildViolation(
-                    "Rule type {$rule->getType()} is not supported. Supported values are [" . implode(
+                    "Rule type '{$rule->getType()}' is not supported. Supported values are [" . implode(
                         ', ',
                         ScoringRuleType::values()
-                    )
+                    ) . ']'
                 )
                     ->addViolation();
             }

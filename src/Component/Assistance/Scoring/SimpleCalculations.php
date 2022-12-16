@@ -6,7 +6,7 @@ namespace Component\Assistance\Scoring;
 
 use Entity\Household;
 
-class SimpleCalculations
+final class SimpleCalculations
 {
     public function numberOfChildrenInHousehold(Household $household): int|string|null
     {
