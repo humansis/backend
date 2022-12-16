@@ -46,7 +46,3 @@ calculation,vulnerabilityOfHouseholdMembers,Vulnerability of Household Members,C
 ,,,Pregnant or lactating female,2
 ,,,NO: Pregnant or lactating female,1
 ,,,,
-calculation,numberOfChildrenInHousehold,Number of children in household,1,1
-,,,2,2
-,,,>=3,3
-,,,,

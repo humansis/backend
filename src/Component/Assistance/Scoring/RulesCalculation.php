@@ -362,25 +362,4 @@ final class RulesCalculation
 
         return $result;
     }
-
-    public function numberOfChildrenInHousehold(Household $household, ScoringRule $rule): float
-    {
-        $children = 0;
-
-        foreach ($household->getBeneficiaries() as $householdMember) {
-            if ($householdMember->getAge() !== null && $householdMember->getAge() < 18) {
-                $children++;
-            }
-        }
-
-        if ($children === 1) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::ONE_CHILD)->getScore();
-        } elseif ($children === 2) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::TWO_CHILDREN)->getScore();
-        } else if ($children >= 3) {
-            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::THREE_OR_MORE_CHILDREN)->getScore();
-        }
-
-        return 0;
-    }
 }
