@@ -45,7 +45,7 @@ stages:
   tags:
     - dind
 
-.test-setup:
+.test-core:
   image: artifactory.quanti.cz/docker/pin-php-test:8.1
   services:
     - name: mysql:8.0.21
@@ -63,16 +63,20 @@ stages:
     - sudo composer self-update
     - cp app/config/parameters.yml.test app/config/parameters.yml
     - composer install
-    - php bin/console doctrine:database:create --env=test || true
-    - php bin/console doctrine:migrations:migrate -n --env=test
-    - php bin/console doctrine:fixtures:load -n --env=dev
-    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   except:
     - tags
   cache:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - vendor/
+
+.test-setup:
+  extends: .test-core
+  before_script:
+    - php bin/console doctrine:database:create --env=test || true
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/console doctrine:fixtures:load -n --env=dev
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
 
 static_analysis:
   image: php:8.1-fpm
@@ -103,7 +107,7 @@ test:
 
 upload crowdin:
   stage: upload_crowdin
-  extends: .test-setup
+  extends: .test-core
   script:
     - php bin/console translation:extract --force en
     - php bin/console crowdin:push
