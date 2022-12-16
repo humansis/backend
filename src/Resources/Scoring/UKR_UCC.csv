@@ -151,8 +151,12 @@ computedValue,numberOfChildrenInHousehold,Number of children in the HH,1,49
 ,,,,
 computedValue,incomePerMember,Income,x < 5400,6
 ,,,,
-computation,vulnerabilityCriterion,Vulnerability,soloParent,14
+calculation,vulnerabilityCriterion,Vulnerability,soloParent,14
 ,,,pregnant,1
+,,,chronicallyIll,0
+,,,disabled,0
+,,,lactating,0
+,,,nutritionalIssues,0
 ,,,,
 countrySpecific,Disabled,Disabled,Severe functional limitation,1
 ,,,A lot of functional limitation,1
