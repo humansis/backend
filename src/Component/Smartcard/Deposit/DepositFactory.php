@@ -60,6 +60,7 @@ class DepositFactory
             throw new DoubledDepositException($this->smartcardDepositRepository->findByHash($deposit->getHash()));
         }
 
+        $this->addDepositToSmartcard($smartcard, $deposit);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
@@ -108,7 +109,7 @@ class DepositFactory
         ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,
     ): SmartcardDeposit {
-        $deposit = new SmartcardDeposit(
+        return new SmartcardDeposit(
             $smartcard,
             $user,
             $reliefPackage,
@@ -116,12 +117,16 @@ class DepositFactory
             (float) $depositInputType->getBalance(),
             $depositInputType->getCreatedAt()
         );
+    }
 
-        $smartcard->addDeposit($deposit);
+    private function addDepositToSmartcard(Smartcard $smartcard, SmartcardDeposit $smartcardDeposit): void
+    {
+        $smartcard->addDeposit($smartcardDeposit);
         if (!$smartcard->getBeneficiary()) {
-            $deposit->setSuspicious(true);
-            $deposit->addMessage('Smartcard does not have assigned beneficiary.');
+            $smartcardDeposit->setSuspicious(true);
+            $smartcardDeposit->addMessage('Smartcard does not have assigned beneficiary.');
         }
+    }
 
         return $deposit;
     }

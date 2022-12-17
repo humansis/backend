@@ -10,9 +10,12 @@ use Entity\Assistance;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
+use Repository\Helper\PersistAndFlush;
 
 class SmartcardDepositRepository extends EntityRepository
 {
+    use PersistAndFlush;
+
     public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('sd');
@@ -44,16 +47,5 @@ class SmartcardDepositRepository extends EntityRepository
             ->setParameter('beneficiaryId', $beneficiary->getId());
 
         return $qb->getQuery()->getResult();
-    }
-
-    public function findByHash(string $hash): ?SmartcardDeposit
-    {
-        return $this->findOneBy(['hash' => $hash]);
-    }
-
-    public function save(SmartcardDeposit $deposit): void
-    {
-        $this->_em->persist($deposit);
-        $this->_em->flush();
     }
 }

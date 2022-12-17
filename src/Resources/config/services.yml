@@ -486,6 +486,7 @@ services:
             - '@Repository\Assistance\ReliefPackageRepository'
             - '@cache.app'
             - '@Component\ReliefPackage\ReliefPackageService'
+            - "@serializer"
 
 
     Export\AssistanceBankReportExport:
@@ -670,6 +671,11 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Institution
+
+    Repository\SmartcardDepositLogRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\SmartcardDepositLog
 
     MapperDeprecated\BeneficiaryMapper:
         arguments:

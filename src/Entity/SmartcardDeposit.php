@@ -3,6 +3,8 @@
 namespace Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Assistance\ReliefPackage;
@@ -91,9 +93,15 @@ class SmartcardDeposit
     private ?array $message;
 
     /**
-     * @ORM\Column(name="hash", type="string", nullable=false, unique=true)
+     * @ORM\Column(name="hash", type="string", nullable=false)
      */
     private string $hash;
+
+    /**
+     * @var Collection|SmartcardDepositLog[]
+     * @ORM\OneToMany(targetEntity="Entity\SmartcardDepositLog", mappedBy="smartcardDeposit")
+     */
+    private Collection|array $logs;
 
     public function __construct(
         Smartcard $smartcard,
@@ -113,6 +121,7 @@ class SmartcardDeposit
         $this->distributedAt = $distributedAt;
         $this->suspicious = $suspicious;
         $this->message = $message;
+        $this->logs = new ArrayCollection();
 
         $this->generateHash();
     }
@@ -195,6 +204,14 @@ class SmartcardDeposit
     public function setHash(string $hash): void
     {
         $this->hash = $hash;
+    }
+
+    /**
+     * @return array|Collection
+     */
+    public function getLogs(): Collection | array
+    {
+        return $this->logs;
     }
 
     private function generateHash(): void

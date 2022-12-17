@@ -85,7 +85,7 @@ class CredentialsCommand extends Command
             ->setPassword($this->encodedPassword)
             ->setRoles($roles);
 
-        $this->userRepository->save($user);
+        $this->userRepository->persistAndFlush($user);
         $this->setCountries($user);
     }
 

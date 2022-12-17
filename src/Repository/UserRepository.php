@@ -10,6 +10,7 @@ use InvalidArgumentException;
 use Entity\User;
 use InputType\UserFilterInputType;
 use InputType\UserOrderInputType;
+use Repository\Helper\PersistAndFlush;
 use Request\Pagination;
 
 /**
@@ -20,6 +21,8 @@ use Request\Pagination;
  */
 class UserRepository extends EntityRepository
 {
+    use PersistAndFlush;
+
     public function toggleTwoFA(bool $enable)
     {
         if ($enable) {
@@ -91,16 +94,5 @@ class UserRepository extends EntityRepository
         }
 
         return new Paginator($qb);
-    }
-
-    /**
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(User $user): void
-    {
-        $this->_em->persist($user);
-        $this->_em->flush();
     }
 }
