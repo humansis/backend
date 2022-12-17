@@ -119,19 +119,27 @@ class ReliefPackageRepository extends EntityRepository
             );
         }
 
-        $qb->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
+        $qb->andWhere('a.archived = false')
             ->andWhere('a.remoteDistributionAllowed = true')
-            ->andWhere('a.archived = false')
             ->andWhere('a.validatedBy IS NOT NULL')
-            ->andWhere('a.completed = false')
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
             ->setParameter('iso3', $country)
             ->setParameter('currentDate', new DateTime());
 
-        if ($filterInputType->hasLastModifiedFrom()) {
+        if (!$filterInputType->hasLastModifiedFrom()) {
+            /**
+             * Full sync can ignore expired and completed assistances
+             */
+            $qb->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
+                ->andWhere('a.completed = false');
+        } else {
+            /**
+             * Partial sync has to now changes even from expired and completed assistances
+             */
             $qb->andWhere('rp.lastModifiedAt >= :lastModifiedFrom')
                 ->setParameter('lastModifiedFrom', $filterInputType->getLastModifiedFromAsUtcDateTime());
         }
+
         if ($filterInputType->hasStates()) {
             $qb->andWhere('rp.state IN (:states)')
                 ->setParameter('states', $filterInputType->getStates());
