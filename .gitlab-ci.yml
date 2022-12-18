@@ -153,6 +153,19 @@ deploy dev2:
   extends: .deploy
   when: manual
 
+deploy dev1 - keep db:
+  stage: deploy_dev
+  environment:
+    name: dev1
+    url: https://apidev1.humansis.org
+  variables:
+    ENVIRONMENT: dev1
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
 deploy dev3 - keep db:
   stage: deploy_test
   environment:
