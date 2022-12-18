@@ -22,6 +22,7 @@ class SmartcardDepositLog
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\SmartcardDeposit", inversedBy="logs", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private SmartcardDeposit $smartcardDeposit;
 
