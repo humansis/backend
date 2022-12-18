@@ -10,7 +10,7 @@ use InvalidArgumentException;
 use Entity\User;
 use InputType\UserFilterInputType;
 use InputType\UserOrderInputType;
-use Repository\Helper\PersistAndFlush;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 
 /**
@@ -21,7 +21,7 @@ use Request\Pagination;
  */
 class UserRepository extends EntityRepository
 {
-    use PersistAndFlush;
+    use TRepositoryHelper;
 
     public function toggleTwoFA(bool $enable)
     {

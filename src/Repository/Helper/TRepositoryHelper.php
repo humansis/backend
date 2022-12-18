@@ -8,9 +8,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Entity\SmartcardDeposit;
 
 /**
- * @property-read EntityManagerInterface $_em
+ * @property EntityManagerInterface $_em
  */
-trait PersistAndFlush
+trait TRepositoryHelper
 {
     public function persist(object $entity): void
     {

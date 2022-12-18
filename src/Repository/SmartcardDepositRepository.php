@@ -10,11 +10,11 @@ use Entity\Assistance;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
-use Repository\Helper\PersistAndFlush;
+use Repository\Helper\TRepositoryHelper;
 
 class SmartcardDepositRepository extends EntityRepository
 {
-    use PersistAndFlush;
+    use TRepositoryHelper;
 
     public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
