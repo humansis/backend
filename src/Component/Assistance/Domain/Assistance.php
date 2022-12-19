@@ -76,7 +76,7 @@ class Assistance
         $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new') . '-commodities';
 
         return $this->cache->get($key, function (ItemInterface $item) {
-            return $this->getAssistanceRoot()->getCommodities();
+            return $this->getAssistanceRoot()->getCommodities()->toArray();
         });
     }
 
