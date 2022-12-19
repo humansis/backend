@@ -143,6 +143,7 @@ services:
         arguments:
             - '@project.project_service'
             - '@beneficiary.repository'
+            - '@translator'
         tags: [ 'app.mapper' ]
 
     Mapper\UserMapper:
@@ -195,7 +196,6 @@ services:
     Controller\OfflineApp\AssistanceController:
         arguments:
             - '@assistance.repository'
-            - '@MapperDeprecated\AssistanceMapper'
             - '@serializer'
 
     Controller\AssistanceController:
@@ -610,7 +610,7 @@ services:
         class: Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@MapperDeprecated\LocationMapper'
+            - '@Mapper\LocationMapper'
         public: true
 
     beneficiary.repository:
@@ -666,19 +666,6 @@ services:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
             - Entity\Institution
-
-    MapperDeprecated\BeneficiaryMapper:
-        arguments:
-            - "@serializer"
-        public: true
-
-    MapperDeprecated\AssistanceMapper:
-        arguments:
-            - '@MapperDeprecated\BeneficiaryMapper'
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\AssistanceBeneficiary")'
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Beneficiary")'
-        public: true
-
 
     beneficiary.beneficiary_service:
         class: Utils\BeneficiaryService
@@ -754,29 +741,6 @@ services:
 
     Utils\SectorService:
 
-    MapperDeprecated\ProjectMapper:
-        arguments:
-            - '@MapperDeprecated\DonorMapper'
-            - '@MapperDeprecated\SectorMapper'
-            - '@MapperDeprecated\AssistanceMapper'
-            - '@beneficiary.repository'
-            - '@project.sector_service'
-            - '@beneficiary.repository'
-        public: true
-
-    MapperDeprecated\DonorMapper:
-        public: true
-
-    MapperDeprecated\SectorMapper:
-        arguments:
-            - '@translator'
-        public: true
-
-    project.sector_mapper:
-        class: MapperDeprecated\SectorMapper
-        arguments: []
-        public: true
-
     Repository\ProjectRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         calls:
@@ -840,11 +804,6 @@ services:
         public: true
         arguments:
             - '@doctrine.orm.entity_manager'
-
-    MapperDeprecated\AssistanceBeneficiaryMapper:
-        arguments:
-            - '@MapperDeprecated\BeneficiaryMapper'
-        public: true
 
     Repository\AssistanceBeneficiaryRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
@@ -971,8 +930,6 @@ services:
         alias: Utils\PdfService
         public: true
 
-    MapperDeprecated\LocationMapper:
-        public: true
 
     #######################################################################################
     ##                                     LISTENER                                      ##

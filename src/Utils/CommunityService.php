@@ -8,7 +8,7 @@ use Entity\NationalId;
 use Entity\Phone;
 use Entity\Location;
 use Enum\EnumValueNoFoundException;
-use MapperDeprecated\LocationMapper;
+use Mapper\LocationMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InputType\CommunityCreateInputType;

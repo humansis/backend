@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Controller\OfflineApp;
 
 use FOS\RestBundle\Controller\Annotations as Rest;
-use MapperDeprecated\ProjectMapper;
+use Mapper\ProjectMapper;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
