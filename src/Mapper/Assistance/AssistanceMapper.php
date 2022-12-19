@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
-use Component\Assistance\DTO\Statistics;
+use Component\Assistance\Domain\Assistance;
 use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Entity;
 use Component\Assistance\AssistanceFactory;
-use Component\Assistance\Domain;
-use Entity\Commodity;
 use Entity\Location;
 use InvalidArgumentException;
 use Entity\ScoringBlueprint;
@@ -23,7 +21,7 @@ class AssistanceMapper implements MapperInterface
 {
     private ?\Entity\Assistance $object = null;
 
-    private ?\Component\Assistance\Domain\Assistance $domainObject = null;
+    private ?Assistance $domainObject = null;
 
     public function __construct(private readonly AssistanceFactory $factory, private readonly TranslatorInterface $translator)
     {
@@ -34,7 +32,7 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return ($object instanceof Entity\Assistance || $object instanceof Domain\Assistance)
+        return ($object instanceof Entity\Assistance || $object instanceof Assistance)
             && isset($context[self::NEW_API])
             && true === $context[self::NEW_API]
             && !isset($context['offline-app']);
@@ -52,7 +50,7 @@ class AssistanceMapper implements MapperInterface
             return;
         }
 
-        if ($object instanceof Domain\Assistance) {
+        if ($object instanceof Assistance) {
             $this->object = $object->getAssistanceRoot();
             $this->domainObject = $object;
 
@@ -147,9 +145,9 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getScoringBlueprint();
     }
 
-    public function getCommodities(): Collection
+    public function getCommodities(): Collection|array
     {
-        return $this->object->getCommodities();
+        return $this->domainObject->getCommodities();
     }
 
     public function getDescription(): ?string
