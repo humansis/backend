@@ -31,7 +31,6 @@ trait LastModifiedAt
     }
 
     /**
-     * @throws Exception
      * @ORM\PrePersist
      */
     public function setLastModifiedNow()

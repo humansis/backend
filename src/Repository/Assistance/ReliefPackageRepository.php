@@ -12,6 +12,7 @@ use Entity\Beneficiary;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Enum\AssistanceTargetType;
+use InputType\Assistance\ReliefPackageFilterInputType;
 use InvalidArgumentException;
 use Repository\LocationRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -21,7 +22,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance\ReliefPackage;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
-use InputType\Assistance\ReliefPackageFilterInputType;
+use InputType\Assistance\VendorReliefPackageFilterInputType;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 
@@ -69,7 +70,7 @@ class ReliefPackageRepository extends EntityRepository
      * @return Paginator
      */
 
-    public function getForVendor(Vendor $vendor, string $country): Paginator
+    public function getForVendor(Vendor $vendor, string $country, VendorReliefPackageFilterInputType $filterInputType): Paginator
     {
         $vendorLocation = $vendor->getLocation();
         if (null === $vendorLocation) {
@@ -82,8 +83,7 @@ class ReliefPackageRepository extends EntityRepository
         $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.assistance', 'a')
-            ->join('ab.beneficiary', 'abstB')
-            ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=abstB.id AND b.archived = 0')
+            ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=IDENTITY(ab.beneficiary) AND b.archived = 0')
             ->join(
                 'b.smartcards',
                 's',
@@ -119,20 +119,36 @@ class ReliefPackageRepository extends EntityRepository
             );
         }
 
-        $qb->andWhere('rp.state = :state')
-            ->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
+        $qb->andWhere('a.archived = false')
             ->andWhere('a.remoteDistributionAllowed = true')
-            ->andWhere('a.archived = false')
             ->andWhere('a.validatedBy IS NOT NULL')
-            ->andWhere('a.completed = false')
             ->setParameter('smartcardStateActive', SmartcardStates::ACTIVE)
-            ->setParameter('iso3', $country)
-            ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE)
-            ->setParameter('currentDate', new DateTime());
+            ->setParameter('iso3', $country);
+
+        if (!$filterInputType->hasLastModifiedFrom()) {
+            /**
+             * Full sync can ignore expired and completed assistances
+             */
+            $qb->andWhere('(a.dateExpiration > :currentDate OR a.dateExpiration IS NULL)')
+                ->andWhere('a.completed = false')
+                ->setParameter('currentDate', new DateTime());
+        } else {
+            /**
+             * Partial sync has to now changes even from expired and completed assistances
+             */
+            $qb->andWhere('rp.lastModifiedAt >= :lastModifiedFrom')
+                ->setParameter('lastModifiedFrom', $filterInputType->getLastModifiedFromAsUtcDateTime());
+        }
+
+        if ($filterInputType->hasStates()) {
+            $qb->andWhere('rp.state IN (:states)')
+                ->setParameter('states', $filterInputType->getStates());
+        }
 
         foreach ($qbLoc->getParameters() as $parameter) {
             $qb->setParameter($parameter->getName(), $parameter->getValue());
         }
+
 
         return new Paginator($qb);
     }

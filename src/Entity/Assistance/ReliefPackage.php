@@ -112,6 +112,8 @@ class ReliefPackage
      */
     private $distributedBy;
 
+
+
     /**
      * @param AssistanceBeneficiary $assistanceBeneficiary
      * @param string $modalityType
@@ -150,6 +152,14 @@ class ReliefPackage
         $this->unit = $unit;
         $this->state = $state;
         $this->amountDistributed = (string) $amountDistributed;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateLastModified()
+    {
+        $this->setLastModifiedNow();
     }
 
     /**
