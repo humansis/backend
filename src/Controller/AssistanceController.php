@@ -22,7 +22,6 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Assistance\AssistanceFactory;
 use Component\Assistance\AssistanceQuery;
-use Entity\AssistanceStatistics;
 use Enum\ModalityType;
 use Exception\CsvParserException;
 use Export\AssistanceBankReportExport;
@@ -57,13 +56,12 @@ class AssistanceController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/assistances/statistics")
-     *
-     *
      */
     public function statistics(
         Request $request,
         AssistanceStatisticsFilterInputType $filter,
-        AssistanceQuery $assistanceQuery
+        AssistanceQuery $assistanceQuery,
+        AssistanceFactory $assistanceFactory
     ): JsonResponse {
         $countryIso3 = $request->headers->get('country');
         if (is_null($countryIso3)) {
@@ -76,12 +74,11 @@ class AssistanceController extends AbstractController
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
-            // TODO if we search only assistance IDs we can check if statistic is in cache
-
-            $statistics = $this->managerRegistry->getRepository(AssistanceStatistics::class)->findByParams(
-                $countryIso3,
-                $filter
-            );
+            $assistanceInCountry = $this->managerRegistry->getRepository(Assistance::class)->findByCountryIso3($countryIso3);
+            foreach ($assistanceInCountry as $assistance) {
+                $assistanceDomain = $assistanceFactory->hydrate($assistance);
+                $statistics[] = $assistanceDomain->getStatistics($countryIso3);
+            }
         }
 
         return $this->json(new Paginator($statistics));
@@ -90,8 +87,6 @@ class AssistanceController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/statistics")
      * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
-     *
-     *
      */
     public function assistanceStatistics(Assistance $assistance, AssistanceFactory $factory): JsonResponse
     {

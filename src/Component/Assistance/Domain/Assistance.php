@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\Assistance\Domain;
 
 use Component\Assistance\Services\AssistanceBeneficiaryService;
+use Component\Assistance\DTO\Statistics;
 use Component\ReliefPackage\ReliefPackageService;
 use DateTime;
 use DateTimeImmutable;
@@ -67,7 +68,7 @@ class Assistance
         });
     }
 
-    public function getStatistics(?string $countryIso3 = null): array
+    public function getStatistics(?string $countryIso3 = null): Statistics
     {
         $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new');
 
@@ -83,16 +84,14 @@ class Assistance
                 );
             }
 
-            // TODO probably better way could be normalize (or store whole) dto
-            return [
-                'id' => $statistics->getId(),
-                'numberOfBeneficiaries' => $statistics->getNumberOfBeneficiaries(),
-                'amountTotal' => $statistics->getAmountTotal(),
-                'amountDistributed' => $statistics->getAmountDistributed(),
-                'amountUsed' => $statistics->getAmountUsed(),
-                'amountSent' => $statistics->getAmountSent(),
-                'amountPickedUp' => $statistics->getAmountPickedUp(),
-            ];
+            return new Statistics(
+                $statistics->getId(),
+                $statistics->getNumberOfBeneficiaries(),
+                $statistics->getBeneficiariesDeleted(),
+                $statistics->getBeneficiariesReached(),
+                $statistics->getAmountDistributed(),
+                $statistics->getAmountTotal(),
+            );
         });
     }
 
@@ -113,9 +112,7 @@ class Assistance
         }
         $this->cleanCache();
 
-        $statistics = $this->getStatistics();
-
-        if ($statistics['amountDistributed'] > 0) {
+        if ($this->hasDistributionStarted()) {
             throw new \InvalidArgumentException('Unable to unvalidate the assistance. Assistance is already started.');
         }
         $this->assistanceRoot->setValidatedBy(null);
@@ -176,9 +173,7 @@ class Assistance
 
     public function hasDistributionStarted(): bool
     {
-        $statistics = $this->getStatistics();
-
-        return $statistics['amountDistributed'] > 0;
+        return $this->getStatistics()->getAmountDistributed() > 0;
     }
 
     /**
@@ -343,9 +338,6 @@ class Assistance
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function removeBeneficiary(AbstractBeneficiary $beneficiary, string $justification): self
     {
         if ($this->assistanceRoot->isValidated()) {

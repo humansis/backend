@@ -67,12 +67,11 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment(
             '{
             "id": ' . $assistance->getId() . ',
-            "numberOfBeneficiaries": "*",
+            "beneficiariesTotal": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
-            "amountUsed": "*",
-            "amountSent": "*",
-            "amountPickedUp": "*"
+            "beneficiariesDeleted": "*",
+            "beneficiariesReached": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -144,7 +143,9 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertArrayHasKey('amountDistributed', $result);
         $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('numberOfBeneficiaries', $result);
+        $this->assertArrayHasKey('beneficiariesTotal', $result);
+        $this->assertArrayHasKey('beneficiariesDeleted', $result);
+        $this->assertArrayHasKey('beneficiariesReached', $result);
         $this->assertEquals((float) $expectedTotalSum, (float) $result['amountTotal']);
         $this->assertEquals((float) $expectedDistributed, (float) $result['amountDistributed']);
     }
