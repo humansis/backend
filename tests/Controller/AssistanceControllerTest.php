@@ -60,7 +60,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
                 "id": ' . $assistance->getLocation()->getId() . ',
                 "name": "' . $assistance->getLocation()->getName() . '",
                 "code": "' . $assistance->getLocation()->getCode() . '",
-                "countryIso3": "' . $assistance->getLocation()->getCountryIso3() . '",
                 "locationId": ' . $assistance->getLocation()->getId() . '
             },
             "target": "' . $assistance->getTargetType() . '",
@@ -71,7 +70,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "householdsTargeted": ' . ($assistance->getHouseholdsTargeted() ?: 'null') . ',
             "individualsTargeted": ' . ($assistance->getIndividualsTargeted() ?: 'null') . ',
             "description": "*",
-            "commodityIds": [' . implode(',', $commodityIds) . '],
+            "commodities": ["*"],
             "validated": ' . ($assistance->isValidated() ? 'true' : 'false') . ',
             "completed": ' . ($assistance->getCompleted() ? 'true' : 'false') . ',
             "foodLimit": "*",
