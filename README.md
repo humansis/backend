@@ -160,4 +160,6 @@ to download translations from test environment, or run
 ```bash
 make translations-get c={ENVIRONMENT}
 ```
-where `{ENVIRONMENT}` is one of `dev1`, `dev2`, `dev3`, `test`, `stage`
+where `{ENVIRONMENT}` is one of `dev1`, `dev2`, `dev3`, `test`, `stage`.
+In CrowdinPullCommand, you may want to set const `PULL_SOURCE_FILES` to false if you don't
+want to overwrite your local source files (en translations) when running command `crowdin:pull`
