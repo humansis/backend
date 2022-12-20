@@ -13,7 +13,7 @@ final class ScoringComputedValues
         $children = 0;
 
         foreach ($household->getBeneficiaries() as $member) {
-            if ($member->getAge() != null && $member->getAge() < 18) {
+            if ($member->getAge() !== null && $member->getAge() < 18) {
                 $children++;
             }
         }
@@ -23,7 +23,7 @@ final class ScoringComputedValues
 
     public function incomePerMember(Household $household): int|string|null
     {
-        if ($household->getIncome() == null || $household->getBeneficiaries()->count() == 0) {
+        if ($household->getIncome() === null || $household->getBeneficiaries()->count() === 0) {
             return null;
         }
 
