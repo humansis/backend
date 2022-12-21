@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
+use Component\Import\Enum\ImportCsoEnum;
 use DateTime;
-use Entity\CountrySpecific;
 use Exception;
+use Repository\CountrySpecificRepository;
+use Repository\LocationRepository;
 use Utils\HouseholdExportCSVService;
-use Entity\Location;
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\CellError\CellError;
 use Component\Import\CellParameters;
 use Component\Import\Utils\ImportDateConverter;
@@ -281,7 +281,7 @@ class ImportLine
      *     groups={"household"}
      * )
      */
-    public $countrySpecifics = [];
+    public array $countrySpecifics = [];
 
     /** @var string[] */
     private array $excelDateTimeFormatProperties = [];
@@ -289,8 +289,12 @@ class ImportLine
     /** @var CellError[] */
     private array $errors = [];
 
-    public function __construct(array $content, private readonly string $countryIso3, private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        array $content,
+        private readonly string $countryIso3,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LocationRepository $locationRepository,
+    ) {
         foreach (HouseholdExportCSVService::MAPPING_PROPERTIES as $header => $property) {
             if (isset($content[$header])) {
                 $value = $content[$header][CellParameters::VALUE];
@@ -317,18 +321,15 @@ class ImportLine
             }
         }
 
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(
-            ['countryIso3' => $countryIso3],
-            ['id' => 'asc']
-        );
+        $countrySpecifics = $this->countrySpecificRepository->findForCriteria($this->countryIso3);
         foreach ($countrySpecifics as $countrySpecific) {
             if (
                 isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString(
                 )][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL
             ) {
                 $this->countrySpecifics[$countrySpecific->getId()] = [
-                    'countrySpecific' => $countrySpecific,
-                    'value' => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
+                    ImportCsoEnum::ImportLineEntityKey->value => $countrySpecific,
+                    ImportCsoEnum::ImportLineValueKey->value => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
                 ];
             }
         }
@@ -414,7 +415,7 @@ class ImportLine
 
         $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -431,7 +432,7 @@ class ImportLine
 
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -452,7 +453,7 @@ class ImportLine
             EnumTrait::normalizeValue($this->adm3),
         ];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -474,7 +475,7 @@ class ImportLine
             EnumTrait::normalizeValue($this->adm4),
         ];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );

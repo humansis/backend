@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Country\Countries;
 use Entity\ImportQueue;
 use InvalidArgumentException;
+use Repository\CountrySpecificRepository;
+use Repository\LocationRepository;
 
 class ImportLineFactory
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly Countries $countries)
-    {
+    public function __construct(
+        private readonly Countries $countries,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LocationRepository $locationRepository,
+    ) {
     }
 
     public function createFromData(array $data, string $countryIso): ImportLine
@@ -21,7 +25,7 @@ class ImportLineFactory
             throw new InvalidArgumentException("Country $countryIso doesn't exist");
         }
 
-        return new ImportLine($data, $countryIso, $this->entityManager);
+        return new ImportLine($data, $countryIso, $this->countrySpecificRepository, $this->locationRepository);
     }
 
     /**

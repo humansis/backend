@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class CountrySpecificDataType extends Constraint
 {
-    public $message = 'Value \'{{ value }}\' has to be number.';
+    public string $message = 'Value \'{{ value }}\' has to be number.';
 
     public function __construct($options = null)
     {
