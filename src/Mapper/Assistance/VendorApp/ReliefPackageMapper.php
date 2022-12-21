@@ -45,6 +45,11 @@ class ReliefPackageMapper implements MapperInterface
         return $this->object->getId();
     }
 
+    public function getState(): string
+    {
+        return $this->object->getState();
+    }
+
     public function getAssistanceId(): int
     {
         return $this->object->getAssistanceBeneficiary()->getAssistance()->getId();
@@ -68,6 +73,11 @@ class ReliefPackageMapper implements MapperInterface
     public function getUnit(): string
     {
         return $this->object->getUnit();
+    }
+
+    public function getLastModifiedAt(): string
+    {
+        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ISO8601);
     }
 
     public function getSmartCardSerialNumber(): ?string

@@ -93,6 +93,8 @@ class ReliefPackage
      */
     private ?\Entity\User $distributedBy = null;
 
+
+
     /**
      * @param float|string|int $amountToDistribute
      * @param float|string|int $amountDistributed
@@ -128,6 +130,17 @@ class ReliefPackage
         $this->amountDistributed = (string) $amountDistributed;
     }
 
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateLastModified()
+    {
+        $this->setLastModifiedNow();
+    }
+
+    /**
+     * @return string
+     */
     public function getState(): string
     {
         return $this->state;

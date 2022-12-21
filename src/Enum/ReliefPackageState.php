@@ -14,15 +14,17 @@ final class ReliefPackageState
     public const EXPIRED = 'Expired';
     public const CANCELED = 'Canceled';
 
+    const RELIEF_PACKAGE_STATES = [
+        self::TO_DISTRIBUTE,
+        self::DISTRIBUTION_IN_PROGRESS,
+        self::DISTRIBUTED,
+        self::EXPIRED,
+        self::CANCELED,
+    ];
+
     public static function values(): array
     {
-        return [
-            self::TO_DISTRIBUTE,
-            self::DISTRIBUTION_IN_PROGRESS,
-            self::DISTRIBUTED,
-            self::EXPIRED,
-            self::CANCELED,
-        ];
+        return self::RELIEF_PACKAGE_STATES;
     }
 
     public static function distributableStates(): array
