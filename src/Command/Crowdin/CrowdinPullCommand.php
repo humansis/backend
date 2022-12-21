@@ -6,12 +6,14 @@ namespace Command\Crowdin;
 
 use JsonException;
 use Exception\CrowdinBuildTimeoutException;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -33,6 +35,10 @@ class CrowdinPullCommand extends Command
 
     protected static $defaultName = 'crowdin:pull';
 
+
+    //If set on true, the source english files will be downloaded from Crowdin.
+    //You may want to set it to false if you made changes in versioned en source files.
+    private const PULL_SOURCE_FILES = true;
 
     /** @var HttpClient $client */
     private $client;
@@ -67,6 +73,10 @@ class CrowdinPullCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
+
+        if (self::PULL_SOURCE_FILES) {
+            $this->downloadSourceFiles();
+        }
 
         //init build
         $this->output->write('Initializing build');
@@ -144,5 +154,50 @@ class CrowdinPullCommand extends Command
         $this->output->writeln('finished');
 
         return 0;
+    }
+
+    private function downloadSourceFiles()
+    {
+        $this->output->writeln('Downloading source files');
+
+        $crowdinSourceFiles = $this->makeRequest('GET', '/projects/' . $this->crowdinProjectId . '/files');
+
+        if (!isset($crowdinSourceFiles['data'])) {
+            throw new UnexpectedValueException('Unexpected Crowdin response format. Missing source files');
+        }
+
+        foreach ($crowdinSourceFiles['data'] as $file) {
+            if (!isset($file['data']['id']) || !isset($file['data']['name'])) {
+                throw new UnexpectedValueException('Unexpected Crowdin response format. Missing file id or name');
+            }
+
+            $fileId = $file['data']['id'];
+            $fileName = $file['data']['name'];
+
+            $this->output->writeln($fileName);
+
+            $fileDownload = $this->makeRequest('GET', '/projects/' . $this->crowdinProjectId . '/files/' . $fileId . '/download');
+
+            if (!isset($fileDownload['data']['url'])) {
+                throw new UnexpectedValueException('Unexpected Crowdin response format. Missing file download url');
+            }
+
+            $url = $fileDownload['data']['url'];
+
+            $response = $this->client->request('GET', $url);
+
+            if ($response->getStatusCode() !== Response::HTTP_OK) {
+                throw new RuntimeException('Cannot download source file ' . $fileName);
+            }
+
+            $content = $response->getContent();
+            $res = file_put_contents($this->translationsDir . '/' . $fileName, $content);
+
+            if ($res === false) {
+                throw new UnexpectedValueException('Cannot save file ' . $fileName);
+            }
+        }
+
+        $this->output->writeln('Downloading source files completed');
     }
 }
