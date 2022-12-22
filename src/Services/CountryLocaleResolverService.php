@@ -22,4 +22,12 @@ class CountryLocaleResolverService
 
         return 'en';
     }
+
+    /**
+     * @return array
+     */
+    public function getCountryCodes(): array
+    {
+        return array_keys($this->countries);
+    }
 }

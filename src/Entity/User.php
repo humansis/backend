@@ -381,26 +381,6 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
         );
     }
 
-    public function getAvailableCountries(): array
-    {
-        if (in_array('ROLE_ADMIN', $this->getRoles())) {
-            return ['KHM', 'SYR', 'UKR', "ETH", "MNG", "ARM", "ZMB"];
-        }
-
-        $countries = [];
-        foreach ($this->getCountries() as $country) {
-            $countries[$country->getIso3()] = true;
-        }
-
-        foreach ($this->getProjects() as $userProject) {
-            /** @var UserProject $userProject */
-            $countries[$userProject->getProject()->getCountryIso3()] = true;
-        }
-
-        return array_keys($countries);
-    }
-
-
     public function __serialize(): array
     {
         return [

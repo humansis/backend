@@ -10,6 +10,7 @@ use InputType\UserUpdateInputType;
 use InputType\UserInitializeInputType;
 use Entity\Project;
 use Repository\RoleRepository;
+use Services\CountryLocaleResolverService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
@@ -30,7 +31,14 @@ class UserService
     /**
      * UserService constructor.
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly RoleHierarchyInterface $roleHierarchy, private readonly Security $security, private readonly RoleRepository $roleRepository)
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ExportService $exportService,
+        private readonly RoleHierarchyInterface $roleHierarchy,
+        private readonly Security $security,
+        private readonly RoleRepository $roleRepository,
+        private readonly CountryLocaleResolverService $countryLocaleResolverService
+    )
     {
     }
 
@@ -104,6 +112,25 @@ class UserService
         $exportableTable = $this->em->getRepository(User::class)->findAll();
 
         return $this->exportService->export($exportableTable, 'users', $type);
+    }
+
+    public function getAvailableCountries(User $user): array
+    {
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->countryLocaleResolverService->getCountryCodes();
+        }
+
+        $countries = [];
+        foreach ($user->getCountries() as $country) {
+            $countries[$country->getCountryIso3()] = true;
+        }
+
+        foreach ($user->getProjects() as $userProject) {
+            /** @var UserProject $userProject */
+            $countries[$userProject->getProject()->getCountryIso3()] = true;
+        }
+
+        return array_keys($countries);
     }
 
     public function create(User $initializedUser, UserCreateInputType $inputType): User

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Listener;
 
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
@@ -12,7 +14,7 @@ class JWTCreatedListener
     /**
      * @param RequestStack $requestStack
      */
-    public function __construct(private readonly RequestStack $requestStack, private readonly UserRepository $userRepository)
+    public function __construct(private readonly RequestStack $requestStack)
     {
     }
 
@@ -21,7 +23,7 @@ class JWTCreatedListener
      *
      * @return void
      */
-    public function onJWTCreated(JWTCreatedEvent $event)
+    public function onJWTCreated(JWTCreatedEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
         $payload = $event->getData();
