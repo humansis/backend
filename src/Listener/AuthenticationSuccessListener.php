@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Listener;
 
+use Closure;
 use Entity\User;
 use JetBrains\PhpStorm\Pure;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
@@ -10,6 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Utils\UserService;
 use Utils\VendorService;
 
 class AuthenticationSuccessListener
@@ -20,6 +24,7 @@ class AuthenticationSuccessListener
         private readonly RequestStack $requestStack,
         private readonly UserRepository $userRepository,
         private readonly VendorService $vendorService,
+        private readonly UserService $userService,
     ) {
         $this->methods = [
             'web-app' => $this->getDataForWebApp(...),
@@ -43,7 +48,11 @@ class AuthenticationSuccessListener
         $event->setData(array_merge($event->getData(), $data));
     }
 
-    private function getMethodForDataRetrieve($uri)
+    /**
+     * @param string $uri
+     * @return array
+     */
+    private function getMethodForDataRetrieve(string $uri): Closure
     {
         if (preg_match('/(?<app>[^\/]+)\/v[\d]/', $uri, $matches)) {
             $app = $matches['app'];
@@ -52,7 +61,11 @@ class AuthenticationSuccessListener
         return $this->methods['default'];
     }
 
-    private function getDataForVendorApp($user): array
+    /**
+     * @param User $user
+     * @return array
+     */
+    private function getDataForVendorApp(User $user): array
     {
         try {
             $vendor = $this->vendorService->getVendorByUser($user);
@@ -70,7 +83,11 @@ class AuthenticationSuccessListener
         }
     }
 
-    private function getDataForFieldApp($user): array
+    /**
+     * @param User $user
+     * @return array
+     */
+    private function getDataForFieldApp(User $user): array
     {
         /** @var User $userEntity */
         $userEntity = $this->userRepository->find($user->getId());
@@ -79,15 +96,23 @@ class AuthenticationSuccessListener
             'username' => $userEntity->getUsername(),
             'email' => $userEntity->getEmail(),
             'changePassword' => $userEntity->getChangePassword(),
-            'availableCountries' => $userEntity->getAvailableCountries(),
+            'availableCountries' => $this->userService->getAvailableCountries($userEntity),
         ];
     }
 
-    private function getDataForWebApp($user): array
+    /**
+     * @param User $user
+     * @return array
+     */
+    private function getDataForWebApp(User $user): array
     {
         return ['userId' => $user->getId()];
     }
 
+    /**
+     * @param $user
+     * @return array
+     */
     private function getDataForDefaultApp($user): array
     {
         return [];

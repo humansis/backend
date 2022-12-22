@@ -29,4 +29,5 @@ dh_auditor:
                 Entity\SmartcardDeposit:
                 Entity\SmartcardPurchase:
                 Entity\SmartcardPurchaseRecord:
+                Entity\Invoice:
                 Entity\Vendor:
