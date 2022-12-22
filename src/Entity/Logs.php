@@ -244,7 +244,7 @@ class Logs
      */
     public function setController(?string $controller)
     {
-        $this->controller = $controller || '';
+        $this->controller = $controller ?? '';
 
         return $this;
     }
