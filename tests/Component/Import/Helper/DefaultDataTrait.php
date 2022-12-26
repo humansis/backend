@@ -76,7 +76,7 @@ trait DefaultDataTrait
 
         $nationalId = new NationalId();
         $nationalId->setIdType(NationalIdType::NATIONAL_ID);
-        $nationalId->setIdNumber('123456789');
+        $nationalId->setIdNumber('1234-56789' . - $this->getUniqueNumber());
         $nationalId->setPriority(1);
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());
@@ -138,5 +138,12 @@ trait DefaultDataTrait
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
         $this->uploadService->uploadFile($import, $file, $this->getUser());
+    }
+
+    private function getUniqueNumber()
+    {
+            $temp = (float)microtime() * 10;
+            $number = str_replace('.', '', strval($temp));
+            return $number;
     }
 }

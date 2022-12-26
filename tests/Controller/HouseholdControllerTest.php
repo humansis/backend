@@ -54,7 +54,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'residencyStatus' => ResidencyStatus::REFUGEE,
                     'nationalIdCards' => [
                         [
-                            'number' => '022-33-1547',
+                            'number' => '7q95qf3oqe',
                             'type' => NationalIdType::NATIONAL_ID,
                             'priority' => 1,
                         ],
@@ -139,7 +139,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnGivenName' => null,
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
-                'number' => '022-33-1547',
+                'number' => '7q95qf3oqe1',
                 'type' => NationalIdType::NATIONAL_ID,
             ],
             'proxyPhone' => [
@@ -236,7 +236,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'residencyStatus' => ResidencyStatus::REFUGEE,
                     'nationalIdCards' => [
                         [
-                            'number' => '022-33-1547',
+                            'number' => '532mhtyoxn',
                             'type' => NationalIdType::NATIONAL_ID,
                             'priority' => 1,
                         ],
@@ -265,7 +265,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'residencyStatus' => ResidencyStatus::REFUGEE,
                     'nationalIdCards' => [
                         [
-                            'number' => '022-33-1548',
+                            'number' => '022-33-1548qf',
                             'type' => NationalIdType::NATIONAL_ID,
                             'priority' => 1,
                         ],
@@ -311,7 +311,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
             'proxyEnGivenName' => null,
             'proxyEnParentsName' => null,
             'proxyNationalIdCard' => [
-                'number' => '022-33-1547',
+                'number' => 'b9j7ug68sq',
                 'type' => NationalIdType::NATIONAL_ID,
                 'priority' => 1,
             ],

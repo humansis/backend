@@ -173,6 +173,13 @@ class HouseholdService
      */
     public function update(Household $household, HouseholdUpdateInputType $inputType, string $countryCode): Household
     {
+        // I think it is important to remove the nationalId before we start the update process,
+        // because after adding the unique constraint of not repeating the id_number in the “national_id” table,
+        // we must ensure that we do not try to add a number that is in the update process
+        // before making sure that it is deleted.
+        if ($household->getHouseholdHead()) {
+            $this->deletAllNationalIds($household->getHouseholdHead());
+        }
         foreach ($household->getHouseholdLocations() as $initialHouseholdLocation) {
             $this->em->remove($initialHouseholdLocation);
         }
@@ -401,5 +408,19 @@ class HouseholdService
             $this->em->persist($nationalId);
             $household->setProxy($proxy);
         }
+    }
+
+    /**
+     * This function removes all "nationalId"s related to the Person
+     * @param Beneficiary $beneficiary
+     * @return void
+     */
+    private function deletAllNationalIds(Beneficiary $beneficiary)
+    {
+        $beneficiaryPerson = $beneficiary->getPerson();
+        foreach ($beneficiaryPerson->getNationalIds() as $nationalId) {
+            $this->em->remove($nationalId);
+        }
+        $this->em->flush();
     }
 }

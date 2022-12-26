@@ -57,7 +57,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'locationId' => $location->getId(),
             ],
             'nationalIdCard' => [
-                'number' => '022-33-1547',
+                'number' => '7adasjfp0n',
                 'type' => 'Passport',
                 'priority' => 1,
             ],
@@ -161,7 +161,7 @@ class CommunityControllerTest extends BMSServiceTestCase
                 'locationId' => $location->getId(),
             ],
             'nationalIdCard' => [
-                'number' => '022-33-1547',
+                'number' => '7adasjfp0n',
                 'type' => 'Passport',
                 'priority' => 1,
             ],

@@ -128,8 +128,8 @@ class ImportDuplicityTest extends KernelTestCase
     {
         $import = $this->makeIdentityCheckFailed(
             $this->project,
-            'import_1duplicity_first_run.ods',
-            'import_1duplicity_second_run.ods'
+            'import_2duplicity_first_run.ods',
+            'import_2duplicity_second_run.ods'
         );
         $this->assertQueueCount(2, $import);
         $this->assertQueueCount(2, $import, [ImportQueueState::IDENTITY_CANDIDATE]);

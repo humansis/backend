@@ -15,9 +15,10 @@ use InputType\Beneficiary\NationalIdCardInputType;
 /**
  * NationalId
  *
- * @ORM\Table(name="national_id", indexes={
- *     @ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})
- * })
+ * @ORM\Table(name="national_id",
+ *      uniqueConstraints={@ORM\UniqueConstraint(name="Unique_Id_Type", columns={"id_number", "id_type"})},
+ *      indexes={@ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})}
+ *     )
  * @ORM\Entity(repositoryClass="Repository\NationalIdRepository")
  */
 class NationalId

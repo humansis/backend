@@ -147,7 +147,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $institutionInputType->setNationalIdCard(
             NationalIdCardInputType::create(
                 $institution['national_id']['type'],
-                $institution['national_id']['number']
+                $institution['national_id']['number'] . - $this->getUniqueNumber()
             )
         );
         $institutionInputType->setPhone(
@@ -171,5 +171,12 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
         return array_map(fn(Project $project) => $project->getId(), $projects);
+    }
+
+    private function getUniqueNumber()
+    {
+        $temp = (float)microtime() * 10;
+        $number = str_replace('.', '', strval($temp));
+        return $number;
     }
 }

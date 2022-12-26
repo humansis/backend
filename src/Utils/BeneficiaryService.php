@@ -90,9 +90,6 @@ class BeneficiaryService
         }
 
         //national ids
-        foreach ($beneficiaryPerson->getNationalIds() as $nationalId) {
-            $this->em->remove($nationalId);
-        }
         $beneficiaryPerson->getNationalIds()->clear();
 
         foreach ($inputType->getNationalIdCards() as $nationalIdInputType) {

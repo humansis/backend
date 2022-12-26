@@ -37,7 +37,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::NATIONAL_ID,
-                'number' => 'ID: 000-1234-5895-21',
+                'number' => 'ID: 000-1234-5895-211',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -61,7 +61,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::FAMILY,
-                'number' => 'FML: 000-1234-5895-21',
+                'number' => 'FML: 000-1234-5895-211',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -85,7 +85,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::CAMP_ID,
-                'number' => 'CMP: 000-1234-5895-21',
+                'number' => 'CMP: 000-1234-5895-211',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -149,7 +149,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setNationalIdCard(
             NationalIdCardInputType::create(
                 $community['national_id']['type'],
-                $community['national_id']['number']
+                $community['national_id']['number'] . - $this->getUniqueNumber()
             )
         );
         $communityInputType->setPhone(
@@ -169,5 +169,12 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
         return array_map(fn(Project $project) => $project->getId(), $projects);
+    }
+
+    private function getUniqueNumber()
+    {
+        $temp = (float)microtime() * 10;
+        $number = str_replace('.', '', strval($temp));
+        return $number;
     }
 }

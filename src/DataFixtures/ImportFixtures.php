@@ -81,7 +81,7 @@ class ImportFixtures extends Fixture implements DependentFixtureInterface
                     'numberFormat' => 'General',
                 ],
                 'ID Number' => [
-                    'value' => '111222333',
+                    'value' => '333222111',
                     'dataType' => 's',
                     'numberFormat' => 'General',
                 ],

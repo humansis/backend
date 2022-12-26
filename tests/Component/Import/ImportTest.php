@@ -112,6 +112,32 @@ class ImportTest extends KernelTestCase
         ];
     }
 
+    public function correctFilesCopy(): array
+    {
+        return [
+            'zero width space' => ['KHM', 'zero-width - Copy.xlsx', 2, 2, 2],
+            'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl - Copy.csv', 2, 60, 0],
+            'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM - Copy.csv', 2, 60, 1],
+            'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM - Copy.ods', 2, 29, 2],
+            'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM - Copy.xlsx', 4, 4, 4],
+            'camp only' => ['SYR', 'SYR-only-camp-1HH - Copy.xlsx', 1, 7, 1],
+            'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format - Copy.xlsx', 1, 1, 1],
+        ];
+    }
+
+    public function correctFilesCopy1(): array
+    {
+        return [
+            'zero width space' => ['KHM', 'zero-width - Copy1.xlsx', 2, 2, 2],
+            'minimal csv without IDs' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM-no-dupl - Copy1.csv', 2, 60, 0],
+            'minimal csv' => ['KHM', 'KHM-Import-2HH-3HHM-55HHM - Copy1.csv', 2, 60, 1],
+            'minimal ods' => ['KHM', 'KHM-Import-2HH-3HHM-24HHM - Copy1.ods', 2, 29, 2],
+            'minimal xlsx' => ['KHM', 'KHM-Import-4HH-0HHM-0HHM - Copy1.xlsx', 4, 4, 4],
+            'camp only' => ['SYR', 'SYR-only-camp-1HH - Copy1.xlsx', 1, 7, 1],
+            'excel date format' => ['KHM', 'KHM-Import-1HH-0HHM-0HHM-excel-date-format - Copy1.xlsx', 1, 1, 1],
+        ];
+    }
+
     public function incorrectFiles(): array
     {
         return [
@@ -158,7 +184,7 @@ class ImportTest extends KernelTestCase
     }
 
     /**
-     * @dataProvider correctFiles
+     * @dataProvider correctFilesCopy
      */
     public function testMinimalWorkflowWithoutSimilarityCheck(
         string $country,
@@ -198,7 +224,7 @@ class ImportTest extends KernelTestCase
             'full replacement of all wrong households' => [
                 'SYR',
                 'SYR-WrongDatedImport-5HH.xlsx',
-                'SYR-only-camp-1HH.xlsx',
+                'SYR-2only-camp-1HH.xlsx',
                 1,
                 7,
             ],
@@ -471,9 +497,8 @@ class ImportTest extends KernelTestCase
 
         return $identities[0];
     }
-
     /**
-     * @dataProvider correctFiles
+     * @dataProvider correctFilesCopy1
      */
     public function testRepeatedUploadSameFile(
         string $country,

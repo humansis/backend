@@ -45,7 +45,7 @@ class ImportFinishServiceTest extends KernelTestCase
       "numberFormat": "General"
     },
     "ID Number": {
-      "value": 123456789,
+      "value": 12345776652,
       "dataType": "n",
       "numberFormat": "General"
     },
@@ -501,7 +501,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testDecidedCreate()
     {
-        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $dataDecode = json_decode(self::TEST_QUEUE_ITEM, true);
+        $dataDecode[0]['ID Number']['value'] = '1234-56333' . - $this->getUniqueNumber();
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, $dataDecode);
         $queueItem->setState(ImportQueueState::TO_CREATE);
         $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::NO_DUPLICITY);
@@ -531,7 +533,9 @@ class ImportFinishServiceTest extends KernelTestCase
 
     public function testUpdate()
     {
-        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, json_decode(self::TEST_QUEUE_ITEM, true));
+        $dataDecode = json_decode(self::TEST_QUEUE_ITEM, true);
+        $dataDecode[0]['ID Number']['value'] = '1234-56333' . - $this->getUniqueNumber();
+        $queueItem = new Entity\ImportQueue($this->import, $this->importFile, $dataDecode);
         $queueItem->setState(ImportQueueState::TO_UPDATE);
         $duplicity = new Entity\ImportHouseholdDuplicity($queueItem, $this->originHousehold);
         $duplicity->setState(ImportDuplicityState::DUPLICITY_KEEP_OURS);
@@ -631,5 +635,12 @@ class ImportFinishServiceTest extends KernelTestCase
             'import' => $this->import->getId(),
         ]);
         $this->assertCount(0, $links, "There should be no link");
+    }
+
+    private function getUniqueNumber()
+    {
+        $temp = (float)microtime() * 10;
+        $number = str_replace('.', '', strval($temp));
+        return $number;
     }
 }
