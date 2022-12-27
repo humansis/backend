@@ -15,8 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AdmXML2DBCommand extends Command
+class UpdateAdmLocations extends Command
 {
+
+    const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/12/repository';
+    const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/raw/develop/src/Resources/locations/';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LocationRepository $locationRepository
@@ -27,8 +31,8 @@ class AdmXML2DBCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('app:adm:upload')
-            ->setDescription('Interactive import ADM into DB')
+            ->setName('app:adm:update')
+            ->setDescription('Interactive update ADM into DB')
             ->addArgument('country', InputArgument::IS_ARRAY, 'Country iso3 code')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Use all known locations')
             ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Adm count limit per country');
@@ -41,6 +45,27 @@ class AdmXML2DBCommand extends Command
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $countries = $this->getRequestedCountries($input, $output);
+        $output->writeln("Countries to upload: " . implode(', ', $countries));
+        foreach ($countries as $countryCode) {
+            if (!isset($this->getADMFiles()[$countryCode])) {
+                $output->writeln("$countryCode is not valid iso3 country code");
+                continue;
+            }
+            $countryFile = $this->getADMFiles()[$countryCode];
+            $countryFileUrl = self::REPOSITORY_URL . $countryFile;
+            $output->writeln("Importing file $countryFileUrl");
+
+            // LOCATION IMPORT
+            $importer = new LocationImporter($this->entityManager, $countryFileUrl, $this->locationRepository);
+            $this->importLocations($input, $output, $importer);
+        }
+
+        return 0;
+    }
+
+    private function getRequestedCountries(InputInterface $input, OutputInterface $output)
     {
         if ($input->hasArgument('country') && !empty($input->getArgument('country'))) {
             $countries = $input->getArgument('country');
@@ -61,21 +86,7 @@ class AdmXML2DBCommand extends Command
                 ),
             ];
         }
-        $output->writeln("Countries to upload: " . implode(', ', $countries));
-        foreach ($countries as $countryCode) {
-            if (!isset($this->getADMFiles()[$countryCode])) {
-                $output->writeln("$countryCode is not valid iso3 country code");
-                continue;
-            }
-            $countryFile = $this->getADMFiles()[$countryCode];
-            $output->writeln("Importing file $countryFile");
-
-            // LOCATION IMPORT
-            $importer = new LocationImporter($this->entityManager, $countryFile, $this->locationRepository);
-            $this->importLocations($input, $output, $importer);
-        }
-
-        return 0;
+        return $countries;
     }
 
     /**
@@ -110,38 +121,14 @@ class AdmXML2DBCommand extends Command
 
     private function getADMFiles(): array
     {
-        $directory = __DIR__ . '/../Resources/locations';
-
+        $response = file_get_contents(self::REPOSITORY_API_URL . '/tree?path=src/Resources/locations');
+        $files = json_decode($response, true);
         $choices = [];
-        foreach (scandir($directory) as $file) {
-            if ('.' == $file || '..' == $file) {
-                continue;
-            }
-            $iso3 = explode('.', (string) $file)[0];
-
-            $choices[$iso3] = realpath($directory . '/' . $file);
+        foreach ($files as $file) {
+            $fileNameWithoutExtension = pathinfo($file['name'], PATHINFO_FILENAME);
+            $choices[$fileNameWithoutExtension] = $file['name'];
         }
-
         return $choices;
     }
 
-    protected function createCountryQuestion(): Question
-    {
-        $directory = __DIR__ . '/../Resources/locations';
-
-        $choices = [];
-        foreach (scandir($directory) as $file) {
-            if ('.' == $file || '..' == $file) {
-                continue;
-            }
-            $iso3 = explode('.', (string) $file)[0];
-
-            $choices[$iso3] = realpath($directory . '/' . $file);
-        }
-
-        return new ChoiceQuestion(
-            'Which file do you want import? ',
-            $choices
-        );
-    }
 }
