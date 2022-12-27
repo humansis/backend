@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class JWTCreatedListener
 {
-
     /**
      * @param RequestStack $requestStack
      */
@@ -31,6 +30,4 @@ class JWTCreatedListener
         $payload['environment'] = getenv('ENVIRONMENT');
         $event->setData($payload);
     }
-
-
 }
