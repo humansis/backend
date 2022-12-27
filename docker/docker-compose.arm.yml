@@ -22,7 +22,7 @@ services:
         networks:
             - backend
         environment:
-            ENVIRONMENT: dev
+            ENVIRONMENT: arm
 
     consumer:
         # CAREFUL: "__DEV__" token is replaced in deployment script ci/deploy-docker.sh!
