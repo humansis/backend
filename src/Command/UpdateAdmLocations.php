@@ -17,7 +17,6 @@ use Symfony\Component\Console\Question\Question;
 
 class UpdateAdmLocations extends Command
 {
-
     const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/12/repository';
     const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/raw/develop/src/Resources/locations/';
 
@@ -130,5 +129,4 @@ class UpdateAdmLocations extends Command
         }
         return $choices;
     }
-
 }
