@@ -911,7 +911,7 @@ services:
             - Entity\UserCountry
 
 #From CommonBundle:
-    Command\AdmXML2DBCommand:
+    Command\UpdateAdmLocations:
         public: true
         tags:
             - { name: 'console.command' }
