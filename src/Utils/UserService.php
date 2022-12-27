@@ -39,8 +39,7 @@ class UserService
         private readonly RoleRepository $roleRepository,
         private readonly CountryLocaleResolverService $countryLocaleResolverService
     )
-    {
-    }
+    {}
 
     /**
      * @throws Exception
