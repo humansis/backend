@@ -38,8 +38,8 @@ class UserService
         private readonly Security $security,
         private readonly RoleRepository $roleRepository,
         private readonly CountryLocaleResolverService $countryLocaleResolverService
-    )
-    {}
+    ) {
+    }
 
     /**
      * @throws Exception
