@@ -29,8 +29,7 @@ class UploadMissingTransactionsCommand extends Command
     public function __construct(
         private readonly string $logsDir,
         private readonly string $projectDir,
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->client = HttpClient::create();
@@ -61,7 +60,7 @@ class UploadMissingTransactionsCommand extends Command
                 ],
                 'body' => $content,
                 'auth_bearer' => self::JWT_TOKEN,
-                'local_cert' => $this->projectDir.self::SSL_CERT_PATH,
+                'local_cert' => $this->projectDir . self::SSL_CERT_PATH,
                 'passphrase' => self::SSL_PASSPHRASE,
             ];
 
