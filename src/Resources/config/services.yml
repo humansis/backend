@@ -74,6 +74,11 @@ services:
         public: true
         tags: [ 'console.command' ]
 
+    Command\UploadMissingTransactionsCommand:
+        arguments:
+            - '%kernel.logs_dir%'
+            - "%kernel.project_dir%"
+
     Command\Crowdin\CrowdinPullCommand:
       arguments:
         - '%crowdin_api_key%'
