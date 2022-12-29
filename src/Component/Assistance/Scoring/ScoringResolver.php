@@ -135,37 +135,18 @@ final class ScoringResolver
 
     private function computeCoreHousehold(Household $household, ScoringRule $rule): float
     {
-        switch ($rule->getFieldName()) {
-            case ScoringSupportedHouseholdCoreFieldsEnum::NOTES:
-                $value = $household->getNotes();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME:
-                $value = $household->getIncome();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::FOOD_CONSUMPTION_SCORE:
-                $value = $household->getFoodConsumptionScore();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::COPING_STRATEGIES_INDEX:
-                $value = $household->getCopingStrategiesIndex();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL:
-                $value = $household->getDebtLevel();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME_SPENT_ON_FOOD:
-                $value = $household->getIncomeSpentOnFood();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME:
-                $value = $household->getHouseholdIncome();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::ASSETS:
-                $value = $household->getAssets();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES:
-                $value = $household->getSupportReceivedTypes();
-                break;
-            default:
-                return 0;
-        }
+        $value = match ($rule->getFieldName()) {
+            ScoringSupportedHouseholdCoreFieldsEnum::NOTES => $household->getNotes(),
+            ScoringSupportedHouseholdCoreFieldsEnum::INCOME => $household->getIncome(),
+            ScoringSupportedHouseholdCoreFieldsEnum::FOOD_CONSUMPTION_SCORE => $household->getFoodConsumptionScore(),
+            ScoringSupportedHouseholdCoreFieldsEnum::COPING_STRATEGIES_INDEX => $household->getCopingStrategiesIndex(),
+            ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL => $household->getDebtLevel(),
+            ScoringSupportedHouseholdCoreFieldsEnum::INCOME_SPENT_ON_FOOD => $household->getIncomeSpentOnFood(),
+            ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME => $household->getHouseholdIncome(),
+            ScoringSupportedHouseholdCoreFieldsEnum::ASSETS => $household->getAssets(),
+            ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES => $household->getSupportReceivedTypes(),
+            default => null,
+        };
 
         if (is_null($value)) {
             return 0;
@@ -208,7 +189,7 @@ final class ScoringResolver
                         'x' => $value,
                     ]);
 
-                    if (is_bool($result) && $result) {
+                    if ($result === true) {
                         return $option->getScore();
                     }
                 } else { // if the expression does not contain 'x' then evaluate it as number
@@ -218,11 +199,9 @@ final class ScoringResolver
                         return $option->getScore();
                     }
                 }
-            } else {
+            } elseif (mb_strtolower($option->getValue()) === mb_strtolower($value)) {
                 // if the value is string, just compare if it is equal to option value
-                if (mb_strtolower($option->getValue()) === mb_strtolower($value)) {
-                    return $option->getScore();
-                }
+                return $option->getScore();
             }
         }
 
