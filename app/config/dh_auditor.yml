@@ -1,5 +1,5 @@
 dh_auditor:
-    enabled: true
+    enabled: false
     timezone: 'UTC'
     providers:
         doctrine:

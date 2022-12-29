@@ -3,7 +3,7 @@
     "license": "MIT",
     "type": "project",
     "minimum-stability": "stable",
-    "version": "3.8.7",
+    "version": "3.8.8",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
         "psr-4": {
