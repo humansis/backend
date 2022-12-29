@@ -6,8 +6,10 @@ namespace Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -19,10 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 )]
 class UploadMissingTransactionsCommand extends Command
 {
-    private const ENVIRONMENT = 'https://apistage.humansis.org';
-    private const JWT_TOKEN = '';
     private const SSL_CERT_PATH = '/cert.pem';
-    private const SSL_PASSPHRASE = '';
 
     private readonly HttpClientInterface $client;
 
@@ -37,6 +36,31 @@ class UploadMissingTransactionsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $environment = $this->getHelper('question')->ask(
+            $input,
+            $output,
+            new Question(
+                'Environment URL [https://api.humansis.org]: ',
+                'https://api.humansis.org'
+            )
+        );
+
+        $jwtToken = $this->getHelper('question')->ask(
+            $input,
+            $output,
+            new Question(
+                'JWT token: '
+            )
+        );
+
+        $sslPassphrase = $this->getHelper('question')->ask(
+            $input,
+            $output,
+            new Question(
+                'SSL Passphrase: '
+            )
+        );
+
         $files = glob($this->logsDir . '/*.json');
 
         if (empty($files)) {
@@ -44,10 +68,13 @@ class UploadMissingTransactionsCommand extends Command
             return Command::SUCCESS;
         }
 
+        $progressBar = new ProgressBar($output, count($files));
+        $progressBar->start();
+
         foreach ($files as $file) {
             $fileName = basename($file, '.json');
 
-            $output->write('Uploading ' . $fileName . '... ');
+            $output->write(' ' . $fileName . '... ');
 
             $content = file_get_contents($file);
 
@@ -59,19 +86,24 @@ class UploadMissingTransactionsCommand extends Command
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $content,
-                'auth_bearer' => self::JWT_TOKEN,
+                'auth_bearer' => $jwtToken,
                 'local_cert' => $this->projectDir . self::SSL_CERT_PATH,
-                'passphrase' => self::SSL_PASSPHRASE,
+                'passphrase' => $sslPassphrase,
             ];
 
             $response = $this->client->request(
                 'POST',
-                self::ENVIRONMENT . "/api/jwt/vendor-app/v4/smartcards/$smartcardCode/purchase",
+                 "$environment/api/jwt/vendor-app/v4/smartcards/$smartcardCode/purchase",
                 $options
             );
 
             $output->writeln((string) $response->getStatusCode());
+
+            $progressBar->advance();
         }
+
+        $progressBar->finish();
+        $output->writeln('');
 
         return Command::SUCCESS;
     }
