@@ -93,7 +93,7 @@ class UploadMissingTransactionsCommand extends Command
 
             $response = $this->client->request(
                 'POST',
-                 "$environment/api/jwt/vendor-app/v4/smartcards/$smartcardCode/purchase",
+                "$environment/api/jwt/vendor-app/v4/smartcards/$smartcardCode/purchase",
                 $options
             );
 
