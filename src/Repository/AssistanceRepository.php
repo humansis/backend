@@ -138,50 +138,7 @@ class AssistanceRepository extends EntityRepository
         }
 
         if ($orderBy) {
-            foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case AssistanceOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('dd.id', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_LOCATION:
-                        $qb->leftJoin('dd.location', 'l');
-                        $qb->orderBy('l.id', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_DATE:
-                        $qb->orderBy('dd.dateDistribution', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_DATE_EXPIRATION:
-                        $qb->orderBy('dd.dateExpiration', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('dd.name', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_TARGET:
-                        $qb->orderBy('dd.targetType', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
-                        $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_PROGRESS:
-                        $qb->join(AssistanceStatistics::class, 'asp', Join::WITH, 'dd.id = asp.assistance')
-                            ->orderBy('asp.beneficiariesReached / asp.numberOfBeneficiaries', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_ROUND:
-                        $qb->orderBy('dd.round', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_STATE:
-                        $qb->leftJoin('dd.validatedBy', 'vb')
-                            ->orderBy('dd.completed', $direction)
-                            ->addOrderBy('vb.id', $direction)
-                        ;
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_TYPE:
-                        $qb->orderBy('dd.assistanceType', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
-            }
+            $this->applyOrder($orderBy, $qb);
         }
 
         return new Paginator($qb);
@@ -311,56 +268,7 @@ class AssistanceRepository extends EntityRepository
         }
 
         if ($orderBy) {
-            foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case AssistanceOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('dd.id', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_LOCATION:
-                        $qb->leftJoin('dd.location', 'l');
-                        $qb->orderBy('l.id', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_DATE:
-                        $qb->orderBy('dd.dateDistribution', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('dd.name', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_TARGET:
-                        $qb->orderBy('dd.targetType', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
-                        $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_PROJECT:
-                        $qb->leftJoin('dd.project', 'p')
-                            ->orderBy('p.name', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_MODALITY_TYPE:
-                        $qb->orderBy('mt.name', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_VALUE:
-                        $qb->orderBy('c.value', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_UNIT:
-                        $qb->orderBy('c.unit', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_STATE:
-                        $qb->leftJoin('dd.validatedBy', 'vb')
-                            ->orderBy('dd.completed', $direction)
-                            ->addOrderBy('vb.id', $direction)
-                        ;
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_TYPE:
-                        $qb->orderBy('dd.assistanceType', $direction);
-                        break;
-                    case AssistanceOrderInputType::SORT_BY_ROUND:
-                        $qb->orderBy('dd.round', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
-            }
+            $this->applyOrder($orderBy, $qb);
         }
 
         return new Paginator($qb);
@@ -370,5 +278,70 @@ class AssistanceRepository extends EntityRepository
     {
         $this->_em->persist($assistance->getAssistanceRoot());
         $this->_em->flush();
+    }
+
+    /**
+     * @param AssistanceOrderInputType $orderBy
+     * @param $qb
+     * @return void
+     */
+    private function applyOrder(AssistanceOrderInputType $orderBy, $qb): void
+    {
+        foreach ($orderBy->toArray() as $name => $direction) {
+            switch ($name) {
+                case AssistanceOrderInputType::SORT_BY_ID:
+                    $qb->orderBy('dd.id', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_LOCATION:
+                    $qb->leftJoin('dd.location', 'l');
+                    $qb->orderBy('l.id', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_DATE:
+                    $qb->orderBy('dd.dateDistribution', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_DATE_EXPIRATION:
+                    $qb->orderBy('dd.dateExpiration', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_NAME:
+                    $qb->orderBy('dd.name', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_TARGET:
+                    $qb->orderBy('dd.targetType', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_NUMBER_OF_BENEFICIARIES:
+                    $qb->orderBy('SIZE(dd.distributionBeneficiaries)', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_PROGRESS:
+                    $qb->join(AssistanceStatistics::class, 'asp', Join::WITH, 'dd.id = asp.assistance')
+                        ->orderBy('asp.beneficiariesReached / asp.numberOfBeneficiaries', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_PROJECT:
+                    $qb->leftJoin('dd.project', 'p')
+                        ->orderBy('p.name', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_MODALITY_TYPE:
+                    $qb->orderBy('mt.name', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_VALUE:
+                    $qb->orderBy('c.value', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_UNIT:
+                    $qb->orderBy('c.unit', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_ROUND:
+                    $qb->orderBy('dd.round', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_STATE:
+                    $qb->leftJoin('dd.validatedBy', 'vb')
+                        ->orderBy('dd.completed', $direction)
+                        ->addOrderBy('vb.id', $direction);
+                    break;
+                case AssistanceOrderInputType::SORT_BY_TYPE:
+                    $qb->orderBy('dd.assistanceType', $direction);
+                    break;
+                default:
+                    throw new InvalidArgumentException('Invalid order by directive ' . $name);
+            }
+        }
     }
 }
