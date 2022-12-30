@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace InputType;
 
-use Enum\AssistanceState;
 use Enum\AssistanceType;
+use InputType\FilterFragment\AssistanceStateFilterTrait;
 use InputType\FilterFragment\LocationFilterTrait;
 use InputType\FilterFragment\ModalityTypeFilterTrait;
 use InputType\FilterFragment\PrimaryIdFilterTrait;
@@ -19,15 +19,13 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     use ProjectFilterTrait;
     use LocationFilterTrait;
     use ModalityTypeFilterTrait;
+    use AssistanceStateFilterTrait;
 
     #[Assert\Type('boolean')]
     protected bool $upcoming;
 
     #[Assert\Choice(callback: [AssistanceType::class, 'values'])]
     protected string $type;
-
-    #[Assert\All([new Assert\Choice(callback: [AssistanceState::class, 'values'])])]
-    protected array $states;
 
     public function hasUpcomingOnly(): bool
     {
@@ -47,15 +45,5 @@ class AssistanceFilterInputType extends AbstractFilterInputType
     public function getType(): string
     {
         return $this->type;
-    }
-
-    public function hasStates(): bool
-    {
-        return $this->has('states');
-    }
-
-    public function getStates(): array
-    {
-        return $this->states;
     }
 }

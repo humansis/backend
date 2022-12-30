@@ -3,6 +3,7 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Entity\AssistanceStatistics;
 use Entity\Location;
 use Enum\AssistanceState;
@@ -115,20 +116,7 @@ class AssistanceRepository extends EntityRepository
             }
 
             if ($filter->hasStates()) {
-                $qbString = [];
-                foreach ($filter->getStates() as $state) {
-                    switch ($state) {
-                        case AssistanceState::NEW:
-                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NULL)';
-                            break;
-                        case AssistanceState::VALIDATED:
-                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NOT NULL)';
-                            break;
-                        case AssistanceState::CLOSED:
-                            $qbString[] = '(dd.completed = 1)';
-                    }
-                }
-                $qb->andWhere(implode(' OR ', $qbString));
+                $this->filterStates($filter, $qb);
             }
         }
 
@@ -245,20 +233,7 @@ class AssistanceRepository extends EntityRepository
                     ->setParameter('modalityTypes', $filter->getModalityTypes());
             }
             if ($filter->hasStates()) {
-                $qbString = [];
-                foreach ($filter->getStates() as $state) {
-                    switch ($state) {
-                        case AssistanceState::NEW:
-                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NULL)';
-                            break;
-                        case AssistanceState::VALIDATED:
-                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NOT NULL)';
-                            break;
-                        case AssistanceState::CLOSED:
-                            $qbString[] = '(dd.completed = 1)';
-                    }
-                }
-                $qb->andWhere(implode(' OR ', $qbString));
+                $this->filterStates($filter, $qb);
             }
         }
 
@@ -280,13 +255,10 @@ class AssistanceRepository extends EntityRepository
         $this->_em->flush();
     }
 
-    /**
-     * @param AssistanceOrderInputType $orderBy
-     * @param $qb
-     * @return void
-     */
-    private function applyOrder(AssistanceOrderInputType $orderBy, $qb): void
-    {
+    private function applyOrder(
+        AssistanceOrderInputType $orderBy,
+        QueryBuilder $qb,
+    ): void {
         foreach ($orderBy->toArray() as $name => $direction) {
             switch ($name) {
                 case AssistanceOrderInputType::SORT_BY_ID:
@@ -343,5 +315,25 @@ class AssistanceRepository extends EntityRepository
                     throw new InvalidArgumentException('Invalid order by directive ' . $name);
             }
         }
+    }
+
+    private function filterStates(
+        AssistanceFilterInputType|ProjectsAssistanceFilterInputType $filter,
+        QueryBuilder $qb,
+    ): void {
+        $qbString = [];
+        foreach ($filter->getStates() as $state) {
+            switch ($state) {
+                case AssistanceState::NEW:
+                    $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NULL)';
+                    break;
+                case AssistanceState::VALIDATED:
+                    $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NOT NULL)';
+                    break;
+                case AssistanceState::CLOSED:
+                    $qbString[] = '(dd.completed = 1)';
+            }
+        }
+        $qb->andWhere(implode(' OR ', $qbString));
     }
 }
