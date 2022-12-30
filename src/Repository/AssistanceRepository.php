@@ -287,6 +287,22 @@ class AssistanceRepository extends EntityRepository
                 $qb->andWhere('c.modalityType IN (:modalityTypes)')
                     ->setParameter('modalityTypes', $filter->getModalityTypes());
             }
+            if ($filter->hasStates()) {
+                $qbString = [];
+                foreach ($filter->getStates() as $state) {
+                    switch ($state) {
+                        case AssistanceState::NEW:
+                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NULL)';
+                            break;
+                        case AssistanceState::VALIDATED:
+                            $qbString[] = '(dd.completed = 0 AND dd.validatedBy IS NOT NULL)';
+                            break;
+                        case AssistanceState::CLOSED:
+                            $qbString[] = '(dd.completed = 1)';
+                    }
+                }
+                $qb->andWhere(implode(' OR ', $qbString));
+            }
         }
 
         if ($pagination) {
@@ -328,6 +344,12 @@ class AssistanceRepository extends EntityRepository
                         break;
                     case AssistanceOrderInputType::SORT_BY_UNIT:
                         $qb->orderBy('c.unit', $direction);
+                        break;
+                    case AssistanceOrderInputType::SORT_BY_STATE:
+                        $qb->leftJoin('dd.validatedBy', 'vb')
+                            ->orderBy('dd.completed', $direction)
+                            ->addOrderBy('vb.id', $direction)
+                        ;
                         break;
                     case AssistanceOrderInputType::SORT_BY_TYPE:
                         $qb->orderBy('dd.assistanceType', $direction);
