@@ -16,10 +16,6 @@ use Utils\UserService;
 
 class LocationService
 {
-    const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/33/repository/tree?path=locations';
-    const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/administrative-areas/-/raw/master/locations/';
-
-
     public function __construct(private readonly string $repositoryApiUrl, private readonly string $repositoryUrl)
     {
     }
