@@ -4,6 +4,7 @@ namespace Command;
 
 use Exception;
 use Repository\LocationRepository;
+use Services\LocationService;
 use Utils\LocationImporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -13,16 +14,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\Question;
 
 class UpdateAdmLocations extends Command
 {
-    const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/33/repository';
-    const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/administrative-areas/-/raw/master/locations/';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly LocationRepository $locationRepository
+        private readonly LocationRepository $locationRepository,
+        private readonly LocationService $locationService
     ) {
         parent::__construct();
     }
@@ -45,15 +44,15 @@ class UpdateAdmLocations extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $countries = $this->getRequestedCountries($input, $output);
+        $admFiles = $this->locationService->getADMFiles();
+        $countries = $this->getRequestedCountries($input, $output, $admFiles);
         $output->writeln("Countries to upload: " . implode(', ', $countries));
         foreach ($countries as $countryCode) {
-            if (!isset($this->getADMFiles()[$countryCode])) {
+            if (!isset($admFiles[$countryCode])) {
                 $output->writeln("$countryCode is not valid iso3 country code");
                 continue;
             }
-            $countryFile = $this->getADMFiles()[$countryCode];
-            $countryFileUrl = self::REPOSITORY_URL . $countryFile;
+            $countryFileUrl = $admFiles[$countryCode];
             $output->writeln("Importing file $countryFileUrl");
 
             // LOCATION IMPORT
@@ -64,7 +63,7 @@ class UpdateAdmLocations extends Command
         return 0;
     }
 
-    private function getRequestedCountries(InputInterface $input, OutputInterface $output)
+    private function getRequestedCountries(InputInterface $input, OutputInterface $output, array $admFiles)
     {
         if ($input->hasArgument('country') && !empty($input->getArgument('country'))) {
             $countries = $input->getArgument('country');
@@ -72,7 +71,7 @@ class UpdateAdmLocations extends Command
             empty($input->getArgument('country'))
             && true === $input->getOption('all')
         ) {
-            $countries = array_keys($this->getADMFiles());
+            $countries = array_keys($admFiles);
         } else {
             $countries = [
                 $this->getHelper('question')->ask(
@@ -80,7 +79,7 @@ class UpdateAdmLocations extends Command
                     $output,
                     new ChoiceQuestion(
                         'Which file do you want import? ',
-                        $this->getADMFiles()
+                        $admFiles
                     )
                 ),
             ];
@@ -89,9 +88,12 @@ class UpdateAdmLocations extends Command
     }
 
     /**
-     * @param AdmsImporter|LocationImporter $importer
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param LocationImporter $importer
+     * @throws \Doctrine\DBAL\Exception
      */
-    private function importLocations(InputInterface $input, OutputInterface $output, $importer): void
+    private function importLocations(InputInterface $input, OutputInterface $output, LocationImporter $importer): void
     {
         $output->writeln(" - Importing by " . $importer::class);
         if ($input->hasOption('limit')) {
@@ -118,19 +120,4 @@ class UpdateAdmLocations extends Command
         ]);
     }
 
-    private function getADMFiles(): array
-    {
-        $url = self::REPOSITORY_API_URL . '/tree?path=src/Resources/locations';
-        $response = file_get_contents(self::REPOSITORY_API_URL . '/tree?path=locations');
-        $files = json_decode($response, true);
-        $choices = [];
-        foreach ($files as $file) {
-            $fileNameWithoutExtension = pathinfo($file['name'], PATHINFO_FILENAME);
-            $choices[$fileNameWithoutExtension] = $file['name'];
-        }
-        if (count($choices) === 0) {
-            throw new Exception("Getting XML files failed. Please check if there are any files at {$url}");
-        }
-        return $choices;
-    }
 }

@@ -569,6 +569,11 @@ services:
 
     Services\ScoringBlueprintService:
 
+    Services\LocationService:
+        arguments:
+            - '%adm.repositoryApiUrl%'
+            - '%adm.repositoryUrl%'
+
     Component\SelectionCriteria\Loader\CriteriaConfigurationLoader:
         arguments:
             - '%distribution.criteria%'
@@ -917,7 +922,6 @@ services:
             - { name: 'console.command' }
         arguments:
             - '@doctrine.orm.default_entity_manager'
-            - '@Repository\LocationRepository'
 
     Command\AdmCSV2XMLCommand:
         public: true
@@ -1009,9 +1013,6 @@ services:
 
     DataFixtures\LocationFixtures:
         public: true
-        arguments:
-            - '@Repository\LocationRepository'
-            - '@Component\Country\Countries'
         tags:
             - { name: doctrine.fixture.orm }
 
