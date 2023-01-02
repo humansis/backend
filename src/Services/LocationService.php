@@ -16,7 +16,6 @@ use Utils\UserService;
 
 class LocationService
 {
-
     const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/33/repository/tree?path=locations';
     const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/administrative-areas/-/raw/master/locations/';
 
@@ -36,7 +35,7 @@ class LocationService
         $admFiles = [];
         foreach ($files as $file) {
             $fileNameWithoutExtension = pathinfo($file['name'], PATHINFO_FILENAME);
-            $admFiles[$fileNameWithoutExtension] = $this->repositoryUrl. $file['name'];
+            $admFiles[$fileNameWithoutExtension] = $this->repositoryUrl . $file['name'];
         }
         if (count($admFiles) === 0) {
             throw new \Exception("Getting XML files failed. Please check if there are any files at {$this->repositoryApiUrl}");

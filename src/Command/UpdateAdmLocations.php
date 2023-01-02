@@ -17,7 +17,6 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class UpdateAdmLocations extends Command
 {
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LocationRepository $locationRepository,
@@ -119,5 +118,4 @@ class UpdateAdmLocations extends Command
             "DONE, imported {$importer->getImportedLocations()}, omitted {$importer->getOmittedLocations()}",
         ]);
     }
-
 }
