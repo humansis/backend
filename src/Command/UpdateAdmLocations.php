@@ -17,8 +17,8 @@ use Symfony\Component\Console\Question\Question;
 
 class UpdateAdmLocations extends Command
 {
-    const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/12/repository';
-    const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/backend/-/raw/develop/src/Resources/locations/';
+    const REPOSITORY_API_URL = 'https://gitlab-public.quanti.cz/api/v4/projects/33/repository';
+    const REPOSITORY_URL = 'https://gitlab-public.quanti.cz/humansis/web-platform/administrative-areas/-/raw/master/locations/';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -120,12 +120,16 @@ class UpdateAdmLocations extends Command
 
     private function getADMFiles(): array
     {
-        $response = file_get_contents(self::REPOSITORY_API_URL . '/tree?path=src/Resources/locations');
+        $url = self::REPOSITORY_API_URL . '/tree?path=src/Resources/locations';
+        $response = file_get_contents(self::REPOSITORY_API_URL . '/tree?path=locations');
         $files = json_decode($response, true);
         $choices = [];
         foreach ($files as $file) {
             $fileNameWithoutExtension = pathinfo($file['name'], PATHINFO_FILENAME);
             $choices[$fileNameWithoutExtension] = $file['name'];
+        }
+        if (count($choices) === 0) {
+            throw new Exception("Getting XML files failed. Please check if there are any files at {$url}");
         }
         return $choices;
     }
