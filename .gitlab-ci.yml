@@ -45,7 +45,7 @@ stages:
   tags:
     - dind
 
-.test-core:
+.test-setup:
   image: artifactory.quanti.cz/docker/pin-php-test:8.1
   services:
     - name: mysql:8.0.21
@@ -69,14 +69,6 @@ stages:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - vendor/
-
-.test-setup:
-  extends: .test-core
-  before_script:
-    - php bin/console doctrine:database:create --env=test || true
-    - php bin/console doctrine:migrations:migrate -n --env=test
-    - php bin/console doctrine:fixtures:load -n --env=dev
-    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
 
 static_analysis:
   image: php:8.1-fpm
@@ -103,11 +95,15 @@ test:
   stage: test
   extends: .test-setup
   script:
+    - php bin/console doctrine:database:create --env=test || true
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/console doctrine:fixtures:load -n --env=dev
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
     - php -d memory_limit=-1 ./vendor/bin/phpunit
 
 upload crowdin:
   stage: upload_crowdin
-  extends: .test-core
+  extends: .test-setup
   script:
     - php bin/console translation:extract --force en
     - php bin/console crowdin:push
