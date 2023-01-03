@@ -331,7 +331,7 @@ make badge:
 
 deploy prod db to stage:
   stage: upload_db
-  image: artifactory.quanti.cz/docker/mysql-ssh-awscli
+  image: artifactory.quanti.cz/docker/mysql-ssh-awscli:8.0
   variables:
     HOSTNAME: apistage.humansis.org
     DATABASE_NAME: proddb
