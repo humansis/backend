@@ -484,8 +484,8 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         );
 
         $this->assertSame(
-            (is_countable($result['notFound']) ? count($result['notFound']) : 0) + (is_countable($result['success']) ? count($result['success']) : 0) + (is_countable($result['failed']) ? count($result['failed']) : 0) + (is_countable($result['alreadyRemoved']) ? count(
-                $result['alreadyRemoved']
+            (is_countable($result['notFound']) ? count($result['notFound']) : 0) + (is_countable($result['success']) ? count($result['success']) : 0) + (is_countable($result['failed']) ? count($result['failed']) : 0) + (is_countable($result['alreadyProcessed']) ? count(
+                $result['alreadyProcessed']
             ) : 0),
             (is_countable($bnfTaxIds) ? count($bnfTaxIds) : 0) + 1,
             'Lost ids, input: ' . $hhTaxId . ',' . implode(',', $bnfTaxIds) . ' output: ' . $this->client->getResponse(

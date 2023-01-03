@@ -339,8 +339,8 @@ class AssistanceBeneficiary
     {
         foreach ($this->getReliefPackages() as $reliefPackage) {
             if (
-                $reliefPackage->getState() !== ReliefPackageState::TO_DISTRIBUTE
-                || $reliefPackage->getAmountDistributed() > 0
+                $reliefPackage->hasDistributionStarted()
+                || $reliefPackage->hasDistributedMoney()
             ) {
                 return true;
             }

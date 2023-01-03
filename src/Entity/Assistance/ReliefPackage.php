@@ -275,6 +275,16 @@ class ReliefPackage
         $this->distributedBy = $distributedBy;
     }
 
+    public function hasDistributedMoney(): bool
+    {
+        return (double)$this->amountDistributed > 0.0;
+    }
+
+    public function hasDistributionStarted(): bool
+    {
+        return in_array($this->state, ReliefPackageState::distributionStartedStates());
+    }
+
     public function isInDistributableState(): bool
     {
         return in_array($this->state, ReliefPackageState::distributableStates());

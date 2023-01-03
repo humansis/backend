@@ -5498,6 +5498,26 @@ the donation of the below specified items from People in Need.</target>
         <source>Total per Vendor and Period</source>
         <target>Total per Vendor and Period</target>
       </trans-unit>
+      <trans-unit id="6ROr5qP" resname="It is not possible to remove a beneficiary from validated and locked assistance">
+        <source>It is not possible to remove a beneficiary from validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="80VoLBb" resname="It is not possible to add a beneficiary to validated and locked assistance">
+        <source>It is not possible to add a beneficiary to validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="MjdvTAf" resname="cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.">
+        <source>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
+        <target>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
+      <trans-unit id="GJ08G1a" resname="Beneficiary %name% can't be removed from assistance. He has already received a relief package.">
+        <source>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</source>
+        <target>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</target>
+      </trans-unit>
+      <trans-unit id="wnSoDHM" resname="Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.">
+        <source>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</source>
+        <target>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
