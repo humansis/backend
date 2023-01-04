@@ -2,16 +2,44 @@
 
 namespace Utils;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
 class CountrySpecificService
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
+    public function create($inputType): CountrySpecific
+    {
+        $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
+
+        try {
+            $this->managerRegistry->getManager()->persist($countrySpecific);
+            $this->managerRegistry->getManager()->flush();
+        } catch (UniqueConstraintViolationException $ex) {
+            throw $ex;
+        }
+        return $countrySpecific;
+    }
+
+    public function update($countrySpecific, $inputType): CountrySpecific
+    {
+        $countrySpecific->setFieldString($inputType->getField());
+        $countrySpecific->setType($inputType->getType());
+
+        try {
+            $this->managerRegistry->getManager()->persist($countrySpecific);
+            $this->managerRegistry->getManager()->flush();
+        } catch (UniqueConstraintViolationException $ex) {
+            throw $ex;
+        }
+        return $countrySpecific;
+    }
     /**
      * @return bool
      */
