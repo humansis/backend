@@ -548,7 +548,6 @@ class AssistanceService
      */
     public function exportVouchersDistributionToCsv(Assistance $assistance, string $type): string
     {
-        $this->translator->trans("Lorem ipsum");
         $distributionBeneficiaries = $this->em->getRepository(AssistanceBeneficiary::class)
             ->findByAssistance($assistance);
 
