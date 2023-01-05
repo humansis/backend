@@ -63,10 +63,6 @@ stages:
     - sudo composer self-update
     - cp app/config/parameters.yml.test app/config/parameters.yml
     - composer install
-    - php bin/console doctrine:database:create --env=test || true
-    - php bin/console doctrine:migrations:migrate -n --env=test
-    - php bin/console doctrine:fixtures:load -n --env=dev
-    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   except:
     - tags
   cache:
@@ -99,6 +95,10 @@ test:
   stage: test
   extends: .test-setup
   script:
+    - php bin/console doctrine:database:create --env=test || true
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/console doctrine:fixtures:load -n --env=dev
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
     - php -d memory_limit=-1 ./vendor/bin/phpunit
 
 upload crowdin:
