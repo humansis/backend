@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Component\Country\Countries;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
-use Export\DistributedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Entity\DistributedItem;
 use InputType\DistributedItemFilterInputType;
 use InputType\DistributedItemOrderInputType;
 use Repository\DistributedItemRepository;
 use Request\Pagination;
-use Entity\Project;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Utils\DistributedSummaryTransformData;
+use Utils\ExportTableServiceInterface;
 
 class DistributedItemController extends AbstractController
 {
-    public function __construct(private readonly DistributedSummarySpreadsheetExport $distributedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly ManagerRegistry $managerRegistry, private readonly Countries $countries, private readonly DistributedItemRepository $distributedItemRepository, private readonly DistributedSummaryTransformData $distributedSummaryTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -87,21 +86,17 @@ class DistributedItemController extends AbstractController
      *
      *
      */
-    public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): Response
+    public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): StreamedResponse
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $filename = $this->distributedSummarySpreadsheetExport->export(
-            $request->headers->get('country'),
-            $request->get('type'),
-            $inputType
-        );
+        $country = $this->countries->getCountry($request->headers->get('country'));
+        $distributedItems = $this->distributedItemRepository->findByParams($country->getIso3(), $inputType);
+        $exportableTable = $this->distributedSummaryTransformData->transformData($distributedItems, $country);
 
-        $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $filename));
-
-        return $response;
+        return $this->exportTableService->export($exportableTable, 'summary', $request->get('type'), false, true);
+        ;
     }
 }

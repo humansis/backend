@@ -1235,6 +1235,10 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\DistributedSummaryTransformData:
+        class:  Utils\DistributedSummaryTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
@@ -1374,16 +1378,6 @@ services:
 
     Utils\Provider\KHMFinancialProvider: '@transaction.khm_financial_provider'
 
-    Export\DistributedSummarySpreadsheetExport:
-        alias: export.distributed_summary.spreadsheet
-
-    export.distributed_summary.spreadsheet:
-        class: Export\DistributedSummarySpreadsheetExport
-        arguments:
-            - '@translator'
-            - '@Component\Country\Countries'
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\DistributedItem")'
-        public: true
 
     Export\PurchasedSummarySpreadsheetExport:
         alias: export.purchased_summary.spreadsheet
