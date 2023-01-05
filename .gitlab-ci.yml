@@ -107,8 +107,7 @@ upload crowdin:
   script:
     - php bin/console translation:extract --force en
     - php bin/console crowdin:push
-  only:
-    - develop
+  when: manual
 
 aws-db-snapshot:
   stage: backup_db
