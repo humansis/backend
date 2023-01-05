@@ -15,11 +15,11 @@ use Entity\User;
 use InputType\Smartcard\DepositInputType;
 use Repository\Assistance\ReliefPackageRepository;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Model\PurchaseService;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Utils\SmartcardService;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
@@ -32,7 +32,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         private readonly PurchaseService $purchaseService,
         private readonly DepositFactory $depositFactory,
         private readonly ReliefPackageRepository $reliefPackageRepository,
-        private readonly SmartcardRepository $smartcardRepository
+        private readonly SmartcardBeneficiaryRepository $smartcardRepository
     ) {
     }
 
@@ -153,8 +153,8 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private function generatePackages(ObjectManager $manager, AssistanceBeneficiary $ab, string $currency): void
     {
         $serialNumber = self::generateSerialNumber();
-        $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('2000-01-01'));
-        $smartcard->setState(Smartcard::STATE_ACTIVE);
+        $smartcard = new SmartcardBeneficiary($serialNumber, new DateTimeImmutable('2000-01-01'));
+        $smartcard->setState(SmartcardBeneficiary::STATE_ACTIVE);
         $smartcard->setCurrency($currency);
         $smartcard->setBeneficiary($ab->getBeneficiary());
         $manager->persist($ab);
@@ -215,14 +215,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private static function generateState()
     {
-        $i = random_int(0, count(Smartcard::states()) - 1);
+        $i = random_int(0, count(SmartcardBeneficiary::states()) - 1);
 
-        return Smartcard::states()[$i];
+        return SmartcardBeneficiary::states()[$i];
     }
 
     private function generatePurchase(
         $seed,
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcard,
         Vendor $vendor,
         Assistance $assistance,
         ObjectManager $manager,

@@ -12,9 +12,9 @@ use Component\Smartcard\Analytics\EventService;
 use Controller\SupportApp\AbstractSupportAppController;
 use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\Vendor;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 
 class AnalyticsController extends AbstractSupportAppController
 {
@@ -25,7 +25,7 @@ class AnalyticsController extends AbstractSupportAppController
     }
 
     #[Rest\Get('/support-app/v1/smartcard-analytics/smartcard/{id}')]
-    public function smartcardById(Smartcard $smartcard, EventService $eventService): JsonResponse
+    public function smartcardById(SmartcardBeneficiary $smartcard, EventService $eventService): JsonResponse
     {
         return $this->json(new Paginator($eventService->getSmartcardEvents($smartcard)));
     }

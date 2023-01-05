@@ -9,7 +9,7 @@ use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Entity\Assistance\ReliefPackage;
 use Entity\Project;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
@@ -67,7 +67,7 @@ class Event implements JsonSerializable
                 case SmartcardPurchase::class:
                     $serializedData['purchaseId'] = $object->getId();
                     break;
-                case Smartcard::class:
+                case SmartcardBeneficiary::class:
                     $serializedData['smartcardId'] = $object->getId();
                     $serializedData['smartcardSerialNumber'] = $object->getSerialNumber();
                     break;

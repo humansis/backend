@@ -33,7 +33,7 @@ use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Entity\Vendor;
 use InputType\SmartcardPurchase;
@@ -553,7 +553,7 @@ class SmartcardServiceTest extends KernelTestCase
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+        $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['beneficiary' => $allTestingBeneficiaries],
             ['id' => 'asc']
         );
@@ -671,7 +671,7 @@ class SmartcardServiceTest extends KernelTestCase
             }
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
-            $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+            $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
                 ['beneficiary' => $beneficiaryId],
                 ['id' => 'asc']
             );

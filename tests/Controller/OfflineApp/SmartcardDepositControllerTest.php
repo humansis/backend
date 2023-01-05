@@ -14,7 +14,7 @@ use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Enum\SmartcardStates;
 
@@ -37,7 +37,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+        $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['serialNumber' => $serialNumber],
             ['id' => 'asc']
         );
@@ -153,10 +153,10 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         return $assistanceBeneficiary;
     }
 
-    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
+    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): SmartcardBeneficiary
     {
-        /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+        /** @var SmartcardBeneficiary[] $smartcards */
+        $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['serialNumber' => $serialNumber],
             ['id' => 'asc']
         );
@@ -169,7 +169,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             }
         }
 
-        $smartcard = new Smartcard($serialNumber, new DateTime('now'));
+        $smartcard = new SmartcardBeneficiary($serialNumber, new DateTime('now'));
         $smartcard->setBeneficiary($beneficiary);
         $smartcard->setState(SmartcardStates::ACTIVE);
 

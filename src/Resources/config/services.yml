@@ -1273,10 +1273,10 @@ services:
         arguments:
             - Entity\SmartcardDeposit
 
-    Repository\SmartcardRepository:
+    Repository\SmartcardBeneficiaryRepository:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
-            - Entity\Smartcard
+            - Entity\SmartcardBeneficiary
 
     Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository

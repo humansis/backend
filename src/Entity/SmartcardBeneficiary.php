@@ -14,9 +14,9 @@ use Enum\SmartcardStates;
 /**
  * Smartcard instance used by one Beneficiary
  */
-#[ORM\Table(name: 'smartcard')]
-#[ORM\Entity(repositoryClass: 'Repository\SmartcardRepository')]
-class Smartcard
+#[ORM\Table(name: 'smartcard_beneficiary')]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardBeneficiaryRepository')]
+class SmartcardBeneficiary
 {
     final public const STATE_UNASSIGNED = 'unassigned';
     final public const STATE_ACTIVE = 'active';

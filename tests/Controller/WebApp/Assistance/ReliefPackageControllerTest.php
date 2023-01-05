@@ -11,7 +11,7 @@ use Entity\Assistance;
 use Entity\Assistance\ReliefPackage;
 use Entity\DistributedItem;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardPurchase;
 use Entity\SmartcardPurchaseRecord;
 use Entity\Vendor;
@@ -175,7 +175,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $vendorInputType = $this->buildVendorInputType($assistance->getLocation()->getId(), $user->getId());
         $vendor = $this->createVendor($vendorInputType, self::getContainer()->get(VendorService::class));
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(
+        $smartcard = $this->em->getRepository(SmartcardBeneficiary::class)->findOneBy(
             ['serialNumber' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber()]
         );
 

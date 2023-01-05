@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Repository\UserRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Utils\DecimalNumber\DecimalNumberFactory;
 use Utils\SmartcardService;
@@ -115,7 +115,7 @@ class DepositFactory
     }
 
     private function createNewDepositRoot(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcard,
         User $user,
         ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,

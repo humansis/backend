@@ -45,9 +45,9 @@ class Beneficiary extends AbstractBeneficiary
     private $vulnerabilityCriteria;
 
     /**
-     * @var Collection|Smartcard[]
+     * @var Collection|SmartcardBeneficiary[]
      */
-    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\Smartcard')]
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\SmartcardBeneficiary')]
     private Collection |array $smartcards;
 
     /**

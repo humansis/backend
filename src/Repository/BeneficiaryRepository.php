@@ -34,7 +34,7 @@ use Request\Pagination;
 use DBAL\LivelihoodEnum;
 use Entity\Project;
 use Doctrine\ORM\Query\Expr\Join;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Enum\SmartcardStates;
 
 /**
@@ -904,7 +904,7 @@ class BeneficiaryRepository extends EntityRepository
     {
         $subQueryForSC = $this->_em->createQueryBuilder()
             ->select("sc$i.id")
-            ->from(Smartcard::class, "sc$i")
+            ->from(SmartcardBeneficiary::class, "sc$i")
             ->andWhere("IDENTITY(sc$i.beneficiary) = $on.id")
             ->andWhere("sc$i.state IN ('" . SmartcardStates::ACTIVE . "')")
             ->getDQL();

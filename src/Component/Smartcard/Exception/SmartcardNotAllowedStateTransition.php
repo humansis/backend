@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Component\Smartcard\Exception;
 
 use Throwable;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 
 /**
  * @deprecated Remove after implement symfony/workflow
@@ -13,7 +13,7 @@ use Entity\Smartcard;
 class SmartcardNotAllowedStateTransition extends SmartcardException
 {
     public function __construct(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcard,
         private readonly string $newState,
         $message = "",
         $code = 0,

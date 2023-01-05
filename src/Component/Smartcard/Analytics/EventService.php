@@ -10,21 +10,21 @@ use Entity\AssistanceBeneficiary;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Assistance\ReliefPackage;
 use Entity\SynchronizationBatch;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Invoice;
 use Entity\Vendor;
 use Repository\SmartcardInvoiceRepository;
 use Repository\SmartcardPurchaseRepository;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Repository\SynchronizationBatchRepository;
 
 class EventService
 {
     private readonly SmartcardPurchaseRepository $purchaseRepository;
 
-    private readonly SmartcardRepository $smartcardRepository;
+    private readonly SmartcardBeneficiaryRepository $smartcardRepository;
 
     private readonly SynchronizationBatchRepository $purchaseSyncRepository;
 
@@ -35,7 +35,7 @@ class EventService
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->purchaseRepository = $entityManager->getRepository(SmartcardPurchase::class);
-        $this->smartcardRepository = $entityManager->getRepository(Smartcard::class);
+        $this->smartcardRepository = $entityManager->getRepository(SmartcardBeneficiary::class);
         $this->depositSyncRepository = $entityManager->getRepository(SynchronizationBatch\Deposits::class);
         $this->purchaseSyncRepository = $entityManager->getRepository(SynchronizationBatch\Purchases::class);
         $this->invoiceRepository = $entityManager->getRepository(Invoice::class);
@@ -67,7 +67,7 @@ class EventService
         return $collector->getSortedEvents();
     }
 
-    public function getSmartcardEvents(Smartcard $smartcard): array
+    public function getSmartcardEvents(SmartcardBeneficiary $smartcard): array
     {
         $collector = new EventCollector();
         $this->collectSmartcard($collector, $smartcard);
@@ -86,7 +86,7 @@ class EventService
         return $collector->getSortedEvents();
     }
 
-    private function collectSmartcard(EventCollector $collector, Smartcard $smartcard): void
+    private function collectSmartcard(EventCollector $collector, SmartcardBeneficiary $smartcard): void
     {
         foreach ($smartcard->getDeposites() as $deposit) {
             $reliefPackage = $deposit->getReliefPackage();
@@ -220,7 +220,7 @@ class EventService
         EventCollector $collector,
         SmartcardDeposit $deposit,
         Assistance $assistance,
-        Smartcard $smartcard
+        SmartcardBeneficiary $smartcard
     ): void {
         $collector->add(new Event('deposit', 'sync', $deposit->getCreatedAt(), [$deposit], []));
 
