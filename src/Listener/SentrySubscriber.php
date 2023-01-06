@@ -9,7 +9,6 @@ use Sentry\State\Scope;
 use Sentry\Tracing\TransactionContext;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
-
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -38,7 +37,7 @@ class SentrySubscriber implements EventSubscriberInterface
         ]);
         $transaction->setData([
             'url' => $request->getUri(),
-            'query_string' => key_exists('query', $parsedUrl) ? $parsedUrl['query']: null,
+            'query_string' => key_exists('query', $parsedUrl) ? $parsedUrl['query'] : null,
         ]);
         SentrySdk::getCurrentHub()->setSpan($transaction);
         configureScope(function (Scope $scope): void {
@@ -49,7 +48,7 @@ class SentrySubscriber implements EventSubscriberInterface
     private function getModuleName($uri)
     {
         if (preg_match('/(?<module>[^\/]+-app)\//', $uri, $matches)) {
-           return $matches['module'];
+            return $matches['module'];
         }
         return null;
     }
