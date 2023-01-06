@@ -1,42 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Listener;
 
 use Sentry\SentrySdk;
+use Sentry\State\Scope;
 use Sentry\Tracing\TransactionContext;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
+use function Sentry\configureScope;
 use function Sentry\startTransaction;
 
-class SentrySubscriber implements \Symfony\Component\EventDispatcher\EventSubscriberInterface
+class SentrySubscriber implements EventSubscriberInterface
 {
-    public function __construct()
+    public function __construct(private readonly TokenStorageInterface $tokenStorage)
     {
     }
 
     public function onKernelController(ControllerEvent $event)
     {
         $request = $event->getRequest();
-        $uri = $this->normalizeUri($request->getRequestUri());
+        $parsedUrl = parse_url($request->getUri());
+        $path = $parsedUrl['path'];
         $requestMethod = $request->getMethod();
-        $transactionContext = new TransactionContext("{$requestMethod} {$uri}");
+        $transactionContext = new TransactionContext();
         $transaction = startTransaction($transactionContext);
-        $transaction->setName("{$requestMethod} {$uri}");
+        $transaction->setName("{$requestMethod} {$path}");
         $transaction->setOp('api.request');
+        $transaction->setTags([
+            'module' => $this->getModuleName($request->getUri()),
+            'method' => $request->getRealMethod(),
+        ]);
+        $transaction->setData([
+            'url' => $request->getUri(),
+            'query_string' => key_exists('query', $parsedUrl) ? $parsedUrl['query']: null,
+        ]);
         SentrySdk::getCurrentHub()->setSpan($transaction);
+        configureScope(function (Scope $scope): void {
+            $scope->setUser($this->getUserInfo());
+        });
     }
 
-    /**
-     * It will remove all integer ID number from URL and replace them by id placeholder
-     *
-     * @param string $uri
-     * @return string
-     */
-    private function normalizeUri(string $uri): string
+    private function getModuleName($uri)
     {
-        $uriWithPlaceholder = preg_replace('/\/(\d)+\//', '/{id}/', $uri);
-        return preg_replace('/\?.+/', '', $uriWithPlaceholder);
+        if (preg_match('/(?<module>[^\/]+-app)\//', $uri, $matches)) {
+           return $matches['module'];
+        }
+        return null;
+    }
+
+    private function getUserInfo()
+    {
+        $token = $this->tokenStorage->getToken();
+        if (!$token) {
+            return [];
+        }
+        if (!$token->getUser()) {
+            return [];
+        }
+        return [
+            'id' => $token->getUser()->getId(),
+            'username' => $token->getUser()->getUserIdentifier(),
+            'roles' => $token->getRoleNames()
+        ];
     }
 
     /**
@@ -45,7 +76,7 @@ class SentrySubscriber implements \Symfony\Component\EventDispatcher\EventSubscr
     public static function getSubscribedEvents(): array
     {
         return [
-            \Symfony\Component\HttpKernel\KernelEvents::CONTROLLER => 'onKernelController',
+            KernelEvents::CONTROLLER => 'onKernelController',
         ];
     }
 }
