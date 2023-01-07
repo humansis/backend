@@ -27,6 +27,6 @@ final class ScoringComputedValues
             return null;
         }
 
-        return $household->getIncome() / $household->getBeneficiaries()->count();
+        return (int) floor($household->getIncome() / $household->getBeneficiaries()->count());
     }
 }
