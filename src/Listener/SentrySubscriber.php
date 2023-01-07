@@ -27,8 +27,7 @@ class SentrySubscriber implements EventSubscriberInterface
         $parsedUrl = parse_url($request->getUri());
         $path = $parsedUrl['path'];
         $requestMethod = $request->getMethod();
-        $transactionContext = new TransactionContext();
-        $transaction = startTransaction($transactionContext);
+        $transaction = SentrySdk::getCurrentHub()->getTransaction();
         $transaction->setName("{$requestMethod} {$path}");
         $transaction->setOp('api.request');
         $transaction->setTags([
@@ -39,7 +38,6 @@ class SentrySubscriber implements EventSubscriberInterface
             'url' => $request->getUri(),
             'query_string' => key_exists('query', $parsedUrl) ? $parsedUrl['query'] : null,
         ]);
-        SentrySdk::getCurrentHub()->setSpan($transaction);
         configureScope(function (Scope $scope): void {
             $scope->setUser($this->getUserInfo());
         });
