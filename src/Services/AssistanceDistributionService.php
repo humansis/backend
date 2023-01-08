@@ -7,6 +7,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
+use Enum\ReliefPackageState;
+use Exception;
+use InputType\Assistance\UpdateReliefPackageInputType;
+use LogicException;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Exception\RemoveDistributionException;
@@ -323,5 +327,48 @@ class AssistanceDistributionService
             $this->logger->error("Can not delete distribution: " . $ex->getMessage());
             throw new RemoveDistributionException("Can not delete distribution");
         }
+     * @param ReliefPackage $reliefPackage
+     * @param UpdateReliefPackageInputType $inputPackages
+     *
+     * @return ReliefPackage
+     * @throws Exception
+     */
+    public function update(ReliefPackage $reliefPackage, UpdateReliefPackageInputType $inputPackages): ReliefPackage
+    {
+        if (in_array($inputPackages->getState(), ReliefPackageState::RELIEF_PACKAGE_STATES)) {
+            $reliefPackageWorkflow = $this->registry->get($reliefPackage);
+            if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageState::transitionsMapper()[$inputPackages->getState()])) {
+                $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageState::transitionsMapper()[$inputPackages->getState()]);
+            } else {
+                throw new LogicException(
+                    sprintf(
+                        'Moving to state %s is not allowed',
+                        $inputPackages->getState()
+                    )
+                );
+            }
+        } else {
+            throw new LogicException(
+                sprintf(
+                    'State %s is not in the list of allowed states ( %s )',
+                    $inputPackages->getState(),
+                    implode(',', ReliefPackageState::RELIEF_PACKAGE_STATES)
+                )
+            );
+        }
+
+        if ($inputPackages->getNotes()) {
+            $reliefPackage->setNotes($inputPackages->getNotes());
+        }
+
+        if ($inputPackages->getAmountDistributed()) {
+            if ($reliefPackage->getAmountDistributed() !== $inputPackages->getAmountDistributed()) {
+                $reliefPackage->setAmountDistributed($inputPackages->getAmountDistributed());
+            }
+        }
+        $reliefPackage->setLastModifiedNow();
+        $this->reliefPackageRepository->save($reliefPackage);
+
+        return $reliefPackage;
     }
 }
