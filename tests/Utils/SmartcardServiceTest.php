@@ -721,7 +721,7 @@ class SmartcardServiceTest extends KernelTestCase
 
         $beneficiary = $this->beneficiaryRepository->findOneBy([]);
         $smartcard1 = $this->getSmartcardForBeneficiary('AAA123AAA', $beneficiary);
-        $smartcard2 = $this->getSmartcardForBeneficiary('BBB123BBB', $beneficiary,);
+        $smartcard2 = $this->getSmartcardForBeneficiary('BBB123BBB', $beneficiary);
         $this->em->refresh($smartcard1);
 
         $this->assertEquals(SmartcardStates::INACTIVE, $smartcard1->getState());
