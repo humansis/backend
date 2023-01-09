@@ -16,13 +16,11 @@ trait SmartcardHelper
     {
         $smartcardService = self::getContainer()->get(SmartcardService::class);
 
-        $smartcard = $smartcardService->getOrCreateSmartcardForBeneficiary(
+        $smartcard = $smartcardService->getOrCreateActiveSmartcardForBeneficiary(
             $serialNumber,
             $beneficiary,
             new DateTimeImmutable()
         );
-
-        $smartcard->setState(SmartcardStates::ACTIVE);
 
         $this->em->persist($smartcard);
         $this->em->flush();

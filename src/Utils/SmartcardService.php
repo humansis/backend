@@ -118,7 +118,7 @@ class SmartcardService
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getOrCreateSmartcardForBeneficiary(
+        $smartcard = $this->getOrCreateActiveSmartcardForBeneficiary(
             $registerInputType->getSerialNumber(),
             $beneficiary,
             $registerInputType->getCreatedAt()
@@ -182,7 +182,7 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getOrCreateSmartcardForBeneficiary(
+        $smartcard = $this->getOrCreateActiveSmartcardForBeneficiary(
             $serialNumber,
             $beneficiary,
             $data->getCreatedAt()
@@ -196,18 +196,20 @@ class SmartcardService
      * Returns already assigned Smartcard for BNF or creates new one
      *
      * @param string $serialNumber
-     * @param Beneficiary|null $beneficiary
+     * @param Beneficiary $beneficiary
      * @param DateTimeInterface $dateOfEvent
      * @return Smartcard
      * @throws ORMException
      */
-    public function getOrCreateSmartcardForBeneficiary(
+    public function getOrCreateActiveSmartcardForBeneficiary(
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
     ): Smartcard {
         $smartcard = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $dateOfEvent);
         if ($smartcard) {
+            $smartcard->setState(SmartcardStates::ACTIVE);
+            $this->disableBnfSmartcardsExceptLastUsed($smartcard);
             return $smartcard;
         }
 
@@ -352,10 +354,9 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard|null $lastUsedSmartcard
+     * @param Smartcard $lastUsedSmartcard
      * @return void
      * @throws ORMException
-     * @throws OptimisticLockException
      */
     private function disableBnfSmartcardsExceptLastUsed(Smartcard $lastUsedSmartcard): void
     {

@@ -14,22 +14,22 @@ use Entity\Beneficiary;
 use DateTime;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Entity\Assistance\ReliefPackage;
 use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
+use Enum\ReliefPackageState;
 use Enum\SmartcardStates;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
 use Psr\Cache\InvalidArgumentException;
+use Repository\Assistance\ReliefPackageRepository;
 use Repository\RoleRepository;
 use Repository\BeneficiaryRepository;
 use Repository\Smartcard\PreliminaryInvoiceRepository;
-use Repository\SmartcardRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Entity\User;
 use Entity\Product;
@@ -37,44 +37,39 @@ use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\Vendor;
 use InputType\SmartcardPurchase;
+use Tests\ComponentHelper\DepositHelper;
 use Tests\ComponentHelper\SmartcardHelper;
 use Utils\SmartcardService;
 
 class SmartcardServiceTest extends KernelTestCase
 {
     use SmartcardHelper;
+    use DepositHelper;
 
     final public const VENDOR_USERNAME = 'one-purpose-vendor@example.org';
 
     /** @var ObjectManager|null */
-    private $em;
+    private ?ObjectManager $em;
 
-    /** @var SmartcardService */
-    private $smartcardService;
+    private SmartcardService $smartcardService;
 
-    private ?\Entity\Vendor $vendor = null;
+    private ?Vendor $vendor = null;
 
     private string $smartcardNumber = '';
 
-    /** @var DepositFactory */
-    private $depositFactory;
+    private DepositFactory $depositFactory;
 
-    /**
-     * @var InvoiceFactory
-     */
-    private $invoiceFactory;
+    private InvoiceFactory $invoiceFactory;
 
-    private ?\Entity\User $user = null;
+    private ?User $user = null;
 
-    /**
-     * @var PreliminaryInvoiceRepository
-     */
-    private $preliminaryInvoiceRepository;
+    private PreliminaryInvoiceRepository $preliminaryInvoiceRepository;
 
-    /**
-     * @var RoleRepository
-     */
-    private $roleRepository;
+    private RoleRepository $roleRepository;
+
+    private ReliefPackageRepository $reliefPackageRepository;
+
+    private BeneficiaryRepository $beneficiaryRepository;
 
     protected function setUp(): void
     {
@@ -90,8 +85,10 @@ class SmartcardServiceTest extends KernelTestCase
         $this->invoiceFactory = self::getContainer()->get(InvoiceFactory::class);
         $this->roleRepository = self::getContainer()->get(RoleRepository::class);
         $this->preliminaryInvoiceRepository = self::getContainer()->get(PreliminaryInvoiceRepository::class);
+        $this->reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
+        $this->beneficiaryRepository = self::getContainer()->get(BeneficiaryRepository::class);
 
-        $this->createTempVendor($this->em);
+        $this->createTempVendor();
         $this->em->persist($this->vendor);
         $this->em->persist($this->user);
 
@@ -711,32 +708,71 @@ class SmartcardServiceTest extends KernelTestCase
         }
     }
 
-    public function testDepositToNotActivatedSmartcard(): void
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     * @throws \Doctrine\ORM\Exception\ORMException
+     * @throws InvalidArgumentException
+     * @throws DoubledDepositException
+     */
+    public function testGetOrCreateActiveSmartcardForBeneficiary(): void
     {
         $this->em->beginTransaction();
 
-        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
-        $beneficiaryRepository = self::getContainer()->get(BeneficiaryRepository::class);
-        $beneficiary = $beneficiaryRepository->findOneBy([]);
-        $this->getSmartcardForBeneficiary('AAA123AAA', $beneficiary);
+        $beneficiary = $this->beneficiaryRepository->findOneBy([]);
+        $smartcard1 = $this->getSmartcardForBeneficiary('AAA123AAA', $beneficiary);
+        $smartcard2 = $this->getSmartcardForBeneficiary('BBB123BBB', $beneficiary,);
+        $this->em->refresh($smartcard1);
 
-        $newSmartcard = $this->smartcardService->getOrCreateSmartcardForBeneficiary('BBB123BBB', $beneficiary, new \DateTimeImmutable('-2 days'));
-        $this->em->flush();
-
-        $numberOfActiveSmartcards2 = count($smartcardRepository->findBy(['beneficiary' => $beneficiary, 'state' => SmartcardStates::ACTIVE]));
-        $this->assertEquals(1, $numberOfActiveSmartcards2);
-
-        /**
-         * @var Smartcard|null $activeSmartcard
-         */
-        $activeSmartcard = $smartcardRepository->findOneBy(['beneficiary' => $beneficiary, 'state' => SmartcardStates::ACTIVE]);
-        $this->assertNotNull($activeSmartcard);
-        $this->assertEquals($newSmartcard->getSerialNumber(), $activeSmartcard->getSerialNumber());
+        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard1->getState());
+        $this->assertEquals(SmartcardStates::ACTIVE, $smartcard2->getState());
 
         $this->em->rollback();
     }
 
-    private function createTempVendor(EntityManagerInterface $em): void
+    public function testDepositToOldSmartcard(): void
+    {
+        $this->em->beginTransaction();
+
+        /**
+         * @var ?ReliefPackage $reliefPackage
+         */
+        $reliefPackage = $this->reliefPackageRepository->findOneBy(
+            ['state' => ReliefPackageState::TO_DISTRIBUTE, 'modalityType' => ModalityType::SMART_CARD]
+        );
+        if (!$reliefPackage) {
+            $this->markTestSkipped('No relief package to distribute.');
+        }
+
+        $ab = $reliefPackage->getAssistanceBeneficiary();
+        $oldSmartcard = $ab->getBeneficiary()->getActiveSmartcard();
+        if (!$oldSmartcard) {
+            $oldSmartcard = $this->getSmartcardForBeneficiary('AAA123AAA', $ab->getBeneficiary());
+        }
+        $newSmartcard = $this->getSmartcardForBeneficiary('BBB123BBB', $ab->getBeneficiary());
+        $this->em->refresh($oldSmartcard);
+        $this->em->refresh($newSmartcard);
+
+        $this->assertEquals(SmartcardStates::INACTIVE, $oldSmartcard->getState());
+        $this->assertEquals(SmartcardStates::ACTIVE, $newSmartcard->getState());
+
+        $depositInputType = self::buildDepositInputType(
+            $reliefPackage->getId(),
+            $reliefPackage->getAmountToDistribute()
+        );
+        $this->createDeposit($oldSmartcard->getSerialNumber(), $depositInputType, $this->user, $this->depositFactory);
+
+        $this->em->flush();
+        $this->em->refresh($oldSmartcard);
+        $this->em->refresh($newSmartcard);
+
+        $this->assertEquals(SmartcardStates::ACTIVE, $oldSmartcard->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $newSmartcard->getState());
+
+        $this->em->rollback();
+    }
+
+    private function createTempVendor(): void
     {
         $id = substr(md5(uniqid()), 0, 5) . "_";
         $adm2 = $this->em->getRepository(Location::class)->findOneBy(

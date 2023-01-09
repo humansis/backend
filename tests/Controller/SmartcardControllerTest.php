@@ -112,6 +112,41 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->rollback();
     }
 
+    public function testRegisterOldCardAgain(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $firstSmartcardCode = '1111111';
+        $secondSmartcardCode = '2222222';
+        $bnf = self::getContainer()->get(BeneficiaryRepository::class)->findOneBy([], ['id' => 'asc']);
+        $smartcard1 = $this->getSmartcardForBeneficiary($firstSmartcardCode, $bnf);
+        $smartcard1->setState(SmartcardStates::ACTIVE);
+        $smartcardRepository->save($smartcard1);
+        $smartcard2 = $this->getSmartcardForBeneficiary($secondSmartcardCode, $bnf);
+        $smartcard2->setState(SmartcardStates::INACTIVE);
+        $smartcardRepository->save($smartcard2);
+
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
+            'serialNumber' => $secondSmartcardCode,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->em->refresh($smartcard1);
+        $this->em->refresh($smartcard2);
+        $this->assertEquals(SmartcardStates::ACTIVE, $smartcard2->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard1->getState());
+
+        $this->em->rollback();
+    }
+
     /**
      * @throws ORMException
      * @throws OptimisticLockException
