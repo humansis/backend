@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Controller\ExportController;
-use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\CountrySpecificCreateInputType;
 use InputType\CountrySpecificFilterInputType;
@@ -68,37 +68,27 @@ class CountrySpecificController extends AbstractController
         return $this->json($countrySpecifics);
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     #[Rest\Post('/web-app/v1/country-specifics')]
     public function create(CountrySpecificCreateInputType $inputType): JsonResponse
     {
         try {
             $countrySpecific = $this->countrySpecificService->create($inputType);
-        } catch (Throwable $ex) {
-            return $this->json(
-                "Country specific option with the same name already exists, please choose another name.",
-                Response::HTTP_BAD_REQUEST
+        } catch (UniqueConstraintViolationException) {
+            throw new BadRequestHttpException(
+                "Country specific option with the same name already exists, please choose another name."
             );
         }
         return $this->json($countrySpecific);
     }
-
-    /**
-     *
-     * @throws Exception
-     */
+    
     #[Rest\Put('/web-app/v1/country-specifics/{id}')]
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {
         try {
             $countrySpecific = $this->countrySpecificService->update($countrySpecific, $inputType);
-        } catch (Throwable $ex) {
-            return $this->json(
-                "Country specific option with the same name already exists, please choose another name.",
-                Response::HTTP_BAD_REQUEST
+        } catch (UniqueConstraintViolationException) {
+            throw new BadRequestHttpException(
+                "Country specific option with the same name already exists, please choose another name."
             );
         }
 
