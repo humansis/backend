@@ -18,6 +18,7 @@ final class ScoringRule
      * $type = calculation: name of method which performs the calculation (in RulesCalculation)
      * $type = enum: name of enum class
      * $type = coreHousehold: name of attribute of Household entity. (Supported fields are in ScoringSupportedHouseholdCoreFieldsEnum)
+     * $type = computedValue: name of method which calculates a value from other household attributes (in ScoringComputedValues)
      */
     private string $fieldName;
 

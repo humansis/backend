@@ -14,12 +14,13 @@ final class Scoring
 {
     /**
      * Scoring constructor
-     * .
      *
      * @param ScoringRule[] $rules
      */
-    public function __construct(private readonly string $name, private readonly array $rules)
-    {
+    public function __construct(
+        private readonly string $name,
+        private readonly array $rules
+    ) {
     }
 
     public function getName(): string

@@ -15,13 +15,16 @@ use Component\Assistance\Scoring\Enum\ScoringRuleType;
 use Component\Assistance\Scoring\Model\ScoringProtocol;
 use Component\Assistance\Scoring\Model\Scoring;
 use Component\Assistance\Scoring\Model\ScoringRule;
-use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class ScoringResolver
 {
-    public function __construct(private readonly RulesCalculation $customComputation, private readonly RulesEnum $enumResolver, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly CountrySpecificAnswerRepository $countrySpecificAnswerRepository)
-    {
+    public function __construct(
+        private readonly RulesCalculation $customComputation,
+        private readonly RulesEnum $enumResolver,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly CountrySpecificAnswerRepository $countrySpecificAnswerRepository
+    ) {
     }
 
     public function compute(Household $household, Scoring $scoring, string $countryCode): ScoringProtocol
@@ -36,8 +39,7 @@ final class ScoringResolver
                 case ScoringRuleType::COUNTRY_SPECIFIC:
                     $score = $this->countrySpecifics(
                         $household,
-                        $rule->getFieldName(),
-                        $rule->getOptions(),
+                        $rule,
                         $countryCode
                     );
                     break;
@@ -46,6 +48,9 @@ final class ScoringResolver
                     break;
                 case ScoringRuleType::CORE_HOUSEHOLD:
                     $score = $this->computeCoreHousehold($household, $rule);
+                    break;
+                case ScoringRuleType::COMPUTED_VALUE:
+                    $score = $this->computeSimpleCalculation($household, $rule);
                     break;
                 default:
                     continue 2;
@@ -68,27 +73,20 @@ final class ScoringResolver
         $customComputationReflection = new ReflectionClass(RulesCalculation::class);
 
         if (!$customComputationReflection->hasMethod($rule->getFieldName())) {
-            //TODO zalogovat? dát někam vědět?
             return 0;
         }
 
         return $this->customComputation->{$rule->getFieldName()}($household, $rule);
     }
 
-    /**
-     * @param string $countrySpecificName value of Entity\CountrySpecific::$fieldString for given country
-     * @param ScoringRuleOption[] $scoringOptions
-     *
-     */
     private function countrySpecifics(
         Household $household,
-        string $countrySpecificName,
-        array $scoringOptions,
+        ScoringRule $rule,
         string $countryCode
     ): float {
         /** @var CountrySpecific $countrySpecific */
         $countrySpecific = $this->countrySpecificRepository->findOneBy([
-            'fieldString' => $countrySpecificName,
+            'fieldString' => $rule->getFieldName(),
             'countryIso3' => $countryCode,
         ]);
 
@@ -107,68 +105,48 @@ final class ScoringResolver
             return 0;
         }
 
-        $expressionLanguage = new ExpressionLanguage();
+        $CSOValue = $countrySpecificAnswer->getAnswer();
 
-        foreach ($scoringOptions as $option) {
-            if ($countrySpecific->getType() === 'number') { //evaluate option as expression
-                if (str_contains($option->getValue(), 'x')) {
-                    $result = $expressionLanguage->evaluate($option->getValue(), [
-                        'x' => (int) $countrySpecificAnswer->getAnswer(),
-                    ]);
-
-                    if (is_bool($result) && $result) {
-                        return $option->getScore();
-                    }
-                } else {
-                    $result = $expressionLanguage->evaluate($option->getValue());
-
-                    if ((int) $countrySpecificAnswer->getAnswer() === $result) {
-                        return $option->getScore();
-                    }
-                }
-            } else {
-                if (mb_strtolower($option->getValue()) === mb_strtolower($countrySpecificAnswer->getAnswer())) {
-                    return $option->getScore();
-                }
-            }
+        if ($countrySpecific->getType() === 'number') {
+            $CSOValue = (int) $CSOValue;
         }
 
-        return 0;
+        return $this->evaluateOptionExpression($rule, $CSOValue);
+    }
+
+    private function computeSimpleCalculation(Household $household, ScoringRule $rule): float
+    {
+        $simpleCalculationReflection = new ReflectionClass(ScoringComputedValues::class);
+
+        if (!$simpleCalculationReflection->hasMethod($rule->getFieldName())) {
+            return 0;
+        }
+
+        $simpleCalculation = new ScoringComputedValues();
+
+        $value = $simpleCalculation->{$rule->getFieldName()}($household);
+
+        if (is_null($value)) {
+            return 0;
+        }
+
+        return $this->evaluateOptionExpression($rule, $value);
     }
 
     private function computeCoreHousehold(Household $household, ScoringRule $rule): float
     {
-        switch ($rule->getFieldName()) {
-            case ScoringSupportedHouseholdCoreFieldsEnum::NOTES:
-                $value = $household->getNotes();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME:
-                $value = $household->getIncome();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::FOOD_CONSUMPTION_SCORE:
-                $value = $household->getFoodConsumptionScore();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::COPING_STRATEGIES_INDEX:
-                $value = $household->getCopingStrategiesIndex();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL:
-                $value = $household->getDebtLevel();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::INCOME_SPENT_ON_FOOD:
-                $value = $household->getIncomeSpentOnFood();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME:
-                $value = $household->getHouseholdIncome();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::ASSETS:
-                $value = $household->getAssets();
-                break;
-            case ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES:
-                $value = $household->getSupportReceivedTypes();
-                break;
-            default:
-                return 0;
-        }
+        $value = match ($rule->getFieldName()) {
+            ScoringSupportedHouseholdCoreFieldsEnum::NOTES => $household->getNotes(),
+            ScoringSupportedHouseholdCoreFieldsEnum::INCOME => $household->getIncome(),
+            ScoringSupportedHouseholdCoreFieldsEnum::FOOD_CONSUMPTION_SCORE => $household->getFoodConsumptionScore(),
+            ScoringSupportedHouseholdCoreFieldsEnum::COPING_STRATEGIES_INDEX => $household->getCopingStrategiesIndex(),
+            ScoringSupportedHouseholdCoreFieldsEnum::DEBT_LEVEL => $household->getDebtLevel(),
+            ScoringSupportedHouseholdCoreFieldsEnum::INCOME_SPENT_ON_FOOD => $household->getIncomeSpentOnFood(),
+            ScoringSupportedHouseholdCoreFieldsEnum::HOUSEHOLD_INCOME => $household->getHouseholdIncome(),
+            ScoringSupportedHouseholdCoreFieldsEnum::ASSETS => $household->getAssets(),
+            ScoringSupportedHouseholdCoreFieldsEnum::SUPPORT_RECEIVED_TYPES => $household->getSupportReceivedTypes(),
+            default => null,
+        };
 
         if (is_null($value)) {
             return 0;
@@ -179,20 +157,50 @@ final class ScoringResolver
             $score = 0;
 
             foreach ($value as $valueItem) {
-                foreach ($rule->getOptions() as $option) {
-                    if ($option->getValue() === $valueItem) {
-                        $score += $option->getScore();
-                    }
+                if (is_null($valueItem)) {
+                    continue;
                 }
+
+                $score += $this->evaluateOptionExpression($rule, $valueItem);
             }
 
             return $score;
         }
 
-        $value = (string) $value;
+        //the value here could be only string or int
+        return $this->evaluateOptionExpression($rule, $value);
+    }
+
+    /**
+     * @param ScoringRule $rule
+     * @param int|string $value value which is compared to rule options
+     *
+     * @return float Final score for given rule
+     */
+    private function evaluateOptionExpression(ScoringRule $rule, int|string $value): float
+    {
+        $expressionLanguage = new ExpressionLanguage();
 
         foreach ($rule->getOptions() as $option) {
-            if ($option->getValue() === $value) {
+            if (is_int($value)) {
+                // if the expression contains 'x' then evaluate it as expression
+                if (str_contains($option->getValue(), 'x')) {
+                    $result = $expressionLanguage->evaluate($option->getValue(), [
+                        'x' => $value,
+                    ]);
+
+                    if ($result === true) {
+                        return $option->getScore();
+                    }
+                } else { // if the expression does not contain 'x' then evaluate it as number
+                    $result = $expressionLanguage->evaluate($option->getValue());
+
+                    if ($value === $result) {
+                        return $option->getScore();
+                    }
+                }
+            } elseif (mb_strtolower($option->getValue()) === mb_strtolower($value)) {
+                // if the value is string, just compare if it is equal to option value
                 return $option->getScore();
             }
         }
