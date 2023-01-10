@@ -8,7 +8,6 @@ use Entity\NationalId;
 use Entity\Phone;
 use Entity\Location;
 use Enum\EnumValueNoFoundException;
-use Mapper\LocationMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use InputType\CommunityCreateInputType;
@@ -23,7 +22,7 @@ class CommunityService
     /**
      * CommunityService constructor.
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly LocationMapper $locationMapper)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
     }
 

@@ -609,7 +609,6 @@ services:
         class: Utils\CommunityService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@Mapper\LocationMapper'
         public: true
 
     beneficiary.repository:
