@@ -29,10 +29,6 @@ final class Version20221216201639 extends AbstractMigration
         ');
 
         $this->addSql('CREATE UNIQUE INDEX unique_deposit_hash ON smartcard_deposit (hash)');
-
-        $this->addSql('CREATE TABLE smartcard_deposit_log (id INT AUTO_INCREMENT NOT NULL, smartcard_deposit_id INT DEFAULT NULL, created_by_user_id INT DEFAULT NULL, request_data JSON NOT NULL, message VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_BF964569A3EB22BF (smartcard_deposit_id), INDEX IDX_BF9645697D182D95 (created_by_user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET UTF8 COLLATE `UTF8_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE smartcard_deposit_log ADD CONSTRAINT FK_BF964569A3EB22BF FOREIGN KEY (smartcard_deposit_id) REFERENCES smartcard_deposit (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE smartcard_deposit_log ADD CONSTRAINT FK_BF9645697D182D95 FOREIGN KEY (created_by_user_id) REFERENCES `user` (id)');
     }
 
     public function down(Schema $schema): void
@@ -45,9 +41,5 @@ final class Version20221216201639 extends AbstractMigration
         ');
 
         $this->addSql('DROP INDEX unique_deposit_hash ON smartcard_deposit');
-
-        $this->addSql('ALTER TABLE smartcard_deposit_log DROP FOREIGN KEY FK_BF964569A3EB22BF');
-        $this->addSql('ALTER TABLE smartcard_deposit_log DROP FOREIGN KEY FK_BF9645697D182D95');
-        $this->addSql('DROP TABLE smartcard_deposit_log');
     }
 }

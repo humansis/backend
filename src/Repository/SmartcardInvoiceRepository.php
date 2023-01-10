@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 use Entity\Invoice;
 use Entity\Vendor;
@@ -19,9 +18,12 @@ use Entity\Vendor;
  */
 class SmartcardInvoiceRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     /**
-     * @param Pagination $pagination
-     * @return Paginator|Invoice[]
+     * @param Vendor $vendor
+     * @param Pagination|null $pagination
+     * @return Paginator|Invoice
      */
     public function findByVendor(Vendor $vendor, ?Pagination $pagination = null): \Doctrine\ORM\Tools\Pagination\Paginator|array
     {
@@ -35,16 +37,5 @@ class SmartcardInvoiceRepository extends EntityRepository
         }
 
         return new Paginator($qbr);
-    }
-
-    /**
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(Invoice $invoice)
-    {
-        $this->_em->persist($invoice);
-        $this->_em->flush();
     }
 }

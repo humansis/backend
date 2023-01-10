@@ -97,12 +97,6 @@ class SmartcardDeposit
      */
     private string $hash;
 
-    /**
-     * @var Collection|SmartcardDepositLog[]
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardDepositLog", mappedBy="smartcardDeposit")
-     */
-    private Collection|array $logs;
-
     public function __construct(
         Smartcard $smartcard,
         User $distributedBy,
@@ -121,7 +115,6 @@ class SmartcardDeposit
         $this->distributedAt = $distributedAt;
         $this->suspicious = $suspicious;
         $this->message = $message;
-        $this->logs = new ArrayCollection();
 
         $this->generateHash();
     }
@@ -204,14 +197,6 @@ class SmartcardDeposit
     public function setHash(string $hash): void
     {
         $this->hash = $hash;
-    }
-
-    /**
-     * @return array|Collection
-     */
-    public function getLogs(): Collection | array
-    {
-        return $this->logs;
     }
 
     private function generateHash(): void

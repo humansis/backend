@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\SmartcardDeposit;
 use Repository\SmartcardDepositRepository;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class SmartcardDepositController extends AbstractOfflineAppController
 {
@@ -63,10 +64,17 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @Rest\Post("/offline-app/v5/smartcards/{serialNumber}/deposit")
      *
      *
+     * @param Request $request
+     * @param string $serialNumber
+     * @param DepositInputType $depositInputType
+     * @param DepositFactory $depositFactory
+     * @return Response
      * @throws DoubledDepositException
      * @throws InvalidArgumentException
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws \JsonException
+     * @throws ExceptionInterface
      */
     public function deposit(
         Request $request,

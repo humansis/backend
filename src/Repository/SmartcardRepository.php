@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Entity\Smartcard;
 use Enum\SmartcardStates;
+use Repository\Helper\TRepositoryHelper;
 
 /**
  * Class SmartcardRepository.
@@ -17,6 +18,8 @@ use Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function findBySerialNumberAndBeneficiary(string $serialNumber, ?Beneficiary $beneficiary = null): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
@@ -113,12 +116,6 @@ class SmartcardRepository extends EntityRepository
         }
     }
 
-    public function save(Smartcard $smartcard): void
-    {
-        $this->_em->persist($smartcard);
-        $this->_em->flush();
-    }
-
     public function findBySerialNumberAndBeneficiaryId(string $serialNumber, int $beneficiary): ?Smartcard
     {
         $smartcards = $this->createQueryBuilder('s')
@@ -133,15 +130,5 @@ class SmartcardRepository extends EntityRepository
             ->getQuery()->getResult();
 
         return empty($smartcards) ? null : $smartcards[0];
-    }
-
-    public function persist(Smartcard $smartcard): void
-    {
-        $this->_em->persist($smartcard);
-    }
-
-    public function flush(): void
-    {
-        $this->_em->flush();
     }
 }

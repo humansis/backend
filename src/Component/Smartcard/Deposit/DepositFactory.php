@@ -25,7 +25,6 @@ use Utils\SmartcardService;
 class DepositFactory
 {
     public function __construct(
-        private readonly SmartcardDepositRepository $smartcardDepositRepository,
         private readonly SmartcardService $smartcardService,
         private readonly ReliefPackageRepository $reliefPackageRepository,
         private readonly CacheInterface $cache,
@@ -55,9 +54,19 @@ class DepositFactory
 
         try {
             $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
-        } catch (UniqueConstraintViolationException) {
-            // TODO log to table
-            throw new DoubledDepositException($this->smartcardDepositRepository->findByHash($deposit->getHash()));
+        } catch (UniqueConstraintViolationException) {      // Warning, Entity manager is closed for this case
+            $message = sprintf(
+                "Deposit with same parameters already exists. Data: %s",
+                json_encode(
+                    array_merge(
+                        ['userId' => $user->getId()],
+                        $this->serializer->normalize($depositInputType),
+                        ['smartcardSerialNumber' => $smartcardSerialNumber]
+                    )
+                )
+            );
+            $this->logger->info($message);
+            throw new DoubledDepositException($message);
         }
 
         $this->addDepositToSmartcard($smartcard, $deposit);
@@ -126,8 +135,5 @@ class DepositFactory
             $smartcardDeposit->setSuspicious(true);
             $smartcardDeposit->addMessage('Smartcard does not have assigned beneficiary.');
         }
-    }
-
-        return $deposit;
     }
 }

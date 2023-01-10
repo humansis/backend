@@ -3,7 +3,6 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use Entity\Vendor;
@@ -13,6 +12,7 @@ use Generator;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InvalidArgumentException;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\User;
@@ -27,6 +27,8 @@ use Entity\User;
  */
 class VendorRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     private ?LocationRepository $locationRepository = null;
 
     public function setLocationRepository(LocationRepository $locationRepository)
@@ -189,11 +191,5 @@ class VendorRepository extends EntityRepository
         foreach ($children as $childKey => $child) {
             yield $child->getId();
         }
-    }
-
-    public function save(Vendor $vendor): void
-    {
-        $this->_em->persist($vendor);
-        $this->_em->flush();
     }
 }

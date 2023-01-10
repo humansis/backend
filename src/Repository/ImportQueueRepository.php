@@ -12,9 +12,12 @@ use Entity\ImportQueue;
 use Enum\ImportQueueState;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Repository\Helper\TRepositoryHelper;
 
 class ImportQueueRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function lockUnlockedItems(Import $import, $state, int $count, $code)
     {
         $freeIds = $this->findUnlockedIds($import, $state, $count);
@@ -271,11 +274,5 @@ class ImportQueueRepository extends EntityRepository
             ->setParameter('import', $import);
 
         return $qb->getQuery()->getResult();
-    }
-
-    public function save(ImportQueue $importQueue)
-    {
-        $this->_em->persist($importQueue);
-        $this->_em->flush();
     }
 }

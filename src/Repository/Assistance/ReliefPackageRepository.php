@@ -12,6 +12,7 @@ use Entity\Assistance;
 use Enum\AssistanceTargetType;
 use InputType\Assistance\ReliefPackageFilterInputType;
 use InvalidArgumentException;
+use Repository\Helper\TRepositoryHelper;
 use Repository\LocationRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,13 +26,14 @@ use Enum\SmartcardStates;
 
 class ReliefPackageRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     /**
      * @param Vendor $vendor
      * @param string $country
      * @param VendorReliefPackageFilterInputType $filterInputType
      * @return Paginator
      */
-
     public function getForVendor(Vendor $vendor, string $country, VendorReliefPackageFilterInputType $filterInputType): Paginator
     {
         $vendorLocation = $vendor->getLocation();
@@ -144,12 +146,6 @@ class ReliefPackageRepository extends EntityRepository
             ->setParameter('assistance', $assistance)
             ->setParameter('beneficiary', $beneficiary)
             ->getQuery()->getResult();
-    }
-
-    public function save(ReliefPackage $package): void
-    {
-        $this->_em->persist($package);
-        $this->_em->flush();
     }
 
     /**

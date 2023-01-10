@@ -17,16 +17,9 @@ trait TRepositoryHelper
         $this->_em->persist($entity);
     }
 
-    public function persistAndFlush(object $entity): void
+    public function save(object $entity): void
     {
         $this->persist($entity);
         $this->_em->flush($entity);
-    }
-
-    public function setNewInstanceOfClosedEntityManager(EntityManagerInterface $newInstanceOfEntityManager): void
-    {
-        if (!$this->_em->isOpen()) {
-            $this->_em = $newInstanceOfEntityManager;
-        }
     }
 }
