@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mapper;
 
-use DateTime;
 use DateTimeInterface;
 use Entity\Donor;
 use InvalidArgumentException;
@@ -63,5 +62,20 @@ class DonorMapper implements MapperInterface
     public function getLogo(): ?string
     {
         return $this->object->getLogo();
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
+    }
+
+    public function getLastModifiedAt()
+    {
+        return $this->object->getLastModifiedAt()->format(DateTimeInterface::ATOM);
+    }
+
+    public function getProjects()
+    {
+        return $this->object->getProjects();
     }
 }

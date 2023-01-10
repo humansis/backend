@@ -6,9 +6,10 @@ namespace Mapper;
 
 use DateTimeInterface;
 use InvalidArgumentException;
+use Repository\BeneficiaryRepository;
 use Serializer\MapperInterface;
 use Entity\Project;
-use Entity\ProjectSector;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ProjectOfflineMapper implements MapperInterface
 {
@@ -16,6 +17,9 @@ class ProjectOfflineMapper implements MapperInterface
 
     private ?\Entity\Project $object = null;
 
+    public function __construct(private readonly BeneficiaryRepository $beneficiaryRepository, private readonly TranslatorInterface $translator)
+    {
+    }
     /**
      * {@inheritdoc}
      */
@@ -82,20 +86,48 @@ class ProjectOfflineMapper implements MapperInterface
 
     public function getSectors(): array
     {
-        return array_values(
-            array_map(fn(ProjectSector $item) => $item->getSector(), $this->object->getSectors()->toArray())
-        );
+        $sectors = array();
+        foreach ($this->object->getSectors() as $item) {
+            $sectors[] = [
+                'id' => $item->getId(),
+                'name' => $this->translator->trans('label_sector_' . $item->getSector(), [], 'messages', 'en')
+            ];
+        }
+        return $sectors;
+    }
+
+    public function getBeneficiariesReached(): int
+    {
+        return $this->beneficiaryRepository->countAllInProject($this->object);
     }
 
     public function getDonorIds(): array
     {
-        return array_values(
-            array_map(fn($item) => $item->getId(), $this->object->getDonors()->toArray())
-        );
+        $donors = array();
+        foreach ($this->object->getDonors() as $item) {
+            $donors[] = [
+                'id' => $item->getId(),
+                'fullname' => $item->getFullname(),
+                'shortname' => $item->getShortname()
+            ];
+        }
+        return $donors;
     }
 
     public function getNumberOfHouseholds(): int
     {
         return $this->object->getNumberOfHouseholds();
+    }
+
+    public function getDistributions(): array
+    {
+        $distributions = array();
+        foreach ($this->object->getDistributions() as $item) {
+            $distributions[] = [
+                'id' => $item->getId(),
+                'name' => $item->getName(),
+            ];
+        }
+        return $distributions;
     }
 }

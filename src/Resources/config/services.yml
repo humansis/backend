@@ -143,7 +143,6 @@ services:
         arguments:
             - '@project.project_service'
             - '@beneficiary.repository'
-            - '@translator'
         tags: [ 'app.mapper' ]
 
     Mapper\UserMapper:

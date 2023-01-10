@@ -91,7 +91,7 @@ class CommunityService
         }
 
         if ($community->getAddress() && $community->getAddress()->getLocation()) {
-            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+            $community->setName($community->getlocationName());
         } else {
             $community->setName('global community');
         }
@@ -172,7 +172,7 @@ class CommunityService
         }
 
         if ($community->getAddress() && $community->getAddress()->getLocation()) {
-            $community->setName($this->locationMapper->toName($community->getAddress()->getLocation()));
+            $community->setName($community->getlocationName());
         } else {
             $community->setName('global community');
         }

@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProjectController extends AbstractOfflineAppController
 {
-    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectMapper $projectMapper)
+    public function __construct(private readonly ProjectRepository $projectRepository)
     {
     }
 
@@ -33,7 +33,7 @@ class ProjectController extends AbstractOfflineAppController
             ->getQuery()
             ->getResult();
 
-        return $this->json($this->projectMapper->toFullArrays($projects));
+        return $this->json($projects);
     }
 
     /**

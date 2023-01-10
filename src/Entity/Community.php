@@ -195,4 +195,17 @@ class Community extends AbstractBeneficiary
     {
         return $this->longitude;
     }
+
+    public function getlocationName(): string
+    {
+        $names = [];
+        if ($this->getAddress() && $this->getAddress()->getLocation()) {
+            $location = $this->getAddress()->getLocation();
+            while ($location !== null) {
+                $names[] = $location->getName();
+                $location = $location->getParent();
+            }
+        }
+        return implode(', ', $names);
+    }
 }

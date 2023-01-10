@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Mapper;
 
-use Entity\Assistance;
-use Entity\Donor;
 use Repository\BeneficiaryRepository;
 use DateTimeInterface;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Project;
 use Entity\ProjectSector;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Utils\ProjectService;
 
 class ProjectMapper implements MapperInterface
 {
     protected ?Project $object = null;
 
-    public function __construct(private readonly ProjectService $projectService, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly TranslatorInterface $translator)
+    public function __construct(private readonly ProjectService $projectService, private readonly BeneficiaryRepository $beneficiaryRepository)
     {
     }
 
@@ -32,8 +29,8 @@ class ProjectMapper implements MapperInterface
             $object instanceof Project &&
             isset($context[self::NEW_API]) &&
             true === $context[self::NEW_API] &&
+            !isset($context['offline-app']) &&
             false === array_key_exists('detail', $context);
-        return $object instanceof Project && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
     }
 
     /**
@@ -144,95 +141,5 @@ class ProjectMapper implements MapperInterface
     public function getLastModifiedAt(): DateTimeInterface
     {
         return $this->object->getLastModifiedAt();
-    }
-
-    public function toFullArray(?Project $project): ?array
-    {
-        if (!$project) {
-            return null;
-        }
-        $bnfCount = $this->beneficiaryRepository->countAllInProject($project);
-
-        return [
-            'id' => $project->getId(),
-            'iso3' => $project->getCountryIso3(),
-            'name' => $project->getName(),
-            'notes' => $project->getNotes(),
-            'target' => $project->getTarget(),
-            'internal_id' => $project->getInternalId(),
-            'donors' => $this->toMinimalDonorArrays($project->getDonors()),
-            'end_date' => $project->getEndDate()->format('d-m-Y'),
-            'start_date' => $project->getStartDate()->format('d-m-Y'),
-            'number_of_households' => $project->getNumberOfHouseholds(),
-            'sectors' => $this->toSectorArray($project->getSectors()),
-            'reached_beneficiaries' => $bnfCount,
-            'distributions' => $this->toMinimalAssistanceArrays($project->getDistributions()),
-        ];
-    }
-
-    public function toFullArrays(array $projects): iterable
-    {
-        foreach ($projects as $project) {
-            yield $this->toFullArray($project);
-        }
-    }
-
-    public function toMinimalDonorArray(?Donor $donor): ?array
-    {
-        if (!$donor) {
-            return null;
-        }
-
-        return [
-            'id' => $donor->getId(),
-            'fullname' => $donor->getFullname(),
-            'shortname' => $donor->getShortname(),
-        ];
-    }
-
-    public function toMinimalDonorArrays(iterable $donors): iterable
-    {
-        foreach ($donors as $donor) {
-            yield $this->toMinimalDonorArray($donor);
-        }
-    }
-
-    private function getLabel(string $enumValue): string
-    {
-        return $this->translator->trans('label_sector_' . $enumValue, [], 'messages', 'en');
-    }
-
-    /**
-     * @param ProjectSector[] $projectSectors
-     *
-     * @return string[]
-     */
-    public function toSectorArray(iterable $projectSectors): iterable
-    {
-        foreach ($projectSectors as $projectSector) {
-            yield [
-                'id' => $projectSector->getSector(),
-                'name' => $this->getLabel($projectSector->getSector()),
-            ];
-        }
-    }
-
-    public function toMinimalAssistanceArray(?Assistance $assistance): ?array
-    {
-        if (!$assistance) {
-            return null;
-        }
-
-        return [
-            'id' => $assistance->getId(),
-            'name' => $assistance->getName(),
-        ];
-    }
-
-    public function toMinimalAssistanceArrays(iterable $assistances): iterable
-    {
-        foreach ($assistances as $assistance) {
-            yield $this->toMinimalAssistanceArray($assistance);
-        }
     }
 }
