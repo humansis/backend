@@ -20,7 +20,6 @@ final class Version20230105085935 extends AbstractMigration
         $this->addSql('DROP TRIGGER IF EXISTS assistance_relief_package_amount_spent_trigger_update');
         $this->addSql('DROP TRIGGER IF EXISTS assistance_relief_package_amount_spent_trigger_insert');
 
-        $this->addSql($this->getUpdateSql());
         $this->addSql($this->getTriggerSql('INSERT'));
         $this->addSql($this->getTriggerSql('UPDATE'));
         $this->addSql($this->getTriggerSql('DELETE'));
@@ -256,43 +255,6 @@ final class Version20230105085935 extends AbstractMigration
         SQL;
     }
 
-    private function getUpdateSql(): string
-    {
-        $modality = ModalityType::SMART_CARD;
-
-        // set amount spent for assistance_relief_package
-        // expects only one smartcard relief package per assistance and beneficiary (= only one smartcard commodity per assistance)
-        // expects beneficiary to use only one smartcard for purchases in assistance
-        return <<<SQL
-            UPDATE `assistance_relief_package` a
-            JOIN (
-                SELECT
-                    arp.id AS aprid,
-                    sum(spr.value) AS total
-                FROM assistance a
-
-                -- get beneficiaries
-                JOIN distribution_beneficiary db
-                    ON a.id = db.assistance_id
-                JOIN assistance_relief_package arp
-                    ON db.id = arp.assistance_beneficiary_id
-                    AND arp.modality_type = '${modality}'
-
-                -- filter only smartcard with joined beneficiaries
-                JOIN smartcard_purchase sp
-                    ON a.id = sp.assistance_id
-                JOIN smartcard_beneficiary s
-                    ON sp.smartcard_id = s.id
-                    AND s.beneficiary_id = db.beneficiary_id
-
-                JOIN smartcard_purchase_record spr
-                    ON sp.id = spr.smartcard_purchase_id
-
-                GROUP by arp.id
-            ) t ON t.aprid = a.id
-            SET a.amount_spent = t.total
-        SQL;
-    }
 
     private function getViewSql(): string
     {

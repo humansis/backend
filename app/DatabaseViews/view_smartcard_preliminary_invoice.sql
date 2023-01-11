@@ -30,7 +30,7 @@ FROM (SELECT spPre.spaid                                            as spaid,
               AND sp.vendor_id IS NOT NULL
               AND spr.currency IS NOT NULL
             GROUP BY spr.currency, sp.id) spPre
-               INNER JOIN smartcard s ON spPre.smartcardId = s.id
+               INNER JOIN smartcard_beneficiary s ON spPre.smartcardId = s.id
                LEFT JOIN abstract_beneficiary ab ON s.beneficiary_id = ab.id
                LEFT JOIN distribution_beneficiary db
                           ON db.beneficiary_id = ab.id AND db.assistance_id = spPre.sp_ass
