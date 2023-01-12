@@ -15,8 +15,9 @@ class ProtocolTest extends PHPStanTestCase
 
         $protocol->addScore('test', 5);
 
-        /** @var ScoringProtocol $recreatedProtocol */
-        $recreatedProtocol = unserialize(serialize($protocol));
+        $json = $protocol->serializeToJson();
+
+        $recreatedProtocol = ScoringProtocol::unserializeFromJson($json);
 
         $this->assertCount(1, $recreatedProtocol->getAllScores());
         $this->assertEquals(5, $recreatedProtocol->getScore('test'));

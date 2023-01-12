@@ -305,7 +305,6 @@ class AssistanceBeneficiary
 
     /**
      * @return ScoringProtocol|null valid JSON string
-     *
      * @throws JsonException
      */
     public function getVulnerabilityScores(): ?ScoringProtocol
@@ -314,20 +313,15 @@ class AssistanceBeneficiary
             return null;
         }
 
-        $protocol = new ScoringProtocol();
-        $protocol->unserialize($this->vulnerabilityScores);
-
-        return $protocol;
+        return ScoringProtocol::unserializeFromJson($this->vulnerabilityScores);
     }
 
     /**
-     *
-     *
      * @throws JsonException
      */
     public function setVulnerabilityScores(ScoringProtocol $vulnerabilityScores): self
     {
-        $this->vulnerabilityScores = $vulnerabilityScores->serialize();
+        $this->vulnerabilityScores = $vulnerabilityScores->serializeToJson();
 
         return $this;
     }
