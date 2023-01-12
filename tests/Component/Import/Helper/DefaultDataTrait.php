@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Component\Import\Helper;
 
+use DataFixtures\Helper\NationalIdHelper;
 use DateTime;
 use Entity\Address;
 use Entity\Beneficiary;
@@ -23,6 +24,8 @@ use Entity\User;
 
 trait DefaultDataTrait
 {
+    use NationalIdHelper;
+
     private function createBlankHousehold(Project $project): Household
     {
         $hh = new Household();
@@ -76,7 +79,7 @@ trait DefaultDataTrait
 
         $nationalId = new NationalId();
         $nationalId->setIdType(NationalIdType::NATIONAL_ID);
-        $nationalId->setIdNumber('1234-56789' . - $this->getUniqueNumber());
+        $nationalId->setIdNumber('1234-56789' . - $this->generateRandomNumbers(100, 500));
         $nationalId->setPriority(1);
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());
@@ -138,12 +141,5 @@ trait DefaultDataTrait
 
         $file = new UploadedFile($uploadedFilePath, $filename, null, null, true);
         $this->uploadService->uploadFile($import, $file, $this->getUser());
-    }
-
-    private function getUniqueNumber()
-    {
-            $temp = (float)microtime() * 10;
-            $number = str_replace('.', '', strval($temp));
-            return $number;
     }
 }

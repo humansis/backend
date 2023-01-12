@@ -2,6 +2,7 @@
 
 namespace DataFixtures\Beneficiaries;
 
+use DataFixtures\Helper\NationalIdHelper;
 use Doctrine\ORM\EntityNotFoundException;
 use Enum\EnumValueNoFoundException;
 use Utils\CommunityService;
@@ -21,6 +22,8 @@ use Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
+    use NationalIdHelper;
+
     final public const COMMUNITIES = [
         [
             'longitude' => '20,254871',
@@ -149,7 +152,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setNationalIdCard(
             NationalIdCardInputType::create(
                 $community['national_id']['type'],
-                $community['national_id']['number'] . - $this->getUniqueNumber()
+                $community['national_id']['number'] . - $this->generateRandomNumbers(1500, 2000)
             )
         );
         $communityInputType->setPhone(
@@ -169,12 +172,5 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $projects = $this->projectRepository->findBy(['countryIso3' => $iso3], ['id' => 'asc']);
 
         return array_map(fn(Project $project) => $project->getId(), $projects);
-    }
-
-    private function getUniqueNumber()
-    {
-        $temp = (float)microtime() * 10;
-        $number = str_replace('.', '', strval($temp));
-        return $number;
     }
 }
