@@ -2,7 +2,6 @@
 
 namespace DataFixtures\Beneficiaries;
 
-use DataFixtures\Helper\NationalIdHelper;
 use Doctrine\ORM\EntityNotFoundException;
 use Enum\EnumValueNoFoundException;
 use Utils\CommunityService;
@@ -22,8 +21,6 @@ use Repository\ProjectRepository;
 
 class CommunityFixture extends Fixture implements DependentFixtureInterface
 {
-    use NationalIdHelper;
-
     final public const COMMUNITIES = [
         [
             'longitude' => '20,254871',
@@ -118,11 +115,13 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
 
             return;
         }
+        $i = 0;
         foreach ($this->countries->getAll() as $country) {
             foreach (self::COMMUNITIES as $communityTypeData) {
                 $this->communityService->create(
-                    $this->buildCommunityInputType($communityTypeData, $country->getIso3())
+                    $this->buildCommunityInputType($communityTypeData, $country->getIso3(), $i)
                 );
+                $i++;
             }
         }
     }
@@ -135,7 +134,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private function buildCommunityInputType(array $community, string $iso3): CommunityCreateInputType
+    private function buildCommunityInputType(array $community, string $iso3, int $i): CommunityCreateInputType
     {
         $communityInputType = new CommunityCreateInputType();
         $communityInputType->setProjectIds($this->getProjectsIds($iso3));
@@ -152,7 +151,7 @@ class CommunityFixture extends Fixture implements DependentFixtureInterface
         $communityInputType->setNationalIdCard(
             NationalIdCardInputType::create(
                 $community['national_id']['type'],
-                $community['national_id']['number'] . - $this->generateRandomNumbers(1500, 2000)
+                $community['national_id']['number'] . $i
             )
         );
         $communityInputType->setPhone(

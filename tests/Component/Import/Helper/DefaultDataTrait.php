@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Component\Import\Helper;
 
-use DataFixtures\Helper\NationalIdHelper;
 use DateTime;
 use Entity\Address;
 use Entity\Beneficiary;
@@ -24,8 +23,6 @@ use Entity\User;
 
 trait DefaultDataTrait
 {
-    use NationalIdHelper;
-
     private function createBlankHousehold(Project $project): Household
     {
         $hh = new Household();
@@ -79,7 +76,7 @@ trait DefaultDataTrait
 
         $nationalId = new NationalId();
         $nationalId->setIdType(NationalIdType::NATIONAL_ID);
-        $nationalId->setIdNumber('1234-56789' . - $this->generateRandomNumbers(100, 500));
+        $nationalId->setIdNumber('1234-56789' . - $this->project->getId());
         $nationalId->setPriority(1);
         $hhh->getPerson()->addNationalId($nationalId);
         $nationalId->setPerson($hhh->getPerson());

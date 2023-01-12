@@ -2,7 +2,6 @@
 
 namespace DataFixtures\Beneficiaries;
 
-use DataFixtures\Helper\NationalIdHelper;
 use Utils\InstitutionService;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
@@ -22,8 +21,6 @@ use Repository\ProjectRepository;
 
 class InstitutionFixture extends Fixture implements DependentFixtureInterface
 {
-    use NationalIdHelper;
-
     final public const INSTITUTIONS = [
         [
             'name' => 'Local mayor office',
@@ -39,7 +36,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::NATIONAL_ID,
-                'number' => 'ID: 000-1234-5895-21',
+                'number' => 'ID: 000-1234-8888-21',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -62,7 +59,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::FAMILY,
-                'number' => 'FML: 000-1234-5895-21',
+                'number' => 'FML: 000-1234-8888-22',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -85,7 +82,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
             ],
             'national_id' => [
                 'type' => NationalIdType::CAMP_ID,
-                'number' => 'CMP: 000-1234-5895-21',
+                'number' => 'CMP: 000-1234-8888-23',
                 'priority' => 1,
             ],
             'phone_type' => 'Mobile',
@@ -115,10 +112,12 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
 
             return;
         }
+        $i = 0;
         foreach ($this->countries->getAll() as $country) {
             foreach (self::INSTITUTIONS as $institutionTypeData) {
-                $inputType = $this->buildInstitutionInputType($institutionTypeData, $country->getIso3());
+                $inputType = $this->buildInstitutionInputType($institutionTypeData, $country->getIso3(), $i);
                 $this->institutionService->create($inputType);
+                $i++;
             }
         }
     }
@@ -131,7 +130,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private function buildInstitutionInputType(array $institution, string $iso3): InstitutionCreateInputType
+    private function buildInstitutionInputType(array $institution, string $iso3, int $i): InstitutionCreateInputType
     {
         $institutionInputType = new InstitutionCreateInputType();
         $institutionInputType->setName($institution['name']);
@@ -150,7 +149,7 @@ class InstitutionFixture extends Fixture implements DependentFixtureInterface
         $institutionInputType->setNationalIdCard(
             NationalIdCardInputType::create(
                 $institution['national_id']['type'],
-                $institution['national_id']['number'] . - $this->generateRandomNumbers(1000, 1400)
+                $institution['national_id']['number'] . - $i
             )
         );
         $institutionInputType->setPhone(
