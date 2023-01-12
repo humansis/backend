@@ -6,6 +6,7 @@ namespace Component\Import\Integrity;
 
 use Component\Import\Enum\ImportCsoEnum;
 use DateTime;
+use Enum\EnumValueTrait;
 use Exception;
 use Repository\CountrySpecificRepository;
 use Repository\LocationRepository;
@@ -13,7 +14,6 @@ use Utils\HouseholdExportCSVService;
 use Component\Import\CellError\CellError;
 use Component\Import\CellParameters;
 use Component\Import\Utils\ImportDateConverter;
-use Enum\EnumTrait;
 use Validator\Constraints\EmptyCountrySpecifics;
 use Validator\Constraints\ImportDate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -26,6 +26,8 @@ use Validator\Constraints\PhonePrefix;
 
 class ImportLine
 {
+    use EnumValueTrait;
+
     /**
      * Not an user input property. Its purpose is only to display information about the import process.
      */
@@ -437,7 +439,7 @@ class ImportLine
             return true;
         }
 
-        $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
+        $locationsArray = [self::normalizeValue($this->adm1)];
 
         $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
@@ -454,7 +456,7 @@ class ImportLine
             return true;
         }
 
-        $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
+        $locationsArray = [self::normalizeValue($this->adm1), self::normalizeValue($this->adm2)];
 
         $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
@@ -472,9 +474,9 @@ class ImportLine
         }
 
         $locationsArray = [
-            EnumTrait::normalizeValue($this->adm1),
-            EnumTrait::normalizeValue($this->adm2),
-            EnumTrait::normalizeValue($this->adm3),
+            self::normalizeValue($this->adm1),
+            self::normalizeValue($this->adm2),
+            self::normalizeValue($this->adm3),
         ];
 
         $location = $this->locationRepository->getByNormalizedNames(
@@ -493,10 +495,10 @@ class ImportLine
         }
 
         $locationsArray = [
-            EnumTrait::normalizeValue($this->adm1),
-            EnumTrait::normalizeValue($this->adm2),
-            EnumTrait::normalizeValue($this->adm3),
-            EnumTrait::normalizeValue($this->adm4),
+            self::normalizeValue($this->adm1),
+            self::normalizeValue($this->adm2),
+            self::normalizeValue($this->adm3),
+            self::normalizeValue($this->adm4),
         ];
 
         $location = $this->locationRepository->getByNormalizedNames(

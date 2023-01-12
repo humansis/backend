@@ -5,6 +5,7 @@ namespace Utils\Mapper;
 use Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
 use Enum\EnumTrait;
+use Enum\EnumValueTrait;
 use Enum\Livelihood;
 use Exception;
 
@@ -13,6 +14,8 @@ use Exception;
  */
 class CSVToArrayMapper
 {
+    use EnumValueTrait;
+
     private array $adms = [];
 
     public function __construct(protected EntityManagerInterface $em)
@@ -35,7 +38,7 @@ class CSVToArrayMapper
         }
 
         $query = [
-            'enumNormalizedName' => EnumTrait::normalizeValue($location[$admType]),
+            'enumNormalizedName' => self::normalizeValue($location[$admType]),
             'level' => $level,
             'countryIso3' => $location['country_iso3'],
         ];

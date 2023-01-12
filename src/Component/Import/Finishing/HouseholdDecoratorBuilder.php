@@ -7,6 +7,7 @@ namespace Component\Import\Finishing;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Entity\Location;
+use Enum\EnumValueTrait;
 use Repository\LocationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Utils\ImportDateConverter;
@@ -23,6 +24,8 @@ use Component\Import;
 
 class HouseholdDecoratorBuilder
 {
+    use EnumValueTrait;
+
     private ?\Component\Import\Integrity\ImportLine $householdLine = null;
 
     /** @var Import\Integrity\ImportLine[] */
@@ -90,10 +93,10 @@ class HouseholdDecoratorBuilder
             /** @var LocationRepository $locationRepository */
             $locationRepository = $this->entityManager->getRepository(Location::class);
             $adms = [
-                EnumTrait::normalizeValue($this->householdLine->adm1),
-                EnumTrait::normalizeValue($this->householdLine->adm2),
-                EnumTrait::normalizeValue($this->householdLine->adm3),
-                EnumTrait::normalizeValue($this->householdLine->adm4),
+                self::normalizeValue($this->householdLine->adm1),
+                self::normalizeValue($this->householdLine->adm2),
+                self::normalizeValue($this->householdLine->adm3),
+                self::normalizeValue($this->householdLine->adm4),
             ];
             $locationsArray = array_filter($adms, fn($value) => !empty($value));
 
@@ -197,10 +200,10 @@ class HouseholdDecoratorBuilder
         $locationRepository = $this->entityManager->getRepository(Location::class);
 
         $adms = [
-            EnumTrait::normalizeValue($line->adm1),
-            EnumTrait::normalizeValue($line->adm2),
-            EnumTrait::normalizeValue($line->adm3),
-            EnumTrait::normalizeValue($line->adm4),
+            self::normalizeValue($line->adm1),
+            self::normalizeValue($line->adm2),
+            self::normalizeValue($line->adm3),
+            self::normalizeValue($line->adm4),
         ];
 
         $locationsArray = array_filter($adms, fn($value) => !empty($value));

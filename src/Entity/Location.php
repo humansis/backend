@@ -9,6 +9,7 @@ use Entity\Helper\NestedTreeTrait;
 use Entity\Helper\StandardizedPrimaryKey;
 use Entity\Helper\TreeInterface;
 use Enum\EnumTrait;
+use Enum\EnumValueTrait;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -27,6 +28,7 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 #[ORM\Entity(repositoryClass: 'Repository\LocationRepository')]
 class Location implements TreeInterface
 {
+    use EnumValueTrait;
     use NestedTreeTrait;
     use CountryDependent;
     use StandardizedPrimaryKey;
@@ -93,7 +95,7 @@ class Location implements TreeInterface
     public function setName(string $name): void
     {
         $this->name = $name;
-        $this->enumNormalizedName = EnumTrait::normalizeValue($name);
+        $this->enumNormalizedName = self::normalizeValue($name);
     }
 
     public function getCode(): ?string
