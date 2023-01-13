@@ -22,6 +22,7 @@ use Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Validator\Constraints\CountrySpecificDataType;
+use Validator\Constraints\PhonePrefix;
 
 class ImportLine
 {
@@ -145,7 +146,7 @@ class ImportLine
      */
     public $typePhone1;
 
-    #[Assert\Type('scalar', groups: ['household', 'member'])]
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone1;
 
     #[Assert\Type('numeric', groups: ['household', 'member'])]
@@ -161,7 +162,7 @@ class ImportLine
      */
     public $typePhone2;
 
-    #[Assert\Type('scalar', groups: ['household', 'member'])]
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone2;
 
     #[Assert\Type('numeric', groups: ['household', 'member'])]
@@ -346,16 +347,40 @@ class ImportLine
         }
     }
 
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', payload: ['propertyPath' => 'prefixPhone1'], groups: ['household', 'member'])]
-    public function isPrefixPhone1Valid(): bool
+    #[Assert\IsTrue(message: 'All required columns for Phone 1 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone1', 'prefixPhone1', 'typePhone1']])]
+    public function isPhone1Complete(): bool
     {
-        return !$this->numberPhone1 || $this->prefixPhone1;
+        $phone1Set = [
+            $this->prefixPhone1,
+            $this->numberPhone1,
+            $this->typePhone1,
+        ];
+        if ($this->isOneFromListNonEmpty($phone1Set)) {
+            return $this->isAllFromListNonEmpty($phone1Set);
+        }
+
+        return true;
     }
 
-    #[Assert\IsTrue(message: 'Prefix should not be blank if phone number is filled', payload: ['propertyPath' => 'prefixPhone2'], groups: ['household', 'member'])]
-    public function isPrefixPhone2Valid(): bool
+    #[Assert\IsTrue(message: 'All required columns for Phone 2 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone2', 'prefixPhone2', 'typePhone2']])]
+    public function isPhone2Complete(): bool
     {
-        return !$this->numberPhone2 || $this->prefixPhone2;
+        $phone2Set = [
+            $this->prefixPhone2,
+            $this->numberPhone2,
+            $this->typePhone2,
+        ];
+        if ($this->isOneFromListNonEmpty($phone2Set)) {
+            return $this->isAllFromListNonEmpty($phone2Set);
+        }
+
+        return true;
     }
 
     #[Assert\IsTrue(message: 'Camp must have defined both Tent number and Camp name', payload: ['propertyPath' => 'campName'], groups: ['household', 'member'])]
@@ -680,5 +705,27 @@ class ImportLine
         }
 
         return $filledIds;
+    }
+
+    private function isOneFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (!empty($item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isAllFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (empty($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
