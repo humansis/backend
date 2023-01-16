@@ -5,7 +5,6 @@ namespace Utils;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
 use Entity\User;
-use Enum\ModalityType;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -53,8 +52,22 @@ class AssistanceService
      *
      * @param FilesystemAdapter $cache
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly CriteriaAssistanceService $criteriaAssistanceService, private readonly Environment $twig, private readonly CacheInterface $cache, private readonly AssistanceFactory $assistanceFactory, private readonly AssistanceRepository $assistanceRepository, private readonly SelectionCriteriaFactory $selectionCriteriaFactory, private readonly TranslatorInterface $translator, private readonly ProjectRepository $projectRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly ExportService $exportService, private readonly PdfService $pdfService)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly CriteriaAssistanceService $criteriaAssistanceService,
+        private readonly Environment $twig,
+        private readonly CacheInterface $cache,
+        private readonly AssistanceFactory $assistanceFactory,
+        private readonly AssistanceRepository $assistanceRepository,
+        private readonly SelectionCriteriaFactory $selectionCriteriaFactory,
+        private readonly TranslatorInterface $translator,
+        private readonly ProjectRepository $projectRepository,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly ExportService $exportService,
+        private readonly PdfService $pdfService,
+        private readonly ProjectService $projectService,
+    ) {
     }
 
     public function update(
@@ -440,7 +453,7 @@ class AssistanceService
     /**
      * @throws InvalidArgumentException
      */
-    public function delete(Assistance $assistanceEntity)
+    public function delete(Assistance $assistanceEntity): void
     {
         $this->cache->delete(CacheTarget::assistanceId($assistanceEntity->getId()));
         if ($assistanceEntity->isValidated()) {
@@ -486,6 +499,8 @@ class AssistanceService
             }
             $this->em->remove($assistanceBeneficiary);
         }
+
+        $this->projectService->removeAssistanceCountCache($assistanceEntity->getProject());
 
         $this->em->remove($assistanceEntity);
         $this->em->flush();

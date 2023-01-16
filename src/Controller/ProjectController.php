@@ -6,7 +6,6 @@ namespace Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
-use Controller\ExportController;
 use Entity\UserCountry;
 use Entity\UserProject;
 use Pagination\Paginator;
@@ -28,8 +27,11 @@ use Utils\ProjectService;
 
 class ProjectController extends AbstractController
 {
-    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private readonly ProjectRepository $projectRepository,
+        private readonly ProjectService $projectService,
+        private readonly ManagerRegistry $managerRegistry
+    ) {
     }
 
     /**
@@ -73,8 +75,6 @@ class ProjectController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/projects/{id}")
      * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
-     *
-     *
      */
     public function item(Project $project): JsonResponse
     {
@@ -82,7 +82,7 @@ class ProjectController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->json($project);
+        return $this->json(data: $project, context: ['detail' => true]);
     }
 
     /**
