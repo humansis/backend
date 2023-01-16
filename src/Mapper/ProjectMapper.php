@@ -14,10 +14,12 @@ use Utils\ProjectService;
 
 class ProjectMapper implements MapperInterface
 {
-    private ?\Entity\Project $object = null;
+    protected ?Project $object = null;
 
-    public function __construct(private readonly ProjectService $projectService, private readonly BeneficiaryRepository $beneficiaryRepository)
-    {
+    public function __construct(
+        protected readonly ProjectService $projectService,
+        protected readonly BeneficiaryRepository $beneficiaryRepository
+    ) {
     }
 
     /**
@@ -25,7 +27,11 @@ class ProjectMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return $object instanceof Project && isset($context[self::NEW_API]) && true === $context[self::NEW_API];
+        return
+            $object instanceof Project &&
+            isset($context[self::NEW_API]) &&
+            true === $context[self::NEW_API] &&
+            false === array_key_exists('detail', $context);
     }
 
     /**

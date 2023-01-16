@@ -31,6 +31,7 @@ use Entity\Project;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Contracts\Cache\CacheInterface;
+use Utils\ProjectService;
 
 class AssistanceFactory
 {
@@ -50,6 +51,7 @@ class AssistanceFactory
         private readonly ReliefPackageService $reliefPackageService,
         private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
         private readonly TranslatorInterface $translator,
+        private readonly ProjectService $projectService,
     ) {
     }
 
@@ -157,6 +159,8 @@ class AssistanceFactory
                 }
                 break;
         }
+
+        $this->projectService->removeAssistanceCountCache($project);
 
         return $assistance;
     }

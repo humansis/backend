@@ -167,7 +167,7 @@ class ProjectControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      */
-    public function testGet(int $id)
+    public function testGet(int $id): int
     {
         $this->request('GET', '/api/basic/web-app/v1/projects/' . $id);
 
@@ -193,6 +193,7 @@ class ProjectControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('projectInvoiceAddressLocal', $result);
         $this->assertArrayHasKey('projectInvoiceAddressEnglish', $result);
         $this->assertArrayHasKey('allowedProductCategoryTypes', $result);
+        $this->assertArrayHasKey('assistanceCount', $result);
 
         return $id;
     }

@@ -7,7 +7,9 @@ use Entity\Household;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Enum\CacheTarget;
 use Exception;
+use Exception\ExportNoDataException;
 use InvalidArgumentException;
 use Entity\Import;
 use Exception\ConstraintViolationException;
@@ -19,6 +21,8 @@ use Entity\Project;
 use Symfony\Component\Validator\ConstraintViolation;
 use Entity\User;
 use Entity\UserProject;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class ProjectService
@@ -30,8 +34,34 @@ class ProjectService
     /**
      * ProjectService constructor.
      */
-    public function __construct(protected EntityManagerInterface $em, private readonly ExportService $exportService)
+    public function __construct(
+        protected EntityManagerInterface $em,
+        private readonly ExportService $exportService,
+        private readonly CacheInterface $cache,
+    ) {
+    }
+
+    /**
+     * @param Project $project
+     * @return int
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function getAssistanceCountByProject(Project $project): int
     {
+        return $this->cache->get(
+            CacheTarget::assistanceCountInProject($project->getId()),
+            function (ItemInterface $item) use ($project) {
+                return $project->getDistributions()->count();
+            }
+        );
+    }
+
+    public function removeAssistanceCountCache(Project $project): void
+    {
+        try {
+            $this->cache->delete(CacheTarget::assistanceCountInProject($project->getId()));
+        } catch (\Psr\Cache\InvalidArgumentException) {
+        }
     }
 
     public function countActive(string $countryIso3): int
@@ -97,10 +127,12 @@ class ProjectService
     }
 
     /**
+     * @param Project $project
+     * @param ProjectUpdateInputType $inputType
      * @return Project
      * @throws EntityNotFoundException
      */
-    public function update(Project $project, ProjectUpdateInputType $inputType)
+    public function update(Project $project, ProjectUpdateInputType $inputType): Project
     {
         $existingProjects = $this->em->getRepository(Project::class)->findBy([
             'name' => $inputType->getName(),
@@ -166,7 +198,7 @@ class ProjectService
         $this->em->flush();
     }
 
-    public function addUser(Project $project, User $user)
+    public function addUser(Project $project, User $user): void
     {
         $right = $user->getRoles();
         if ($right[0] !== "ROLE_ADMIN") {
@@ -192,7 +224,7 @@ class ProjectService
      * @return void
      * @throws error if one or more distributions prevent the project from being deleted
      */
-    public function delete(Project $project)
+    public function delete(Project $project): void
     {
         /** @var Paginator $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
@@ -232,11 +264,8 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     *
-     * @param Assistance[] $assistance
-     * @return bool
      */
-    private function checkIfAllDistributionClosed(iterable $assistances)
+    private function checkIfAllDistributionClosed(iterable $assistances): bool
     {
         foreach ($assistances as $distributionDatum) {
             if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
