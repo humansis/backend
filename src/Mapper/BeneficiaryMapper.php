@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mapper;
 
 use Entity\Beneficiary;
-use Entity\VulnerabilityCriterion;
 use Enum\PersonGender;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
@@ -86,17 +85,11 @@ class BeneficiaryMapper implements MapperInterface
         return $this->object->isHead();
     }
 
-    public function getVulnerabilityCriteria(): array
+    public function getVulnerabilityCriteria(): ?array
     {
-        $data = [];
 
-        foreach ($this->object->getVulnerabilityCriteria() as $criterion) {
-            if ($criterion->isActive()) {
-                $data[] = (string) $criterion->getFieldString();
-            }
-        }
-
-        return $data;
+        return $this->object->getVulnerabilityCriteria() ?  array_values($this->object->getVulnerabilityCriteria())
+            : null;
     }
 
     public function getId(): int

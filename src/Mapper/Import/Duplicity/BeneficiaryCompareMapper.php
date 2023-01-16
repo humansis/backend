@@ -7,7 +7,6 @@ namespace Mapper\Import\Duplicity;
 use Entity\Beneficiary;
 use Entity\Person;
 use Entity\Phone;
-use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
 use Component\Import\ValueObject\BeneficiaryCompare;
 use Entity\ImportBeneficiaryDuplicity;
@@ -137,18 +136,14 @@ class BeneficiaryCompareMapper implements MapperInterface
 
     public function getVulnerability(): ?array
     {
-        $databaseVulnerabilities = [];
-        /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        foreach ($this->object->getBeneficiary()->getVulnerabilityCriteria() as $vulnerabilityCriterion) {
-            $databaseVulnerabilities[] = $vulnerabilityCriterion->getFieldString();
-        }
+
         $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
         $importedVulnerabilities = $enumBuilder->buildInputValues(
             $this->object->getImportLine()->vulnerabilityCriteria
         );
 
-        return $this->compareLists($databaseVulnerabilities, $importedVulnerabilities);
+        return $this->compareLists($this->object->getBeneficiary()->getVulnerabilityCriteria(), $importedVulnerabilities);
     }
 
     public function getResidencyStatus(): ?array

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Doctrine\Persistence\ManagerRegistry;
 use Entity\Referral;
-use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
+use Enum\VulnerabilityCriteria;
 use Pagination\Paginator;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Enum\BeneficiaryType;
@@ -20,7 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Cache(expires: '+12 hours', public: true)]
 class BeneficiaryCodelistController extends AbstractController
 {
-    public function __construct(private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly CodeListService $codeListService)
     {
     }
 
@@ -51,10 +50,10 @@ class BeneficiaryCodelistController extends AbstractController
     #[Rest\Get('/web-app/v1/beneficiaries/vulnerability-criteria')]
     public function getVulnerabilityCriterion(): JsonResponse
     {
-        $criterion = $this->managerRegistry->getRepository(VulnerabilityCriterion::class)
-            ->findAllActive();
 
-        return $this->json(new Paginator($this->codeListService->mapCriterion($criterion)));
+        $data = $this->codeListService->mapEnum(VulnerabilityCriteria::all());
+
+        return $this->json(new Paginator($data));
     }
 
     #[Rest\Get('/web-app/v1/beneficiaries/national-ids/types')]

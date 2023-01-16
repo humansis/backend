@@ -9,12 +9,10 @@ use Entity\NationalId;
 use Entity\Phone;
 use Entity\Profile;
 use Entity\Referral;
-use Entity\VulnerabilityCriterion;
 use Exception\ExportNoDataException;
 use InvalidArgumentException;
 use Repository\BeneficiaryRepository;
 use Repository\HouseholdRepository;
-use Repository\VulnerabilityCriterionRepository;
 use Controller\ExportController;
 use Doctrine\ORM\EntityManagerInterface;
 use InputType\BenefciaryPatchInputType;
@@ -29,7 +27,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BeneficiaryService
 {
-    public function __construct(private readonly EntityManagerInterface $em, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly HouseholdRepository $householdRepository, private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly HouseholdRepository $householdRepository)
     {
     }
 
@@ -103,14 +101,7 @@ class BeneficiaryService
         }
 
         //vulnerability criteria
-        $beneficiary->getVulnerabilityCriteria()->clear();
-        foreach ($inputType->getVulnerabilityCriteria() as $vulnerabilityCriterionName) {
-            /** @var VulnerabilityCriterion $criterion */
-            $criterion = $this->vulnerabilityCriterionRepository->findOneBy(
-                ['fieldString' => $vulnerabilityCriterionName]
-            );
-            $beneficiary->addVulnerabilityCriterion($criterion);
-        }
+        $beneficiary->setVulnerabilityCriteria($inputType->getVulnerabilityCriteria());
 
         //referral
         $referral = $beneficiaryPerson->getReferral();
@@ -142,9 +133,7 @@ class BeneficiaryService
             ->setResidencyStatus($inputType->getResidencyStatus())
             ->setUpdatedOn(new DateTime());
 
-        foreach ($inputType->getVulnerabilityCriteria() as $id => $vulnerability_criterion) {
-            $beneficiary->addVulnerabilityCriterion($this->getVulnerabilityCriterion($vulnerability_criterion));
-        }
+        $beneficiary->setVulnerabilityCriteria($inputType->getVulnerabilityCriteria());
 
         $person = $beneficiary->getPerson();
         $person->setGender($inputType->getGender())
@@ -194,24 +183,13 @@ class BeneficiaryService
 
     /**
      * @param $vulnerabilityCriterionId
+     *
+     * @return String
      * @throws \Exception
      */
-    public function getVulnerabilityCriterion($vulnerabilityCriterionId): VulnerabilityCriterion
+    public function getVulnerabilityCriterion($vulnerabilityCriterionId): string
     {
-        /** @var VulnerabilityCriterion $vulnerabilityCriterion */
-        $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->findOneBy(
-            ['fieldString' => $vulnerabilityCriterionId]
-        );
-
-        if (!$vulnerabilityCriterion) {
-            $vulnerabilityCriterion = $this->vulnerabilityCriterionRepository->find($vulnerabilityCriterionId);
-        }
-
-        if (!$vulnerabilityCriterion instanceof VulnerabilityCriterion) {
-            throw new \Exception("Vulnerability $vulnerabilityCriterionId doesn't exist.");
-        }
-
-        return $vulnerabilityCriterion;
+        return VulnerabilityCriteriaEnum::valueFromDB($vulnerabilityCriterionId);
     }
 
     public function remove(Beneficiary $beneficiary): void

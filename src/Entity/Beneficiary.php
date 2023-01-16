@@ -2,6 +2,9 @@
 
 namespace Entity;
 
+use DBAL\VulnerabilityCriteriaEnum;
+use Entity\Helper\EnumTrait;
+use Enum\VulnerabilityCriteria;
 use Utils\ExportableInterface;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,6 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: 'Repository\BeneficiaryRepository')]
 class Beneficiary extends AbstractBeneficiary
 {
+    use EnumTrait;
+
     #[ORM\OneToOne(targetEntity: 'Entity\Person', cascade: ['persist', 'remove'])]
     private $person;
 
@@ -39,10 +44,11 @@ class Beneficiary extends AbstractBeneficiary
     private ?Household $household = null;
 
     /**
-     * @var VulnerabilityCriterion
+     * @var int[]
+     *
+     * @ORM\Column(name="vulnerability_criterion", type="array", nullable=true)
      */
-    #[ORM\ManyToMany(targetEntity: 'Entity\VulnerabilityCriterion', cascade: ['persist'])]
-    private $vulnerabilityCriteria;
+    private array $vulnerabilityCriteria;
 
     /**
      * @var Collection|SmartcardBeneficiary[]
@@ -62,7 +68,7 @@ class Beneficiary extends AbstractBeneficiary
     public function __construct()
     {
         parent::__construct();
-        $this->vulnerabilityCriteria = new ArrayCollection();
+        $this->vulnerabilityCriteria = [];
         $this->person = new Person();
         $this->smartcardBeneficiaries = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
@@ -133,52 +139,32 @@ class Beneficiary extends AbstractBeneficiary
         return $this->household;
     }
 
-    /**
-     * Add vulnerabilityCriterion.
-     *
-     *
-     * @return Beneficiary
-     */
-    public function addVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion): Beneficiary
-    {
-        if (!$this->vulnerabilityCriteria->contains($vulnerabilityCriterion)) {
-            $this->vulnerabilityCriteria[] = $vulnerabilityCriterion;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Remove vulnerabilityCriterion.
-     *
-     *
-     * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
-     */
-    public function removeVulnerabilityCriterion(VulnerabilityCriterion $vulnerabilityCriterion): bool
-    {
-        return $this->vulnerabilityCriteria->removeElement($vulnerabilityCriterion);
-    }
 
     /**
      * Get vulnerabilityCriterion.
      *
-     * @return Collection
+     * @return string[]
      */
-    public function getVulnerabilityCriteria()
+    public function getVulnerabilityCriteria(): array
     {
-        return $this->vulnerabilityCriteria;
+        return array_values(
+            array_map(fn($criteria) => VulnerabilityCriteriaEnum::valueFromDB($criteria), $this->vulnerabilityCriteria)
+        );
     }
 
     /**
      * Set VulnerabilityCriterions.
      *
-     * @param Collection|null $collection
-     *
-     * @return Beneficiary
+     * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria(Collection $collection = null): Beneficiary
+    public function setVulnerabilityCriteria(array $vulnerabilityCriteria): self
     {
-        $this->vulnerabilityCriteria = $collection;
+        self::validateValues('vulnerabilityCriteria', VulnerabilityCriteria::class, $vulnerabilityCriteria);
+        $this->vulnerabilityCriteria = array_values(
+            array_unique(
+                array_map(fn($criteria) => VulnerabilityCriteriaEnum::valueToDB($criteria), $vulnerabilityCriteria)
+            )
+        );
 
         return $this;
     }
@@ -346,10 +332,8 @@ class Beneficiary extends AbstractBeneficiary
 
     public function hasVulnerabilityCriteria(string $vulnerabilityCriteria): bool
     {
-        foreach ($this->getVulnerabilityCriteria() as $criterion) {
-            if ($criterion->getFieldString() === $vulnerabilityCriteria) {
-                return true;
-            }
+        if (in_array($vulnerabilityCriteria, $this->getVulnerabilityCriteria(), true)) {
+            return true;
         }
 
         return false;

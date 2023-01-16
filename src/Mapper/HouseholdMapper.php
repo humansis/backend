@@ -8,7 +8,6 @@ use DateTime;
 use Entity\Beneficiary;
 use Entity\Household;
 use Entity\HouseholdLocation;
-use Entity\VulnerabilityCriterion;
 use InvalidArgumentException;
 use LogicException;
 use Serializer\MapperInterface;
@@ -127,8 +126,7 @@ class HouseholdMapper implements MapperInterface
     {
         $vulnerabilities = [];
         foreach ($this->object->getBeneficiaries() as $beneficiary) {
-            $vulnerabilityNames = array_map(fn(VulnerabilityCriterion $vulnerability) => $vulnerability->getFieldString(), $beneficiary->getVulnerabilityCriteria()->toArray());
-            $vulnerabilities = array_merge($vulnerabilities, $vulnerabilityNames);
+            $vulnerabilities = array_merge($vulnerabilities, $beneficiary->getVulnerabilityCriteria());
         }
 
         return array_values(array_unique($vulnerabilities));

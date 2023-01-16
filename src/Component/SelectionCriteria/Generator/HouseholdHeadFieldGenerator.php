@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Generator;
 
-use Entity\VulnerabilityCriterion;
 use Component\SelectionCriteria\FieldGeneratorInterface;
 use Component\SelectionCriteria\Structure\Field;
 use Enum\EnumValueNoFoundException;
 use Enum\PersonGender;
 use Enum\SelectionCriteriaTarget;
+use Enum\VulnerabilityCriteria;
 
 class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
 {
@@ -28,7 +28,7 @@ class HouseholdHeadFieldGenerator implements FieldGeneratorInterface
         );
         yield new Field(
             'disabledHeadOfHousehold',
-            VulnerabilityCriterion::all()[VulnerabilityCriterion::CRITERION_DISABLED],
+            VulnerabilityCriteria::all()[VulnerabilityCriteria::DISABLED],
             ['='],
             'boolean'
         );

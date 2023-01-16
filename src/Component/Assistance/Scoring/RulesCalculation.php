@@ -6,10 +6,10 @@ namespace Component\Assistance\Scoring;
 
 use Entity\CountrySpecificAnswer;
 use Entity\Household;
-use Entity\VulnerabilityCriterion;
 use Component\Assistance\Scoring\Enum\ScoringRuleCalculationOptionsEnum;
 use Component\Assistance\Scoring\Model\ScoringRule;
 use Enum\PersonGender;
+use Enum\VulnerabilityCriteria;
 use Utils\Floats;
 
 /**
@@ -62,9 +62,9 @@ final class RulesCalculation
 
     public function singleParentHeaded(Household $household, ScoringRule $rule): float
     {
-        /** @var VulnerabilityCriterion $headVulnerability */
+
         foreach ($household->getHouseholdHead()->getVulnerabilityCriteria() as $headVulnerability) {
-            if ($headVulnerability->getFieldString() === VulnerabilityCriterion::CRITERION_SOLO_PARENT) {
+            if ($headVulnerability === VulnerabilityCriteria::SOLO_PARENT) {
                 return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore(
                 );
             }
@@ -78,12 +78,9 @@ final class RulesCalculation
         $totalScore = 0;
 
         foreach ($household->getBeneficiaries() as $beneficiary) {
-            /** @var VulnerabilityCriterion $headVulnerability */
             foreach ($beneficiary->getVulnerabilityCriteria() as $headVulnerability) {
                 if (
-                    $headVulnerability->getFieldString(
-                    ) === VulnerabilityCriterion::CRITERION_PREGNANT || $headVulnerability->getFieldString(
-                    ) === VulnerabilityCriterion::CRITERION_LACTATING
+                    $headVulnerability() === VulnerabilityCriteria::PREGNANT || $headVulnerability() === VulnerabilityCriteria::LACTATING
                 ) {
                     $totalScore += $rule->getOptionByValue(
                         ScoringRuleCalculationOptionsEnum::VULNERABILITY_PREGNANT_OR_LACTATING
@@ -195,8 +192,8 @@ final class RulesCalculation
                 $adultsInWorkingAge++;
 
                 if (
-                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-                    $member->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriteria::DISABLED) ||
+                    $member->hasVulnerabilityCriteria(VulnerabilityCriteria::CHRONICALLY_ILL)
                 ) {
                     $adultsWithDisabilitiesOrChronicallyIll++;
                 }
@@ -265,8 +262,8 @@ final class RulesCalculation
         $result = 0;
 
         if (
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-            $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)
+            $head->hasVulnerabilityCriteria(VulnerabilityCriteria::DISABLED) ||
+            $head->hasVulnerabilityCriteria(VulnerabilityCriteria::CHRONICALLY_ILL)
         ) {
             $result += $rule->getOptionByValue(
                 ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL_OR_DISABLED
@@ -290,11 +287,11 @@ final class RulesCalculation
 
         $result = 0;
 
-        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL)) {
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriteria::CHRONICALLY_ILL)) {
             $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::CHRONICALLY_ILL)->getScore();
         }
 
-        if ($head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED)) {
+        if ($head->hasVulnerabilityCriteria(VulnerabilityCriteria::DISABLED)) {
             $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PERSON_WITH_DISABILITY)->getScore();
         }
 
@@ -308,8 +305,8 @@ final class RulesCalculation
 
         if ($head->getPerson()->getGender() === PersonGender::FEMALE) {
             if (
-                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
-                $head->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+                $head->hasVulnerabilityCriteria(VulnerabilityCriteria::LACTATING) ||
+                $head->hasVulnerabilityCriteria(VulnerabilityCriteria::PREGNANT)
             ) {
                 $result += $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::PREGNANT_OR_LACTATING_FEMALE)->getScore();
             }
@@ -329,8 +326,8 @@ final class RulesCalculation
             }
 
             if (
-                ($householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_DISABLED) ||
-                $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL) &&
+                ($householdMember->hasVulnerabilityCriteria(VulnerabilityCriteria::DISABLED) ||
+                $householdMember->hasVulnerabilityCriteria(VulnerabilityCriteria::CHRONICALLY_ILL) &&
                 $householdMember->getAge() && $householdMember->getAge() < 60)
             ) {
                 $chronicallyIllOrDisabled = true;
@@ -338,8 +335,8 @@ final class RulesCalculation
 
             if ($householdMember->getPerson()->getGender() === PersonGender::FEMALE) {
                 if (
-                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_LACTATING) ||
-                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriterion::CRITERION_PREGNANT)
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriteria::LACTATING) ||
+                    $householdMember->hasVulnerabilityCriteria(VulnerabilityCriteria::PREGNANT)
                 ) {
                     $lactatingOrPregnant = true;
                 }
@@ -373,9 +370,8 @@ final class RulesCalculation
         $vulnerabilityCriteria = [];
 
         foreach ($household->getBeneficiaries() as $householdMember) {
-            /** @var VulnerabilityCriterion $vulnerabilityCriterion */
             foreach ($householdMember->getVulnerabilityCriteria() as $vulnerabilityCriterion) {
-                $vulnerabilityCriteria[$vulnerabilityCriterion->getFieldString()] = true;
+                $vulnerabilityCriteria[$vulnerabilityCriterion] = true;
             }
         }
 

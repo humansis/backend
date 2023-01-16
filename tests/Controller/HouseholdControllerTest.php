@@ -5,7 +5,7 @@ namespace Tests\Controller;
 use Entity\Camp;
 use Entity\Household;
 use Entity\NationalId;
-use Entity\VulnerabilityCriterion;
+use Enum\VulnerabilityCriteria;
 use Enum\ResidencyStatus;
 use Entity\Location;
 use Doctrine\ORM\EntityManagerInterface;
@@ -70,7 +70,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
+                    'vulnerabilityCriteria' => [VulnerabilityCriteria::DISABLED],
                 ],
                 [
                     'dateOfBirth' => '2000-12-01',
@@ -99,8 +99,8 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralComment' => 'string',
                     'isHead' => false,
                     'vulnerabilityCriteria' => [
-                        VulnerabilityCriterion::CRITERION_DISABLED,
-                        VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL,
+                        VulnerabilityCriteria::DISABLED,
+                        VulnerabilityCriteria::CHRONICALLY_ILL,
                     ],
                 ],
             ],
@@ -199,9 +199,6 @@ class HouseholdControllerTest extends BMSServiceTestCase
      */
     public function testUpdate(int $id)
     {
-        $vulnerabilityCriterion = self::getContainer()->get('doctrine')->getRepository(
-            VulnerabilityCriterion::class
-        )->findBy([], ['id' => 'asc'])[0];
         $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
         $camp = self::getContainer()->get('doctrine')->getRepository(Camp::class)->findBy([], ['id' => 'asc'])[0];
 
@@ -252,7 +249,7 @@ class HouseholdControllerTest extends BMSServiceTestCase
                     'referralType' => '1',
                     'referralComment' => 'string',
                     'isHead' => true,
-                    'vulnerabilityCriteria' => [VulnerabilityCriterion::CRITERION_DISABLED],
+                    'vulnerabilityCriteria' => [VulnerabilityCriteria::DISABLED],
                 ],
                 [
                     'id' => $member->getId(),

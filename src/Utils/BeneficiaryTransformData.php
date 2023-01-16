@@ -57,8 +57,8 @@ class BeneficiaryTransformData
 
             // Recover the  criterions from Vulnerability criteria object
             $valuesCriteria = [];
-            foreach ($beneficiary->getVulnerabilityCriteria()->getValues() as $value) {
-                $valuesCriteria[] = $value->getFieldString();
+            foreach ($beneficiary->getVulnerabilityCriteria() as $value) {
+                $valuesCriteria[] = $value;
             }
             $valuesCriteria = join(',', $valuesCriteria);
 

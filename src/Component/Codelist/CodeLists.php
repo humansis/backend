@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Component\Codelist;
 
-use Entity\VulnerabilityCriterion;
 use DBAL\SubSectorEnum;
 use DTO\Sector;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -54,24 +53,6 @@ class CodeLists
                 $subSector->getSubSectorName(),
                 SubSectorEnum::translate($subSector->getSubSectorName())
             );
-        }
-
-        return $data;
-    }
-
-    public static function mapCriterion(iterable $criteria, ?TranslatorInterface $translator = null)
-    {
-        $data = [];
-
-        /* @var VulnerabilityCriterion $criterion */
-        foreach ($criteria as $criterion) {
-            if ($criterion->isActive()) {
-                $translation = $translator !== null
-                    ? $translator->trans(VulnerabilityCriterion::all()[$criterion->getFieldString()])
-                    : VulnerabilityCriterion::all()[$criterion->getFieldString()];
-
-                $data[] = new CodeItem($criterion->getFieldString(), $translation);
-            }
         }
 
         return $data;

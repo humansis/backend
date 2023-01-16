@@ -14,9 +14,9 @@ use Component\Assistance\Scoring\Enum\ScoringRulesCalculationsEnum;
 use Component\Assistance\Scoring\Enum\ScoringRuleType;
 use Component\Assistance\Scoring\Model\ScoringRuleOption;
 use Component\Assistance\Scoring\Model\ScoringRule;
-use Entity\VulnerabilityCriterion;
 use Enum\HouseholdShelterStatus;
 use Enum\PersonGender;
+use Enum\VulnerabilityCriteria;
 use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -220,8 +220,7 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNWS($household, $scoringRule);
         $this->assertEquals(0, $score);
 
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+        $head->setVulnerabilityCriteria([VulnerabilityCriteria::CHRONICALLY_ILL, VulnerabilityCriteria::DISABLED]);
 
         $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNWS($household, $scoringRule);
         $this->assertEquals(1, $score);
@@ -250,9 +249,8 @@ class RulesComputationTest extends KernelTestCase
         $score = $this->rulesCalculation->vulnerabilityHeadOfHouseholdNES($household, $scoringRule);
         $this->assertEquals(0, $score);
 
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_PREGNANT));
+        $head->setVulnerabilityCriteria([VulnerabilityCriteria::CHRONICALLY_ILL, VulnerabilityCriteria::DISABLED, VulnerabilityCriteria::PREGNANT]);
+
         $head->getPerson()->setDateOfBirth((new DateTime())->modify('-15 year'));
         $head->getPerson()->setGender(PersonGender::FEMALE);
 
@@ -338,7 +336,7 @@ class RulesComputationTest extends KernelTestCase
 
         $head = new Beneficiary();
         $head->setHead();
-        $head->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_PREGNANT));
+        $head->setVulnerabilityCriteria([VulnerabilityCriteria::PREGNANT]);
         $head->getPerson()->setGender(PersonGender::FEMALE);
 
         $household->addBeneficiary($head);
@@ -348,8 +346,7 @@ class RulesComputationTest extends KernelTestCase
 
         $member = new Beneficiary();
         $member->setHead(false);
-        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
-        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_LACTATING));
+        $member->setVulnerabilityCriteria([VulnerabilityCriteria::DISABLED, VulnerabilityCriteria::LACTATING]);
         $member->getPerson()->setGender(PersonGender::FEMALE);
 
         $household->addBeneficiary($member);
@@ -404,17 +401,17 @@ class RulesComputationTest extends KernelTestCase
     public function testVulnerabilityCriterion()
     {
         $scoringRule = new ScoringRule(ScoringRuleType::CALCULATION, ScoringRulesCalculationsEnum::VULNERABILITY_CRITERION, 'Vulnerability criterion');
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL, 1));
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_DISABLED, 2));
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_PREGNANT, 3));
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_LACTATING, 4));
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES, 5));
-        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriterion::CRITERION_SOLO_PARENT, 6));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::CHRONICALLY_ILL, 1));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::DISABLED, 2));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::PREGNANT, 3));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::LACTATING, 4));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::NUTRITIONAL_ISSUES, 5));
+        $scoringRule->addOption(new ScoringRuleOption(VulnerabilityCriteria::SOLO_PARENT, 6));
 
         $household = new Household();
 
         $member = new Beneficiary();
-        $member->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL));
+        $member->setVulnerabilityCriteria([VulnerabilityCriteria::CHRONICALLY_ILL]);
         $household->addBeneficiary($member);
 
         $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
@@ -425,13 +422,15 @@ class RulesComputationTest extends KernelTestCase
         $this->assertEquals(1, $score);
 
         $member2 = new Beneficiary();
-        $member2->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_DISABLED));
+        $member2->setVulnerabilityCriteria([VulnerabilityCriteria::DISABLED]);
         $household->addBeneficiary($member2);
 
         $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
         $this->assertEquals(3, $score);
 
-        $member2->addVulnerabilityCriterion(new VulnerabilityCriterion(VulnerabilityCriterion::CRITERION_SOLO_PARENT));
+        $member3 = new Beneficiary();
+        $member3->setVulnerabilityCriteria([VulnerabilityCriteria::SOLO_PARENT]);
+        $household->addBeneficiary($member3);
 
         $score = $this->rulesCalculation->vulnerabilityCriterion($household, $scoringRule);
         $this->assertEquals(9, $score);

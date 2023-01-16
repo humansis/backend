@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Component\SelectionCriteria\Generator;
 
-use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
 use Enum\SelectionCriteriaTarget;
-use Repository\VulnerabilityCriterionRepository;
+use Enum\VulnerabilityCriteria;
 use Component\SelectionCriteria\FieldGeneratorInterface;
 use Component\SelectionCriteria\Structure\Field;
 
 class BeneficiaryFieldGenerator implements FieldGeneratorInterface
 {
-    public function __construct(private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository)
-    {
-    }
-
     /**
      * @inheritdoc
      */
@@ -45,10 +40,10 @@ class BeneficiaryFieldGenerator implements FieldGeneratorInterface
             [self::class, 'validateDate']
         );
 
-        foreach ($this->vulnerabilityCriterionRepository->findAllActive() as $vulnerabilityCriterion) {
+        foreach (VulnerabilityCriteria::values() as $vulnerabilityCriterion) {
             yield new Field(
-                $vulnerabilityCriterion->getFieldString(),
-                VulnerabilityCriterion::all()[$vulnerabilityCriterion->getFieldString()],
+                $vulnerabilityCriterion,
+                VulnerabilityCriteria::all()[$vulnerabilityCriterion],
                 ['='],
                 'boolean'
             );

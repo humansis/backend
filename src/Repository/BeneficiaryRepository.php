@@ -588,6 +588,9 @@ class BeneficiaryRepository extends EntityRepository
             ->setParameter('countryIso3', $countryISO3);
     }
 
+    // Note: It seems that these function are not used anywhere
+    // Also to note: After deleting the 'beneficiary_vulnerability' table in task PIN-4387,
+    // the code here must be modified, as it may not work when used
     public function getDistributionBeneficiaries(CriteriaGroup $criteriaGroup, Project $project)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);

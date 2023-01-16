@@ -9,8 +9,8 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\CountrySpecific;
 use Entity\Helper\StandardizedPrimaryKey;
-use Entity\VulnerabilityCriterion;
 use Enum\SelectionCriteriaField;
+use Enum\VulnerabilityCriteria;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
@@ -70,7 +70,7 @@ class SelectionCriteria
                     ->getRepository(CountrySpecific::class)
                     ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
         } elseif ($this->tableString === SelectionCriteriaField::VULNERABILITY_CRITERIA) {
-            $this->deprecated = !key_exists($this->fieldString, VulnerabilityCriterion::all());
+            $this->deprecated = !key_exists($this->fieldString, VulnerabilityCriteria::all());
         } else {
             $this->deprecated = !in_array($this->fieldString, SelectionCriteriaField::values());
         }

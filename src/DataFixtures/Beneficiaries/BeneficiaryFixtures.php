@@ -5,9 +5,9 @@ namespace DataFixtures\Beneficiaries;
 use DataFixtures\CountrySpecificFixtures;
 use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
-use DataFixtures\VulnerabilityCriterionFixtures;
 use DBAL\HouseholdAssetsEnum;
 use DBAL\HouseholdSupportReceivedTypeEnum;
+use DBAL\VulnerabilityCriteriaEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -63,7 +63,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             LocationFixtures::class,
-            VulnerabilityCriterionFixtures::class,
             ProjectFixtures::class,
             CountrySpecificFixtures::class,
         ];
@@ -108,11 +107,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "1",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "10-10-1996",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_disabled')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -154,11 +148,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "1",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "10-10-1996",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_disabled')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -175,11 +164,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::IDP,
                         "date_of_birth" => "10-11-1996",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -196,11 +180,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::REFUGEE,
                         "date_of_birth" => "10-12-1995",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -217,11 +196,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "14-10-2000",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -264,11 +238,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "1",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "14-10-1995",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_lactating')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -285,11 +254,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "15-10-1989",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_lactating')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -306,11 +270,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "15-10-1990",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_disabled')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -327,11 +286,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
                         "status" => "0",
                         "residency_status" => ResidencyStatus::RESIDENT,
                         "date_of_birth" => "15-08-1989",
-                        "vulnerability_criteria" => [
-                            [
-                                "id" => $this->getReference('vulnerability_chronicallyIll')->getId(),
-                            ],
-                        ],
                         "phones" => [],
                         "national_ids" => [],
                         "profile" => [
@@ -423,9 +377,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $bnfInputType->addPhone(self::generatePhoneInputType());
         $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
         $bnfInputType->setIsHead($head);
-        foreach ($beneficiary['vulnerability_criteria'] as $vulnerability) {
-            $bnfInputType->addVulnerabilityCriteria($vulnerability['id']);
-        }
+        $bnfInputType->setVulnerabilityCriteria([ValueGenerator::fromArray(VulnerabilityCriteriaEnum::all())]);
 
         return $bnfInputType;
     }

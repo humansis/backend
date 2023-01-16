@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Assistance\Scoring\Enum;
 
-use Entity\VulnerabilityCriterion;
+use Enum\VulnerabilityCriteria;
 
 /**
  * List of supported values for each calculation rules
@@ -134,12 +134,12 @@ final class ScoringRuleCalculationOptionsEnum
         ],
 
         ScoringRulesCalculationsEnum::VULNERABILITY_CRITERION => [
-            VulnerabilityCriterion::CRITERION_CHRONICALLY_ILL,
-            VulnerabilityCriterion::CRITERION_DISABLED,
-            VulnerabilityCriterion::CRITERION_LACTATING,
-            VulnerabilityCriterion::CRITERION_PREGNANT,
-            VulnerabilityCriterion::CRITERION_SOLO_PARENT,
-            VulnerabilityCriterion::CRITERION_NUTRITIONAL_ISSUES,
+            VulnerabilityCriteria::CHRONICALLY_ILL,
+            VulnerabilityCriteria::DISABLED,
+            VulnerabilityCriteria::LACTATING,
+            VulnerabilityCriteria::PREGNANT,
+            VulnerabilityCriteria::SOLO_PARENT,
+            VulnerabilityCriteria::NUTRITIONAL_ISSUES,
         ]
     ];
 }

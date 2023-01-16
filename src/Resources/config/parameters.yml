@@ -76,7 +76,7 @@ parameters:
                         target: Household
                 },
                 vulnerabilityCriteria: {
-                        type: Entity\VulnerabilityCriterion,
+                        type: table_field,
                         target: Beneficiary
                 },
                 countrySpecific: {

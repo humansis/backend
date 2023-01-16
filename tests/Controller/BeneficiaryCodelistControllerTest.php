@@ -3,9 +3,9 @@
 namespace Tests\Controller;
 
 use Entity\Referral;
-use Entity\VulnerabilityCriterion;
 use Enum\ResidencyStatus;
 use Doctrine\ORM\EntityManagerInterface;
+use Enum\VulnerabilityCriteria;
 use Exception;
 use Enum\BeneficiaryType;
 use Enum\NationalIdType;
@@ -110,7 +110,7 @@ class BeneficiaryCodelistControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertIsArray($result['data']);
 
-        $criterion = $em->getRepository(VulnerabilityCriterion::class)->findAllActive();
+        $criterion = VulnerabilityCriteria::all();
         $this->assertEquals(is_countable($criterion) ? count($criterion) : 0, $result['totalCount']);
     }
 

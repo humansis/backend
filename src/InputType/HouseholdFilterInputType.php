@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace InputType;
 
 use Entity\Referral;
-use Entity\VulnerabilityCriterion;
+use Enum\VulnerabilityCriteria;
 use Enum\Livelihood;
 use Enum\ResidencyStatus;
 use InputType\FilterFragment\FulltextFilterTrait;
@@ -63,7 +63,7 @@ class HouseholdFilterInputType extends AbstractFilterInputType
 
     public static function vulnerabilities(): array
     {
-        return array_keys(VulnerabilityCriterion::all());
+        return array_keys(VulnerabilityCriteria::all());
     }
 
     public function hasGender(): bool

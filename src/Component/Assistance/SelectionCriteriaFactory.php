@@ -8,9 +8,8 @@ use Component\SelectionCriteria\Generator\HouseholdFieldGenerator;
 use Entity\CountrySpecific;
 use Entity\HouseholdLocation;
 use Entity\Location;
-use Entity\VulnerabilityCriterion;
+use Enum\VulnerabilityCriteria;
 use Repository\CountrySpecificRepository;
-use Repository\VulnerabilityCriterionRepository;
 use Repository\LocationRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Component\Assistance\Domain\SelectionCriteria;
@@ -24,7 +23,7 @@ use InputType\Assistance\SelectionCriterionInputType;
 
 class SelectionCriteriaFactory
 {
-    public function __construct(private readonly CriteriaConfigurationLoader $configurationLoader, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository, private readonly LocationRepository $locationRepository)
+    public function __construct(private readonly CriteriaConfigurationLoader $configurationLoader, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly LocationRepository $locationRepository)
     {
     }
 
@@ -144,14 +143,13 @@ class SelectionCriteriaFactory
         return $list[$fieldName] ?? null;
     }
 
-    private function getVulnerability(string $fieldName): ?VulnerabilityCriterion
+    private function getVulnerability(string $fieldName): ?string
     {
         static $list = null;
         if (null === $list) {
             $list = [];
-            $vulnerabilityCriteria = $this->vulnerabilityCriterionRepository->findBy(['active' => true]);
-            foreach ($vulnerabilityCriteria as $criterion) {
-                $list[$criterion->getFieldString()] = $criterion;
+            foreach (VulnerabilityCriteria::values() as $criterion) {
+                $list[$criterion] = $criterion;
             }
         }
 

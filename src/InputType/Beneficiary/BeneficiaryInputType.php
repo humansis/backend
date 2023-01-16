@@ -9,6 +9,8 @@ use Entity\Referral;
 use Enum\ResidencyStatus;
 use Enum\HouseholdHead;
 use Enum\PersonGender;
+use Enum\VulnerabilityCriteria;
+use InputType\Helper\EnumsBuilder;
 use Request\InputTypeInterface;
 use Utils\DateTime\Iso8601Converter;
 use Validator\Constraints\Iso8601;
@@ -94,9 +96,8 @@ class BeneficiaryInputType implements InputTypeInterface
     ])]
     private $isHead;
 
-    #[Assert\Type('array')]
-    #[Assert\All(constraints: [new Enum(options: ['enumClass' => "Enum\VulnerabilityCriteria"])], groups: ['Strict'])]
-    private array $vulnerabilityCriteria = [];
+    #[Assert\Type(['array', 'string'])]
+    private array|string|null $vulnerabilityCriteria = null;
 
     /**
      * @return DateTimeInterface
@@ -336,24 +337,28 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
+     * @Assert\All(
+     *     constraints={
+     *         @Assert\Choice(callback={"\Enum\VulnerabilityCriteria", "values"}, strict=true, groups={"Strict"})
+     *     },
+     *     groups={"Strict"}
+     * )
      * @return string[]
      */
-    public function getVulnerabilityCriteria()
+    public function getVulnerabilityCriteria(): array
     {
-        return $this->vulnerabilityCriteria;
+        $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
+        $enumBuilder->setNullToEmptyArrayTransformation();
+
+        return $enumBuilder->buildInputValues($this->vulnerabilityCriteria);
     }
 
     /**
-     * @param string[] $vulnerabilityCriteria
+     * @param int[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria(array $vulnerabilityCriteria)
+    public function setVulnerabilityCriteria(array|string|null $vulnerabilityCriteria): void
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
-    }
-
-    public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
-    {
-        $this->vulnerabilityCriteria[] = $vulnerabilityCriteria;
     }
 
     /**
