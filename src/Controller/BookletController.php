@@ -8,7 +8,11 @@ use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
+use Entity\Voucher;
 use Exception;
+use InputType\Country;
+use InputType\DataTableType;
+use InputType\RequestConverter;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -27,10 +31,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Booklet;
 use Utils\BookletService;
+use Utils\ExportTableServiceInterface;
+use Utils\VoucherService;
+use Utils\VoucherTransformData;
 
 class BookletController extends AbstractController
 {
-    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry, private readonly VoucherService $voucherService, private readonly VoucherTransformData $voucherTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -51,18 +58,31 @@ class BookletController extends AbstractController
      */
     public function exports(Request $request, BookletExportFilterInputType $inputType): Response
     {
-        $request->query->add([
-            'bookletCodes' => true,
-        ]);
-        $request->request->add([
-            '__country' => $request->headers->get('country'),
-        ]);
-
+        $countryIso3 = $request->headers->get("country");
+        $filters = $request->request->get('filters');
+        $type = $request->query->get('type');
+        $voucherRepository = $this->managerRegistry->getRepository(Voucher::class);
+        $bookletRepository = $this->managerRegistry->getRepository(Booklet::class);
         if ($inputType->hasIds()) {
-            $request->request->add(['ids' => $inputType->getIds()]);
+            $ids = $inputType->getIds();
+            $allVouchers = $voucherRepository->getAllByBookletIds($ids)->getResult();
+        } else {
+            if ($filters) {
+                /** @var DataTableType $dataTableFilter */
+                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+                $booklets = $this->bookletService->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            } else {
+                $booklets = $bookletRepository->getActiveBooklets($countryIso3);
+            }
+            $allVouchers = $voucherRepository->getAllByBooklets($booklets)->getResult();
         }
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        if ($type == 'pdf') {
+            return $this->voucherService->exportToPdf($allVouchers);
+        } else {
+            $exportableTable = $this->voucherTransformData->transformData($allVouchers);
+            return $this->exportTableService->export($exportableTable, 'bookletCodes', $type);
+        }
     }
 
     /**
