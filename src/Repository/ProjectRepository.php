@@ -4,7 +4,14 @@ namespace Repository;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use DTO\ProjectDTO;
+use Entity\Assistance;
+use Entity\Beneficiary;
+use Entity\Donor;
+use Entity\Household;
+use Entity\ProjectSector;
 use Enum\RoleType;
 use InputType\ProjectFilterInputType;
 use InputType\ProjectOrderInputType;
@@ -61,14 +68,102 @@ class ProjectRepository extends EntityRepository
         return $qbr->getQuery()->getResult();
     }
 
-    public function findByParams(
-        ?User $user,
-        ?string $iso3,
-        ?ProjectFilterInputType $filter,
-        ?ProjectOrderInputType $orderBy = null,
-        ?Pagination $pagination = null
+    public function findByParamsSelectIntoDTO(
+        User | null $user,
+        string | null $iso3,
+        ProjectFilterInputType | null $filter,
+        ProjectOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
     ): Paginator {
+        $qb = $this->getProjectsQuery(
+            $user,
+            $iso3,
+            $filter,
+            $orderBy,
+            $pagination
+        );
+
+        $qb->addSelect(
+            sprintf(
+                'NEW %s(
+                        p.id,
+                        p.name,
+                        p.internalId,
+                        :iso3,
+                        p.notes,
+                        p.target,
+                        p.startDate,
+                        p.endDate,
+                        (
+                            SELECT GROUP_CONCAT(s.sector)
+                            FROM ' . ProjectSector::class . ' s
+                            WHERE s.project = p.id
+                        ),
+                        (
+                            SELECT GROUP_CONCAT(d.id)
+                            FROM ' . Donor::class . ' d
+                            WHERE d MEMBER OF p.donors
+                        ),
+                        (
+                            SELECT COUNT(h.id)
+                            FROM ' . Household::class . ' h
+                            WHERE p MEMBER OF h.projects AND h.archived = 0
+                        ),
+                        (
+                            SELECT COUNT(a.id)
+                            FROM ' . Assistance::class . ' a
+                            WHERE a.project = p AND NOT (a.archived != 0 AND a.completed != 0)
+                        ),
+                        (
+                            SELECT COUNT(DISTINCT b)
+                            FROM ' . Beneficiary::class . ' b
+                            INNER JOIN b.household hh WHERE p MEMBER OF hh.projects AND b.archived = 0
+                        ),
+                        p.projectInvoiceAddressLocal,
+                        p.projectInvoiceAddressEnglish,
+                        p.allowedProductCategoryTypes,
+                        p.createdAt,
+                        p.lastModifiedAt
+                    )',
+                ProjectDTO::class
+            )
+        )
+            ->setParameter('iso3', $iso3)
+            ->andWhere('p.archived = 0');
+
+        $paginator = new Paginator($qb, false);
+        $paginator->setUseOutputWalkers(false);
+
+        return $paginator;
+    }
+
+    public function findByParams(
+        User | null $user,
+        string | null $iso3,
+        ProjectFilterInputType | null $filter,
+        ProjectOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
+    ): Paginator {
+        $qb = $this->getProjectsQuery(
+            $user,
+            $iso3,
+            $filter,
+            $orderBy,
+            $pagination
+        );
+
+        return new Paginator($qb);
+    }
+
+    private function getProjectsQuery(
+        User | null $user,
+        string | null $iso3,
+        ProjectFilterInputType | null $filter,
+        ProjectOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
+    ): QueryBuilder {
         $qb = $this->createQueryBuilder('p')
+            ->setParameter('iso3', $iso3)
             ->andWhere('p.archived = 0');
 
         if ($user) {
@@ -116,13 +211,16 @@ class ProjectRepository extends EntityRepository
                     ProjectOrderInputType::SORT_BY_INTERNAL_ID => $qb->orderBy('p.internalId', $direction),
                     ProjectOrderInputType::SORT_BY_START_DATE => $qb->orderBy('p.startDate', $direction),
                     ProjectOrderInputType::SORT_BY_END_DATE => $qb->orderBy('p.endDate', $direction),
-                    ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS => $qb->orderBy('SIZE(p.households)', $direction),
+                    ProjectOrderInputType::SORT_BY_NUMBER_OF_HOUSEHOLDS => $qb->orderBy(
+                        'SIZE(p.households)',
+                        $direction
+                    ),
                     default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
                 };
             }
         }
 
-        return new Paginator($qb);
+        return $qb;
     }
 
     public function getProjectCountriesByUser(User $user): array

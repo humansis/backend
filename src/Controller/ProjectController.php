@@ -106,7 +106,7 @@ class ProjectController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $projects = $this->projectRepository->findByParams(
+        $projects = $this->projectRepository->findByParamsSelectIntoDTO(
             $this->getUser(),
             $countryIso3,
             $filter,

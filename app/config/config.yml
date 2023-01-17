@@ -222,6 +222,7 @@ doctrine:
                          month: DoctrineExtensions\Query\Mysql\Month
                          year: DoctrineExtensions\Query\Mysql\Year
                          any_value: DoctrineExtensions\Query\Mysql\AnyValue
+                         group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
 
                     numeric_functions:
                         levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
