@@ -65,12 +65,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
                     return $this->assistanceService->exportToPdf($idProject);
                 }
                 $filename = $this->assistanceService->exportToCsv($idProject, $type);
-            } elseif ($request->query->get('officialDistributions')) {
-                $idProject = $request->query->get('officialDistributions');
-                if ($type === 'pdf') {
-                    return $this->assistanceService->exportToPdf($idProject);
-                }
-                $filename = $this->assistanceService->exportToOfficialCsv($idProject, $type);
             } elseif ($request->query->get('countries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->countrySpecificService->exportToCsv($type, $countryIso3);

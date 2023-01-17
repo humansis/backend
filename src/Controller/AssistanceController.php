@@ -15,6 +15,7 @@ use Entity\Assistance;
 use Enum\AssistanceType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -43,6 +44,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
+use Utils\ExportTableServiceInterface;
+use Utils\ProjectAssistancesTransformData;
 
 class AssistanceController extends AbstractController
 {
@@ -51,6 +54,8 @@ class AssistanceController extends AbstractController
         private readonly AssistanceService $assistanceService,
         private readonly AssistanceBankReportExport $assistanceBankReportExport,
         private readonly ManagerRegistry $managerRegistry,
+        private readonly ProjectAssistancesTransformData $projectAssistancesTransformData,
+        private readonly ExportTableServiceInterface $exportTableService
     ) {
     }
 
@@ -204,9 +209,24 @@ class AssistanceController extends AbstractController
     #[Rest\Get('/web-app/v1/projects/{id}/assistances/exports')]
     public function exports(Project $project, Request $request): Response
     {
-        $request->query->add(['officialDistributions' => $project->getId()]);
+        $projectId = $project->getId();
+        $type = $request->query->get('type');
+        $assistanceRepository = $this->managerRegistry->getRepository(Assistance::class);
+        $projectRepository = $this->managerRegistry->getRepository(Project::class);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        if ($type == "pdf") {
+            return $this->assistanceService->exportToPdf($projectId);
+        } else {
+            $project = $projectRepository->find($project->getId());
+            if (!$project) {
+                throw new NotFoundHttpException("Project #$projectId missing");
+            }
+
+            $assistances = $assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
+            $exportableTable = $this->projectAssistancesTransformData->transformData($project, $assistances);
+
+            return $this->exportTableService->export($exportableTable, 'distributions', $type);
+        }
     }
 
     /**
