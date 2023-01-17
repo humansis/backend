@@ -1232,6 +1232,9 @@ services:
     Utils\SmartcardPurchasedItemTransformData:
         class: Utils\SmartcardPurchasedItemTransformData
         public: true
+        
+    Utils\ProjectTransformData:
+        class: Utils\ProjectTransformData
 
     Utils\DistributedSummaryTransformData:
         class:  Utils\DistributedSummaryTransformData

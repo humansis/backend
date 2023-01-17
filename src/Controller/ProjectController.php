@@ -6,7 +6,6 @@ namespace Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
-use Controller\ExportController;
 use Entity\UserCountry;
 use Entity\UserProject;
 use Pagination\Paginator;
@@ -24,11 +23,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\User;
+use Utils\ExportTableServiceInterface;
 use Utils\ProjectService;
+use Utils\ProjectTransformData;
 
 class ProjectController extends AbstractController
 {
-    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectService $projectService, private readonly ManagerRegistry $managerRegistry, private readonly ProjectTransformData $projectTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
@@ -65,9 +66,13 @@ class ProjectController extends AbstractController
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['projects' => $request->headers->get('country')]);
+        $countryIso3 = $request->headers->get('country');
+        $type = $request->query->get('type');
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $projects = $this->projectRepository->getAllOfCountry($countryIso3);
+        $exportableTable = $this->projectTransformData->transformData($projects);
+
+        return $this->exportTableService->export($exportableTable, 'projects', $type);
     }
 
     /**

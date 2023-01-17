@@ -246,17 +246,4 @@ class ProjectService
 
         return true;
     }
-
-    /**
-     * Export all projects of the country in the CSV file
-     *
-     * @param $countryIso3
-     * @return mixed
-     */
-    public function exportToCsv($countryIso3, string $type)
-    {
-        $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
-
-        return $this->exportService->export($exportableTable, 'projects', $type);
-    }
 }

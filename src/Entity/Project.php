@@ -16,7 +16,6 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ProductCategoryType;
 use Exception\CountryMismatchException;
 use InvalidArgumentException;
-use Utils\ExportableInterface;
 use Entity\Helper\CountryDependent;
 
 /**
@@ -26,7 +25,7 @@ use Entity\Helper\CountryDependent;
  * @ORM\Entity(repositoryClass="Repository\ProjectRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class Project implements ExportableInterface
+class Project
 {
     use CreatedAt;
     use LastModifiedAt;
@@ -496,40 +495,6 @@ class Project implements ExportableInterface
         return $this->distributions;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     */
-    public function getMappedValueForExport(): array
-    {
-        //  Recover all donors with the Donors object
-        $donors = [];
-        foreach ($this->getDonors()->getValues() as $value) {
-            array_push($donors, $value->getFullname());
-        }
-        $donors = join(',', $donors);
-
-        // Recover all sectors with the Sectors object
-        $sectors = [];
-        foreach ($this->getSectors()->getValues() as $value) {
-            array_push($sectors, $value->getName());
-        }
-        $sectors = join(',', $sectors);
-
-        return [
-            "ID" => $this->getId(),
-            "Project name" => $this->getName(),
-            "Internal ID" => $this->getInternalId(),
-            "Start date" => $this->getStartDate()->format('d-m-Y'),
-            "End date" => $this->getEndDate()->format('d-m-Y'),
-            "Number of households" => $this->getNumberOfHouseholds(),
-            "Total Target beneficiaries" => $this->getTarget(),
-            "Notes" => $this->getNotes(),
-            "Country" => $this->getCountryIso3(),
-            "Donors" => $donors,
-            "Sectors" => $sectors,
-            "is archived" => $this->getArchived(),
-        ];
-    }
 
     /**
      * @ORM\PostLoad
