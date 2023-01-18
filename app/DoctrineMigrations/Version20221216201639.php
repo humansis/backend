@@ -12,11 +12,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20221216201639 extends AbstractMigration
 {
-    public function getDescription(): string
-    {
-        return '';
-    }
-
     public function up(Schema $schema): void
     {
         $this->addSql('ALTER TABLE smartcard_deposit CHANGE hash hash VARCHAR(255) NOT NULL');
