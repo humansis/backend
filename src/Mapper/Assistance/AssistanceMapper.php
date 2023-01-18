@@ -23,8 +23,10 @@ class AssistanceMapper implements MapperInterface
 
     private ?Assistance $domainObject = null;
 
-    public function __construct(private readonly AssistanceFactory $factory, private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly AssistanceFactory $factory,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     /**
@@ -145,7 +147,7 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getScoringBlueprint();
     }
 
-    public function getCommodities(): Collection|array
+    public function getCommodities(): Collection | array
     {
         return $this->domainObject->getCommodities();
     }
@@ -186,12 +188,14 @@ class AssistanceMapper implements MapperInterface
     public function getProgress(): float
     {
         $stats = $this->domainObject->getStatistics();
+
         return round($stats->getBeneficiariesReached() / $stats->getBeneficiariesTotal(), 2);
     }
 
     public function getTotal(): int
     {
-        return $this->domainObject->getStatistics()->getBeneficiariesTotal();
+        return $this->domainObject->getStatistics()->getBeneficiariesTotal() -
+            $this->domainObject->getStatistics()->getBeneficiariesDeleted();
     }
 
     public function getReached(): int
