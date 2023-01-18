@@ -315,8 +315,8 @@ class Beneficiary extends AbstractBeneficiary
         $referral_type = null;
         $referral_comment = null;
         if ($this->getPerson()->getReferral()) {
-            $referral_type = $this->$this->getPerson()->getReferral()->getType();
-            $referral_comment = $this->$this->getPerson()->getReferral()->getComment();
+            $referral_type = $this->getPerson()->getReferral()->getType();
+            $referral_comment = $this->getPerson()->getReferral()->getComment();
         }
 
         $referralInfo = [
