@@ -23,7 +23,6 @@ class ProjectDetailMapper extends ProjectMapper
     }
 
     /**
-     * @return int
      * @throws InvalidArgumentException
      */
     public function getAssistanceCount(): int
