@@ -5530,6 +5530,30 @@ the donation of the below specified items from People in Need.</target>
         <source>All required columns for Phone 1 should be set</source>
         <target>All required columns for Phone 1 should be set</target>
       </trans-unit>
+      <trans-unit id="WcrtTWg" resname="Primary ID Type">
+        <source>Primary ID Type</source>
+        <target>Primary ID Type</target>
+      </trans-unit>
+      <trans-unit id="aDSqfOq" resname="Primary ID Number">
+        <source>Primary ID Number</source>
+        <target>Primary ID Number</target>
+      </trans-unit>
+      <trans-unit id="mfOM9gT" resname="Secondary ID Type">
+        <source>Secondary ID Type</source>
+        <target>Secondary ID Type</target>
+      </trans-unit>
+      <trans-unit id="Hu037VI" resname="Secondary ID Number">
+        <source>Secondary ID Number</source>
+        <target>Secondary ID Number</target>
+      </trans-unit>
+      <trans-unit id="6xuj0uJ" resname="Tertiary ID Type">
+        <source>Tertiary ID Type</source>
+        <target>Tertiary ID Type</target>
+      </trans-unit>
+      <trans-unit id="9E9rU5Z" resname="Tertiary ID Number">
+        <source>Tertiary ID Number</source>
+        <target>Tertiary ID Number</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
