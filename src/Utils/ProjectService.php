@@ -42,8 +42,6 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @return int
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function getAssistanceCountByProject(Project $project): int
@@ -127,9 +125,6 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @param ProjectUpdateInputType $inputType
-     * @return Project
      * @throws EntityNotFoundException
      */
     public function update(Project $project, ProjectUpdateInputType $inputType): Project
@@ -221,8 +216,7 @@ class ProjectService
     }
 
     /**
-     * @return void
-     * @throws error if one or more distributions prevent the project from being deleted
+     * @throws Exception if one or more distributions prevent the project from being deleted
      */
     public function delete(Project $project): void
     {
