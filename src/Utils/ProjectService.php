@@ -42,8 +42,6 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @return int
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function getAssistanceCountByProject(Project $project): int
@@ -127,9 +125,6 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @param ProjectUpdateInputType $inputType
-     * @return Project
      * @throws EntityNotFoundException
      */
     public function update(Project $project, ProjectUpdateInputType $inputType): Project
@@ -221,8 +216,7 @@ class ProjectService
     }
 
     /**
-     * @return void
-     * @throws error if one or more distributions prevent the project from being deleted
+     * @throws Exception if one or more distributions prevent the project from being deleted
      */
     public function delete(Project $project): void
     {
@@ -264,9 +258,6 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     *
-     * @param iterable $assistances
-     * @return bool
      */
     private function checkIfAllDistributionClosed(iterable $assistances): bool
     {
@@ -282,9 +273,6 @@ class ProjectService
     /**
      * Export all projects of the country in the CSV file
      *
-     * @param $countryIso3
-     * @param string $type
-     * @return string
      * @throws ExportNoDataException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
