@@ -3,6 +3,8 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use DTO\AssistanceBeneficiaryDTO;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
 use Entity\Community;
@@ -49,24 +51,13 @@ class AssistanceBeneficiaryRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * @param BeneficiaryFilterInputType|null $filter
-     * @param BeneficiaryOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     * @param array|null $context
-     *
-     * context values [
-     *      notRemoved = show only not removed assistance-bnf
-     * ]
-     *
-     */
-    public function findBeneficiariesByAssistance(
+    private function getBeneficiariesByAssistanceQuery(
         Assistance $assistance,
-        ?BeneficiaryFilterInputType $filter = null,
-        ?BeneficiaryOrderInputType $orderBy = null,
-        ?Pagination $pagination = null,
-        ?array $context = null
-    ): Paginator {
+        BeneficiaryFilterInputType|null $filter = null,
+        BeneficiaryOrderInputType|null $orderBy = null,
+        Pagination|null $pagination = null,
+        array|null $context = null
+    ): QueryBuilder {
         $qb = $this->createQueryBuilder('db')
             ->andWhere('db.assistance = :assistance')
             ->setParameter('assistance', $assistance)
@@ -151,7 +142,60 @@ class AssistanceBeneficiaryRepository extends EntityRepository
             }
         }
 
-        return new Paginator($qb);
+        return $qb;
+    }
+
+    public function findBeneficiariesByAssistance(
+        Assistance $assistance,
+        BeneficiaryFilterInputType|null $filter = null,
+        BeneficiaryOrderInputType|null $orderBy = null,
+        Pagination|null $pagination = null,
+        array|null $context = null
+    ): Paginator {
+        return new Paginator(
+            $this->getBeneficiariesByAssistanceQuery(
+                $assistance,
+                $filter,
+                $orderBy,
+                $pagination,
+                $context
+            )
+        );
+    }
+
+    public function findBeneficiariesByAssistanceSelectIntoDTO(
+        Assistance $assistance,
+        ?BeneficiaryFilterInputType $filter = null,
+        ?BeneficiaryOrderInputType $orderBy = null,
+        ?Pagination $pagination = null,
+        ?array $context = null
+    ): Paginator {
+        $qb = $this->getBeneficiariesByAssistanceQuery(
+            $assistance,
+            $filter,
+            $orderBy,
+            $pagination,
+            $context
+        );
+
+        $qb->addSelect(sprintf(
+            'NEW %s(
+                    db.id,
+                    b.id,
+                    db.removed,
+                    db.justification,
+                    (
+                        SELECT GROUP_CONCAT(rp.id)
+                        FROM ' . ReliefPackage::class . ' rp
+                        WHERE rp.assistanceBeneficiary = db.id
+                    )
+                )',
+            AssistanceBeneficiaryDTO::class
+        ));
+
+        $paginator = new Paginator($qb, false);
+        $paginator->setUseOutputWalkers(false);
+        return $paginator;
     }
 
     public function findInstitutionsByAssistance(

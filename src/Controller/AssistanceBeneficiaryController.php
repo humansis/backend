@@ -59,7 +59,7 @@ class AssistanceBeneficiaryController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository->findBeneficiariesByAssistance(
+        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository->findBeneficiariesByAssistanceSelectIntoDTO(
             $assistance,
             $filter,
             $orderBy,
