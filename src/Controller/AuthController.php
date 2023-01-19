@@ -12,7 +12,7 @@ use Entity\User;
 class AuthController extends AbstractController
 {
     /**
-     * @Rest\Post("/web-app/v1/login")
+     * @Rest\Post("/web-app/v5/login")
      *
      *
      * @return JsonResponse

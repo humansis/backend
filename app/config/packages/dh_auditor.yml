@@ -1,0 +1,33 @@
+dh_auditor:
+    enabled: false
+    timezone: 'UTC'
+    providers:
+        doctrine:
+            storage_services:
+                - '@doctrine.orm.default_entity_manager'
+            auditing_services:
+                - '@doctrine.orm.default_entity_manager'
+            viewer: true
+            ignored_columns:
+                - 'createdAt'
+                - 'createdBy'
+                - 'lastModifiedAt'
+                - 'updatedOn'
+            entities:
+                Entity\User:
+                    ignored_columns:
+                        - 'lastLogin'
+                Entity\Import:
+                Entity\Assistance\ReliefPackage:
+                Entity\Assistance:
+                Entity\AssistanceBeneficiary:
+                Entity\Household:
+                Entity\Beneficiary:
+                Entity\Person:
+                Entity\NationalId:
+                Entity\Smartcard:
+                Entity\SmartcardDeposit:
+                Entity\SmartcardPurchase:
+                Entity\SmartcardPurchaseRecord:
+                Entity\Invoice:
+                Entity\Vendor:

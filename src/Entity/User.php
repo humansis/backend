@@ -381,7 +381,6 @@ class User implements ExportableInterface, UserInterface, LegacyPasswordAuthenti
         );
     }
 
-
     public function __serialize(): array
     {
         return [

@@ -2,6 +2,7 @@
 
 use DependencyInjection\Compiler\MapperCompilerPass;
 use DH\AuditorBundle\DHAuditorBundle;
+use Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -43,6 +44,7 @@ class AppKernel extends Kernel
             new Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle(),
             new DHAuditorBundle(),
             new Sentry\SentryBundle\SentryBundle(),
+            new GesdinetJWTRefreshTokenBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['local', 'dev', 'test'], true)) {
@@ -58,7 +60,6 @@ class AppKernel extends Kernel
     {
         $confDir = $this->getProjectDir() . '/app/config';
         $loader->load($confDir . '/config' . self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir . '/dh_auditor' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir . '/packages/*' . self::CONFIG_EXTS, 'glob');
         if (is_dir($confDir . '/packages/' . $this->environment)) {
             $loader->load($confDir . '/packages/' . $this->environment . '/**/*' . self::CONFIG_EXTS, 'glob');
