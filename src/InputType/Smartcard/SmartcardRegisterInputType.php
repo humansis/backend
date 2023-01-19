@@ -17,10 +17,10 @@ class SmartcardRegisterInputType implements InputTypeInterface
     private ?string $serialNumber = null;
 
     /**
-     * @Assert\NotNull()
-     * @Assert\Type(type="int")
      * @EntityExist(entity="Entity\Beneficiary")
      */
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'int')]
     private int $beneficiaryId;
 
     /**
