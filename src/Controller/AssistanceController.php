@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Controller;
 
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\Persistence\ManagerRegistry;
 use Entity\User;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -15,6 +14,7 @@ use Entity\Assistance;
 use Enum\AssistanceType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
+use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
@@ -53,9 +53,10 @@ class AssistanceController extends AbstractController
         private readonly VulnerabilityScoreExport $vulnerabilityScoreExport,
         private readonly AssistanceService $assistanceService,
         private readonly AssistanceBankReportExport $assistanceBankReportExport,
-        private readonly ManagerRegistry $managerRegistry,
         private readonly ProjectAssistancesTransformData $projectAssistancesTransformData,
-        private readonly ExportTableServiceInterface $exportTableService
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly AssistanceRepository $assistanceRepository,
+        private readonly ProjectRepository $projectRepository
     ) {
     }
 
@@ -77,7 +78,7 @@ class AssistanceController extends AbstractController
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
-            $assistanceInCountry = $this->managerRegistry->getRepository(Assistance::class)->findByCountryIso3($countryIso3);
+            $assistanceInCountry = $this->assistanceRepository->findByCountryIso3($countryIso3);
             foreach ($assistanceInCountry as $assistance) {
                 $assistanceDomain = $assistanceFactory->hydrate($assistance);
                 $statistics[] = $assistanceDomain->getStatistics($countryIso3);
@@ -108,7 +109,7 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $assistances = $this->managerRegistry->getRepository(Assistance::class)->findByParams(
+        $assistances = $this->assistanceRepository->findByParams(
             $countryIso3,
             $filter,
             $orderBy,
@@ -211,8 +212,8 @@ class AssistanceController extends AbstractController
     {
         $projectId = $project->getId();
         $type = $request->query->get('type');
-        $assistanceRepository = $this->managerRegistry->getRepository(Assistance::class);
-        $projectRepository = $this->managerRegistry->getRepository(Project::class);
+        $assistanceRepository = $this->assistanceRepository;
+        $projectRepository = $this->projectRepository;
 
         if ($type == "pdf") {
             return $this->assistanceService->exportToPdf($projectId);
@@ -310,7 +311,7 @@ class AssistanceController extends AbstractController
         AssistanceOrderInputType $orderBy
     ): JsonResponse {
         /** @var AssistanceRepository $repository */
-        $repository = $this->managerRegistry->getRepository(Assistance::class);
+        $repository = $this->assistanceRepository;
 
         $assistances = $repository->findByProject($project, null, $filter, $orderBy, $pagination);
 
