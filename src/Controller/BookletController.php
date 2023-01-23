@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
@@ -22,6 +21,8 @@ use InputType\BookletFilterInputType;
 use InputType\BookletOrderInputType;
 use InputType\BookletPrintFilterInputType;
 use InputType\BookletUpdateInputType;
+use Repository\BookletRepository;
+use Repository\VoucherRepository;
 use Request\Pagination;
 use Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -37,8 +38,15 @@ use Utils\VoucherTransformData;
 
 class BookletController extends AbstractController
 {
-    public function __construct(private readonly BookletService $bookletService, private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry, private readonly VoucherService $voucherService, private readonly VoucherTransformData $voucherTransformData, private readonly ExportTableServiceInterface $exportTableService)
-    {
+    public function __construct(
+        private readonly BookletService $bookletService,
+        private readonly CodeListService $codeListService,
+        private readonly VoucherService $voucherService,
+        private readonly VoucherTransformData $voucherTransformData,
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly VoucherRepository $voucherRepository,
+        private readonly BookletRepository $bookletRepository
+    ) {
     }
 
     /**
@@ -61,20 +69,19 @@ class BookletController extends AbstractController
         $countryIso3 = $request->headers->get("country");
         $filters = $request->request->get('filters');
         $type = $request->query->get('type');
-        $voucherRepository = $this->managerRegistry->getRepository(Voucher::class);
-        $bookletRepository = $this->managerRegistry->getRepository(Booklet::class);
+
         if ($inputType->hasIds()) {
             $ids = $inputType->getIds();
-            $allVouchers = $voucherRepository->getAllByBookletIds($ids)->getResult();
+            $allVouchers = $this->voucherRepository->getAllByBookletIds($ids)->getResult();
         } else {
             if ($filters) {
                 /** @var DataTableType $dataTableFilter */
                 $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
                 $booklets = $this->bookletService->getAll(new Country($countryIso3), $dataTableFilter)[1];
             } else {
-                $booklets = $bookletRepository->getActiveBooklets($countryIso3);
+                $booklets = $this->bookletRepository->getActiveBooklets($countryIso3);
             }
-            $allVouchers = $voucherRepository->getAllByBooklets($booklets)->getResult();
+            $allVouchers = $this->voucherRepository->getAllByBooklets($booklets)->getResult();
         }
 
         if ($type == 'pdf') {
@@ -92,7 +99,7 @@ class BookletController extends AbstractController
      */
     public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
-        $booklets = $this->managerRegistry->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
+        $booklets = $this->bookletRepository->findBy(['id' => $inputType->getIds()]);
 
         return $this->bookletService->generatePdf($booklets);
     }
@@ -140,8 +147,7 @@ class BookletController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->managerRegistry->getRepository(Booklet::class)
-            ->findByParams($countryIso3, $filter, $orderBy, $pagination);
+        $list = $this->bookletRepository->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($list);
     }
