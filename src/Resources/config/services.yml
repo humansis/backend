@@ -480,9 +480,6 @@ services:
             - '@Component\ReliefPackage\ReliefPackageService'
             - '@logger'
 
-    Export\SmartcardPurchasedItemSpreadsheet:
-        arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\SmartcardPurchasedItem")'
 
     Export\AssistanceBankReportExport:
 
@@ -1230,6 +1227,10 @@ services:
 
     Utils\VendorTransformData:
         class: Utils\VendorTransformData
+        public: true
+
+    Utils\SmartcardPurchasedItemTransformData:
+        class: Utils\SmartcardPurchasedItemTransformData
         public: true
 
     Utils\DistributedSummaryTransformData:
