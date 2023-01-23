@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Utils;
 
 use Doctrine\DBAL\Exception;
+use Doctrine\Persistence\ObjectManager;
 use Entity\Location;
 use Repository\LocationRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectManager;
 use SimpleXMLElement;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use XMLReader;
@@ -93,8 +92,12 @@ class LocationImporter
         $this->em->getConnection()->getConfiguration()->setSQLLogger(null);
 
         $xml = new XMLReader();
-        if (false === $xml->open($this->file)) {
+        $xmlFile = file_get_contents($this->file);
+
+        if (!$xmlFile) {
             throw new FileNotFoundException('File ' . $this->file . ' does not exists.');
+        } else {
+            $xml->XML($xmlFile);
         }
 
         $i = 0;

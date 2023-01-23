@@ -3,6 +3,7 @@
 namespace DataFixtures;
 
 use Repository\LocationRepository;
+use Services\LocationService;
 use Utils\LocationImporter;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -20,20 +21,28 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
     private $locationRepository;
 
     /**
+     * @var LocationService
+     */
+    private $locationService;
+
+    /**
      * @var Countries
      */
     private $countries;
 
     public function __construct(
         LocationRepository $locationRepository,
+        LocationService $locationService,
         Countries $countries
     ) {
         $this->locationRepository = $locationRepository;
+        $this->locationService = $locationService;
         $this->countries = $countries;
     }
 
     /**
      * {@inheritdoc}
+     * @throws \Exception
      */
     public function load(ObjectManager $manager)
     {
@@ -41,26 +50,21 @@ class LocationFixtures extends Fixture implements FixtureGroupInterface
 
         $directory = __DIR__ . '/../Resources/locations';
 
-        foreach (scandir($directory) as $file) {
-            if ('.' == $file || '..' == $file) {
-                continue;
-            }
-
-            $filepath = realpath($directory . '/' . $file);
-
-            $locationImported = new LocationImporter($manager, $filepath, $this->locationRepository);
-
+        $countries = $this->locationService->getADMFiles();
+        foreach ($countries as $countryFileUrl) {
+            // LOCATION IMPORT
+            $importer = new LocationImporter($manager, $countryFileUrl, $this->locationRepository);
             $limit = self::LIMIT;
-            echo "FILE PART($limit) IMPORT LOCATION: $filepath \n";
-            $locationImported->setLimit($limit);
-            foreach ($locationImported->importLocations() as $importStatus) {
+            echo "FILE PART($limit) IMPORT LOCATION: $countryFileUrl \n";
+            $importer->setLimit($limit);
+            foreach ($importer->importLocations() as $importStatus) {
                 echo '.';
             }
             echo "\n";
 
-            $country = $this->countries->getCountry($locationImported->getIso3());
+            $country = $this->countries->getCountry($importer->getIso3());
             if (!$country || $country->isArchived()) {
-                echo 'Skip non-existing or archived country ' . $locationImported->getIso3();
+                echo 'Skip non-existing or archived country ' . $importer->getIso3();
             }
         }
     }
