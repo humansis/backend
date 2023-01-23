@@ -6,6 +6,7 @@ namespace Controller;
 
 use Controller\ExportController;
 use Doctrine\DBAL\ConnectionException;
+use InputType\Import\Duplicity\DuplicityFilterInputType;
 use InputType\Import\FilterInputType;
 use InputType\Import\OrderInputType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -20,6 +21,7 @@ use Enum\ImportQueueState;
 use Enum\ImportState;
 use InputType\Import;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
+use Repository\ImportHouseholdDuplicityRepository;
 use Repository\ImportQueueRepository;
 use Repository\ImportRepository;
 use Request\Pagination;
@@ -41,7 +43,15 @@ class ImportController extends AbstractController
 {
     final public const DISABLE_CRON = 'disable-cron-fast-forward';
 
-    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(
+        private readonly ImportService $importService,
+        private readonly UploadImportService $uploadImportService,
+        private readonly string $importInvalidFilesDirectory,
+        private readonly int $maxFileSizeToLoad,
+        private readonly ImportRepository $importRepo,
+        private readonly ImportQueueRepository $importQueueRepo,
+        private readonly ImportHouseholdDuplicityRepository $importHouseholdDuplicityRepository,
+        private readonly ManagerRegistry $managerRegistry)
     {
     }
 
@@ -205,11 +215,11 @@ class ImportController extends AbstractController
     }
 
     #[Rest\Get('/web-app/v1/imports/{id}/duplicities')]
-    public function duplicities(Entity\Import $import): JsonResponse
+    public function duplicities(Entity\Import $import, DuplicityFilterInputType $filter, Pagination $pagination): JsonResponse
     {
         /** @var Entity\ImportHouseholdDuplicity[] $duplicities */
-        $duplicities = $this->managerRegistry->getRepository(Entity\ImportHouseholdDuplicity::class)
-            ->findByImport($import);
+        $duplicities = $this->importHouseholdDuplicityRepository
+            ->findByImport($import, $filter, $pagination);
 
         return $this->json($duplicities);
     }
