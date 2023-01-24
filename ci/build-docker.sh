@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -e
-export PLATFORM=${1:-amd64}
-USER=$2
-PASSWORD=$3
-echo "building Docker image for platform ${PLATFORM}"
+USER=$1
+PASSWORD=$2
 # get app version
 echo "Getting application information"
 ./ci/get-info.sh

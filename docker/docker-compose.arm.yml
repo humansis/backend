@@ -37,21 +37,25 @@ services:
             - backend
         restart: always
         environment:
-            ENVIRONMENT: dev
+            ENVIRONMENT: arm
         logging:
             driver: "syslog"
             options:
                 tag: docker-consumer
 
-    adminer:
-        image: adminer
+    phpmyadmin:
+        image: phpmyadmin
         ports:
             - 8081:80
         networks:
             - pma
+        volumes:
+            - /opt/overrides/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
         environment:
             # CAREFUL: "%env(RDS_HOSTNAME)%" token is replaced in deployment script ci/apply-env-config.sh!
-            ADMINER_DEFAULT_SERVER: %env(RDS_HOSTNAME)%
+            PMA_HOST: %env(RDS_HOSTNAME)%
+            # CAREFUL: "__DEV__" token is replaced in deployment script ci/deploy-docker.sh!
+            PMA_ABSOLUTE_URI: https://api__DEV__.humansis.org/pma_yzixy37h/
 
     nginx:
         # CAREFUL: "__DEV__" token is replaced in deployment script ci/deploy-docker.sh!
