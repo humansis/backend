@@ -51,7 +51,8 @@ class ImportController extends AbstractController
         private readonly ImportRepository $importRepo,
         private readonly ImportQueueRepository $importQueueRepo,
         private readonly ImportHouseholdDuplicityRepository $importHouseholdDuplicityRepository,
-        private readonly ManagerRegistry $managerRegistry)
+        private readonly ManagerRegistry $managerRegistry
+    )
     {
     }
 

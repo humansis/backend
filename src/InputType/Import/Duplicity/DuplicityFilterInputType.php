@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['DuplicityFilterInputType', 'Strict'])]
 class DuplicityFilterInputType extends AbstractFilterInputType
 {
-
     /**
      * @Assert\All(
      *     constraints={

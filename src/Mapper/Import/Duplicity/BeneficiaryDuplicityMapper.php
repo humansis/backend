@@ -77,5 +77,4 @@ class BeneficiaryDuplicityMapper implements MapperInterface
             return $person->getEnFamilyName();
         }
     }
-
 }
