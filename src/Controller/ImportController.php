@@ -53,8 +53,7 @@ class ImportController extends AbstractController
         private readonly ImportHouseholdDuplicityRepository $importHouseholdDuplicityRepository,
         private readonly ManagerRegistry $managerRegistry
     )
-    {
-    }
+    {}
 
     /**
      *
