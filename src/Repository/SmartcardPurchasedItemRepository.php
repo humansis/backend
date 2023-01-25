@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Repository;
 
+use Doctrine\ORM\QueryBuilder;
+use DTO\SmartcardPurchasedItemDTO;
 use Entity\Beneficiary;
 use Entity\Location;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Entity\SmartcardPurchasedItem;
 use Enum\NationalIdType;
 use InputType\PurchasedItemOrderInputType;
 use InputType\SmartcardPurchasedItemFilterInputType;
@@ -17,16 +18,12 @@ use Request\Pagination;
 
 class SmartcardPurchasedItemRepository extends EntityRepository
 {
-    /**
-     *
-     * @return Paginator|SmartcardPurchasedItem[]
-     */
-    public function findByParams(
+    private function getFindByParamsQuery(
         string $countryIso3,
-        ?SmartcardPurchasedItemFilterInputType $filter = null,
-        ?PurchasedItemOrderInputType $orderBy = null,
-        ?Pagination $pagination = null
-    ): Paginator {
+        SmartcardPurchasedItemFilterInputType | null $filter = null,
+        PurchasedItemOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
+    ): QueryBuilder {
         $qbr = $this->createQueryBuilder('pi')
             ->join('pi.project', 'pr')
             ->andWhere('pr.countryIso3 = :iso3')
@@ -116,7 +113,10 @@ class SmartcardPurchasedItemRepository extends EntityRepository
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
                 match ($name) {
-                    PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE => $qbr->addOrderBy('pi.datePurchase', $direction),
+                    PurchasedItemOrderInputType::SORT_BY_DATE_PURCHASE => $qbr->addOrderBy(
+                        'pi.datePurchase',
+                        $direction
+                    ),
                     PurchasedItemOrderInputType::SORT_BY_VALUE => $qbr->addOrderBy('pi.value', $direction),
                     default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
                 };
@@ -130,6 +130,70 @@ class SmartcardPurchasedItemRepository extends EntityRepository
 
         $qbr->addOrderBy('pi.datePurchase', 'DESC');
 
-        return new Paginator($qbr);
+        return $qbr;
+    }
+
+    public function findByParams(
+        string $countryIso3,
+        SmartcardPurchasedItemFilterInputType | null $filter = null,
+        PurchasedItemOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
+    ): Paginator {
+        return new Paginator(
+            $this->getFindByParamsQuery(
+                $countryIso3,
+                $filter,
+                $orderBy,
+                $pagination
+            )
+        );
+    }
+
+    public function findByParamsSelectIntoDTO(
+        string $countryIso3,
+        SmartcardPurchasedItemFilterInputType | null $filter = null,
+        PurchasedItemOrderInputType | null $orderBy = null,
+        Pagination | null $pagination = null
+    ): Paginator {
+        $qb = $this->getFindByParamsQuery(
+            $countryIso3,
+            $filter,
+            $orderBy,
+            $pagination
+        );
+
+        $qb->addSelect(
+            sprintf(
+                'NEW %s(
+                    IDENTITY(pi.household),
+                    IDENTITY(pi.beneficiary),
+                    IDENTITY(pi.project),
+                    IDENTITY(pi.assistance),
+                    IDENTITY(pi.location),
+                    pi.datePurchase,
+                    pi.smartcardCode,
+                    IDENTITY(pi.product),
+                    pp.unit,
+                    pi.value,
+                    pi.currency,
+                    IDENTITY(pi.vendor),
+                    pi.invoiceNumber,
+                    v.contractNo,
+                    pi.idNumber,
+                    :iso3
+                )',
+                SmartcardPurchasedItemDTO::class
+            )
+        )
+            ->leftJoin('pi.location', 'pl')
+            ->leftJoin('pi.product', 'pp');
+
+        if (!in_array('v', $qb->getAllAliases())) {
+            $qb->leftJoin('pi.vendor', 'v');
+        }
+
+        $paginator = new Paginator($qb, false);
+        $paginator->setUseOutputWalkers(false);
+        return $paginator;
     }
 }

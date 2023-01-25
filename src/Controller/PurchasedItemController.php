@@ -130,7 +130,7 @@ class PurchasedItemController extends AbstractController
             throw $this->createNotFoundException('Missing header attribute country');
         }
 
-        $data = $purchasedItemRepository->findByParams(
+        $data = $purchasedItemRepository->findByParamsSelectIntoDTO(
             $request->headers->get('country'),
             $filterInputType,
             $order,
