@@ -81,9 +81,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
-            DateTimeInterface::ATOM
-        ) : null;
+        return $this->object->getDateExpiration()?->format(DateTimeInterface::ATOM);
     }
 
     public function getProjectId(): int
@@ -105,12 +103,6 @@ class AssistanceMapper implements MapperInterface
     {
         return $this->object->getLocation();
     }
-
-    /** @deprecated use getLocation */
-//    public function getLocationId(): int
-//    {
-//        return $this->object->getLocation()->getId();
-//    }
 
     public function getAdm1(): ?Location
     {
@@ -189,7 +181,7 @@ class AssistanceMapper implements MapperInterface
     {
         $stats = $this->domainObject->getStatistics();
 
-        return round($stats->getBeneficiariesReached() / $stats->getBeneficiariesTotal(), 2);
+        return round($stats->getBeneficiariesReached() / $this->getTotal(), 2);
     }
 
     public function getTotal(): int
