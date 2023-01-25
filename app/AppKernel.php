@@ -47,7 +47,7 @@ class AppKernel extends Kernel
             new GesdinetJWTRefreshTokenBundle()
         ];
 
-        if (in_array($this->getEnvironment(), ['local', 'dev', 'test', 'arm'], true)) {
+        if (in_array($this->getEnvironment(), ['local', 'dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
