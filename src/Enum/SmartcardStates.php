@@ -44,12 +44,4 @@ class SmartcardStates
     {
         return self::all();
     }
-
-    public static function activatedStates(): array
-    {
-        return [
-            self::ACTIVE,
-            self::REUSED,
-        ];
-    }
 }
