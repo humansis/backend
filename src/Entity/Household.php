@@ -36,7 +36,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var int[]
      */
-    #[ORM\Column(name: 'assets', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'assets', type: 'json', nullable: true)]
     private array|null $assets;
 
     /**
@@ -85,7 +85,7 @@ class Household extends AbstractBeneficiary
     /**
      * @var int[]
      */
-    #[ORM\Column(name: 'support_received_types', type: 'array', nullable: true)]
+    #[ORM\Column(name: 'support_received_types', type: 'json', nullable: true)]
     private array $supportReceivedTypes;
 
     #[ORM\Column(name: 'support_organization_name', type: 'string', nullable: true)]
