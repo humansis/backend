@@ -21,6 +21,10 @@ class SentrySubscriber implements EventSubscriberInterface
     {
     }
 
+    /**
+     * @param ControllerEvent $event
+     * @return void
+     */
     public function onKernelController(ControllerEvent $event)
     {
         $request = $event->getRequest();
@@ -43,7 +47,11 @@ class SentrySubscriber implements EventSubscriberInterface
         });
     }
 
-    private function getModuleName($uri)
+    /**
+     * @param $uri
+     * @return string|null
+     */
+    private function getModuleName($uri): string|null
     {
         if (preg_match('/(?<module>[^\/]+-app)\//', $uri, $matches)) {
             return $matches['module'];
@@ -51,7 +59,10 @@ class SentrySubscriber implements EventSubscriberInterface
         return null;
     }
 
-    private function getUserInfo()
+    /**
+     * @return array
+     */
+    private function getUserInfo(): array
     {
         $token = $this->tokenStorage->getToken();
         if (!$token) {
