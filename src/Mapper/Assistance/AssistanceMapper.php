@@ -179,15 +179,12 @@ class AssistanceMapper implements MapperInterface
 
     public function getProgress(): float
     {
-        $stats = $this->domainObject->getStatistics();
-
-        return round($stats->getBeneficiariesReached() / $this->getTotal(), 2);
+        return $this->domainObject->getStatistics()->getProgress();
     }
 
     public function getTotal(): int
     {
-        return $this->domainObject->getStatistics()->getBeneficiariesTotal() -
-            $this->domainObject->getStatistics()->getBeneficiariesDeleted();
+        return $this->domainObject->getStatistics()->getReachedBeneficiariesTotal();
     }
 
     public function getReached(): int

@@ -78,7 +78,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
             "threshold": ' . ($assistance->getAssistanceSelection()->getThreshold() ?: 'null') . ',
-            "deletable": ' . ($assistance->isValidated() ? 'false' : 'true') . '
+            "deletable": ' . ($assistance->isValidated() ? 'false' : 'true') . ',
+            "progress": "*",
+            "total": "*",
+            "reached": "*"
         }',
             $this->client->getResponse()->getContent()
         );

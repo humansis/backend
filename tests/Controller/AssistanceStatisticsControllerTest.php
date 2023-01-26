@@ -16,25 +16,11 @@ use Tests\BMSServiceTestCase;
 
 class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {
-    /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
+    private AssistanceRepository $assistanceRepository;
 
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
+    private ReliefPackageRepository $reliefPackageRepository;
 
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
-    private $assistanceBeneficiaryRepository;
-
-    /**
-     * @var AssistanceFactory
-     */
-    private $assistanceFactory;
+    private AssistanceFactory $assistanceFactory;
 
     /**
      * @throws Exception
@@ -71,7 +57,8 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             "amountTotal": "*",
             "amountDistributed": "*",
             "beneficiariesDeleted": "*",
-            "beneficiariesReached": "*"
+            "beneficiariesReached": "*",
+            "progress": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -146,6 +133,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('beneficiariesTotal', $result);
         $this->assertArrayHasKey('beneficiariesDeleted', $result);
         $this->assertArrayHasKey('beneficiariesReached', $result);
+        $this->assertArrayHasKey('progress', $result);
         $this->assertEquals((float) $expectedTotalSum, (float) $result['amountTotal']);
         $this->assertEquals((float) $expectedDistributed, (float) $result['amountDistributed']);
     }
