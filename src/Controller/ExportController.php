@@ -135,17 +135,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
                         );
                     }
                 }
-            } elseif ($request->query->get('bookletCodes')) {
-                $ids = $request->request->get('ids');
-                $countryIso3 = $request->request->get("__country");
-                $filters = $request->request->get('filters');
-                if ($type === 'pdf') {
-                    return $this->voucherService->exportToPdf($ids, $countryIso3, $filters);
-                }
-                if ($type === 'csv') {
-                    return $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
-                }
-                $filename = $this->voucherService->exportToCsv($type, $countryIso3, $ids, $filters);
             } elseif ($request->query->get('reporting')) {
                 // The service does not exist
                 // $filename = $this->get('reporting.reporting_service')->exportToCsv($request->request, $type);

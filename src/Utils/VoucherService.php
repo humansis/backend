@@ -6,7 +6,6 @@ use Controller\ExportController;
 use Exception;
 use InputType\Country;
 use InputType\DataTableType;
-use InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use Twig\Environment;
@@ -23,7 +22,7 @@ class VoucherService
     /**
      * UserService constructor.
      */
-    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService, private readonly Environment $twig, private readonly PdfService $pdfService)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly Environment $twig, private readonly PdfService $pdfService)
     {
     }
 
@@ -214,114 +213,22 @@ class VoucherService
         return true;
     }
 
-    /**
-     * Export all vouchers in a CSV file
-     *
-     * @param array $ids
-     * @param array $filters
-     * @return mixed
-     */
-    public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
-    {
-        $booklets = null;
-        $exportableCount = 0;
-        $exportableTable = [];
 
-        if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            $exportableCount = $this->em->getRepository(Voucher::class)->countByBookletsIds($ids);
-        } else {
-            if ($filters) {
-                /** @var DataTableType $dataTableFilter */
-                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->getAllBooklets(
-                    new Country($countryIso3),
-                    $dataTableFilter
-                )[1];
-            } else {
-                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
-            }
-        }
-
-        // If we only have the booklets, get the vouchers
-        if ($booklets !== null) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
-            $exportableCount = $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
-        }
-
-        // If csv type, return the response
-        if ('csv' === $type) {
-            if ($exportableCount >= ExportController::EXPORT_LIMIT_CSV) {
-                $totalBooklets = $ids ? count($ids) : count($booklets);
-                throw new Exception(
-                    "Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). " .
-                    "Export the data in batches of " . ExportController::EXPORT_LIMIT_CSV . " vouchers or less"
-                );
-            }
-
-            return $this->csvExport($exportableTable);
-        }
-
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
-            Voucher::class
-        )->countByBooklets($booklets);
-        if ($total > ExportController::EXPORT_LIMIT) {
-            $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new Exception(
-                "Too much vouchers for the export ($total vouchers in $totalBooklets booklets). " .
-                "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
-            );
-        }
-
-        return $this->exportService->export(
-            $exportableTable->getResult(),
-            'bookletCodes',
-            $type
-        );
-    }
 
     /**
      * Export all vouchers in a pdf
-     *
-     * @param array $ids
-     * @param array $filters
+     * @param array $exportableTable
      * @return mixed
      */
-    public function exportToPdf($ids, string $countryIso3, $filters)
+    public function exportToPdf(array $exportableTable)
     {
-        $booklets = null;
-        $exportableTable = [];
-
-        if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
-        } else {
-            if ($filters) {
-                /** @var DataTableType $dataTableFilter */
-                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->getAllBooklets(
-                    new Country($countryIso3),
-                    $dataTableFilter
-                )[1];
-            } else {
-                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
-            }
-        }
-
-        if ($booklets) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
-        }
-
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
-            Voucher::class
-        )->countByBooklets($booklets);
+        $total = count($exportableTable);
         if ($total > ExportController::EXPORT_LIMIT) {
-            $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new Exception(
-                "Too much vouchers for the export ($total vouchers in $totalBooklets). " .
+                "Too much vouchers ($total) for the export" .
                 "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
             );
         }
-
         try {
             $html = $this->twig->render(
                 'Pdf/codes.html.twig',
