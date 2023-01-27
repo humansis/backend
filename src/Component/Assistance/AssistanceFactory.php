@@ -96,7 +96,7 @@ class AssistanceFactory
 
         $location = $this->locationRepository->find($inputType->getLocationId());
         $assistanceRoot->setLocation($location);
-        $assistanceRoot->setName(self::generateName($assistanceRoot));
+        $assistanceRoot->setName($inputType->getName());
 
         if (!is_null($inputType->getScoringBlueprintId())) {
             $scoringBlueprint = $this->scoringBlueprintRepository->findActive(
@@ -189,18 +189,5 @@ class AssistanceFactory
             $this->assistanceBeneficiaryService,
             $this->translator,
         );
-    }
-
-    public static function generateName(Assistance $assistance): string
-    {
-        $adm = $assistance->getLocation()->getName();
-
-        $round = $assistance->getRound();
-
-        if ($round !== null) {
-            $adm .= " #$round";
-        }
-
-        return $adm . " • " . $assistance->getDateDistribution()->format('Y-m-d');
     }
 }

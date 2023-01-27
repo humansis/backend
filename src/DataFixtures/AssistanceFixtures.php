@@ -282,6 +282,7 @@ class AssistanceFixtures extends Fixture implements DependentFixtureInterface, F
         $assistanceInputType->setSubsector(SubSectorEnum::CASH_TRANSFERS);
         $assistanceInputType->setAllowedProductCategoryTypes([ProductCategoryType::FOOD]);
         $assistanceInputType->setFoodLimit(15);
+        $assistanceInputType->setName('Test assistance in ' . $country->getName());
 
         return $assistanceInputType;
     }

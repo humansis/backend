@@ -131,6 +131,10 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     #[Assert\Type('array')]
     private $allowedProductCategoryTypes;
 
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    private $name;
+
     #[Assert\IsTrue(message: 'Expiration date must be greater than distribution date', groups: ['Strict'])]
     public function isExpirationDateValid(): bool
     {
@@ -588,5 +592,21 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     public function setRound(?int $round): void
     {
         $this->round = $round;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name): void
+    {
+        $this->name = $name;
     }
 }

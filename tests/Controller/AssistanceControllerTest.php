@@ -408,6 +408,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         }
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
+            'name' => 'Test distribution',
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
@@ -499,6 +500,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
             'iso3' => 'KHM',
+            'name' => 'Test commodity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
@@ -605,6 +607,29 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->assertEquals($date->format(DateTimeInterface::ATOM), $contentArray['dateExpiration']);
     }
 
+    /**
+     * @depends testCreateDistribution
+     */
+    public function testUpdateName()
+    {
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findOneBy([
+            'validatedBy' => null,
+            'completed' => false,
+        ], ['updatedOn' => 'desc']);
+
+        $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
+            'name' => 'New name',
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $this->assertEquals('New name', $contentArray['name']);
+    }
+
     public function testCreateDistributionWithExpirationDate()
     {
         /** @var Project $project */
@@ -617,6 +642,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
+            'name' => 'Test distribution',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
@@ -693,6 +719,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
+            'name' => 'Test activity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2000-12-01T01:01:01+00:00',
@@ -762,6 +789,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
+            'name' => 'test community activity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2000-12-01T01:01:01+0000',
@@ -821,6 +849,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
+            'name' => 'test distribution',
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
             'sector' => SectorEnum::FOOD_SECURITY,
@@ -908,6 +937,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
+            'name' => 'test distribution',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
