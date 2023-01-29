@@ -4,6 +4,7 @@ namespace Services;
 
 use Component\Codelist\CodeItem;
 use DTO\Sector;
+use Enum\VulnerabilityCriteria;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CodeListService
@@ -42,6 +43,20 @@ class CodeListService
                 $subSector->getSubSectorName(),
                 $this->translator->trans('label_sector_' . $subSector->getSubSectorName())
             );
+        }
+
+        return $data;
+    }
+
+    public function mapCriterion(): array
+    {
+        $data = [];
+
+        foreach (VulnerabilityCriteria::values() as $criterion) {
+                $data[] = new CodeItem(
+                    $criterion,
+                    $this->translator->trans(VulnerabilityCriteria::all()[$criterion])
+                );
         }
 
         return $data;

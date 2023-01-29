@@ -44,9 +44,9 @@ class Beneficiary extends AbstractBeneficiary
     private ?Household $household = null;
 
     /**
-     * @var int[]
+     * @var string[]
      *
-     * @ORM\Column(name="vulnerability_criterion", type="array", nullable=true)
+     * @ORM\Column(name="vulnerability_criterion", type="json", nullable=true)
      */
     private array $vulnerabilityCriteria;
 
@@ -332,11 +332,7 @@ class Beneficiary extends AbstractBeneficiary
 
     public function hasVulnerabilityCriteria(string $vulnerabilityCriteria): bool
     {
-        if (in_array($vulnerabilityCriteria, $this->getVulnerabilityCriteria(), true)) {
-            return true;
-        }
-
-        return false;
+        return in_array($vulnerabilityCriteria, $this->getVulnerabilityCriteria(), true);
     }
 
     /**

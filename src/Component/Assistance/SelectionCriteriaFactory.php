@@ -39,7 +39,7 @@ class SelectionCriteriaFactory
         $criterium->setTableString('Personnal');
 
         if (SelectionCriteriaTarget::BENEFICIARY === $input->getTarget()) {
-            if ($this->getVulnerability($input->getField())) {
+            if (in_array($input->getValue(), VulnerabilityCriteria::values())) {
                 $criterium->setTableString(SelectionCriteriaField::VULNERABILITY_CRITERIA);
 
                 return $criterium;
@@ -137,19 +137,6 @@ class SelectionCriteriaFactory
             $countrySpecifics = $this->countrySpecificRepository->findBy([]);
             foreach ($countrySpecifics as $countrySpecific) {
                 $list[$countrySpecific->getFieldString()] = $countrySpecific;
-            }
-        }
-
-        return $list[$fieldName] ?? null;
-    }
-
-    private function getVulnerability(string $fieldName): ?string
-    {
-        static $list = null;
-        if (null === $list) {
-            $list = [];
-            foreach (VulnerabilityCriteria::values() as $criterion) {
-                $list[$criterion] = $criterion;
             }
         }
 

@@ -184,7 +184,6 @@ class BeneficiaryService
     /**
      * @param $vulnerabilityCriterionId
      *
-     * @return String
      * @throws \Exception
      */
     public function getVulnerabilityCriterion($vulnerabilityCriterionId): string

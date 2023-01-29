@@ -96,8 +96,16 @@ class BeneficiaryInputType implements InputTypeInterface
     ])]
     private $isHead;
 
-    #[Assert\Type(['array', 'string'])]
-    private array|string|null $vulnerabilityCriteria = null;
+    /**
+     * @Assert\All(
+     *     constraints={
+     *         @Enum(enumClass="Enum\VulnerabilityCriteria")
+     *     },
+     *     groups={"Strict"}
+     * )
+     */
+    #[Assert\Type('array')]
+    private array $vulnerabilityCriteria  = [];
 
     /**
      * @return DateTimeInterface
@@ -337,15 +345,9 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"\Enum\VulnerabilityCriteria", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     * @return string[]
+     * @return array|null
      */
-    public function getVulnerabilityCriteria(): array
+    public function getVulnerabilityCriteria(): array|null
     {
         $enumBuilder = new EnumsBuilder(VulnerabilityCriteria::class);
         $enumBuilder->setNullToEmptyArrayTransformation();
@@ -354,9 +356,9 @@ class BeneficiaryInputType implements InputTypeInterface
     }
 
     /**
-     * @param int[] $vulnerabilityCriteria
+     * @param string[] $vulnerabilityCriteria
      */
-    public function setVulnerabilityCriteria(array|string|null $vulnerabilityCriteria): void
+    public function setVulnerabilityCriteria(array $vulnerabilityCriteria): void
     {
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
     }

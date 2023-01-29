@@ -16,7 +16,19 @@ final class Version20230112102403 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql('ALTER TABLE beneficiary ADD vulnerability_criterion LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:array)\'');
+        $this->addSql('ALTER TABLE beneficiary ADD vulnerability_criterion JSON NOT NULL');
+
+        $data = $this->connection->fetchAllAssociative(
+            'SELECT beneficiary_id as id, JSON_ARRAYAGG(v.field_string) as val
+                   FROM `beneficiary_vulnerability_criterion` bv
+                   LEFT JOIN vulnerability_criterion v on v.id = bv.vulnerability_criterion_id
+                   GROUP BY beneficiary_id;'
+        );
+
+        foreach ($data as $row) {
+            $this->addSql("UPDATE beneficiary SET vulnerability_criterion=? WHERE id=?", [$row['val'], $row['id']]);
+        }
+
         $this->addSql('DROP TABLE beneficiary_vulnerability_criterion');
         $this->addSql('DROP TABLE vulnerability_criterion');
     }

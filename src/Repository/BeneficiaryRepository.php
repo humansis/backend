@@ -588,9 +588,7 @@ class BeneficiaryRepository extends EntityRepository
             ->setParameter('countryIso3', $countryISO3);
     }
 
-    // Note: It seems that these function are not used anywhere
-    // Also to note: After deleting the 'beneficiary_vulnerability' table in task PIN-4387,
-    // the code here must be modified, as it may not work when used
+
     public function getDistributionBeneficiaries(CriteriaGroup $criteriaGroup, Project $project)
     {
         $hhRepository = $this->getEntityManager()->getRepository(Household::class);
@@ -882,31 +880,29 @@ class BeneficiaryRepository extends EntityRepository
     ) {
         // Find a way to act directly on the join table beneficiary_vulnerability
         if ($hasVulnerability) {
-            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString = :vulnerability$i");
-            $userConditionsStatement->add($qb->expr()->eq("vc$i.fieldString", ":vulnerability$i"));
+            $userConditionsStatement->add("$on.vulnerabilityCriteria LIKE :vulnerabilityser$i ");
             // If has criteria, add it to the select to calculate weight later
-            $qb->addSelect("vc$i.fieldString AS $on$vulnerabilityName$i");
+            $qb->addSelect("$on.vulnerabilityCriteria AS $on$vulnerabilityName$i");
         } else {
             // The beneficiary doesn"t have a vulnerability A if all their vulnerabilities are != A or if they have no vulnerabilities
-            $qb->leftJoin("$on.vulnerabilityCriteria", "vc$i", Join::WITH, "vc$i.fieldString <> :vulnerability$i");
 
             $subQuery = $this->_em->createQueryBuilder();
             $subQuery
-                ->select("b2$i.id")
+                ->select("b2$i.id , b2$i.vulnerabilityCriteria")
                 ->from(Beneficiary::class, "b2$i")
-                ->leftJoin("b2$i.vulnerabilityCriteria", "vc2$i")
-                ->andWhere("vc2$i.fieldString = :vulnerability$i")
+                ->andWhere("b2$i.vulnerabilityCriteria LIKE :vulnerabilityser$i ")
                 ->andWhere("b2$i.id = $on.id");
             $userConditionsStatement->add("$on.id NOT IN ({$subQuery->getDQL()})");
 
             // If has criteria, add it to the select to calculate weight later
             $qb->addSelect(
-                "(CASE WHEN vc$i.fieldString <> :vulnerability$i THEN vc$i.fieldString WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i"
+                "(CASE WHEN $on.vulnerabilityCriteria <> :vulnerability$i THEN $on.vulnerabilityCriteria WHEN SIZE($on.vulnerabilityCriteria) = 0 THEN :noCriteria ELSE :null END) AS $on$vulnerabilityName$i"
             )
                 ->setParameter('noCriteria', 'noCriteria')
-                ->setParameter('null', null);
+                ->setParameter('null', null)
+                ->setParameter('vulnerability' . $i, $vulnerabilityName);
         }
-        $qb->setParameter('vulnerability' . $i, $vulnerabilityName);
+        $qb->setParameter('vulnerabilityser' . $i, '%' . $vulnerabilityName . '%');
     }
 
     private function hasValidSmartcardCriterion(QueryBuilder &$qb, string $on, bool $value, int $i)

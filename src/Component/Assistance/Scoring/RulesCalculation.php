@@ -62,14 +62,15 @@ final class RulesCalculation
 
     public function singleParentHeaded(Household $household, ScoringRule $rule): float
     {
-
-        foreach ($household->getHouseholdHead()->getVulnerabilityCriteria() as $headVulnerability) {
-            if ($headVulnerability === VulnerabilityCriteria::SOLO_PARENT) {
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore(
-                );
-            }
+        if (
+            in_array(
+                VulnerabilityCriteria::SOLO_PARENT,
+                $household->getHouseholdHead()->getVulnerabilityCriteria(),
+                true
+            )
+        ) {
+            return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::VULNERABILITY_SOLO_PARENT)->getScore();
         }
-
         return 0;
     }
 

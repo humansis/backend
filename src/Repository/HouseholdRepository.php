@@ -202,7 +202,6 @@ class HouseholdRepository extends EntityRepository
             $joins['ni'] = 1;
             $joins['ni2'] = 2;
             $joins['ni3'] = 3;
-            $joins['vb'] = true;
             $joins['p'] = true;
 
             $this->getHouseholdLocation($qb);
@@ -222,7 +221,7 @@ class HouseholdRepository extends EntityRepository
                             COALESCE(per.localGivenName, ''),
                             COALESCE(p.name, ''),
                             COALESCE(l.name, ''),
-                            COALESCE(vb.fieldString, ''),
+                            COALESCE(b.vulnerabilityCriteria, ''),
                             COALESCE(ni.idNumber, ''),
                             COALESCE(ni2.idNumber, ''),
                             COALESCE(ni3.idNumber, '')
@@ -262,9 +261,15 @@ class HouseholdRepository extends EntityRepository
 
         if ($filter->hasVulnerabilities()) {
             $joins['b'] = true;
-            $joins['vb'] = true;
-            $qb->andWhere('vb.fieldString IN (:vulnerabilities)')
-                ->setParameter('vulnerabilities', $filter->getVulnerabilities());
+            foreach ($filter->getVulnerabilities() as $key => $value) {
+                if ($key == 0) {
+                    $qb->andWhere('b.vulnerabilityCriteria like :vulnerabilities' . $key)
+                        ->setParameter('vulnerabilities' . $key, "%" . $value . "%");
+                } else {
+                    $qb->orWhere('b.vulnerabilityCriteria like :vulnerabilities' . $key)
+                        ->setParameter('vulnerabilities' . $key, "%" . $value . "%");
+                }
+            }
         }
 
         if ($filter->hasNationalIds()) {
@@ -334,8 +339,7 @@ class HouseholdRepository extends EntityRepository
                         break;
                     case HouseholdOrderInputType::SORT_BY_VULNERABILITIES:
                         $joins['b'] = true;
-                        $joins['vb'] = true;
-                        $qb->addGroupBy('vb')->addOrderBy('vb.fieldString', $direction);
+                        $qb->addGroupBy('b.vulnerabilityCriteria')->addOrderBy('b.vulnerabilityCriteria', $direction);
                         break;
                     case HouseholdOrderInputType::SORT_BY_NATIONAL_ID:
                         $joins['b'] = true;
@@ -362,9 +366,6 @@ class HouseholdRepository extends EntityRepository
                     break;
                 case 'p':
                     $qb->leftJoin('hh.projects', $alias);
-                    break;
-                case 'vb':
-                    $qb->leftJoin('b.vulnerabilityCriteria', $alias);
                     break;
                 case 'ni':
                 case 'ni2':

@@ -51,7 +51,7 @@ class BeneficiaryCodelistController extends AbstractController
     public function getVulnerabilityCriterion(): JsonResponse
     {
 
-        $data = $this->codeListService->mapEnum(VulnerabilityCriteria::all());
+        $data = $this->codeListService->mapCriterion();
 
         return $this->json(new Paginator($data));
     }
