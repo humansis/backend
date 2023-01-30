@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\SmartcardDepositService;
@@ -24,10 +24,6 @@ use Utils\SmartcardService;
 
 class DepositFactory
 {
-    private array $messages = [];
-
-    private bool $suspicious = false;
-
     public function __construct(
         private readonly SmartcardDepositRepository $smartcardDepositRepository,
         private readonly SmartcardService $smartcardService,
@@ -39,17 +35,16 @@ class DepositFactory
     }
 
     /**
-     *
      * @throws DoubledDepositException
-     * @throws
-     * @throws ORMException
      * @throws OptimisticLockException
      * @throws InvalidArgumentException
+     * @throws ORMException
      */
     public function create(
         string $smartcardSerialNumber,
         DepositInputType $depositInputType,
-        User $user
+        User $user,
+        CreationContext | null $context = null,
     ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
         $hash = SmartcardDepositService::generateDepositHash(
@@ -65,7 +60,7 @@ class DepositFactory
             $depositInputType->getCreatedAt()
         );
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
-        $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
+        $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
@@ -89,8 +84,6 @@ class DepositFactory
             (float) $depositInputType->getBalance(),
             $depositInputType->getCreatedAt(),
             $hash,
-            $this->suspicious,
-            $this->messages
         );
 
         $smartcard->addDeposit($deposit);

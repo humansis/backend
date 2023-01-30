@@ -121,10 +121,6 @@ class SmartcardService
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param DateTimeInterface $registrationDateTime
-     *
-     * @return void
      * @throws SmartcardDoubledRegistrationException
      */
     private function checkSmartcardRegistrationDuplicity(
@@ -140,10 +136,6 @@ class SmartcardService
     }
 
     /**
-     * @param string $serialNumber
-     * @param SmartcardPurchaseInput|SmartcardPurchaseInputType $data
-     *
-     * @return SmartcardPurchase
      * @throws EntityNotFoundException
      * @throws ORMException
      */

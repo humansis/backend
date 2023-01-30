@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Component\ReliefPackage;
 
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
+use Component\Smartcard\Deposit\CreationContext;
 use Entity\Assistance\ReliefPackage;
+use Enum\ReliefPackageState;
 use LogicException;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
@@ -23,18 +23,14 @@ class ReliefPackageService
     ) {
     }
 
-    /**
-     *
-     * @param ReliefPackage $reliefPackage
-     * @param SmartcardDeposit $deposit
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function addDeposit(ReliefPackage $reliefPackage, SmartcardDeposit $deposit): void
-    {
+    public function addDeposit(
+        ReliefPackage $reliefPackage,
+        SmartcardDeposit $deposit,
+        CreationContext | null $context = null
+    ): void {
         $this->addDistributedAmount($reliefPackage, $deposit);
-        $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+        $this->checkDistributedAmount($reliefPackage, $deposit);
+        $this->markReliefPackageAsDistributed($reliefPackage, $deposit, $context);
         $this->smartcardDepositRepository->save($deposit);
     }
 
@@ -56,11 +52,36 @@ class ReliefPackageService
         }
     }
 
-    private function addDistributedAmount(ReliefPackage $reliefPackage, SmartcardDeposit $deposit): void
-    {
+    private function addDistributedAmount(
+        ReliefPackage $reliefPackage,
+        SmartcardDeposit $deposit,
+    ): void {
         $reliefPackage->addDistributedAmount($deposit->getValue());
         $reliefPackage->setDistributedBy($deposit->getDistributedBy());
+    }
 
+    private function markReliefPackageAsDistributed(
+        ReliefPackage $reliefPackage,
+        SmartcardDeposit $deposit,
+        CreationContext | null $context = null
+    ): void {
+        if (!$context || ($context->checkDistributionWorkflow())) {
+            $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+            if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+                $deposit->setSuspicious(true);
+                $message = "Relief package #{$reliefPackage->getId()} could not be set as Distributed because of invalid state ({$reliefPackage->getState()}).";
+                $deposit->addMessage($message);
+                $this->logger->info($message);
+            } else {
+                $this->applyReliefPackageTransition($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+            }
+        } else {
+            $reliefPackage->setState(ReliefPackageState::DISTRIBUTED);
+        }
+    }
+
+    private function checkDistributedAmount(ReliefPackage $reliefPackage, SmartcardDeposit $deposit): void
+    {
         if ($reliefPackage->getAmountDistributed() > $reliefPackage->getAmountToDistribute()) {
             $deposit->setSuspicious(true);
             $message = sprintf(
@@ -69,14 +90,6 @@ class ReliefPackageService
                 $reliefPackage->getId(),
                 $reliefPackage->getAmountToDistribute()
             );
-            $deposit->addMessage($message);
-            $this->logger->info($message);
-        }
-
-        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-        if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
-            $deposit->setSuspicious(true);
-            $message = "Relief package #{$reliefPackage->getId()} could not be set as Distributed because of invalid state ({$reliefPackage->getState()}).";
             $deposit->addMessage($message);
             $this->logger->info($message);
         }
