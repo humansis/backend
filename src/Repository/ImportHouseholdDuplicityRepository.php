@@ -20,8 +20,10 @@ class ImportHouseholdDuplicityRepository extends EntityRepository
             ->setParameter('import', $import);
 
         if ($filter) {
-            $qbr->andWhere('ibd.state IN (:states)');
-            $qbr->setParameter('states', $filter->getStatus());
+            if ($filter->hasStatus()) {
+                $qbr->andWhere('ibd.state IN (:states)');
+                $qbr->setParameter('states', $filter->getStatus());
+            }
         }
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit());
