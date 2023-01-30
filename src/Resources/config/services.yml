@@ -1268,6 +1268,9 @@ services:
 
     Utils\UserTransformData:
         class: Utils\UserTransformData
+        
+    Utils\CountrySpecificTransformData:
+        class: Utils\CountrySpecificTransformData
         public: true
 
 #From VoucherBundle:

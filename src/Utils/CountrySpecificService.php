@@ -54,19 +54,4 @@ class CountrySpecificService
 
         return true;
     }
-
-    /**
-     * Export all the countries specifics in a CSV file
-     *
-     * @return mixed
-     */
-    public function exportToCsv(string $type, string $countryIso3)
-    {
-        $exportableTable = $this->em->getRepository(CountrySpecific::class)->findBy(
-            ['countryIso3' => $countryIso3],
-            ['id' => 'asc']
-        );
-
-        return $this->exportService->export($exportableTable, 'country', $type);
-    }
 }
