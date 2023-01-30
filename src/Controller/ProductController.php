@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
 use Doctrine\Persistence\ManagerRegistry;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
@@ -20,25 +19,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Product;
 use Repository\ProductRepository;
+use Utils\ExportTableServiceInterface;
 use Utils\ProductService;
+use Utils\ProductTransformData;
 
 class ProductController extends AbstractController
 {
-    public function __construct(private readonly UploadService $uploadService, private readonly ProductService $productService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly UploadService $uploadService, private readonly ProductService $productService, private readonly ManagerRegistry $managerRegistry, private readonly ProductTransformData $productTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
     #[Rest\Get('/web-app/v1/products/exports')]
     public function exports(Request $request): Response
     {
-        $request->query->add([
-            'products' => true,
-        ]);
-        $request->request->add([
-            '__country' => $request->headers->get('country'),
-        ]);
+        $type = $request->query->get('type');
+        $countryIso3 = $request->headers->get('country');
+        $productRepository = $this->managerRegistry->getRepository(Product::class);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $products = $productRepository->findBy(['archived' => false, 'countryIso3' => $countryIso3]);
+
+        $exportableTable = $this->productTransformData->transformData($products);
+        return $this->exportTableService->export($exportableTable, 'products', $type);
     }
 
     #[Rest\Get('/web-app/v1/products/{id}')]

@@ -1232,6 +1232,9 @@ services:
         class: Utils\VendorTransformData
         public: true
 
+    Utils\ProductTransformData:
+        class: Utils\ProductTransformData
+
     Utils\SmartcardPurchasedItemTransformData:
         class: Utils\SmartcardPurchasedItemTransformData
         public: true
@@ -1277,6 +1280,11 @@ services:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - Entity\SmartcardBeneficiary
+
+    Repository\ProductRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Product
 
     Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository

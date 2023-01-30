@@ -8,15 +8,13 @@ use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Entity\ProductCategory;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
-use Utils\ExportableInterface;
-
 /**
  * Product
  */
 #[ORM\Table(name: 'product')]
 #[ORM\Entity(repositoryClass: 'Repository\ProductRepository')]
 #[ORM\HasLifecycleCallbacks]
-class Product implements ExportableInterface
+class Product
 {
     use CreatedAt;
     use LastModifiedAt;
@@ -141,16 +139,6 @@ class Product implements ExportableInterface
         return $this->image;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     */
-    public function getMappedValueForExport(): array
-    {
-        return [
-            'Name' => $this->getName(),
-            'Unit' => $this->getUnit(),
-        ];
-    }
 
     public function getProductCategory(): ?ProductCategory
     {
