@@ -10,13 +10,9 @@ use Entity\Project;
 use Entity\User;
 use Exception;
 use InputType\ProjectCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\ProjectService;
 use Utils\ValueGenerator\ValueGenerator;
 
-/**
- * @property Container $container
- */
 trait ProjectHelper
 {
     /**

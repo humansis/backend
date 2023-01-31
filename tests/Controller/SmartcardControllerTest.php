@@ -15,6 +15,7 @@ use Entity\Commodity;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use Repository\BeneficiaryRepository;
 use Tests\BMSServiceTestCase;
 use Entity\User;
 use Entity\Smartcard;
@@ -23,10 +24,13 @@ use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 use Repository\SmartcardRepository;
+use Tests\ComponentHelper\SmartcardHelper;
 use Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
+    use SmartcardHelper;
+
     public function setUp(): void
     {
         parent::setUpFunctionnal();
@@ -76,6 +80,73 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->flush();
     }
 
+    public function testReRegisterSmartcard(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $firstSmartcardCode = '1111111';
+        $secondSmartcardCode = '2222222';
+        $bnf = self::getContainer()->get(BeneficiaryRepository::class)->findOneBy([], ['id' => 'asc']);
+        $this->getSmartcardForBeneficiary($firstSmartcardCode, $bnf);
+
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
+            'serialNumber' => $secondSmartcardCode,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        /**
+         * @var Smartcard[] $activeSmartcards
+         */
+        $activeSmartcards = $smartcardRepository->findBy(['beneficiary' => $bnf, 'state' => SmartcardStates::ACTIVE]);
+        $this->assertEquals(1, count($activeSmartcards));
+        $this->assertEquals($secondSmartcardCode, $activeSmartcards[0]->getSerialNumber());
+
+        $this->em->rollback();
+    }
+
+    public function testRegisterOldCardAgain(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $firstSmartcardCode = '1111111';
+        $secondSmartcardCode = '2222222';
+        $bnf = self::getContainer()->get(BeneficiaryRepository::class)->findOneBy([], ['id' => 'asc']);
+        $smartcard1 = $this->getSmartcardForBeneficiary($firstSmartcardCode, $bnf);
+        $smartcard1->setState(SmartcardStates::ACTIVE);
+        $smartcardRepository->save($smartcard1);
+        $smartcard2 = $this->getSmartcardForBeneficiary($secondSmartcardCode, $bnf);
+        $smartcard2->setState(SmartcardStates::INACTIVE);
+        $smartcardRepository->save($smartcard2);
+
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
+            'serialNumber' => $secondSmartcardCode,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->em->refresh($smartcard1);
+        $this->em->refresh($smartcard2);
+        $this->assertEquals(SmartcardStates::ACTIVE, $smartcard2->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard1->getState());
+
+        $this->em->rollback();
+    }
+
     /**
      * @throws ORMException
      * @throws OptimisticLockException
@@ -104,22 +175,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $this->em->remove($smartcard);
         $this->em->flush();
-    }
-
-    public function testRegisterDuplicateSmartcard()
-    {
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
-
-        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
-            'serialNumber' => '1234ABC',
-            'beneficiaryId' => $bnf->getId(), // @todo replace for fixture
-            'createdAt' => '2020-02-02T12:00:00Z',
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request should failed: ' . $this->client->getResponse()->getContent()
-        );
     }
 
     public function testPurchase()
@@ -818,32 +873,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($assistanceBeneficiary);
 
         return $assistanceBeneficiary;
-    }
-
-    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
-    {
-        /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
-            ['serialNumber' => $serialNumber],
-            ['id' => 'asc']
-        );
-
-        foreach ($smartcards as $smartcard) {
-            if ($smartcard->getState() === SmartcardStates::ACTIVE) {
-                $smartcard->setBeneficiary($beneficiary);
-
-                return $smartcard;
-            }
-        }
-
-        $smartcard = new Smartcard($serialNumber, new DateTime('now'));
-        $smartcard->setBeneficiary($beneficiary);
-        $smartcard->setState(SmartcardStates::ACTIVE);
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        return $smartcard;
     }
 
     private function createReliefPackage(AssistanceBeneficiary $ab): ReliefPackage

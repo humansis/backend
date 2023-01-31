@@ -30,7 +30,7 @@ class SmartcardStates
         SmartcardStates::CANCELLED => [],
     ];
 
-    public static function all()
+    public static function all(): array
     {
         return self::$values;
     }

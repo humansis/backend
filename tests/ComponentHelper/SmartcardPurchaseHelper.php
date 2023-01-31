@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Tests\ComponentHelper;
 
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\SmartcardPurchase;
 use Exception;
 use InputType\PurchaseProductInputType;
 use InputType\SmartcardPurchaseInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\SmartcardService;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait SmartcardPurchaseHelper

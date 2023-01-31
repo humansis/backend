@@ -8,12 +8,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Entity\Vendor;
 use Exception;
 use InputType\VendorCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\ValueGenerator\ValueGenerator;
 use Utils\VendorService;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait VendorHelper

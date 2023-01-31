@@ -376,4 +376,15 @@ class Beneficiary extends AbstractBeneficiary
     {
         return $this->importBeneficiaries;
     }
+
+    public function getActiveSmartcard(): null|Smartcard
+    {
+        foreach ($this->smartcards as $smartcard) {
+            if ($smartcard->isActive()) {
+                return $smartcard;
+            }
+        }
+
+        return null;
+    }
 }

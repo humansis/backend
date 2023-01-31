@@ -28,8 +28,14 @@ class DepositFactory
 
     private bool $suspicious = false;
 
-    public function __construct(private readonly SmartcardDepositRepository $smartcardDepositRepository, private readonly SmartcardService $smartcardService, private readonly ReliefPackageRepository $reliefPackageRepository, private readonly CacheInterface $cache, private readonly ReliefPackageService $reliefPackageService, private readonly LoggerInterface $logger)
-    {
+    public function __construct(
+        private readonly SmartcardDepositRepository $smartcardDepositRepository,
+        private readonly SmartcardService $smartcardService,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly CacheInterface $cache,
+        private readonly ReliefPackageService $reliefPackageService,
+        private readonly LoggerInterface $logger
+    ) {
     }
 
     /**
@@ -53,7 +59,7 @@ class DepositFactory
             $reliefPackage
         );
         $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew(
+        $smartcard = $this->smartcardService->getOrCreateActiveSmartcardForBeneficiary(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()
