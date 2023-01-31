@@ -219,7 +219,6 @@ deploy test - keep db:
 
 deploy test - clean fixtures:
   stage: deploy_test
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: test
     url: https://apitest.humansis.org
@@ -233,7 +232,6 @@ deploy test - clean fixtures:
 
 deploy test - anonymized db:
   stage: deploy_test
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: test
     url: https://apitest.humansis.org
@@ -295,7 +293,6 @@ deploy demo  - keep db:
 
 deploy demo - anonymized db:
   stage: deploy_demo
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: demo
     url: https://apidemo.humansis.org
