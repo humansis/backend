@@ -9,7 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Entity\SmartcardDeposit;
+use Entity\User;
+use Enum\ModalityType;
 use Enum\ReliefPackageState;
+use Repository\Assistance\ReliefPackageRepository;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
 use Repository\BeneficiaryRepository;
@@ -23,18 +26,16 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     private AssistanceRepository $assistanceRepository;
 
-
     private BeneficiaryRepository $beneficiaryRepository;
-
 
     private UserRepository $userRepository;
 
-
     private SmartcardRepository $smartcardRepository;
 
-    protected $em;
+    private ReliefPackageRepository $reliefPackageRepository;
 
-    private $container;
+    /** @var EntityManagerInterface */
+    protected $em;
 
     /**
      * @throws Exception
@@ -44,16 +45,17 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
-        $this->container = self::getContainer();
-        // Get a Client instance for simulate a browser
-        $this->client = $this->container->get('test.client');
 
-        $this->assistanceBeneficiaryRepository = $this->container->get(AssistanceBeneficiaryRepository::class);
-        $this->assistanceRepository = $this->container->get(AssistanceRepository::class);
-        $this->beneficiaryRepository = $this->container->get(BeneficiaryRepository::class);
-        $this->userRepository = $this->container->get(UserRepository::class);
-        $this->smartcardRepository = $this->container->get(SmartcardRepository::class);
-        $this->em = $this->container->get(EntityManagerInterface::class);
+        // Get a Client instance for simulate a browser
+        $this->client = self::getContainer()->get('test.client');
+
+        $this->assistanceBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(AssistanceBeneficiary::class);
+        $this->assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
+        $this->beneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(Beneficiary::class);
+        $this->userRepository = self::getContainer()->get('doctrine')->getRepository(User::class);
+        $this->smartcardRepository = self::getContainer()->get('doctrine')->getRepository(Smartcard::class);
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        $this->reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
     }
 
     /**
@@ -289,5 +291,83 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
+    }
+
+    public function testManualDistribution(): void
+    {
+        $this->em->beginTransaction();
+        $reliefPackage = $this->reliefPackageRepository->findOneBy(
+            ['state' => ReliefPackageState::TO_DISTRIBUTE, 'modalityType' => ModalityType::SMART_CARD]
+        );
+        if (!$reliefPackage) {
+            $this->markTestSkipped('There is no usable Relief Package');
+        }
+
+        $this->request(
+            'POST',
+            '/api/basic/support-app/v1/smartcard/distribution',
+            [
+                'reliefPackageId' => $reliefPackage->getId(),
+                'value' => 20,
+                'createdAt' => '2023-01-01T00:01:01Z',
+                'createdBy' => $this->getTestUser()->getId(),
+                'smartcardCode' => 'AABBBCCC',
+                'note' => 'Test note',
+            ]
+        );
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->em->refresh($reliefPackage);
+        $this->assertEquals($this->getTestUser()->getId(), $reliefPackage->getDistributedBy()->getId());
+        $this->assertEquals(20, $reliefPackage->getAmountDistributed());
+        $this->assertEquals('Test note', $reliefPackage->getNotes());
+
+        $this->em->rollback();
+    }
+
+    public function testManualDistributionWithoutCheckingWorkflow(): void
+    {
+        $this->em->beginTransaction();
+        $reliefPackage = $this->reliefPackageRepository->findOneBy(
+            ['modalityType' => ModalityType::SMART_CARD]
+        );
+        if (!$reliefPackage) {
+            $this->markTestSkipped('There is no usable Relief Package');
+        }
+        $valueToDistribute = $reliefPackage->getAmountToDistribute();
+        $spent = $reliefPackage->getAmountSpent();
+        $reliefPackage->setState(ReliefPackageState::DISTRIBUTED);
+        $reliefPackage->setAmountDistributed('0');
+        $this->em->persist($reliefPackage);
+        $this->em->flush();
+
+        $this->request(
+            'POST',
+            '/api/basic/support-app/v1/smartcard/distribution',
+            [
+                'reliefPackageId' => $reliefPackage->getId(),
+                'value' => null,
+                'checkState' => false,
+                'createdAt' => '2023-01-01T00:01:01Z',
+                'createdBy' => $this->getTestUser()->getId(),
+                'smartcardCode' => 'AABBBCCC',
+                'note' => 'Test note',
+                'spent' => 100,
+            ]
+        );
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->em->refresh($reliefPackage);
+        $this->assertEquals(100 + $spent, $reliefPackage->getAmountSpent());
+        $this->assertEquals($valueToDistribute, $reliefPackage->getAmountDistributed());
+        $this->assertEquals(false, $reliefPackage->getSmartcardDeposits()[0]->isSuspicious());
+
+        $this->em->rollback();
     }
 }

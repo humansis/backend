@@ -23,12 +23,11 @@ class ManualDistributionInputType implements InputTypeInterface
     #[Assert\NotBlank(allowNull: true)]
     private float | null $value = null;
 
-    #[Assert\NotBlank]
     #[Assert\Type(type: 'bool')]
     private bool $checkState = true;
 
     #[Assert\NotBlank]
-    #[Assert\DateTime]
+    #[Assert\Type(type: '\DateTimeInterface')]
     private DateTime $createdAt;
 
     /**
