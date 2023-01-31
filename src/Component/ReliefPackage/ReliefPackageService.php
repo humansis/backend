@@ -28,9 +28,12 @@ class ReliefPackageService
         SmartcardDeposit $deposit,
         CreationContext | null $context = null
     ): void {
-        $this->addDistributedAmount($reliefPackage, $deposit);
+        $this->addDistributedAmount($reliefPackage, $deposit, $context);
         $this->checkDistributedAmount($reliefPackage, $deposit);
         $this->markReliefPackageAsDistributed($reliefPackage, $deposit, $context);
+        if ($context && $context->getNotes()) {
+            $reliefPackage->setNotes($context->getNotes());
+        }
         $this->smartcardDepositRepository->save($deposit);
     }
 
@@ -55,9 +58,13 @@ class ReliefPackageService
     private function addDistributedAmount(
         ReliefPackage $reliefPackage,
         SmartcardDeposit $deposit,
+        CreationContext | null $context = null
     ): void {
         $reliefPackage->addDistributedAmount($deposit->getValue());
         $reliefPackage->setDistributedBy($deposit->getDistributedBy());
+        if ($context && $context->getSpent()) {
+            $reliefPackage->addSpent($context->getSpent());
+        }
     }
 
     private function markReliefPackageAsDistributed(

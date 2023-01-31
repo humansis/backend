@@ -13,9 +13,11 @@ use Entity\Assistance\ReliefPackage;
 use Entity\User;
 use Enum\CacheTarget;
 use InputType\Smartcard\DepositInputType;
+use InputType\Smartcard\ManualDistributionInputType;
 use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Repository\UserRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
@@ -30,7 +32,8 @@ class DepositFactory
         private readonly ReliefPackageRepository $reliefPackageRepository,
         private readonly CacheInterface $cache,
         private readonly ReliefPackageService $reliefPackageService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly UserRepository $userRepository,
     ) {
     }
 
@@ -67,6 +70,40 @@ class DepositFactory
         );
 
         return $deposit;
+    }
+
+    /**
+     * @throws DoubledDepositException
+     * @throws InvalidArgumentException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function createForSupportApp(
+        ManualDistributionInputType $manualDistributionInputType,
+    ): SmartcardDeposit {
+        $context = new CreationContext(
+            $manualDistributionInputType->isCheckState(),
+            $manualDistributionInputType->getSpent(),
+            $manualDistributionInputType->getNote()
+        );
+        if ($manualDistributionInputType->getValue()) {
+            $value = $manualDistributionInputType->getValue();
+        } else {
+            $reliefPackage = $this->reliefPackageRepository->find($manualDistributionInputType->getReliefPackageId());
+            $value = $reliefPackage->getAmountToDistribute() - $reliefPackage->getAmountDistributed();
+        }
+
+        return $this->create(
+            $manualDistributionInputType->getSmartcardCode(),
+            DepositInputType::create(
+                $manualDistributionInputType->getReliefPackageId(),
+                $value,
+                $value,
+                $manualDistributionInputType->getCreatedAt()
+            ),
+            $this->userRepository->find($manualDistributionInputType->getCreatedBy()),
+            $context
+        );
     }
 
     private function createNewDepositRoot(

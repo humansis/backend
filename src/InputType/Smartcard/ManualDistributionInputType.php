@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Smartcard;
 
-use DateTimeImmutable;
+use DateTime;
 use DateTimeInterface;
 use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
@@ -19,6 +19,7 @@ class ManualDistributionInputType implements InputTypeInterface
     private int $reliefPackageId;
 
     #[Assert\Type(type: 'float')]
+    #[Assert\GreaterThan(0)]
     #[Assert\NotBlank(allowNull: true)]
     private float | null $value = null;
 
@@ -28,7 +29,7 @@ class ManualDistributionInputType implements InputTypeInterface
 
     #[Assert\NotBlank]
     #[Assert\DateTime]
-    private DateTimeImmutable $createdAt;
+    private DateTime $createdAt;
 
     /**
      * @EntityExist(entity="Entity\User")
@@ -36,11 +37,8 @@ class ManualDistributionInputType implements InputTypeInterface
     #[Assert\NotBlank]
     private int $createdBy;
 
-    /**
-     * @EntityExist(entity="Entity\Smartcard")
-     */
     #[Assert\NotBlank]
-    private int $smartcardId;
+    private string $smartcardCode;
 
     #[Assert\NotBlank(allowNull: true)]
     private float | null $spent = null;
@@ -79,14 +77,14 @@ class ManualDistributionInputType implements InputTypeInterface
         $this->checkState = $checkState;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
     public function setCreatedAt(string $createdAt): void
     {
-        $this->createdAt = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, $createdAt);
+        $this->createdAt = DateTime::createFromFormat(DateTimeInterface::ATOM, $createdAt);
     }
 
     public function getCreatedBy(): int
@@ -99,14 +97,14 @@ class ManualDistributionInputType implements InputTypeInterface
         $this->createdBy = $createdBy;
     }
 
-    public function getSmartcardId(): int
+    public function getSmartcardCode(): string
     {
-        return $this->smartcardId;
+        return $this->smartcardCode;
     }
 
-    public function setSmartcardId(int $smartcardId): void
+    public function setSmartcardCode(string $smartcardCode): void
     {
-        $this->smartcardId = $smartcardId;
+        $this->smartcardCode = $smartcardCode;
     }
 
     public function getSpent(): ?float

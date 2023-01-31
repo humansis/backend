@@ -56,8 +56,6 @@ class ReliefPackage
     private string $amountDistributed;
 
     /**
-     *
-     * controlled by database triggers on smartcard_payment_record table
      * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2, nullable=true)
      */
     private string|null $amountSpent = null;
@@ -93,21 +91,13 @@ class ReliefPackage
      */
     private ?\Entity\User $distributedBy = null;
 
-
-
-
-
-    /**
-     * @param float|string|int $amountToDistribute
-     * @param float|string|int $amountDistributed
-     */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        $amountToDistribute,
+        float | int | string $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        $amountDistributed = 0.0
+        float | int | string $amountDistributed = 0.0
     ) {
         if (!in_array($modalityType, ModalityType::values())) {
             throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
@@ -135,7 +125,7 @@ class ReliefPackage
     /**
      * @ORM\PreUpdate
      */
-    public function updateLastModified()
+    public function updateLastModified(): void
     {
         $this->setLastModifiedNow();
     }
@@ -225,6 +215,11 @@ class ReliefPackage
     public function isFullyDistributed(): bool
     {
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
+    }
+
+    public function addSpent(float | int $amountSpent): void
+    {
+        $this->amountSpent = (string) ((float) $this->amountSpent + $amountSpent);
     }
 
     public function getAmountSpent(): string|null
