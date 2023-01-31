@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Controller\SupportApp;
+namespace Controller\SupportApp\Smartcard;
 
 use Controller\AbstractController;
+use Enum\ModalityType;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\ResetingReliefPackageInputType;
@@ -14,32 +15,19 @@ use Services\AssistanceDistributionService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Throwable;
 
 class DistributionController extends AbstractController
 {
-    /** @var AssistanceDistributionService */
-    private $assistanceDistributionService;
-
-    /** @var AssistanceBeneficiaryRepository */
-    private $assistanceBeneficiaryRepository;
-
-    /** @var SmartcardRepository */
-    private $smartcardRepository;
-
-
-
     public function __construct(
-        AssistanceDistributionService $assistanceDistributionService,
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        SmartcardRepository $smartcardRepository
+        private readonly AssistanceDistributionService $assistanceDistributionService,
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        private readonly SmartcardRepository $smartcardRepository
     ) {
-        $this->assistanceDistributionService = $assistanceDistributionService;
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->smartcardRepository = $smartcardRepository;
     }
 
     /**
-     * @Rest\Delete("/support-app/v1/distribution")
+     * @Rest\Delete("/support-app/v1/smartcard/distribution")
      *
      * @param ResetingReliefPackageInputType $inputType
      * @return JsonResponse
@@ -70,7 +58,14 @@ class DistributionController extends AbstractController
             throw new BadRequestHttpException("This beneficiary ({$inputType->getBeneficiaryId()}) did not receive a deposit for assistance ({$inputType->getAssistanceId()})");
         }
 
-        $this->assistanceDistributionService->deleteDistribution($reliefPackages, $smartcardDeposits);
+        if ($reliefPackages[0]->getModalityType() != ModalityType::SMART_CARD) {
+            throw new BadRequestHttpException("Only Relief Packages that use the smartcard modality are allowed");
+        }
+        try {
+            $this->assistanceDistributionService->deleteDistribution($reliefPackages, $smartcardDeposits);
+        } catch (Throwable $ex) {
+            throw new BadRequestHttpException($ex->getMessage());
+        }
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

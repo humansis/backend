@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Enum\ReliefPackageState;
+use Exception;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
@@ -31,8 +32,15 @@ class AssistanceDistributionService
 {
     final public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
 
-    public function __construct(private readonly ReliefPackageRepository $reliefPackageRepository, private readonly BeneficiaryRepository $beneficiaryRepository, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly LoggerInterface $logger, private readonly Registry $registry)
-    {
+    public function __construct(
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LoggerInterface $logger,
+        private readonly Registry $registry,
+        private readonly EntityManagerInterface $em,
+        private readonly SmartcardDepositRepository $smartcardDepositRepository
+    ) {
     }
 
     /**
@@ -221,11 +229,11 @@ class AssistanceDistributionService
 
             $this->em->flush();
             $this->em->getConnection()->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $ex) {
             if ($this->em->getConnection()->isTransactionActive()) {
                 $this->em->getConnection()->rollBack();
             }
-            throw $e;
+            throw $ex;
         }
     }
 }

@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Controller\SupportApp;
+namespace Tests\Controller\SupportApp\Smartcard;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
+use Entity\Beneficiary;
+use Entity\Smartcard;
 use Entity\SmartcardDeposit;
+use Entity\User;
 use Enum\ReliefPackageState;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
@@ -19,20 +22,19 @@ use Tests\BMSServiceTestCase;
 
 class DistributionControllerTest extends BMSServiceTestCase
 {
-    /** @var AssistanceBeneficiaryRepository */
-    private $assistanceBeneficiaryRepository;
+    private AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository;
 
-    /** @var AssistanceRepository */
-    private $assistanceRepository;
 
-    /** @var BeneficiaryRepository */
-    private $beneficiaryRepository;
+    private AssistanceRepository $assistanceRepository;
 
-    /** @var UserRepository */
-    private $userRepository;
 
-    /** @var SmartcardRepository */
-    private $smartcardRepository;
+    private BeneficiaryRepository $beneficiaryRepository;
+
+
+    private UserRepository $userRepository;
+
+
+    private SmartcardRepository $smartcardRepository;
 
     /** @var EntityManagerInterface */
     protected $em;
@@ -47,14 +49,14 @@ class DistributionControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
 
-        $this->assistanceBeneficiaryRepository = self::$container->get(AssistanceBeneficiaryRepository::class);
-        $this->assistanceRepository = self::$container->get(AssistanceRepository::class);
-        $this->beneficiaryRepository = self::$container->get(BeneficiaryRepository::class);
-        $this->userRepository = self::$container->get(UserRepository::class);
-        $this->smartcardRepository = self::$container->get(SmartcardRepository::class);
-        $this->em = self::$container->get(EntityManagerInterface::class);
+        $this->assistanceBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(AssistanceBeneficiary::class);
+        $this->assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
+        $this->beneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(Beneficiary::class);
+        $this->userRepository = self::getContainer()->get('doctrine')->getRepository(User::class);
+        $this->smartcardRepository = self::getContainer()->get('doctrine')->getRepository(Smartcard::class);
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     /**
@@ -71,11 +73,11 @@ class DistributionControllerTest extends BMSServiceTestCase
         $oldAssistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($assistance->getId(), $beneficiary->getId());
         if ($oldAssistanceBeneficiary) {
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
-            if ($oldReliefPackages) {
+            if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
                     if ($oldReliefPackage) {
                         $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if ($oldSmartcardDeposits) {
+                        if (!$oldSmartcardDeposits->isEmpty()) {
                             foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
                                 $this->em->remove($oldSmartcardDeposit);
                                 $this->em->flush();
@@ -90,6 +92,7 @@ class DistributionControllerTest extends BMSServiceTestCase
             $this->em->flush();
         }
 
+
         $assistanceBeneficiary = new AssistanceBeneficiary();
         $assistanceBeneficiary->setAssistance($assistance);
         $assistanceBeneficiary->setBeneficiary($beneficiary);
@@ -98,7 +101,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $reliefPackage = new Assistance\ReliefPackage(
             $assistanceBeneficiary,
-            'Mobile Money',
+            'Smartcard',
             45,
             'KHR',
             ReliefPackageState::DISTRIBUTED,
@@ -124,7 +127,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $this->request(
             'DELETE',
-            '/api/basic/support-app/v1/distribution',
+            '/api/basic/support-app/v1/smartcard/distribution',
             [
                 "assistanceId" => 9999999,
                 "beneficiaryId" => $beneficiaryID,
@@ -152,11 +155,11 @@ class DistributionControllerTest extends BMSServiceTestCase
         $oldAssistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($assistance->getId(), $beneficiary->getId());
         if ($oldAssistanceBeneficiary) {
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
-            if ($oldReliefPackages) {
+            if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
                     if ($oldReliefPackage) {
                         $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if ($oldSmartcardDeposits) {
+                        if (!$oldSmartcardDeposits->isEmpty()) {
                             foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
                                 $this->em->remove($oldSmartcardDeposit);
                                 $this->em->flush();
@@ -179,7 +182,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $reliefPackage = new Assistance\ReliefPackage(
             $assistanceBeneficiary,
-            'Mobile Money',
+            'Smartcard',
             45,
             'KHR',
             ReliefPackageState::DISTRIBUTED,
@@ -205,7 +208,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $this->request(
             'DELETE',
-            '/api/basic/support-app/v1/distribution',
+            '/api/basic/support-app/v1/smartcard/distribution',
             [
                 "assistanceId" => $assistanceID,
                 "beneficiaryId" => $beneficiaryID,
@@ -233,11 +236,11 @@ class DistributionControllerTest extends BMSServiceTestCase
         $oldAssistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($assistance->getId(), $beneficiary->getId());
         if ($oldAssistanceBeneficiary) {
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
-            if ($oldReliefPackages) {
+            if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
                     if ($oldReliefPackage) {
                         $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if ($oldSmartcardDeposits) {
+                        if (!$oldSmartcardDeposits->isEmpty()) {
                             foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
                                 $this->em->remove($oldSmartcardDeposit);
                                 $this->em->flush();
@@ -260,7 +263,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $reliefPackage = new Assistance\ReliefPackage(
             $assistanceBeneficiary,
-            'Mobile Money',
+            'Smartcard',
             45,
             'KHR',
             ReliefPackageState::DISTRIBUTED,
@@ -279,14 +282,12 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->refresh($assistanceBeneficiary);
         $this->em->refresh($reliefPackage);
         $this->em->refresh($smartcardDeposit);
-
         $assistanceID = $assistance->getId();
         $beneficiaryID = $beneficiary->getId();
         $smartcardCode = $smartcard->getSerialNumber();
-
         $this->request(
             'DELETE',
-            '/api/basic/support-app/v1/distribution',
+            '/api/basic/support-app/v1/smartcard/distribution',
             [
                 "assistanceId" => $assistanceID,
                 "beneficiaryId" => $beneficiaryID,
