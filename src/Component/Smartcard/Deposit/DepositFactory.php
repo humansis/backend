@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Entity\Assistance\ReliefPackage;
