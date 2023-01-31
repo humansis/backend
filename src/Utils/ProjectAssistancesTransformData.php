@@ -180,7 +180,7 @@ class ProjectAssistancesTransformData
                     "N/A"
                 ) : $assistance->getRound()),
                 $this->translator->trans("Donor") => $donors,
-                $this->translator->trans("Starting Date") => $assistance->getDateDistribution(),
+                $this->translator->trans("Starting Date") => date_format($assistance->getDateDistribution(), 'Y-m-d H:i:s'),
                 $this->translator->trans("Ending Date") => $assistance->getCompleted() ? $assistance->getUpdatedOn(
                 ) : " - ",
                 $this->translator->trans("Governorate") => $assistance->getLocation()->getAdm1Name(),
