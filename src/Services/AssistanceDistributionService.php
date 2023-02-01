@@ -2,7 +2,6 @@
 
 namespace Services;
 
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
