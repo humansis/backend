@@ -138,6 +138,8 @@ class SmartcardRepository extends EntityRepository
         } else {
             return $smartcards[0];
         }
+    }
+
     public function persist(Smartcard $smartcard): void
     {
         $this->_em->persist($smartcard);
