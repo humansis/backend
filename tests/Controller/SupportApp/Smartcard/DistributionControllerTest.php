@@ -106,7 +106,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->persist($reliefPackage);
 
 
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($beneficiary->getSmartcardSerialNumber(), $beneficiary);
+        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
 
         $smartcardDeposit = new SmartcardDeposit();
         $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
@@ -184,8 +184,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $reliefPackage->setDistributedBy($user);
         $this->em->persist($reliefPackage);
 
-
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($beneficiary->getSmartcardSerialNumber(), $beneficiary);
+        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
 
         $smartcardDeposit = new SmartcardDeposit();
         $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
@@ -264,7 +263,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->persist($reliefPackage);
 
 
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($beneficiary->getSmartcardSerialNumber(), $beneficiary);
+        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
 
         $smartcardDeposit = new SmartcardDeposit();
         $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
