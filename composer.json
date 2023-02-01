@@ -38,7 +38,7 @@
         "doctrine/doctrine-fixtures-bundle": "3.4.2",
         "doctrine/doctrine-migrations-bundle": "3.2.2",
         "doctrine/orm": "2.13.3",
-        "dompdf/dompdf": "v2.0.1",
+        "dompdf/dompdf": "v2.0.2",
         "friendsofsymfony/rest-bundle": "3.4.0",
         "gesdinet/jwt-refresh-token-bundle": "^1.1",
         "graylog2/gelf-php": "1.7.1",
