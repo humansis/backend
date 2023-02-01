@@ -24,7 +24,6 @@ class DistributionControllerTest extends BMSServiceTestCase
 {
     private AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository;
 
-
     private AssistanceRepository $assistanceRepository;
 
 
@@ -36,8 +35,9 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     private SmartcardRepository $smartcardRepository;
 
-    /** @var EntityManagerInterface */
     protected $em;
+
+    private $container;
 
     /**
      * @throws Exception
@@ -47,16 +47,16 @@ class DistributionControllerTest extends BMSServiceTestCase
         // Configuration of BMSServiceTest
         $this->setDefaultSerializerName('serializer');
         parent::setUpFunctionnal();
-
+        $this->container = self::getContainer();
         // Get a Client instance for simulate a browser
-        $this->client = self::getContainer()->get('test.client');
+        $this->client = $this->container->get('test.client');
 
-        $this->assistanceBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(AssistanceBeneficiary::class);
-        $this->assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
-        $this->beneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(Beneficiary::class);
-        $this->userRepository = self::getContainer()->get('doctrine')->getRepository(User::class);
-        $this->smartcardRepository = self::getContainer()->get('doctrine')->getRepository(Smartcard::class);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        $this->assistanceBeneficiaryRepository = $this->container->get(AssistanceBeneficiaryRepository::class);
+        $this->assistanceRepository = $this->container->get(AssistanceRepository::class);
+        $this->beneficiaryRepository = $this->container->get(BeneficiaryRepository::class);
+        $this->userRepository = $this->container->get(UserRepository::class);
+        $this->smartcardRepository = $this->container->get(SmartcardRepository::class);
+        $this->em = $this->container->get(EntityManagerInterface::class);
     }
 
     /**
@@ -75,17 +75,15 @@ class DistributionControllerTest extends BMSServiceTestCase
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
             if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
-                    if ($oldReliefPackage) {
-                        $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if (!$oldSmartcardDeposits->isEmpty()) {
-                            foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
-                                $this->em->remove($oldSmartcardDeposit);
-                                $this->em->flush();
-                            }
+                    $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
+                    if (!$oldSmartcardDeposits->isEmpty()) {
+                        foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
+                            $this->em->remove($oldSmartcardDeposit);
+                            $this->em->flush();
                         }
-                        $this->em->remove($oldReliefPackage);
-                        $this->em->flush();
                     }
+                    $this->em->remove($oldReliefPackage);
+                    $this->em->flush();
                 }
             }
             $this->em->remove($oldAssistanceBeneficiary);
@@ -157,17 +155,15 @@ class DistributionControllerTest extends BMSServiceTestCase
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
             if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
-                    if ($oldReliefPackage) {
-                        $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if (!$oldSmartcardDeposits->isEmpty()) {
-                            foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
-                                $this->em->remove($oldSmartcardDeposit);
-                                $this->em->flush();
-                            }
+                    $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
+                    if (!$oldSmartcardDeposits->isEmpty()) {
+                        foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
+                            $this->em->remove($oldSmartcardDeposit);
+                            $this->em->flush();
                         }
-                        $this->em->remove($oldReliefPackage);
-                        $this->em->flush();
                     }
+                    $this->em->remove($oldReliefPackage);
+                    $this->em->flush();
                 }
             }
             $this->em->remove($oldAssistanceBeneficiary);
@@ -238,17 +234,15 @@ class DistributionControllerTest extends BMSServiceTestCase
             $oldReliefPackages = $oldAssistanceBeneficiary->getReliefPackages();
             if (!$oldReliefPackages->isEmpty()) {
                 foreach ($oldReliefPackages as $oldReliefPackage) {
-                    if ($oldReliefPackage) {
-                        $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
-                        if (!$oldSmartcardDeposits->isEmpty()) {
-                            foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
-                                $this->em->remove($oldSmartcardDeposit);
-                                $this->em->flush();
-                            }
+                    $oldSmartcardDeposits = $oldReliefPackage->getSmartcardDeposits();
+                    if (!$oldSmartcardDeposits->isEmpty()) {
+                        foreach ($oldSmartcardDeposits as $oldSmartcardDeposit) {
+                            $this->em->remove($oldSmartcardDeposit);
+                            $this->em->flush();
                         }
-                        $this->em->remove($oldReliefPackage);
-                        $this->em->flush();
                     }
+                    $this->em->remove($oldReliefPackage);
+                    $this->em->flush();
                 }
             }
             $this->em->remove($oldAssistanceBeneficiary);
