@@ -28,9 +28,9 @@ class ReliefPackageService
         SmartcardDeposit $deposit,
         CreationContext | null $context = null
     ): void {
-        $this->addDistributedAmount($reliefPackage, $deposit, $context);
+        $this->addDistributedAmount($reliefPackage, $deposit, $context?->getSpent());
         $this->checkDistributedAmount($reliefPackage, $deposit);
-        $this->markReliefPackageAsDistributed($reliefPackage, $deposit, $context);
+        $this->markReliefPackageAsDistributed($reliefPackage, $deposit, (bool) $context?->checkDistributionWorkflow());
         if ($context && $context->getNotes()) {
             $reliefPackage->setNotes($context->getNotes());
         }
@@ -58,21 +58,21 @@ class ReliefPackageService
     private function addDistributedAmount(
         ReliefPackage $reliefPackage,
         SmartcardDeposit $deposit,
-        CreationContext | null $context = null
+        float | int | null $spent = null
     ): void {
         $reliefPackage->addDistributedAmount($deposit->getValue());
         $reliefPackage->setDistributedBy($deposit->getDistributedBy());
-        if ($context && $context->getSpent()) {
-            $reliefPackage->addSpent($context->getSpent());
+        if ($spent) {
+            $reliefPackage->addSpent($spent);
         }
     }
 
     private function markReliefPackageAsDistributed(
         ReliefPackage $reliefPackage,
         SmartcardDeposit $deposit,
-        CreationContext | null $context = null
+        bool $checkWorkflow = true
     ): void {
-        if (!$context || ($context->checkDistributionWorkflow())) {
+        if ($checkWorkflow) {
             $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
             if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
                 $deposit->setSuspicious(true);

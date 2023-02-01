@@ -94,10 +94,10 @@ class ReliefPackage
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        float | int | string $amountToDistribute,
+        float | int $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        float | int | string $amountDistributed = 0.0
+        float | int $amountDistributed = 0.0
     ) {
         if (!in_array($modalityType, ModalityType::values())) {
             throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
