@@ -101,17 +101,6 @@ class UserService
         return $user;
     }
 
-    /**
-     * Export all users in a CSV file
-     *
-     * @return mixed
-     */
-    public function exportToCsv(string $type)
-    {
-        $exportableTable = $this->em->getRepository(User::class)->findAll();
-
-        return $this->exportService->export($exportableTable, 'users', $type);
-    }
 
     public function getAvailableCountries(User $user): array
     {

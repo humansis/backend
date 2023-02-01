@@ -1240,7 +1240,7 @@ services:
     Utils\SmartcardPurchasedItemTransformData:
         class: Utils\SmartcardPurchasedItemTransformData
         public: true
-        
+
     Utils\ProjectTransformData:
         class: Utils\ProjectTransformData
 
@@ -1249,6 +1249,9 @@ services:
 
     Utils\VoucherTransformData:
         class: Utils\VoucherTransformData
+
+    Utils\UserTransformData:
+        class: Utils\UserTransformData
         public: true
 
 #From VoucherBundle:
