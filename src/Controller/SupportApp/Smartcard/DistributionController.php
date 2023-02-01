@@ -23,7 +23,6 @@ class DistributionController extends AbstractController
 {
     public function __construct(
         private readonly AssistanceDistributionService $assistanceDistributionService,
-        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
     ) {
     }
 
@@ -35,10 +34,8 @@ class DistributionController extends AbstractController
      */
     public function removeDistribution(ResetingReliefPackageInputType $inputType): JsonResponse
     {
-        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($inputType->getAssistanceId(), $inputType->getBeneficiaryId());
-
         try {
-            $this->assistanceDistributionService->deleteDistribution($assistanceBeneficiary, $inputType);
+            $this->assistanceDistributionService->deleteDistribution($inputType);
         } catch (RemoveDistribtuionException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }

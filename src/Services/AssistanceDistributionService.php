@@ -11,6 +11,7 @@ use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Exception\RemoveDistribtuionException;
 use InputType\ResetingReliefPackageInputType;
+use Repository\AssistanceBeneficiaryRepository;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
@@ -46,7 +47,8 @@ class AssistanceDistributionService
         private readonly Registry $registry,
         private readonly EntityManagerInterface $em,
         private readonly SmartcardDepositRepository $smartcardDepositRepository,
-        private readonly SmartcardRepository $smartcardRepository
+        private readonly SmartcardRepository $smartcardRepository,
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
     ) {
     }
 
@@ -222,10 +224,10 @@ class AssistanceDistributionService
     /**
      * @throws RemoveDistribtuionException
      */
-    private function checkDataBeforeDelete($assistanceBeneficiary, $inputType)
+    private function checkDataBeforeDelete($assistanceBeneficiary, $inputType): void
     {
         if (!$assistanceBeneficiary) {
-            throw new BadRequestHttpException("this beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assestant ({$inputType->getAssistanceId()})");
+            throw new BadRequestHttpException("this beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assistance ({$inputType->getAssistanceId()})");
         }
 
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryID($inputType->getSmartcardCode(), $inputType->getBeneficiaryId());
@@ -252,9 +254,12 @@ class AssistanceDistributionService
     /**
      * @throws RemoveDistribtuionException|Exception
      */
-    public function deleteDistribution($assistanceBeneficiary, $inputType)
+    public function deleteDistribution($inputType): void
     {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($inputType->getAssistanceId(), $inputType->getBeneficiaryId());
+
         $this->checkDataBeforeDelete($assistanceBeneficiary, $inputType);
+
         $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
         $this->em->getConnection()->beginTransaction();
         try {
