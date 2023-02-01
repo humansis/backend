@@ -33,22 +33,22 @@ class AssistanceStatistics
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private float $amountTotal;
+    private float | null $amountTotal;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private float $amountDistributed;
+    private float | null $amountDistributed;
 
     /**
      * @ORM\Column(name="beneficiaries_deleted", type="integer")
      */
-    private $beneficiariesDeleted;
+    private int $beneficiariesDeleted;
 
     /**
      * @ORM\Column(name="beneficiaries_reached", type="integer")
      */
-    private $beneficiariesReached;
+    private int $beneficiariesReached;
 
     public function getId(): int
     {
