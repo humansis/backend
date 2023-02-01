@@ -23,7 +23,6 @@ use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
 use Repository\SmartcardDepositRepository;
 use Repository\SmartcardRepository;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Throwable;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
@@ -224,26 +223,31 @@ class AssistanceDistributionService
     /**
      * @throws RemoveDistribtuionException
      */
-    private function checkDataBeforeDelete($assistanceBeneficiary, $inputType): void
+    private function checkDataBeforeDelete(AssistanceBeneficiary $assistanceBeneficiary, ResetingReliefPackageInputType $inputType): void
     {
-        if (!$assistanceBeneficiary) {
-            throw new BadRequestHttpException("this beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assistance ({$inputType->getAssistanceId()})");
-        }
-
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryID($inputType->getSmartcardCode(), $inputType->getBeneficiaryId());
+        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryId(
+            $inputType->getSmartcardCode(),
+            $inputType->getBeneficiaryId()
+        );
         if (!$smartcard) {
-            throw new RemoveDistribtuionException("Beneficiary ({$inputType->getBeneficiaryId()}) does not have assigned Smartcard with code ({$inputType->getSmartcardCode()})");
+            throw new RemoveDistribtuionException(
+                "Beneficiary ({$inputType->getBeneficiaryId()}) does not have assigned Smartcard with code ({$inputType->getSmartcardCode()})"
+            );
         }
 
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
         if (count($reliefPackages) > 1) {
-            throw new RemoveDistribtuionException("This beneficiary ({$inputType->getBeneficiaryId()}) has more than one ReliefPackage in the same assistance ({$inputType->getAssistanceId()})");
+            throw new RemoveDistribtuionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) has more than one ReliefPackage in the same assistance ({$inputType->getAssistanceId()})"
+            );
         }
         $reliefPackage = $reliefPackages[0];
 
         $smartcardDeposits = $reliefPackage->getSmartcardDeposits();
         if (count($smartcardDeposits) === 0) {
-            throw new RemoveDistribtuionException("This beneficiary ({$inputType->getBeneficiaryId()}) did not receive a deposit for assistance ({$inputType->getAssistanceId()})");
+            throw new RemoveDistribtuionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) did not receive a deposit for assistance ({$inputType->getAssistanceId()})"
+            );
         }
 
         if ($reliefPackage->getModalityType() != ModalityType::SMART_CARD) {
@@ -254,9 +258,18 @@ class AssistanceDistributionService
     /**
      * @throws RemoveDistribtuionException|Exception
      */
-    public function deleteDistribution($inputType): void
+    public function deleteDistribution(ResetingReliefPackageInputType $inputType): void
     {
-        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($inputType->getAssistanceId(), $inputType->getBeneficiaryId());
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary(
+            $inputType->getAssistanceId(),
+            $inputType->getBeneficiaryId()
+        );
+
+        if (!$assistanceBeneficiary) {
+            throw new RemoveDistribtuionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assistance ({$inputType->getAssistanceId()})"
+            );
+        }
 
         $this->checkDataBeforeDelete($assistanceBeneficiary, $inputType);
 
