@@ -121,12 +121,17 @@ class SmartcardRepository extends EntityRepository
         $this->_em->flush();
     }
 
-    public function findBySerialNumber(string $serialNumber): ?Smartcard
+    public function findBySerialNumberAndBeneficiaryID(string $serialNumber, int $beneficiary): ?Smartcard
     {
         $smartcards = $this->createQueryBuilder('s')
             ->andWhere('s.serialNumber = :serialNumber')
+            ->andWhere('s.beneficiary = :beneficiary')
+            ->setParameter('beneficiary', $beneficiary)
             ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->orderBy('s.disabledAt', 'desc')
+            ->orderBy('s.createdAt', 'desc')
             ->orderBy('s.id', 'desc')
+            ->setMaxResults(1)
             ->getQuery()->getResult();
         if (empty($smartcards)) {
             return null;

@@ -36,19 +36,10 @@ class DistributionController extends AbstractController
     public function removeDistribution(ResetingReliefPackageInputType $inputType): JsonResponse
     {
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary($inputType->getAssistanceId(), $inputType->getBeneficiaryId());
-        if (!$assistanceBeneficiary) {
-            throw new BadRequestHttpException("this beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assestant ({$inputType->getAssistanceId()})");
-        }
 
         try {
-            $reliefPackage = $this->assistanceDistributionService->checkDataBeforeDelete($assistanceBeneficiary, $inputType);
+            $this->assistanceDistributionService->deleteDistribution($assistanceBeneficiary, $inputType);
         } catch (RemoveDistribtuionException $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
-
-        try {
-            $this->assistanceDistributionService->deleteDistribution($reliefPackage);
-        } catch (\Doctrine\DBAL\Exception | RemoveDistribtuionException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 

@@ -220,20 +220,17 @@ class AssistanceDistributionService
     }
 
     /**
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param ResetingReliefPackageInputType $inputType
-     * @return ReliefPackage|null
      * @throws RemoveDistribtuionException
      */
-    public function checkDataBeforeDelete(AssistanceBeneficiary $assistanceBeneficiary, ResetingReliefPackageInputType $inputType): ?ReliefPackage
+    private function checkDataBeforeDelete($assistanceBeneficiary, $inputType)
     {
-        $smartcard = $this->smartcardRepository->findBySerialNumber($inputType->getSmartcardCode());
-        if ($smartcard) {
-            if ($smartcard->getBeneficiary()->getId() !== $inputType->getBeneficiaryId()) {
-                throw new RemoveDistribtuionException("This beneficiary doesn't have this smartcard ({$inputType->getSmartcardCode()})");
-            }
-        } else {
-            throw new RemoveDistribtuionException("This smartcard doesn't exist or isn't activated");
+        if (!$assistanceBeneficiary) {
+            throw new BadRequestHttpException("this beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assestant ({$inputType->getAssistanceId()})");
+        }
+
+        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryID($inputType->getSmartcardCode(), $inputType->getBeneficiaryId());
+        if (!$smartcard) {
+            throw new RemoveDistribtuionException("Beneficiary ({$inputType->getBeneficiaryId()}) does not have assigned Smartcard with code ({$inputType->getSmartcardCode()})");
         }
 
         $reliefPackages = $assistanceBeneficiary->getReliefPackages();
@@ -250,14 +247,15 @@ class AssistanceDistributionService
         if ($reliefPackage->getModalityType() != ModalityType::SMART_CARD) {
             throw new RemoveDistribtuionException("Only Relief Packages that use the smartcard modality are allowed");
         }
-        return $reliefPackage;
     }
 
     /**
      * @throws RemoveDistribtuionException|Exception
      */
-    public function deleteDistribution($reliefPackage)
+    public function deleteDistribution($assistanceBeneficiary, $inputType)
     {
+        $this->checkDataBeforeDelete($assistanceBeneficiary, $inputType);
+        $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
         $this->em->getConnection()->beginTransaction();
         try {
             $smartcardDeposit = $reliefPackage->getSmartcardDeposits()[0];
@@ -277,7 +275,8 @@ class AssistanceDistributionService
             if ($this->em->getConnection()->isTransactionActive()) {
                 $this->em->getConnection()->rollBack();
             }
-            throw new RemoveDistribtuionException($ex->getMessage());
+            $this->logger->error("Can not delete distribution: " . $ex->getMessage());
+            throw new RemoveDistribtuionException("Can not delete distribution");
         }
     }
 }
