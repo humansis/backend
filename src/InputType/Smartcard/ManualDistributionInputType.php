@@ -18,10 +18,9 @@ class ManualDistributionInputType implements InputTypeInterface
     #[Assert\NotBlank]
     private int $reliefPackageId;
 
-    #[Assert\Type(type: 'float')]
-    #[Assert\GreaterThan(0)]
+    #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private float | null $value = null;
+    private string | null $value = null;
 
     #[Assert\Type(type: 'bool')]
     private bool $checkState = true;
@@ -39,8 +38,9 @@ class ManualDistributionInputType implements InputTypeInterface
     #[Assert\NotBlank]
     private string $smartcardCode;
 
+    #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private float | null $spent = null;
+    private string | null $spent = null;
 
     #[Assert\NotNull]
     #[Assert\Type(type: 'string')]
@@ -56,12 +56,12 @@ class ManualDistributionInputType implements InputTypeInterface
         $this->reliefPackageId = $reliefPackageId;
     }
 
-    public function getValue(): ?float
+    public function getValue(): string | null
     {
         return $this->value;
     }
 
-    public function setValue(?float $value): void
+    public function setValue(string | null $value): void
     {
         $this->value = $value;
     }
@@ -106,12 +106,12 @@ class ManualDistributionInputType implements InputTypeInterface
         $this->smartcardCode = $smartcardCode;
     }
 
-    public function getSpent(): ?float
+    public function getSpent(): string|null
     {
         return $this->spent;
     }
 
-    public function setSpent(?float $spent): void
+    public function setSpent(?string $spent): void
     {
         $this->spent = $spent;
     }

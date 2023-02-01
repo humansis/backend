@@ -9,10 +9,10 @@ use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Controller\AbstractController;
 use Doctrine\DBAL\Exception;
 use Exception\RemoveDistribtuionException;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\ResetingReliefPackageInputType;
+use InputType\Smartcard\ManualDistributionInputType;
+use Psr\Cache\InvalidArgumentException;
 use Services\AssistanceDistributionService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,14 +44,16 @@ class DistributionController extends AbstractController
     /**
      * @Rest\Post("/support-app/v1/smartcard/distribution")
      *
-     * @throws DoubledDepositException
-     * @throws ORMException
-     * @throws OptimisticLockException
      * @throws InvalidArgumentException
      */
     public function createDistribution(ManualDistributionInputType $manualDistributionInputType): JsonResponse
     {
-        $this->depositFactory->createForSupportApp($manualDistributionInputType);
+        try {
+            $this->depositFactory->createForSupportApp($manualDistributionInputType);
+        } catch (DoubledDepositException $e) {
+            throw new BadRequestHttpException($e->getMessage(), $e);
+        }
+
         return $this->json(null, Response::HTTP_CREATED);
     }
 }

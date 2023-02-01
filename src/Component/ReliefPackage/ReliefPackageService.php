@@ -31,7 +31,7 @@ class ReliefPackageService
         $this->addDistributedAmount($reliefPackage, $deposit, $context?->getSpent());
         $this->checkDistributedAmount($reliefPackage, $deposit);
         $this->markReliefPackageAsDistributed($reliefPackage, $deposit, (bool) $context?->checkDistributionWorkflow());
-        if ($context && $context->getNotes()) {
+        if ($context?->getNotes()) {
             $reliefPackage->setNotes($context->getNotes());
         }
         $this->smartcardDepositRepository->save($deposit);
@@ -58,7 +58,7 @@ class ReliefPackageService
     private function addDistributedAmount(
         ReliefPackage $reliefPackage,
         SmartcardDeposit $deposit,
-        float | int | null $spent = null
+        string | null $spent = null
     ): void {
         $reliefPackage->addDistributedAmount($deposit->getValue());
         $reliefPackage->setDistributedBy($deposit->getDistributedBy());

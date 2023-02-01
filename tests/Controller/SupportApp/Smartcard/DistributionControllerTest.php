@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Controller\SupportApp\Smartcard;
 
-use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
+use Entity\Beneficiary;
+use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Entity\User;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
+use Exception;
 use Repository\Assistance\ReliefPackageRepository;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
@@ -59,8 +63,8 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     //this test for incorrect scenario
     public function testIncorrectResetingReliefPackage1()
@@ -139,8 +143,8 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     //this test for incorrect scenario
     public function testIncorrectResetingReliefPackage2()
@@ -217,8 +221,8 @@ class DistributionControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     //this test for correct  scenario
     public function testResetingReliefPackage()
@@ -355,7 +359,7 @@ class DistributionControllerTest extends BMSServiceTestCase
                 'createdBy' => $this->getTestUser()->getId(),
                 'smartcardCode' => 'AABBBCCC',
                 'note' => 'Test note',
-                'spent' => 100,
+                'spent' => "100.00",
             ]
         );
 

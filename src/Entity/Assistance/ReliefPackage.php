@@ -16,6 +16,7 @@ use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Entity\User;
 use Entity\SmartcardDeposit;
+use PrestaShop\Decimal\DecimalNumber;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\Assistance\ReliefPackageRepository")
@@ -217,9 +218,11 @@ class ReliefPackage
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
     }
 
-    public function addSpent(float | int $amountSpent): void
+    public function addSpent(string $amountSpent): void
     {
-        $this->amountSpent = (string) ((float) $this->amountSpent + $amountSpent);
+        $this->amountSpent = (new DecimalNumber($this->amountSpent ?? '0'))
+            ->plus(new DecimalNumber($amountSpent))
+            ->round(2);
     }
 
     public function getAmountSpent(): string|null

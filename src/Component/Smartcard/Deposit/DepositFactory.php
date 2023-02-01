@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\SmartcardDepositService;
@@ -14,6 +12,7 @@ use Entity\User;
 use Enum\CacheTarget;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\ManualDistributionInputType;
+use PrestaShop\Decimal\DecimalNumber;
 use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -39,9 +38,7 @@ class DepositFactory
 
     /**
      * @throws DoubledDepositException
-     * @throws OptimisticLockException
      * @throws InvalidArgumentException
-     * @throws ORMException
      */
     public function create(
         string $smartcardSerialNumber,
@@ -75,8 +72,6 @@ class DepositFactory
     /**
      * @throws DoubledDepositException
      * @throws InvalidArgumentException
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function createForSupportApp(
         ManualDistributionInputType $manualDistributionInputType,
@@ -90,15 +85,17 @@ class DepositFactory
             $value = $manualDistributionInputType->getValue();
         } else {
             $reliefPackage = $this->reliefPackageRepository->find($manualDistributionInputType->getReliefPackageId());
-            $value = $reliefPackage->getAmountToDistribute() - $reliefPackage->getAmountDistributed();
+            $value = (new DecimalNumber($reliefPackage->getAmountToDistribute()))
+                ->minus(new DecimalNumber($reliefPackage->getAmountDistributed()))
+                ->round(2);
         }
 
         return $this->create(
             $manualDistributionInputType->getSmartcardCode(),
             DepositInputType::create(
                 $manualDistributionInputType->getReliefPackageId(),
-                $value,
-                $value,
+                (float) $value,
+                (float) $value,
                 $manualDistributionInputType->getCreatedAt()
             ),
             $this->userRepository->find($manualDistributionInputType->getCreatedBy()),

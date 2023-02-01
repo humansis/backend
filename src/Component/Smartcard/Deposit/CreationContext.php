@@ -7,9 +7,9 @@ namespace Component\Smartcard\Deposit;
 class CreationContext
 {
     public function __construct(
-        private bool $checkDistributionWorkflow = true,
-        private float|null $spent = null,
-        private string $notes = '',
+        private readonly bool $checkDistributionWorkflow = true,
+        private readonly string | null $spent = null,
+        private readonly string $notes = '',
     ) {
     }
 
@@ -18,7 +18,7 @@ class CreationContext
         return $this->checkDistributionWorkflow;
     }
 
-    public function getSpent(): ?float
+    public function getSpent(): ?string
     {
         return $this->spent;
     }
