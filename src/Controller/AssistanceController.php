@@ -212,18 +212,16 @@ class AssistanceController extends AbstractController
     {
         $projectId = $project->getId();
         $type = $request->query->get('type');
-        $assistanceRepository = $this->assistanceRepository;
-        $projectRepository = $this->projectRepository;
 
         if ($type == "pdf") {
             return $this->assistanceService->exportToPdf($projectId);
         } else {
-            $project = $projectRepository->find($project->getId());
+            $project = $this->projectRepository->find($project->getId());
             if (!$project) {
                 throw new NotFoundHttpException("Project #$projectId missing");
             }
 
-            $assistances = $assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
+            $assistances = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
             $exportableTable = $this->projectAssistancesTransformData->transformData($project, $assistances);
 
             return $this->exportTableService->export($exportableTable, 'distributions', $type);
