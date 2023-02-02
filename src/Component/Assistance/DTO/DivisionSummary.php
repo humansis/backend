@@ -10,9 +10,9 @@ use Entity\DivisionGroup;
 class DivisionSummary
 {
     /**
-     * @param \Entity\DivisionGroup[]|Collection $divisionGroups
+     * @param \Entity\DivisionGroup[]|Collection|null $divisionGroups
      */
-    public function __construct(private readonly ?string $division, private readonly Collection $divisionGroups)
+    public function __construct(private readonly ?string $division, private readonly ?Collection $divisionGroups)
     {
     }
 
@@ -22,9 +22,9 @@ class DivisionSummary
     }
 
     /**
-     * @return DivisionGroup[]|Collection
+     * @return DivisionGroup[]|Collection|null
      */
-    public function getDivisionGroups(): Collection
+    public function getDivisionGroups(): ?Collection
     {
         return $this->divisionGroups;
     }

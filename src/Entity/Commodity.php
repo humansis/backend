@@ -59,7 +59,7 @@ class Commodity
 
     /**
      * @var DivisionGroup[]|Collection
-     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", fetch="EAGER", cascade={"persist", "remove"})
      */
     private Collection |array|null $divisionGroups = null;
 

@@ -5,6 +5,7 @@ namespace Entity;
 use DateTime;
 use DateTimeInterface;
 use Entity\Helper\StandardizedPrimaryKey;
+use Enum\AssistanceState;
 use Enum\Livelihood;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
@@ -126,7 +127,7 @@ class Assistance implements ExportableInterface
      *
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
-    private int|bool $completed = 0;
+    private bool $completed = false;
 
     /**
      *
@@ -612,6 +613,19 @@ class Assistance implements ExportableInterface
         $this->scoringBlueprint = $scoringBlueprint;
 
         return $this;
+    }
+
+    public function getState(): string
+    {
+        if ($this->getCompleted()) {
+            return AssistanceState::CLOSED;
+        }
+
+        if ($this->isValidated()) {
+            return AssistanceState::VALIDATED;
+        }
+
+        return AssistanceState::NEW;
     }
 
     public function setDescription(?string $description): Assistance

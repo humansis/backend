@@ -4,23 +4,29 @@ declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
+use Component\Assistance\Domain\Assistance;
+use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Entity;
 use Component\Assistance\AssistanceFactory;
-use Component\Assistance\Domain;
+use Entity\Location;
 use InvalidArgumentException;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssistanceMapper implements MapperInterface
 {
     private ?\Entity\Assistance $object = null;
 
-    private ?\Component\Assistance\Domain\Assistance $domainObject = null;
+    private ?Assistance $domainObject = null;
 
-    public function __construct(private readonly AssistanceFactory $factory)
-    {
+    public function __construct(
+        private readonly AssistanceFactory $factory,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     /**
@@ -28,7 +34,7 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return ($object instanceof Entity\Assistance || $object instanceof Domain\Assistance)
+        return ($object instanceof Entity\Assistance || $object instanceof Assistance)
             && isset($context[self::NEW_API])
             && true === $context[self::NEW_API]
             && !isset($context['offline-app']);
@@ -46,7 +52,7 @@ class AssistanceMapper implements MapperInterface
             return;
         }
 
-        if ($object instanceof Domain\Assistance) {
+        if ($object instanceof Assistance) {
             $this->object = $object->getAssistanceRoot();
             $this->domainObject = $object;
 
@@ -75,9 +81,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
-            DateTimeInterface::ATOM
-        ) : null;
+        return $this->object->getDateExpiration()?->format(DateTimeInterface::ATOM);
     }
 
     public function getProjectId(): int
@@ -95,29 +99,29 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceType();
     }
 
-    public function getLocationId(): int
+    public function getLocation(): Location
     {
-        return $this->object->getLocation()->getId();
+        return $this->object->getLocation();
     }
 
-    public function getAdm1Id(): ?int
+    public function getAdm1(): ?Location
     {
-        return $this->object->getLocation()->getAdm1Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(1) ?: null;
     }
 
-    public function getAdm2Id(): ?int
+    public function getAdm2(): ?Location
     {
-        return $this->object->getLocation()->getAdm2Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(2) ?: null;
     }
 
-    public function getAdm3Id(): ?int
+    public function getAdm3(): ?Location
     {
-        return $this->object->getLocation()->getAdm3Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(3) ?: null;
     }
 
-    public function getAdm4Id(): ?int
+    public function getAdm4(): ?Location
     {
-        return $this->object->getLocation()->getAdm4Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(4) ?: null;
     }
 
     public function getSector(): string
@@ -135,9 +139,9 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getScoringBlueprint();
     }
 
-    public function getCommodityIds(): array
+    public function getCommodities(): Collection | array
     {
-        return $this->domainObject->getCommodityIds();
+        return $this->domainObject->getCommodities();
     }
 
     public function getDescription(): ?string
@@ -162,7 +166,30 @@ class AssistanceMapper implements MapperInterface
 
     public function getCompleted(): bool
     {
-        return (bool) $this->object->getCompleted();
+        return $this->object->getCompleted();
+    }
+
+    public function getState(): CodeItem
+    {
+        return new CodeItem(
+            $this->object->getState(),
+            $this->translator->trans($this->object->getState())
+        );
+    }
+
+    public function getProgress(): float
+    {
+        return $this->domainObject->getStatistics()->getProgress();
+    }
+
+    public function getTotal(): int
+    {
+        return $this->domainObject->getStatistics()->getReachedBeneficiariesTotal();
+    }
+
+    public function getReached(): int
+    {
+        return $this->domainObject->getStatistics()->getBeneficiariesReached();
     }
 
     public function getDistributionStarted(): bool

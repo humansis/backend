@@ -44,6 +44,13 @@ class DivisionSummaryMapper implements MapperInterface
 
     public function getQuantities(): ?Collection
     {
-        return $this->object->getDivisionGroups()->count() ? $this->object->getDivisionGroups() : null;
+        $divisionGroups = $this->object->getDivisionGroups();
+
+        return (
+            $divisionGroups instanceof Collection
+            && $this->object->getDivisionGroups()->count()
+        )
+            ? $this->object->getDivisionGroups()
+            : null;
     }
 }

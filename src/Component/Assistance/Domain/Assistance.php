@@ -62,12 +62,21 @@ class Assistance
      */
     public function getCommodityIds(): array
     {
-        $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new') . '-commodities';
+        $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new') . '-commodityIds';
 
         return $this->cache->get($key, function (ItemInterface $item) {
             return array_map(function (Entity\Commodity $commodity) {
                 return $commodity->getId();
             }, $this->getAssistanceRoot()->getCommodities()->toArray());
+        });
+    }
+
+    public function getCommodities(): Collection | array
+    {
+        $key = CacheTarget::assistanceId($this->assistanceRoot->getId() ?? 'new') . '-commodities';
+
+        return $this->cache->get($key, function (ItemInterface $item) {
+            return $this->getAssistanceRoot()->getCommodities()->toArray();
         });
     }
 

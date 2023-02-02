@@ -6,58 +6,14 @@ namespace Component\Assistance\DTO;
 
 class Statistics
 {
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var float|null
-     */
-    private $amountDistributed;
-
-    /**
-     * @var float|null
-     */
-    private $amountTotal;
-
-    /**
-     * @var int
-     */
-    private $beneficiariesTotal;
-
-    /**
-     * @var int
-     */
-    private $beneficiariesDeleted;
-
-    /**
-     * @var int
-     */
-    private $beneficiariesReached;
-
-    /**
-     * @param int $id
-     * @param int $beneficiariesTotal
-     * @param int $beneficiariesDeleted
-     * @param int $beneficiariesReached
-     * @param float|null $amountDistributed
-     * @param float|null $amountTotal
-     */
     public function __construct(
-        int $id,
-        int $beneficiariesTotal,
-        int $beneficiariesDeleted,
-        int $beneficiariesReached,
-        ?float $amountDistributed = null,
-        ?float $amountTotal = null
+        private int $id,
+        private int $beneficiariesTotal,
+        private int $beneficiariesDeleted,
+        private int $beneficiariesReached,
+        private float | null $amountDistributed = null,
+        private float | null $amountTotal = null
     ) {
-        $this->id = $id;
-        $this->beneficiariesTotal = $beneficiariesTotal;
-        $this->beneficiariesDeleted = $beneficiariesDeleted;
-        $this->amountDistributed = $amountDistributed;
-        $this->amountTotal = $amountTotal;
-        $this->beneficiariesReached = $beneficiariesReached;
     }
 
     /**
@@ -154,5 +110,15 @@ class Statistics
     public function setBeneficiariesReached(int $beneficiariesReached): void
     {
         $this->beneficiariesReached = $beneficiariesReached;
+    }
+
+    public function getProgress(): float
+    {
+        return round($this->getBeneficiariesReached() / $this->getReachedBeneficiariesTotal(), 2);
+    }
+
+    public function getReachedBeneficiariesTotal(): int
+    {
+        return $this->getBeneficiariesTotal() - $this->getBeneficiariesDeleted();
     }
 }

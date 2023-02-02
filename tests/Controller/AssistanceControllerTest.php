@@ -56,7 +56,12 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTime::ATOM) . '",
             "dateExpiration": "*",
             "projectId": ' . $assistance->getProject()->getId() . ',
-            "locationId": ' . $assistance->getLocation()->getId() . ',
+            "location": {
+                "id": ' . $assistance->getLocation()->getId() . ',
+                "name": "' . $assistance->getLocation()->getName() . '",
+                "code": "' . $assistance->getLocation()->getCode() . '",
+                "locationId": ' . $assistance->getLocation()->getId() . '
+            },
             "target": "' . $assistance->getTargetType() . '",
             "type": "' . $assistance->getAssistanceType() . '",
             "sector": "' . $assistance->getSector() . '",
@@ -65,7 +70,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "householdsTargeted": ' . ($assistance->getHouseholdsTargeted() ?: 'null') . ',
             "individualsTargeted": ' . ($assistance->getIndividualsTargeted() ?: 'null') . ',
             "description": "*",
-            "commodityIds": [' . implode(',', $commodityIds) . '],
+            "commodities": ["*"],
             "validated": ' . ($assistance->isValidated() ? 'true' : 'false') . ',
             "completed": ' . ($assistance->getCompleted() ? 'true' : 'false') . ',
             "foodLimit": "*",
@@ -73,7 +78,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "cashbackLimit": "*",
             "allowedProductCategoryTypes": "*",
             "threshold": ' . ($assistance->getAssistanceSelection()->getThreshold() ?: 'null') . ',
-            "deletable": ' . ($assistance->isValidated() ? 'false' : 'true') . '
+            "deletable": ' . ($assistance->isValidated() ? 'false' : 'true') . ',
+            "progress": "*",
+            "total": "*",
+            "reached": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -440,7 +448,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "*",
             "dateExpiration": null,
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -449,7 +457,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "householdsTargeted": "*",
             "individualsTargeted": "*",
             "description": "*",
-            "commodityIds": ["*"],
+            "commodities": ["*"],
             "foodLimit": 10.99,
             "nonFoodLimit": null,
             "cashbackLimit": 1024,
@@ -620,7 +628,11 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'target' => AssistanceTargetType::INDIVIDUAL,
             'threshold' => null,
             'commodities' => [
-                ['modalityType' => $modalityType, 'unit' => 'CZK', 'value' => 1000, 'division' => null],
+                ['modalityType' => $modalityType,
+                    'unit' => 'CZK',
+                    'value' => 1000,
+                    'division' => null
+                ],
             ],
             'selectionCriteria' => [
                 [
@@ -649,7 +661,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "2021-03-10T13:45:32+00:00",
             "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -663,7 +675,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": null,
             "nonFoodLimit": null,
             "cashbackLimit": null,
-            "commodityIds": ["*"]
+            "commodities": ["*"]
         }',
             $this->client->getResponse()->getContent()
         );
@@ -718,7 +730,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "*",
             "dateExpiration": null,
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -728,7 +740,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
-            "commodityIds": "*"
+            "commodities": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -779,7 +791,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "*",
             "dateExpiration": null,
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -789,7 +801,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "individualsTargeted": "*",
             "deletable": true,
             "description": "*",
-            "commodityIds": []
+            "commodities": []
         }',
             $this->client->getResponse()->getContent()
         );
@@ -864,7 +876,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "dateDistribution": "2021-03-10T13:45:32+00:00",
             "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -878,7 +890,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "foodLimit": null,
             "nonFoodLimit": null,
             "cashbackLimit": null,
-            "commodityIds": ["*"]
+            "commodities": ["*"]
         }',
             $this->client->getResponse()->getContent()
         );

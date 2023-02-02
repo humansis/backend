@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class AssistanceStatisticsMapper implements MapperInterface
 {
-    /** @var Statistics */
-    private $object;
+    private Statistics $object;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -59,5 +58,10 @@ class AssistanceStatisticsMapper implements MapperInterface
     public function getBeneficiariesReached(): int
     {
         return $this->object->getBeneficiariesReached();
+    }
+
+    public function getProgress(): float
+    {
+        return $this->object->getProgress();
     }
 }
