@@ -308,10 +308,7 @@ class AssistanceController extends AbstractController
         ProjectsAssistanceFilterInputType $filter,
         AssistanceOrderInputType $orderBy
     ): JsonResponse {
-        /** @var AssistanceRepository $repository */
-        $repository = $this->assistanceRepository;
-
-        $assistances = $repository->findByProject($project, null, $filter, $orderBy, $pagination);
+        $assistances = $this->assistanceRepository->findByProject($project, null, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }
