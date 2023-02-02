@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Entity\Helper\StandardizedPrimaryKey;
-use Utils\ExportableInterface;
 
 /**
  * Donor
@@ -159,26 +158,6 @@ class Donor implements ExportableInterface
         return $this->projects;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     */
-    public function getMappedValueForExport(): array
-    {
-        // Recover projects of the donor
-        $project = [];
-        foreach ($this->getProjects()->getValues() as $value) {
-            array_push($project, $value->getName());
-        }
-        $project = join(',', $project);
-
-        return [
-            "Full name" => $this->getFullName(),
-            "Short name" => $this->getShortname(),
-            "Date added" => $this->getDateAdded()->format('d-m-Y H:i:s'),
-            "Notes" => $this->getNotes(),
-            "Project" => $project,
-        ];
-    }
 
     /**
      * Set logo.

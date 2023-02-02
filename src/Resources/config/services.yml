@@ -1247,6 +1247,8 @@ services:
 
     Utils\UserTransformData:
         class: Utils\UserTransformData
+    Utils\DonorTransformData:
+        class: Utils\DonorTransformData
         public: true
 
 #From VoucherBundle:
@@ -1277,6 +1279,11 @@ services:
         factory: ['@doctrine.orm.default_entity_manager', getRepository]
         arguments:
             - Entity\SmartcardBeneficiary
+
+    Repository\DonorRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Donor
 
     Repository\SmartcardPurchaseRepository:
         alias: smartcard_purchase.repository

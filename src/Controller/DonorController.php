@@ -19,19 +19,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Utils\DonorService;
+use Utils\DonorTransformData;
+use Utils\ExportTableServiceInterface;
 
 class DonorController extends AbstractController
 {
-    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService, private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService, private readonly ManagerRegistry $managerRegistry, private readonly DonorTransformData $donorTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
     }
 
     #[Rest\Get('/web-app/v1/donors/exports')]
     public function exports(Request $request): Response
     {
-        $request->query->add(['donors' => true]);
+        $type = $request->query->get('type');
+        $donorRepository = $this->managerRegistry->getRepository(Donor::class);
+        $donors = $donorRepository->findAll();
+        $exportableTable = $this->donorTransformData->transformData($donors);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        return $this->exportTableService->export($exportableTable, 'donors', $type);
     }
 
     #[Rest\Get('/web-app/v1/donors/{id}')]

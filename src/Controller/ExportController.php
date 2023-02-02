@@ -74,8 +74,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
             } elseif ($request->query->get('countries')) {
                 $countryIso3 = $request->request->get("__country");
                 $filename = $this->countrySpecificService->exportToCsv($type, $countryIso3);
-            } elseif ($request->query->get('donors')) {
-                $filename = $this->donorService->exportToCsv($type);
             } elseif ($request->query->get('distributionSample')) {
                 $arrayObjectBeneficiary = $request->request->get('sample');
                 $filename = $this->assistanceBeneficiaryService->exportToCsv(
