@@ -11,6 +11,7 @@ use InputType\DonorCreateInputType;
 use InputType\DonorFilterInputType;
 use InputType\DonorOrderInputType;
 use InputType\DonorUpdateInputType;
+use Repository\DonorRepository;
 use Request\Pagination;
 use Entity\Donor;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -24,16 +25,21 @@ use Utils\ExportTableServiceInterface;
 
 class DonorController extends AbstractController
 {
-    public function __construct(private readonly UploadService $uploadService, private readonly DonorService $donorService, private readonly ManagerRegistry $managerRegistry, private readonly DonorTransformData $donorTransformData, private readonly ExportTableServiceInterface $exportTableService)
-    {
+    public function __construct(
+        private readonly UploadService $uploadService,
+        private readonly DonorService $donorService,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly DonorTransformData $donorTransformData,
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly DonorRepository $donorRepository
+    ) {
     }
 
     #[Rest\Get('/web-app/v1/donors/exports')]
     public function exports(Request $request): Response
     {
         $type = $request->query->get('type');
-        $donorRepository = $this->managerRegistry->getRepository(Donor::class);
-        $donors = $donorRepository->findAll();
+        $donors = $this->donorRepository->findAll();
         $exportableTable = $this->donorTransformData->transformData($donors);
 
         return $this->exportTableService->export($exportableTable, 'donors', $type);
