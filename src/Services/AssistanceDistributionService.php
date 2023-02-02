@@ -10,7 +10,8 @@ use Entity\CountrySpecific;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Exception\RemoveDistribtuionException;
-use InputType\ResetingReliefPackageInputType;
+use InputType\ResetReliefPackageInputType;
+use PrestaShop\Decimal\DecimalNumber;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
@@ -223,8 +224,10 @@ class AssistanceDistributionService
     /**
      * @throws RemoveDistribtuionException
      */
-    private function checkDataBeforeDelete(AssistanceBeneficiary $assistanceBeneficiary, ResetingReliefPackageInputType $inputType): void
-    {
+    private function checkDataBeforeDelete(
+        AssistanceBeneficiary $assistanceBeneficiary,
+        ResetReliefPackageInputType $inputType
+    ): void {
         $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryId(
             $inputType->getSmartcardCode(),
             $inputType->getBeneficiaryId()
@@ -235,16 +238,14 @@ class AssistanceDistributionService
             );
         }
 
-        $reliefPackages = $assistanceBeneficiary->getReliefPackages();
-        if (count($reliefPackages) > 1) {
+        if ($assistanceBeneficiary->getReliefPackages()->count() > 1) {
             throw new RemoveDistribtuionException(
                 "This beneficiary ({$inputType->getBeneficiaryId()}) has more than one ReliefPackage in the same assistance ({$inputType->getAssistanceId()})"
             );
         }
-        $reliefPackage = $reliefPackages[0];
 
-        $smartcardDeposits = $reliefPackage->getSmartcardDeposits();
-        if (count($smartcardDeposits) === 0) {
+        $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
+        if ($reliefPackage->getSmartcardDeposits()->count() === 0) {
             throw new RemoveDistribtuionException(
                 "This beneficiary ({$inputType->getBeneficiaryId()}) did not receive a deposit for assistance ({$inputType->getAssistanceId()})"
             );
@@ -253,13 +254,28 @@ class AssistanceDistributionService
         if ($reliefPackage->getModalityType() != ModalityType::SMART_CARD) {
             throw new RemoveDistribtuionException("Only Relief Packages that use the smartcard modality are allowed");
         }
+
+        if ($inputType->getDepositId()) {
+            $smartcardDeposit = $this->smartcardDepositRepository->find($inputType->getDepositId());
+            if ($smartcardDeposit->getReliefPackage()->getId() !== $reliefPackage->getId()) {
+                throw new RemoveDistribtuionException(
+                    "Deposit #{$inputType->getDepositId()} is connected with inconsistent Relief Package id #{$smartcardDeposit->getReliefPackage()->getId()}. Beneficiary #{$inputType->getBeneficiaryId()} has generated Relief Package #{$reliefPackage->getId()}."
+                );
+            }
+        } else {
+            if ($reliefPackage->getSmartcardDeposits()->count() > 1) {
+                throw new RemoveDistribtuionException(
+                    "Relief Package #{$reliefPackage->getId()} has more then 1 Deposit. Please specify Deposit id to remove in the request."
+                );
+            }
+        }
     }
 
     /**
      * @throws RemoveDistribtuionException
      * @throws Exception
      */
-    public function deleteDistribution(ResetingReliefPackageInputType $inputType): void
+    public function deleteDistribution(ResetReliefPackageInputType $inputType): void
     {
         $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary(
             $inputType->getAssistanceId(),
@@ -277,17 +293,27 @@ class AssistanceDistributionService
         $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
         $this->em->getConnection()->beginTransaction();
         try {
-            $smartcardDeposit = $reliefPackage->getSmartcardDeposits()[0];
-            $smartcardDeposit = $this->smartcardDepositRepository->find($smartcardDeposit->getId());
+            if ($inputType->getDepositId()) {
+                $smartcardDeposit = $this->smartcardDepositRepository->find($inputType->getDepositId());
+                $restOfDistributedAmount = (new DecimalNumber($reliefPackage->getAmountDistributed()))
+                    ->minus(new DecimalNumber((string) $smartcardDeposit->getValue()))
+                    ->round(2);
+            } else {
+                $smartcardDeposit = $reliefPackage->getSmartcardDeposits()[0];
+            }
             $this->em->remove($smartcardDeposit);
-
-            $reliefPackage = $this->reliefPackageRepository->find($reliefPackage->getID());
-            $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
-            $reliefPackage->setAmountDistributed("0");
-            $reliefPackage->setDistributedAt(null);
-            $reliefPackage->setDistributedBy(null);
+            if (isset($restOfDistributedAmount) && (float) $restOfDistributedAmount > 0) {
+                $reliefPackage->setAmountDistributed($restOfDistributedAmount);
+            } else {
+                $reliefPackage->setAmountDistributed('0');
+                $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
+                $reliefPackage->setDistributedAt(null);
+                $reliefPackage->setDistributedBy(null);
+            }
+            if ($inputType->getNote()) {
+                $reliefPackage->setNotes($inputType->getNote());
+            }
             $this->em->persist($reliefPackage);
-
             $this->em->flush();
             $this->em->getConnection()->commit();
         } catch (Throwable $ex) {
