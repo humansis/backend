@@ -2,6 +2,7 @@
 
 namespace Services;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
@@ -255,7 +256,8 @@ class AssistanceDistributionService
     }
 
     /**
-     * @throws RemoveDistribtuionException|Exception
+     * @throws RemoveDistribtuionException
+     * @throws Exception
      */
     public function deleteDistribution(ResetingReliefPackageInputType $inputType): void
     {
