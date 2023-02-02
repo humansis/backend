@@ -430,4 +430,12 @@ class AssistanceBeneficiaryRepository extends EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findByAssistanceAndBeneficiary(int $assistanceId, int $beneficiaryId): ?AssistanceBeneficiary
+    {
+        return $this->findOneBy([
+            'assistance' => $assistanceId,
+            'beneficiary' => $beneficiaryId,
+        ], ['id' => 'asc']);
+    }
 }
