@@ -256,7 +256,8 @@ class AssistanceDistributionService
     }
 
     /**
-     * @throws RemoveDistribtuionException|Exception
+     * @throws RemoveDistribtuionException
+     * @throws Exception
      */
     public function deleteDistribution(ResetingReliefPackageInputType $inputType): void
     {

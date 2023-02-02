@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\SmartcardDepositService;
@@ -13,9 +11,12 @@ use Entity\Assistance\ReliefPackage;
 use Entity\User;
 use Enum\CacheTarget;
 use InputType\Smartcard\DepositInputType;
+use InputType\Smartcard\ManualDistributionInputType;
+use PrestaShop\Decimal\DecimalNumber;
 use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Repository\UserRepository;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
@@ -24,32 +25,26 @@ use Utils\SmartcardService;
 
 class DepositFactory
 {
-    private array $messages = [];
-
-    private bool $suspicious = false;
-
     public function __construct(
         private readonly SmartcardDepositRepository $smartcardDepositRepository,
         private readonly SmartcardService $smartcardService,
         private readonly ReliefPackageRepository $reliefPackageRepository,
         private readonly CacheInterface $cache,
         private readonly ReliefPackageService $reliefPackageService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly UserRepository $userRepository,
     ) {
     }
 
     /**
-     *
      * @throws DoubledDepositException
-     * @throws
-     * @throws ORMException
-     * @throws OptimisticLockException
      * @throws InvalidArgumentException
      */
     public function create(
         string $smartcardSerialNumber,
         DepositInputType $depositInputType,
-        User $user
+        User $user,
+        CreationContext | null $context = null,
     ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
         $hash = SmartcardDepositService::generateDepositHash(
@@ -65,13 +60,47 @@ class DepositFactory
             $depositInputType->getCreatedAt()
         );
         $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
-        $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
+        $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
         );
 
         return $deposit;
+    }
+
+    /**
+     * @throws DoubledDepositException
+     * @throws InvalidArgumentException
+     */
+    public function createForSupportApp(
+        ManualDistributionInputType $manualDistributionInputType,
+    ): SmartcardDeposit {
+        $context = new CreationContext(
+            $manualDistributionInputType->isCheckState(),
+            $manualDistributionInputType->getSpent(),
+            $manualDistributionInputType->getNote()
+        );
+        if ($manualDistributionInputType->getValue()) {
+            $value = $manualDistributionInputType->getValue();
+        } else {
+            $reliefPackage = $this->reliefPackageRepository->find($manualDistributionInputType->getReliefPackageId());
+            $value = (new DecimalNumber($reliefPackage->getAmountToDistribute()))
+                ->minus(new DecimalNumber($reliefPackage->getAmountDistributed()))
+                ->round(2);
+        }
+
+        return $this->create(
+            $manualDistributionInputType->getSmartcardCode(),
+            DepositInputType::create(
+                $manualDistributionInputType->getReliefPackageId(),
+                (float) $value,
+                (float) $value,
+                $manualDistributionInputType->getCreatedAt()
+            ),
+            $this->userRepository->find($manualDistributionInputType->getCreatedBy()),
+            $context
+        );
     }
 
     private function createNewDepositRoot(
@@ -89,8 +118,6 @@ class DepositFactory
             (float) $depositInputType->getBalance(),
             $depositInputType->getCreatedAt(),
             $hash,
-            $this->suspicious,
-            $this->messages
         );
 
         $smartcard->addDeposit($deposit);

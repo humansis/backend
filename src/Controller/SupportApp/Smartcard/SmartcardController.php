@@ -5,8 +5,6 @@ namespace Controller\SupportApp\Smartcard;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Controller\AbstractController;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Entity\Smartcard;
 use Enum\RoleType;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -33,9 +31,6 @@ class SmartcardController extends AbstractController
 
     /**
      * @Rest\Get("/{smartcardCode}")
-     *
-     *
-     * @throws ORMException
      */
     public function smartcard(string $smartcardCode): JsonResponse
     {
@@ -46,9 +41,6 @@ class SmartcardController extends AbstractController
 
     /**
      * @Rest\Get ("/{smartcardCode}/purchases")
-     *
-     *
-     * @throws ORMException
      */
     public function smartcardPurchases(string $smartcardCode): JsonResponse
     {
@@ -60,10 +52,6 @@ class SmartcardController extends AbstractController
 
     /**
      * @Rest\Get ("/{smartcardCode}/deposits")
-     *
-     *
-     * @return JsonnResponse
-     * @throws ORMException
      */
     public function smartcardDeposits(string $smartcardCode): JsonResponse
     {
@@ -79,8 +67,6 @@ class SmartcardController extends AbstractController
      *
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function update(
         Smartcard $smartcard,

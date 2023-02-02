@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Enum\SmartcardStates;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
@@ -28,9 +26,6 @@ class SmartcardController extends AbstractOfflineAppController
 
     /**
      * @Rest\Post("/offline-app/v1/smartcards")
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function register(
         SmartcardRegisterInputType $registerInputType,
@@ -49,9 +44,6 @@ class SmartcardController extends AbstractOfflineAppController
      * Deactivate Smartcard
      *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
      * @deprecated This endpoint is only used for card deactivation, but it´s done automatically during assign.
      *
      */
