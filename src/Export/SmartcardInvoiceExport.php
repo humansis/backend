@@ -25,7 +25,7 @@ use Repository\SmartcardPurchaseRepository;
 class SmartcardInvoiceExport
 {
     final public const TEMPLATE_VERSION = '1.3';
-    final public const DATE_FORMAT = 'j-n-y';
+    final public const DATE_FORMAT = 'd.m.Y';
     final public const EOL = "\r\n";
 
     /**
@@ -143,12 +143,13 @@ class SmartcardInvoiceExport
         // Temporary Invoice No. box
         $countryIso3 = self::extractCountryIso3($invoice->getVendor());
         $humansisInvoiceNo = $invoice->getInvoiceNo();
-        $vendor = sprintf('%03d', $invoice->getVendor()->getId());
         $date = $invoice->getInvoicedAt()->format('y');
+        $worksheet->mergeCells('B2:C2');
+        $worksheet->mergeCells('B3:C3');
         $worksheet->setCellValue('B2', 'Temporary Invoice No.');
         $worksheet->setCellValue('B3', "{$countryIso3}EV{$date}{$humansisInvoiceNo}");
-        self::setSmallHeadline($worksheet, 'B2:B3');
-        self::setSmallBorder($worksheet, 'B2:B3');
+        self::setSmallHeadline($worksheet, 'B2:C3');
+        self::setSmallBorder($worksheet, 'B2:C3');
 
         // Humansis Invoice No. box
         $worksheet->mergeCells('E2:F2');
@@ -244,7 +245,7 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         $worksheet->getStyle("H$row1")->getAlignment()->setWrapText(true);
         self::setImportantFilledInfo($worksheet, "C$row1");
-        self::setImportantFilledInfo($worksheet, "I$row1");
+        self::setImportantFilledInfo($worksheet, "I$row1", 12);
         $worksheet->getStyle("C$row1:G$row2")->getBorders()
             ->getOutline()
             ->setBorderStyle(Border::BORDER_THIN);
@@ -300,13 +301,14 @@ class SmartcardInvoiceExport
         self::setSmallHeadline($worksheet, "B$row3:J$row3");
         self::setSmallHeadline($worksheet, "B$row1");
         self::setSmallHeadline($worksheet, "F$row1");
-        self::setImportantFilledInfo($worksheet, "C$row1");
+        self::setWrapText($worksheet, "B$row1");
+        self::setImportantFilledInfo($worksheet, "C$row1", 12);
         self::setImportantFilledInfo($worksheet, "H$row3");
         self::setImportantFilledInfo($worksheet, "I$row3");
         self::setImportantFilledInfo($worksheet, "J$row3");
         self::setSmallBorder($worksheet, "B$row3:J$row3");
-        self::setSmallBorder($worksheet, "B$row1");
-        self::setSmallBorder($worksheet, "F$row1");
+        self::setSmallBorder($worksheet, "B$row1:B$row3");
+        self::setSmallBorder($worksheet, "F$row1:G$row1");
         $worksheet->getStyle("F$row2")->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
     }
@@ -324,6 +326,9 @@ class SmartcardInvoiceExport
 
         // style
         $worksheet->getRowDimension($row)->setRowHeight(30);
+        self::setSmallBorder($worksheet, "B$row:G$row");
+        self::setSmallBorder($worksheet, "H$row:I$row");
+        self::setWrapText($worksheet, "J$row");
     }
 
     private static function buildBodyLine(
@@ -348,6 +353,7 @@ class SmartcardInvoiceExport
         $worksheet->getRowDimension($row1)->setRowHeight(20);
         $worksheet->getRowDimension($row2)->setRowHeight(20);
         self::setImportantInfo($worksheet, "B$row1:J$row2");
+        self::setWrapText($worksheet, "B$row1:J$row2");
         self::setSmallBorder($worksheet, "H$row1:J$row2");
     }
 
@@ -438,6 +444,7 @@ class SmartcardInvoiceExport
         $worksheet->mergeCells("C$lineStart:E$lineStart");
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Annex I', "B", $lineStart);
         self::sidetranslatedSmallHeadline($worksheet, $translator, 'Itemized Breakdown', "C", $lineStart);
+        self::setSmallBorder($worksheet, "C$lineStart:E$lineStart");
 
         // table header
         $row1 = $lineStart + 2;
@@ -613,12 +620,12 @@ class SmartcardInvoiceExport
             ->setHorizontal(Alignment::HORIZONTAL_LEFT);
     }
 
-    private static function setImportantFilledInfo(Worksheet $worksheet, string $cellCoordination)
+    private static function setImportantFilledInfo(Worksheet $worksheet, string $cellCoordination, int $fontSize = 15)
     {
         self::setSpecialBackground($worksheet, $cellCoordination);
         $worksheet->getStyle($cellCoordination)->getFont()
             ->setBold(true)
-            ->setSize(15)
+            ->setSize($fontSize)
             ->setName('Arial');
         $worksheet->getStyle($cellCoordination)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -632,6 +639,12 @@ class SmartcardInvoiceExport
             ->setName('Arial');
         $worksheet->getStyle($cellCoordination)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    }
+
+    private static function setWrapText(Worksheet $worksheet, string $cellCoordination)
+    {
+        $worksheet->getStyle($cellCoordination)->getAlignment()
+            ->setWrapText(true);
     }
 
     private static function undertranslatedSmallHeadline(
