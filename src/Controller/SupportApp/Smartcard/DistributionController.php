@@ -8,7 +8,7 @@ use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Controller\AbstractController;
 use Doctrine\DBAL\Exception;
-use Exception\RemoveDistribtuionException;
+use Exception\RemoveDistributionException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\ResetReliefPackageInputType;
 use InputType\Smartcard\ManualDistributionInputType;
@@ -34,7 +34,7 @@ class DistributionController extends AbstractController
     {
         try {
             $this->assistanceDistributionService->deleteDistribution($inputType);
-        } catch (RemoveDistribtuionException $e) {
+        } catch (RemoveDistributionException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 
