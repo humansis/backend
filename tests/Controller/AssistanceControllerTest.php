@@ -20,6 +20,7 @@ use Component\Assistance\Enum\CommodityDivision;
 use Enum\ProductCategoryType;
 use DBAL\SubSectorEnum;
 use Entity\Project;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
 
 class AssistanceControllerTest extends BMSServiceTestCase
@@ -495,7 +496,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
         }
 
         $smartcardModalityType = ModalityType::SMART_CARD;
-        $cashModalityType = ModalityType::CASH;
 
         $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
             'iso3' => 'KHM',
@@ -510,9 +510,6 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'threshold' => null,
             'commodities' => [
                 ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
-                ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 100],
-                ['modalityType' => $cashModalityType, 'unit' => 'CZK', 'value' => 200],
-                ['modalityType' => $cashModalityType, 'unit' => 'USD', 'value' => 400],
             ],
             'selectionCriteria' => [
                 [
@@ -538,7 +535,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
 
         $this->assertJsonFragment(
             '{
-            "totalCount": 3,
+            "totalCount": 1,
             "data": [
                 {
                 "modalityType": "*",
@@ -551,10 +548,65 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($contentArray['data'] as $summary) {
-            $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
+            $this->assertEquals(ModalityType::SMART_CARD, $summary['modalityType']);
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
             $this->assertGreaterThan(0, $summary['value']);
         }
+    }
+
+    public function testMultipleCommodityShouldBeBadRequest()
+    {
+        /** @var Project $project */
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findOneBy([], ['id' => 'asc']);
+
+        /** @var Location $location */
+        $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findOneBy([], ['id' => 'asc']);
+
+        if (null === $project || null === $location) {
+            $this->markTestSkipped(
+                'There needs to be at least one project and location in system for completing this test'
+            );
+        }
+
+        $smartcardModalityType = ModalityType::SMART_CARD;
+        $cashModalityType = ModalityType::CASH;
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances/commodities', [
+            'iso3' => 'KHM',
+            'projectId' => $project->getId(),
+            'locationId' => $location->getId(),
+            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'sector' => SectorEnum::FOOD_SECURITY,
+            'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
+            'scoringBlueprint' => null,
+            'type' => AssistanceType::DISTRIBUTION,
+            'target' => AssistanceTargetType::HOUSEHOLD,
+            'threshold' => null,
+            'commodities' => [
+                ['modalityType' => $smartcardModalityType, 'unit' => 'USD', 'value' => 4000],
+                ['modalityType' => $cashModalityType, 'unit' => 'USD', 'value' => 50],
+            ],
+            'selectionCriteria' => [
+                [
+                    'group' => 1,
+                    'target' => SelectionCriteriaTarget::BENEFICIARY,
+                    'field' => 'dateOfBirth',
+                    'condition' => '<',
+                    'weight' => 1,
+                    'value' => '2020-01-01',
+                ],
+            ],
+            'foodLimit' => 10.99,
+            'nonFoodLimit' => null,
+            'cashbackLimit' => 1024,
+            'remoteDistributionAllowed' => false,
+            'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
+        ]);
+
+        $this->assertEquals(
+            Response::HTTP_BAD_REQUEST,
+            $this->client->getResponse()->getStatusCode()
+        );
     }
 
     /**

@@ -57,9 +57,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'threshold' => null,
             'commodities' => [
                 ['modalityType' => ModalityType::SMART_CARD, 'unit' => 'USD', 'value' => 4000],
-                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 100],
-                ['modalityType' => ModalityType::CASH, 'unit' => 'CZK', 'value' => 200],
-                ['modalityType' => ModalityType::CASH, 'unit' => 'USD', 'value' => 400],
             ],
             'selectionCriteria' => $criteria,
             'foodLimit' => 10.99,
@@ -203,7 +200,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
         $this->assertJsonFragment(
             '{
-            "totalCount": 3,
+            "totalCount": 1,
             "data": [
                 {
                 "modalityType": "*",
@@ -216,7 +213,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         );
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($contentArray['data'] as $summary) {
-            $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
+            $this->assertEquals(ModalityType::SMART_CARD, $summary['modalityType']);
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
             $this->assertGreaterThan(0, $summary['value']);
         }

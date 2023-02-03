@@ -210,6 +210,12 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return count((array) $smartcardCommodities) <= 1;
     }
 
+    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'Assistance cannot have more than one commodity.')]
+    public function hasMaxOneCommodity(): bool
+    {
+        return count($this->commodities) <= 1;
+    }
+
     /**
      * @return string
      */
