@@ -12,7 +12,6 @@ use Entity\User;
 use Enum\CacheTarget;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\ManualDistributionInputType;
-use PrestaShop\Decimal\DecimalNumber;
 use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -21,6 +20,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
 use Repository\SmartcardDepositRepository;
+use Utils\DecimalNumber\DecimalNumberFactory;
 use Utils\SmartcardService;
 
 class DepositFactory
@@ -85,8 +85,8 @@ class DepositFactory
             $value = $manualDistributionInputType->getValue();
         } else {
             $reliefPackage = $this->reliefPackageRepository->find($manualDistributionInputType->getReliefPackageId());
-            $value = (new DecimalNumber($reliefPackage->getAmountToDistribute()))
-                ->minus(new DecimalNumber($reliefPackage->getAmountDistributed()))
+            $value = (DecimalNumberFactory::create($reliefPackage->getAmountToDistribute()))
+                ->minus(DecimalNumberFactory::create($reliefPackage->getAmountDistributed()))
                 ->round(2);
         }
 

@@ -8,9 +8,9 @@ use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Controller\AbstractController;
 use Doctrine\DBAL\Exception;
-use Exception\RemoveDistribtuionException;
+use Exception\RemoveDistributionException;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use InputType\ResetingReliefPackageInputType;
+use InputType\ResetReliefPackageInputType;
 use InputType\Smartcard\ManualDistributionInputType;
 use Psr\Cache\InvalidArgumentException;
 use Services\AssistanceDistributionService;
@@ -30,11 +30,11 @@ class DistributionController extends AbstractController
      * @Rest\Delete("/support-app/v1/smartcard/distribution")
      * @throws Exception
      */
-    public function removeDistribution(ResetingReliefPackageInputType $inputType): JsonResponse
+    public function removeDistribution(ResetReliefPackageInputType $inputType): JsonResponse
     {
         try {
             $this->assistanceDistributionService->deleteDistribution($inputType);
-        } catch (RemoveDistribtuionException $e) {
+        } catch (RemoveDistributionException $e) {
             throw new BadRequestHttpException($e->getMessage());
         }
 
