@@ -16,7 +16,7 @@ use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Entity\User;
 use Entity\SmartcardDeposit;
-use PrestaShop\Decimal\DecimalNumber;
+use Utils\DecimalNumber\DecimalNumberFactory;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\Assistance\ReliefPackageRepository")
@@ -220,8 +220,8 @@ class ReliefPackage
 
     public function addSpent(string $amountSpent): void
     {
-        $this->amountSpent = (new DecimalNumber($this->amountSpent ?? '0'))
-            ->plus(new DecimalNumber($amountSpent))
+        $this->amountSpent = (DecimalNumberFactory::create($this->amountSpent ?? '0'))
+            ->plus(DecimalNumberFactory::create($amountSpent))
             ->round(2);
     }
 

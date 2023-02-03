@@ -11,7 +11,6 @@ use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Exception\RemoveDistributionException;
 use InputType\ResetReliefPackageInputType;
-use PrestaShop\Decimal\DecimalNumber;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
@@ -25,6 +24,7 @@ use Repository\Assistance\ReliefPackageRepository;
 use Repository\SmartcardDepositRepository;
 use Repository\SmartcardRepository;
 use Throwable;
+use Utils\DecimalNumber\DecimalNumberFactory;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
@@ -295,8 +295,8 @@ class AssistanceDistributionService
         try {
             if ($inputType->getDepositId()) {
                 $smartcardDeposit = $this->smartcardDepositRepository->find($inputType->getDepositId());
-                $restOfDistributedAmount = (new DecimalNumber($reliefPackage->getAmountDistributed()))
-                    ->minus(new DecimalNumber(number_format($smartcardDeposit->getValue(), 2, '.', '')))
+                $restOfDistributedAmount = (DecimalNumberFactory::create($reliefPackage->getAmountDistributed()))
+                    ->minus(DecimalNumberFactory::create($smartcardDeposit->getValue()))
                     ->round(2);
             } else {
                 $smartcardDeposit = $reliefPackage->getSmartcardDeposits()[0];
