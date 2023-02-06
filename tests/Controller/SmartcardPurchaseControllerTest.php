@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Doctrine\ORM\NoResultException;
 use Exception;
 use Tests\BMSServiceTestCase;
 use Entity\SmartcardPurchase;
@@ -43,14 +44,18 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
 
     public function testPurchasesInRedemptionBatch()
     {
-        $batchId = $this->em->createQueryBuilder()
-            ->select('srb.id')
-            ->from(SmartcardPurchase::class, 'sp')
-            ->join('sp.redemptionBatch', 'srb')
-            ->where('sp.redemptionBatch IS NOT NULL')
-            ->getQuery()
-            ->setMaxResults(1)
-            ->getSingleScalarResult();
+        try {
+            $batchId = $this->em->createQueryBuilder()
+                ->select('srb.id')
+                ->from(SmartcardPurchase::class, 'sp')
+                ->join('sp.redemptionBatch', 'srb')
+                ->where('sp.redemptionBatch IS NOT NULL')
+                ->getQuery()
+                ->setMaxResults(1)
+                ->getSingleScalarResult();
+        } catch (NoResultException) {
+            $this->markTestSkipped('There is no any redeemed purchase');
+        }
 
         $this->request(
             'GET',

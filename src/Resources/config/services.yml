@@ -481,12 +481,7 @@ services:
     Component\Smartcard\Deposit\DepositFactory:
         public: true
         arguments:
-            - '@Repository\SmartcardDepositRepository'
-            - '@smartcard_service'
-            - '@Repository\Assistance\ReliefPackageRepository'
-            - '@cache.app'
-            - '@Component\ReliefPackage\ReliefPackageService'
-            - '@logger'
+            $serializer: "@serializer"
 
 
     Export\AssistanceBankReportExport:

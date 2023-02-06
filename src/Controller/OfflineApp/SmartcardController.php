@@ -41,8 +41,6 @@ class SmartcardController extends AbstractOfflineAppController
     }
 
     /**
-     * Deactivate Smartcard
-     *
      * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @deprecated This endpoint is only used for card deactivation, but it´s done automatically during assign.
      *

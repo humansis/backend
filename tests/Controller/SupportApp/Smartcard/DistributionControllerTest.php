@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Controller\SupportApp\Smartcard;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -65,6 +66,7 @@ class DistributionControllerTest extends BMSServiceTestCase
     /**
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws Exception
      */
     //this test for incorrect scenario
     public function testIncorrectResetingReliefPackage1()
@@ -113,16 +115,20 @@ class DistributionControllerTest extends BMSServiceTestCase
 
 
         $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
-
-        $smartcardDeposit = new SmartcardDeposit();
-        $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
+        $smartcardDeposit = new SmartcardDeposit(
+            $smartcard,
+            $user,
+            $reliefPackage,
+            45,
+            0,
+            new DateTime('@' . strtotime('now')),
+        );
         $this->em->persist($smartcardDeposit);
         $this->em->flush();
         $this->em->refresh($assistanceBeneficiary);
         $this->em->refresh($reliefPackage);
         $this->em->refresh($smartcardDeposit);
 
-        $assistanceID = $assistance->getId();
         $beneficiaryID = $beneficiary->getId();
         $smartcardCode = $smartcard->getSerialNumber();
 
@@ -145,6 +151,7 @@ class DistributionControllerTest extends BMSServiceTestCase
     /**
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws Exception
      */
     //this test for incorrect scenario
     public function testIncorrectResetingReliefPackage2()
@@ -192,8 +199,14 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
 
-        $smartcardDeposit = new SmartcardDeposit();
-        $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
+        $smartcardDeposit = new SmartcardDeposit(
+            $smartcard,
+            $user,
+            $reliefPackage,
+            45,
+            0,
+            new DateTime('@' . strtotime('now')),
+        );
         $this->em->persist($smartcardDeposit);
         $this->em->flush();
         $this->em->refresh($assistanceBeneficiary);
@@ -202,7 +215,6 @@ class DistributionControllerTest extends BMSServiceTestCase
 
         $assistanceID = $assistance->getId();
         $beneficiaryID = $beneficiary->getId();
-        $smartcardCode = $smartcard->getSerialNumber();
 
         $this->request(
             'DELETE',
@@ -223,9 +235,10 @@ class DistributionControllerTest extends BMSServiceTestCase
     /**
      * @throws ORMException
      * @throws OptimisticLockException
+     * @throws Exception
      */
     //this test for correct  scenario
-    public function testResetingReliefPackage()
+    public function testResetReliefPackage()
     {
         $assistance = $this->assistanceRepository->findOneBy([], ['id' => 'ASC']);
         $beneficiary = $this->beneficiaryRepository->findOneBy([], ['id' => 'ASC']);
@@ -270,9 +283,14 @@ class DistributionControllerTest extends BMSServiceTestCase
 
 
         $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
-
-        $smartcardDeposit = new SmartcardDeposit();
-        $smartcardDeposit = $smartcardDeposit::create($smartcard, $user, $reliefPackage, 45, 0, new \DateTime('@' . strtotime('now')), '2b69fe65aab80651d0075cf8e9ff4f12');
+        $smartcardDeposit = new SmartcardDeposit(
+            $smartcard,
+            $user,
+            $reliefPackage,
+            45,
+            0,
+            new DateTime('@' . strtotime('now')),
+        );
         $this->em->persist($smartcardDeposit);
         $this->em->flush();
         $this->em->refresh($assistanceBeneficiary);
@@ -297,6 +315,10 @@ class DistributionControllerTest extends BMSServiceTestCase
         );
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function testManualDistribution(): void
     {
         $this->em->beginTransaction();
@@ -332,6 +354,10 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->rollback();
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function testManualDistributionWithoutCheckingWorkflow(): void
     {
         $this->em->beginTransaction();

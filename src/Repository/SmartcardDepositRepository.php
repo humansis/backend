@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance;
-use Entity\Assistance\ReliefPackage;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
+use Repository\Helper\TRepositoryHelper;
 
 class SmartcardDepositRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('sd');
@@ -47,19 +47,5 @@ class SmartcardDepositRepository extends EntityRepository
             ->setParameter('beneficiaryId', $beneficiary->getId());
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @return object|SmartcardDeposit|null
-     */
-    public function findByHash(string $hash): ?SmartcardDeposit
-    {
-        return $this->findOneBy(['hash' => $hash]);
-    }
-
-    public function save(SmartcardDeposit $deposit)
-    {
-        $this->_em->persist($deposit);
-        $this->_em->flush();
     }
 }
