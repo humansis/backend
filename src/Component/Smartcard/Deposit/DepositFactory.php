@@ -16,10 +16,10 @@ use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Repository\UserRepository;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
-use Repository\SmartcardDepositRepository;
 use Utils\DecimalNumber\DecimalNumberFactory;
 use Utils\SmartcardService;
 
@@ -32,6 +32,7 @@ class DepositFactory
         private readonly ReliefPackageService $reliefPackageService,
         private readonly LoggerInterface $logger,
         private readonly UserRepository $userRepository,
+        private readonly SerializerInterface $serializer,
     ) {
     }
 
