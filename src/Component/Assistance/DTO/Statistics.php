@@ -114,6 +114,10 @@ class Statistics
 
     public function getProgress(): float
     {
+        if ($this->getReachedBeneficiariesTotal() === 0) {
+            return 0.0;
+        }
+
         return round($this->getBeneficiariesReached() / $this->getReachedBeneficiariesTotal(), 2);
     }
 
