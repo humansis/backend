@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\SelectionCriteria\Generator\HouseholdFieldGenerator;
 use Entity\CountrySpecific;
+use Entity\HouseholdLocation;
 use Entity\Location;
 use Entity\VulnerabilityCriterion;
 use Repository\CountrySpecificRepository;
@@ -72,6 +74,13 @@ class SelectionCriteriaFactory
             $criterium->setFieldString(SelectionCriteriaField::GENDER);
 
             return $criterium;
+        }
+
+        if (
+            SelectionCriteriaField::LOCATION_TYPE === $input->getField()
+            && HouseholdFieldGenerator::isValueIndexOfHouseholdLocationTypeArray($input->getValue())
+        ) {
+            $criterium->setValueString(HouseholdLocation::LOCATION_TYPES[(int) $input->getValue()]);
         }
 
         return $criterium;

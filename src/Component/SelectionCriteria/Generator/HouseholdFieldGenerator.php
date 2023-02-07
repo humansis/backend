@@ -97,6 +97,15 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
 
     public static function validateLocationType($value): bool
     {
-        return is_int($value) || in_array($value, HouseholdLocation::LOCATION_TYPES, true);
+        return self::isValueIndexOfHouseholdLocationTypeArray($value) || in_array($value, HouseholdLocation::LOCATION_TYPES, true);
+    }
+
+    public static function isValueIndexOfHouseholdLocationTypeArray(string|int $value): bool
+    {
+        if (!ctype_digit($value) && !is_int($value)) {
+            return false;
+        }
+
+        return array_key_exists((int) $value, HouseholdLocation::LOCATION_TYPES);
     }
 }
