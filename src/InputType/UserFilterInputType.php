@@ -13,14 +13,11 @@ class UserFilterInputType extends AbstractFilterInputType
     use FulltextFilterTrait;
 
     #[Assert\Choice([true, false])]
-    protected $showVendors;
+    protected bool $showVendors;
 
-    /**
-     * @return bool
-     */
-    public function getShowVendors()
+    public function getShowVendors(): bool
     {
-        return "true" === $this->showVendors;
+        return $this->showVendors;
     }
 
     public function hasShowVendors(): bool
