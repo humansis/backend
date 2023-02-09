@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\ReliefPackage;
 
 use Component\Smartcard\Deposit\CreationContext;
+use DateTimeImmutable;
 use Entity\Assistance\ReliefPackage;
 use Enum\ReliefPackageState;
 use LogicException;
@@ -84,6 +85,7 @@ class ReliefPackageService
             }
         } else {
             $reliefPackage->setState(ReliefPackageState::DISTRIBUTED);
+            $reliefPackage->setDistributedAt(new DateTimeImmutable());
         }
     }
 
