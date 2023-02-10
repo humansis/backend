@@ -14,7 +14,18 @@ final class Version20221216201639 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE smartcard_deposit CHANGE hash hash VARCHAR(255) NOT NULL');
+        // clean doubled deposits
+        $this->addSql('DROP TEMPORARY TABLE IF EXISTS doubled_smartcard_deposit;');
+        $this->addSql("CREATE TEMPORARY TABLE doubled_smartcard_deposit
+            SELECT sd1.id
+            FROM smartcard_deposit sd1
+                     INNER JOIN (SELECT JSON_REMOVE(JSON_ARRAYAGG(sd.id), '$[0]') as idsToRemove
+                                 FROM assistance_relief_package arp
+                                          INNER JOIN smartcard_deposit sd on arp.id = sd.relief_package_id
+                                 GROUP BY arp.id, sd.smartcard_id, sd.value
+                                 HAVING count(arp.id) > 1) sub ON JSON_CONTAINS(sub.idsToRemove, CAST(sd1.id as json), '$');
+        ");
+        $this->addSql('DELETE FROM smartcard_deposit WHERE id IN (SELECT id FROM doubled_smartcard_deposit);');
 
         $this->addSql('
             UPDATE smartcard_deposit sd
