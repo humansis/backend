@@ -33,10 +33,13 @@ class CountrySpecificController extends AbstractController
      *
      *
      */
-    public function exports(Request $request): JsonResponse
+    public function exports(Request $request): Response
     {
         $request->query->add([
             'countries' => true,
+        ]);
+
+        $request->request->add([
             '__country' => $request->headers->get('country'),
         ]);
 
