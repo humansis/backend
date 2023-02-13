@@ -3,6 +3,7 @@
 namespace Utils;
 
 use DateTime;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Beneficiary;
 use Entity\NationalId;
 use Entity\Phone;
@@ -228,33 +229,34 @@ class BeneficiaryService
         return (int) $this->beneficiaryRepository->countServedInCountry($iso3);
     }
 
-
-
     /**
-     * @param string $countryIso3
-     * @param HouseholdFilterInputType $filter
-     * @param Pagination $pagination
-     * @param HouseholdOrderInputType $order
-     *
+     * @param Paginator $households
      * @return array
      */
-    public function findBeneficiaries(
-        string $countryIso3,
-        HouseholdFilterInputType $filter,
-        Pagination $pagination,
-        HouseholdOrderInputType $order
+    public function getHouseholdBeneficiaries(
+        Paginator $households
     ): array {
-        $households = $this->householdRepository->findByParams($countryIso3, $filter, $order, $pagination);
         $exportableTable = [];
-        if ($households) {
-            foreach ($households as $household) {
-                foreach ($household->getBeneficiaries() as $beneficiary) {
-                    array_push($exportableTable, $beneficiary);
-                }
+        foreach ($households as $household) {
+            foreach ($household->getBeneficiaries() as $beneficiary) {
+                array_push($exportableTable, $beneficiary);
             }
         }
-
         return $exportableTable;
+    }
+
+    /**
+     * @param Paginator $households
+     * @return int
+     */
+    public function countBeneficiaries(
+        Paginator $households
+    ): int {
+        $sum = 0;
+        foreach ($households as $household) {
+            $sum += $household->getBeneficiaries()->count();
+        }
+        return $sum;
     }
 
 

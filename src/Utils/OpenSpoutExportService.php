@@ -49,7 +49,7 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
         } elseif ($format == 'csv' && count($exportableTable) > self::EXPORT_LIMIT_CSV) {
             $count = count($exportableTable);
             throw new BadRequestHttpException(
-                "Too much records ($count) to export. Limit is for CSV is" . self::EXPORT_LIMIT_CSV
+                "Too much records ($count) to export. Limit is for CSV is " . self::EXPORT_LIMIT_CSV
             );
         } elseif (0 === count($exportableTable)) {
             throw new ExportNoDataException('No data to export');
