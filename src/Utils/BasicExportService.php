@@ -13,6 +13,10 @@ class BasicExportService
     public const FORMAT_XLSX = 'xlsx';
     public const FORMAT_ODS = 'ods';
 
+    public const FLUSH_THRESHOLD = 1000;
+    public const EXPORT_LIMIT = 10000;
+    public const EXPORT_LIMIT_CSV = 20000;
+
     /**
      * Return list of header names.
      *

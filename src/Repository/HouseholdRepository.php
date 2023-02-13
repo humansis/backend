@@ -166,9 +166,12 @@ class HouseholdRepository extends EntityRepository
     }
 
     /**
+     * @param string $iso3
+     * @param HouseholdFilterInputType $filter
      * @param HouseholdOrderInputType|null $orderBy
-     *
-     * @return Paginator|Household[]
+     * @param Pagination|null $pagination
+     * @return Paginator
+     * @throws \Exception
      */
     public function findByParams(
         string $iso3,
