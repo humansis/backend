@@ -56,7 +56,7 @@ class HouseholdController extends AbstractController
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
-        $households = $this->householdRepository->findByParams( $request->headers->get('country'), $filter, $order, $pagination);
+        $households = $this->householdRepository->findByParams($request->headers->get('country'), $filter, $order, $pagination);
         $beneficiariesCount = $this->beneficiaryService->countBeneficiaries(
             $households
         );
