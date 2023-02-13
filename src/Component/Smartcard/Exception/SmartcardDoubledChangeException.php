@@ -10,11 +10,11 @@ use Entity\SmartcardBeneficiary;
 
 class SmartcardDoubledChangeException extends SmartcardException
 {
-    public function __construct(?SmartcardBeneficiary $smartcard = null, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(?SmartcardBeneficiary $smartcardBeneficiary = null, $message = "", $code = 0, Throwable $previous = null)
     {
-        parent::__construct($smartcard, $message, $code, $previous);
+        parent::__construct($smartcardBeneficiary, $message, $code, $previous);
         if (empty($message)) {
-            $this->message = "Smartcard #{$smartcard->getId()} was already changed at {$smartcard->getChangedAt()->format(DateTimeInterface::ATOM)}";
+            $this->message = "Smartcard #{$smartcardBeneficiary->getId()} was already changed at {$smartcardBeneficiary->getChangedAt()->format(DateTimeInterface::ATOM)}";
         }
     }
 }

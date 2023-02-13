@@ -13,13 +13,13 @@ use Entity\SmartcardBeneficiary;
 class SmartcardNotAllowedStateTransition extends SmartcardException
 {
     public function __construct(
-        SmartcardBeneficiary $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         private readonly string $newState,
         $message = "",
         $code = 0,
         Throwable $previous = null
     ) {
-        parent::__construct($smartcard, $message, $code, $previous);
+        parent::__construct($smartcardBeneficiary, $message, $code, $previous);
     }
 
     public function getNewState(): string

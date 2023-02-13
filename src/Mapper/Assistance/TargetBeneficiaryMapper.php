@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mapper\Assistance;
 
 use Entity\Beneficiary;
-use Entity\SmartcardDeposit;
 
 class TargetBeneficiaryMapper extends AbstractTargetMapper
 {

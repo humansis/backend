@@ -10,7 +10,7 @@ use Entity\SmartcardBeneficiary;
 
 class SmartcardException extends Exception
 {
-    public function __construct(private readonly ?\Entity\SmartcardBeneficiary $smartcard = null, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(private readonly ?\Entity\SmartcardBeneficiary $smartcardBeneficiary = null, $message = "", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -20,6 +20,6 @@ class SmartcardException extends Exception
      */
     public function getSmartcard(): ?SmartcardBeneficiary
     {
-        return $this->smartcard;
+        return $this->smartcardBeneficiary;
     }
 }

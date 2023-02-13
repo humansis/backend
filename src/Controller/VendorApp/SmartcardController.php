@@ -114,8 +114,8 @@ class SmartcardController extends AbstractVendorAppController
     public function listOfBlocked(Request $request): Response
     {
         $country = $request->headers->get('country');
-        $smartcards = $this->managerRegistry->getRepository(SmartcardBeneficiary::class)->findBlocked($country);
+        $smartcardBeneficiaries = $this->managerRegistry->getRepository(SmartcardBeneficiary::class)->findBlocked($country);
 
-        return new JsonResponse($smartcards);
+        return new JsonResponse($smartcardBeneficiaries);
     }
 }
