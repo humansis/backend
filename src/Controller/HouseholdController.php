@@ -35,9 +35,9 @@ class HouseholdController extends AbstractController
         private readonly ProjectService $projectService,
         private readonly ManagerRegistry $managerRegistry,
         private readonly BeneficiaryTransformData $beneficiaryTransformData,
-        private readonly ExportTableServiceInterface $exportTableService)
-    {
-    }
+        private readonly ExportTableServiceInterface $exportTableService
+    )
+    {}
 
     /**
      * @Rest\Get("/web-app/v1/households/exports")
