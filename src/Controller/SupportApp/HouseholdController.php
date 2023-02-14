@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Controller\SupportApp;
 
+use Component\Country\Countries;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Repository\BeneficiaryRepository;
 
 class HouseholdController extends AbstractSupportAppController
 {
-    public function __construct(private readonly BeneficiaryRepository $beneficiaryRepository)
+    public function __construct(private readonly BeneficiaryRepository $beneficiaryRepository, private readonly Countries $countries)
     {
     }
 
@@ -19,6 +20,15 @@ class HouseholdController extends AbstractSupportAppController
      */
     public function getHeadStatistics()
     {
-        return $this->json($this->beneficiaryRepository->getNumberHouseholdWithoutHead());
+        $headStatistics = [];
+        $countries = $this->countries->getAll(true);
+        foreach ($countries as $country) {
+            $headStatistics[$country->getIso3()] = 0;
+        }
+
+        foreach ($this->beneficiaryRepository->getNumberHouseholdWithoutHead() as $obj) {
+            $headStatistics[$obj['countryIso3']] = $obj['total'];
+        }
+        return $this->json($headStatistics);
     }
 }
