@@ -15,6 +15,7 @@ use InputType\PurchasedItemOrderInputType;
 use InputType\SmartcardPurchasedItemFilterInputType;
 use InvalidArgumentException;
 use Request\Pagination;
+use Utils\DateTime\DateTimeFilter;
 
 class SmartcardPurchasedItemRepository extends EntityRepository
 {
@@ -102,11 +103,11 @@ class SmartcardPurchasedItemRepository extends EntityRepository
             }
             if ($filter->hasDateFrom()) {
                 $qbr->andWhere('pi.datePurchase >= :dateFrom')
-                    ->setParameter('dateFrom', $filter->getDateFrom());
+                    ->setParameter('dateFrom', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateFrom()));
             }
             if ($filter->hasDateTo()) {
-                $qbr->andWhere('pi.datePurchase <= :dateTo')
-                    ->setParameter('dateTo', $filter->getDateTo());
+                $qbr->andWhere('pi.datePurchase < :dateTo')
+                    ->setParameter('dateTo', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateTo(), true));
             }
         }
 

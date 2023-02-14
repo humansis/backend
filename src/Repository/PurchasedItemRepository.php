@@ -18,6 +18,7 @@ use InputType\PurchasedItemFilterInputType;
 use InputType\PurchasedItemOrderInputType;
 use InvalidArgumentException;
 use Request\Pagination;
+use Utils\DateTime\DateTimeFilter;
 
 class PurchasedItemRepository extends EntityRepository
 {
@@ -149,11 +150,11 @@ class PurchasedItemRepository extends EntityRepository
             }
             if ($filter->hasDateFrom()) {
                 $qbr->andWhere('pi.datePurchase >= :dateFrom')
-                    ->setParameter('dateFrom', $filter->getDateFrom());
+                    ->setParameter('dateFrom', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateFrom()));
             }
             if ($filter->hasDateTo()) {
-                $qbr->andWhere('pi.datePurchase <= :dateTo')
-                    ->setParameter('dateTo', $filter->getDateTo());
+                $qbr->andWhere('pi.datePurchase < :dateTo')
+                    ->setParameter('dateTo', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateTo(), true));
             }
         }
 

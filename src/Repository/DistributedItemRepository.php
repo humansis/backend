@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Repository;
 
+use DateTime;
+use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\Household;
 use Entity\Location;
@@ -15,6 +17,8 @@ use InputType\DistributedItemFilterInputType;
 use InputType\DistributedItemOrderInputType;
 use InvalidArgumentException;
 use Request\Pagination;
+use Utils\DateTime\DateTimeFilter;
+use Utils\DateTime\Iso8601Converter;
 
 class DistributedItemRepository extends EntityRepository
 {
@@ -83,11 +87,11 @@ class DistributedItemRepository extends EntityRepository
             }
             if ($filter->hasDateFrom()) {
                 $qbr->andWhere('di.dateDistribution >= :dateFrom')
-                    ->setParameter('dateFrom', $filter->getDateFrom());
+                    ->setParameter('dateFrom', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateFrom()));
             }
             if ($filter->hasDateTo()) {
-                $qbr->andWhere('di.dateDistribution <= :dateTo')
-                    ->setParameter('dateTo', $filter->getDateTo());
+                $qbr->andWhere('di.dateDistribution < :dateTo')
+                    ->setParameter('dateTo', DateTimeFilter::getDateTimeFromFilterDate($filter->getDateTo(), true));
             }
         }
 
