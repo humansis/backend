@@ -51,7 +51,6 @@ class AssistanceBeneficiaryController extends AbstractController
                 $inputType->getDocumentNumbers(),
                 $inputType->getDocumentType(),
                 $countryCode
-
             );
             $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
