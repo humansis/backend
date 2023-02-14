@@ -41,11 +41,11 @@ abstract class SynchronizationBatch
     private string $state = SynchronizationBatchState::UPLOADED;
 
     /**
-     * @var ?Collection serialized ConstraintViolationListInterface[]
+     * serialized ConstraintViolationListInterface[]
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
-    private ?Collection $violations = null;
+    private array | null $violations = null;
 
     /**
      * @ORM\Column(name="validated_at", type="datetime", nullable=true)
@@ -100,9 +100,11 @@ abstract class SynchronizationBatch
             throw new InvalidArgumentException("Violation shouldn't be added to processed batches");
         }
         $this->validatedAt = $validatedAt ?? new DateTimeImmutable();
-        $this->violations = new ArrayCollection();
-        foreach ($violations as $rowKey => $violationList) {
-            $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
+        if (count($violations) > 0) {
+            $this->violations = [];
+            foreach ($violations as $rowKey => $violationList) {
+                $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
+            }
         }
     }
 

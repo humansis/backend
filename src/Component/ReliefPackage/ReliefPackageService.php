@@ -56,6 +56,25 @@ class ReliefPackageService
         }
     }
 
+    public function canBeDistributed(ReliefPackage $reliefPackage): bool
+    {
+        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+
+        return $reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
+    }
+
+    public function tryReuse(ReliefPackage $reliefPackage): bool
+    {
+        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::REUSE)) {
+            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::REUSE);
+
+            return true;
+        }
+
+        return false;
+    }
+
     private function addDistributedAmount(
         ReliefPackage $reliefPackage,
         SmartcardDeposit $deposit,
