@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Smartcard;
 
+use Component\ReliefPackage\ReliefPackageService;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\AssistanceBeneficiary;
 use Entity\SmartcardDeposit;
@@ -37,7 +38,8 @@ class SmartcardDepositService
         private readonly DepositFactory $depositFactory,
         private readonly ReliefPackageRepository $reliefPackageRepository,
         private readonly LoggerInterface $logger,
-        private readonly SmartcardDepositRepository $smartcardDepositRepository
+        private readonly SmartcardDepositRepository $smartcardDepositRepository,
+        private readonly ReliefPackageService $reliefPackageService,
     ) {
     }
 
@@ -78,9 +80,12 @@ class SmartcardDepositService
                         )
                     );
                 } else {
-                    $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+                    if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
+                        $this->reliefPackageService->tryReuse($reliefPackage);
+                    }
 
-                    if (!$reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::DISTRIBUTE)) {
+                    if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
+                        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
                         $tb = $reliefPackageWorkflow->buildTransitionBlockerList(
                             $reliefPackage,
                             ReliefPackageTransitions::DISTRIBUTE

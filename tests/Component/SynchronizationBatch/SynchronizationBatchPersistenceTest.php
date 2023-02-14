@@ -4,29 +4,21 @@ declare(strict_types=1);
 
 namespace Tests\Component\SynchronizationBatch;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Entity\SynchronizationBatch;
 use Entity\SynchronizationBatch\Deposits;
-use Enum\SynchronizationBatchValidationType;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\Extension\Validator\ViolationMapper\ViolationPath;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 class SynchronizationBatchPersistenceTest extends WebTestCase
 {
-    /** @var ObjectManager */
-    private $manager;
+    private EntityManagerInterface $manager;
 
-    /** @var EntityRepository */
-    private $syncRepo;
+    private EntityRepository $syncRepo;
 
-    private \Entity\SynchronizationBatch\Deposits $sync;
+    private Deposits $sync;
 
     protected function setUp(): void
     {
@@ -57,10 +49,5 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
 
         $this->assertArrayHasKey('fst', $this->sync->getViolations());
         $this->assertArrayHasKey('snd', $this->sync->getViolations());
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
     }
 }
