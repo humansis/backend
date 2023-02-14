@@ -83,10 +83,7 @@ abstract class SynchronizationBatch
         return $this->requestData;
     }
 
-    /**
-     * @return array[]|null
-     */
-    public function getViolations(): ?Collection
+    public function getViolations(): array|null
     {
         return $this->violations;
     }
