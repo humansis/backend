@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace InputType;
 
 use DateTimeInterface;
+use Enum\AssistanceTargetType;
 use Enum\ModalityType;
 use Enum\SelectionCriteriaField;
 use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
 use Request\InputTypeNullableDenormalizer;
 use Utils\DateTime\Iso8601Converter;
-use Validator\Constraints\Country;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -208,6 +208,46 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $smartcardCommodities = array_filter($this->commodities, fn(CommodityInputType $commodity) => $commodity->getModalityType() === ModalityType::SMART_CARD);
 
         return count((array) $smartcardCommodities) <= 1;
+    }
+
+    #[Assert\IsTrue(message: 'Assistance must have at least one household targeted.', groups: ['AdditionalChecks'])]
+    public function householdTargetHasHouseholdsTargeted(): bool
+    {
+        if ($this->target !== AssistanceTargetType::HOUSEHOLD) {
+            return true;
+        }
+
+        return $this->householdsTargeted > 0;
+    }
+
+    #[Assert\IsTrue(message: 'Assistance must have at least one individual targeted.', groups: ['AdditionalChecks'])]
+    public function individualTargetHasIndividualsTargeted(): bool
+    {
+        if ($this->target !== AssistanceTargetType::INDIVIDUAL) {
+            return true;
+        }
+
+        return $this->individualsTargeted > 0;
+    }
+
+    #[Assert\IsTrue(message: 'Assistance must have at least one community.', groups: ['AdditionalChecks'])]
+    public function comunityTargetHasCommunitiesTargeted(): bool
+    {
+        if ($this->target !== AssistanceTargetType::COMMUNITY) {
+            return true;
+        }
+
+        return count($this->communities) > 0;
+    }
+
+    #[Assert\IsTrue(message: 'Assistance must have at least one institution.', groups: ['AdditionalChecks'])]
+    public function institutionTargetHasInstitutionsTargeted(): bool
+    {
+        if ($this->target !== AssistanceTargetType::INSTITUTION) {
+            return true;
+        }
+
+        return count($this->institutions) > 0;
     }
 
     /**
