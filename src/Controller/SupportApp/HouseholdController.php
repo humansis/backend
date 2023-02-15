@@ -21,8 +21,7 @@ class HouseholdController extends AbstractSupportAppController
     public function getHeadStatistics()
     {
         $headStatistics = [];
-        $countries = $this->countries->getAll(true);
-        foreach ($countries as $country) {
+        foreach ($this->countries->getAll(true) as $country) {
             $headStatistics[$country->getIso3()] = 0;
         }
 
