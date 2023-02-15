@@ -7,10 +7,9 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Referral
- *
- * @ORM\Table(name="referral")
- * @ORM\Entity(repositoryClass="Repository\ReferralRepository")
  */
+#[ORM\Table(name: 'referral')]
+#[ORM\Entity(repositoryClass: 'Repository\ReferralRepository')]
 class Referral
 {
     use StandardizedPrimaryKey;
@@ -26,14 +25,10 @@ class Referral
         '5' => 'Other',
     ];
 
-    /**
-     * @ORM\Column(name="type", type="string", length=255)
-     */
+    #[ORM\Column(name: 'type', type: 'string', length: 255)]
     private string $type;
 
-    /**
-     * @ORM\Column(name="comment", type="string", length=255)
-     */
+    #[ORM\Column(name: 'comment', type: 'string', length: 255)]
     private string $comment;
 
     /**

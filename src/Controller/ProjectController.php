@@ -38,11 +38,7 @@ class ProjectController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/summaries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/summaries')]
     public function summaries(Request $request, Project $project): JsonResponse
     {
         if (true === $project->getArchived()) {
@@ -64,11 +60,7 @@ class ProjectController extends AbstractController
         return $this->json(new Paginator($result));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/exports')]
     public function exports(Request $request): Response
     {
         $countryIso3 = $request->headers->get('country');
@@ -80,10 +72,8 @@ class ProjectController extends AbstractController
         return $this->exportTableService->export($exportableTable, 'projects', $type);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}")
-     * @Cache(lastModified="project.getLastModifiedAtIncludingBeneficiaries()", public=true)
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}')]
+    #[Cache(public: true, lastModified: 'project.getLastModifiedAtIncludingBeneficiaries()')]
     public function item(Project $project): JsonResponse
     {
         if (true === $project->getArchived()) {
@@ -93,11 +83,7 @@ class ProjectController extends AbstractController
         return $this->json(data: $project, context: ['detail' => true]);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects')]
     public function list(
         Request $request,
         ProjectFilterInputType $filter,
@@ -120,11 +106,7 @@ class ProjectController extends AbstractController
         return $this->json($projects);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/projects")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/projects')]
     public function create(ProjectCreateInputType $inputType): JsonResponse
     {
         $object = $this->projectService->create($inputType, $this->getUser());
@@ -132,11 +114,7 @@ class ProjectController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/projects/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/projects/{id}')]
     public function update(Project $project, ProjectUpdateInputType $inputType): JsonResponse
     {
         if ($project->getArchived()) {
@@ -148,11 +126,7 @@ class ProjectController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/projects/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/projects/{id}')]
     public function delete(Project $project): JsonResponse
     {
         $this->projectService->delete($project);
@@ -160,11 +134,7 @@ class ProjectController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users/{id}/projects")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users/{id}/projects')]
     public function userProjects(User $user): JsonResponse
     {
         if ($user->getProjects()->count() > 0) {

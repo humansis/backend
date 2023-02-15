@@ -28,11 +28,7 @@ class CountrySpecificController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/country-specifics/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/country-specifics/exports')]
     public function exports(Request $request): JsonResponse
     {
         $request->query->add([
@@ -43,31 +39,19 @@ class CountrySpecificController extends AbstractController
         return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/country-specifics/answers/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/country-specifics/answers/{id}')]
     public function answer(CountrySpecificAnswer $object): JsonResponse
     {
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/country-specifics/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/country-specifics/{id}')]
     public function item(CountrySpecific $object): JsonResponse
     {
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/country-specifics")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/country-specifics')]
     public function list(
         Request $request,
         CountrySpecificFilterInputType $filter,
@@ -85,11 +69,10 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/country-specifics")
-     *
      *
      * @throws Exception
      */
+    #[Rest\Post('/web-app/v1/country-specifics')]
     public function create(CountrySpecificCreateInputType $inputType): JsonResponse
     {
         $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
@@ -108,11 +91,10 @@ class CountrySpecificController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/web-app/v1/country-specifics/{id}")
-     *
      *
      * @throws Exception
      */
+    #[Rest\Put('/web-app/v1/country-specifics/{id}')]
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {
         $countrySpecific->setFieldString($inputType->getField());
@@ -131,11 +113,7 @@ class CountrySpecificController extends AbstractController
         return $this->json($countrySpecific);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/country-specifics/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/country-specifics/{id}')]
     public function delete(CountrySpecific $object): JsonResponse
     {
         $this->countrySpecificService->delete($object);

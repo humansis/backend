@@ -9,35 +9,30 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Sector
- *
- * @ORM\Table(name="project_sector", uniqueConstraints={
- *      @ORM\UniqueConstraint(name="uniq_sector_project", columns={"sector", "subsector", "project_id"})})
- * })
- * @ORM\Entity(repositoryClass="Repository\SectorRepository")
  */
+#[ORM\Table(name: 'project_sector')]
+#[ORM\UniqueConstraint(name: 'uniq_sector_project', columns: ['sector', 'subsector', 'project_id'])]
+#[ORM\Entity(repositoryClass: 'Repository\SectorRepository')]
 class ProjectSector
 {
     use StandardizedPrimaryKey;
 
     /**
      * @see SectorEnum
-     *
-     * @ORM\Column(name="sector", type="enum_sector", nullable=false)
      */
+    #[ORM\Column(name: 'sector', type: 'enum_sector', nullable: false)]
     private string $sector;
 
     /**
      * @see SubSectorEnum
-     *
-     * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
      */
+    #[ORM\Column(name: 'subsector', type: 'enum_sub_sector', nullable: true)]
     private string|null $subSector;
 
     /**
      * @var Project
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="sectors")
      */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project', inversedBy: 'sectors')]
     private Project $project;
 
     public function __construct(string $sector, Project $project, string|null $subSector = null)

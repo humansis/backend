@@ -14,72 +14,50 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Smartcard purchase batch for redemption feature.
- *
- * @ORM\Table(name="smartcard_redemption_batch")
- * @ORM\Entity(repositoryClass="\Repository\SmartcardInvoiceRepository")
  */
+#[ORM\Table(name: 'smartcard_redemption_batch')]
+#[ORM\Entity(repositoryClass: '\Repository\SmartcardInvoiceRepository')]
 class Invoice implements JsonSerializable
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: '\Entity\Vendor')]
+    #[ORM\JoinColumn(nullable: false)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Project")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: '\Entity\Project')]
+    #[ORM\JoinColumn(nullable: true)]
     private Project | null $project;
 
-    /**
-     * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
-     */
+    #[ORM\Column(name: 'redeemed_at', type: 'datetime', nullable: false)]
     private DateTimeInterface $invoicedAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(name="redeemed_by", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
+    #[ORM\JoinColumn(name: 'redeemed_by', nullable: false)]
     private User $invoicedBy;
 
-    /**
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(name: 'value', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private mixed $value;
 
-    /**
-     * @ORM\Column(name="currency", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'currency', type: 'string', nullable: true)]
     private string $currency;
 
-    /**
-     * @ORM\Column(name="contract_no", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'contract_no', type: 'string', nullable: true)]
     private string | null $contractNo;
 
-    /**
-     * @ORM\Column(name="vendor_no", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'vendor_no', type: 'string', nullable: true)]
     private string | null $vendorNo;
 
-    /**
-     * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
-     */
+    #[ORM\Column(name: 'project_invoice_address_local', type: 'text', nullable: true, options: ['default' => null])]
     private ?string $projectInvoiceAddressLocal;
 
-    /**
-     * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
-     */
+    #[ORM\Column(name: 'project_invoice_address_english', type: 'text', nullable: true, options: ['default' => null])]
     private ?string $projectInvoiceAddressEnglish;
 
     /**
      * @var Collection|SmartcardPurchase[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="redemptionBatch", cascade={"persist"}, orphanRemoval=false)
      */
+    #[ORM\OneToMany(mappedBy: 'redemptionBatch', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: false)]
     private Collection | array $purchases;
 
     /**

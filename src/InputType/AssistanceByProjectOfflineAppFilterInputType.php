@@ -18,14 +18,9 @@ class AssistanceByProjectOfflineAppFilterInputType extends AbstractFilterInputTy
     #[Assert\Choice([0, 1], message: 'Invalid boolean value. Accepted are 0,1, given {{ value }}.')]
     protected $completed;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $notModalityTypes;
 

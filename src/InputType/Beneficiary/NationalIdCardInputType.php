@@ -17,10 +17,10 @@ class NationalIdCardInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $number;
 
-    /**
-     * @Enum(enumClass="Enum\NationalIdType")
-     */
     #[Assert\NotNull]
+    #[Enum(options: [
+        'enumClass' => "Enum\NationalIdType",
+    ])]
     private $type;
 
     #[Assert\Type('integer')]

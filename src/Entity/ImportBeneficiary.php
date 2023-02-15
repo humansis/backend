@@ -11,10 +11,9 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * This entity tracks source (import) of beneficiary being updated.
- *
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class ImportBeneficiary
 {
     use StandardizedPrimaryKey;
@@ -23,17 +22,15 @@ class ImportBeneficiary
 
     /**
      * @var Import
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importBeneficiaries")
      */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Import', inversedBy: 'importBeneficiaries')]
     private Import $import;
 
     /**
      * @var Beneficiary
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="importBeneficiaries", cascade={"persist"})
-     * @ORM\JoinColumn(name="beneficiary_id", referencedColumnName="id", onDelete="CASCADE")
      */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Beneficiary', cascade: ['persist'], inversedBy: 'importBeneficiaries')]
+    #[ORM\JoinColumn(name: 'beneficiary_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Beneficiary $beneficiary;
 
     public function __construct(

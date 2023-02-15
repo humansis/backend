@@ -15,39 +15,29 @@ use InvalidArgumentException;
 
 /**
  * Product
- *
- * @ORM\Table(name="product_category")
- * @ORM\Entity(repositoryClass="Repository\ProductCategoryRepository")
  */
+#[ORM\Table(name: 'product_category')]
+#[ORM\Entity(repositoryClass: 'Repository\ProductCategoryRepository')]
 class ProductCategory
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="name", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'name', type: 'string', nullable: false)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="type", type="enum_product_category_type", nullable=false)
-     */
+    #[ORM\Column(name: 'type', type: 'enum_product_category_type', nullable: false)]
     private string $type;
 
-    /**
-     * @ORM\Column(name="image", type="text", nullable=true)
-     */
+    #[ORM\Column(name: 'image', type: 'text', nullable: true)]
     private ?string $image = null;
 
-    /**
-     * @ORM\Column(name="archived", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'archived', type: 'boolean', nullable: false)]
     private bool $archived = false;
 
     /**
      * @var Collection|Product[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Product", mappedBy="productCategory")
      */
+    #[ORM\OneToMany(mappedBy: 'productCategory', targetEntity: 'Entity\Product')]
     private Collection |array $products;
 
     public function __construct(string $name, string $type)

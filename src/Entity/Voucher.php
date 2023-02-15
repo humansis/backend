@@ -8,52 +8,37 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Voucher.
- *
- * @ORM\Table(name="voucher")
- * @ORM\Entity(repositoryClass="Repository\VoucherRepository")
  */
+#[ORM\Table(name: 'voucher')]
+#[ORM\Entity(repositoryClass: 'Repository\VoucherRepository')]
 class Voucher
 {
-    /**
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=true)
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\VoucherPurchase', inversedBy: 'vouchers')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?VoucherPurchase $voucherPurchase;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\VoucherRedemptionBatch', cascade: ['persist'], inversedBy: 'vouchers')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?\Entity\VoucherRedemptionBatch $redemptionBatch = null;
 
-    /**
-     * @ORM\Column(name="code", type="string", length=255, unique=true)
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\Column(name: 'code', type: 'string', length: 255, unique: true)]
     private string $code;
 
-    /**
-     * @ORM\Column(name="value", type="integer")
-     */
     #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'value', type: 'integer')]
     private int $value;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=false)
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\ManyToOne(targetEntity: '\Entity\Booklet', inversedBy: 'vouchers')]
+    #[ORM\JoinColumn(nullable: false)]
     private Booklet $booklet;
 
     public function __construct(string $code, int $value, Booklet $booklet)

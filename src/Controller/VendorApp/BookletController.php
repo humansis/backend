@@ -21,10 +21,10 @@ class BookletController extends AbstractVendorAppController
     /**
      * Get booklets that have been deactivated
      *
-     * @Rest\Get("/vendor-app/v1/deactivated-booklets")
      *
      * @return Response
      */
+    #[Rest\Get('/vendor-app/v1/deactivated-booklets')]
     public function vendorGetDeactivatedAction(Request $request)
     {
         try {
@@ -41,10 +41,10 @@ class BookletController extends AbstractVendorAppController
     /**
      * Get booklets that are protected by a password
      *
-     * @Rest\Get("/vendor-app/v1/protected-booklets")
      *
      * @return Response
      */
+    #[Rest\Get('/vendor-app/v1/protected-booklets')]
     public function vendorGetProtectedAction(Request $request)
     {
         try {
@@ -69,10 +69,10 @@ class BookletController extends AbstractVendorAppController
     /**
      * Deactivate booklets
      *
-     * @Rest\Post("/vendor-app/v1/deactivate-booklets")
      *
      * @return Response
      */
+    #[Rest\Post('/vendor-app/v1/deactivate-booklets')]
     public function vendorDeactivateBookletsAction(Request $request)
     {
         try {

@@ -12,11 +12,10 @@ use Entity\User;
 class AuthController extends AbstractController
 {
     /**
-     * @Rest\Post("/web-app/v5/login")
-     *
      *
      * @return JsonResponse
      */
+    #[Rest\Post('/web-app/v5/login')]
     public function getTokenUser(JWTTokenManagerInterface $JWTManager, ?Profiler $profiler)
     {
         if (null !== $profiler) {

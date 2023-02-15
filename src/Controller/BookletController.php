@@ -49,9 +49,7 @@ class BookletController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/booklets/statuses")
-     */
+    #[Rest\Get('/web-app/v1/booklets/statuses')]
     public function statuses(): JsonResponse
     {
         $data = $this->codeListService->mapArray(Booklet::statuses());
@@ -59,11 +57,7 @@ class BookletController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/booklets/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/booklets/exports')]
     public function exports(Request $request, BookletExportFilterInputType $inputType): Response
     {
         $countryIso3 = $request->headers->get("country");
@@ -92,11 +86,7 @@ class BookletController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/booklets/prints")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/booklets/prints')]
     public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
         $booklets = $this->bookletRepository->findBy(['id' => $inputType->getIds()]);
@@ -104,21 +94,13 @@ class BookletController extends AbstractController
         return $this->bookletService->generatePdf($booklets);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/booklets/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/booklets/{id}')]
     public function item(Booklet $object): JsonResponse
     {
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/booklets/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/booklets/{id}')]
     public function update(Booklet $object, BookletUpdateInputType $inputType): JsonResponse
     {
         $this->bookletService->update($object, [
@@ -131,11 +113,7 @@ class BookletController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/booklets")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/booklets')]
     public function list(
         Request $request,
         BookletFilterInputType $filter,
@@ -152,11 +130,7 @@ class BookletController extends AbstractController
         return $this->json($list);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/booklets/batches")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/booklets/batches')]
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
         $this->bookletService->createBooklets($inputType);
@@ -164,11 +138,7 @@ class BookletController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/booklets/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/booklets/{id}')]
     public function delete(Booklet $object): JsonResponse
     {
         try {
@@ -180,14 +150,10 @@ class BookletController extends AbstractController
         return $this->json(null, $deleted ? Response::HTTP_NO_CONTENT : Response::HTTP_BAD_REQUEST);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets/{bookletCode}")
-     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
-     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{assistanceId}/beneficiaries/{beneficiaryId}/booklets/{bookletCode}')]
+    #[ParamConverter('assistance', options: ['mapping' => ['assistanceId' => 'id']])]
+    #[ParamConverter('beneficiary', options: ['mapping' => ['beneficiaryId' => 'id']])]
+    #[ParamConverter('booklet', options: ['mapping' => ['bookletCode' => 'code']])]
     public function assignToBeneficiary(
         Assistance $assistance,
         Beneficiary $beneficiary,
@@ -198,14 +164,10 @@ class BookletController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/communities/{communityId}/booklets/{bookletCode}")
-     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
-     * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
-     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{assistanceId}/communities/{communityId}/booklets/{bookletCode}')]
+    #[ParamConverter('assistance', options: ['mapping' => ['assistanceId' => 'id']])]
+    #[ParamConverter('community', options: ['mapping' => ['communityId' => 'id']])]
+    #[ParamConverter('booklet', options: ['mapping' => ['bookletCode' => 'code']])]
     public function assignToCommunity(Assistance $assistance, Community $community, Booklet $booklet): JsonResponse
     {
         $this->bookletService->assign($booklet, $assistance, $community);
@@ -213,14 +175,10 @@ class BookletController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{assistanceId}/institutions/{institutionId}/booklets/{bookletCode}")
-     * @ParamConverter("assistance", options={"mapping": {"assistanceId" : "id"}})
-     * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
-     * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{assistanceId}/institutions/{institutionId}/booklets/{bookletCode}')]
+    #[ParamConverter('assistance', options: ['mapping' => ['assistanceId' => 'id']])]
+    #[ParamConverter('institution', options: ['mapping' => ['institutionId' => 'id']])]
+    #[ParamConverter('booklet', options: ['mapping' => ['bookletCode' => 'code']])]
     public function assignToInstitution(
         Assistance $assistance,
         Institution $institution,

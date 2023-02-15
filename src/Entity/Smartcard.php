@@ -13,10 +13,9 @@ use Enum\SmartcardStates;
 
 /**
  * Smartcard instance used by one Beneficiary
- *
- * @ORM\Table(name="smartcard")
- * @ORM\Entity(repositoryClass="Repository\SmartcardRepository")
  */
+#[ORM\Table(name: 'smartcard')]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardRepository')]
 class Smartcard
 {
     final public const STATE_UNASSIGNED = 'unassigned';
@@ -24,88 +23,66 @@ class Smartcard
     final public const STATE_INACTIVE = 'inactive';
     final public const STATE_CANCELLED = 'cancelled';
 
-    /**
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[SymfonyGroups(['SmartcardOverview', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id = 0;
 
     /**
      * @var string serial number / UID
-     *
-     * @ORM\Column(name="code", type="string", length=14, unique=true, nullable=false)
      */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'code', type: 'string', length: 14, unique: true, nullable: false)]
     private string $serialNumber;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary", inversedBy="smartcards")
-     */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Beneficiary', inversedBy: 'smartcards')]
     private ?Beneficiary $beneficiary = null;
 
     /**
      * @var Collection|SmartcardDeposit[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardDeposit", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardDeposit', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $deposites;
 
     /**
      * @var Collection|SmartcardPurchase[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="smartcard", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $purchases;
 
     /**
      * @see SmartcardStates::all()
-     * @ORM\Column(name="state", type="string", length=10, nullable=false)
      */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    #[ORM\Column(name: 'state', type: 'string', length: 10, nullable: false)]
     private string $state;
 
-    /**
-     * @ORM\Column(name="currency", type="string", length=3, nullable=true)
-     */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    #[ORM\Column(name: 'currency', type: 'string', length: 3, nullable: true)]
     private ?string $currency = null;
 
-    /**
-     * @ORM\Column(name="disabled_at", type="datetime", nullable=true)
-     */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    #[ORM\Column(name: 'disabled_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $disabledAt = null;
 
-    /**
-     * @ORM\Column(name="registered_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'registered_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $registeredAt = null;
 
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
     #[SymfonyGroups(['SmartcardOverview', 'FullSmartcard'])]
+    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\Column(name="changed_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'changed_at', type: 'datetime', nullable: true)]
     private ?DateTimeInterface $changedAt = null;
 
-    /**
-     * @ORM\Column(name="suspicious", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'suspicious', type: 'boolean', nullable: false)]
     private bool $suspicious = false;
 
-    /**
-     * @ORM\Column(name="suspicious_reason", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'suspicious_reason', type: 'string', nullable: true)]
     private ?string $suspiciousReason = null;
 
     public function __construct(

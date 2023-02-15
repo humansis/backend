@@ -39,11 +39,7 @@ class CommonController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/summaries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/summaries')]
     public function summaries(Request $request, AssistanceRepository $assistanceRepository): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');
@@ -82,10 +78,8 @@ class CommonController extends AbstractController
         return $this->json(new Paginator($result));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/icons")
-     * @Cache(expires="+12 hours", public=true)
-     */
+    #[Rest\Get('/web-app/v1/icons')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function icons(): JsonResponse
     {
         $data = [];
@@ -109,10 +103,8 @@ class CommonController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/languages")
-     * @Cache(expires="+12 hours", public=true)
-     */
+    #[Rest\Get('/web-app/v1/languages')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function languages(): JsonResponse
     {
         $data = [];
@@ -127,10 +119,8 @@ class CommonController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/currencies")
-     * @Cache(expires="+12 hours", public=true)
-     */
+    #[Rest\Get('/web-app/v1/currencies')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function currencies(): JsonResponse
     {
         $data = [];
@@ -145,11 +135,7 @@ class CommonController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/translations/{language}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/translations/{language}')]
     public function translations(string $language): JsonResponse
     {
         if (!in_array($language, $this->getParameter('app.locales'))) {
@@ -187,11 +173,8 @@ class CommonController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/translations-xml")
-     * @Cache(expires="+12 hours", public=true)
-     *
-     */
+    #[Rest\Get('/web-app/v1/translations-xml')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function getTranslationsXml(): BinaryFileResponse
     {
         $finder = new Finder();
@@ -222,11 +205,7 @@ class CommonController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adms")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adms')]
     public function adms(Request $request): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');

@@ -11,50 +11,38 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Smartcard purchase record.
  *
  * Information about products purchased by smartcard.
- *
- * @ORM\Table(name="smartcard_purchase_record")
- * @ORM\Entity
  */
+#[ORM\Table(name: 'smartcard_purchase_record')]
+#[ORM\Entity]
 class SmartcardPurchaseRecord
 {
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\SmartcardPurchase", inversedBy="records")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\SmartcardPurchase', inversedBy: 'records')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\SmartcardPurchase $smartcardPurchase = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Product")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Product')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\Product $product = null;
 
     /**
      * @var float
-     *
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'value', type: 'decimal', precision: 10, scale: 2)]
     private $value;
 
-    /**
-     * @ORM\Column(name="currency", type="string", nullable=true)
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'currency', type: 'string', nullable: true)]
     private ?string $currency = null;
 
     /**
      * @var mixed
-     *
-     * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'quantity', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private $quantity;
 
     public static function create(

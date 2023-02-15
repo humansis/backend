@@ -7,17 +7,14 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Profile
- *
- * @ORM\Table(name="profile")
- * @ORM\Entity(repositoryClass="Repository\ProfileRepository")
  */
+#[ORM\Table(name: 'profile')]
+#[ORM\Entity(repositoryClass: 'Repository\ProfileRepository')]
 class Profile
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="photo", type="string", length=255)
-     */
+    #[ORM\Column(name: 'photo', type: 'string', length: 255)]
     private string $photo;
 
     /**

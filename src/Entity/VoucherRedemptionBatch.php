@@ -10,41 +10,31 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Class VoucherRedemptionBatch.
- *
- * @ORM\Table(name="voucher_redemption_batch")
- * @ORM\Entity(repositoryClass="\Repository\VoucherRedemptionBatchRepository")
  */
+#[ORM\Table(name: 'voucher_redemption_batch')]
+#[ORM\Entity(repositoryClass: '\Repository\VoucherRedemptionBatchRepository')]
 class VoucherRedemptionBatch
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="redeemed_at", type="datetime", nullable=false)
-     */
+    #[ORM\Column(name: 'redeemed_at', type: 'datetime', nullable: false)]
     private DateTime $redeemedAt;
 
     /**
      * @var Collection|Voucher[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Voucher", cascade={"persist"}, orphanRemoval=false, mappedBy="redemptionBatch")
      */
+    #[ORM\OneToMany(mappedBy: 'redemptionBatch', targetEntity: 'Entity\Voucher', cascade: ['persist'], orphanRemoval: false)]
     private Collection | array $vouchers;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: '\Entity\Vendor')]
+    #[ORM\JoinColumn(nullable: false)]
     private Vendor $vendor;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(name="redeemed_by", nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
+    #[ORM\JoinColumn(name: 'redeemed_by', nullable: true)]
     private ?\Entity\User $redeemedBy;
 
-    /**
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(name: 'value', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $value;
 
     public function __construct(Vendor $vendor, User $redeemedBy, array $vouchers, float $value)

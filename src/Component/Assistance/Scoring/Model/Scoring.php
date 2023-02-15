@@ -6,10 +6,7 @@ namespace Component\Assistance\Scoring\Model;
 
 use Component\Assistance\Scoring\Validator\Scoring as ScoringConstraint;
 
-/**
- * Some complex validation were necessary, so validation of whole Scoring is written in Validator\ScoringValidator.
- * @ScoringConstraint();
- */
+#[ScoringConstraint]
 final class Scoring
 {
     /**

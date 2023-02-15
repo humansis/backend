@@ -32,15 +32,10 @@ class UserUpdateInputType implements InputTypeInterface
     #[Assert\Type('string')]
     private ?string $phoneNumber = null;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"}),
-     *         @Assert\Length ("3", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+        new Assert\Length('3', groups: ['Strict'])
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     private ?array $countries = null;
 
@@ -48,27 +43,15 @@ class UserUpdateInputType implements InputTypeInterface
     #[Assert\Type('string')]
     private ?string $language = null;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     #[Assert\NotBlank]
     #[Assert\NotNull]
     private ?array $roles = null;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('int', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private ?array $projectIds = null;
 

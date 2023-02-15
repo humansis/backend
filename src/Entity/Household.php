@@ -21,125 +21,90 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 /**
  * Household
  *
- * @ORM\Table(name="household")
- * @ORM\Entity(repositoryClass="Repository\HouseholdRepository")
  * @method Household setCountryIso3(string $countryIso3)
  */
+#[ORM\Table(name: 'household')]
+#[ORM\Entity(repositoryClass: 'Repository\HouseholdRepository')]
 class Household extends AbstractBeneficiary
 {
     use EnumTrait;
     use CountryDependent;
 
-    /**
-     * @ORM\Column(name="livelihood", type="enum_livelihood", nullable=true)
-     */
+    #[ORM\Column(name: 'livelihood', type: 'enum_livelihood', nullable: true)]
     private string|null $livelihood = null;
 
     /**
      * @var int[]
-     *
-     * @ORM\Column(name="assets", type="array", nullable=true)
      */
+    #[ORM\Column(name: 'assets', type: 'array', nullable: true)]
     private array|null $assets;
 
     /**
      * TODO: migrate to enum sometimes
-     * @ORM\Column(name="shelter_status", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'shelter_status', type: 'integer', nullable: true)]
     private int|null $shelterStatus = null;
 
-    /**
-     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'notes', type: 'string', length: 255, nullable: true)]
     private string|null $notes = null;
 
-    /**
-     * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'latitude', type: 'string', length: 45, nullable: true)]
     private string|null $latitude = null;
 
-    /**
-     * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'longitude', type: 'string', length: 45, nullable: true)]
     private string|null $longitude = null;
 
     /**
      * @var Collection | CountrySpecific[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="household", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'household', targetEntity: 'Entity\CountrySpecificAnswer', cascade: ['persist', 'remove'])]
     private Collection | array $countrySpecificAnswers;
 
     /**
      * @var Collection|Beneficiary[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Beneficiary", mappedBy="household", fetch="EAGER", cascade={"persist"})
      */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullReceivers'])]
+    #[ORM\OneToMany(mappedBy: 'household', targetEntity: 'Entity\Beneficiary', cascade: ['persist'], fetch: 'EAGER')]
     private array | Collection $beneficiaries;
 
-    /**
-     * @ORM\Column(name="income", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'income', type: 'integer', nullable: true)]
     private int|null $income = null;
 
-    /**
-     * @ORM\Column(name="foodConsumptionScore", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'foodConsumptionScore', type: 'integer', nullable: true)]
     private int|null $foodConsumptionScore = null;
 
-    /**
-     * @ORM\Column(name="copingStrategiesIndex", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'copingStrategiesIndex', type: 'integer', nullable: true)]
     private int|null $copingStrategiesIndex = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\HouseholdLocation", mappedBy="household", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'household', targetEntity: 'Entity\HouseholdLocation', cascade: ['persist', 'remove'])]
     private $householdLocations;
 
-    /**
-     * @ORM\Column(name="debt_level", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'debt_level', type: 'integer', nullable: true)]
     private int|null $debtLevel = null;
 
     /**
      * @var int[]
-     *
-     * @ORM\Column(name="support_received_types", type="array", nullable=true)
      */
+    #[ORM\Column(name: 'support_received_types', type: 'array', nullable: true)]
     private array $supportReceivedTypes;
 
-    /**
-     * @ORM\Column(name="support_organization_name", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'support_organization_name', type: 'string', nullable: true)]
     private string|null $supportOrganizationName = null;
 
-    /**
-     * @ORM\Column(name="support_date_received", type="date", nullable=true)
-     */
+    #[ORM\Column(name: 'support_date_received', type: 'date', nullable: true)]
     private ?DateTimeInterface $supportDateReceived = null;
 
-    /**
-     * @ORM\Column(name="income_spent_on_food", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'income_spent_on_food', type: 'integer', nullable: true)]
     private int|null $incomeSpentOnFood = null;
 
-    /**
-     * @ORM\Column(name="household_income", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'household_income', type: 'integer', nullable: true)]
     private int|null $householdIncome = null;
 
-    /**
-     * @ORM\Column(name="enumerator_name", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'enumerator_name', type: 'string', nullable: true)]
     private string|null $enumeratorName = null;
 
-    /**
-     *
-     * @ORM\OneToOne(targetEntity="Entity\Person")
-     * @ORM\JoinColumn(name="proxy_id")
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Person')]
+    #[ORM\JoinColumn(name: 'proxy_id')]
     private ?Person $proxy = null;
 
     /**

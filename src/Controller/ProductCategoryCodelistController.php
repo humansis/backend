@@ -16,9 +16,7 @@ class ProductCategoryCodelistController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/product-categories/types")
-     */
+    #[Rest\Get('/web-app/v1/product-categories/types')]
     public function getTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(ProductCategoryType::values());

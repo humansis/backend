@@ -9,65 +9,48 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Organization
- *
- * @ORM\Table(name="organization")
- * @ORM\Entity(repositoryClass="Repository\OrganizationRepository")
  */
+#[ORM\Table(name: 'organization')]
+#[ORM\Entity(repositoryClass: 'Repository\OrganizationRepository')]
 class Organization
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
-    /**
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     *
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'logo', type: 'string', length: 255, nullable: true)]
     private string|null $logo;
 
-    /**
-     * @ORM\Column(name="font", type="string", length=255)
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'font', type: 'string', length: 255)]
     private string $font;
 
-    /**
-     * @ORM\Column(name="primaryColor", type="string", length=255)
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'primaryColor', type: 'string', length: 255)]
     private string $primaryColor;
 
-    /**
-     * @ORM\Column(name="secondaryColor", type="string", length=255)
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'secondaryColor', type: 'string', length: 255)]
     private string $secondaryColor;
 
-    /**
-     * @ORM\Column(name="footerContent", type="string", length=255)
-     */
     #[SymfonyGroups(['FullOrganization'])]
+    #[ORM\Column(name: 'footerContent', type: 'string', length: 255)]
     private string $footerContent;
 
     /**
      * @var OrganizationServices $organizationServices
-     *
-     * @ORM\OneToMany(targetEntity="Entity\OrganizationServices", mappedBy="organization", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'organization', targetEntity: 'Entity\OrganizationServices', cascade: ['remove'])]
     private $organizationServices;
 
     /**

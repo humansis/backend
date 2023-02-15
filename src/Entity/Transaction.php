@@ -14,10 +14,9 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * Transaction
  *
  * @deprecated Mobile money transaction needs to be completely rewrite
- *
- * @ORM\Table(name="transaction")
- * @ORM\Entity(repositoryClass="Repository\TransactionRepository")
  */
+#[ORM\Table(name: 'transaction')]
+#[ORM\Entity(repositoryClass: 'Repository\TransactionRepository')]
 class Transaction
 {
     use StandardizedPrimaryKey;
@@ -42,87 +41,62 @@ class Transaction
         ];
     }
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage")
-     * @ORM\JoinColumn(name="relief_package_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance\ReliefPackage')]
+    #[ORM\JoinColumn(name: 'relief_package_id')]
     private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="transaction_id", type="string", length=45)
      */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'transaction_id', type: 'string', length: 45)]
     private $transactionId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="amount_sent", type="string")
      */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'amount_sent', type: 'string')]
     private $amountSent;
 
-    /**
-     *
-     * @ORM\Column(name="date_sent", type="datetime")
-     *
-     */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'date_sent', type: 'datetime')]
     private ?\DateTime $dateSent = null;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="transaction_status", type="smallint")
      */
     #[SymfonyGroups(['ValidatedAssistance', 'FullReceivers', 'FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'transaction_status', type: 'smallint')]
     private $transactionStatus;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="message", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'message', type: 'string', length: 255, nullable: true)]
     private $message;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="money_received", type="boolean", nullable=true)
      */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'money_received', type: 'boolean', nullable: true)]
     private $moneyReceived;
 
-    /**
-     *
-     * @ORM\Column(name="pickup_date", type="datetime", nullable=true)
-     *
-     */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'pickup_date', type: 'datetime', nullable: true)]
     private ?\DateTime $pickupDate = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="transactions", cascade={"persist"})
-     * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\AssistanceBeneficiary', cascade: ['persist'], inversedBy: 'transactions')]
+    #[ORM\JoinColumn(name: 'distribution_beneficiary_id')]
     private ?\Entity\AssistanceBeneficiary $assistanceBeneficiary = null;
 
-    /**
-     *
-     * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     *
-     */
     #[SymfonyGroups(['ValidatedAssistance'])]
+    #[ORM\Column(name: 'updated_on', type: 'datetime', nullable: true)]
     private ?\DateTime $updatedOn;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="transactions", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User', cascade: ['persist'], inversedBy: 'transactions')]
     private ?\Entity\User $sentBy = null;
 
     /**

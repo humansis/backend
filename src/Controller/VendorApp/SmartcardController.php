@@ -32,12 +32,12 @@ class SmartcardController extends AbstractVendorAppController
     /**
      * //TODO whole endpoint should be removed after syncs of purchases
      *
-     * @Rest\Post("/vendor-app/v4/smartcards/{serialNumber}/purchase")
      *
      *
      * @return JsonResponse
      * @throws Exception
      */
+    #[Rest\Post('/vendor-app/v4/smartcards/{serialNumber}/purchase')]
     public function beneficiaries(Request $request): Response
     {
         $serializer = new Serializer([
@@ -107,10 +107,10 @@ class SmartcardController extends AbstractVendorAppController
      * List of blocked smardcards.
      * Blocked smartcards are not allowed to pay with.
      *
-     * @Rest\Get("/vendor-app/v1/smartcards/blocked")
      *
      *
      */
+    #[Rest\Get('/vendor-app/v1/smartcards/blocked')]
     public function listOfBlocked(Request $request): Response
     {
         $country = $request->headers->get('country');

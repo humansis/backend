@@ -12,63 +12,45 @@ use Utils\ExportableInterface;
 
 /**
  * Product
- *
- * @ORM\Table(name="product")
- * @ORM\Entity(repositoryClass="Repository\ProductRepository")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'product')]
+#[ORM\Entity(repositoryClass: 'Repository\ProductRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Product implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
     use CountryDependent;
 
-    /**
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[SymfonyGroups(['FullProduct', 'ValidatedAssistance', 'FullVoucher'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=255)
-     */
     #[SymfonyGroups(['FullProduct', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(name="unit", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullProduct'])]
+    #[ORM\Column(name: 'unit', type: 'string', length: 255, nullable: true)]
     private ?string $unit = null;
 
-    /**
-     * @ORM\Column(name="image", type="string", length=255)
-     */
     #[SymfonyGroups(['FullProduct', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'image', type: 'string', length: 255)]
     private ?string $image = null;
 
-    /**
-     * @ORM\Column(name="archived", type="boolean")
-     */
     #[SymfonyGroups(['FullProduct'])]
+    #[ORM\Column(name: 'archived', type: 'boolean')]
     private ?bool $archived = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ProductCategory", inversedBy="products")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ProductCategory', inversedBy: 'products')]
     private ?\Entity\ProductCategory $productCategory = null;
 
-    /**
-     * @ORM\Column(name="unit_price", type="decimal", type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(name: 'unit_price', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?float $unitPrice = null;
 
-    /**
-     * @ORM\Column(name="currency", type="string", length=3, nullable=true)
-     */
+    #[ORM\Column(name: 'currency', type: 'string', length: 3, nullable: true)]
     private ?string $currency = null;
 
     /**

@@ -17,11 +17,7 @@ class ProjectController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/projects")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v1/projects')]
     public function getProjects(Request $request): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');
@@ -39,9 +35,9 @@ class ProjectController extends AbstractOfflineAppController
     /**
      *
      * @deprecated This endpoint is not consumed by app because of different interface
-     * @Rest\Get("/offline-app/v2/projects")
      *
      */
+    #[Rest\Get('/offline-app/v2/projects')]
     public function list(Request $request): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');

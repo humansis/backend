@@ -6,10 +6,7 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class DateGreaterThan extends GreaterThan
 {
     final public const TOO_LOW_ERROR = 'd6aadef3-8df1-4f11-900a-215ecd726cd6';

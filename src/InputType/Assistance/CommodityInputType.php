@@ -10,12 +10,12 @@ use Validator\Constraints\Enum;
 
 class CommodityInputType implements InputTypeNullableDenormalizer
 {
-    /**
-     * @Enum(enumClass="Enum\ModalityType")
-     */
     #[Assert\Type('string')]
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Enum(options: [
+        'enumClass' => "Enum\ModalityType",
+    ])]
     private $modalityType;
 
     #[Assert\Type('string')]

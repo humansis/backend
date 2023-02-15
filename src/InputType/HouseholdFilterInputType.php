@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use Entity\Referral;
 use Entity\VulnerabilityCriterion;
+use Enum\Livelihood;
+use Enum\ResidencyStatus;
 use InputType\FilterFragment\FulltextFilterTrait;
 use InputType\FilterFragment\LocationFilterTrait;
 use InputType\FilterFragment\PrimaryIdFilterTrait;
@@ -23,58 +26,38 @@ class HouseholdFilterInputType extends AbstractFilterInputType
     #[Assert\Choice(['M', 'F'])]
     protected $gender;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="vulnerabilities", strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Choice(callback: 'vulnerabilities', strict: true, groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $vulnerabilities;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $nationalIds;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Enum\ResidencyStatus", "all"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [ResidencyStatus::class, "all"]),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $residencyStatuses;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Entity\Referral", "types"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [Referral::class, "types"]),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $referralTypes;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *        @Assert\Choice(callback={"Enum\Livelihood", "values"}, strict=true)
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [Livelihood::class, "values"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $livelihoods;
 

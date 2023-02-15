@@ -9,82 +9,52 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Read only entity.
- *
- * @ORM\Entity(repositoryClass="Repository\SmartcardPurchasedItemRepository", readOnly=true)
- * @ORM\Table(name="view_smartcard_purchased_item")
  */
+#[ORM\Table(name: 'view_smartcard_purchased_item')]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardPurchasedItemRepository', readOnly: true)]
 class SmartcardPurchasedItem
 {
-    /**
-     *
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     */
+    #[ORM\Column(type: 'string')]
+    #[ORM\Id]
     private string $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Project")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project')]
     private \Entity\Project $project;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private \Entity\Location $location;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Beneficiary')]
     private \Entity\Beneficiary $beneficiary;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household')]
     private \Entity\Household $household;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance')]
     private \Entity\Assistance $assistance;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Product")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Product')]
     private \Entity\Product $product;
 
-    /**
-     * @ORM\Column(name="invoice_number", type="string")
-     */
+    #[ORM\Column(name: 'invoice_number', type: 'string')]
     private ?string $invoiceNumber = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Vendor")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Vendor')]
     private \Entity\Vendor $vendor;
 
-    /**
-     * @ORM\Column(name="date_purchase", type="datetime")
-     */
+    #[ORM\Column(name: 'date_purchase', type: 'datetime')]
     private \DateTimeInterface $datePurchase;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $smartcardCode = null;
 
-    /**
-     * @ORM\Column(name="value", type="decimal")
-     */
+    #[ORM\Column(name: 'value', type: 'decimal')]
     private $value;
 
-    /**
-     * @ORM\Column(name="currency", type="string")
-     */
+    #[ORM\Column(name: 'currency', type: 'string')]
     private $currency;
 
-    /**
-     * @ORM\Column(name="id_number", type="string")
-     */
+    #[ORM\Column(name: 'id_number', type: 'string')]
     private $idNumber;
 
     public function getId(): string

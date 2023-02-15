@@ -24,9 +24,7 @@ class SmartcardController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Post("/offline-app/v1/smartcards")
-     */
+    #[Rest\Post('/offline-app/v1/smartcards')]
     public function register(
         SmartcardRegisterInputType $registerInputType,
         SmartcardService $smartcardService
@@ -41,10 +39,10 @@ class SmartcardController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Patch("/offline-app/v1/smartcards/{serialNumber}")
      * @deprecated This endpoint is only used for card deactivation, but it´s done automatically during assign.
      *
      */
+    #[Rest\Patch('/offline-app/v1/smartcards/{serialNumber}')]
     public function deactivate(
         string $serialNumber,
         ChangeSmartcardInputType $changeSmartcardInputType,
@@ -73,10 +71,9 @@ class SmartcardController extends AbstractOfflineAppController
 
     /**
      * Info about smartcard.
-     *
-     * @Rest\Get("/offline-app/v1/smartcards/{serialNumber}")
-     * @ParamConverter("smartcard")
      */
+    #[Rest\Get('/offline-app/v1/smartcards/{serialNumber}')]
+    #[ParamConverter('smartcard')]
     public function info(Smartcard $smartcard): Response
     {
         $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);

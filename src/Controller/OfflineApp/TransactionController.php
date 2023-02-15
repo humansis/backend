@@ -18,11 +18,7 @@ class TransactionController extends AbstractController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/offline-app/v1/transactions")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v1/transactions')]
     public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
     {
         /** @var TransactionRepository $repository */

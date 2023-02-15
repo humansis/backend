@@ -13,9 +13,7 @@ use Utils\SectorService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class SectorsCodelistController extends AbstractController
 {
     public function __construct(private readonly SectorService $sectorService, private readonly CodeListService $codeListService)
@@ -23,10 +21,9 @@ class SectorsCodelistController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/sectors")
-     *
      * @deprecated use /projects/{id}/sectors instead
      */
+    #[Rest\Get('/web-app/v1/sectors')]
     public function getSectors(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(SectorEnum::all());
@@ -34,11 +31,7 @@ class SectorsCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v2/projects/{id}/sectors")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v2/projects/{id}/sectors')]
     public function getSectorsV2(Project $project): JsonResponse
     {
         $data = $this->sectorService->getSectorsInProject($project);
@@ -46,11 +39,7 @@ class SectorsCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/sectors/{code}/subsectors")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/sectors/{code}/subsectors')]
     public function getSubSectors(string $code): JsonResponse
     {
         if (!in_array($code, SectorEnum::all())) {

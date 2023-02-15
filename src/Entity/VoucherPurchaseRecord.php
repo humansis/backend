@@ -8,44 +8,34 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Voucher Purchase Record.
- *
- * @ORM\Table(name="voucher_purchase_record")
- * @ORM\Entity(repositoryClass="Repository\VoucherPurchaseRecordRepository")
  */
+#[ORM\Table(name: 'voucher_purchase_record')]
+#[ORM\Entity(repositoryClass: 'Repository\VoucherPurchaseRecordRepository')]
 class VoucherPurchaseRecord
 {
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="records")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\VoucherPurchase', inversedBy: 'records')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\VoucherPurchase $voucherPurchase = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Product")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Product')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\Product $product = null;
 
     /**
      * @var mixed
-     *
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=true)
      */
     #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'value', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private $value;
 
     /**
      * @var mixed
-     *
-     * @ORM\Column(name="quantity", type="decimal", precision=10, scale=2, nullable=true)
      */
     #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'quantity', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private $quantity;
 
     public static function create(VoucherPurchase $purchase, Product $product, $quantity, $value)

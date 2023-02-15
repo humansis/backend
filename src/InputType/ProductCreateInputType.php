@@ -15,11 +15,9 @@ class ProductCreateInputType extends ProductUpdateInputType
     #[Assert\NotNull]
     private $name;
 
-    /**
-     * @Country
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Country]
     private $iso3;
 
     /**

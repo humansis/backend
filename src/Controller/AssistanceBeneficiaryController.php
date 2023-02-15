@@ -44,11 +44,7 @@ class AssistanceBeneficiaryController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-beneficiaries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/assistances-beneficiaries')]
     public function assistanceBeneficiariesByAssistance(
         Entity\Assistance $assistance,
         BeneficiaryFilterInputType $filter,
@@ -69,11 +65,7 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json($assistanceBeneficiaries);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-institutions")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/assistances-institutions')]
     public function assistanceInstitutionsByAssistance(
         Entity\Assistance $assistance,
         InstitutionFilterInputType $filter,
@@ -94,11 +86,7 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json($assistanceInstitutions);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/assistances-communities")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/assistances-communities')]
     public function assistanceCommunitiesByAssistance(
         Entity\Assistance $assistance,
         CommunityFilterType $filter,
@@ -119,9 +107,7 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json($assistanceCommunities);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/assistances/{id}/assistances-beneficiaries")
-     */
+    #[Rest\Delete('/web-app/v1/assistances/{id}/assistances-beneficiaries')]
     public function removeAssistanceBeneficiaries(
         Entity\Assistance $assistanceRoot,
         AssistanceBeneficiariesOperationInputType $inputType
@@ -146,10 +132,7 @@ class AssistanceBeneficiaryController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{id}/assistances-beneficiaries')]
     public function addAssistanceBeneficiaries(
         Entity\Assistance $assistanceRoot,
         AssistanceBeneficiariesOperationInputType $inputType
@@ -190,11 +173,7 @@ class AssistanceBeneficiaryController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-institutions")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{id}/assistances-institutions')]
     public function addOrRemoveAssistanceInstitutions(
         Entity\Assistance $assistanceRoot,
         AddRemoveInstitutionToAssistanceInputType $inputType,
@@ -215,11 +194,7 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/assistances/{id}/assistances-communities")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/assistances/{id}/assistances-communities')]
     public function addOrRemoveAssistanceCommunities(
         Entity\Assistance $assistanceRoot,
         AddRemoveCommunityToAssistanceInputType $inputType,

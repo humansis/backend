@@ -15,15 +15,15 @@ use Enum\RoleType;
 use Repository\RoleRepository;
 use Repository\UserCountryRepository;
 use Repository\UserRepository;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
+#[AsCommand(name: 'app:default-credentials')]
 class CredentialsCommand extends Command
 {
-    protected static $defaultName = 'app:default-credentials';
-
     public function __construct(
         private readonly string $account,
         private readonly string $salt,

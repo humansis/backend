@@ -18,9 +18,7 @@ class AssistanceController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Get("/offline-app/{version}/projects/{id}/distributions")
-     */
+    #[Rest\Get('/offline-app/{version}/projects/{id}/distributions')]
     public function projectAssistances(string $version, Project $project): Response
     {
         if (!in_array($version, ['v1', 'v2'])) {

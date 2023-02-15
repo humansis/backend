@@ -28,11 +28,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/smartcard-deposits")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v1/smartcard-deposits')]
     public function list(Request $request, SmartcardDepositFilterInputType $filter): JsonResponse
     {
         /** @var SmartcardDepositRepository $repository */
@@ -47,9 +43,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/last-smartcard-deposit/{id}")
-     */
+    #[Rest\Get('/offline-app/v1/last-smartcard-deposit/{id}')]
     public function lastSmartcardDeposit(SmartcardDeposit $smartcardDeposit, Request $request): JsonResponse
     {
         $response = $this->json($smartcardDeposit);
@@ -61,9 +55,6 @@ class SmartcardDepositController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Post("/offline-app/v5/smartcards/{serialNumber}/deposit")
-     *
-     *
      * @param Request $request
      * @param string $serialNumber
      * @param DepositInputType $depositInputType
@@ -76,6 +67,7 @@ class SmartcardDepositController extends AbstractOfflineAppController
      * @throws \JsonException
      * @throws ExceptionInterface
      */
+    #[Rest\Post('/offline-app/v5/smartcards/{serialNumber}/deposit')]
     public function deposit(
         Request $request,
         string $serialNumber,

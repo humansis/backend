@@ -8,10 +8,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Institution
- *
- * @ORM\Table(name="institution")
- * @ORM\Entity(repositoryClass="Repository\InstitutionRepository")
  */
+#[ORM\Table(name: 'institution')]
+#[ORM\Entity(repositoryClass: 'Repository\InstitutionRepository')]
 class Institution extends AbstractBeneficiary
 {
     final public const TYPE_SCHOOL = 'school';
@@ -29,36 +28,24 @@ class Institution extends AbstractBeneficiary
         self::TYPE_COMMERCE,
     ];
 
-    /**
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: true)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(name="type", type="string", length=255)
-     */
     #[Assert\Choice(choices: Institution::TYPE_ALL)]
+    #[ORM\Column(name: 'type', type: 'string', length: 255)]
     private ?string $type = null;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Person', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'contact_person_id', referencedColumnName: 'id', nullable: true)]
     private ?\Entity\Person $contact;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Address', cascade: ['persist', 'remove'])]
     private $address;
 
-    /**
-     * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'latitude', type: 'string', length: 45, nullable: true)]
     private ?string $latitude = null;
 
-    /**
-     * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'longitude', type: 'string', length: 45, nullable: true)]
     private ?string $longitude = null;
 
     /**

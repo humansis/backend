@@ -9,28 +9,20 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Entity()
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 class ImportInvalidFile
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
 
-    /**
-     * @ORM\Column(name="filename", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'filename', type: 'string', nullable: false)]
     private ?string $filename = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importInvalidFiles")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Import', inversedBy: 'importInvalidFiles')]
     private ?\Entity\Import $import = null;
 
-    /**
-     * @ORM\Column(name="invalid_queue_count", type="integer", nullable=false)
-     */
+    #[ORM\Column(name: 'invalid_queue_count', type: 'integer', nullable: false)]
     private int $invalidQueueCount = 0;
 
     public function getFilename(): string

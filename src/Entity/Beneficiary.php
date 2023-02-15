@@ -16,58 +16,44 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Beneficiary
- *
- * @ORM\Table(name="beneficiary")
- * @ORM\Entity(repositoryClass="Repository\BeneficiaryRepository")
  */
+#[ORM\Table(name: 'beneficiary')]
+#[ORM\Entity(repositoryClass: 'Repository\BeneficiaryRepository')]
 class Beneficiary extends AbstractBeneficiary
 {
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Person', cascade: ['persist', 'remove'])]
     private $person;
 
-    /**
-     * @ORM\Column(name="status", type="boolean")
-     */
     #[Assert\NotBlank(message: 'The status is required.')]
+    #[ORM\Column(name: 'status', type: 'boolean')]
     private bool $status;
 
-    /**
-     * @ORM\Column(name="residency_status", type="string", length=20)
-     */
     #[Assert\Regex('/^(refugee|IDP|resident|returnee)$/i')]
+    #[ORM\Column(name: 'residency_status', type: 'string', length: 20)]
     private string $residencyStatus;
 
-    /**
-     * @ORM\Column(name="updated_on", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'updated_on', type: 'datetime', nullable: true)]
     private ?DateTime $updatedOn;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="beneficiaries")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household', inversedBy: 'beneficiaries')]
     private ?Household $household = null;
 
     /**
      * @var VulnerabilityCriterion
-     *
-     * @ORM\ManyToMany(targetEntity="Entity\VulnerabilityCriterion", cascade={"persist"})
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\VulnerabilityCriterion', cascade: ['persist'])]
     private $vulnerabilityCriteria;
 
     /**
-     * @ORM\OneToMany(targetEntity="Entity\Smartcard", mappedBy="beneficiary")
-     *
      * @var Collection|Smartcard[]
      */
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\Smartcard')]
     private Collection |array $smartcards;
 
     /**
      * @var ImportBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\ImportBeneficiary', cascade: ['persist', 'remove'])]
     private array| Collection $importBeneficiaries;
 
     /**

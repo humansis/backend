@@ -17,8 +17,8 @@ trait CreatedAt
 {
     /**
      * @var DateTimeInterface
-     * @ORM\Column(name="created_at", type="datetime_immutable", nullable=false)
      */
+    #[ORM\Column(name: 'created_at', type: 'datetime_immutable', nullable: false)]
     protected $createdAt;
 
     public function getCreatedAt(): DateTimeInterface
@@ -32,8 +32,8 @@ trait CreatedAt
 
     /**
      * @throws Exception
-     * @ORM\PrePersist
      */
+    #[ORM\PrePersist]
     public function setCreatedAt()
     {
         $this->createdAt = new DateTimeImmutable();

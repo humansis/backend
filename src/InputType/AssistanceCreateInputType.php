@@ -6,6 +6,7 @@ namespace InputType;
 
 use DateTimeInterface;
 use Enum\ModalityType;
+use Enum\ProductCategoryType;
 use Enum\SelectionCriteriaField;
 use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
@@ -18,23 +19,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['AssistanceCreateInputType', 'Strict', 'AdditionalChecks'])]
 class AssistanceCreateInputType implements InputTypeNullableDenormalizer
 {
-    /**
-     * @Country
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Country]
     private $iso3;
-
-    /**
-     * @Iso8601
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Iso8601]
     private $dateDistribution;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     private $dateExpiration;
 
     #[Assert\Type('string')]
@@ -86,25 +80,11 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     #[Assert\Type('integer')]
     private $threshold;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private $communities;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private $institutions;
 
@@ -142,24 +122,22 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     #[Assert\LessThan(100)]
     private ?int $round = null;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [ProductCategoryType::class, "values"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     private $allowedProductCategoryTypes;
 
-    #[Assert\IsTrue(groups: ['Strict'], message: 'Expiration date must be greater than distribution date')]
+    #[Assert\IsTrue(message: 'Expiration date must be greater than distribution date', groups: ['Strict'])]
     public function isExpirationDateValid(): bool
     {
         return $this->getDateExpiration() == null || $this->getDateExpiration() >= $this->getDateDistribution();
     }
 
-    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'Please add BNF has valid card criterion for each group')]
+    #[Assert\IsTrue(message: 'Please add BNF has valid card criterion for each group', groups: ['AdditionalChecks'])]
     public function isValidSmartcardForRemoteDistribution(): bool
     {
         if ($this->remoteDistributionAllowed) {
@@ -189,7 +167,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.')]
+    #[Assert\IsTrue(message: 'remoteDistributionAllowed must not be null if distribution is for smartcards. Null otherwise.', groups: ['AdditionalChecks'])]
     public function isNotNullRemoteDistributionWhenSmartcard(): bool
     {
         /** @var CommodityInputType $commodity */
@@ -202,7 +180,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->remoteDistributionAllowed === null;
     }
 
-    #[Assert\IsTrue(groups: ['AdditionalChecks'], message: 'Assistance cannot have more than one smartcard commodity.')]
+    #[Assert\IsTrue(message: 'Assistance cannot have more than one smartcard commodity.', groups: ['AdditionalChecks'])]
     public function hasMaxOneSmartcardCommodity(): bool
     {
         $smartcardCommodities = array_filter($this->commodities, fn(CommodityInputType $commodity) => $commodity->getModalityType() === ModalityType::SMART_CARD);

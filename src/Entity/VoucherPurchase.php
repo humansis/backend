@@ -11,52 +11,40 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Voucher purchase.
- *
- * @ORM\Table(name="voucher_purchase")
- * @ORM\Entity(repositoryClass="Repository\VoucherPurchaseRepository")
  */
+#[ORM\Table(name: 'voucher_purchase')]
+#[ORM\Entity(repositoryClass: 'Repository\VoucherPurchaseRepository')]
 class VoucherPurchase
 {
-    /**
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullVoucher'])]
+    #[ORM\ManyToOne(targetEntity: '\Entity\Vendor')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\Vendor $vendor = null;
 
     /**
      * @var Collection|Voucher[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Voucher", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      */
+    #[ORM\OneToMany(mappedBy: 'voucherPurchase', targetEntity: 'Entity\Voucher', cascade: ['persist'], orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection|array $vouchers;
 
     /**
      * @var Collection|VoucherPurchaseRecord[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
+    #[ORM\OneToMany(mappedBy: 'voucherPurchase', targetEntity: 'Entity\VoucherPurchaseRecord', cascade: ['persist'], orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection|array $records;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(name="used_at", type="datetime", nullable=true)
      */
     #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'used_at', type: 'datetime', nullable: true)]
     private $createdAt;
 
     protected function __construct()

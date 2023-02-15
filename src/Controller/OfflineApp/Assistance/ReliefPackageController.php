@@ -19,11 +19,11 @@ class ReliefPackageController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Patch("/offline-app/v1/assistances/relief-packages/distribute")
-     * @ParamConverter(class="InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
      */
+    #[Rest\Patch('/offline-app/v1/assistances/relief-packages/distribute')]
+    #[ParamConverter('packages', class: 'InputType\Assistance\DistributeReliefPackagesInputType[]', converter: 'input_type_converter')]
     public function distributePackages(
         array $packages
     ): Response {

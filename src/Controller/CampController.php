@@ -17,11 +17,7 @@ class CampController extends AbstractController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/web-app/v1/camps")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/camps')]
     public function camps(Request $request, CampFilterInputType $filterInputType): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');
@@ -37,21 +33,13 @@ class CampController extends AbstractController
         return $this->json(new Paginator($beneficiaries));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/camps/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/camps/{id}')]
     public function camp(Camp $camp): JsonResponse
     {
         return $this->json($camp);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/locations/{id}/camps")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/locations/{id}/camps')]
     public function campsByLocation(Location $location): JsonResponse
     {
         $camps = $this->managerRegistry->getRepository(Camp::class)->findBy(['location' => $location]);

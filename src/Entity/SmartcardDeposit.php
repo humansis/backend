@@ -12,89 +12,65 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Smartcard deposit.
- *
- * @ORM\Table(name="smartcard_deposit", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="unique_deposit_hash", columns={"hash"})
- * })
- * @ORM\Entity(repositoryClass="Repository\SmartcardDepositRepository")
- * @ORM\HasLifecycleCallbacks
  */
+#[ORM\Table(name: 'smartcard_deposit')]
+#[ORM\UniqueConstraint(name: 'unique_deposit_hash', columns: ['hash'])]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardDepositRepository')]
+#[ORM\HasLifecycleCallbacks]
 class SmartcardDeposit
 {
     use CreatedAt;
 
-    /**
-     *
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Smartcard", inversedBy="deposites")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Smartcard', inversedBy: 'deposites')]
+    #[ORM\JoinColumn(nullable: false)]
     private Smartcard $smartcard;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(nullable=false)
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
+    #[ORM\JoinColumn(nullable: false)]
     private User $distributedBy;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(name="distributed_at", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'distributed_at', type: 'datetime', nullable: true)]
     private DateTime $distributedAt;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage", inversedBy="smartcardDeposits")
-     * @ORM\JoinColumn(name="relief_package_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance\ReliefPackage', inversedBy: 'smartcardDeposits')]
+    #[ORM\JoinColumn(name: 'relief_package_id')]
     private ReliefPackage $reliefPackage;
 
     /**
      * @var float
-     *
-     * @ORM\Column(name="value", type="decimal", precision=10, scale=2, nullable=false)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'value', type: 'decimal', precision: 10, scale: 2, nullable: false)]
     private float $value;
 
     /**
      * @var float
-     *
-     * @ORM\Column(name="balance", type="decimal", precision=10, scale=2, nullable=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'balance', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $balance;
 
-    /**
-     * @ORM\Column(name="suspicious", type="boolean", options={"default": false})
-     */
+    #[ORM\Column(name: 'suspicious', type: 'boolean', options: ['default' => false])]
     private bool $suspicious;
 
     /**
      * @var array|null
-     *
-     * @ORM\Column(name="message", type="simple_array", nullable=true, options={"default": null})
      */
+    #[ORM\Column(name: 'message', type: 'simple_array', nullable: true, options: ['default' => null])]
     private ?array $message;
 
-    /**
-     * @ORM\Column(name="hash", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'hash', type: 'string', nullable: false)]
     private string $hash;
 
     public function __construct(

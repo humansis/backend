@@ -16,18 +16,14 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class HouseholdCodelistController extends AbstractController
 {
     public function __construct(private readonly CodeListService $codeListService)
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/livelihoods")
-     */
+    #[Rest\Get('/web-app/v1/households/livelihoods')]
     public function getLivelihoods(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(Livelihood::values());
@@ -35,9 +31,7 @@ class HouseholdCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/assets")
-     */
+    #[Rest\Get('/web-app/v1/households/assets')]
     public function getAssets(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(HouseholdAssets::values());
@@ -45,9 +39,7 @@ class HouseholdCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/support-received-types")
-     */
+    #[Rest\Get('/web-app/v1/households/support-received-types')]
     public function supportReceivedTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(HouseholdSupportReceivedType::values());
@@ -55,9 +47,7 @@ class HouseholdCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/shelter-statuses")
-     */
+    #[Rest\Get('/web-app/v1/households/shelter-statuses')]
     public function getShelterStatuses(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(HouseholdShelterStatus::values());
@@ -65,9 +55,7 @@ class HouseholdCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/locations/types")
-     */
+    #[Rest\Get('/web-app/v1/households/locations/types')]
     public function getLocationTypes(): JsonResponse
     {
         $data = $this->codeListService->mapArray(HouseholdLocation::LOCATION_TYPES);
@@ -75,9 +63,7 @@ class HouseholdCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/referrals/types")
-     */
+    #[Rest\Get('/web-app/v1/households/referrals/types')]
     public function referralTypes(): JsonResponse
     {
         $data = $this->codeListService->mapArray(Referral::REFERRALTYPES);

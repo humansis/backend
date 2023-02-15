@@ -6,9 +6,7 @@ namespace Component\Assistance\Scoring\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
+#[\Attribute]
 final class Scoring extends Constraint
 {
     public function getTargets(): string|array

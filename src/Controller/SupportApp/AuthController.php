@@ -9,9 +9,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Profiler\Profiler;
 
-/**
- * @Rest\Route("/support-app/v1/login")
- */
+#[Rest\Route('/support-app/v1/login')]
 class AuthController extends AbstractController
 {
     public function __construct(private readonly JWTTokenManagerInterface $jwtManager)
@@ -19,11 +17,10 @@ class AuthController extends AbstractController
     }
 
     /**
-     * @Rest\Post
-     *
      *
      * @return JsonResponse
      */
+    #[Rest\Post]
     public function getTokenUser(?Profiler $profiler)
     {
         $profiler?->disable();

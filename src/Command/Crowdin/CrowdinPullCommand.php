@@ -7,6 +7,7 @@ namespace Command\Crowdin;
 use JsonException;
 use Exception\CrowdinBuildTimeoutException;
 use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,12 +29,11 @@ use ZipArchive;
  * @deprecated use official crowdin package after upgrading symfony to 6.x
  * https://symfony.com/doc/current/translation.html#translation-providers
  */
+#[AsCommand(name: 'crowdin:pull')]
 class CrowdinPullCommand extends Command
 {
     use CrowdinRequestTrait;
     use ZipError;
-
-    protected static $defaultName = 'crowdin:pull';
 
 
     //If set on true, the source english files will be downloaded from Crowdin.

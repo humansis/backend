@@ -25,11 +25,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v2/assistances/{id}/assistances-beneficiaries')]
     public function assistanceBeneficiariesByAssistance(
         Request $request,
         Assistance $assistance,
@@ -52,11 +48,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/offline-app/{version}/assistances/{id}/targets/beneficiaries")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/{version}/assistances/{id}/targets/beneficiaries')]
     public function beneficiaryTargetByAssistance(
         string $version,
         Request $request,
@@ -95,11 +87,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-institutions")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v1/assistances/{id}/assistances-institutions')]
     public function assistanceInstitutionsByAssistance(
         Request $request,
         Assistance $assistance,
@@ -128,9 +116,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-communities")
-     */
+    #[Rest\Get('/offline-app/v1/assistances/{id}/assistances-communities')]
     public function assistanceCommunitiesByAssistance(
         Request $request,
         Assistance $assistance,

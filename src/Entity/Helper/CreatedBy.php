@@ -12,10 +12,9 @@ trait CreatedBy
 {
     /**
      * @var User|null
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(name="created_by_user_id")
      */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
+    #[ORM\JoinColumn(name: 'created_by_user_id')]
     private ?User $createdBy;
 
     public function getCreatedBy(): ?User

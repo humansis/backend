@@ -18,16 +18,11 @@ use InvalidArgumentException;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-/**
- * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
- * @ORM\InheritanceType(value="SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="validationType", type="string")
- * @ORM\DiscriminatorMap({
- *     "Deposits"="\Entity\SynchronizationBatch\Deposits",
- *     "Purchases"="\Entity\SynchronizationBatch\Purchases"
- * })
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: '\Repository\SynchronizationBatchRepository')]
+#[ORM\InheritanceType(value: 'SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'validationType', type: 'string')]
+#[ORM\DiscriminatorMap(['Deposits' => '\Entity\SynchronizationBatch\Deposits', 'Purchases' => '\Entity\SynchronizationBatch\Purchases'])]
+#[ORM\HasLifecycleCallbacks]
 abstract class SynchronizationBatch
 {
     use StandardizedPrimaryKey;
@@ -35,26 +30,16 @@ abstract class SynchronizationBatch
     use CreatedAt;
     use CreatedBy;
 
-    /**
-     * @ORM\Column(name="state", type="enum_synchronization_batch_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_synchronization_batch_state', nullable: false)]
     private string $state = SynchronizationBatchState::UPLOADED;
 
-    /**
-     * serialized ConstraintViolationListInterface[]
-     *
-     * @ORM\Column(name="violations", type="json", nullable=true)
-     */
+    #[ORM\Column(name: 'violations', type: 'json', nullable: true)]
     private array | null $violations = null;
 
-    /**
-     * @ORM\Column(name="validated_at", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'validated_at', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $validatedAt = null;
 
-    /**
-     * @ORM\Column(name="request_data", type="json", nullable=false)
-     */
+    #[ORM\Column(name: 'request_data', type: 'json', nullable: false)]
     private array $requestData;
 
     /**

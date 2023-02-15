@@ -13,107 +13,98 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
- *
- * @ORM\Table(name="`user")
- * @ORM\Entity(repositoryClass="Repository\UserRepository")
  */
+#[ORM\Table(name: '`user')]
+#[ORM\Entity(repositoryClass: 'Repository\UserRepository')]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     use StandardizedPrimaryKey;
 
     /**
      * @var string
-     * @ORM\Column(name="username", type="string")
      */
     #[Assert\NotBlank(message: "Username can't be empty")]
     #[Assert\Length(min: 2, max: 50, minMessage: 'Your username must be at least {{ limit }} characters long', maxMessage: 'Your username cannot be longer than {{ limit }} characters')]
+    #[ORM\Column(name: 'username', type: 'string')]
     protected $username;
 
     /**
      * @var string
-     * @ORM\Column(name="password", type="string", nullable=false)
      */
+    #[ORM\Column(name: 'password', type: 'string', nullable: false)]
     protected $password;
 
     /**
      * The salt to use for hashing.
      *
      * @var string|null
-     * @ORM\Column(name="salt", type="string", nullable=true)
      */
+    #[ORM\Column(name: 'salt', type: 'string', nullable: true)]
     protected $salt;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\UserCountry", mappedBy="user", cascade={"persist","remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserCountry', cascade: ['persist', 'remove'])]
     private $countries;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\UserProject", mappedBy="user", cascade={"remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserProject', cascade: ['remove'])]
     private $projects;
 
     /**
      * @var string
-     * @ORM\Column(name="email", type="string")
      */
     #[Assert\NotBlank(message: "Email can't be empty")]
+    #[ORM\Column(name: 'email', type: 'string')]
     protected $email;
 
     /**
      * @var bool
-     * @ORM\Column(name="enabled", type="boolean")
      */
+    #[ORM\Column(name: 'enabled', type: 'boolean')]
     protected $enabled;
 
     /**
      * @var Collection|Role[]
-     * @ORM\ManyToMany(targetEntity="Entity\Role", inversedBy="users")
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Role', inversedBy: 'users')]
     protected $roles;
 
     /**
      * @var Transaction
-     * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="sentBy")
      */
+    #[ORM\OneToMany(mappedBy: 'sentBy', targetEntity: 'Entity\Transaction')]
     private $transactions;
 
-    /**
-     * @ORM\OneToOne(targetEntity="\Entity\Vendor", mappedBy="user", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true, onDelete="CASCADE")
-     */
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: '\Entity\Vendor', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private $vendor;
 
     /**
      * @var string
-     * @ORM\Column(name="language", type="string", length=255, nullable=true)
      */
+    #[ORM\Column(name: 'language', type: 'string', length: 255, nullable: true)]
     protected $language;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="phonePrefix", type="string", nullable=true)
      */
+    #[ORM\Column(name: 'phonePrefix', type: 'string', nullable: true)]
     protected $phonePrefix;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="phoneNumber", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'phoneNumber', type: 'integer', nullable: true)]
     protected $phoneNumber;
 
     /**
      * @var bool
-     * @ORM\Column(name="changePassword", type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(name: 'changePassword', type: 'boolean', options: ['default' => 0])]
     protected $changePassword = false;
 
     /**
      * @var bool
-     * @ORM\Column(name="twoFactorAuthentication", type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(name: 'twoFactorAuthentication', type: 'boolean', options: ['default' => 0])]
     protected $twoFactorAuthentication = false;
 
     public function __construct()

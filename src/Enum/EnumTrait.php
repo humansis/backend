@@ -60,8 +60,6 @@ trait EnumTrait
     }
 
     /**
-     *
-     *
      * @throws EnumApiValueNoFoundException
      */
     public static function valueToAPI(string|int|bool $value): string|int|bool

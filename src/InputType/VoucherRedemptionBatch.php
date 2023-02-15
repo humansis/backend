@@ -9,12 +9,9 @@ class VoucherRedemptionBatch implements InputTypeInterface
 {
     /**
      * @var int[]
-     *
-     * @Assert\All({
-     *     @Assert\Type("int")
-     * })
      */
     #[Assert\NotBlank]
+    #[Assert\All([new Assert\Type('int')])]
     private $vouchers;
 
     public function getVouchers(): array

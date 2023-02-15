@@ -16,92 +16,58 @@ use Entity\Vendor;
 
 /**
  * Read only entity.
- *
- * @ORM\Entity(repositoryClass="Repository\PurchasedItemRepository", readOnly=true)
- * @ORM\Table(name="view_purchased_item")
  */
+#[ORM\Table(name: 'view_purchased_item')]
+#[ORM\Entity(repositoryClass: 'Repository\PurchasedItemRepository', readOnly: true)]
 class PurchasedItem
 {
-    /**
-     *
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     */
+    #[ORM\Column(type: 'string')]
+    #[ORM\Id]
     private string $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Project")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project')]
     private \Entity\Project $project;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private \Entity\Location $location;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\AbstractBeneficiary")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\AbstractBeneficiary')]
     private \Entity\AbstractBeneficiary $beneficiary;
 
-    /**
-     * @ORM\Column(name="bnf_type", type="string")
-     */
+    #[ORM\Column(name: 'bnf_type', type: 'string')]
     private string $beneficiaryType;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance')]
     private \Entity\Assistance $assistance;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Product")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Product')]
     private \Entity\Product $product;
 
-    /**
-     * @ORM\Column(name="invoice_number", type="string")
-     */
+    #[ORM\Column(name: 'invoice_number', type: 'string')]
     private ?string $invoiceNumber = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Vendor")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Vendor')]
     private \Entity\Vendor $vendor;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Commodity")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Commodity')]
     private \Entity\Commodity $commodity;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     private string $modalityType;
 
-    /**
-     * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'date_distribution', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $dateDistribution = null;
 
-    /**
-     * @ORM\Column(name="date_purchase", type="datetime")
-     */
+    #[ORM\Column(name: 'date_purchase', type: 'datetime')]
     private \DateTimeInterface $datePurchase;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $carrierNumber = null;
 
-    /**
-     * @ORM\Column(name="value", type="decimal")
-     */
+    #[ORM\Column(name: 'value', type: 'decimal')]
     private $value;
 
-    /**
-     * @ORM\Column(name="currency", type="string")
-     */
+    #[ORM\Column(name: 'currency', type: 'string')]
     private $currency;
 
     public function getId(): string

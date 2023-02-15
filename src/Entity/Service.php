@@ -10,36 +10,29 @@ use JsonSerializable;
 
 /**
  * Service
- *
- * @ORM\Table(name="service")
- * @ORM\Entity(repositoryClass="Repository\ServiceRepository")
  */
+#[ORM\Table(name: 'service')]
+#[ORM\Entity(repositoryClass: 'Repository\ServiceRepository')]
 class Service implements JsonSerializable
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=255)
-     */
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
     /**
      * @var json
-     *
-     * @ORM\Column(name="parameters", type="json")
      */
+    #[ORM\Column(name: 'parameters', type: 'json')]
     private $parameters;
 
-    /**
-     * @ORM\Column(name="country", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'country', type: 'string', length: 255, nullable: true)]
     private ?string $country;
 
     /**
      * @var OrganizationServices $organizationServices
-     *
-     * @ORM\OneToMany(targetEntity="Entity\OrganizationServices", mappedBy="service", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'service', targetEntity: 'Entity\OrganizationServices', cascade: ['remove'])]
     private $organizationServices;
 
     /**

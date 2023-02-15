@@ -15,41 +15,29 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     #[Assert\NotBlank]
     protected $justification;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $documentNumbers = [];
 
-    /**
-     * @Enum(enumClass="Enum\NationalIdType")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\NationalIdType",
+    ])]
     protected $documentType;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('int', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $beneficiaryIds = [];
 
-    #[Assert\IsTrue(groups: ['Strict'], message: 'Only one array can have values.')]
+    #[Assert\IsTrue(message: 'Only one array can have values.', groups: ['Strict'])]
     public function isOneOfArraysNotEmpty(): bool
     {
         return (empty($this->beneficiaryIds) && !empty($this->documentNumbers))
             || (!empty($this->beneficiaryIds) && empty($this->documentNumbers));
     }
 
-    #[Assert\IsTrue(groups: ['Strict'], message: 'You must choose type of ID when using document numbers')]
+    #[Assert\IsTrue(message: 'You must choose type of ID when using document numbers', groups: ['Strict'])]
     public function hasDocumentTypeWithPresentDocumentNumbers(): bool
     {
         if (empty($this->documentNumbers)) {

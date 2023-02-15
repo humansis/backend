@@ -10,11 +10,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class DivisionGroupInputType implements InputTypeInterface
 {
     #[Assert\Type('int')]
-    #[Assert\Range(min: 1, max: 1000, notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.')]
+    #[Assert\Range(notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.', min: 1, max: 1000)]
     private ?int $rangeFrom = null;
 
     #[Assert\Type(type: 'int')]
-    #[Assert\Range(min: 1, max: 1000, notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.')]
+    #[Assert\Range(notInRangeMessage: 'Supported range is from {{ min }} to {{ max }} members.', min: 1, max: 1000)]
     #[Assert\NotBlank(allowNull: true)]
     private ?int $rangeTo = null;
 

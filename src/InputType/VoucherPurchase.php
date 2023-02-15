@@ -8,26 +8,23 @@ use Validator\Constraints\Iso8601;
 
 class VoucherPurchase
 {
-    /**
-     * @Assert\All({
-     *      @Assert\Collection(fields={
-     *          "id" = @Assert\Type("int"),
-     *          "quantity" = @Assert\Type("numeric"),
-     *          "value" = @Assert\Type("numeric")
-     *      })
-     * })
-     */
+    #[Assert\All([
+        new Assert\Collection(
+            fields: [
+                'id' => new Assert\Type('int'),
+                'quantity' => new Assert\Type('numeric'),
+                'value' => new Assert\Type('numeric')
+            ]
+        )
+    ])]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private ?array $products = null;
 
     /**
      * @var int[]
-     *
-     * @Assert\All({
-     *     @Assert\Type("int")
-     * })
      */
+    #[Assert\All([new Assert\Type('int')])]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private $vouchers;
@@ -39,10 +36,8 @@ class VoucherPurchase
     #[Assert\NotBlank]
     private ?int $vendorId = null;
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotBlank]
+    #[Iso8601]
     private ?DateTime $createdAt = null;
 
     public function getProducts(): array

@@ -10,9 +10,8 @@ trait CountryDependent
 {
     /**
      * @var string
-     *
-     * @ORM\Column(name="iso3", type="string", nullable=false, length=3, options={"fixed" = true})
      */
+    #[ORM\Column(name: 'iso3', type: 'string', length: 3, nullable: false, options: ['fixed' => true])]
     private string $countryIso3;
 
     public function getCountryIso3(): string

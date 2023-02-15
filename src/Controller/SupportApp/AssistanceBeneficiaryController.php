@@ -18,9 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-/**
- * @Rest\Route("/support-app/v1/assistances/{id}/assistances-beneficiaries")
- */
+#[Rest\Route('/support-app/v1/assistances/{id}/assistances-beneficiaries')]
 class AssistanceBeneficiaryController extends AbstractController
 {
     final public const MAX_ALLOWED_OPERATIONS = 5000;
@@ -30,11 +28,10 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Put
-     *
      *
      * @throws JsonException
      */
+    #[Rest\Put]
     public function addAssistanceBeneficiaries(
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
@@ -65,11 +62,7 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json($output, Response::HTTP_OK);
     }
 
-    /**
-     * @Rest\Delete
-     *
-     *
-     */
+    #[Rest\Delete]
     public function removeAssistanceBeneficiaries(
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType

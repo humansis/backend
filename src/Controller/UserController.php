@@ -35,11 +35,7 @@ class UserController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users/exports')]
     public function exports(Request $request): Response
     {
         $type = $request->query->get('type');
@@ -48,21 +44,13 @@ class UserController extends AbstractController
         return $this->exportTableService->export($exportableTable, 'users', $type);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users/{id}')]
     public function item(User $object): JsonResponse
     {
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users')]
     public function list(
         UserOrderInputType $userOderInputType,
         UserFilterInputType $userFilterInputType,
@@ -77,11 +65,10 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/users/initialize")
-     *
      *
      * @throws Exception
      */
+    #[Rest\Post('/web-app/v1/users/initialize')]
     public function initialize(UserInitializeInputType $inputType): JsonResponse
     {
         $initializedUser = $this->userService->initialize($inputType);
@@ -89,11 +76,7 @@ class UserController extends AbstractController
         return $this->json($initializedUser);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/users/{id}")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/users/{id}')]
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
         $user = $this->userService->create($user, $inputType);
@@ -101,11 +84,7 @@ class UserController extends AbstractController
         return $this->json($user);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/users/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/users/{id}')]
     public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
         $updatedUser = $this->userService->update($user, $inputType);
@@ -113,11 +92,7 @@ class UserController extends AbstractController
         return $this->json($updatedUser);
     }
 
-    /**
-     * @Rest\Patch("/web-app/v1/users/{id}")
-     *
-     *
-     */
+    #[Rest\Patch('/web-app/v1/users/{id}')]
     public function patch(User $user, Request $request): JsonResponse
     {
         if ($request->request->has('password')) {
@@ -156,11 +131,7 @@ class UserController extends AbstractController
         return $this->json($user);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/users/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/users/{id}')]
     public function delete(User $user): JsonResponse
     {
         $this->userService->remove($user);
@@ -168,11 +139,7 @@ class UserController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users/salt/{username}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users/salt/{username}')]
     public function getSalt(string $username): JsonResponse
     {
         $salt = $this->userService->getSalt($username);

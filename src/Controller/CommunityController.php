@@ -32,11 +32,7 @@ class CommunityController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/communities/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/communities/{id}')]
     public function item(Community $object): JsonResponse
     {
         if (true === $object->getArchived()) {
@@ -46,11 +42,7 @@ class CommunityController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/communities")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/communities')]
     public function list(
         Request $request,
         CommunityOrderInputType $communityOrderInputType,
@@ -74,11 +66,7 @@ class CommunityController extends AbstractController
         return $this->json($communitiesPerCountry);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/communities")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/communities')]
     public function create(CommunityCreateInputType $inputType): JsonResponse
     {
         $community = $this->communityService->create($inputType);
@@ -86,11 +74,7 @@ class CommunityController extends AbstractController
         return $this->json($community);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/communities/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/communities/{id}')]
     public function update(Community $community, CommunityUpdateInputType $inputType): JsonResponse
     {
         $object = $this->communityService->update($community, $inputType);
@@ -98,11 +82,7 @@ class CommunityController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/communities/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/communities/{id}')]
     public function delete(Community $project): JsonResponse
     {
         $this->communityService->remove($project);
@@ -110,11 +90,7 @@ class CommunityController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/communities")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/communities')]
     public function communitiesByProject(Project $project): JsonResponse
     {
         $communities = $this->managerRegistry->getRepository(Community::class)->findByProject($project);

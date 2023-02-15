@@ -27,11 +27,10 @@ class VoucherController extends AbstractVendorAppController
      * Provide purchase of goods for vouchers.
      * If vendor scan some vouchers and sell some goods for them, this request will send.
      *
-     * @Rest\Post("/vendor-app/v1/vouchers/purchase")
-     *
      *
      * @return Response
      */
+    #[Rest\Post('/vendor-app/v1/vouchers/purchase')]
     public function purchase(Request $request)
     {
         $data = $this->serializer->deserialize($request->getContent(), VoucherPurchase::class . '[]', 'json');

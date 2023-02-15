@@ -10,15 +10,16 @@ use InvalidArgumentException;
 use Component\WingMoney\ImportService;
 use Component\WingMoney\ReportParser;
 use Component\WingMoney\ValueObject\ReportEntry;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Entity\User;
 
+#[AsCommand(name: 'app:wing-money:import')]
 class WingMoneyReportImportCommand extends Command
 {
-    protected static $defaultName = 'app:wing-money:import';
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly ReportParser $reportParser,

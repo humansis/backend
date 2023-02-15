@@ -14,43 +14,31 @@ use InvalidArgumentException;
 
 /**
  * Information about duplicity between queue record and household.
- *
- * @ORM\Entity(repositoryClass="\Repository\ImportHouseholdDuplicityRepository")
  */
+#[ORM\Entity(repositoryClass: '\Repository\ImportHouseholdDuplicityRepository')]
 class ImportHouseholdDuplicity
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportQueue', inversedBy: 'importBeneficiaryDuplicities')]
     private ImportQueue $ours;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household')]
     private Household $theirs;
 
     /**
      * @var ImportBeneficiaryDuplicity[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="householdDuplicity", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'householdDuplicity', targetEntity: 'Entity\ImportBeneficiaryDuplicity', cascade: ['persist', 'remove'])]
     private Collection $beneficiaryDuplicities;
 
-    /**
-     * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_import_duplicity_state', nullable: false)]
     private string $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="importBeneficiaryDuplicities")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User', inversedBy: 'importBeneficiaryDuplicities')]
     private ?User $decideBy = null;
 
-    /**
-     * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
-     */
+    #[ORM\Column(name: 'decide_at', type: 'datetimetz', nullable: true)]
     private ?DateTimeInterface $decideAt = null;
 
     public function __construct(

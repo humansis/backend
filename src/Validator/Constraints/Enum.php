@@ -6,19 +6,22 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class Enum extends Constraint
 {
-    public $message = 'Provided value {{ providedValue }} is not allowed for parameter "{{ parameter }}". Allowed values are: [ {{ allowedValues }} ].';
+    public string $message = 'Provided value {{ providedValue }} is not allowed for parameter "{{ parameter }}". Allowed values are: [ {{ allowedValues }} ].';
 
-    public $enumClass;
+    public string $enumClass;
+    public bool $includeAPIAlternatives = true;
 
-    public $includeAPIAlternatives = true;
+    public mixed $array = false;
 
-    public $array = false;
+    public function __construct(
+        mixed $options = null,
+        array $groups = null
+    ) {
+        parent::__construct($options, $groups);
+    }
 
     /**
      * @return string[]

@@ -23,9 +23,7 @@ class SmartcardRegisterInputType implements InputTypeInterface
     #[Assert\Type(type: 'int')]
     private int $beneficiaryId;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     private ?DateTime $createdAt;
 
     public static function create(string $serialNumber, int $beneficiaryId, DateTime $createdAt): self

@@ -47,11 +47,11 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
     }
 
     /**
-     * @Rest\Post("/export", name="export_data")
      *
      * @return Response
      * @deprecated export action must be refactorized. Please make own export action instead.
      */
+    #[Rest\Post('/export', name: 'export_data')]
     public function exportAction(Request $request)
     {
         try {
@@ -165,9 +165,7 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
         }
     }
 
-    /**
-     * @Rest\Get("/export/distribution", name="export_distribution")
-     */
+    #[Rest\Get('/export/distribution', name: 'export_distribution')]
     public function exportDistributionToPdf(Request $request): Response
     {
         if (!$request->query->has('id')) {

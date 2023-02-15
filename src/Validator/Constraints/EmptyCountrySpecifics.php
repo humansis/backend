@@ -6,16 +6,13 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class EmptyCountrySpecifics extends Constraint
 {
     public string $message = 'This value should be empty.';
 
-    public function __construct($options = null)
+    public function __construct(mixed $options = null, array $groups = null)
     {
-        parent::__construct($options);
+        parent::__construct($options, $groups);
     }
 }

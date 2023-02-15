@@ -13,54 +13,41 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Commodity
- *
- * @ORM\Table(name="commodity")
- * @ORM\Entity(repositoryClass="Repository\CommodityRepository")
  */
+#[ORM\Table(name: 'commodity')]
+#[ORM\Entity(repositoryClass: 'Repository\CommodityRepository')]
 class Commodity
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
 
-    /**
-     * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'modality_type', type: 'enum_modality_type', nullable: true)]
     private string|null $modalityType = null;
 
-    /**
-     * @ORM\Column(name="unit", type="string", length=45)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'unit', type: 'string', length: 45)]
     private string $unit;
 
-    /**
-     * @ORM\Column(name="value", type="float")
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'value', type: 'float')]
     private float $value;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="commodities")
-     * @ORM\JoinColumn(name="assistance_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance', inversedBy: 'commodities')]
+    #[ORM\JoinColumn(name: 'assistance_id')]
     private ?\Entity\Assistance $assistance = null;
 
-    /**
-     * @ORM\Column(name="description", type="string",length=511, nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'description', type: 'string', length: 511, nullable: true)]
     private string|null $description = null;
 
-    /**
-     * @ORM\Column(name="division", type="enum_assitance_commodity_division", nullable=true)
-     */
+    #[ORM\Column(name: 'division', type: 'enum_assitance_commodity_division', nullable: true)]
     private string|null $division = null;
 
     /**
      * @var DivisionGroup[]|Collection
-     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", fetch="EAGER", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'commodity', targetEntity: 'Entity\DivisionGroup', cascade: ['persist', 'remove'], fetch: 'EAGER')]
     private Collection |array|null $divisionGroups = null;
 
     /**

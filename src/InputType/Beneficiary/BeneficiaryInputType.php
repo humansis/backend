@@ -21,11 +21,9 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\Type('integer')]
     private ?int $id = null;
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Iso8601]
     private $dateOfBirth;
 
     #[Assert\Type('string')]
@@ -56,10 +54,10 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\Length(max: 255)]
     private $enParentsName;
 
-    /**
-     * @Enum(enumClass="Enum\PersonGender")
-     */
     #[Assert\NotNull]
+    #[Enum(options: [
+        'enumClass' => "Enum\PersonGender",
+    ])]
     private $gender;
 
     /**
@@ -76,10 +74,10 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\Valid]
     private array $phones = [];
 
-    /**
-     * @Enum(enumClass="Enum\ResidencyStatus")
-     */
     #[Assert\NotNull]
+    #[Enum(options: [
+        'enumClass' => "Enum\ResidencyStatus",
+    ])]
     private $residencyStatus;
 
     #[Assert\Choice(callback: ['\\' . Referral::class, 'types'], strict: true, groups: ['Strict'])]
@@ -90,21 +88,14 @@ class BeneficiaryInputType implements InputTypeInterface
     #[Assert\Length(max: 255)]
     private $referralComment;
 
-    /**
-     * @Enum(enumClass="Enum\HouseholdHead")
-     */
     #[Assert\NotNull]
+    #[Enum(options: [
+        'enumClass' => "Enum\HouseholdHead",
+    ])]
     private $isHead;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Enum(enumClass="Enum\VulnerabilityCriteria")
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
     #[Assert\Type('array')]
+    #[Assert\All(constraints: [new Enum(options: ['enumClass' => "Enum\VulnerabilityCriteria"])], groups: ['Strict'])]
     private array $vulnerabilityCriteria = [];
 
     /**

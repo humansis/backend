@@ -24,8 +24,6 @@ use Entity\Vendor;
 class SmartcardPurchaseRepository extends EntityRepository
 {
     /**
-     *
-     *
      * @throws NonUniqueResultException
      */
     public function countPurchases(Vendor $vendor): PurchaseSummary

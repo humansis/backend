@@ -7,37 +7,26 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Phone
- *
- * @ORM\Table(name="phone")
- * @ORM\Entity(repositoryClass="Repository\PhoneRepository")
  */
+#[ORM\Table(name: 'phone')]
+#[ORM\Entity(repositoryClass: 'Repository\PhoneRepository')]
 class Phone
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="number", type="string", length=45)
-     */
+    #[ORM\Column(name: 'number', type: 'string', length: 45)]
     private string $number;
 
-    /**
-     * @ORM\Column(name="type", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'type', type: 'string', length: 45, nullable: true)]
     private ?string $type = null;
 
-    /**
-     * @ORM\Column(name="prefix", type="string", length=45)
-     */
+    #[ORM\Column(name: 'prefix', type: 'string', length: 45)]
     private string $prefix;
 
-    /**
-     * @ORM\Column(name="proxy", type="boolean")
-     */
+    #[ORM\Column(name: 'proxy', type: 'boolean')]
     private bool $proxy = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="phones")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Person', inversedBy: 'phones')]
     private ?\Entity\Person $person = null;
 
     /**

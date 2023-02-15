@@ -7,27 +7,20 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * UserProject
- *
- * @ORM\Table(name="user_project")
- * @ORM\Entity(repositoryClass="Repository\UserProjectRepository")
  */
+#[ORM\Table(name: 'user_project')]
+#[ORM\Entity(repositoryClass: 'Repository\UserProjectRepository')]
 class UserProject
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="projects", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User', cascade: ['persist'], inversedBy: 'projects')]
     private ?\Entity\User $user = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="usersProject")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project', inversedBy: 'usersProject')]
     private ?\Entity\Project $project = null;
 
-    /**
-     * @ORM\Column(name="rights", type="string")
-     */
+    #[ORM\Column(name: 'rights', type: 'string')]
     private string $rights;
 
     /**

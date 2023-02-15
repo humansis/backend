@@ -10,14 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['SmartcardInvoiceCreateInputType', 'Strict'])]
 class SmartcardInvoiceCreateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private array $purchaseIds;
 

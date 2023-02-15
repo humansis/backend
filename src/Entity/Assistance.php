@@ -21,207 +21,144 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Assistance
- *
- * @ORM\Table(name="assistance")
- * @ORM\Entity(repositoryClass="Repository\AssistanceRepository")
  */
+#[ORM\Table(name: 'assistance')]
+#[ORM\Entity(repositoryClass: 'Repository\AssistanceRepository')]
 class Assistance implements ExportableInterface
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="assistance_type", type="enum_assistance_type")
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'FullBooklet', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'assistance_type', type: 'enum_assistance_type')]
     private string $assistanceType = AssistanceType::DISTRIBUTION;
 
-    /**
-     *
-     * @ORM\Column(name="name", type="string", length=45)
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'FullBooklet', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'name', type: 'string', length: 45)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="UpdatedOn", type="datetime")
-     */
+    #[ORM\Column(name: 'UpdatedOn', type: 'datetime')]
     private DateTimeInterface $updatedOn;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(name="date_distribution", type="date")
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'date_distribution', type: 'date')]
     private $dateDistribution;
 
     /**
      * @var DateTime|null
-     *
-     * @ORM\Column(name="date_expiration", type="datetime", nullable=true)
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'date_expiration', type: 'datetime', nullable: true)]
     private $dateExpiration;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private ?\Entity\Location $location = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Project", inversedBy="distributions")
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project', inversedBy: 'distributions')]
     private ?\Entity\Project $project = null;
 
-    /**
-     *
-     * @ORM\OneToOne(targetEntity="Entity\AssistanceSelection", cascade={"persist"}, inversedBy="assistance", fetch="EAGER")
-     * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
-     */
+    #[ORM\OneToOne(inversedBy: 'assistance', targetEntity: 'Entity\AssistanceSelection', cascade: ['persist'], fetch: 'EAGER')]
+    #[ORM\JoinColumn(name: 'assistance_selection_id', nullable: false)]
     private \Entity\AssistanceSelection $assistanceSelection;
 
-    /**
-     *
-     * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'archived', type: 'boolean', options: ['default' => 0])]
     private int|bool $archived = 0;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\User', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true)]
     private ?\Entity\User $validatedBy = null;
 
-    /**
-     *
-     * @ORM\Column(name="target_type", type="enum_assistance_target_type")
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\Column(name: 'target_type', type: 'enum_assistance_target_type')]
     private ?string $targetType = null;
 
     /**
      * @var Collection | Commodity[]
-     * @ORM\OneToMany(targetEntity="Entity\Commodity", mappedBy="assistance", cascade={"persist"})
      */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    #[ORM\OneToMany(mappedBy: 'assistance', targetEntity: 'Entity\Commodity', cascade: ['persist'])]
     private Collection | array $commodities;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="assistance", cascade={"persist"})
-     */
     #[SymfonyGroups(['FullAssistance', 'FullProject'])]
+    #[ORM\OneToMany(mappedBy: 'assistance', targetEntity: 'Entity\AssistanceBeneficiary', cascade: ['persist'])]
     private $distributionBeneficiaries;
 
-    /**
-     *
-     * @ORM\Column(name="completed", type="boolean", options={"default" : 0})
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'completed', type: 'boolean', options: ['default' => 0])]
     private bool $completed = false;
 
     /**
      *
      * @see SectorEnum
-     * @ORM\Column(name="sector", type="enum_sector", nullable=false)
      */
+    #[ORM\Column(name: 'sector', type: 'enum_sector', nullable: false)]
     private ?string $sector = null;
 
     /**
      *
      * @see SubSectorEnum
-     * @ORM\Column(name="subsector", type="enum_sub_sector", nullable=true)
      */
+    #[ORM\Column(name: 'subsector', type: 'enum_sub_sector', nullable: true)]
     private ?string $subSector = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ScoringBlueprint")
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\ScoringBlueprint')]
     private ?\Entity\ScoringBlueprint $scoringBlueprint = null;
 
-    /**
-     *
-     * @ORM\Column(name="description", type="text", nullable=true)
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'description', type: 'text', nullable: true)]
     private ?string $description = null;
 
-    /**
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $householdsTargeted = null;
 
-    /**
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     *
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $individualsTargeted = null;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $remoteDistributionAllowed = null;
 
     /**
      * @var numeric|null
-     *
-     * @ORM\Column(name="food_limit", type="decimal", nullable=true)
      */
+    #[ORM\Column(name: 'food_limit', type: 'decimal', nullable: true)]
     private $foodLimit;
 
     /**
      * @var numeric|null
-     *
-     * @ORM\Column(name="non_food_limit", type="decimal", nullable=true)
      */
+    #[ORM\Column(name: 'non_food_limit', type: 'decimal', nullable: true)]
     private $nonFoodLimit;
 
     /**
      * @var numeric|null
-     *
-     * @ORM\Column(name="cashback_limit", type="decimal", nullable=true)
      */
+    #[ORM\Column(name: 'cashback_limit', type: 'decimal', nullable: true)]
     private $cashbackLimit;
 
-    /**
-     * @ORM\Column(name="round", type="smallint", nullable=true)
-     */
+    #[ORM\Column(name: 'round', type: 'smallint', nullable: true)]
     private ?int $round = null;
 
     /**
      * @var string[]
-     *
-     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
+    #[ORM\Column(name: 'allowed_product_category_types', type: 'array', nullable: false)]
     private array $allowedProductCategoryTypes;
 
     /**
      * @var SmartcardPurchase[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchase", mappedBy="assistanceId")
      */
+    #[ORM\OneToMany(mappedBy: 'assistanceId', targetEntity: 'Entity\SmartcardPurchase')]
     private $smartcardPurchases;
 
-    /**
-     * @ORM\Column(name="note", type="text", length=65535, nullable=true)
-     */
+    #[ORM\Column(name: 'note', type: 'text', length: 65535, nullable: true)]
     private ?string $note = null;
 
     /**

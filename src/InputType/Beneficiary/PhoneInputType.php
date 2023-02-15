@@ -25,14 +25,14 @@ class PhoneInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $number;
 
-    /**
-     * @Enum(enumClass="Enum\PhoneTypes")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\PhoneTypes",
+    ])]
     private $type;
 
-    /**
-     * @Enum(enumClass="Enum\VariableBool")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\VariableBool",
+    ])]
     private $proxy;
 
     public static function create(string $prefix, string $number, ?string $type, ?bool $proxy = null): PhoneInputType

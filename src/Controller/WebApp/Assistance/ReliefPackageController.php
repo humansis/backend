@@ -24,11 +24,7 @@ class ReliefPackageController extends AbstractWebAppController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/relief-packages")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/relief-packages')]
     public function packages(
         Assistance $assistance,
         Request $request,
@@ -47,12 +43,8 @@ class ReliefPackageController extends AbstractWebAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/relief-packages/{id}")
-     * @Cache(lastModified="package.getLastModifiedAt()", public=true)
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/relief-packages/{id}')]
+    #[Cache(public: true, lastModified: 'package.getLastModifiedAt()')]
     public function package(ReliefPackage $package, Request $request): JsonResponse
     {
         $response = $this->json($package);
@@ -64,11 +56,11 @@ class ReliefPackageController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Patch("/web-app/v1/assistances/relief-packages/distribute")
-     * @ParamConverter(class="InputType\Assistance\DistributeReliefPackagesInputType[]", name="packages", converter="input_type_converter")
      *
      * @param DistributeReliefPackagesInputType[] $packages
      */
+    #[Rest\Patch('/web-app/v1/assistances/relief-packages/distribute')]
+    #[ParamConverter('packages', class: 'InputType\Assistance\DistributeReliefPackagesInputType[]', converter: 'input_type_converter')]
     public function distributePackages(
         array $packages
     ): JsonResponse {
@@ -78,12 +70,11 @@ class ReliefPackageController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Patch("/web-app/v1/assistances/{id}/relief-packages/distribute")
-     * @ParamConverter(class="InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]", name="packages", converter="input_type_converter")
-     *
      * @param DistributeBeneficiaryReliefPackagesInputType[] $packages
      *
      */
+    #[Rest\Patch('/web-app/v1/assistances/{id}/relief-packages/distribute')]
+    #[ParamConverter('packages', class: 'InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType[]', converter: 'input_type_converter')]
     public function distributeBeneficiaryPackages(
         Assistance $assistance,
         array $packages

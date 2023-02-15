@@ -18,11 +18,7 @@ class AssistanceCommodityController extends AbstractController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/offline-app/v2/commodities")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v2/commodities')]
     public function commodities(Request $request, CommodityOfflineFilterInputType $filter): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');

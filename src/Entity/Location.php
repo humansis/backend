@@ -13,58 +13,44 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Location
- *
- * @ORM\Table(name="location", indexes={
- *      @ORM\Index(name="search_name", columns={"name"}),
- *      @ORM\Index(name="search_country_name", columns={"iso3", "name"}),
- *      @ORM\Index(name="search_subtree", columns={"iso3", "nested_tree_level", "nested_tree_left", "nested_tree_right"}),
- *      @ORM\Index(name="search_superpath", columns={"nested_tree_level", "nested_tree_left", "nested_tree_right"}),
- *      @ORM\Index(name="search_level", columns={"iso3", "nested_tree_level"}),
- *      @ORM\Index(name="duplicity", columns={"iso3", "nested_tree_level", "enum_normalized_name"}),
- *     })
- * @ORM\Entity(repositoryClass="Repository\LocationRepository")
  */
 // TODO add unique on normalized name X parent location:
 // uniqueConstraints={ @ORM\UniqueConstraint(name="name_parent_unique", columns={"enum_normalized_name", "parent_location_id"}) })
 // (now resolves in SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'XXX' for key 'location.name_parent_unique')
+#[ORM\Table(name: 'location')]
+#[ORM\Index(columns: ['name'], name: 'search_name')]
+#[ORM\Index(columns: ['iso3', 'name'], name: 'search_country_name')]
+#[ORM\Index(columns: ['iso3', 'nested_tree_level', 'nested_tree_left', 'nested_tree_right'], name: 'search_subtree')]
+#[ORM\Index(columns: ['nested_tree_level', 'nested_tree_left', 'nested_tree_right'], name: 'search_superpath')]
+#[ORM\Index(columns: ['iso3', 'nested_tree_level'], name: 'search_level')]
+#[ORM\Index(columns: ['iso3', 'nested_tree_level', 'enum_normalized_name'], name: 'duplicity')]
+#[ORM\Entity(repositoryClass: 'Repository\LocationRepository')]
 class Location implements TreeInterface
 {
     use NestedTreeTrait;
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Location", inversedBy="childLocations")
-     * @ORM\JoinColumn(name="parent_location_id", nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location', inversedBy: 'childLocations')]
+    #[ORM\JoinColumn(name: 'parent_location_id', nullable: true)]
     private ?\Entity\Location $parentLocation = null;
 
     /**
      * @var Collection|null
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Location", mappedBy="parentLocation")
      */
+    #[ORM\OneToMany(mappedBy: 'parentLocation', targetEntity: 'Entity\Location')]
     private ?Collection $childLocations = null;
 
-    /**
-     * @ORM\Column(name="enum_normalized_name", type="string", length=255, nullable=false)
-     */
+    #[ORM\Column(name: 'enum_normalized_name', type: 'string', length: 255, nullable: false)]
     private ?string $enumNormalizedName = null;
 
-    /**
-     * @ORM\Column(name="duplicity_count", type="integer", nullable=false)
-     */
+    #[ORM\Column(name: 'duplicity_count', type: 'integer', nullable: false)]
     private int $duplicityCount = 0;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'name', type: 'string', length: 255, nullable: true)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="code", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'code', type: 'string', length: 255, nullable: true)]
     private string|null $code;
 
     public function __construct(

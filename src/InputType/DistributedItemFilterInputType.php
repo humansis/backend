@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use Enum\BeneficiaryType;
 use InputType\FilterFragment\AssistanceFilterTrait;
 use InputType\FilterFragment\DateIntervalFilterTrait;
 use InputType\FilterFragment\FulltextFilterTrait;
@@ -24,14 +25,12 @@ class DistributedItemFilterInputType extends AbstractFilterInputType
     use AssistanceFilterTrait;
     use ModalityTypeFilterTrait;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Enum\BeneficiaryType", "values"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [BeneficiaryType::class, "values"]),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $beneficiaryTypes;
 

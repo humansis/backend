@@ -26,7 +26,6 @@ class AdmCSV2XMLCommand extends Command
     }
 
     /**
-     *
      * @return int|void|null
      *
      * @throws Exception

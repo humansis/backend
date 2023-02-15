@@ -50,11 +50,10 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances/beneficiaries")
-     *
      *
      * @throws EntityNotFoundException
      */
+    #[Rest\Post('/web-app/v1/assistances/beneficiaries')]
     public function precalculateBeneficiaries(
         AssistanceCreateInputType $inputType,
         Pagination $pagination
@@ -65,15 +64,13 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances/vulnerability-scores")
-     *
-     *
      * @throws EntityNotFoundException
      * @throws CsvParserException
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws ORMException
      */
+    #[Rest\Post('/web-app/v1/assistances/vulnerability-scores')]
     public function vulnerabilityScoresOld(AssistanceCreateInputType $inputType, Pagination $pagination): JsonResponse
     {
         $vulnerabilities = $this->assistanceService->findVulnerabilityScores($inputType, $pagination);
@@ -81,9 +78,7 @@ class BeneficiaryController extends AbstractController
         return $this->json($vulnerabilities);
     }
 
-    /**
-     * @Rest\Post("/web-app/v2/assistances/vulnerability-scores")
-     */
+    #[Rest\Post('/web-app/v2/assistances/vulnerability-scores')]
     public function vulnerabilityScores(
         VulnerabilityScoreInputType $vulnerabilityScoreInputType,
         Request $request
@@ -101,12 +96,10 @@ class BeneficiaryController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/beneficiaries/exports")
-     *
-     *
      * @throws EntityNotFoundException
      * @throws EnumApiValueNoFoundException
      */
+    #[Rest\Get('/web-app/v1/beneficiaries/exports')]
     public function exports(
         Request $request,
         BeneficiaryExportFilterInputType $inputType,
@@ -139,11 +132,7 @@ class BeneficiaryController extends AbstractController
         return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/beneficiaries/exports')]
     public function exportsByAssistance(
         Assistance $assistance,
         Request $request,
@@ -176,11 +165,7 @@ class BeneficiaryController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/beneficiaries/exports-raw")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/beneficiaries/exports-raw')]
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
         $file = $this->assistanceService->exportGeneralReliefDistributionToCsv(
@@ -202,11 +187,7 @@ class BeneficiaryController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/national-ids")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/national-ids')]
     public function nationalIds(
         NationalIdFilterInputType $filter,
         NationalIdRepository $nationalIdRepository
@@ -216,21 +197,13 @@ class BeneficiaryController extends AbstractController
         return $this->json($nationalIds);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/national-ids/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/national-ids/{id}')]
     public function nationalId(NationalId $nationalId): JsonResponse
     {
         return $this->json($nationalId);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/phones")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/phones')]
     public function phones(PhoneFilterInputType $filter, PhoneRepository $phoneRepository): JsonResponse
     {
         $params = $phoneRepository->findByParams($filter);
@@ -238,21 +211,13 @@ class BeneficiaryController extends AbstractController
         return $this->json($params);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/phones/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/phones/{id}')]
     public function phone(Phone $phone): JsonResponse
     {
         return $this->json($phone);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/{id}')]
     public function beneficiary(Beneficiary $beneficiary): JsonResponse
     {
         if ($beneficiary->getArchived()) {
@@ -262,11 +227,7 @@ class BeneficiaryController extends AbstractController
         return $this->json($beneficiary);
     }
 
-    /**
-     * @Rest\Patch("/web-app/v1/beneficiaries/{id}")
-     *
-     *
-     */
+    #[Rest\Patch('/web-app/v1/beneficiaries/{id}')]
     public function update(Beneficiary $beneficiary, BenefciaryPatchInputType $inputType): JsonResponse
     {
         if ($beneficiary->getArchived()) {
@@ -278,11 +239,7 @@ class BeneficiaryController extends AbstractController
         return $this->json($beneficiary);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries')]
     public function beneficiaries(
         BeneficiaryFilterInputType $filter,
         BeneficiaryRepository $beneficiaryRepository
@@ -292,11 +249,7 @@ class BeneficiaryController extends AbstractController
         return $this->json($beneficiaries);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/targets/{target}/beneficiaries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/targets/{target}/beneficiaries')]
     public function getBeneficiaries(
         Project $project,
         string $target,

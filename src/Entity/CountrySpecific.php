@@ -12,30 +12,22 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * CountrySpecific
- *
- * @ORM\Table(name="country_specific", uniqueConstraints={
- *     @ORM\UniqueConstraint(name="duplicity_check_idx", columns={"field_string", "iso3"})
- * })
- * @ORM\Entity(repositoryClass="Repository\CountrySpecificRepository")
  */
+#[ORM\Table(name: 'country_specific')]
+#[ORM\UniqueConstraint(name: 'duplicity_check_idx', columns: ['field_string', 'iso3'])]
+#[ORM\Entity(repositoryClass: 'Repository\CountrySpecificRepository')]
 class CountrySpecific extends Criteria implements ExportableInterface
 {
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="field_string", type="string", length=45)
-     */
+    #[ORM\Column(name: 'field_string', type: 'string', length: 45)]
     private ?string $fieldString = null;
 
-    /**
-     * @ORM\Column(name="type", type="string", length=45)
-     */
+    #[ORM\Column(name: 'type', type: 'string', length: 45)]
     private ?string $type = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'countrySpecific', targetEntity: 'Entity\CountrySpecificAnswer', cascade: ['remove'])]
     private \Doctrine\Common\Collections\Collection|array $countrySpecificAnswers;
 
     /**

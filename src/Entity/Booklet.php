@@ -16,10 +16,9 @@ use Entity\Project;
 
 /**
  * Booklet
- *
- * @ORM\Table(name="booklet")
- * @ORM\Entity(repositoryClass="Repository\BookletRepository")
  */
+#[ORM\Table(name: 'booklet')]
+#[ORM\Entity(repositoryClass: 'Repository\BookletRepository')]
 class Booklet implements ExportableInterface
 {
     use StandardizedPrimaryKey;
@@ -30,61 +29,43 @@ class Booklet implements ExportableInterface
     final public const USED = 2;
     final public const DEACTIVATED = 3;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage")
-     * @ORM\JoinColumn(name="relief_package_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance\ReliefPackage')]
+    #[ORM\JoinColumn(name: 'relief_package_id')]
     private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Project")
-     */
     #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project')]
     private ?\Entity\Project $project = null;
 
-    /**
-     * @ORM\Column(name="code", type="string", length=255, unique=true)
-     */
     #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'code', type: 'string', length: 255, unique: true)]
     private ?string $code = null;
 
-    /**
-     * @ORM\Column(name="number_vouchers", type="integer")
-     */
     #[SymfonyGroups(['FullBooklet'])]
+    #[ORM\Column(name: 'number_vouchers', type: 'integer')]
     private ?int $numberVouchers = null;
 
-    /**
-     * @ORM\Column(name="currency", type="string", length=255)
-     */
     #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'currency', type: 'string', length: 255)]
     private ?string $currency = null;
 
-    /**
-     * @ORM\Column(name="status", type="integer", nullable=true)
-     */
     #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'status', type: 'integer', nullable: true)]
     private ?int $status = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="password", type="string", length=255, nullable=true)
      */
     #[SymfonyGroups(['FullBooklet'])]
+    #[ORM\Column(name: 'password', type: 'string', length: 255, nullable: true)]
     public $password;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
-     */
     #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    #[ORM\OneToMany(mappedBy: 'booklet', targetEntity: 'Entity\Voucher', cascade: ['persist'], orphanRemoval: true)]
     private $vouchers;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="booklets")
-     * @ORM\JoinColumn(name="distribution_beneficiary_id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\AssistanceBeneficiary', inversedBy: 'booklets')]
+    #[ORM\JoinColumn(name: 'distribution_beneficiary_id')]
     private $distribution_beneficiary;
 
     public static function statuses(): array

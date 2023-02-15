@@ -20,11 +20,10 @@ use Entity\Helper\CountryDependent;
 
 /**
  * Project
- *
- * @ORM\Table(name="project")
- * @ORM\Entity(repositoryClass="Repository\ProjectRepository")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'project')]
+#[ORM\Entity(repositoryClass: 'Repository\ProjectRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Project
 {
     use CreatedAt;
@@ -32,97 +31,54 @@ class Project
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     *
-     */
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private ?string $name = null;
 
-    /**
-     *
-     * @ORM\Column(name="internalId", type="string", length=255, nullable=true)
-     *
-     */
+    #[ORM\Column(name: 'internalId', type: 'string', length: 255, nullable: true)]
     private ?string $internalId = null;
 
-    /**
-     *
-     * @ORM\Column(name="startDate", type="date")
-     *
-     */
+    #[ORM\Column(name: 'startDate', type: 'date')]
     private ?\DateTime $startDate = null;
 
-    /**
-     *
-     * @ORM\Column(name="endDate", type="date")
-     *
-     */
+    #[ORM\Column(name: 'endDate', type: 'date')]
     private ?\DateTime $endDate = null;
 
     private ?int $numberOfHouseholds = null;
 
-    /**
-     *
-     * @ORM\Column(name="target", type="float", nullable=true)
-     *
-     */
+    #[ORM\Column(name: 'target', type: 'float', nullable: true)]
     private ?float $target = null;
 
-    /**
-     *
-     * @ORM\Column(name="notes", type="text", nullable=true)
-     *
-     */
+    #[ORM\Column(name: 'notes', type: 'text', nullable: true)]
     private ?string $notes = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Entity\Donor", inversedBy="projects")
-     *
-     */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Donor', inversedBy: 'projects')]
     private $donors;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\ProjectSector", mappedBy="project", cascade={"persist"}, orphanRemoval=true)
-     *
-     */
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: 'Entity\ProjectSector', cascade: ['persist'], orphanRemoval: true)]
     private $sectors;
 
-    /**
-     * @ORM\Column(name="archived", type="boolean", options={"default" : 0})
-     */
+    #[ORM\Column(name: 'archived', type: 'boolean', options: ['default' => 0])]
     private int|bool $archived = 0;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\UserProject", mappedBy="project", cascade={"remove"})
-     */
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: 'Entity\UserProject', cascade: ['remove'])]
     private $usersProject;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Entity\AbstractBeneficiary", mappedBy="projects")
-     */
+    #[ORM\ManyToMany(targetEntity: 'Entity\AbstractBeneficiary', mappedBy: 'projects')]
     private $households;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Entity\Assistance", mappedBy="project")
-     */
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: 'Entity\Assistance')]
     private $distributions;
 
-    /**
-     * @ORM\Column(name="project_invoice_address_local", type="text", nullable=true, options={"default" : null})
-     */
+    #[ORM\Column(name: 'project_invoice_address_local', type: 'text', nullable: true, options: ['default' => null])]
     private ?string $projectInvoiceAddressLocal = null;
 
-    /**
-     * @ORM\Column(name="project_invoice_address_english", type="text", nullable=true, options={"default" : null})
-     */
+    #[ORM\Column(name: 'project_invoice_address_english', type: 'text', nullable: true, options: ['default' => null])]
     private ?string $projectInvoiceAddressEnglish = null;
 
     /**
      * @var string[]
-     *
-     * @ORM\Column(name="allowed_product_category_types", type="array", nullable=false)
      */
+    #[ORM\Column(name: 'allowed_product_category_types', type: 'array', nullable: false)]
     private array $allowedProductCategoryTypes;
 
     private ?\DateTimeInterface $lastModifiedAtIncludingBeneficiaries = null;
@@ -496,11 +452,9 @@ class Project
     }
 
 
-    /**
-     * @ORM\PostLoad
-     * @ORM\PostPersist
-     * @ORM\PostUpdate
-     */
+    #[ORM\PostLoad]
+    #[ORM\PostPersist]
+    #[ORM\PostUpdate]
     public function updateNumberOfHouseholds(LifecycleEventArgs $args)
     {
         $em = $args->getObjectManager();
@@ -511,10 +465,10 @@ class Project
     }
 
     /**
-     * @ORM\PostPersist
-     * @ORM\PostUpdate
      * @throws NonUniqueResultException
      */
+    #[ORM\PostPersist]
+    #[ORM\PostUpdate]
     public function updateLastModifiedAtIncludingBeneficiaries(LifecycleEventArgs $args)
     {
         /** @var Project $project */

@@ -1,5 +1,5 @@
 rest:
-    type: annotation
+    type: attribute
     prefix: /api/{firewall}
     defaults: { _format: 'json'}
     resource: '../../src/Controller/'

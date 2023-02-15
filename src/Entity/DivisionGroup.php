@@ -7,33 +7,23 @@ namespace Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Table(name="division_group")
- * @ORM\Entity(repositoryClass="Repository\Assistance\DivisionGroupRepository")
- */
+#[ORM\Table(name: 'division_group')]
+#[ORM\Entity(repositoryClass: 'Repository\Assistance\DivisionGroupRepository')]
 class DivisionGroup
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Commodity")
-     * @ORM\JoinColumn(name="commodity_id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Commodity')]
+    #[ORM\JoinColumn(name: 'commodity_id', nullable: false)]
     private ?\Entity\Commodity $commodity = null;
 
-    /**
-     * @ORM\Column(name="range_from", type="integer", nullable=false)
-     */
+    #[ORM\Column(name: 'range_from', type: 'integer', nullable: false)]
     private ?int $rangeFrom = null;
 
-    /**
-     * @ORM\Column(name="range_to", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'range_to', type: 'integer', nullable: true)]
     private ?int $rangeTo = null;
 
-    /**
-     * @ORM\Column(name="value", type="decimal")
-     */
+    #[ORM\Column(name: 'value', type: 'decimal')]
     private ?string $value = null;
 
     public function getCommodity(): Commodity

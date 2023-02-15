@@ -16,11 +16,10 @@ class VendorController extends AbstractVendorAppController
     /**
      * Get single vendor.
      *
-     * @Rest\Get("/vendor-app/v1/vendors/{id}")
-     *
      *
      * @return Response
      */
+    #[Rest\Get('/vendor-app/v1/vendors/{id}')]
     public function getSingleActionVendor(Vendor $vendor)
     {
         $json = $this->serializer->serialize($vendor, 'json', ['groups' => ['FullVendor']]);

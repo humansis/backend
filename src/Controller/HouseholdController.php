@@ -39,11 +39,7 @@ class HouseholdController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/households/exports')]
     public function exports(
         Request $request,
         HouseholdFilterInputType $filter,
@@ -74,11 +70,7 @@ class HouseholdController extends AbstractController
         );
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/households/{id}')]
     public function item(Household $household): JsonResponse
     {
         if (true === $household->getArchived()) {
@@ -88,11 +80,7 @@ class HouseholdController extends AbstractController
         return $this->json($household);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/households')]
     public function list(
         Request $request,
         HouseholdFilterInputType $filter,
@@ -114,11 +102,10 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/households")
-     *
      *
      * @throws Exception
      */
+    #[Rest\Post('/web-app/v1/households')]
     public function create(Request $request, HouseholdCreateInputType $inputType): JsonResponse
     {
         $household = $this->householdService->create($inputType, $this->getCountryCode($request));
@@ -128,11 +115,10 @@ class HouseholdController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/web-app/v1/households/{id}")
-     *
      *
      * @throws Exception
      */
+    #[Rest\Put('/web-app/v1/households/{id}')]
     public function update(Request $request, Household $household, HouseholdUpdateInputType $inputType): JsonResponse
     {
         $object = $this->householdService->update($household, $inputType, $this->getCountryCode($request));
@@ -141,11 +127,7 @@ class HouseholdController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/households/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/households/{id}')]
     public function delete(Household $household): JsonResponse
     {
         $this->householdService->remove($household);
@@ -153,12 +135,7 @@ class HouseholdController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/projects/{id}/households")
-     *
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/projects/{id}/households')]
     public function addHouseholdsToProject(Project $project, AddHouseholdsToProjectInputType $inputType): JsonResponse
     {
         $this->projectService->addHouseholds($project, $inputType);

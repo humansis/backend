@@ -20,12 +20,10 @@ class LogController extends AbstractOfflineAppController
     }
 
     /**
-     * @Rest\Post("/offline-app/v1/users/{id}/logs")
-     *
-     *
      * @return JsonResponse
      * @throws FilesystemException
      */
+    #[Rest\Post('/offline-app/v1/users/{id}/logs')]
     public function uploadLogs(User $user, Request $request): Response
     {
         /** @var UploadedFile[] $files */

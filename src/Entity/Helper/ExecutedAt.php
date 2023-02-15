@@ -17,8 +17,8 @@ trait ExecutedAt
 {
     /**
      * @var DateTimeInterface
-     * @ORM\Column(name="executed_at", type="datetime_immutable", nullable=false)
      */
+    #[ORM\Column(name: 'executed_at', type: 'datetime_immutable', nullable: false)]
     protected $executedAt;
 
     public function getExecutedAt(): DateTimeInterface

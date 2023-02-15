@@ -17,11 +17,7 @@ class SmartcardDepositController extends AbstractWebAppController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/web-app/v1/smartcard-deposits")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/smartcard-deposits')]
     public function list(SmartcardDepositFilterInputType $filter): JsonResponse
     {
         /** @var SmartcardDepositRepository $repository */

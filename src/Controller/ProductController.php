@@ -28,11 +28,7 @@ class ProductController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/products/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/products/exports')]
     public function exports(Request $request): Response
     {
         $request->query->add([
@@ -45,12 +41,8 @@ class ProductController extends AbstractController
         return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/products/{id}")
-     * @Cache(lastModified="product.getLastModifiedAt()", public=true)
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/products/{id}')]
+    #[Cache(public: true, lastModified: 'product.getLastModifiedAt()')]
     public function item(Product $product): JsonResponse
     {
         if (true === $product->getArchived()) {
@@ -60,12 +52,8 @@ class ProductController extends AbstractController
         return $this->json($product);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/products")
-     * @Rest\Get("/vendor-app/v2/products")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/products')]
+    #[Rest\Get('/vendor-app/v2/products')]
     public function list(
         Request $request,
         ProductFilterInputType $filter,
@@ -83,11 +71,7 @@ class ProductController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/products")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/products')]
     public function create(ProductCreateInputType $inputType): JsonResponse
     {
         $object = $this->productService->create($inputType);
@@ -95,11 +79,7 @@ class ProductController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/products/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/products/{id}')]
     public function update(Product $product, ProductUpdateInputType $inputType): JsonResponse
     {
         $object = $this->productService->update($product, $inputType);
@@ -107,11 +87,7 @@ class ProductController extends AbstractController
         return $this->json($object);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/products/images")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/products/images')]
     public function uploadImage(Request $request): JsonResponse
     {
         if (!($file = $request->files->get('file'))) {
@@ -127,11 +103,7 @@ class ProductController extends AbstractController
         return $this->json(['url' => $url]);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/products/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/products/{id}')]
     public function delete(Product $product): JsonResponse
     {
         $this->productService->archive($product);

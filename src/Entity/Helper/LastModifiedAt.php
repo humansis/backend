@@ -14,8 +14,8 @@ trait LastModifiedAt
 {
     /**
      * @var DateTimeInterface
-     * @ORM\Column(name="modified_at", type="datetime_immutable", nullable=false)
      */
+    #[ORM\Column(name: 'modified_at', type: 'datetime_immutable', nullable: false)]
     protected $lastModifiedAt;
 
     public function getLastModifiedAt(): DateTimeInterface
@@ -27,9 +27,7 @@ trait LastModifiedAt
         return $this->lastModifiedAt;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function setLastModifiedNow()
     {
         $this->lastModifiedAt = new DateTimeImmutable();

@@ -58,8 +58,6 @@ class SelectionCriterionService
     }
 
     /**
-     *
-     *
      * @throws BadMethodCallException
      */
     private function getGenerator(string $target): FieldGeneratorInterface

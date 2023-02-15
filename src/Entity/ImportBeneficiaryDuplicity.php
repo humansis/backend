@@ -10,38 +10,28 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Information about duplicity between queue record and beneficiary.
- *
- * @ORM\Entity(repositoryClass="\Repository\ImportBeneficiaryDuplicityRepository")
  */
+#[ORM\Entity(repositoryClass: '\Repository\ImportBeneficiaryDuplicityRepository')]
 class ImportBeneficiaryDuplicity
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportQueue')]
     private ImportQueue $queue;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private int $memberIndex;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Beneficiary')]
     private Beneficiary $beneficiary;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportHouseholdDuplicity')]
     private ImportHouseholdDuplicity $householdDuplicity;
 
     /**
      * @var string[]
-     *
-     * @ORM\Column(type="array", nullable=true)
      */
+    #[ORM\Column(type: 'array', nullable: true)]
     private array $reasons;
 
     public function __construct(

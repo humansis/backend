@@ -20,20 +20,14 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\User;
 use Entity\UserCountry;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class LocationController extends AbstractController
 {
     public function __construct(private readonly Countries $countries, private readonly LocationRepository $locationRepository, private readonly ProjectRepository $projectRepository)
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/countries/{iso3}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/countries/{iso3}')]
     public function country(string $iso3): JsonResponse
     {
         $country = $this->countries->getCountry($iso3);
@@ -44,11 +38,7 @@ class LocationController extends AbstractController
         throw $this->createNotFoundException();
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/users/{id}/countries")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/users/{id}/countries')]
     public function userCountries(User $user): JsonResponse
     {
         $userRoles = $user->getRoles();
@@ -76,59 +66,37 @@ class LocationController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/countries")
-     */
+    #[Rest\Get('/web-app/v1/countries')]
     public function countries(): JsonResponse
     {
         return $this->json(new Paginator($this->countries->getAll()));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm1/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm1/{id}')]
     public function adm1(Location $adm1): JsonResponse
     {
         return $this->json($adm1);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm2/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm2/{id}')]
     public function adm2(Location $adm2): JsonResponse
     {
         return $this->json($adm2);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm3/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm3/{id}')]
     public function adm3(Location $adm3): JsonResponse
     {
         return $this->json($adm3);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm4/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm4/{id}')]
     public function adm4(Location $adm4): JsonResponse
     {
         return $this->json($adm4);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm1")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm1')]
     public function adm1List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
         $data = $this->getAdmList($request, $inputType, 1);
@@ -136,9 +104,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm1/{id}/adm2")
-     */
+    #[Rest\Get('/web-app/v1/adm1/{id}/adm2')]
     public function adm2ListByAdm1(Request $request, Location $location): JsonResponse
     {
         $inputType = new LocationFilterInputType();
@@ -147,11 +113,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm2")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm2')]
     public function adm2List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
         $data = $this->getAdmList($request, $inputType, 2);
@@ -159,11 +121,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm2/{id}/adm3")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm2/{id}/adm3')]
     public function adm3ListByAdm2(Request $request, Location $location): JsonResponse
     {
         $inputType = new LocationFilterInputType();
@@ -172,11 +130,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm3")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm3')]
     public function adm3List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
         $data = $this->getAdmList($request, $inputType, 3);
@@ -184,11 +138,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm3/{id}/adm4")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm3/{id}/adm4')]
     public function adm4ListByAdm3(Request $request, Location $location): JsonResponse
     {
         $inputType = new LocationFilterInputType();
@@ -197,11 +147,7 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/adm4")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/adm4')]
     public function adm4List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
         $data = $this->getAdmList($request, $inputType, 4);
@@ -209,21 +155,13 @@ class LocationController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/locations/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/locations/{id}')]
     public function item(Location $location): JsonResponse
     {
         return $this->json($location);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/locations")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/locations')]
     public function locations(Request $request, LocationFilterInputType $filter): JsonResponse
     {
         $countryIso3 = $request->headers->get('country');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Import;
 
+use Enum\ImportState;
 use InputType\FilterFragment\FulltextFilterTrait;
 use InputType\FilterFragment\ProjectFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
@@ -15,14 +16,12 @@ class FilterInputType extends AbstractFilterInputType
     use FulltextFilterTrait;
     use ProjectFilterTrait;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Enum\ImportState", "values"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [ImportState::class, "values"]),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $status;
 

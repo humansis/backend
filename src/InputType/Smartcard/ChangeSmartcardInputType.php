@@ -11,14 +11,12 @@ use Validator\Constraints\Iso8601;
 
 class ChangeSmartcardInputType implements InputTypeInterface
 {
-    /**
-     * @Enum(enumClass="Enum\SmartcardStates")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\SmartcardStates",
+    ])]
     private ?string $state = null;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     private ?DateTime $createdAt;
 
     /**

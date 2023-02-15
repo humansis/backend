@@ -15,79 +15,53 @@ use Entity\User;
 
 /**
  * Read only entity.
- *
- * @ORM\Entity(repositoryClass="Repository\DistributedItemRepository", readOnly=true)
- * @ORM\Table(name="view_distributed_item")
  */
+#[ORM\Table(name: 'view_distributed_item')]
+#[ORM\Entity(repositoryClass: 'Repository\DistributedItemRepository', readOnly: true)]
 class DistributedItem
 {
-    /**
-     *
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     */
+    #[ORM\Column(type: 'string')]
+    #[ORM\Id]
     private string $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Project")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project')]
     private \Entity\Project $project;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Beneficiary')]
     private \Entity\Beneficiary $beneficiary;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance')]
     private \Entity\Assistance $assistance;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private \Entity\Location $location;
 
-    /**
-     * @ORM\Column(name="bnf_type", type="string")
-     */
+    #[ORM\Column(name: 'bnf_type', type: 'string')]
     private string $beneficiaryType;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Commodity")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Commodity')]
     private \Entity\Commodity $commodity;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2)
-     */
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private float $amount;
 
     /**
      *
      * controlled by database triggers on smartcard_payment_record table
-     * @ORM\Column(type="decimal", precision=10, scale=2)
      */
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?float $spent = null;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     private string $modalityType;
 
-    /**
-     * @ORM\Column(name="date_distribution", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'date_distribution', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $dateDistribution = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     private ?string $carrierNumber = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
     private ?\Entity\User $fieldOfficer = null;
 
     public function getId(): string

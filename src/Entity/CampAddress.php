@@ -7,22 +7,17 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * CampAddress
- *
- * @ORM\Table(name="camp_address")
- * @ORM\Entity(repositoryClass="Repository\CampAddressRepository")
  */
+#[ORM\Table(name: 'camp_address')]
+#[ORM\Entity(repositoryClass: 'Repository\CampAddressRepository')]
 class CampAddress
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="tentNumber", type="string", length=45)
-     */
+    #[ORM\Column(name: 'tentNumber', type: 'string', length: 45)]
     private string $tentNumber;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Camp", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Camp', cascade: ['persist'])]
     private $camp;
 
     /**

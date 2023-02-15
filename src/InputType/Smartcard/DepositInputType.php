@@ -21,9 +21,7 @@ final class DepositInputType implements InputTypeInterface
 
     private $balance = null;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     private ?\DateTime $createdAt;
 
     public static function create(int $reliefPackageId, $value, $balance, \DateTime $createdAt): self

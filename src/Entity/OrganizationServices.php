@@ -8,34 +8,26 @@ use JsonSerializable;
 
 /**
  * OrganizationServices
- *
- * @ORM\Table(name="organization_service")
- * @ORM\Entity(repositoryClass="Repository\OrganizationServicesRepository")
  */
+#[ORM\Table(name: 'organization_service')]
+#[ORM\Entity(repositoryClass: 'Repository\OrganizationServicesRepository')]
 class OrganizationServices implements JsonSerializable
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="enabled", type="boolean")
-     */
+    #[ORM\Column(name: 'enabled', type: 'boolean')]
     private bool $enabled;
 
     /**
      * @var json
-     *
-     * @ORM\Column(name="parameters_value", type="json")
      */
+    #[ORM\Column(name: 'parameters_value', type: 'json')]
     private $parametersValue;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Organization", inversedBy="organizationServices")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Organization', inversedBy: 'organizationServices')]
     private ?\Entity\Organization $organization = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Service", inversedBy="organizationServices")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Service', inversedBy: 'organizationServices')]
     private ?\Entity\Service $service = null;
 
     /**

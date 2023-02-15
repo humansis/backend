@@ -17,14 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CommunityUpdateInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private array $projectIds = [];
 

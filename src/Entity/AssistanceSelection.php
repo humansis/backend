@@ -10,28 +10,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\Assistance\SelectionCriteria;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class AssistanceSelection
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="threshold", type="integer", nullable=true)
-     */
+    #[ORM\Column(name: 'threshold', type: 'integer', nullable: true)]
     private ?int $threshold = null;
 
     /**
      * @var Collection|SelectionCriteria[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Assistance\SelectionCriteria", mappedBy="assistanceSelection", cascade={"persist"})
      */
+    #[ORM\OneToMany(mappedBy: 'assistanceSelection', targetEntity: 'Entity\Assistance\SelectionCriteria', cascade: ['persist'])]
     private \Doctrine\Common\Collections\Collection|array $selectionCriteria;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Assistance", mappedBy="assistanceSelection", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(mappedBy: 'assistanceSelection', targetEntity: 'Entity\Assistance', cascade: ['persist', 'remove'])]
     private ?\Entity\Assistance $assistance = null;
 
     public function __construct()

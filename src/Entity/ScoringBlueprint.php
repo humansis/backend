@@ -11,11 +11,9 @@ use Entity\Helper\CreatedBy;
 use Entity\Helper\StandardizedPrimaryKey;
 use Utils\Objects\PropertySetter;
 
-/**
- * @ORM\Table(name="scoring_blueprint")
- * @ORM\Entity(repositoryClass="Repository\ScoringBlueprintRepository")
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Table(name: 'scoring_blueprint')]
+#[ORM\Entity(repositoryClass: 'Repository\ScoringBlueprintRepository')]
+#[ORM\HasLifecycleCallbacks]
 class ScoringBlueprint
 {
     use StandardizedPrimaryKey;
@@ -24,21 +22,16 @@ class ScoringBlueprint
     use CountryDependent;
     use PropertySetter;
 
-    /**
-     * @ORM\Column(name="name", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'name', type: 'string', nullable: false)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(name="archived", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'archived', type: 'boolean', nullable: false)]
     private bool $archived = false;
 
     /**
      * @var string|resource
-     *
-     * @ORM\Column(name="content", type="blob", nullable=false)
      */
+    #[ORM\Column(name: 'content', type: 'blob', nullable: false)]
     private $content;
 
     public function getId(): int

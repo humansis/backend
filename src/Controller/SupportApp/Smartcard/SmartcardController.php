@@ -16,9 +16,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Utils\SmartcardService;
 
-/**
- * @Rest\Route("/support-app/v1/smartcards")
- */
+#[Rest\Route('/support-app/v1/smartcards')]
 class SmartcardController extends AbstractController
 {
     public function __construct(
@@ -29,9 +27,7 @@ class SmartcardController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/{smartcardCode}")
-     */
+    #[Rest\Get('/{smartcardCode}')]
     public function smartcard(string $smartcardCode): JsonResponse
     {
         $smartcards = $this->smartcardRepository->findBy(['serialNumber' => $smartcardCode]);
@@ -39,9 +35,7 @@ class SmartcardController extends AbstractController
         return $this->json(['data' => $smartcards]);
     }
 
-    /**
-     * @Rest\Get ("/{smartcardCode}/purchases")
-     */
+    #[Rest\Get('/{smartcardCode}/purchases')]
     public function smartcardPurchases(string $smartcardCode): JsonResponse
     {
         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
@@ -50,9 +44,7 @@ class SmartcardController extends AbstractController
         return $this->json($purchases);
     }
 
-    /**
-     * @Rest\Get ("/{smartcardCode}/deposits")
-     */
+    #[Rest\Get('/{smartcardCode}/deposits')]
     public function smartcardDeposits(string $smartcardCode): JsonResponse
     {
         $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
@@ -62,12 +54,10 @@ class SmartcardController extends AbstractController
     }
 
     /**
-     * @Rest\Patch("/{id}")
-     *
-     *
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
      */
+    #[Rest\Patch('/{id}')]
     public function update(
         Smartcard $smartcard,
         UpdateSmartcardInputType $updateSmartcardInputType,

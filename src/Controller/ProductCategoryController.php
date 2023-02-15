@@ -24,20 +24,14 @@ class ProductCategoryController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/product-categories/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/product-categories/{id}')]
     public function item(ProductCategory $productCategory): JsonResponse
     {
         return $this->json($productCategory);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/product-categories")
-     * @Rest\Get("/vendor-app/v1/product-categories")
-     */
+    #[Rest\Get('/web-app/v1/product-categories')]
+    #[Rest\Get('/vendor-app/v1/product-categories')]
     public function list(
         Request $request,
         ProductCategoryFilterInputType $filter,
@@ -49,11 +43,7 @@ class ProductCategoryController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/product-categories")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/product-categories')]
     public function create(ProductCategoryInputType $inputType): JsonResponse
     {
         $productCategory = $this->productCategoryService->create($inputType);
@@ -63,11 +53,7 @@ class ProductCategoryController extends AbstractController
         return $this->json($productCategory);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/product-categories/{id}")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/product-categories/{id}')]
     public function update(ProductCategory $productCategory, ProductCategoryInputType $inputType): JsonResponse
     {
         $productCategory = $this->productCategoryService->update($productCategory, $inputType);
@@ -77,11 +63,7 @@ class ProductCategoryController extends AbstractController
         return $this->json($productCategory);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/product-categories/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/product-categories/{id}')]
     public function delete(ProductCategory $productCategory): JsonResponse
     {
         $productCount = $this->managerRegistry->getManager()->getRepository(Product::class)->count(

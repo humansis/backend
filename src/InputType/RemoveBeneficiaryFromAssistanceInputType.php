@@ -10,14 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['RemoveBeneficiaryFromAssistanceInputType', 'Strict'])]
 class RemoveBeneficiaryFromAssistanceInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('int', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $beneficiaryIds;
 

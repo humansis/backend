@@ -6,10 +6,7 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- * @Target({"ANNOTATION", "CLASS"})
- */
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 class SelectionCriterionField extends Constraint
 {
     final public const INVALID_FIELD_ERROR = 'd6aadef3-8dd1-4f11-900a-215ecd726cd1';

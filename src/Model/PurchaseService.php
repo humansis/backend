@@ -29,8 +29,6 @@ class PurchaseService
     }
 
     /**
-     *
-     *
      * @throws EntityNotFoundException
      */
     public function purchase(VoucherPurchaseInput $input): VoucherPurchase

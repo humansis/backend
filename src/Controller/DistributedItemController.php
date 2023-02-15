@@ -27,12 +27,8 @@ class DistributedItemController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/{id}/distributed-items")
-     * @ParamConverter("beneficiary")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/{id}/distributed-items')]
+    #[ParamConverter('beneficiary')]
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
         $data = $this->managerRegistry->getRepository(DistributedItem::class)
@@ -41,12 +37,8 @@ class DistributedItemController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/{id}/distributed-items")
-     * @ParamConverter("household")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/households/{id}/distributed-items')]
+    #[ParamConverter('household')]
     public function listByHousehold(Household $household): JsonResponse
     {
         $data = $this->managerRegistry->getRepository(DistributedItem::class)
@@ -55,11 +47,7 @@ class DistributedItemController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/distributed-items")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/distributed-items')]
     public function distributedItems(
         Request $request,
         DistributedItemFilterInputType $inputType,
@@ -81,11 +69,7 @@ class DistributedItemController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/distributed-items/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/distributed-items/exports')]
     public function summaryExports(Request $request, DistributedItemFilterInputType $inputType): StreamedResponse
     {
         if (!$request->headers->has('country')) {

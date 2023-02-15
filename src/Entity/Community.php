@@ -7,36 +7,25 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Community
- *
- * @ORM\Table(name="community")
- * @ORM\Entity(repositoryClass="Repository\CommunityRepository")
  */
+#[ORM\Table(name: 'community')]
+#[ORM\Entity(repositoryClass: 'Repository\CommunityRepository')]
 class Community extends AbstractBeneficiary
 {
-    /**
-     * @ORM\Column(name="name", type="string", length=100, nullable=false)
-     */
+    #[ORM\Column(name: 'name', type: 'string', length: 100, nullable: false)]
     private ?string $name = null;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="contact_person_id", referencedColumnName="id", nullable=true)
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Person', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'contact_person_id', referencedColumnName: 'id', nullable: true)]
     private ?\Entity\Person $contact;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Address', cascade: ['persist', 'remove'])]
     private $address;
 
-    /**
-     * @ORM\Column(name="latitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'latitude', type: 'string', length: 45, nullable: true)]
     private ?string $latitude = null;
 
-    /**
-     * @ORM\Column(name="longitude", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'longitude', type: 'string', length: 45, nullable: true)]
     private ?string $longitude = null;
 
     /**

@@ -9,14 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['AddRemoveBeneficiaryToAssistanceInputType', 'Strict'])]
 class AddRemoveBeneficiaryToAssistanceInputType extends AddRemoveAbstractBeneficiaryToAssistanceInputType
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("int", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $beneficiaryIds;
 

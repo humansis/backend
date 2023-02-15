@@ -13,23 +13,20 @@ trait NestedTreeTrait
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="nested_tree_level", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'nested_tree_level', type: 'integer', nullable: true)]
     protected $lvl;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nested_tree_left", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'nested_tree_left', type: 'integer', nullable: true)]
     protected $lft;
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="nested_tree_right", type="integer", nullable=true)
      */
+    #[ORM\Column(name: 'nested_tree_right', type: 'integer', nullable: true)]
     protected $rgt;
 
     public function getLvl(): int

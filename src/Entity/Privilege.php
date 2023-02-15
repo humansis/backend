@@ -9,24 +9,19 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Table(name="privilege")
- * @ORM\Entity(repositoryClass="Repository\PrivilegeRepository")
- */
+#[ORM\Table(name: 'privilege')]
+#[ORM\Entity(repositoryClass: 'Repository\PrivilegeRepository')]
 class Privilege
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="code", type="string", nullable=false, unique=true)
-     */
+    #[ORM\Column(name: 'code', type: 'string', unique: true, nullable: false)]
     private ?string $code = null;
 
     /**
      * @var Collection|Role[]
-     *
-     * @ORM\ManyToMany(targetEntity="Entity\Role", mappedBy="privileges")
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Role', mappedBy: 'privileges')]
     private \Doctrine\Common\Collections\Collection|array $roles;
 
     public function __construct()

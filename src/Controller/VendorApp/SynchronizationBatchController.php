@@ -19,11 +19,7 @@ class SynchronizationBatchController extends AbstractVendorAppController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Post("/vendor-app/v1/syncs/deposit")
-     *
-     *
-     */
+    #[Rest\Post('/vendor-app/v1/syncs/deposit')]
     public function create(Request $request, SmartcardDepositService $depositService): Response
     {
         $sync = new SynchronizationBatch\Deposits($request->request->all());

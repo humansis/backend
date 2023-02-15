@@ -32,11 +32,10 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/vendors/exports")
-     *
      *
      * @return JsonResponse
      */
+    #[Rest\Get('/web-app/v1/vendors/exports')]
     public function exports(Request $request): Response
     {
         $vendors = $this->vendorRepository->findByCountry($request->headers->get('country'));
@@ -45,11 +44,7 @@ class VendorController extends AbstractController
         return $this->exportTableService->export($exportableTable, 'vendors', $request->query->get('type'));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/vendors/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/vendors/{id}')]
     public function item(Vendor $vendor): JsonResponse
     {
         if (true === $vendor->getArchived()) {
@@ -60,10 +55,9 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/vendors")
-     *
      * @throws EnumValueNoFoundException
      */
+    #[Rest\Get('/web-app/v1/vendors')]
     public function list(
         Request $request,
         VendorFilterInputType $filter,
@@ -81,13 +75,11 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/vendors")
-     *
-     *
      * @throws EntityNotFoundException
      * @throws ORMException
      * @throws OptimisticLockException
      */
+    #[Rest\Post('/web-app/v1/vendors')]
     public function create(VendorCreateInputType $inputType): JsonResponse
     {
         $object = $this->vendorService->create($inputType);
@@ -96,12 +88,12 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Put("/web-app/v1/vendors/{id}")
      *
      * @throws EntityNotFoundException
      * @throws ORMException
      * @throws OptimisticLockException
      */
+    #[Rest\Put('/web-app/v1/vendors/{id}')]
     public function update(Vendor $vendor, VendorUpdateInputType $inputType): JsonResponse
     {
         if ($vendor->getArchived()) {
@@ -114,12 +106,9 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/web-app/v1/vendors/{id}")
-     *
-     *
-     *
      * @throws Exception
      */
+    #[Rest\Delete('/web-app/v1/vendors/{id}')]
     public function delete(Vendor $vendor): JsonResponse
     {
         $this->vendorService->archiveVendor($vendor, true);
@@ -128,23 +117,19 @@ class VendorController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/vendors/{id}/invoice")
-     *
-     *
-     *
      * @throws Exception
      */
+    #[Rest\Get('/web-app/v1/vendors/{id}/invoice')]
     public function invoice(Vendor $vendor): Response
     {
         return $this->vendorService->printInvoice($vendor);
     }
 
     /**
-     * @Rest\Get("/web-app/v1/vendors/{id}/summaries")
-     *
      *
      * @throws NonUniqueResultException
      */
+    #[Rest\Get('/web-app/v1/vendors/{id}/summaries')]
     public function summaries(Vendor $vendor, SmartcardPurchaseRepository $smartcardPurchaseRepository): Response
     {
         $summary = $smartcardPurchaseRepository->countPurchases($vendor);

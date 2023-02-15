@@ -11,18 +11,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class InstitutionCodelistController extends AbstractController
 {
     public function __construct(private readonly CodeListService $codeListService)
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/institutions/types")
-     */
+    #[Rest\Get('/web-app/v1/institutions/types')]
     public function getInstitutionTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(Institution::TYPE_ALL);

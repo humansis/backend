@@ -12,9 +12,8 @@ trait Source
     /**
      * @var string|null
      * @see SourceType
-     *
-     * @ORM\Column(name="source", type="enum_source_type", nullable=true)
      */
+    #[ORM\Column(name: 'source', type: 'enum_source_type', nullable: true)]
     private $source;
 
     /**

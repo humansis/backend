@@ -11,105 +11,72 @@ use Utils\ExportableInterface;
 
 /**
  * Vendor
- *
- * @ORM\Table(name="vendor")
- * @ORM\Entity(repositoryClass="Repository\VendorRepository")
  */
+#[ORM\Table(name: 'vendor')]
+#[ORM\Entity(repositoryClass: 'Repository\VendorRepository')]
 class Vendor
 {
-    /**
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     * @ORM\Column(name="name", type="string", length=255)
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
-    /**
-     * @ORM\Column(name="shop", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'shop', type: 'string', length: 255, nullable: true)]
     private string|null $shop = null;
 
-    /**
-     * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'address_street', type: 'string', length: 255, nullable: true)]
     private string|null $addressStreet;
 
-    /**
-     * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'address_number', type: 'string', length: 255, nullable: true)]
     private string|null $addressNumber;
 
-    /**
-     * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'address_postcode', type: 'string', length: 255, nullable: true)]
     private string|null $addressPostcode;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private ?\Entity\Location $location = null;
 
-    /**
-     * @ORM\Column(name="archived", type="boolean")
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\Column(name: 'archived', type: 'boolean')]
     private bool $archived;
 
-    /**
-     * @ORM\OneToOne(targetEntity="\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     */
     #[SymfonyGroups(['FullVendor'])]
+    #[ORM\OneToOne(inversedBy: 'vendor', targetEntity: '\Entity\User', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private $user;
 
-    /**
-     * @ORM\Column(name="vendor_no", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'vendor_no', type: 'string', nullable: true)]
     private string|null $vendorNo = null;
 
-    /**
-     * @ORM\Column(name="contract_no", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'contract_no', type: 'string', nullable: true)]
     private string|null $contractNo = null;
 
-    /**
-     * @ORM\Column(name="can_sell_food", type="boolean")
-     */
+    #[ORM\Column(name: 'can_sell_food', type: 'boolean')]
     private bool $canSellFood = true;
 
-    /**
-     * @ORM\Column(name="can_sell_non_food", type="boolean")
-     */
+    #[ORM\Column(name: 'can_sell_non_food', type: 'boolean')]
     private bool $canSellNonFood = true;
 
-    /**
-     * @ORM\Column(name="can_sell_cashback", type="boolean")
-     */
+    #[ORM\Column(name: 'can_sell_cashback', type: 'boolean')]
     private bool $canSellCashback = true;
 
-    /**
-     * @ORM\Column(name="can_do_remote_distributions", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'can_do_remote_distributions', type: 'boolean', nullable: false)]
     private bool $canDoRemoteDistributions = false;
 
     /**
      * @var PreliminaryInvoice[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Smartcard\PreliminaryInvoice", mappedBy="vendor")
      */
+    #[ORM\OneToMany(mappedBy: 'vendor', targetEntity: 'Entity\Smartcard\PreliminaryInvoice')]
     private $preliminaryInvoices;
 
     public function __construct()

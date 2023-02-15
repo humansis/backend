@@ -16,65 +16,46 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Smartcard purchase.
- *
- * @ORM\Table(name="smartcard_purchase")
- * @ORM\Entity(repositoryClass="Repository\SmartcardPurchaseRepository")
  */
+#[ORM\Table(name: 'smartcard_purchase')]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardPurchaseRepository')]
 class SmartcardPurchase
 {
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Smartcard", inversedBy="purchases")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Smartcard', inversedBy: 'purchases')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\Smartcard $smartcard = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\ManyToOne(targetEntity: '\Entity\Vendor')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?\Entity\Vendor $vendor = null;
 
     /**
      * @var Collection|SmartcardPurchaseRecord[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\OneToMany(mappedBy: 'smartcardPurchase', targetEntity: 'Entity\SmartcardPurchaseRecord', cascade: ['persist'], orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection|array $records;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(name="used_at", type="datetime", nullable=true)
      */
     #[SymfonyGroups(['FullSmartcard'])]
+    #[ORM\Column(name: 'used_at', type: 'datetime', nullable: true)]
     private $createdAt;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Invoice", inversedBy="purchases", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Invoice', cascade: ['persist'], inversedBy: 'purchases')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?\Entity\Invoice $redemptionBatch = null;
 
-    /**
-     * @ORM\Column(name="hash", type="text")
-     */
+    #[ORM\Column(name: 'hash', type: 'text')]
     private ?string $hash = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance', cascade: ['persist'], inversedBy: 'smartcardPurchases')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?\Entity\Assistance $assistance = null;
 
     protected function __construct()

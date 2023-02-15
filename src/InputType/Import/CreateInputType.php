@@ -22,13 +22,8 @@ class CreateInputType implements InputTypeInterface
      * TODO array should not be empty (after FE implementation)
      *
      * @var int[]
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private ?array $projects = null;
 

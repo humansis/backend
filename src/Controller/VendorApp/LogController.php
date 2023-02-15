@@ -19,12 +19,9 @@ class LogController extends AbstractVendorAppController
     }
 
     /**
-     * @Rest\Post("/vendor-app/v1/vendors/{id}/logs")
-     *
-     *
-     *
      * @throws FilesystemException
      */
+    #[Rest\Post('/vendor-app/v1/vendors/{id}/logs')]
     public function uploadLogs(Vendor $vendor, Request $request): Response
     {
         /** @var UploadedFile[] $files */

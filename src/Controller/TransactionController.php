@@ -28,11 +28,7 @@ class TransactionController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/transactions")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/transactions')]
     public function list(Request $request, TransactionFilterInputType $filter): JsonResponse
     {
         /** @var TransactionRepository $repository */
@@ -43,15 +39,13 @@ class TransactionController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances/{id}/transactions")
-     *
-     *
      * @return JsonResponse
      * @throws \Psr\Cache\InvalidArgumentException
      * @throws InvalidArgumentException
      * @deprecated Probably does not work. Do not try to use transaction before you refactor them, please.
      *
      */
+    #[Rest\Post('/web-app/v1/assistances/{id}/transactions')]
     public function createTransactions(Assistance $assistance, Request $request): Response
     {
         $request->request->set('__country', $request->headers->get('country'));
@@ -93,12 +87,8 @@ class TransactionController extends AbstractController
         return new Response($json);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/assistances/{id}/transactions/emails")
-     * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/assistances/{id}/transactions/emails')]
+    #[ParamConverter('assistance', options: ['mapping' => ['id' => 'id']])]
     public function sendEmail(Assistance $assistance): JsonResponse
     {
         $this->transactionService->sendVerifyEmail($this->getUser(), $assistance);
@@ -106,9 +96,7 @@ class TransactionController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/transactions/statuses")
-     */
+    #[Rest\Get('/web-app/v1/transactions/statuses')]
     public function statuses(): JsonResponse
     {
         $data = $this->codeListService->mapArray(Transaction::statuses());

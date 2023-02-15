@@ -8,46 +8,31 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Read only entity.
- *
- * @ORM\Entity(repositoryClass="Repository\AssistanceStatisticsRepository", readOnly=true)
- * @ORM\Table(name="view_assistance_statistics")
  */
+#[ORM\Table(name: 'view_assistance_statistics')]
+#[ORM\Entity(repositoryClass: 'Repository\AssistanceStatisticsRepository', readOnly: true)]
 class AssistanceStatistics
 {
-    /**
-     * @ORM\Column(name="assistance_id", type="integer")
-     * @ORM\Id
-     */
+    #[ORM\Column(name: 'assistance_id', type: 'integer')]
+    #[ORM\Id]
     private ?int $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance')]
     private \Entity\Assistance $assistance;
 
-    /**
-     * @ORM\Column(name="number_of_beneficiaries", type="integer")
-     */
+    #[ORM\Column(name: 'number_of_beneficiaries', type: 'integer')]
     private int $numberOfBeneficiaries;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float | null $amountTotal;
 
-    /**
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float | null $amountDistributed;
 
-    /**
-     * @ORM\Column(name="beneficiaries_deleted", type="integer")
-     */
+    #[ORM\Column(name: 'beneficiaries_deleted', type: 'integer')]
     private int $beneficiariesDeleted;
 
-    /**
-     * @ORM\Column(name="beneficiaries_reached", type="integer")
-     */
+    #[ORM\Column(name: 'beneficiaries_reached', type: 'integer')]
     private int $beneficiariesReached;
 
     public function getId(): int

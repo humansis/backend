@@ -28,21 +28,13 @@ class OrganizationController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/organizations/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/organizations/{id}')]
     public function item(Organization $organization): JsonResponse
     {
         return $this->json($organization);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/organizations/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/organizations/{id}')]
     public function update(
         Organization $organization,
         OrganizationUpdateInputType $inputType,
@@ -53,11 +45,7 @@ class OrganizationController extends AbstractController
         return $this->json($organization);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/organizations")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/organizations')]
     public function list(Pagination $pagination, OrganizationRepository $organizationRepository): JsonResponse
     {
         $organizations = $organizationRepository->findByParams($pagination);
@@ -65,11 +53,7 @@ class OrganizationController extends AbstractController
         return $this->json($organizations);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/organizations/{id}/services")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/organizations/{id}/services')]
     public function listServices(
         Organization $organization,
         Pagination $pagination,
@@ -80,11 +64,7 @@ class OrganizationController extends AbstractController
         return $this->json($organizationServices);
     }
 
-    /**
-     * @Rest\Patch("/web-app/v1/organizations/services/{id}")
-     *
-     *
-     */
+    #[Rest\Patch('/web-app/v1/organizations/services/{id}')]
     public function updateService(
         Request $request,
         OrganizationServices $organizationServices,
@@ -102,12 +82,10 @@ class OrganizationController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/organizations/{id}/images")
-     *
-     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
+    #[Rest\Post('/web-app/v1/organizations/{id}/images')]
     public function uploadImage(
         Organization $organization,
         Request $request,

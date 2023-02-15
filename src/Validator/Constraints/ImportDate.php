@@ -6,10 +6,7 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraints\Date;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class ImportDate extends Date
 {
 }

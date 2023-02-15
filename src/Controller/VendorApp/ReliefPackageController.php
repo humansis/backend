@@ -18,11 +18,7 @@ class ReliefPackageController extends AbstractVendorAppController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/vendor-app/v1/vendors/{id}/relief-packages")
-     *
-     *
-     */
+    #[Rest\Get('/vendor-app/v1/vendors/{id}/relief-packages')]
     public function beneficiaries(Vendor $vendor, VendorReliefPackageFilterInputType $filterInputType, Request $request): JsonResponse
     {
         if (!$vendor->canDoRemoteDistributions()) {

@@ -54,9 +54,7 @@ class AssistanceController extends AbstractController
     ) {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/statistics")
-     */
+    #[Rest\Get('/web-app/v1/assistances/statistics')]
     public function statistics(
         Request $request,
         AssistanceStatisticsFilterInputType $filter,
@@ -84,10 +82,8 @@ class AssistanceController extends AbstractController
         return $this->json(new Paginator($statistics));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/statistics")
-     * @ParamConverter("assistance", options={"mapping": {"id": "id"}})
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/statistics')]
+    #[ParamConverter('assistance', options: ['mapping' => ['id' => 'id']])]
     public function assistanceStatistics(Assistance $assistance, AssistanceFactory $factory): JsonResponse
     {
         $statistics = $factory->hydrate($assistance)->getStatistics();
@@ -95,11 +91,7 @@ class AssistanceController extends AbstractController
         return $this->json($statistics);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances')]
     public function assistances(
         Request $request,
         AssistanceFilterInputType $filter,
@@ -122,15 +114,13 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances")
-     *
-     *
      * @throws CsvParserException
      * @throws EntityNotFoundException
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws ORMException
      */
+    #[Rest\Post('/web-app/v1/assistances')]
     public function create(
         AssistanceCreateInputType $inputType,
         AssistanceFactory $factory,
@@ -142,11 +132,7 @@ class AssistanceController extends AbstractController
         return $this->json($assistance->getAssistanceRoot());
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}')]
     public function item(Assistance $assistance): JsonResponse
     {
         if ($assistance->getArchived()) {
@@ -156,11 +142,7 @@ class AssistanceController extends AbstractController
         return $this->json($assistance);
     }
 
-    /**
-     * @Rest\Patch("/web-app/v1/assistances/{id}")
-     *
-     *
-     */
+    #[Rest\Patch('/web-app/v1/assistances/{id}')]
     public function update(
         Assistance $assistanceRoot,
         UpdateAssistanceInputType $updateAssistanceInputType
@@ -175,11 +157,10 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/web-app/v1/assistances/{id}")
-     *
      *
      * @throws InvalidArgumentException
      */
+    #[Rest\Delete('/web-app/v1/assistances/{id}')]
     public function delete(Assistance $assistance): JsonResponse
     {
         $this->assistanceService->delete($assistance);
@@ -187,11 +168,7 @@ class AssistanceController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/bank-report/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/bank-report/exports')]
     public function bankReportExports(Assistance $assistance, Request $request): Response
     {
         $type = $request->query->get('type', 'csv');
@@ -224,11 +201,7 @@ class AssistanceController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/assistances/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/assistances/exports')]
     public function exports(Project $project, Request $request): Response
     {
         $request->query->add(['officialDistributions' => $project->getId()]);
@@ -237,13 +210,11 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/vulnerability-scores/exports")
-     *
-     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws Exception
      */
+    #[Rest\Get('/web-app/v1/assistances/{id}/vulnerability-scores/exports')]
     public function vulnerabilityScoresExports(
         Assistance $assistance,
         Request $request,
@@ -259,13 +230,13 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances/vulnerability-scores/exports")
      *
      * @throws Exception
      * @throws NonUniqueResultException
      * @throws NoResultException
      * @throws EntityNotFoundException
      */
+    #[Rest\Post('/web-app/v1/assistances/vulnerability-scores/exports')]
     public function vulnerabilityScoresPreExport(
         AssistanceCreateInputType $inputType,
         AssistanceFactory $factory,
@@ -311,11 +282,7 @@ class AssistanceController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/assistances")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/assistances')]
     public function getProjectAssistances(
         Project $project,
         Pagination $pagination,

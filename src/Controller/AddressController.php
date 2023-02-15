@@ -17,11 +17,7 @@ class AddressController extends AbstractController
     public function __construct(private readonly ManagerRegistry $managerRegistry)
     {
     }
-    /**
-     * @Rest\Get("/web-app/v1/addresses/camps")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/camps')]
     public function camps(CampAddressFilterInputType $filter): JsonResponse
     {
         $campAddresses = $this->managerRegistry->getRepository(HouseholdLocation::class)->findCampAddressesByParams(
@@ -31,11 +27,7 @@ class AddressController extends AbstractController
         return $this->json($campAddresses);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/camps/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/camps/{id}')]
     public function camp(HouseholdLocation $campAddress): JsonResponse
     {
         if (HouseholdLocation::LOCATION_TYPE_CAMP !== $campAddress->getType()) {
@@ -45,11 +37,7 @@ class AddressController extends AbstractController
         return $this->json($campAddress);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/residencies")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/residencies')]
     public function residences(ResidenceAddressFilterInputType $filter): JsonResponse
     {
         $residences = $this->managerRegistry->getRepository(HouseholdLocation::class)->findResidenciesByParams($filter);
@@ -57,11 +45,7 @@ class AddressController extends AbstractController
         return $this->json($residences);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/residencies/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/residencies/{id}')]
     public function residence(HouseholdLocation $residence): JsonResponse
     {
         if (HouseholdLocation::LOCATION_TYPE_RESIDENCE !== $residence->getType()) {
@@ -71,11 +55,7 @@ class AddressController extends AbstractController
         return $this->json($residence);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/temporary-settlements")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/temporary-settlements')]
     public function temporarySettlements(TemporarySettlementAddressFilterInputType $filter): JsonResponse
     {
         $temporarySettlements = $this->managerRegistry->getRepository(
@@ -85,11 +65,7 @@ class AddressController extends AbstractController
         return $this->json($temporarySettlements);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/temporary-settlements/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/temporary-settlements/{id}')]
     public function temporarySettlement(HouseholdLocation $temporarySettlement): JsonResponse
     {
         if (HouseholdLocation::LOCATION_TYPE_SETTLEMENT !== $temporarySettlement->getType()) {
@@ -99,11 +75,7 @@ class AddressController extends AbstractController
         return $this->json($temporarySettlement);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses')]
     public function addresses(AddressFilterInputType $filter): JsonResponse
     {
         $temporarySettlements = $this->managerRegistry->getRepository(Address::class)->findByParams($filter);
@@ -111,11 +83,7 @@ class AddressController extends AbstractController
         return $this->json($temporarySettlements);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/addresses/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/addresses/{id}')]
     public function address(Address $address): JsonResponse
     {
         return $this->json($address);

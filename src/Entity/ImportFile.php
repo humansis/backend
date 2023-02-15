@@ -12,63 +12,45 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Entity\User;
 use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="Repository\ImportFileRepository")
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity(repositoryClass: 'Repository\ImportFileRepository')]
+#[ORM\HasLifecycleCallbacks]
 class ImportFile implements Stringable
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
     use CreatedBy;
 
-    /**
-     * @ORM\Column(name="filename", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'filename', type: 'string', nullable: false)]
     private string $filename;
 
-    /**
-     * @ORM\Column(name="is_loaded", type="boolean")
-     */
+    #[ORM\Column(name: 'is_loaded', type: 'boolean')]
     private bool $isLoaded;
 
-    /**
-     * @ORM\Column(name="saved_as_filename", type="string", nullable=true)
-     */
+    #[ORM\Column(name: 'saved_as_filename', type: 'string', nullable: true)]
     private ?string $savedAsFilename = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importFiles")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Import', inversedBy: 'importFiles')]
     private Import $import;
 
     /**
      * @var ImportQueue[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="file", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'file', targetEntity: 'Entity\ImportQueue', cascade: ['remove'])]
     private array | Collection $importQueues;
 
-    /**
-     * @ORM\Column(name="expected_valid_columns", type="simple_array", nullable=true)
-     */
+    #[ORM\Column(name: 'expected_valid_columns', type: 'simple_array', nullable: true)]
     private ?array $expectedValidColumns = null;
 
-    /**
-     * @ORM\Column(name="expected_missing_columns", type="simple_array", nullable=true)
-     */
+    #[ORM\Column(name: 'expected_missing_columns', type: 'simple_array', nullable: true)]
     private ?array $expectedMissingColumns = null;
 
-    /**
-     * @ORM\Column(name="unexpected_columns", type="simple_array", nullable=true)
-     */
+    #[ORM\Column(name: 'unexpected_columns', type: 'simple_array', nullable: true)]
     private ?array $unexpectedColumns = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="structure_violations", type="json", nullable=true)
      */
+    #[ORM\Column(name: 'structure_violations', type: 'json', nullable: true)]
     private $structureViolations;
 
     public function __construct(

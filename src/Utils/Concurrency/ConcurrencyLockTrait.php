@@ -13,15 +13,14 @@ trait ConcurrencyLockTrait
 {
     /**
      * @var DateTimeInterface|null
-     * @ORM\Column(name="locked_at", type="datetime_immutable", nullable=true)
      */
+    #[ORM\Column(name: 'locked_at', type: 'datetime_immutable', nullable: true)]
     protected $lockedAt;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="locked_by", type="string", nullable=true, length=23)
      */
+    #[ORM\Column(name: 'locked_by', type: 'string', length: 23, nullable: true)]
     protected $lockedBy;
 
     public function getLockedAt(): ?DateTimeInterface

@@ -7,10 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * HouseholdLocation
- *
- * @ORM\Table(name="household_location")
- * @ORM\Entity(repositoryClass="Repository\HouseholdLocationRepository")
  */
+#[ORM\Table(name: 'household_location')]
+#[ORM\Entity(repositoryClass: 'Repository\HouseholdLocationRepository')]
 class HouseholdLocation
 {
     use StandardizedPrimaryKey;
@@ -26,29 +25,19 @@ class HouseholdLocation
         self::LOCATION_TYPE_SETTLEMENT,
     ];
 
-    /**
-     * @ORM\Column(name="location_group", type="string", length=45)
-     */
+    #[ORM\Column(name: 'location_group', type: 'string', length: 45)]
     private string $locationGroup;
 
-    /**
-     * @ORM\Column(name="type", type="string", length=45)
-     */
+    #[ORM\Column(name: 'type', type: 'string', length: 45)]
     private string $type;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Address", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Address', cascade: ['persist', 'remove'])]
     private $address;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\CampAddress", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\CampAddress', cascade: ['persist', 'remove'])]
     private $campAddress;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="householdLocations")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household', inversedBy: 'householdLocations')]
     private ?\Entity\Household $household = null;
 
     /**

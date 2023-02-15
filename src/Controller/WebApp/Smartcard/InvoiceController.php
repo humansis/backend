@@ -29,9 +29,7 @@ class InvoiceController extends AbstractWebAppController
 {
     use BinaryFileResponse;
 
-    /**
-     * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     */
+    #[Rest\Get('/web-app/v1/smartcard-redemption-batches/{id}/exports')]
     public function export(
         Invoice $invoice,
         Countries $countries,
@@ -55,9 +53,7 @@ class InvoiceController extends AbstractWebAppController
         return $this->createBinaryFileResponse($filename);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     */
+    #[Rest\Get('/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports')]
     public function legacyExport(
         Invoice $invoice,
         OrganizationRepository $organizationRepository,
@@ -70,9 +66,7 @@ class InvoiceController extends AbstractWebAppController
         return $this->createBinaryFileResponse($filename);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
-     */
+    #[Rest\Get('/web-app/v1/vendors/{id}/smartcard-redemption-batches')]
     public function invoices(
         Vendor $vendor,
         Pagination $pagination,
@@ -84,22 +78,21 @@ class InvoiceController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-batches")
-     *
      *
      * @return JsonResponse
      */
+    #[Rest\Get('/vendor-app/v2/vendors/{id}/smartcard-redemption-batches')]
     public function invoicesForVendorApp(Vendor $vendor, Pagination $pagination): Response
     {
         return $this->forward(self::class . '::invoices', ['vendor' => $vendor, 'pagination' => $pagination]);
     }
 
     /**
-     * @Rest\Post("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
      * @throws ORMException
      * @throws OptimisticLockException
      */
+    #[Rest\Post('/web-app/v1/vendors/{id}/smartcard-redemption-batches')]
     public function create(
         Vendor $vendor,
         SmartcardInvoiceCreateInputType $inputType,
@@ -110,9 +103,7 @@ class InvoiceController extends AbstractWebAppController
         return $this->json($invoice);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
-     */
+    #[Rest\Get('/web-app/v1/vendors/{id}/smartcard-redemption-candidates')]
     public function preliminaryInvoices(
         Vendor $vendor,
         PreliminaryInvoiceRepository $preliminaryInvoiceRepository
@@ -121,10 +112,9 @@ class InvoiceController extends AbstractWebAppController
     }
 
     /**
-     * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
-     *
      * @return JsonResponse
      */
+    #[Rest\Get('/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates')]
     public function preliminariesForVendorApp(
         Vendor $vendor,
         PreliminaryInvoiceRepository $preliminaryInvoiceRepository

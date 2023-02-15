@@ -15,75 +15,53 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * SelectionCriteria - user filled criteria
- *
- * @ORM\Table(name="selection_criteria")
- * @ORM\Entity(repositoryClass="Repository\SelectionCriteriaRepository")
- * @ORM\HasLifecycleCallbacks
  */
+#[ORM\Table(name: 'selection_criteria')]
+#[ORM\Entity(repositoryClass: 'Repository\SelectionCriteriaRepository')]
+#[ORM\HasLifecycleCallbacks]
 class SelectionCriteria
 {
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\AssistanceSelection", inversedBy="selectionCriteria")
-     * @ORM\JoinColumn(name="assistance_selection_id", nullable=false)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\AssistanceSelection', inversedBy: 'selectionCriteria')]
+    #[ORM\JoinColumn(name: 'assistance_selection_id', nullable: false)]
     private AssistanceSelection|null $assistanceSelection = null;
 
-    /**
-     * @ORM\Column(name="table_string", type="string", length=255)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'table_string', type: 'string', length: 255)]
     private ?string $tableString = null;
 
-    /**
-     * @ORM\Column(name="target", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'target', type: 'string', length: 255, nullable: true)]
     private string $target;
 
-    /**
-     * @ORM\Column(name="field_string", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'field_string', type: 'string', length: 255, nullable: true)]
     private string $fieldString;
 
-    /**
-     * @ORM\Column(name="field_id", type="integer", nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'field_id', type: 'integer', nullable: true)]
     private int $idField;
 
-    /**
-     * @ORM\Column(name="condition_string", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'condition_string', type: 'string', length: 255, nullable: true)]
     private ?string $conditionString = null;
 
-    /**
-     * @ORM\Column(name="value_string", type="string", length=255, nullable=true)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'value_string', type: 'string', length: 255, nullable: true)]
     private string|null $valueString = null;
 
-    /**
-     * @ORM\Column(name="weight", type="integer")
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'weight', type: 'integer')]
     private ?int $weight = null;
 
-    /**
-     * @ORM\Column(name="group_number", type="integer", nullable=false)
-     */
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    #[ORM\Column(name: 'group_number', type: 'integer', nullable: false)]
     private ?int $groupNumber = null;
 
     private bool $deprecated = true;
 
-    /**
-     * @ORM\PostLoad()
-     */
+    #[ORM\PostLoad]
     public function postLoad(LifecycleEventArgs $lifecycleEventArgs): void
     {
         if ($this->tableString === SelectionCriteriaField::COUNTRY_SPECIFIC) {

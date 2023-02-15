@@ -11,14 +11,10 @@ trait GenericStateFilterTrait
 {
     /**
      * TODO: add validation from enum
-     *
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $states;
 

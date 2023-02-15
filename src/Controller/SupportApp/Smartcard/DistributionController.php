@@ -27,9 +27,9 @@ class DistributionController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/support-app/v1/smartcard/distribution")
      * @throws Exception
      */
+    #[Rest\Delete('/support-app/v1/smartcard/distribution')]
     public function removeDistribution(ResetReliefPackageInputType $inputType): JsonResponse
     {
         try {
@@ -42,10 +42,9 @@ class DistributionController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/support-app/v1/smartcard/distribution")
-     *
      * @throws InvalidArgumentException
      */
+    #[Rest\Post('/support-app/v1/smartcard/distribution')]
     public function createDistribution(ManualDistributionInputType $manualDistributionInputType): JsonResponse
     {
         try {

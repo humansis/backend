@@ -8,9 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\SynchronizationBatch;
 use Entity\SmartcardPurchase;
 
-/**
- * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
- */
+#[ORM\Entity(repositoryClass: '\Repository\SynchronizationBatchRepository')]
 class Purchases extends SynchronizationBatch
 {
     /**

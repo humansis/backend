@@ -20,12 +20,12 @@ class SynchronizationBatchController extends AbstractController
     {
     }
     /**
-     * @Rest\Get("/web-app/v1/syncs")
      *
      * @param API\FilterInputType $filter
      * @param API\OrderInputType $orderBy
      *
      */
+    #[Rest\Get('/web-app/v1/syncs')]
     public function list(API\FilterInputType $filter, API\OrderInputType $orderBy, Pagination $pagination): JsonResponse
     {
         /** @var SynchronizationBatchRepository $repository */
@@ -35,11 +35,7 @@ class SynchronizationBatchController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/syncs/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/syncs/{id}')]
     public function detail(SynchronizationBatch $object): JsonResponse
     {
         if ($object->getState() === SynchronizationBatchState::ARCHIVED) {

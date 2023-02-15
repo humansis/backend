@@ -13,54 +13,32 @@ use Utils\ExportableInterface;
 
 /**
  * Donor
- *
- * @ORM\Table(name="donor")
- * @ORM\Entity(repositoryClass="Repository\DonorRepository")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Table(name: 'donor')]
+#[ORM\Entity(repositoryClass: 'Repository\DonorRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Donor implements ExportableInterface
 {
     use CreatedAt;
     use LastModifiedAt;
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\Column(name="fullname", type="string", length=255)
-     *
-     */
+    #[ORM\Column(name: 'fullname', type: 'string', length: 255)]
     private ?string $fullname = null;
 
-    /**
-     *
-     * @ORM\Column(name="shortname", type="string", length=255)
-     *
-     */
+    #[ORM\Column(name: 'shortname', type: 'string', length: 255)]
     private ?string $shortname = null;
 
-    /**
-     *
-     * @ORM\Column(name="dateAdded", type="datetime")
-     *
-     */
+    #[ORM\Column(name: 'dateAdded', type: 'datetime')]
     private ?\DateTime $dateAdded = null;
 
-    /**
-     *
-     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     *
-     */
+    #[ORM\Column(name: 'notes', type: 'string', length: 255, nullable: true)]
     private ?string $notes = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Entity\Project", mappedBy="donors")
-     *
-     */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Project', mappedBy: 'donors')]
     private $projects;
 
-    /**
-     * @ORM\Column(name="logo", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'logo', type: 'string', length: 255, nullable: true)]
     private ?string $logo = null;
 
     public function __construct()

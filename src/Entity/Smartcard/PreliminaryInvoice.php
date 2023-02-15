@@ -10,56 +10,37 @@ use Entity\Vendor;
 
 /**
  * Read only entity.
- *
- * @ORM\Table(name="view_smartcard_preliminary_invoice")
- * @ORM\Entity(readOnly=true, repositoryClass="Repository\Smartcard\PreliminaryInvoiceRepository")
  */
+#[ORM\Table(name: 'view_smartcard_preliminary_invoice')]
+#[ORM\Entity(repositoryClass: 'Repository\Smartcard\PreliminaryInvoiceRepository', readOnly: true)]
 class PreliminaryInvoice
 {
-    /**
-     *
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     */
+    #[ORM\Column(type: 'string')]
+    #[ORM\Id]
     private string $id;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Project")
-     *
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Project')]
     private ?\Entity\Project $project = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Vendor")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Vendor')]
     private \Entity\Vendor $vendor;
 
-    /**
-     * @ORM\Column(name="value", type="decimal")
-     */
+    #[ORM\Column(name: 'value', type: 'decimal')]
     private $value;
 
-    /**
-     * @ORM\Column(name="currency", type="string")
-     */
+    #[ORM\Column(name: 'currency', type: 'string')]
     private $currency;
 
-    /**
-     * @ORM\Column(name="purchase_ids", type="json")
-     */
+    #[ORM\Column(name: 'purchase_ids', type: 'json')]
     private array $purchaseIds;
 
-    /**
-     * @ORM\Column(name="purchase_count", type="integer")
-     */
+    #[ORM\Column(name: 'purchase_count', type: 'integer')]
     private int $purchaseCount;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(name="is_redeemable", type="boolean")
      */
+    #[ORM\Column(name: 'is_redeemable', type: 'boolean')]
     private $isRedeemable;
 
     public function getProject(): ?Project

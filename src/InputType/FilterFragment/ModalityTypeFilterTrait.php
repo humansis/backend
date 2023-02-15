@@ -8,14 +8,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 trait ModalityTypeFilterTrait
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $modalityTypes;
 

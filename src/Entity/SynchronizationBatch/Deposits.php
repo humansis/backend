@@ -9,9 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Entity\SynchronizationBatch;
 use Entity\SmartcardDeposit;
 
-/**
- * @ORM\Entity(repositoryClass="\Repository\SynchronizationBatchRepository")
- */
+#[ORM\Entity(repositoryClass: '\Repository\SynchronizationBatchRepository')]
 class Deposits extends SynchronizationBatch
 {
     /**

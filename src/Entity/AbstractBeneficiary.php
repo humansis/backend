@@ -7,46 +7,35 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(name="abstract_beneficiary")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="bnf_type", type="string")
- * @ORM\DiscriminatorMap({
- *     "bnf" = "Beneficiary",
- *     "hh" = "Household",
- *     "inst" = "Institution",
- *     "comm" = "Community"
- * })
- */
+#[ORM\Table(name: 'abstract_beneficiary')]
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'bnf_type', type: 'string')]
+#[ORM\DiscriminatorMap(['bnf' => 'Beneficiary', 'hh' => 'Household', 'inst' => 'Institution', 'comm' => 'Community'])]
 abstract class AbstractBeneficiary
 {
     use StandardizedPrimaryKey;
 
     /**
      * @var Project[]|Collection
-     * @ORM\ManyToMany(targetEntity="Entity\Project", inversedBy="households", cascade={"persist"})
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Project', inversedBy: 'households', cascade: ['persist'])]
     private $projects;
 
     /**
      * @var AssistanceBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\AssistanceBeneficiary', cascade: ['remove'])]
     private Collection | array $distributionBeneficiaries;
 
     /**
      * @var AssistanceBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\AssistanceBeneficiary", mappedBy="beneficiary", cascade={"remove"})
-     * @ORM\JoinColumn(name="distribution_beneficiary_id")
      */
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\AssistanceBeneficiary', cascade: ['remove'])]
+    #[ORM\JoinColumn(name: 'distribution_beneficiary_id')]
     private Collection | array $assistanceBeneficiary;
 
-    /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private int|bool $archived = 0;
 
     /**

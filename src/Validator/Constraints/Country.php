@@ -6,14 +6,11 @@ namespace Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
+#[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY | \Attribute::IS_REPEATABLE)]
 class Country extends \Symfony\Component\Validator\Constraints\Country
 {
-    public function __construct($options = null)
+    public function __construct(mixed $options = null, array $groups = null)
     {
-        Constraint::__construct($options);
+        Constraint::__construct($options, $groups);
     }
 }

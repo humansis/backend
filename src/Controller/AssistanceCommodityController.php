@@ -18,11 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AssistanceCommodityController extends AbstractController
 {
-    /**
-     * @Rest\Get("/web-app/v1/assistances/commodities")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/commodities')]
     public function commodities(
         CommodityFilterInputType $filter,
         CommodityRepository $commodityRepository
@@ -32,11 +28,7 @@ class AssistanceCommodityController extends AbstractController
         return $this->json($projects);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/commodities")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/commodities')]
     public function commoditiesByAssistance(Assistance $assistance): JsonResponse
     {
         if ($assistance->getArchived()) {
@@ -47,15 +39,13 @@ class AssistanceCommodityController extends AbstractController
     }
 
     /**
-     * @Rest\Post("/web-app/v1/assistances/commodities")
-     *
-     *
      * @throws CsvParserException
      * @throws EntityNotFoundException
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws ORMException
      */
+    #[Rest\Post('/web-app/v1/assistances/commodities')]
     public function create(AssistanceCreateInputType $inputType, AssistanceFactory $factory): JsonResponse
     {
         return $this->json(new Paginator($factory->create($inputType)->getCommoditiesSummary()));

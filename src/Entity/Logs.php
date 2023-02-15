@@ -8,77 +8,49 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
 /**
  * Logs
- *
- * @ORM\Table(name="logs")
- * @ORM\Entity(repositoryClass="Repository\LogsRepository")
  */
+#[ORM\Table(name: 'logs')]
+#[ORM\Entity(repositoryClass: 'Repository\LogsRepository')]
 class Logs
 {
-    /**
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private ?int $id;
 
-    /**
-     *
-     * @ORM\Column(name="url", type="string", length=255)
-     *
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'url', type: 'string', length: 255)]
     private string $url;
 
-    /**
-     * @ORM\Column(name="idUser", type="integer")
-     */
+    #[ORM\Column(name: 'idUser', type: 'integer')]
     private int $idUser;
 
-    /**
-     *
-     * @ORM\Column(name="mailUser", type="string", length=255)
-     *
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'mailUser', type: 'string', length: 255)]
     private string $mailUser;
 
-    /**
-     *
-     * @ORM\Column(name="method", type="string", length=255)
-     *
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'method', type: 'string', length: 255)]
     private string $method;
 
-    /**
-     * @ORM\Column(name="date", type="datetime")
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'date', type: 'datetime')]
     private \DateTime $date;
 
-    /**
-     *
-     * @ORM\Column(name="httpStatus", type="integer")
-     *
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'httpStatus', type: 'integer')]
     private int $httpStatus;
 
-    /**
-     * @ORM\Column(name="controller", type="string", length=255)
-     */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'controller', type: 'string', length: 255)]
     private ?string $controller = '';
 
     /**
      * @var array
-     *
-     * @ORM\Column(name="request", type="text")
      */
     #[SymfonyGroups(['FullLogs'])]
+    #[ORM\Column(name: 'request', type: 'text')]
     protected $request;
 
     /**

@@ -9,41 +9,31 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 
-/**
- * @ORM\Table(name="role")
- * @ORM\Entity(repositoryClass="Repository\RoleRepository")
- */
+#[ORM\Table(name: 'role')]
+#[ORM\Entity(repositoryClass: 'Repository\RoleRepository')]
 class Role
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="code", type="string", nullable=false, unique=true)
-     */
+    #[ORM\Column(name: 'code', type: 'string', unique: true, nullable: false)]
     private string|null $code = null;
 
-    /**
-     * @ORM\Column(name="name", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'name', type: 'string', nullable: false)]
     private string|null $name = null;
 
-    /**
-     * @ORM\Column(name="deletable", type="boolean", nullable=false)
-     */
+    #[ORM\Column(name: 'deletable', type: 'boolean', nullable: false)]
     private bool $deletable = true;
 
     /**
      * @var Collection|Privilege[]
-     *
-     * @ORM\ManyToMany(targetEntity="Entity\Privilege", inversedBy="roles")
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\Privilege', inversedBy: 'roles')]
     private Collection |array $privileges;
 
     /**
      * @var Collection|User[]
-     *
-     * @ORM\ManyToMany(targetEntity="Entity\User", mappedBy="roles")
      */
+    #[ORM\ManyToMany(targetEntity: 'Entity\User', mappedBy: 'roles')]
     private Collection |array $users;
 
     public function __construct()

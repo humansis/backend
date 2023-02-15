@@ -22,8 +22,10 @@ class VendorFilterInputType extends AbstractFilterInputType
 
     /**
      * @var string|null
-     * @Enum(enumClass="Enum\VendorInvoicingState")
      */
+    #[Enum(options: [
+        'enumClass' => "Enum\VendorInvoicingState",
+    ])]
     protected $invoicing;
 
     public function hasInvoicing(): bool

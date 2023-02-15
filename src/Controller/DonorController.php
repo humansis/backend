@@ -26,11 +26,7 @@ class DonorController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/donors/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/donors/exports')]
     public function exports(Request $request): Response
     {
         $request->query->add(['donors' => true]);
@@ -38,22 +34,14 @@ class DonorController extends AbstractController
         return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/donors/{id}")
-     * @Cache(lastModified="donor.getLastModifiedAt()", public=true)
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/donors/{id}')]
+    #[Cache(public: true, lastModified: 'donor.getLastModifiedAt()')]
     public function item(Donor $donor): JsonResponse
     {
         return $this->json($donor);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/donors")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/donors')]
     public function list(
         Pagination $pagination,
         DonorOrderInputType $orderBy,
@@ -65,11 +53,7 @@ class DonorController extends AbstractController
         return $this->json($countrySpecifics);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/donors")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/donors')]
     public function create(DonorCreateInputType $inputType): JsonResponse
     {
         $donor = $this->donorService->create($inputType);
@@ -77,11 +61,7 @@ class DonorController extends AbstractController
         return $this->json($donor);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/donors/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/donors/{id}')]
     public function update(Donor $donor, DonorUpdateInputType $inputType): JsonResponse
     {
         $this->donorService->update($donor, $inputType);
@@ -89,11 +69,7 @@ class DonorController extends AbstractController
         return $this->json($donor);
     }
 
-    /**
-     * @Rest\Delete("/web-app/v1/donors/{id}")
-     *
-     *
-     */
+    #[Rest\Delete('/web-app/v1/donors/{id}')]
     public function delete(Donor $object): JsonResponse
     {
         $this->donorService->delete($object);
@@ -101,11 +77,7 @@ class DonorController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/donors/{id}/images")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/donors/{id}/images')]
     public function uploadImage(Donor $donor, Request $request): JsonResponse
     {
         if (!($file = $request->files->get('file'))) {

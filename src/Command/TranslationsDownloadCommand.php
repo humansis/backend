@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Command;
 
 use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,12 +16,10 @@ use UnexpectedValueException;
 use Utils\FileSystem\ZipError;
 use ZipArchive;
 
+#[AsCommand(name: 'translations:download')]
 class TranslationsDownloadCommand extends Command
 {
     use ZipError;
-
-    protected static $defaultName = 'translations:download';
-
 
     private readonly \Symfony\Component\HttpClient\HttpClient $client;
 

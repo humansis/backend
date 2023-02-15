@@ -18,78 +18,56 @@ use Entity\User;
 use Entity\SmartcardDeposit;
 use Utils\DecimalNumber\DecimalNumberFactory;
 
-/**
- * @ORM\Entity(repositoryClass="Repository\Assistance\ReliefPackageRepository")
- * @ORM\Table(name="assistance_relief_package")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Table(name: 'assistance_relief_package')]
+#[ORM\Entity(repositoryClass: 'Repository\Assistance\ReliefPackageRepository')]
+#[ORM\HasLifecycleCallbacks]
 class ReliefPackage
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
     use LastModifiedAt;
 
-    /**
-     * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_relief_package_state', nullable: false)]
     private string $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\AssistanceBeneficiary', inversedBy: 'reliefPackages')]
     private AssistanceBeneficiary $assistanceBeneficiary;
 
-    /**
-     * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=false)
-     */
+    #[ORM\Column(name: 'modality_type', type: 'enum_modality_type', nullable: false)]
     private string $modalityType;
 
-    /**
-     * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
-     */
+    #[ORM\Column(name: 'amount_to_distribute', type: 'decimal', precision: 10, scale: 2)]
     private string|float $amountToDistribute;
 
     /**
      *
      * Not in use right now. Prepared for partial assists.
-     * @ORM\Column(name="amount_distributed", type="decimal", precision=10, scale=2)
      */
+    #[ORM\Column(name: 'amount_distributed', type: 'decimal', precision: 10, scale: 2)]
     private string $amountDistributed;
 
-    /**
-     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2, nullable=true)
-     */
+    #[ORM\Column(name: 'amount_spent', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private string|null $amountSpent = null;
 
-    /**
-     * @ORM\Column(name="unit", type="string", nullable=false)
-     */
+    #[ORM\Column(name: 'unit', type: 'string', nullable: false)]
     private string $unit;
 
-    /**
-     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'notes', type: 'string', length: 255, nullable: true)]
     private ?string $notes = null;
 
     /**
      * @var Collection|SmartcardDeposit[]
      *
      * There should be only one deposit at this moment. One-to-many prepared for partial distribution
-     *
-     * @ORM\OneToMany(targetEntity="Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
+    #[ORM\OneToMany(mappedBy: 'reliefPackage', targetEntity: 'Entity\SmartcardDeposit')]
     private \Doctrine\Common\Collections\Collection|array $smartcardDeposits;
 
-    /**
-     * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
-     */
+    #[ORM\Column(name: 'distributedAt', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $distributedAt = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     * @ORM\JoinColumn(nullable=true)
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?\Entity\User $distributedBy = null;
 
     public function __construct(
@@ -123,9 +101,7 @@ class ReliefPackage
         $this->amountDistributed = (string) $amountDistributed;
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function updateLastModified(): void
     {
         $this->setLastModifiedNow();

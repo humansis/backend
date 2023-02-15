@@ -9,14 +9,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 trait DateIntervalFilterTrait
 {
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     protected $dateFrom;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     protected $dateTo;
 
     public function getDateFrom(): string

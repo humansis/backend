@@ -16,9 +16,7 @@ use Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class AssistanceCodelistController extends AbstractController
 {
     /**
@@ -28,11 +26,7 @@ class AssistanceCodelistController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/targets")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/assistances/targets')]
     public function getTargets(AssistanceTargetFilterInputType $targetTypeFilterType): JsonResponse
     {
         if (!$targetTypeFilterType->hasType()) {
@@ -46,9 +40,7 @@ class AssistanceCodelistController extends AbstractController
         return $this->json(new Paginator($targets));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/types")
-     */
+    #[Rest\Get('/web-app/v1/assistances/types')]
     public function getTypes(AssistanceTypeFilterInputType $typeSubsectorInputType): JsonResponse
     {
         if (!$typeSubsectorInputType->hasSubsector()) {
@@ -69,9 +61,7 @@ class AssistanceCodelistController extends AbstractController
         return $this->json(new Paginator($assistanceTypes));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/commodity/divisions")
-     */
+    #[Rest\Get('/web-app/v1/assistances/commodity/divisions')]
     public function getCommodityDivision(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(CommodityDivision::values());

@@ -11,14 +11,10 @@ use Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class ModalityCodelistController extends AbstractController
 {
-    /**
-     * @Rest\Get("/offline-app/v1/modality-types")
-     */
+    #[Rest\Get('/offline-app/v1/modality-types')]
     public function allTypes(): JsonResponse
     {
         $data = [];

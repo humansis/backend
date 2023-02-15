@@ -12,10 +12,10 @@ use Validator\Constraints\Enum;
 #[Assert\GroupSequence(['DivisionInputType', 'Primary', 'Secondary', 'Tertiary'])]
 class DivisionInputType implements InputTypeNullableDenormalizer
 {
-    /**
-     * @Enum(enumClass="Component\Assistance\Enum\CommodityDivision")
-     */
     #[Assert\Type('string')]
+    #[Enum(options: [
+        'enumClass' => "Component\Assistance\Enum\CommodityDivision",
+    ])]
     private ?string $code = null;
 
     /**
@@ -25,7 +25,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
     #[Assert\NotBlank(allowNull: true)]
     private ?array $quantities = null;
 
-    #[Assert\IsTrue(groups: ['Primary'], message: "For selection 'Per Household Members' should be defined at least one group.")]
+    #[Assert\IsTrue(message: "For selection 'Per Household Members' should be defined at least one group.", groups: ['Primary'])]
     public function isSetQuantitiesForGroups(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -39,7 +39,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    #[Assert\IsTrue(groups: ['Primary'], message: "Property 'quantities' must be null for no-groups selection.")]
+    #[Assert\IsTrue(message: "Property 'quantities' must be null for no-groups selection.", groups: ['Primary'])]
     public function isNotSetQuantities(): bool
     {
         if ($this->code === CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -53,7 +53,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    #[Assert\IsTrue(groups: ['Secondary'], message: "For selection 'Per Household Members' should be defined one starting group from 1 Member")]
+    #[Assert\IsTrue(message: "For selection 'Per Household Members' should be defined one starting group from 1 Member", groups: ['Secondary'])]
     public function isStartingGroupExists(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -74,7 +74,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    #[Assert\IsTrue(groups: ['Secondary'], message: "For selection 'Per Household Members' should be defined one Group which ends with null")]
+    #[Assert\IsTrue(message: "For selection 'Per Household Members' should be defined one Group which ends with null", groups: ['Secondary'])]
     public function isEndingGroupExists(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -95,7 +95,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         }
     }
 
-    #[Assert\IsTrue(groups: ['Secondary'], message: 'Groups must not overlap.')]
+    #[Assert\IsTrue(message: 'Groups must not overlap.', groups: ['Secondary'])]
     public function isGroupsOverlapping(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {
@@ -131,7 +131,7 @@ class DivisionInputType implements InputTypeNullableDenormalizer
         return true;
     }
 
-    #[Assert\IsTrue(groups: ['Tertiary'], message: 'Groups ranges must follow up.')]
+    #[Assert\IsTrue(message: 'Groups ranges must follow up.', groups: ['Tertiary'])]
     public function isGroupsFollowing(): bool
     {
         if ($this->code !== CommodityDivision::PER_HOUSEHOLD_MEMBERS) {

@@ -19,11 +19,9 @@ class CreateDepositInputType implements InputTypeInterface
     #[Assert\GreaterThan(value: 0)]
     private ?int $reliefPackageId = null;
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotNull]
     #[Assert\NotBlank]
+    #[Iso8601]
     private ?\DateTime $createdAt = null;
 
     #[Assert\Type(type: 'string')]

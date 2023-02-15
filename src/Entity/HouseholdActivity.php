@@ -9,32 +9,23 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * Household activity.
- *
- * @ORM\Table(name="household_activity")
- * @ORM\Entity(repositoryClass="Repository\HouseholdActivityRepository")
  */
+#[ORM\Table(name: 'household_activity')]
+#[ORM\Entity(repositoryClass: 'Repository\HouseholdActivityRepository')]
 class HouseholdActivity
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household')]
     private Household $household;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
     private ?User $author;
 
-    /**
-     * @ORM\Column(name="content", type="json")
-     */
+    #[ORM\Column(name: 'content', type: 'json')]
     private string $content;
 
-    /**
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
+    #[ORM\Column(name: 'created_at', type: 'datetime', nullable: false)]
     private \DateTimeInterface $createdAt;
 
     public function __construct(

@@ -33,12 +33,8 @@ class PurchasedItemController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/{id}/purchased-items")
-     * @ParamConverter("beneficiary")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/{id}/purchased-items')]
+    #[ParamConverter('beneficiary')]
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
@@ -49,12 +45,8 @@ class PurchasedItemController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/households/{id}/purchased-items")
-     * @ParamConverter("household")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/households/{id}/purchased-items')]
+    #[ParamConverter('household')]
     public function listByHousehold(Household $household): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
@@ -66,11 +58,10 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/purchased-items")
-     *
      *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
+    #[Rest\Get('/web-app/v1/purchased-items')]
     public function list(
         Request $request,
         PurchasedItemFilterInputType $filterInputType,
@@ -90,12 +81,9 @@ class PurchasedItemController extends AbstractController
     }
 
     /**
-     * @Rest\Get("/web-app/v1/purchased-items/exports")
-     *
-     *
-     *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
+    #[Rest\Get('/web-app/v1/purchased-items/exports')]
     public function summaryExports(Request $request, PurchasedItemFilterInputType $filter): Response
     {
         if (!$request->headers->has('country')) {
@@ -114,11 +102,7 @@ class PurchasedItemController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/smartcard-purchased-items")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/smartcard-purchased-items')]
     public function listSmartcardItems(
         Request $request,
         SmartcardPurchasedItemFilterInputType $filterInputType,
@@ -140,11 +124,7 @@ class PurchasedItemController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/smartcard-purchased-items/exports")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/smartcard-purchased-items/exports')]
     public function exportSmartcardItems(Request $request, SmartcardPurchasedItemFilterInputType $filter): Response
     {
         if (!$request->headers->has('country')) {

@@ -10,14 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['AddHouseholdsToProjectInputType', 'Strict'])]
 class AddHouseholdsToProjectInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     #[Assert\NotNull]
     private $householdIds;

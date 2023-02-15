@@ -19,20 +19,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-/**
- * @Rest\Route("/web-app/v1/scoring-blueprints")
- * @Cache(expires="+1 hour", public=true)
- */
+#[Rest\Route('/web-app/v1/scoring-blueprints')]
+#[Cache(expires: '+1 hour', public: true)]
 class ScoringBlueprintController extends AbstractController
 {
     public function __construct(private readonly ScoringBlueprintService $scoringBlueprintService, private readonly ScoringBlueprintRepository $scoringBlueprintRepository)
     {
     }
 
-    /**
-     * @Rest\Get()
-     *
-     */
+    #[Rest\Get]
     public function list(Request $request, ScoringBlueprintFilterInputType $scoringFilterInputType): JsonResponse
     {
         $scoringBlueprints = $this->scoringBlueprintRepository->findByParams(
@@ -44,10 +39,7 @@ class ScoringBlueprintController extends AbstractController
         return $this->json($scoringBlueprints);
     }
 
-    /**
-     * @Rest\Post()
-     *
-     */
+    #[Rest\Post]
     public function create(Request $request, ScoringInputType $inputType): JsonResponse
     {
         try {
@@ -60,19 +52,13 @@ class ScoringBlueprintController extends AbstractController
         }
     }
 
-    /**
-     * @Rest\Get("/{id}")
-     *
-     */
+    #[Rest\Get('/{id}')]
     public function single(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
         return $this->json($scoringBlueprint);
     }
 
-    /**
-     * @Rest\Patch("/{id}")
-     *
-     */
+    #[Rest\Patch('/{id}')]
     public function patch(ScoringBlueprint $scoringBlueprint, ScoringPatchInputType $inputType): JsonResponse
     {
         $this->scoringBlueprintService->patch($inputType, $scoringBlueprint);
@@ -80,10 +66,7 @@ class ScoringBlueprintController extends AbstractController
         return $this->json($scoringBlueprint);
     }
 
-    /**
-     * @Rest\Delete("/{id}")
-     *
-     */
+    #[Rest\Delete('/{id}')]
     public function archive(ScoringBlueprint $scoringBlueprint): JsonResponse
     {
         $this->scoringBlueprintService->archive($scoringBlueprint);
@@ -91,10 +74,7 @@ class ScoringBlueprintController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/{id}/content")
-     *
-     */
+    #[Rest\Get('/{id}/content')]
     public function getContent(ScoringBlueprint $scoringBlueprint): StreamedResponse
     {
         $stream = $scoringBlueprint->getStream();

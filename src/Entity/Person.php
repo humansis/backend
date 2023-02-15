@@ -16,89 +16,70 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Person
- *
- * @ORM\Table(name="person", indexes={@ORM\Index(name="idx_local_name", columns={"localGivenName", "localFamilyName"})})
- * @ORM\Entity()
  */
+#[ORM\Table(name: 'person')]
+#[ORM\Index(columns: ['localGivenName', 'localFamilyName'], name: 'idx_local_name')]
+#[ORM\Entity]
 class Person
 {
     use EnumTrait;
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="enGivenName", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'enGivenName', type: 'string', length: 255, nullable: true)]
     private ?string $enGivenName = null;
 
-    /**
-     * @ORM\Column(name="enFamilyName", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'enFamilyName', type: 'string', length: 255, nullable: true)]
     private ?string $enFamilyName = null;
 
-    /**
-     * @ORM\Column(name="localGivenName", type="string", length=255, nullable=true)
-     */
     #[Assert\NotBlank(message: 'The local given name is required.')]
+    #[ORM\Column(name: 'localGivenName', type: 'string', length: 255, nullable: true)]
     private ?string $localGivenName = null;
 
-    /**
-     * @ORM\Column(name="localFamilyName", type="string", length=255, nullable=true)
-     */
     #[Assert\NotBlank(message: 'The local family name is required.')]
+    #[ORM\Column(name: 'localFamilyName', type: 'string', length: 255, nullable: true)]
     private ?string $localFamilyName = null;
 
     /**
      * @var int|null
-     *
-     * @ORM\Column(name="gender", type="smallint", nullable=true)
      */
+    #[ORM\Column(name: 'gender', type: 'smallint', nullable: true)]
     private $gender;
 
     /**
      * @var DateTime|null
-     *
-     * @ORM\Column(name="dateOfBirth", type="date", nullable=true)
      */
     #[Assert\NotBlank(message: 'The date of birth is required.')]
+    #[ORM\Column(name: 'dateOfBirth', type: 'date', nullable: true)]
     private $dateOfBirth;
 
     /**
      * @var DateTime|null
-     *
-     * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      */
+    #[ORM\Column(name: 'updated_on', type: 'datetime', nullable: true)]
     private $updatedOn;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Profile", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Profile', cascade: ['persist', 'remove'])]
     private ?\Entity\Profile $profile = null;
 
     /**
      * @var Phone[]|Collection
-     * @ORM\OneToMany(targetEntity="Entity\Phone", mappedBy="person", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'person', targetEntity: 'Entity\Phone', cascade: ['persist', 'remove'])]
     private $phones;
 
     /**
      * @var NationalId[]|Collection
-     * @ORM\OneToMany(targetEntity="Entity\NationalId", mappedBy="person", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'person', targetEntity: 'Entity\NationalId', cascade: ['persist', 'remove'])]
     private $nationalIds;
 
-    /**
-     * @ORM\OneToOne(targetEntity="Entity\Referral", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: 'Entity\Referral', cascade: ['persist', 'remove'])]
     private ?\Entity\Referral $referral = null;
 
-    /**
-     * @ORM\Column(name="local_parents_name", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'local_parents_name', type: 'string', length: 255, nullable: true)]
     private ?string $localParentsName = null;
 
-    /**
-     * @ORM\Column(name="en_parents_name", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'en_parents_name', type: 'string', length: 255, nullable: true)]
     private ?string $enParentsName = null;
 
     /**

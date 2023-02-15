@@ -17,18 +17,14 @@ use Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-/**
- * @Cache(expires="+12 hours", public=true)
- */
+#[Cache(expires: '+12 hours', public: true)]
 class BeneficiaryCodelistController extends AbstractController
 {
     public function __construct(private readonly CodeListService $codeListService, private readonly ManagerRegistry $managerRegistry)
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/types")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/types')]
     public function getTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(BeneficiaryType::values());
@@ -36,9 +32,7 @@ class BeneficiaryCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/referral-types")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/referral-types')]
     public function getReferralTypes(): JsonResponse
     {
         $data = $this->codeListService->mapArray(Referral::REFERRALTYPES);
@@ -46,9 +40,7 @@ class BeneficiaryCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/residency-statuses")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/residency-statuses')]
     public function getResidencyStatuses(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(ResidencyStatus::values());
@@ -56,9 +48,7 @@ class BeneficiaryCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/vulnerability-criteria")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/vulnerability-criteria')]
     public function getVulnerabilityCriterion(): JsonResponse
     {
         $criterion = $this->managerRegistry->getRepository(VulnerabilityCriterion::class)
@@ -67,9 +57,7 @@ class BeneficiaryCodelistController extends AbstractController
         return $this->json(new Paginator($this->codeListService->mapCriterion($criterion)));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/national-ids/types")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/national-ids/types')]
     public function getNationalIdTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(NationalIdType::values());
@@ -77,9 +65,7 @@ class BeneficiaryCodelistController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/beneficiaries/phones/types")
-     */
+    #[Rest\Get('/web-app/v1/beneficiaries/phones/types')]
     public function getPhoneTypes(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(PhoneTypes::values());

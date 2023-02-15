@@ -26,10 +26,8 @@ class AclController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/acl/roles")
-     * @Cache(expires="+12 hours", public=true)
-     */
+    #[Rest\Get('/web-app/v1/acl/roles')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function roles(): JsonResponse
     {
         $roles = $this->managerRegistry->getRepository(Role::class)->findAll();
@@ -46,13 +44,9 @@ class AclController extends AbstractController
         return $this->json(new Paginator($filtered));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/acl/roles/{code}")
-     * @ParamConverter("role", options={"mapping": {"code": "code"}})
-     * @Cache(expires="+12 hours", public=true)
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/acl/roles/{code}')]
+    #[ParamConverter('role', options: ['mapping' => ['code' => 'code']])]
+    #[Cache(expires: '+12 hours', public: true)]
     public function getRole(Role $role): JsonResponse
     {
         return $this->json($role);

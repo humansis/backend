@@ -21,11 +21,9 @@ class ScoringInputType implements InputTypeInterface
     #[Assert\Type('bool')]
     private $archived = false;
 
-    /**
-     * @IsBase64()
-     */
     #[Assert\Type('string')]
     #[Assert\NotBlank]
+    #[IsBase64]
     private $content;
 
     public function getName(): string

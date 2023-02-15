@@ -15,37 +15,26 @@ use Entity\User;
 
 /**
  * Imformation about duplicity between two queue records.
- *
- * @ORM\Entity()
  */
+#[ORM\Entity]
 class ImportQueueDuplicity
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesOurs")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportQueue', inversedBy: 'importQueueDuplicitiesOurs')]
     private ImportQueue $ours;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importQueueDuplicitiesTheirs")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportQueue', inversedBy: 'importQueueDuplicitiesTheirs')]
     private ImportQueue $theirs;
 
-    /**
-     * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_import_duplicity_state', nullable: false)]
     private string $state;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User')]
     private ?\Entity\User $decideBy = null;
 
-    /**
-     * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
-     */
+    #[ORM\Column(name: 'decide_at', type: 'datetimetz', nullable: true)]
     private ?\DateTimeInterface $decideAt = null;
 
     public function __construct(ImportQueue $ours, ImportQueue $theirs)

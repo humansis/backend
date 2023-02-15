@@ -17,11 +17,10 @@ class BeneficiaryController extends AbstractOfflineAppController
     {
     }
     /**
-     * @Rest\Get("/offline-app/v2/beneficiaries")
-     *
      *
      * @deprecated Application require only one beneficiary at a time
      */
+    #[Rest\Get('/offline-app/v2/beneficiaries')]
     public function beneficiaries(Request $request, BeneficiaryFilterInputType $filter): JsonResponse
     {
         $beneficiaries = $this->managerRegistry->getRepository(Beneficiary::class)->findByParams($filter);
@@ -34,11 +33,7 @@ class BeneficiaryController extends AbstractOfflineAppController
         return $response;
     }
 
-    /**
-     * @Rest\Get("/offline-app/v2/beneficiary/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v2/beneficiary/{id}')]
     public function beneficiary(Beneficiary $beneficiary, Request $request): JsonResponse
     {
         $response = $this->json($beneficiary);

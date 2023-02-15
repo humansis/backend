@@ -14,37 +14,28 @@ use InputType\Beneficiary\NationalIdCardInputType;
 
 /**
  * NationalId
- *
- * @ORM\Table(name="national_id", indexes={
- *     @ORM\Index(name="duplicity_check_idx", columns={"id_type", "id_number"})
- * })
- * @ORM\Entity(repositoryClass="Repository\NationalIdRepository")
  */
+#[ORM\Table(name: 'national_id')]
+#[ORM\Index(columns: ['id_type', 'id_number'], name: 'duplicity_check_idx')]
+#[ORM\Entity(repositoryClass: 'Repository\NationalIdRepository')]
 class NationalId
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
 
-    /**
-     * @ORM\Column(name="id_number", type="string", length=255)
-     */
+    #[ORM\Column(name: 'id_number', type: 'string', length: 255)]
     private string $idNumber;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="id_type", type="enum_national_id_type")
      */
+    #[ORM\Column(name: 'id_type', type: 'enum_national_id_type')]
     private $idType;
 
-    /**
-     * @ORM\Column(name="priority", type="integer")
-     */
+    #[ORM\Column(name: 'priority', type: 'integer')]
     private int $priority;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Person", inversedBy="nationalIds")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Person', inversedBy: 'nationalIds')]
     private ?\Entity\Person $person = null;
 
     /**

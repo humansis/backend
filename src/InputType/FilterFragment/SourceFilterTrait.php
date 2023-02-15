@@ -13,13 +13,10 @@ trait SourceFilterTrait
      * TODO: add validation from enum
      *
      * @see SourceType
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
      */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $sources;
 

@@ -25,10 +25,8 @@ class SelectionCriterionController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/selection-criteria/targets")
-     * @Cache(expires="+12 hours", public=true)
-     */
+    #[Rest\Get('/web-app/v1/selection-criteria/targets')]
+    #[Cache(expires: '+12 hours', public: true)]
     public function targets(): JsonResponse
     {
         $data = $this->codeListService->mapEnum(SelectionCriteriaTarget::values());
@@ -36,11 +34,7 @@ class SelectionCriterionController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/selection-criteria/targets/{targetCode}/fields')]
     public function fields(
         Request $request,
         string $targetCode,
@@ -60,10 +54,7 @@ class SelectionCriterionController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions")
-     *
-     */
+    #[Rest\Get('/web-app/v1/selection-criteria/targets/{targetCode}/fields/{fieldCode}/conditions')]
     public function conditions(
         Request $request,
         string $targetCode,
@@ -86,10 +77,8 @@ class SelectionCriterionController extends AbstractController
         return $this->json(new Paginator($data));
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/assistances/{id}/selection-criteria")
-     * @ParamConverter("assistance")
-     */
+    #[Rest\Get('/web-app/v1/assistances/{id}/selection-criteria')]
+    #[ParamConverter('assistance')]
     public function selectionCriteriaByAssistance(Assistance $assistance, Request $request): JsonResponse
     {
         $response = $this->json(new Paginator($assistance->getSelectionCriteria()));

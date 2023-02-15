@@ -10,14 +10,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Assert\GroupSequence(['PhoneFilterInputType', 'PrimaryValidation', 'SecondaryValidation'])]
 class PhoneFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"SecondaryValidation"})
-     *     },
-     *     groups={"SecondaryValidation"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('integer', groups: ['SecondaryValidation']),
+    ], groups: ['SecondaryValidation'])]
     #[Assert\NotNull]
     #[Assert\Type('array', groups: ['PrimaryValidation'])]
     protected $id;

@@ -18,61 +18,49 @@ use Symfony\Component\Serializer\Annotation\MaxDepth as SymfonyMaxDepth;
 
 /**
  * AssistanceBeneficiary.
- *
- * @ORM\Table(name="distribution_beneficiary")
- * @ORM\Entity(repositoryClass="Repository\AssistanceBeneficiaryRepository")
  */
+#[ORM\Table(name: 'distribution_beneficiary')]
+#[ORM\Entity(repositoryClass: 'Repository\AssistanceBeneficiaryRepository')]
 class AssistanceBeneficiary
 {
     use StandardizedPrimaryKey;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="distributionBeneficiaries")
-     * @ORM\JoinColumn(name="assistance_id")
-     */
     #[SymfonyGroups(['FullAssistanceBeneficiary', 'FullBooklet'])]
+    #[ORM\ManyToOne(targetEntity: 'Entity\Assistance', inversedBy: 'distributionBeneficiaries')]
+    #[ORM\JoinColumn(name: 'assistance_id')]
     private ?\Entity\Assistance $assistance = null;
 
-    /**
-     *
-     * @ORM\ManyToOne(targetEntity="Entity\AbstractBeneficiary", inversedBy="assistanceBeneficiary")
-     * @ORM\JoinColumn(name="beneficiary_id")
-     */
     #[SymfonyGroups(['FullAssistanceBeneficiary', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance', 'FullBooklet', 'FullProject'])]
     #[SymfonyMaxDepth(3)]
+    #[ORM\ManyToOne(targetEntity: 'Entity\AbstractBeneficiary', inversedBy: 'assistanceBeneficiary')]
+    #[ORM\JoinColumn(name: 'beneficiary_id')]
     private ?\Entity\AbstractBeneficiary $beneficiary = null;
 
     /**
      * @var Collection|Transaction[]
      * @deprecated you shouldn't know about transaction here
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Transaction", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
      */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
     #[SymfonyMaxDepth(1)]
+    #[ORM\OneToMany(mappedBy: 'assistanceBeneficiary', targetEntity: 'Entity\Transaction', cascade: ['persist', 'remove'])]
     private $transactions;
 
     /**
      * @var Collection|Booklet[]
      * @deprecated you shouldn't know about booklets here
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Booklet", mappedBy="distribution_beneficiary", cascade={"persist", "remove"})
      */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    #[ORM\OneToMany(mappedBy: 'distribution_beneficiary', targetEntity: 'Entity\Booklet', cascade: ['persist', 'remove'])]
     private $booklets;
 
-    /**
-     * @ORM\Column(name="content", type="json", nullable=true)
-     */
+    #[ORM\Column(name: 'content', type: 'json', nullable: true)]
     private ?string $vulnerabilityScores = null;
 
     /**
      * @var Collection|ReliefPackage[]
-     *
-     * @ORM\OneToMany(targetEntity="Entity\Assistance\ReliefPackage", mappedBy="assistanceBeneficiary", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="relief_package_id")
      */
+    #[ORM\OneToMany(mappedBy: 'assistanceBeneficiary', targetEntity: 'Entity\Assistance\ReliefPackage', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'relief_package_id')]
     private \Doctrine\Common\Collections\Collection|array $reliefPackages;
 
     public function __construct()
@@ -82,18 +70,12 @@ class AssistanceBeneficiary
         $this->reliefPackages = new ArrayCollection();
     }
 
-    /**
-     * @ORM\Column(name="justification", type="string", length=511, nullable=true)
-     */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'justification', type: 'string', length: 511, nullable: true)]
     private string|null $justification = null;
 
-    /**
-     *
-     * @ORM\Column(name="removed", type="boolean", options={"default" : 0})
-     *
-     */
     #[SymfonyGroups(['FullHousehold', 'SmallHousehold', 'FullAssistance', 'SmallAssistance', 'ValidatedAssistance'])]
+    #[ORM\Column(name: 'removed', type: 'boolean', options: ['default' => 0])]
     private int|bool $removed = 0;
 
     /**

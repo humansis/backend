@@ -27,11 +27,7 @@ class BookletController extends AbstractOfflineAppController
     {
     }
 
-    /**
-     * @Rest\Get("/offline-app/v1/booklets")
-     *
-     *
-     */
+    #[Rest\Get('/offline-app/v1/booklets')]
     public function list(
         Request $request,
         BookletFilterInputType $filter,
@@ -57,14 +53,14 @@ class BookletController extends AbstractOfflineAppController
     /**
      * Assign the booklet to a specific beneficiary.
      *
-     * @Rest\Post("/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}")
      *
-     * @ParamConverter("booklet", options={"mapping": {"bookletId": "code"}})
-     * @ParamConverter("assistance", options={"mapping": {"distributionId": "id"}})
-     * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId": "id"}})
      *
      * @return Response
      */
+    #[Rest\Post('/offline-app/v1/booklets/assign/{distributionId}/{beneficiaryId}')]
+    #[ParamConverter('booklet', options: ['mapping' => ['bookletId' => 'code']])]
+    #[ParamConverter('assistance', options: ['mapping' => ['distributionId' => 'id']])]
+    #[ParamConverter('beneficiary', options: ['mapping' => ['beneficiaryId' => 'id']])]
     public function offlineAssignAction(Request $request, Assistance $assistance, Beneficiary $beneficiary)
     {
         $code = $request->request->get('code');

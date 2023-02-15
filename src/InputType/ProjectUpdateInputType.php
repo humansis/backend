@@ -6,6 +6,8 @@ namespace InputType;
 
 use DateTime;
 use DateTimeInterface;
+use DBAL\SectorEnum;
+use Enum\ProductCategoryType;
 use Request\InputTypeInterface;
 use Validator\Constraints\Country;
 use Validator\Constraints\DateGreaterThan;
@@ -23,11 +25,9 @@ class ProjectUpdateInputType implements InputTypeInterface
     #[Assert\Length(max: 255)]
     private $internalId;
 
-    /**
-     * @Country
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Country]
     private $iso3;
 
     #[Assert\Type('string')]
@@ -39,52 +39,37 @@ class ProjectUpdateInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $target;
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Iso8601]
     private $startDate;
 
-    /**
-     * @Iso8601
-     * @DateGreaterThan(propertyPath="startDate", groups={"Strict"})
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[DateGreaterThan(propertyPath: 'startDate', groups: ['Strict'])]
+    #[Iso8601]
     private $endDate;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"DBAL\SectorEnum", "all"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [SectorEnum::class, "all"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     #[Assert\Count(min: 1, groups: ['Strict'])]
     private array $sectors = [];
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer")
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private array $donorIds = [];
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"Enum\ProductCategoryType", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [ProductCategoryType::class, "values"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     #[Assert\Count(min: 1, groups: ['Strict'])]
     private array $allowedProductCategoryTypes = [];

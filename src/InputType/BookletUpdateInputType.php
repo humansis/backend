@@ -17,15 +17,10 @@ class BookletUpdateInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $quantityOfVouchers;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"SecondaryValidation"}),
-     *         @Assert\GreaterThan(0, groups={"SecondaryValidation"}),
-     *     },
-     *     groups={"SecondaryValidation"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('integer', groups: ['SecondaryValidation']),
+        new Assert\GreaterThan(0, groups: ['SecondaryValidation']),
+    ], groups: ['SecondaryValidation'])]
     #[Assert\NotNull]
     #[Assert\Type('array', groups: ['PrimaryValidation'])]
     #[Assert\Callback([\InputType\BookletBatchCreateInputType::class, 'validateIndividualValues'], groups: ['SecondaryValidation'])]

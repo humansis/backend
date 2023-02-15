@@ -7,20 +7,20 @@ use Validator\Constraints\Iso8601;
 
 class SmartcardPurchase
 {
-    /**
-     * @Assert\All({
-     *      @Assert\Collection(fields={
-     *          "id" = @Assert\Type("int"),
-     *          "quantity" = @Assert\Type("numeric"),
-     *          "value" = @Assert\Type("numeric"),
-     *          "currency" = {
-     *              @Assert\Type("string"),
-     *              @Assert\NotBlank(message="Currency can't be empty"),
-     *              @Assert\Length(min="3",max="3",allowEmptyString=false)
-     *          },
-     *      })
-     * })
-     */
+    #[Assert\All([
+        new Assert\Collection(
+            fields: [
+                'id' => new Assert\Type('int'),
+                'quantity' => new Assert\Type('numeric'),
+                'value' => new Assert\Type('numeric'),
+                'currency' => [
+                    new Assert\Type('string'),
+                    new Assert\NotBlank(message: "Currency can't be empty"),
+                    new Assert\Length(min: '3', max: '3'),
+                ],
+            ]
+        ),
+    ])]
     #[Assert\Valid]
     #[Assert\NotBlank]
     private ?array $products = null;
@@ -38,10 +38,8 @@ class SmartcardPurchase
     #[Assert\Type('int')]
     private ?int $beneficiaryId = null;
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotBlank]
+    #[Iso8601]
     private ?\DateTime $createdAt = null;
 
     public function getProducts(): array

@@ -16,47 +16,26 @@ class BookletFilterInputType extends AbstractFilterInputType
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback="bookletStatuses", strict=true)
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: "bookletStatuses", strict: true),
+        ],
+        groups: ['Strict']
+    )]
     #[Assert\Type('array')]
     protected $statuses;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("string", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [
+        new Assert\Type('string', groups: ['Strict']),
+    ], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $currencies;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $distributions;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     protected $beneficiaries;
 

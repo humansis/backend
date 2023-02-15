@@ -7,32 +7,23 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Address
- *
- * @ORM\Table(name="address")
- * @ORM\Entity(repositoryClass="Repository\AddressRepository")
  */
+#[ORM\Table(name: 'address')]
+#[ORM\Entity(repositoryClass: 'Repository\AddressRepository')]
 class Address
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="number", type="string", length=45, nullable=true)
-     */
-    private string | null $number = null;
+    #[ORM\Column(name: 'number', type: 'string', length: 45, nullable: true)]
+    private ?string $number = null;
 
-    /**
-     * @ORM\Column(name="street", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'street', type: 'string', length: 255, nullable: true)]
     private string | null $street;
 
-    /**
-     * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
-     */
+    #[ORM\Column(name: 'postcode', type: 'string', length: 45, nullable: true)]
     private string | null $postcode;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Location")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Location')]
     private Location | null $location;
 
     public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self

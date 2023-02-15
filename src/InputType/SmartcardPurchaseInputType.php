@@ -20,11 +20,9 @@ class SmartcardPurchaseInputType implements InputTypeInterface
     #[Assert\NotBlank]
     private array $products = [];
 
-    /**
-     * @Iso8601
-     */
     #[Assert\NotNull]
     #[Assert\NotBlank]
+    #[Iso8601]
     private ?DateTime $createdAt = null;
 
     #[Assert\NotNull]

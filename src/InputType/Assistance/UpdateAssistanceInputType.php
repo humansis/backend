@@ -35,7 +35,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     private string|int|null $round = self::UNSET_STRING;
 
-    #[Assert\Range(min: 1, max: 99, notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.')]
+    #[Assert\Range(notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.', min: 1, max: 99)]
     private ?int $roundToSave = null;
 
     private int|string|null $note = self::UNSET_NUMBER;
@@ -47,7 +47,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
     #[Assert\NotBlank(allowNull: true)]
     private $noteToSave;
 
-    #[Assert\IsTrue(groups: ['Strict'], message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
+    #[Assert\IsTrue(message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
     public function isValidExpirationDate(): bool
     {
         if (is_null($this->originalDateExpiration)) {
@@ -56,7 +56,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
         return !is_null(Iso8601Converter::toDateTime($this->originalDateExpiration));
     }
 
-    #[Assert\IsTrue(groups: ['Strict'], message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP')]
+    #[Assert\IsTrue(message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
     public function isValidDateDistribution(): bool
     {
         if (is_null($this->originalDateDistribution)) {

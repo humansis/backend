@@ -8,23 +8,18 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * UserCountry
- *
- * @ORM\Table(name="user_country")
- * @ORM\Entity(repositoryClass="Repository\UserCountryRepository")
  */
+#[ORM\Table(name: 'user_country')]
+#[ORM\Entity(repositoryClass: 'Repository\UserCountryRepository')]
 class UserCountry
 {
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="rights", type="string")
-     */
+    #[ORM\Column(name: 'rights', type: 'string')]
     private ?string $rights = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="countries", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\User', cascade: ['persist'], inversedBy: 'countries')]
     private ?\Entity\User $user = null;
 
     /**

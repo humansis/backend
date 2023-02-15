@@ -8,9 +8,7 @@ use Request\InputTypeInterface;
 use Validator\Constraints\SelectionCriterionField;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @SelectionCriterionField
- */
+#[SelectionCriterionField]
 class SelectionCriterionInputType implements InputTypeInterface
 {
     #[Assert\Type('integer')]

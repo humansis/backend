@@ -16,11 +16,9 @@ class DistributeReliefPackagesInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $id;
 
-    /**
-     * @Iso8601()
-     */
     #[Assert\NotBlank]
     #[Assert\NotNull]
+    #[Iso8601]
     private $dateDistributed;
 
     #[Assert\Type(type: 'scalar')]

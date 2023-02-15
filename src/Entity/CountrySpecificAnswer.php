@@ -7,32 +7,21 @@ use Entity\Helper\StandardizedPrimaryKey;
 
 /**
  * CountrySpecificAnswer
- *
- * @ORM\Table(
- *     name="country_specific_answer",
- *     uniqueConstraints={
- *        @ORM\UniqueConstraint(name="only_one_household_answer", columns={"country_specific_id", "household_id"})
- *    }
- * )
- * @ORM\Entity(repositoryClass="Repository\CountrySpecificAnswerRepository")
  */
+#[ORM\Table(name: 'country_specific_answer')]
+#[ORM\UniqueConstraint(name: 'only_one_household_answer', columns: ['country_specific_id', 'household_id'])]
+#[ORM\Entity(repositoryClass: 'Repository\CountrySpecificAnswerRepository')]
 class CountrySpecificAnswer
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @ORM\Column(name="answer", type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(name: 'answer', type: 'string', length: 255, nullable: true)]
     private string $answer;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\CountrySpecific", inversedBy="countrySpecificAnswers")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\CountrySpecific', inversedBy: 'countrySpecificAnswers')]
     private ?\Entity\CountrySpecific $countrySpecific = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="countrySpecificAnswers")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Household', inversedBy: 'countrySpecificAnswers')]
     private ?\Entity\Household $household = null;
 
     /**

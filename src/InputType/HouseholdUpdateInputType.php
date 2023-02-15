@@ -61,27 +61,20 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      */
     private string $iso3;
 
-    /**
-     * @Enum(enumClass="Enum\Livelihood")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\Livelihood",
+    ])]
     private ?string $livelihood = null;
 
     #[Assert\Type(['array', 'string'])]
     private array|string|null $assets = null;
 
-    /**
-     * @Enum(enumClass="Enum\HouseholdShelterStatus")
-     */
+    #[Enum(options: [
+        'enumClass' => "Enum\HouseholdShelterStatus",
+    ])]
     private int|string|null $shelterStatus = null;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Type("integer", groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
     #[Assert\NotNull]
     private array $projectIds;
@@ -118,9 +111,7 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     #[Assert\GreaterThanOrEqual(0)]
     private ?int $debtLevel = null;
 
-    /**
-     * @Iso8601
-     */
+    #[Iso8601]
     private ?DateTime $supportDateReceived = null;
 
     #[Assert\Type(['array', 'string'])]
@@ -201,16 +192,12 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         $this->livelihood = $livelihood;
     }
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"\Enum\HouseholdAssets", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     *
-     * @return string[]
-     */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [HouseholdAssets::class, "values"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     public function getAssets(): array
     {
         $enumBuilder = new EnumsBuilder(HouseholdAssets::class);
@@ -361,15 +348,14 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     }
 
     /**
-     * @Assert\All(
-     *     constraints={
-     *         @Assert\Choice(callback={"\Enum\HouseholdSupportReceivedType", "values"}, strict=true, groups={"Strict"})
-     *     },
-     *     groups={"Strict"}
-     * )
-     *
      * @return string[]
      */
+    #[Assert\All(
+        constraints: [
+            new Assert\Choice(callback: [HouseholdSupportReceivedType::class, "values"], strict: true, groups: ['Strict']),
+        ],
+        groups: ['Strict']
+    )]
     public function getSupportReceivedTypes(): array
     {
         $enumBuilder = new EnumsBuilder(HouseholdSupportReceivedType::class);

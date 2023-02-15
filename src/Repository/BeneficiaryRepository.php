@@ -996,8 +996,6 @@ class BeneficiaryRepository extends EntityRepository
     }
 
     /**
-     *
-     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */

@@ -24,11 +24,7 @@ class InstitutionController extends AbstractController
     {
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/institutions/{id}")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/institutions/{id}')]
     public function item(Institution $institution): JsonResponse
     {
         if (true === $institution->getArchived()) {
@@ -38,11 +34,7 @@ class InstitutionController extends AbstractController
         return $this->json($institution);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/institutions")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/institutions')]
     public function list(
         Request $request,
         Pagination $pagination,
@@ -59,11 +51,7 @@ class InstitutionController extends AbstractController
         return $this->json($data);
     }
 
-    /**
-     * @Rest\Post("/web-app/v1/institutions")
-     *
-     *
-     */
+    #[Rest\Post('/web-app/v1/institutions')]
     public function create(InstitutionCreateInputType $inputType): JsonResponse
     {
         $institution = $this->institutionService->create($inputType);
@@ -71,11 +59,7 @@ class InstitutionController extends AbstractController
         return $this->json($institution);
     }
 
-    /**
-     * @Rest\Put("/web-app/v1/institutions/{id}")
-     *
-     *
-     */
+    #[Rest\Put('/web-app/v1/institutions/{id}')]
     public function update(Institution $institution, InstitutionUpdateInputType $inputType): JsonResponse
     {
         $institution = $this->institutionService->update($institution, $inputType);
@@ -84,11 +68,10 @@ class InstitutionController extends AbstractController
     }
 
     /**
-     * @Rest\Delete("/web-app/v1/institutions/{id}")
-     *
      *
      * @return JsonResponse
      */
+    #[Rest\Delete('/web-app/v1/institutions/{id}')]
     public function delete(Institution $institution)
     {
         $this->institutionService->remove($institution);
@@ -96,11 +79,7 @@ class InstitutionController extends AbstractController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Rest\Get("/web-app/v1/projects/{id}/institutions")
-     *
-     *
-     */
+    #[Rest\Get('/web-app/v1/projects/{id}/institutions')]
     public function institutionsByProject(Project $project): JsonResponse
     {
         $institutions = $this->managerRegistry->getRepository(Institution::class)->findByProject($project);

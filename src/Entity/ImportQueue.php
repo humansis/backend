@@ -19,83 +19,64 @@ use Stringable;
 use Utils\Concurrency\ConcurrencyLockableInterface;
 use Utils\Concurrency\ConcurrencyLockTrait;
 
-/**
- * @ORM\Entity(repositoryClass="Repository\ImportQueueRepository")
- */
+#[ORM\Entity(repositoryClass: 'Repository\ImportQueueRepository')]
 class ImportQueue implements ConcurrencyLockableInterface, Stringable
 {
     use StandardizedPrimaryKey;
     use EnumTrait;
     use ConcurrencyLockTrait;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importQueue")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\Import', inversedBy: 'importQueue')]
     private Import $import;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Entity\ImportFile", inversedBy="importQueues")
-     */
+    #[ORM\ManyToOne(targetEntity: 'Entity\ImportFile', inversedBy: 'importQueues')]
     private ImportFile $file;
 
-    /**
-     * @ORM\Column(name="content", type="json", nullable=false)
-     */
+    #[ORM\Column(name: 'content', type: 'json', nullable: false)]
     private array $content;
 
     /**
      * @var ImportHouseholdDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'ours', targetEntity: 'ImportHouseholdDuplicity', cascade: ['persist', 'remove'])]
     private array | Collection $householdDuplicities;
 
     /**
      * @var ImportBeneficiaryDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="queue", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'queue', targetEntity: 'Entity\ImportBeneficiaryDuplicity', cascade: ['persist', 'remove'])]
     private array | Collection $beneficiaryDuplicities;
 
-    /**
-     * @ORM\Column(name="state", type="enum_import_queue_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_import_queue_state', nullable: false)]
     private string $state;
 
-    /**
-     * @ORM\Column(name="message", type="text", nullable=true)
-     */
+    #[ORM\Column(name: 'message', type: 'text', nullable: true)]
     private ?string $message = null;
 
     private array $rawMessageData = [];
 
     /**
      * @var ImportHouseholdDuplicity[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="ImportHouseholdDuplicity", mappedBy="ours", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'ours', targetEntity: 'ImportHouseholdDuplicity', cascade: ['remove'])]
     private array | Collection $importBeneficiaryDuplicities;
 
     /**
      * @var Collection|ImportQueueDuplicity[]
-     * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="ours", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'ours', targetEntity: 'Entity\ImportQueueDuplicity', cascade: ['remove'])]
     private array | Collection $importQueueDuplicitiesOurs;
 
     /**
      * @var Collection|ImportQueueDuplicity[]
-     * @ORM\OneToMany(targetEntity="Entity\ImportQueueDuplicity", mappedBy="theirs", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'theirs', targetEntity: 'Entity\ImportQueueDuplicity', cascade: ['remove'])]
     private array | Collection $importQueueDuplicitiesTheirs;
 
-    /**
-     * @ORM\Column(name="identity_checked_at", type="datetimetz", nullable=true)
-     */
+    #[ORM\Column(name: 'identity_checked_at', type: 'datetimetz', nullable: true)]
     private ?DateTimeInterface $identityCheckedAt = null;
 
-    /**
-     * @ORM\Column(name="similarity_checked_at", type="datetimetz", nullable=true)
-     */
+    #[ORM\Column(name: 'similarity_checked_at', type: 'datetimetz', nullable: true)]
     private ?DateTimeInterface $similarityCheckedAt = null;
 
     private array $violatedColumns = [];

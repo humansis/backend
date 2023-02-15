@@ -17,10 +17,8 @@ use Entity\Project;
 use Entity\User;
 use Stringable;
 
-/**
- * @ORM\Entity(repositoryClass="Repository\ImportRepository")
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity(repositoryClass: 'Repository\ImportRepository')]
+#[ORM\HasLifecycleCallbacks]
 class Import implements Stringable
 {
     use StandardizedPrimaryKey;
@@ -31,60 +29,50 @@ class Import implements Stringable
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="title", type="string", nullable=false)
      */
+    #[ORM\Column(name: 'title', type: 'string', nullable: false)]
     private string $title;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="notes", type="string", nullable=true)
      */
+    #[ORM\Column(name: 'notes', type: 'string', nullable: true)]
     private string|null $notes;
 
     /**
      * @var Project[]|Collection
-     *
-     * @ORM\ManyToMany(targetEntity="Entity\Project", cascade={"persist"})
-     * @ORM\JoinTable(name="import_project",
-     *     joinColumns={@ORM\JoinColumn(name="import_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="project_id", referencedColumnName="id")}
-     * )
      */
+    #[ORM\JoinTable(name: 'import_project')]
+    #[ORM\JoinColumn(name: 'import_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'project_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: 'Entity\Project', cascade: ['persist'])]
     private array| Collection $projects;
 
-    /**
-     * @ORM\Column(name="state", type="enum_import_state", nullable=false)
-     */
+    #[ORM\Column(name: 'state', type: 'enum_import_state', nullable: false)]
     private string $state;
 
     /**
      * @var ImportQueue[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="import", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'import', targetEntity: 'Entity\ImportQueue', cascade: ['remove'])]
     private array| Collection $importQueue;
 
     /**
      * @var ImportFile[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportFile", mappedBy="import", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'import', targetEntity: 'Entity\ImportFile', cascade: ['persist', 'remove'])]
     private array| Collection $importFiles;
 
     /**
      * @var ImportBeneficiary[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="import", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'import', targetEntity: 'Entity\ImportBeneficiary', cascade: ['persist', 'remove'])]
     private array| Collection $importBeneficiaries;
 
     /**
      * @var ImportInvalidFile[]|Collection
-     *
-     * @ORM\OneToMany(targetEntity="Entity\ImportInvalidFile", mappedBy="import", cascade={"remove"})
      */
+    #[ORM\OneToMany(mappedBy: 'import', targetEntity: 'Entity\ImportInvalidFile', cascade: ['remove'])]
     private array| Collection $importInvalidFiles;
 
     public function __construct(
