@@ -6,6 +6,7 @@ namespace InputType;
 
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Validator\Constraints\DoesNotContainComma;
 
 class CountrySpecificUpdateInputType implements InputTypeInterface
 {
@@ -13,35 +14,30 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
     #[Assert\Length(max: 45)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $field;
+    #[DoesNotContainComma]
+    private string $field;
 
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Choice(['number', 'text'])]
-    private $type;
+    private string $type;
 
-    /**
-     * @return string
-     */
-    public function getField()
+    public function getField(): string
     {
-        return trim((string) $this->field);
+        return trim($this->field);
     }
 
-    public function setField($field)
+    public function setField($field): void
     {
         $this->field = $field;
     }
 
-    /**
-     * @return string one of number|text
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType($type)
+    public function setType($type): void
     {
         $this->type = $type;
     }
