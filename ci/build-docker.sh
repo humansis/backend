@@ -13,7 +13,7 @@ case ${ENVIRONMENT} in
   test) export dockerfile="docker/prod/php/Dockerfile";
     sed -i -e "s|^memory_limit = 256M|memory_limit = 4096M|g" docker/dev/php/php.ini # TEMPORARY, REMOVE AFTER instance is downgraded again
     export ENV=dev ;;
-  stage) export dockerfile="docker/prod/php/Dockerfile";
+  stage|stage2) export dockerfile="docker/prod/php/Dockerfile";
     sed -i -e "s|^memory_limit = 256M|memory_limit = 4096M|g" docker/prod/php/php.ini # TEMPORARY, REMOVE AFTER instance is downgraded again
     export ENV=prod ;;
   demo) export dockerfile="docker/prod/php/Dockerfile";

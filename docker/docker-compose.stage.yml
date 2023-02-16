@@ -8,7 +8,8 @@ networks:
 
 services:
     php:
-        image: artifactory.quanti.cz/docker/humansis-php:stage
+    # CAREFUL: "__STAGE__" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-php:__STAGE__
         volumes:
             - /opt/humansis/var:/var/www/html/var
             - /opt/humansis/app/Resources/translations:/var/www/html/app/Resources/translations
@@ -21,7 +22,7 @@ services:
             ENVIRONMENT: stage
 
     phpmyadmin:
-        image: phpmyadmin/phpmyadmin
+        image: phpmyadmin
         ports:
             - 8081:80
         networks:
@@ -34,7 +35,8 @@ services:
             PMA_ABSOLUTE_URI: https://apistage.humansis.org/pma_yzixy37h/
 
     nginx:
-        image: artifactory.quanti.cz/docker/humansis-nginx:stage
+    # CAREFUL: "__STAGE__" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-nginx:__STAGE__
         ports:
             - 8087:80
         depends_on:
