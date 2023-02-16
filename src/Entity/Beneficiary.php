@@ -2,7 +2,6 @@
 
 namespace Entity;
 
-use DBAL\VulnerabilityCriteriaEnum;
 use Entity\Helper\EnumTrait;
 use Enum\VulnerabilityCriteria;
 use Utils\ExportableInterface;
@@ -148,7 +147,7 @@ class Beneficiary extends AbstractBeneficiary
     public function getVulnerabilityCriteria(): array
     {
         return array_values(
-            array_map(fn($criteria) => VulnerabilityCriteriaEnum::valueFromDB($criteria), $this->vulnerabilityCriteria)
+            array_map(fn($criteria) => $criteria, $this->vulnerabilityCriteria)
         );
     }
 
@@ -162,7 +161,7 @@ class Beneficiary extends AbstractBeneficiary
         self::validateValues('vulnerabilityCriteria', VulnerabilityCriteria::class, $vulnerabilityCriteria);
         $this->vulnerabilityCriteria = array_values(
             array_unique(
-                array_map(fn($criteria) => VulnerabilityCriteriaEnum::valueToDB($criteria), $vulnerabilityCriteria)
+                array_map(fn($criteria) => $criteria, $vulnerabilityCriteria)
             )
         );
 

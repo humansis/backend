@@ -7,7 +7,6 @@ use DataFixtures\LocationFixtures;
 use DataFixtures\ProjectFixtures;
 use DBAL\HouseholdAssetsEnum;
 use DBAL\HouseholdSupportReceivedTypeEnum;
-use DBAL\VulnerabilityCriteriaEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -18,6 +17,7 @@ use Enum\Livelihood;
 use Enum\NationalIdType;
 use Enum\PhoneTypes;
 use Enum\ResidencyStatus;
+use Enum\VulnerabilityCriteria;
 use Exception;
 use InputType\Beneficiary\Address\CampAddressInputType;
 use InputType\Beneficiary\Address\CampInputType;
@@ -377,7 +377,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         $bnfInputType->addPhone(self::generatePhoneInputType());
         $bnfInputType->setResidencyStatus($beneficiary['residency_status']);
         $bnfInputType->setIsHead($head);
-        $bnfInputType->setVulnerabilityCriteria([ValueGenerator::fromArray(VulnerabilityCriteriaEnum::all())]);
+        $bnfInputType->setVulnerabilityCriteria([ValueGenerator::fromArray(VulnerabilityCriteria::values())]);
 
         return $bnfInputType;
     }

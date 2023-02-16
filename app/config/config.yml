@@ -228,7 +228,6 @@ doctrine:
             enum_person_gender: DBAL\PersonGenderEnum
             enum_national_id_type: DBAL\NationalIdTypeEnum
             enum_assitance_commodity_division: DBAL\AssistanceCommodityDivisionEnum
-            enum_vulnerability_criterion: DBAL\VulnerabilityCriteriaEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         entity_managers:

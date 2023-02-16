@@ -181,15 +181,6 @@ class BeneficiaryService
         return $beneficiary;
     }
 
-    /**
-     * @param $vulnerabilityCriterionId
-     *
-     * @throws \Exception
-     */
-    public function getVulnerabilityCriterion($vulnerabilityCriterionId): string
-    {
-        return VulnerabilityCriteriaEnum::valueFromDB($vulnerabilityCriterionId);
-    }
 
     public function remove(Beneficiary $beneficiary): void
     {
