@@ -276,7 +276,7 @@ class Beneficiary extends AbstractBeneficiary
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
+            $shelterStatus = HouseholdShelterStatus::valueFromAPI($this->getHousehold()->getShelterStatus());
         }
 
         $supportReceivedTypes = array_values(
