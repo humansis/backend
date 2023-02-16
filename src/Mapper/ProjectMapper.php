@@ -16,7 +16,7 @@ class ProjectMapper implements MapperInterface
 {
     protected ?Project $object = null;
 
-    public function __construct(private readonly ProjectService $projectService, private readonly BeneficiaryRepository $beneficiaryRepository)
+    public function __construct(protected readonly ProjectService $projectService, protected readonly BeneficiaryRepository $beneficiaryRepository)
     {
     }
 
