@@ -191,19 +191,6 @@ deploy dev3 - clean fixtures:
   extends: .deploy
   when: manual
 
-deploy arm:
-  stage: deploy_dev
-  environment:
-    name: arm
-    url: https://apiarm.humansis.org
-  variables:
-    ENVIRONMENT: arm
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
 deploy test - keep db:
   stage: deploy_test
   environment:

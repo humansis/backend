@@ -59,13 +59,8 @@ elif [[ $1 == "dev3" ]]; then
   mv docker/docker-compose.dev.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
   sed -i -e "s|__DEV__|dev3|g" docker-compose.yml
-elif [[ $1 == "arm" ]]; then
-  EC2_ASG=arm-asg
-  mv docker/docker-compose.arm.yml docker-compose.yml
-  # CAREFUL: replaces tokens in docker-compose.yml
-  sed -i -e "s|__DEV__|arm|g" docker-compose.yml
 else
-  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, arm, test, stage, stage2, demo, production]"
+  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, stage2, demo, production]"
   exit 1
 fi
 
