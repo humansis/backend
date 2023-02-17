@@ -89,12 +89,14 @@ class SelectionCriterionController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/selection-criteria")
      * @ParamConverter("assistance")
-     * @Cache(expires="+12 hours", public=true)
-     *
-     *
      */
-    public function selectionCriteriaByAssistance(Assistance $assistance): JsonResponse
+    public function selectionCriteriaByAssistance(Assistance $assistance, Request $request): JsonResponse
     {
-        return $this->json(new Paginator($assistance->getSelectionCriteria()));
+        $response = $this->json(new Paginator($assistance->getSelectionCriteria()));
+        $response->setEtag(md5($response->getContent()));
+        $response->setPublic();
+        $response->isNotModified($request);
+
+        return $response;
     }
 }
