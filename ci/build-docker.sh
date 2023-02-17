@@ -8,7 +8,7 @@ echo "Getting application information"
 echo "...done"
 
 case ${ENVIRONMENT} in
-  dev|dev1|dev2|dev3) export dockerfile="docker/prod/php/Dockerfile";
+  dev|dev1|test2|test3) export dockerfile="docker/prod/php/Dockerfile";
     export ENV=dev ;;
   test) export dockerfile="docker/prod/php/Dockerfile";
     sed -i -e "s|^memory_limit = 256M|memory_limit = 4096M|g" docker/dev/php/php.ini # TEMPORARY, REMOVE AFTER instance is downgraded again
