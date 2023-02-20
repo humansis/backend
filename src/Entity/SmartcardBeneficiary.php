@@ -44,14 +44,14 @@ class SmartcardBeneficiary
      * @var Collection|SmartcardDeposit[]
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardDeposit', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'smartcardBeneficiary', targetEntity: 'Entity\SmartcardDeposit', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $deposites;
 
     /**
      * @var Collection|SmartcardPurchase[]
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'smartcardBeneficiary', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $purchases;
 
     /**

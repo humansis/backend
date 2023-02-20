@@ -109,7 +109,7 @@ class SmartcardRepository extends EntityRepository
         } else {
             if ((is_countable($smartcards) ? count($smartcards) : 0) > 1) {
                 //TODO log
-                //$this->logger->error("There is inconsistency in the database. Smartcard '$serialNumber' has " . count($smartcards) . ' active entries.');
+                //$this->logger->error("There is inconsistency in the database. Smartcard '$serialNumber' has " . count($smartcardBeneficiaries) . ' active entries.');
             }
 
             return $smartcards[0];

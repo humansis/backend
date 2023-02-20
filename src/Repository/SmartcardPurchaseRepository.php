@@ -121,7 +121,7 @@ class SmartcardPurchaseRepository extends EntityRepository
     public function findByBeneficiary(Beneficiary $beneficiary, ?Pagination $pagination = null): Paginator
     {
         $qbr = $this->createQueryBuilder('sp')
-            ->innerJoin('sp.smartcard', 'sc')
+            ->innerJoin('sp.smartcardBeneficiary', 'sc')
             ->andWhere('sc.beneficiary = :beneficiary')
             ->setParameter('beneficiary', $beneficiary);
 

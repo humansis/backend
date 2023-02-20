@@ -553,12 +553,12 @@ class SmartcardServiceTest extends KernelTestCase
         foreach ($deposits as $deposit) {
             $this->em->remove($deposit);
         }
-        $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
+        $smartcardBeneficiaries = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['beneficiary' => $allTestingBeneficiaries],
             ['id' => 'asc']
         );
         $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(
-            ['smartcard' => $smartcards],
+            ['smartcardBeneficiary' => $smartcardBeneficiaries],
             ['id' => 'asc']
         );
         foreach ($purchases as $purchase) {
@@ -671,12 +671,12 @@ class SmartcardServiceTest extends KernelTestCase
             }
             $this->assertEquals($values['distributed'], $distributed, "Wrong distributed amount");
 
-            $smartcards = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
+            $smartcardBeneficiaries = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
                 ['beneficiary' => $beneficiaryId],
                 ['id' => 'asc']
             );
             $purchases = $this->em->getRepository(\Entity\SmartcardPurchase::class)->findBy(
-                ['smartcard' => $smartcards],
+                ['smartcardBeneficiary' => $smartcardBeneficiaries],
                 ['id' => 'asc']
             );
             $purchased = 0;

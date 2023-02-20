@@ -154,7 +154,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): SmartcardBeneficiary
     {
-        /** @var SmartcardBeneficiary[] $smartcards */
+        /** @var SmartcardBeneficiary[] $smartcardBeneficiaries */
         $smartcardBeneficiaries = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['serialNumber' => $serialNumber],
             ['id' => 'asc']

@@ -63,10 +63,10 @@ class PurchaseService
      * @throws EntityNotFoundException
      * @throws Exception
      */
-    public function purchaseSmartcard(SmartcardBeneficiary $smartcard, \InputType\SmartcardPurchaseInputType|SmartcardPurchaseInput $input): SmartcardPurchase
+    public function purchaseSmartcard(SmartcardBeneficiary $smartcardBeneficiary, \InputType\SmartcardPurchaseInputType|SmartcardPurchaseInput $input): SmartcardPurchase
     {
         $hash = $this->hashPurchase(
-            $smartcard->getBeneficiary(),
+            $smartcardBeneficiary->getBeneficiary(),
             $this->getVendor($input->getVendorId()),
             $input->getCreatedAt()
         );
@@ -93,7 +93,7 @@ class PurchaseService
         }
 
         $purchase = SmartcardPurchase::create(
-            $smartcard,
+            $smartcardBeneficiary,
             $this->getVendor($input->getVendorId()),
             $input->getCreatedAt(),
             $assistance
@@ -113,7 +113,7 @@ class PurchaseService
             }
         }
 
-        $smartcard->addPurchase($purchase);
+        $smartcardBeneficiary->addPurchase($purchase);
 
         $this->em->persist($purchase);
         $this->em->flush();
