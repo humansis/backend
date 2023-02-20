@@ -17,10 +17,7 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        },
-        "files": [
-            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
-        ]
+        }
     },
     "require": {
         "php": "^8.1",
@@ -56,14 +53,22 @@
         "punic/punic": "3.8.0",
         "sensio/framework-extra-bundle": "v6.2.9",
         "sentry/sentry-symfony": "4.6",
+        "symfony/console": "^6.2.5",
         "symfony/contracts": "v3.1.1",
-        "symfony/doctrine-messenger": "^6.1",
-        "symfony/expression-language": "v6.1.12",
-        "symfony/mailer": "v6.1.12",
+        "symfony/debug-bundle": "^6.2.5",
+        "symfony/doctrine-messenger": "^6.2.5",
+        "symfony/dotenv": "^6.2.5",
+        "symfony/expression-language": "^6.2.5",
+        "symfony/form": "^6.2.5",
+        "symfony/framework-bundle": "^6.2.5",
+        "symfony/mailer": "^6.2.5",
         "symfony/monolog-bundle": "v3.8.0",
         "symfony/polyfill-apcu": "1.27.0",
-        "symfony/string": "v6.1.12",
-        "symfony/symfony": "6.1.12",
+        "symfony/runtime": "^6.2.5",
+        "symfony/serializer-pack": "^1.1",
+        "symfony/string": "^6.2.5",
+        "symfony/workflow": "^6.2.5",
+        "symfony/yaml": "^6.2.5",
         "tecnickcom/tcpdf": "6.5.0",
         "twig/twig": "v3.4.3"
     },
@@ -75,8 +80,19 @@
         "rector/rector": "0.15.15",
         "roave/security-advisories": "dev-latest",
         "squizlabs/php_codesniffer": "3.*",
-        "symfony/phpunit-bridge": "^6",
-        "symfony/profiler-pack": "^1.0"
+        "symfony/browser-kit": "^6.2.5",
+        "symfony/phpunit-bridge": "^6.2.5",
+        "symfony/profiler-pack": "^1.0",
+        "symfony/test-pack": "^1.1"
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*",
+        "symfony/polyfill-php73": "*",
+        "symfony/polyfill-php74": "*",
+        "symfony/polyfill-php80": "*",
+        "symfony/polyfill-php81": "*"
     },
     "scripts": {
     },
@@ -86,8 +102,12 @@
         },
         "sort-packages": true,
         "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "symfony/runtime": true
         }
+    },
+    "conflict": {
+        "symfony/symfony": "*"
     },
     "extra": {
         "symfony-app-dir": "app",
@@ -103,7 +123,7 @@
             "dev-master": "3.4-dev"
         },
         "symfony": {
-            "require": "6.1.*"
+            "require": "^6.2.5"
         }
     }
 }
