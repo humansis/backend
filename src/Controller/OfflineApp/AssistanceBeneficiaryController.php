@@ -65,14 +65,25 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
             throw $this->createNotFoundException();
         }
 
-        $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
-            ->findBeneficiariesByAssistance(
-                $assistance,
-                $filter,
-                $orderBy,
-                $pagination,
-                [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
-            );
+        if ($version === 'v3') {
+            $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
+                ->findBeneficiariesByAssistance(
+                    $assistance,
+                    $filter,
+                    $orderBy,
+                    $pagination,
+                    [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+                );
+        } else {
+            $assistanceBeneficiaries = $this->assistanceBeneficiaryRepository
+                ->findTargetBeneficiariesByAssistance(
+                    $assistance,
+                    $filter,
+                    $orderBy,
+                    $pagination,
+                    [AssistanceBeneficiaryRepository::SEARCH_CONTEXT_NOT_REMOVED => true]
+                );
+        }
 
         $response = $this->json(
             $assistanceBeneficiaries,

@@ -3,8 +3,10 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use DTO\BookletDTO;
 use Entity\Beneficiary;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Entity\Voucher;
 use InputType\BookletFilterInputType;
 use InputType\BookletOrderInputType;
 use Request\Pagination;
@@ -295,5 +297,34 @@ class BookletRepository extends EntityRepository
         }
 
         return new Paginator($qb, false);
+    }
+
+    /**
+     * @param int[] $bookletIds
+     * @return BookletDTO[]
+     */
+    public function getBookletDTOByIds(array $bookletIds): array
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->select(
+                sprintf(
+                    'NEW %s(
+                    b.id,
+                    b.code,
+                    b.currency,
+                    b.status,
+                    (
+                        SELECT GROUP_CONCAT(v.value)
+                        FROM ' . Voucher::class . ' v
+                        WHERE v MEMBER OF b.vouchers
+                    )
+                )',
+                    BookletDTO::class
+                )
+            )
+            ->where('b.id IN (:bookletIds)')
+            ->setParameter('bookletIds', $bookletIds);
+
+        return $qb->getQuery()->getResult();
     }
 }

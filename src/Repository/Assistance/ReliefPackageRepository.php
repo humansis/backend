@@ -6,6 +6,7 @@ namespace Repository\Assistance;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;
+use DTO\ReliefPackageDTO;
 use Entity\Location;
 use Entity\Beneficiary;
 use Entity\Assistance;
@@ -230,5 +231,35 @@ class ReliefPackageRepository extends EntityRepository
             ->setParameter('state', ReliefPackageState::TO_DISTRIBUTE);
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @param int[] $reliefPackageIds
+     * @return ReliefPackageDTO[]
+     */
+    public function getReliefPackageDTOByIds(array $reliefPackageIds): array
+    {
+        $qb = $this->createQueryBuilder('rp')
+            ->select(
+                sprintf(
+                    'NEW %s(
+                    rp.id,
+                    rp.state,
+                    rp.modalityType,
+                    rp.notes,
+                    rp.amountDistributed,
+                    rp.amountToDistribute,
+                    rp.unit,
+                    rp.createdAt,
+                    rp.lastModifiedAt,
+                    rp.distributedAt
+                )',
+                    ReliefPackageDTO::class
+                )
+            )
+            ->where('rp.id IN (:reliefPackageIds)')
+            ->setParameter('reliefPackageIds', $reliefPackageIds);
+
+        return $qb->getQuery()->getResult();
     }
 }

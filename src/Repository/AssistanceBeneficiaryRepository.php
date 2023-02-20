@@ -5,12 +5,15 @@ namespace Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use DTO\AssistanceBeneficiaryDTO;
+use DTO\AssistanceBeneficiaryTargetDTO;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
+use Entity\Booklet;
 use Entity\Community;
 use Entity\CountrySpecific;
 use Entity\Institution;
 use Entity\Assistance;
+use Entity\SmartcardBeneficiary;
 use Enum\AssistanceTargetType;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -161,6 +164,65 @@ class AssistanceBeneficiaryRepository extends EntityRepository
                 $context
             )
         );
+    }
+
+    public function findTargetBeneficiariesByAssistance(
+        Assistance $assistance,
+        BeneficiaryFilterInputType|null $filter = null,
+        BeneficiaryOrderInputType|null $orderBy = null,
+        Pagination|null $pagination = null,
+        array|null $context = null
+    ): Paginator {
+        $qb = $this->getBeneficiariesByAssistanceQuery(
+            $assistance,
+            $filter,
+            $orderBy,
+            $pagination,
+            $context
+        );
+
+        $qb->select(sprintf(
+            'NEW %s(
+                    db.id,
+                    b.id,
+                    p.localFamilyName,
+                    p.localGivenName,
+                    r.type,
+                    r.comment,
+                    (
+                        SELECT MAX(sd.createdAt)
+                        FROM ' . SmartcardDeposit::class . ' sd
+                        WHERE sd.reliefPackage MEMBER OF db.reliefPackages
+                    ),
+                    (
+                        SELECT MAX(s.serialNumber)
+                        FROM ' . SmartcardBeneficiary::class . ' s
+                        WHERE s.beneficiary = b AND s.state = \'active\'
+                    ),
+                    IDENTITY(b.person),
+                    (
+                        SELECT GROUP_CONCAT(rp.id)
+                        FROM ' . ReliefPackage::class . ' rp
+                        WHERE rp MEMBER OF db.reliefPackages
+                    ),
+                    (
+                        SELECT GROUP_CONCAT(bt.id)
+                        FROM ' . Booklet::class . ' bt
+                        WHERE bt MEMBER OF db.booklets
+                    )
+                )',
+            AssistanceBeneficiaryTargetDTO::class
+        ));
+
+        if (!in_array('p', $qb->getAllAliases())) {
+            $qb->leftJoin('b.person', 'p');
+        }
+
+        $qb->leftJoin('p.referral', 'r');
+
+        $paginator = new Paginator($qb, false);
+        $paginator->setUseOutputWalkers(false);
+        return $paginator;
     }
 
     public function findBeneficiariesByAssistanceSelectIntoDTO(

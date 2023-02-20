@@ -4,6 +4,7 @@ namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use DTO\NationalIdInfoDTO;
 use InputType\NationalIdFilterInputType;
 
 /**
@@ -26,5 +27,32 @@ class NationalIdRepository extends EntityRepository
         }
 
         return new Paginator($qbr);
+    }
+    public function getNationalIdsInfoByPersonId(int $personId): array
+    {
+        $qb = $this->createQueryBuilder('n')
+            ->select(
+                sprintf(
+                    'NEW %s(
+                    n.idType,
+                    n.idNumber
+                )',
+                    NationalIdInfoDTO::class
+                )
+            )
+            ->where('IDENTITY(n.person) = :personId')
+            ->setParameter('personId', $personId);
+
+        $nationalIds = [];
+
+        /** @var NationalIdInfoDTO $nationalIdInfoDTO */
+        foreach ($qb->getQuery()->getResult() as $nationalIdInfoDTO) {
+            $nationalIds[] = [
+                'type' => $nationalIdInfoDTO->getIdType(),
+                'number' => $nationalIdInfoDTO->getIdNumber(),
+            ];
+        }
+
+        return $nationalIds;
     }
 }
