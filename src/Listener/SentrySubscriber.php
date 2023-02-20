@@ -29,10 +29,7 @@ class SentrySubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $parsedUrl = parse_url($request->getUri());
-        $path = $parsedUrl['path'];
-        $requestMethod = $request->getMethod();
         $transaction = SentrySdk::getCurrentHub()->getTransaction();
-        $transaction->setName("{$requestMethod} {$path}");
         $transaction->setOp('api.request');
         $transaction->setTags([
             'module' => $this->getModuleName($request->getUri()),
