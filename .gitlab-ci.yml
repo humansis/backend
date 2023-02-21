@@ -191,19 +191,6 @@ deploy dev3 - clean fixtures:
   extends: .deploy
   when: manual
 
-deploy arm:
-  stage: deploy_dev
-  environment:
-    name: arm
-    url: https://apiarm.humansis.org
-  variables:
-    ENVIRONMENT: arm
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
 deploy test - keep db:
   stage: deploy_test
   environment:
@@ -258,6 +245,23 @@ deploy stage:
     - /^release\/.*$/
   except:
     - tags
+
+deploy stage2:
+  stage: deploy_stage
+  environment:
+    name: stage2
+    url: https://apistage2.humansis.org
+  variables:
+    ENVIRONMENT: stage2
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  only:
+    - /^release\/.*$/
+  except:
+    - tags
+  when: manual
 
 deploy demo  - clean fixtures:
   stage: deploy_demo

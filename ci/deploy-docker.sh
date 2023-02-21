@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # parameters:
-# $1: environment (dev[1:3], test, stage, demo, production)
+# $1: environment (dev[1:3], test, stage[1:2], demo, production)
 # $2: clean database (true, false, database)
 # $3: load fixtures (dev, test, false)
 # $4: cache clear mode (normal, aggressive)
@@ -28,6 +28,19 @@ elif [[ $1 == "stage" ]]; then
   CONSUMER_EC2_ASG=consumer-stage-asg
   mv docker/docker-compose.stage.yml docker-compose.yml
   mv docker/docker-compose.stage-consumer.yml docker-compose.consumer.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__STAGE__|stage|g" docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.consumer.yml
+  sed -i -e "s|__STAGE__|stage|g" docker-compose.consumer.yml
+elif [[ $1 == "stage2" ]]; then
+  EC2_ASG=stage2-asg
+  CONSUMER_EC2_ASG=consumer-stage2-asg
+  mv docker/docker-compose.stage.yml docker-compose.yml
+  mv docker/docker-compose.stage-consumer.yml docker-compose.consumer.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__STAGE__|stage2|g" docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.consumer.yml
+  sed -i -e "s|__STAGE__|stage2|g" docker-compose.consumer.yml
 elif [[ $1 == "test" ]]; then
   EC2_ASG=test-asg
   mv docker/docker-compose.test.yml docker-compose.yml
@@ -46,13 +59,8 @@ elif [[ $1 == "dev3" ]]; then
   mv docker/docker-compose.dev.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
   sed -i -e "s|__DEV__|dev3|g" docker-compose.yml
-elif [[ $1 == "arm" ]]; then
-  EC2_ASG=arm-asg
-  mv docker/docker-compose.arm.yml docker-compose.yml
-  # CAREFUL: replaces tokens in docker-compose.yml
-  sed -i -e "s|__DEV__|arm|g" docker-compose.yml
 else
-  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, arm, test, stage, demo, production]"
+  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, stage2, demo, production]"
   exit 1
 fi
 
@@ -163,7 +171,7 @@ ssh $ec2_user@$ec2_host "$crowdin_cache" || exit 1
 echo "...done"
 
 # create default admin user
-if [[ $1 == "stage" ]]; then
+if [[ $1 == "stage" ]] || [[ $1 == "stage2" ]] ; then
   admin_user="cd /opt/humansis && sudo docker-compose exec -T php bash -c 'php bin/console app:default-credentials'"
   ssh $ec2_user@$ec2_host $admin_user
 fi
