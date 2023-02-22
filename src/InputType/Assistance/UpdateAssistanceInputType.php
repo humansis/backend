@@ -17,27 +17,27 @@ class UpdateAssistanceInputType implements InputTypeInterface
     private const UNSET_NUMBER = 0;
 
     #[Assert\Type(type: 'bool')]
-    private ?bool $validated = null;
+    private bool | null $validated = null;
 
     #[Assert\Type(type: 'bool')]
     private bool $completed = false;
 
     #[Assert\Date]
     #[Assert\NotBlank(allowNull: true)]
-    private ?string $dateDistribution = null;
+    private string | null $dateDistribution = null;
 
-    private string|null $dateExpiration = self::UNSET_STRING;
+    private string | null $dateExpiration = self::UNSET_STRING;
 
     #[Assert\NotBlank(allowNull: true)]
     #[Iso8601]
-    private ?string $dateExpirationToSave = null;
+    private string | null $dateExpirationToSave = null;
 
-    private string|int|null $round = self::UNSET_STRING;
+    private string | int | null $round = self::UNSET_STRING;
 
     #[Assert\Range(notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.', min: 1, max: 99)]
-    private ?int $roundToSave = null;
+    private int | null $roundToSave = null;
 
-    private int|string|null $note = self::UNSET_NUMBER;
+    private int | string | null $note = self::UNSET_NUMBER;
 
     private string|null $name = null;
 
@@ -46,14 +46,14 @@ class UpdateAssistanceInputType implements InputTypeInterface
      */
     #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private ?string $noteToSave;
+    private string | null $noteToSave;
 
-    public function getValidated(): ?bool
+    public function getValidated(): bool | null
     {
         return $this->validated;
     }
 
-    public function setValidated(?bool $validated): void
+    public function setValidated(bool | null $validated): void
     {
         $this->validated = $validated;
     }
@@ -68,17 +68,17 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->completed = $completed;
     }
 
-    public function getDateDistribution(): ?DateTimeInterface
+    public function getDateDistribution(): DateTimeInterface | null
     {
         return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
     }
 
-    public function setDateDistribution(?string $dateDistribution): void
+    public function setDateDistribution(string | null $dateDistribution): void
     {
         $this->dateDistribution = $dateDistribution;
     }
 
-    public function getDateExpiration(): ?DateTimeInterface
+    public function getDateExpiration(): DateTimeInterface | null
     {
         return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
     }
@@ -89,23 +89,23 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->dateExpirationToSave = $this->dateExpiration;
     }
 
-    public function getRound(): ?int
+    public function getRound(): int | null
     {
         return $this->roundToSave;
     }
 
-    public function setRound(?int $round): void
+    public function setRound(int | null $round): void
     {
         $this->round = $round;
         $this->roundToSave = $round;
     }
 
-    public function getNote(): ?string
+    public function getNote(): string | null
     {
         return $this->noteToSave;
     }
 
-    public function setNote(?string $note): void
+    public function setNote(string | null $note): void
     {
         $note = ($note === "") ? null : $note;
 
