@@ -21,6 +21,7 @@ use Enum\ProductCategoryType;
 use DBAL\SubSectorEnum;
 use Entity\Project;
 use Tests\BMSServiceTestCase;
+use Utils\DateTime\DateTimeFormat;
 
 class AssistanceControllerTest extends BMSServiceTestCase
 {
@@ -53,7 +54,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": ' . $assistance->getId() . ',
             "name": "' . $assistance->getName() . '",
-            "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTime::ATOM) . '",
+            "dateDistribution": "' . $assistance->getDateDistribution()->format(DateTimeFormat::DATE) . '",
             "dateExpiration": "*",
             "projectId": ' . $assistance->getProject()->getId() . ',
             "location": {
@@ -412,7 +413,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
@@ -503,7 +504,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'Test commodity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
@@ -571,7 +572,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $date = new DateTime();
 
         $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
-            'dateDistribution' => $date->format(DateTimeInterface::ATOM),
+            'dateDistribution' => $date->format(DateTimeFormat::DATE),
         ]);
 
         $this->assertTrue(
@@ -580,7 +581,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals($date->format(DateTimeInterface::ATOM), $contentArray['dateDistribution']);
+        $this->assertEquals($date->format(DateTimeFormat::DATE), $contentArray['dateDistribution']);
     }
 
     /**
@@ -645,7 +646,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'Test distribution',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
@@ -684,7 +685,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": "*",
             "name": "*",
-            "dateDistribution": "2021-03-10T13:45:32+00:00",
+            "dateDistribution": "2021-03-10",
             "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
             "location": "*",
@@ -722,7 +723,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'Test activity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2000-12-01T01:01:01+00:00',
+            'dateDistribution' => '2000-12-01',
             'sector' => SectorEnum::LIVELIHOODS,
             'subsector' => SubSectorEnum::SKILLS_TRAINING,
             'scoringBlueprint' => null,
@@ -792,7 +793,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'test community activity',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2000-12-01T01:01:01+0000',
+            'dateDistribution' => '2000-12-01',
             'sector' => SectorEnum::SHELTER,
             'subsector' => SubSectorEnum::CONSTRUCTION,
             //'scoringBlueprint' => null,
@@ -850,7 +851,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'name' => 'test distribution',
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
@@ -902,7 +903,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             '{
             "id": "*",
             "name": "*",
-            "dateDistribution": "2021-03-10T13:45:32+00:00",
+            "dateDistribution": "2021-03-10",
             "dateExpiration": "2022-10-10T03:45:00+00:00",
             "projectId": "*",
             "location": "*",
@@ -940,7 +941,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'name' => 'test distribution',
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'dateExpiration' => '2022-10-10T03:45:00.000Z',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,

@@ -22,49 +22,51 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Country]
-    private $iso3;
+    private string $iso3;
+
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    #[Iso8601]
-    private $dateDistribution;
+    #[Assert\Date]
+    private ?string $dateDistribution;
 
     #[Iso8601]
-    private $dateExpiration;
+    #[Assert\NotBlank(allowNull: true)]
+    private ?string $dateExpiration = null;
 
     #[Assert\Type('string')]
-    private $description;
+    private ?string $description = null;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $projectId;
+    private int $projectId;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $locationId;
+    private int $locationId;
 
     #[Assert\Choice(callback: [\Enum\AssistanceTargetType::class, 'values'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $target;
+    private string $target;
 
     #[Assert\Choice(callback: [\Enum\AssistanceType::class, 'values'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $type;
+    private string $type;
 
     #[Assert\Choice(callback: [\DBAL\SectorEnum::class, 'all'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $sector;
+    private string $sector;
 
     #[Assert\Choice(callback: [\DBAL\SubSectorEnum::class, 'all'])]
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    private $subsector;
+    private string $subsector;
 
     #[Assert\Type('integer')]
     private ?int $scoringBlueprintId = null;
@@ -78,23 +80,23 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private array $selectionCriteria = [];
 
     #[Assert\Type('integer')]
-    private $threshold;
+    private ?int $threshold;
 
     #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
-    private $communities;
+    private ?array $communities;
 
     #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
-    private $institutions;
+    private ?array $institutions;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
-    private $householdsTargeted;
+    private ?int $householdsTargeted = null;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
-    private $individualsTargeted;
+    private ?int $individualsTargeted = null;
 
     #[Assert\Type('boolean')]
     private bool $completed = false;
@@ -112,10 +114,10 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private $cashbackLimit;
 
     #[Assert\Type('boolean')]
-    private $remoteDistributionAllowed;
+    private ?bool $remoteDistributionAllowed = null;
 
     #[Assert\Type('string')]
-    private $note;
+    private ?string $note = null;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThan(0)]
@@ -192,18 +194,12 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return count((array) $smartcardCommodities) <= 1;
     }
 
-    /**
-     * @return string
-     */
-    public function getIso3()
+    public function getIso3(): string
     {
         return $this->iso3;
     }
 
-    /**
-     * @param string $iso3
-     */
-    public function setIso3($iso3)
+    public function setIso3(string $iso3)
     {
         $this->iso3 = $iso3;
     }
@@ -228,114 +224,72 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->dateExpiration = $dateExpiration;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string|null $description
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description)
     {
         $this->description = $description;
     }
 
-    /**
-     * @return int
-     */
-    public function getProjectId()
+    public function getProjectId(): int
     {
         return $this->projectId;
     }
 
-    /**
-     * @param int $projectId
-     */
-    public function setProjectId($projectId)
+    public function setProjectId(int $projectId)
     {
         $this->projectId = $projectId;
     }
 
-    /**
-     * @return int
-     */
-    public function getLocationId()
+    public function getLocationId(): int
     {
         return $this->locationId;
     }
 
-    /**
-     * @param int $locationId
-     */
-    public function setLocationId($locationId)
+    public function setLocationId(int $locationId)
     {
         $this->locationId = $locationId;
     }
 
-    /**
-     * @return string
-     */
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->target;
     }
 
-    /**
-     * @param string $target
-     */
-    public function setTarget($target)
+    public function setTarget(string $target)
     {
         $this->target = $target;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
-    public function getSector()
+    public function getSector(): string
     {
         return $this->sector;
     }
 
-    /**
-     * @param string $sector
-     */
-    public function setSector($sector)
+    public function setSector(string $sector)
     {
         $this->sector = $sector;
     }
 
-    /**
-     * @return string
-     */
-    public function getSubsector()
+    public function getSubsector(): string
     {
         return $this->subsector;
     }
 
-    /**
-     * @param string $subsector
-     */
-    public function setSubsector($subsector)
+    public function setSubsector(string $subsector)
     {
         $this->subsector = $subsector;
     }
@@ -355,7 +309,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return Assistance\CommodityInputType[]
      */
-    public function getCommodities()
+    public function getCommodities(): array
     {
         return $this->commodities;
     }
@@ -373,7 +327,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return Assistance\SelectionCriterionInputType[]
      */
-    public function getSelectionCriteria()
+    public function getSelectionCriteria(): array
     {
         return $this->selectionCriteria;
     }
@@ -388,34 +342,22 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         // method must be declared to fullfill normalizer requirements
     }
 
-    /**
-     * @return int|null
-     */
-    public function getThreshold()
+    public function getThreshold(): ?int
     {
         return $this->threshold;
     }
 
-    /**
-     * @param int|null $threshold
-     */
-    public function setThreshold($threshold): void
+    public function setThreshold(?int $threshold): void
     {
         $this->threshold = $threshold;
     }
 
-    /**
-     * @return bool
-     */
-    public function getCompleted()
+    public function getCompleted(): bool
     {
         return $this->completed;
     }
 
-    /**
-     * @param bool $completed
-     */
-    public function setCompleted($completed)
+    public function setCompleted(bool $completed)
     {
         $this->completed = $completed;
     }
@@ -423,7 +365,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return int[]|null
      */
-    public function getCommunities()
+    public function getCommunities(): ?array
     {
         return $this->communities;
     }
@@ -431,7 +373,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @param int[]|null $communities
      */
-    public function setCommunities($communities)
+    public function setCommunities(?array $communities)
     {
         $this->communities = $communities;
     }
@@ -439,7 +381,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @return int[]|null
      */
-    public function getInstitutions()
+    public function getInstitutions(): ?array
     {
         return $this->institutions;
     }
@@ -447,55 +389,37 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     /**
      * @param int[]|null $institutions
      */
-    public function setInstitutions($institutions)
+    public function setInstitutions(?array $institutions)
     {
         $this->institutions = $institutions;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getHouseholdsTargeted()
+    public function getHouseholdsTargeted(): ?int
     {
         return $this->householdsTargeted;
     }
 
-    /**
-     * @param int|null $householdsTargeted
-     */
-    public function setHouseholdsTargeted($householdsTargeted)
+    public function setHouseholdsTargeted(?int $householdsTargeted)
     {
         $this->householdsTargeted = $householdsTargeted;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIndividualsTargeted()
+    public function getIndividualsTargeted(): ?int
     {
         return $this->individualsTargeted;
     }
 
-    /**
-     * @param int|null $individualsTargeted
-     */
-    public function setIndividualsTargeted($individualsTargeted)
+    public function setIndividualsTargeted(?int $individualsTargeted)
     {
         $this->individualsTargeted = $individualsTargeted;
     }
 
-    /**
-     * @return bool
-     */
-    public function getValidated()
+    public function getValidated(): bool
     {
         return $this->validated;
     }
 
-    /**
-     * @param bool $validated
-     */
-    public function setValidated($validated)
+    public function setValidated(bool $validated)
     {
         $this->validated = $validated;
     }
@@ -539,34 +463,22 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->cashbackLimit = $cashbackLimit;
     }
 
-    /**
-     * @return bool|null
-     */
-    public function getRemoteDistributionAllowed()
+    public function getRemoteDistributionAllowed(): ?bool
     {
         return $this->remoteDistributionAllowed;
     }
 
-    /**
-     * @param bool|null $remoteDistributionAllowed
-     */
-    public function setRemoteDistributionAllowed($remoteDistributionAllowed)
+    public function setRemoteDistributionAllowed(?bool $remoteDistributionAllowed)
     {
         $this->remoteDistributionAllowed = $remoteDistributionAllowed;
     }
 
-    /**
-     * @return array
-     */
-    public function getAllowedProductCategoryTypes()
+    public function getAllowedProductCategoryTypes(): array
     {
         return $this->allowedProductCategoryTypes;
     }
 
-    /**
-     * @param array $allowedProductCategoryTypes
-     */
-    public function setAllowedProductCategoryTypes($allowedProductCategoryTypes): void
+    public function setAllowedProductCategoryTypes(array $allowedProductCategoryTypes): void
     {
         $this->allowedProductCategoryTypes = $allowedProductCategoryTypes;
     }
@@ -581,10 +493,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->note = $note;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getRound()
+    public function getRound(): ?int
     {
         return $this->round;
     }

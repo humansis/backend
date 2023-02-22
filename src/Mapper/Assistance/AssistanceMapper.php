@@ -6,7 +6,6 @@ namespace Mapper\Assistance;
 
 use Component\Assistance\Domain\Assistance;
 use Component\Codelist\CodeItem;
-use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\Collection;
 use Entity;
@@ -16,6 +15,7 @@ use InvalidArgumentException;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Utils\DateTime\DateTimeFormat;
 
 class AssistanceMapper implements MapperInterface
 {
@@ -76,7 +76,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format(DateTime::ATOM);
+        return $this->object->getDateDistribution()->format(DateTimeFormat::DATE);
     }
 
     public function getDateExpiration(): ?string

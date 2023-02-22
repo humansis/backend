@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Utils\DateTime\Iso8601Converter;
+use Validator\Constraints\Iso8601;
 
 #[Assert\GroupSequence(['UpdateAssistanceInputType', 'Strict'])]
 class UpdateAssistanceInputType implements InputTypeInterface
@@ -21,16 +22,14 @@ class UpdateAssistanceInputType implements InputTypeInterface
     #[Assert\Type(type: 'bool')]
     private bool $completed = false;
 
+    #[Assert\Date]
     #[Assert\NotBlank(allowNull: true)]
     private ?string $dateDistribution = null;
 
-    private ?string $originalDateDistribution = null;
-
     private string|null $dateExpiration = self::UNSET_STRING;
 
-    private ?string $originalDateExpiration = null;
-
     #[Assert\NotBlank(allowNull: true)]
+    #[Iso8601]
     private ?string $dateExpirationToSave = null;
 
     private string|int|null $round = self::UNSET_STRING;
@@ -47,25 +46,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
      */
     #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private $noteToSave;
-
-    #[Assert\IsTrue(message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
-    public function isValidExpirationDate(): bool
-    {
-        if (is_null($this->originalDateExpiration)) {
-            return true;
-        }
-        return !is_null(Iso8601Converter::toDateTime($this->originalDateExpiration));
-    }
-
-    #[Assert\IsTrue(message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
-    public function isValidDateDistribution(): bool
-    {
-        if (is_null($this->originalDateDistribution)) {
-            return true;
-        }
-        return !is_null(Iso8601Converter::toDateTime($this->originalDateDistribution));
-    }
+    private ?string $noteToSave;
 
     public function getValidated(): ?bool
     {
@@ -87,25 +68,23 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->completed = $completed;
     }
 
-    public function getDateDistribution()
+    public function getDateDistribution(): ?DateTimeInterface
     {
         return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
     }
 
-    public function setDateDistribution($dateDistribution): void
+    public function setDateDistribution(?string $dateDistribution): void
     {
-        $this->originalDateDistribution = $dateDistribution;
         $this->dateDistribution = $dateDistribution;
     }
 
-    public function getDateExpiration()
+    public function getDateExpiration(): ?DateTimeInterface
     {
         return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
     }
 
-    public function setDateExpiration($dateExpiration): void
+    public function setDateExpiration(string $dateExpiration): void
     {
-        $this->originalDateExpiration = $dateExpiration;
         $this->dateExpiration = $dateExpiration;
         $this->dateExpirationToSave = $this->dateExpiration;
     }

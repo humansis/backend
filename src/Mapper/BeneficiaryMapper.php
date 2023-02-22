@@ -9,7 +9,7 @@ use Entity\VulnerabilityCriterion;
 use Enum\PersonGender;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Utils\DateTime\DateOnlyFormat;
+use Utils\DateTime\DateTimeFormat;
 
 class BeneficiaryMapper implements MapperInterface
 {
@@ -107,7 +107,7 @@ class BeneficiaryMapper implements MapperInterface
     public function getDateOfBirth(): ?string
     {
         return $this->object->getPerson()->getDateOfBirth() ? $this->object->getPerson()->getDateOfBirth()->format(
-            DateOnlyFormat::FORMAT
+            DateTimeFormat::DATE
         ) : null;
     }
 

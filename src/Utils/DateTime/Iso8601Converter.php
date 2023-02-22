@@ -11,7 +11,7 @@ final class Iso8601Converter
 {
     public static function toDateTime(string $dateTimeString): ?DateTimeInterface
     {
-        foreach ([DateTimeInterface::ATOM, 'Y-m-d\TH:i:s.u\Z', 'Y-m-d'] as $format) {
+        foreach ([DateTimeInterface::ATOM, DateTimeFormat::DATETIME_WITH_TIMEZONE, DateTimeFormat::DATE] as $format) {
             $dateTime = DateTime::createFromFormat($format, $dateTimeString);
 
             if (false !== $dateTime) {
