@@ -39,7 +39,7 @@ FROM distribution_beneficiary db
 
     -- smartcards
          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
-         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_id
+         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_beneficiary_id
 
     -- mobile money
          LEFT JOIN transaction t ON t.relief_package_id=pack.id and t.transaction_status=1

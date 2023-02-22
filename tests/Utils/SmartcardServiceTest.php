@@ -745,29 +745,29 @@ class SmartcardServiceTest extends KernelTestCase
         }
 
         $ab = $reliefPackage->getAssistanceBeneficiary();
-        $oldSmartcard = $ab->getBeneficiary()->getActiveSmartcard();
-        if (!$oldSmartcard) {
-            $oldSmartcard = $this->getSmartcardForBeneficiary('AAA123AAA', $ab->getBeneficiary());
+        $oldSmartcardBeneficiary = $ab->getBeneficiary()->getActiveSmartcard();
+        if (!$oldSmartcardBeneficiary) {
+            $oldSmartcardBeneficiary = $this->getSmartcardForBeneficiary('AAA123AAA', $ab->getBeneficiary());
         }
-        $newSmartcard = $this->getSmartcardForBeneficiary('BBB123BBB', $ab->getBeneficiary());
-        $this->em->refresh($oldSmartcard);
-        $this->em->refresh($newSmartcard);
+        $newSmartcardBeneficiary = $this->getSmartcardForBeneficiary('BBB123BBB', $ab->getBeneficiary());
+        $this->em->refresh($oldSmartcardBeneficiary);
+        $this->em->refresh($newSmartcardBeneficiary);
 
-        $this->assertEquals(SmartcardStates::INACTIVE, $oldSmartcard->getState());
-        $this->assertEquals(SmartcardStates::ACTIVE, $newSmartcard->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $oldSmartcardBeneficiary->getState());
+        $this->assertEquals(SmartcardStates::ACTIVE, $newSmartcardBeneficiary->getState());
 
         $depositInputType = self::buildDepositInputType(
             $reliefPackage->getId(),
             $reliefPackage->getAmountToDistribute()
         );
-        $this->createDeposit($oldSmartcard->getSerialNumber(), $depositInputType, $this->user, $this->depositFactory);
+        $this->createDeposit($oldSmartcardBeneficiary->getSerialNumber(), $depositInputType, $this->user, $this->depositFactory);
 
         $this->em->flush();
-        $this->em->refresh($oldSmartcard);
-        $this->em->refresh($newSmartcard);
+        $this->em->refresh($oldSmartcardBeneficiary);
+        $this->em->refresh($newSmartcardBeneficiary);
 
-        $this->assertEquals(SmartcardStates::ACTIVE, $oldSmartcard->getState());
-        $this->assertEquals(SmartcardStates::INACTIVE, $newSmartcard->getState());
+        $this->assertEquals(SmartcardStates::ACTIVE, $oldSmartcardBeneficiary->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $newSmartcardBeneficiary->getState());
 
         $this->em->rollback();
     }

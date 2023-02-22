@@ -28,9 +28,9 @@ class SmartcardDeposit
     private ?int $id;
 
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\ManyToOne(targetEntity: 'Entity\Smartcard', inversedBy: 'deposites')]
+    #[ORM\ManyToOne(targetEntity: 'Entity\SmartcardBeneficiary', inversedBy: 'deposites')]
     #[ORM\JoinColumn(nullable: false)]
-    private Smartcard $smartcard;
+    private SmartcardBeneficiary $smartcardBeneficiary;
 
     #[SymfonyGroups(['FullSmartcard'])]
     #[ORM\ManyToOne(targetEntity: 'Entity\User')]
@@ -74,7 +74,7 @@ class SmartcardDeposit
     private string $hash;
 
     public function __construct(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         User $distributedBy,
         ReliefPackage $reliefPackage,
         $value,
@@ -83,7 +83,7 @@ class SmartcardDeposit
         bool $suspicious = false,
         ?array $message = null
     ) {
-        $this->smartcard = $smartcard;
+        $this->smartcardBeneficiary = $smartcardBeneficiary;
         $this->distributedBy = $distributedBy;
         $this->reliefPackage = $reliefPackage;
         $this->value = $value;
@@ -100,9 +100,9 @@ class SmartcardDeposit
         return $this->id;
     }
 
-    public function getSmartcard(): Smartcard
+    public function getSmartcard(): SmartcardBeneficiary
     {
-        return $this->smartcard;
+        return $this->smartcardBeneficiary;
     }
 
     public function getDistributedBy(): User
@@ -178,7 +178,7 @@ class SmartcardDeposit
     private function generateHash(): void
     {
         $this->hash = md5(
-            $this->smartcard->getSerialNumber() .
+            $this->smartcardBeneficiary->getSerialNumber() .
             '-' .
             $this->value .
             '-' .

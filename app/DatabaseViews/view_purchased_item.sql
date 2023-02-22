@@ -57,8 +57,8 @@ FROM distribution_beneficiary db
     -- smartcards
          LEFT JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id
          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
-         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_id
-         LEFT JOIN smartcard_purchase sp ON s.id=sp.smartcard_id
+         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_beneficiary_id
+         LEFT JOIN smartcard_purchase sp ON s.id=sp.smartcard_beneficiary_id
          LEFT JOIN smartcard_purchase_record spr ON sp.id=spr.smartcard_purchase_id
          LEFT JOIN smartcard_redemption_batch sbatch ON sp.redemption_batch_id=sbatch.id
 

@@ -11,7 +11,7 @@ use Doctrine\ORM\ORMException;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Entity\User;
 use Enum\ModalityType;
@@ -21,7 +21,7 @@ use Repository\Assistance\ReliefPackageRepository;
 use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
 use Repository\BeneficiaryRepository;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Repository\UserRepository;
 use Tests\BMSServiceTestCase;
 
@@ -35,7 +35,7 @@ class DistributionControllerTest extends BMSServiceTestCase
 
     private UserRepository $userRepository;
 
-    private SmartcardRepository $smartcardRepository;
+    private SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository;
 
     private ReliefPackageRepository $reliefPackageRepository;
 
@@ -58,7 +58,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
         $this->beneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(Beneficiary::class);
         $this->userRepository = self::getContainer()->get('doctrine')->getRepository(User::class);
-        $this->smartcardRepository = self::getContainer()->get('doctrine')->getRepository(Smartcard::class);
+        $this->smartcardBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(SmartcardBeneficiary::class);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
     }
@@ -114,9 +114,9 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->persist($reliefPackage);
 
 
-        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
         $smartcardDeposit = new SmartcardDeposit(
-            $smartcard,
+            $smartcardBeneficiary,
             $user,
             $reliefPackage,
             45,
@@ -130,7 +130,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->refresh($smartcardDeposit);
 
         $beneficiaryID = $beneficiary->getId();
-        $smartcardCode = $smartcard->getSerialNumber();
+        $smartcardCode = $smartcardBeneficiary->getSerialNumber();
 
         $this->request(
             'DELETE',
@@ -197,10 +197,10 @@ class DistributionControllerTest extends BMSServiceTestCase
         $reliefPackage->setDistributedBy($user);
         $this->em->persist($reliefPackage);
 
-        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
 
         $smartcardDeposit = new SmartcardDeposit(
-            $smartcard,
+            $smartcardBeneficiary,
             $user,
             $reliefPackage,
             45,
@@ -282,9 +282,9 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->persist($reliefPackage);
 
 
-        $smartcard = $this->smartcardRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findBy(['beneficiary' => $beneficiary->getId()], ['id' => 'desc'])[0];
         $smartcardDeposit = new SmartcardDeposit(
-            $smartcard,
+            $smartcardBeneficiary,
             $user,
             $reliefPackage,
             45,
@@ -298,7 +298,7 @@ class DistributionControllerTest extends BMSServiceTestCase
         $this->em->refresh($smartcardDeposit);
         $assistanceID = $assistance->getId();
         $beneficiaryID = $beneficiary->getId();
-        $smartcardCode = $smartcard->getSerialNumber();
+        $smartcardCode = $smartcardBeneficiary->getSerialNumber();
         $this->request(
             'DELETE',
             '/api/basic/support-app/v1/smartcard/distribution',

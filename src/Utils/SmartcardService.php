@@ -14,6 +14,7 @@ use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Entity\Assistance\ReliefPackage;
 use Entity\Commodity;
+use Entity\SmartcardBeneficiary;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
@@ -23,18 +24,17 @@ use InvalidArgumentException;
 use LogicException;
 use Repository\BeneficiaryRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Entity\Smartcard;
 use Entity\SmartcardPurchase;
 use Enum\SmartcardStates;
 use InputType\SmartcardPurchase as SmartcardPurchaseInput;
 use Model\PurchaseService;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 
 class SmartcardService
 {
     public function __construct(
         private readonly PurchaseService $purchaseService,
-        private readonly SmartcardRepository $smartcardRepository,
+        private readonly SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository,
         private readonly BeneficiaryRepository $beneficiaryRepository,
     ) {
     }
@@ -43,95 +43,95 @@ class SmartcardService
      * @throws SmartcardNotAllowedStateTransition
      * @throws SmartcardActivationDeactivatedException
      */
-    public function change(Smartcard $smartcard, ChangeSmartcardInputType $changeSmartcardInputType): void
+    public function change(SmartcardBeneficiary $smartcardBeneficiary, ChangeSmartcardInputType $changeSmartcardInputType): void
     {
-        if ($smartcard->getState() === SmartcardStates::INACTIVE) {
-            throw new SmartcardActivationDeactivatedException($smartcard);
+        if ($smartcardBeneficiary->getState() === SmartcardStates::INACTIVE) {
+            throw new SmartcardActivationDeactivatedException($smartcardBeneficiary);
         }
 
-        if ($smartcard->getState() !== $changeSmartcardInputType->getState()) {
-            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $changeSmartcardInputType->getState())) {
+        if ($smartcardBeneficiary->getState() !== $changeSmartcardInputType->getState()) {
+            if (!SmartcardStates::isTransitionAllowed($smartcardBeneficiary->getState(), $changeSmartcardInputType->getState())) {
                 throw new SmartcardNotAllowedStateTransition(
-                    $smartcard,
+                    $smartcardBeneficiary,
                     $changeSmartcardInputType->getState(),
-                    "Not allowed transition from state {$smartcard->getState()} to {$changeSmartcardInputType->getState()}."
+                    "Not allowed transition from state {$smartcardBeneficiary->getState()} to {$changeSmartcardInputType->getState()}."
                 );
             }
-            $smartcard->setState($changeSmartcardInputType->getState());
-            $smartcard->setChangedAt($changeSmartcardInputType->getCreatedAt());
-            $this->smartcardRepository->save($smartcard);
+            $smartcardBeneficiary->setState($changeSmartcardInputType->getState());
+            $smartcardBeneficiary->setChangedAt($changeSmartcardInputType->getCreatedAt());
+            $this->smartcardBeneficiaryRepository->save($smartcardBeneficiary);
         }
     }
 
     /**
      * @throws SmartcardNotAllowedStateTransition
      */
-    public function update(Smartcard $smartcard, UpdateSmartcardInputType $updateSmartcardInputType): Smartcard
+    public function update(SmartcardBeneficiary $smartcardBeneficiary, UpdateSmartcardInputType $updateSmartcardInputType): SmartcardBeneficiary
     {
-        if ($smartcard->getState() !== $updateSmartcardInputType->getState()) {
-            if (!SmartcardStates::isTransitionAllowed($smartcard->getState(), $updateSmartcardInputType->getState())) {
+        if ($smartcardBeneficiary->getState() !== $updateSmartcardInputType->getState()) {
+            if (!SmartcardStates::isTransitionAllowed($smartcardBeneficiary->getState(), $updateSmartcardInputType->getState())) {
                 throw new SmartcardNotAllowedStateTransition(
-                    $smartcard,
+                    $smartcardBeneficiary,
                     $updateSmartcardInputType->getState(),
-                    "Not allowed transition from state {$smartcard->getState()} to {$updateSmartcardInputType->getState()}."
+                    "Not allowed transition from state {$smartcardBeneficiary->getState()} to {$updateSmartcardInputType->getState()}."
                 );
             }
             if ($updateSmartcardInputType->getState() === SmartcardStates::INACTIVE) {
-                $smartcard->setDisabledAt($updateSmartcardInputType->getCreatedAt());
+                $smartcardBeneficiary->setDisabledAt($updateSmartcardInputType->getCreatedAt());
             }
-            if ($smartcard->isSuspicious() !== $updateSmartcardInputType->isSuspicious()) {
-                $smartcard->setSuspicious(
+            if ($smartcardBeneficiary->isSuspicious() !== $updateSmartcardInputType->isSuspicious()) {
+                $smartcardBeneficiary->setSuspicious(
                     $updateSmartcardInputType->isSuspicious(),
                     $updateSmartcardInputType->getSuspiciousReason()
                 );
             }
-            $smartcard->setState($updateSmartcardInputType->getState());
-            $smartcard->setChangedAt($updateSmartcardInputType->getCreatedAt());
-            $this->smartcardRepository->save($smartcard);
+            $smartcardBeneficiary->setState($updateSmartcardInputType->getState());
+            $smartcardBeneficiary->setChangedAt($updateSmartcardInputType->getCreatedAt());
+            $this->smartcardBeneficiaryRepository->save($smartcardBeneficiary);
         }
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     /**
      * @throws SmartcardDoubledRegistrationException
      */
-    public function register(SmartcardRegisterInputType $registerInputType): Smartcard
+    public function register(SmartcardRegisterInputType $registerInputType): SmartcardBeneficiary
     {
         /** @var Beneficiary $beneficiary */
         $beneficiary = $this->beneficiaryRepository->find($registerInputType->getBeneficiaryId());
-        $smartcard = $this->getOrCreateActiveSmartcardForBeneficiary(
+        $smartcardBeneficiary = $this->getOrCreateActiveSmartcardForBeneficiary(
             $registerInputType->getSerialNumber(),
             $beneficiary,
             $registerInputType->getCreatedAt()
         );
-        $this->checkSmartcardRegistrationDuplicity($smartcard, $registerInputType->getCreatedAt());
-        $smartcard->setSuspicious(false, null);
-        $smartcard->setRegisteredAt($registerInputType->getCreatedAt());
+        $this->checkSmartcardRegistrationDuplicity($smartcardBeneficiary, $registerInputType->getCreatedAt());
+        $smartcardBeneficiary->setSuspicious(false, null);
+        $smartcardBeneficiary->setRegisteredAt($registerInputType->getCreatedAt());
 
         if ($beneficiary) {
-            $smartcard->setBeneficiary($beneficiary);
+            $smartcardBeneficiary->setBeneficiary($beneficiary);
         } else {
-            $smartcard->setSuspicious(true, "Beneficiary #{$registerInputType->getBeneficiaryId()} does not exists");
+            $smartcardBeneficiary->setSuspicious(true, "Beneficiary #{$registerInputType->getBeneficiaryId()} does not exists");
         }
 
-        $this->smartcardRepository->save($smartcard);
+        $this->smartcardBeneficiaryRepository->save($smartcardBeneficiary);
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     /**
      * @throws SmartcardDoubledRegistrationException
      */
     private function checkSmartcardRegistrationDuplicity(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         DateTimeInterface $registrationDateTime
     ): void {
-        if (is_null($smartcard->getRegisteredAt())) {
+        if (is_null($smartcardBeneficiary->getRegisteredAt())) {
             return;
         }
-        if ($smartcard->getRegisteredAt()->getTimestamp() === $registrationDateTime->getTimestamp()) {
-            throw new SmartcardDoubledRegistrationException($smartcard);
+        if ($smartcardBeneficiary->getRegisteredAt()->getTimestamp() === $registrationDateTime->getTimestamp()) {
+            throw new SmartcardDoubledRegistrationException($smartcardBeneficiary);
         }
     }
 
@@ -155,27 +155,27 @@ class SmartcardService
         if (!$beneficiary) {
             throw new NotFoundHttpException('Beneficiary ID must exist');
         }
-        $smartcard = $this->getSmartcardForPurchase(
+        $smartcardBeneficiary = $this->getSmartcardForPurchase(
             $serialNumber,
             $beneficiary,
             $data->getCreatedAt()
         );
-        $this->smartcardRepository->persist($smartcard);
+        $this->smartcardBeneficiaryRepository->persist($smartcardBeneficiary);
 
-        return $this->purchaseService->purchaseSmartcard($smartcard, $data);
+        return $this->purchaseService->purchaseSmartcard($smartcardBeneficiary, $data);
     }
 
     public function getSmartcardForPurchase(
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $createdAt
-    ): Smartcard {
-        $smartcard = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $createdAt);
-        if (!$smartcard) {
-            $smartcard = $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $createdAt);
+    ): SmartcardBeneficiary {
+        $smartcardBeneficiary = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $createdAt);
+        if (!$smartcardBeneficiary) {
+            $smartcardBeneficiary = $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $createdAt);
         }
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     /**
@@ -186,24 +186,24 @@ class SmartcardService
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
-    ): Smartcard {
-        $smartcard = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $dateOfEvent);
-        $smartcard ?: $smartcard = $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $dateOfEvent);
-        $this->activateSmartcardAndDisableOthers($smartcard);
+    ): SmartcardBeneficiary {
+        $smartcardBeneficiary = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $dateOfEvent);
+        $smartcardBeneficiary ?: $smartcardBeneficiary = $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $dateOfEvent);
+        $this->activateSmartcardAndDisableOthers($smartcardBeneficiary);
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     private function getSmartcardForBeneficiaryBySerialNumber(
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
-    ): ?Smartcard {
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
-        if ($smartcard) {
-            $this->checkAndMarkDisabledSmartcardAsSuspicious($smartcard, $dateOfEvent);
+    ): ?SmartcardBeneficiary {
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findBySerialNumberAndBeneficiary($serialNumber, $beneficiary);
+        if ($smartcardBeneficiary) {
+            $this->checkAndMarkDisabledSmartcardAsSuspicious($smartcardBeneficiary, $dateOfEvent);
 
-            return $smartcard;
+            return $smartcardBeneficiary;
         }
 
         return null;
@@ -213,25 +213,25 @@ class SmartcardService
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $dateOfEvent
-    ): Smartcard {
-        $this->smartcardRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
-        $smartcard = new Smartcard($serialNumber, $dateOfEvent);
-        $smartcard->setBeneficiary($beneficiary);
-        $smartcard->setSuspicious(true, "Smartcard made adhoc");
-        $this->smartcardRepository->persist($smartcard);
+    ): SmartcardBeneficiary {
+        $this->smartcardBeneficiaryRepository->disableBySerialNumber($serialNumber, SmartcardStates::REUSED, $dateOfEvent);
+        $smartcardBeneficiary = new SmartcardBeneficiary($serialNumber, $dateOfEvent);
+        $smartcardBeneficiary->setBeneficiary($beneficiary);
+        $smartcardBeneficiary->setSuspicious(true, "Smartcard made adhoc");
+        $this->smartcardBeneficiaryRepository->persist($smartcardBeneficiary);
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     private function checkAndMarkDisabledSmartcardAsSuspicious(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         DateTimeInterface $dateOfEvent
     ): void {
-        $eventWasBeforeDisable = $smartcard->getDisabledAt()
-            && $smartcard->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
+        $eventWasBeforeDisable = $smartcardBeneficiary->getDisabledAt()
+            && $smartcardBeneficiary->getDisabledAt()->getTimestamp() > $dateOfEvent->getTimestamp();
 
-        if (SmartcardStates::ACTIVE !== $smartcard->getState() && !$eventWasBeforeDisable) {
-            $smartcard->setSuspicious(true, "Using disabled card");
+        if (SmartcardStates::ACTIVE !== $smartcardBeneficiary->getState() && !$eventWasBeforeDisable) {
+            $smartcardBeneficiary->setSuspicious(true, "Using disabled card");
         }
     }
 
@@ -249,44 +249,44 @@ class SmartcardService
         );
     }
 
-    public function setMissingCurrencyToSmartcardAndPurchases(Smartcard $smartcard, ReliefPackage $reliefPackage): void
+    public function setMissingCurrencyToSmartcardAndPurchases(SmartcardBeneficiary $smartcardBeneficiary, ReliefPackage $reliefPackage): void
     {
-        $this->setMissingCurrencyToSmartcard($smartcard, $reliefPackage);
-        $this->setMissingCurrencyToPurchases($smartcard);
-        $this->smartcardRepository->save($smartcard);
+        $this->setMissingCurrencyToSmartcard($smartcardBeneficiary, $reliefPackage);
+        $this->setMissingCurrencyToPurchases($smartcardBeneficiary);
+        $this->smartcardBeneficiaryRepository->save($smartcardBeneficiary);
     }
 
-    private function setMissingCurrencyToSmartcard(Smartcard $smartcard, ReliefPackage $reliefPackage): void
+    private function setMissingCurrencyToSmartcard(SmartcardBeneficiary $smartcardBeneficiary, ReliefPackage $reliefPackage): void
     {
-        if (null === $smartcard->getCurrency()) {
-            $smartcard->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
+        if (null === $smartcardBeneficiary->getCurrency()) {
+            $smartcardBeneficiary->setCurrency(SmartcardService::findCurrency($reliefPackage->getAssistanceBeneficiary()));
         }
     }
 
-    private function setMissingCurrencyToPurchases(Smartcard $smartcard): void
+    private function setMissingCurrencyToPurchases(SmartcardBeneficiary $smartcardBeneficiary): void
     {
-        foreach ($smartcard->getPurchases() as $purchase) {
+        foreach ($smartcardBeneficiary->getPurchases() as $purchase) {
             foreach ($purchase->getRecords() as $record) {
                 if (null === $record->getCurrency()) {
-                    $record->setCurrency($smartcard->getCurrency());
-                    $this->smartcardRepository->persist($record);
+                    $record->setCurrency($smartcardBeneficiary->getCurrency());
+                    $this->smartcardBeneficiaryRepository->persist($record);
                 }
             }
         }
     }
 
-    public function getSmartcardByCode(string $smartcardCode): Smartcard
+    public function getSmartcardByCode(string $smartcardCode): SmartcardBeneficiary
     {
-        $smartcard = $this->smartcardRepository->findOneBy(['serialNumber' => $smartcardCode]);
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findOneBy(['serialNumber' => $smartcardCode]);
 
-        if (!$smartcard) {
+        if (!$smartcardBeneficiary) {
             throw new NotFoundHttpException("Card with code '{$smartcardCode}' does not exists");
         }
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
-    private function activateSmartcardAndDisableOthers(Smartcard $smartcardForActivation): void
+    private function activateSmartcardAndDisableOthers(SmartcardBeneficiary $smartcardForActivation): void
     {
         if (!$smartcardForActivation->getBeneficiary()) {
             throw new LogicException(
@@ -295,12 +295,12 @@ class SmartcardService
         }
         $smartcardForActivation->setState(SmartcardStates::ACTIVE);
 
-        $activatedSmartcardsByBeneficiary = $this->smartcardRepository->findBy(
+        $activatedSmartcardsByBeneficiary = $this->smartcardBeneficiaryRepository->findBy(
             ['beneficiary' => $smartcardForActivation->getBeneficiary(), 'state' => SmartcardStates::ACTIVE]
         );
         foreach ($activatedSmartcardsByBeneficiary as $smartcardBnf) {
             if ($smartcardForActivation->getId() !== $smartcardBnf->getId()) {
-                $this->smartcardRepository->disable($smartcardBnf);
+                $this->smartcardBeneficiaryRepository->disable($smartcardBnf);
             }
         }
     }

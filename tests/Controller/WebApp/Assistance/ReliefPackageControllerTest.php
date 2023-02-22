@@ -156,7 +156,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $reliefPackage = $qb->select('r')
             ->from(ReliefPackage::class, 'r')
             ->innerJoin('r.assistanceBeneficiary', 'ab')
-            ->innerJoin(Smartcard::class, 's', Join::WITH, 's.beneficiary = ab.beneficiary')
+            ->innerJoin(SmartcardBeneficiary::class, 's', Join::WITH, 's.beneficiary = ab.beneficiary')
             ->andWhere('r.amountSpent is not null')
             ->andWhere('s.state = :activeState')
             ->andWhere('r.amountSpent < r.amountToDistribute')

@@ -90,8 +90,8 @@ final class Version20230105085935 extends AbstractMigration
         -- smartcards
          LEFT JOIN assistance_relief_package pack ON pack.assistance_beneficiary_id=db.id
          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
-         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_id
-         LEFT JOIN smartcard_purchase sp ON s.id=sp.smartcard_id
+         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_beneficiary_id
+         LEFT JOIN smartcard_purchase sp ON s.id=sp.smartcard_beneficiary_id
          LEFT JOIN smartcard_purchase_record spr ON sp.id=spr.smartcard_purchase_id
          LEFT JOIN smartcard_redemption_batch sbatch ON sp.redemption_batch_id=sbatch.id
 
@@ -131,7 +131,7 @@ final class Version20230105085935 extends AbstractMigration
                                SUM(spr.value)   as value,
                                spr.currency     as currency,
                                sp.vendor_id     as vendor_id,
-                               sp.smartcard_id  as smartcardId
+                               sp.smartcard_beneficiary_id  as smartcardId
                         FROM smartcard_purchase AS sp
                                  INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
                         WHERE sp.redemption_batch_id IS NULL
@@ -168,7 +168,7 @@ final class Version20230105085935 extends AbstractMigration
         ni.id_number
         FROM smartcard_purchase_record spr
          LEFT JOIN smartcard_purchase sp ON sp.id = spr.smartcard_purchase_id
-         LEFT JOIN smartcard_beneficiary s ON sp.smartcard_id = s.id
+         LEFT JOIN smartcard_beneficiary s ON sp.smartcard_beneficiary_id = s.id
          LEFT JOIN smartcard_redemption_batch srb ON sp.redemption_batch_id = srb.id
          LEFT JOIN beneficiary b ON s.beneficiary_id = b.id
          LEFT JOIN person p ON b.person_id = p.id
@@ -228,8 +228,8 @@ final class Version20230105085935 extends AbstractMigration
                         ON sp.id = spr.smartcard_purchase_id
                         AND sp.assistance_id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                     JOIN smartcard_beneficiary s
-                        ON sp.smartcard_id = s.id
-                        AND s.id = (SELECT smartcard_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
+                        ON sp.smartcard_beneficiary_id = s.id
+                        AND s.id = (SELECT smartcard_beneficiary_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                 )
                 WHERE arp.assistance_beneficiary_id in (
                     SELECT db.id
@@ -244,8 +244,8 @@ final class Version20230105085935 extends AbstractMigration
                             ON sp.id = spr.smartcard_purchase_id
                             AND sp.assistance_id = (SELECT assistance_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                         JOIN smartcard_beneficiary s
-                            ON sp.smartcard_id = s.id
-                            AND s.id = (SELECT smartcard_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
+                            ON sp.smartcard_beneficiary_id = s.id
+                            AND s.id = (SELECT smartcard_beneficiary_id FROM smartcard_purchase WHERE id = ${modifier}.smartcard_purchase_id)
                         GROUP by aid, bid
                     ) ps
                         ON db.assistance_id = ps.aid
@@ -300,7 +300,7 @@ final class Version20230105085935 extends AbstractMigration
 
                     -- smartcards
                          LEFT JOIN smartcard_deposit sd ON sd.relief_package_id=pack.id
-                         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_id
+                         LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_beneficiary_id
 
                     -- mobile money
                          LEFT JOIN transaction t ON t.relief_package_id=pack.id and t.transaction_status=1

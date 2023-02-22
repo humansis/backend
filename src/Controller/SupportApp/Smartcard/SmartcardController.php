@@ -5,12 +5,12 @@ namespace Controller\SupportApp\Smartcard;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Controller\AbstractController;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Enum\RoleType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
 use Repository\RoleRepository;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -21,7 +21,7 @@ class SmartcardController extends AbstractController
 {
     public function __construct(
         private readonly SmartcardService $smartcardService,
-        private readonly SmartcardRepository $smartcardRepository,
+        private readonly SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository,
         private readonly RoleRepository $roleRepository,
         private readonly TokenStorageInterface $tokenStorage
     ) {
@@ -30,16 +30,16 @@ class SmartcardController extends AbstractController
     #[Rest\Get('/{smartcardCode}')]
     public function smartcard(string $smartcardCode): JsonResponse
     {
-        $smartcards = $this->smartcardRepository->findBy(['serialNumber' => $smartcardCode]);
+        $smartcardBeneficiaries = $this->smartcardBeneficiaryRepository->findBy(['serialNumber' => $smartcardCode]);
 
-        return $this->json(['data' => $smartcards]);
+        return $this->json(['data' => $smartcardBeneficiaries]);
     }
 
     #[Rest\Get('/{smartcardCode}/purchases')]
     public function smartcardPurchases(string $smartcardCode): JsonResponse
     {
-        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
-        $purchases = $smartcard->getPurchases();
+        $smartcardBeneficiary = $this->smartcardService->getSmartcardByCode($smartcardCode);
+        $purchases = $smartcardBeneficiary->getPurchases();
 
         return $this->json($purchases);
     }
@@ -47,8 +47,8 @@ class SmartcardController extends AbstractController
     #[Rest\Get('/{smartcardCode}/deposits')]
     public function smartcardDeposits(string $smartcardCode): JsonResponse
     {
-        $smartcard = $this->smartcardService->getSmartcardByCode($smartcardCode);
-        $purchases = $smartcard->getDeposites();
+        $smartcardBeneficiary = $this->smartcardService->getSmartcardByCode($smartcardCode);
+        $purchases = $smartcardBeneficiary->getDeposites();
 
         return $this->json($purchases);
     }
@@ -59,7 +59,7 @@ class SmartcardController extends AbstractController
      */
     #[Rest\Patch('/{id}')]
     public function update(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         UpdateSmartcardInputType $updateSmartcardInputType,
         SmartcardService $smartcardService
     ): JsonResponse {
@@ -70,10 +70,10 @@ class SmartcardController extends AbstractController
         ]);
 
         if ($role && $user->hasRole($role)) {
-            $smartcard = $this->smartcardRepository->find($smartcard);
-            $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
+            $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->find($smartcardBeneficiary);
+            $smartcardBeneficiary = $smartcardService->update($smartcardBeneficiary, $updateSmartcardInputType);
 
-            return $this->json($smartcard);
+            return $this->json($smartcardBeneficiary);
         } else {
             throw new AccessDeniedException('You do not have the privilege to update the Smartcard');
         }

@@ -23,7 +23,7 @@ FROM (SELECT spPre.spaid                                            as spaid,
                    SUM(spr.value)   as value,
                    spr.currency     as currency,
                    sp.vendor_id     as vendor_id,
-                   sp.smartcard_id  as smartcardId
+                   sp.smartcard_beneficiary_id  as smartcardId
             FROM smartcard_purchase AS sp
                      INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
             WHERE sp.redemption_batch_id IS NULL

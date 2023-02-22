@@ -21,8 +21,8 @@ use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Repository\SmartcardDepositRepository;
-use Repository\SmartcardRepository;
 use Throwable;
 use Utils\DecimalNumber\DecimalNumberFactory;
 use Workflow\ReliefPackageTransitions;
@@ -47,7 +47,7 @@ class AssistanceDistributionService
         private readonly Registry $registry,
         private readonly EntityManagerInterface $em,
         private readonly SmartcardDepositRepository $smartcardDepositRepository,
-        private readonly SmartcardRepository $smartcardRepository,
+        private readonly SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository,
         private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
     ) {
     }
@@ -228,11 +228,11 @@ class AssistanceDistributionService
         AssistanceBeneficiary $assistanceBeneficiary,
         ResetReliefPackageInputType $inputType
     ): void {
-        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryId(
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findBySerialNumberAndBeneficiaryId(
             $inputType->getSmartcardCode(),
             $inputType->getBeneficiaryId()
         );
-        if (!$smartcard) {
+        if (!$smartcardBeneficiary) {
             throw new RemoveDistributionException(
                 "Beneficiary ({$inputType->getBeneficiaryId()}) does not have assigned Smartcard with code ({$inputType->getSmartcardCode()})"
             );
