@@ -49,7 +49,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'projectId' => 8,
             'locationId' => 30,
             'name' => 'Test Assistance',
-            'dateDistribution' => '2021-03-10T13:45:32.988Z',
+            'dateDistribution' => '2021-03-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringType' => 'Default',
