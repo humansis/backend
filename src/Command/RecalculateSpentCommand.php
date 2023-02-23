@@ -5,26 +5,17 @@ declare(strict_types=1);
 namespace Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'recalculate:spent', description: 'Recalculate column spent in table assistance_relief_package for every row')]
 class RecalculateSpentCommand extends Command
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
         parent::__construct();
-        $this->em = $em;
-    }
-    protected function configure(): void
-    {
-        parent::configure();
-        $this
-            ->setName('recalculate:spent')
-            ->setDescription('Recalculate column spent in table assistance_relief_package for every row');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -59,11 +50,10 @@ class RecalculateSpentCommand extends Command
             GROUP by arp.id
             ) t ON t.aprid = a.id
             SET a.amount_spent = t.total
-
         ');
 
         $output->writeln('Recalculating spent column in assistance_relief_package table finished');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }
