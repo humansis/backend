@@ -24,8 +24,10 @@ use Utils\CountrySpecificService;
 
 class CountrySpecificController extends AbstractController
 {
-    public function __construct(private readonly CountrySpecificService $countrySpecificService, private readonly ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private readonly CountrySpecificService $countrySpecificService,
+        private readonly ManagerRegistry $managerRegistry
+    ) {
     }
 
     #[Rest\Get('/web-app/v1/country-specifics/exports')]
@@ -78,9 +80,10 @@ class CountrySpecificController extends AbstractController
                 "Country specific option with the same name already exists, please choose another name."
             );
         }
+
         return $this->json($countrySpecific);
     }
-    
+
     #[Rest\Put('/web-app/v1/country-specifics/{id}')]
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {
