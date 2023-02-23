@@ -46,7 +46,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'documentNumber' => $number,
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
-                . $this->translator->trans('was not found in the assistance.'),
+                . $this->translator->trans('was not found.'),
         ];
 
         return $this;
@@ -60,7 +60,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
-                . $this->translator->trans('was not found in the assistance.'),
+                . $this->translator->trans('was not found.'),
         ];
 
         return $this;

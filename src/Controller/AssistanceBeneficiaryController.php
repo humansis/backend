@@ -33,6 +33,7 @@ use InputType\InstitutionOrderInputType;
 use OutputType\Assistance\AssistanceBeneficiaryOperationOutputType;
 use Request\Pagination;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -47,7 +48,11 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
-     *
+     * @param Assistance $assistance
+     * @param BeneficiaryFilterInputType $filter
+     * @param BeneficiaryOrderInputType $orderBy
+     * @param Pagination $pagination
+     * @return JsonResponse
      */
     public function assistanceBeneficiariesByAssistance(
         Entity\Assistance $assistance,
@@ -72,7 +77,11 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-institutions")
      *
-     *
+     * @param Assistance $assistance
+     * @param InstitutionFilterInputType $filter
+     * @param InstitutionOrderInputType $orderBy
+     * @param Pagination $pagination
+     * @return JsonResponse
      */
     public function assistanceInstitutionsByAssistance(
         Entity\Assistance $assistance,
@@ -97,7 +106,11 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/assistances-communities")
      *
-     *
+     * @param Assistance $assistance
+     * @param CommunityFilterType $filter
+     * @param CommunityOrderInputType $orderBy
+     * @param Pagination $pagination
+     * @return JsonResponse
      */
     public function assistanceCommunitiesByAssistance(
         Entity\Assistance $assistance,
@@ -121,16 +134,22 @@ class AssistanceBeneficiaryController extends AbstractController
 
     /**
      * @Rest\Delete("/web-app/v1/assistances/{id}/assistances-beneficiaries")
+     *
+     * @param Request $request
+     * @param Assistance $assistanceRoot
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     * @return JsonResponse
      */
     public function removeAssistanceBeneficiaries(
+        Request $request,
         Entity\Assistance $assistanceRoot,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkAssistance($assistanceRoot);
         $this->checkAllowedOperations($inputType);
-
+        $countryCode =  $this->getCountryCode($request);
         try {
-            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType);
+            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType, $countryCode);
             $output = $this->prepareBeneficiariesForChange($assistanceRoot, $beneficiaries, $inputType);
 
             $output = $this->assistanceBeneficiaryService->removeBeneficiariesFromAssistance(
@@ -149,16 +168,21 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-beneficiaries")
      *
+     * @param Request $request
+     * @param Assistance $assistanceRoot
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     * @return JsonResponse
      */
     public function addAssistanceBeneficiaries(
+        Request $request,
         Entity\Assistance $assistanceRoot,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkAssistance($assistanceRoot);
         $this->checkAllowedOperations($inputType);
-
+        $countryCode =  $this->getCountryCode($request);
         try {
-            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType);
+            $beneficiaries = $this->getBeneficiariesForAssistanceBeneficiaryChange($inputType, $countryCode);
             $output = $this->prepareBeneficiariesForChange($assistanceRoot, $beneficiaries, $inputType);
 
             $output = $this->assistanceBeneficiaryService->addBeneficiariesToAssistance(
@@ -193,7 +217,11 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-institutions")
      *
-     *
+     * @param Assistance $assistanceRoot
+     * @param AddRemoveInstitutionToAssistanceInputType $inputType
+     * @param AssistanceFactory $factory
+     * @param InstitutionRepository $repository
+     * @return JsonResponse
      */
     public function addOrRemoveAssistanceInstitutions(
         Entity\Assistance $assistanceRoot,
@@ -218,7 +246,11 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/assistances/{id}/assistances-communities")
      *
-     *
+     * @param Assistance $assistanceRoot
+     * @param AddRemoveCommunityToAssistanceInputType $inputType
+     * @param AssistanceFactory $factory
+     * @param CommunityRepository $repository
+     * @return JsonResponse
      */
     public function addOrRemoveAssistanceCommunities(
         Entity\Assistance $assistanceRoot,
@@ -241,18 +273,21 @@ class AssistanceBeneficiaryController extends AbstractController
     }
 
     /**
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     * @param string $countryCode
      * @return Beneficiary[]
      */
-    private function getBeneficiariesForAssistanceBeneficiaryChange(AssistanceBeneficiariesOperationInputType $inputType): array
+    private function getBeneficiariesForAssistanceBeneficiaryChange(AssistanceBeneficiariesOperationInputType $inputType, string $countryCode): array
     {
         if ($inputType->hasDocumentNumbers()) {
             return $this->beneficiaryRepository->findByIdentities(
                 $inputType->getDocumentNumbers(),
-                $inputType->getDocumentType()
+                $inputType->getDocumentType(),
+                $countryCode
             );
         }
 
-        return $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds());
+        return $this->beneficiaryRepository->findByIds($inputType->getBeneficiaryIds(), $countryCode);
     }
 
     /**
@@ -278,6 +313,10 @@ class AssistanceBeneficiaryController extends AbstractController
         );
     }
 
+    /**
+     * @param Assistance $assistance
+     * @return void
+     */
     private function checkAssistance(Assistance $assistance): void
     {
         if (
@@ -288,6 +327,10 @@ class AssistanceBeneficiaryController extends AbstractController
         }
     }
 
+    /**
+     * @param AssistanceBeneficiariesOperationInputType $inputType
+     * @return void
+     */
     private function checkAllowedOperations(AssistanceBeneficiariesOperationInputType $inputType): void
     {
         $operations = 0;

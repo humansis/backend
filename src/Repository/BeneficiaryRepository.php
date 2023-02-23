@@ -313,7 +313,7 @@ class BeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    public function findByIdentities(array $documentNumbers, string $idType)
+    public function findByIdentities(array $documentNumbers, string $idType, string $countryCode)
     {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
@@ -323,8 +323,10 @@ class BeneficiaryRepository extends EntityRepository
             ->andWhere('id.idType = :idType')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
+            ->andWhere('hh.countryIso3 = :country')
             ->setParameter('idNumbers', $documentNumbers)
-            ->setParameter('idType', $idType);
+            ->setParameter('idType', $idType)
+            ->setParameter('country', $countryCode);
 
         return $qb->getQuery()
             ->getResult();
@@ -335,7 +337,7 @@ class BeneficiaryRepository extends EntityRepository
      *
      * @return float|int|mixed|string
      */
-    public function findByIds(array $ids)
+    public function findByIds(array $ids, string $countryCode)
     {
         $qb = $this->createQueryBuilder('b')
             ->join('b.person', 'p')
@@ -344,7 +346,9 @@ class BeneficiaryRepository extends EntityRepository
             ->andWhere('b.id IN (:id)')
             ->andWhere('b.archived = 0')
             ->andWhere('hh.archived = 0')
-            ->setParameter('id', $ids);
+            ->andWhere('hh.countryIso3 = :country')
+            ->setParameter('id', $ids)
+            ->setParameter('country', $countryCode);
 
         return $qb->getQuery()
             ->getResult();
