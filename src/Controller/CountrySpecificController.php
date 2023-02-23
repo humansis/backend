@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Entity\CountrySpecificAnswer;
 use Controller\ExportController;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\CountrySpecificCreateInputType;
 use InputType\CountrySpecificFilterInputType;
@@ -20,12 +19,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Throwable;
 use Utils\CountrySpecificService;
 
 class CountrySpecificController extends AbstractController
 {
-    public function __construct(private readonly CountrySpecificService $countrySpecificService, private readonly ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private readonly CountrySpecificService $countrySpecificService,
+        private readonly ManagerRegistry $managerRegistry
+    ) {
     }
 
     #[Rest\Get('/web-app/v1/country-specifics/exports')]
@@ -68,45 +70,28 @@ class CountrySpecificController extends AbstractController
         return $this->json($countrySpecifics);
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     #[Rest\Post('/web-app/v1/country-specifics')]
     public function create(CountrySpecificCreateInputType $inputType): JsonResponse
     {
-        $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
-
         try {
-            $this->managerRegistry->getManager()->persist($countrySpecific);
-            $this->managerRegistry->getManager()->flush();
+            $countrySpecific = $this->countrySpecificService->create($inputType);
         } catch (UniqueConstraintViolationException) {
-            return new JsonResponse(
-                "Country specific option with the same name already exists, please choose another name.",
-                \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+            throw new BadRequestHttpException(
+                "Country specific option with the same name already exists, please choose another name."
             );
         }
 
         return $this->json($countrySpecific);
     }
 
-    /**
-     *
-     * @throws Exception
-     */
     #[Rest\Put('/web-app/v1/country-specifics/{id}')]
     public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): JsonResponse
     {
-        $countrySpecific->setFieldString($inputType->getField());
-        $countrySpecific->setType($inputType->getType());
-
         try {
-            $this->managerRegistry->getManager()->persist($countrySpecific);
-            $this->managerRegistry->getManager()->flush();
+            $countrySpecific = $this->countrySpecificService->update($countrySpecific, $inputType);
         } catch (UniqueConstraintViolationException) {
-            return new JsonResponse(
-                "Country specific option with the same name already exists, please choose another name.",
-                \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST
+            throw new BadRequestHttpException(
+                "Country specific option with the same name already exists, please choose another name."
             );
         }
 
