@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\Booklet;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Entity\Voucher;
@@ -63,10 +63,10 @@ class PurchaseService
      * @throws EntityNotFoundException
      * @throws Exception
      */
-    public function purchaseSmartcard(Smartcard $smartcard, \InputType\SmartcardPurchaseInputType|SmartcardPurchaseInput $input): SmartcardPurchase
+    public function purchaseSmartcard(SmartcardBeneficiary $smartcardBeneficiary, \InputType\SmartcardPurchaseInputType|SmartcardPurchaseInput $input): SmartcardPurchase
     {
         $hash = $this->hashPurchase(
-            $smartcard->getBeneficiary(),
+            $smartcardBeneficiary->getBeneficiary(),
             $this->getVendor($input->getVendorId()),
             $input->getCreatedAt()
         );
@@ -93,7 +93,7 @@ class PurchaseService
         }
 
         $purchase = SmartcardPurchase::create(
-            $smartcard,
+            $smartcardBeneficiary,
             $this->getVendor($input->getVendorId()),
             $input->getCreatedAt(),
             $assistance
@@ -113,7 +113,7 @@ class PurchaseService
             }
         }
 
-        $smartcard->addPurchase($purchase);
+        $smartcardBeneficiary->addPurchase($purchase);
 
         $this->em->persist($purchase);
         $this->em->flush();

@@ -5,7 +5,7 @@ namespace Tests\Controller\SupportApp\Smartcard;
 use Entity\Beneficiary;
 use Exception;
 use Tests\BMSServiceTestCase;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\Vendor;
 
 class AnalyticsControllerTest extends BMSServiceTestCase
@@ -42,7 +42,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardAnalytics()
     {
-        $smartcardId = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getId();
+        $smartcardId = $this->em->getRepository(SmartcardBeneficiary::class)->findOneBy([], ['id' => 'asc'])->getId();
 
         $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcard/' . $smartcardId);
 
@@ -58,7 +58,7 @@ class AnalyticsControllerTest extends BMSServiceTestCase
 
     public function testSmartcardsAnalytics()
     {
-        $smartcardSerialNumber = $this->em->getRepository(Smartcard::class)->findOneBy([], ['id' => 'asc'])->getSerialNumber();
+        $smartcardSerialNumber = $this->em->getRepository(SmartcardBeneficiary::class)->findOneBy([], ['id' => 'asc'])->getSerialNumber();
 
         $this->request('GET', '/api/basic/support-app/v1/smartcard-analytics/smartcards/' . $smartcardSerialNumber);
 

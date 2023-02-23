@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Repository\UserRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Utils\DecimalNumber\DecimalNumberFactory;
 use Utils\SmartcardService;
@@ -47,12 +47,12 @@ class DepositFactory
         CreationContext | null $context = null,
     ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
-        $smartcard = $this->smartcardService->getOrCreateActiveSmartcardForBeneficiary(
+        $smartcardBeneficiary = $this->smartcardService->getOrCreateActiveSmartcardForBeneficiary(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()
         );
-        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType);
+        $deposit = $this->createNewDepositRoot($smartcardBeneficiary, $user, $reliefPackage, $depositInputType);
 
         try {
             $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
@@ -71,8 +71,8 @@ class DepositFactory
             throw new DoubledDepositException($message);
         }
 
-        $this->addDepositToSmartcard($smartcard, $deposit);
-        $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
+        $this->addDepositToSmartcard($smartcardBeneficiary, $deposit);
+        $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcardBeneficiary, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
         );
@@ -115,13 +115,13 @@ class DepositFactory
     }
 
     private function createNewDepositRoot(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         User $user,
         ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,
     ): SmartcardDeposit {
         return new SmartcardDeposit(
-            $smartcard,
+            $smartcardBeneficiary,
             $user,
             $reliefPackage,
             (float) $depositInputType->getValue(),
@@ -130,10 +130,10 @@ class DepositFactory
         );
     }
 
-    private function addDepositToSmartcard(Smartcard $smartcard, SmartcardDeposit $smartcardDeposit): void
+    private function addDepositToSmartcard(SmartcardBeneficiary $smartcardBeneficiary, SmartcardDeposit $smartcardDeposit): void
     {
-        $smartcard->addDeposit($smartcardDeposit);
-        if (!$smartcard->getBeneficiary()) {
+        $smartcardBeneficiary->addDeposit($smartcardDeposit);
+        if (!$smartcardBeneficiary->getBeneficiary()) {
             $smartcardDeposit->setSuspicious(true);
             $smartcardDeposit->addMessage('Smartcard does not have assigned beneficiary.');
         }

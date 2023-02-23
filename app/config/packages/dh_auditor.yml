@@ -25,7 +25,7 @@ dh_auditor:
                 Entity\Beneficiary:
                 Entity\Person:
                 Entity\NationalId:
-                Entity\Smartcard:
+                Entity\SmartcardBeneficiary:
                 Entity\SmartcardDeposit:
                 Entity\SmartcardPurchase:
                 Entity\SmartcardPurchaseRecord:

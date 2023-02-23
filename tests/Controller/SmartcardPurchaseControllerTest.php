@@ -83,7 +83,7 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->select('p.id', 'v.vendorNo', 's.currency')
             ->from(SmartcardPurchase::class, 'sp')
             ->join('sp.vendor', 'v')
-            ->join('sp.smartcard', 's')
+            ->join('sp.smartcardBeneficiary', 's')
             ->join('s.deposites', 'sd')
             ->join('sd.reliefPackage', 'pack')
             ->join('pack.assistanceBeneficiary', 'ab')

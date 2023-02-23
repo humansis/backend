@@ -14,9 +14,9 @@ use Enum\SmartcardStates;
 /**
  * Smartcard instance used by one Beneficiary
  */
-#[ORM\Table(name: 'smartcard')]
-#[ORM\Entity(repositoryClass: 'Repository\SmartcardRepository')]
-class Smartcard
+#[ORM\Table(name: 'smartcard_beneficiary')]
+#[ORM\Entity(repositoryClass: 'Repository\SmartcardBeneficiaryRepository')]
+class SmartcardBeneficiary
 {
     final public const STATE_UNASSIGNED = 'unassigned';
     final public const STATE_ACTIVE = 'active';
@@ -44,14 +44,14 @@ class Smartcard
      * @var Collection|SmartcardDeposit[]
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardDeposit', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'smartcardBeneficiary', targetEntity: 'Entity\SmartcardDeposit', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $deposites;
 
     /**
      * @var Collection|SmartcardPurchase[]
      */
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\OneToMany(mappedBy: 'smartcard', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'smartcardBeneficiary', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: true)]
     private Collection |array $purchases;
 
     /**

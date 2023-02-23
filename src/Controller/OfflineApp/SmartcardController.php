@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Entity\SmartcardBeneficiary;
 use Enum\SmartcardStates;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
@@ -11,9 +12,8 @@ use Component\Smartcard\Exception\SmartcardDoubledRegistrationException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use InputType\Smartcard\ChangeSmartcardInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
+use Repository\SmartcardBeneficiaryRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Entity\Smartcard;
-use Repository\SmartcardRepository;
 use Symfony\Component\Serializer\SerializerInterface;
 use Utils\SmartcardService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -46,17 +46,17 @@ class SmartcardController extends AbstractOfflineAppController
     public function deactivate(
         string $serialNumber,
         ChangeSmartcardInputType $changeSmartcardInputType,
-        SmartcardRepository $smartcardRepository,
+        SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository,
         SmartcardService $smartcardService
     ): Response {
-        $smartcards = $smartcardRepository->findBy(
+        $smartcardBeneficiaries = $smartcardBeneficiaryRepository->findBy(
             ['serialNumber' => $serialNumber, 'state' => SmartcardStates::ACTIVE]
         );
-        $doubledRequest = count($smartcards) === 0;
+        $doubledRequest = count($smartcardBeneficiaries) === 0;
 
-        foreach ($smartcards as $smartcard) {
+        foreach ($smartcardBeneficiaries as $smartcardBeneficiary) {
             try {
-                $smartcardService->change($smartcard, $changeSmartcardInputType);
+                $smartcardService->change($smartcardBeneficiary, $changeSmartcardInputType);
             } catch (SmartcardActivationDeactivatedException | SmartcardNotAllowedStateTransition) {
                 $doubledRequest = true;
             }
@@ -73,10 +73,10 @@ class SmartcardController extends AbstractOfflineAppController
      * Info about smartcard.
      */
     #[Rest\Get('/offline-app/v1/smartcards/{serialNumber}')]
-    #[ParamConverter('smartcard')]
-    public function info(Smartcard $smartcard): Response
+    #[ParamConverter('smartcardBeneficiary')]
+    public function info(SmartcardBeneficiary $smartcardBeneficiary): Response
     {
-        $json = $this->serializer->serialize($smartcard, 'json', ['groups' => ['SmartcardOverview']]);
+        $json = $this->serializer->serialize($smartcardBeneficiary, 'json', ['groups' => ['SmartcardOverview']]);
 
         return new Response($json);
     }

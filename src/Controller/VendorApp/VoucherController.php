@@ -8,14 +8,12 @@ use Model\PurchaseService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Valid;
 use InputType\VoucherPurchase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Utils\SmartcardService;
 
 class VoucherController extends AbstractVendorAppController
 {

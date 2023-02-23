@@ -49,7 +49,7 @@ class ReliefPackageRepository extends EntityRepository
             ->join('ab.assistance', 'a')
             ->join(Beneficiary::class, 'b', Join::WITH, 'b.id=IDENTITY(ab.beneficiary) AND b.archived = 0')
             ->join(
-                'b.smartcards',
+                'b.smartcardBeneficiaries',
                 's',
                 Join::WITH,
                 's.beneficiary=b AND s.state=:smartcardStateActive'

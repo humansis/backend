@@ -11,7 +11,7 @@ use Entity\Assistance;
 use Entity\Assistance\ReliefPackage;
 use Entity\DistributedItem;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardPurchase;
 use Entity\SmartcardPurchaseRecord;
 use Entity\Vendor;
@@ -156,7 +156,7 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $reliefPackage = $qb->select('r')
             ->from(ReliefPackage::class, 'r')
             ->innerJoin('r.assistanceBeneficiary', 'ab')
-            ->innerJoin(Smartcard::class, 's', Join::WITH, 's.beneficiary = ab.beneficiary')
+            ->innerJoin(SmartcardBeneficiary::class, 's', Join::WITH, 's.beneficiary = ab.beneficiary')
             ->andWhere('r.amountSpent is not null')
             ->andWhere('s.state = :activeState')
             ->andWhere('r.amountSpent < r.amountToDistribute')
@@ -175,12 +175,12 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $vendorInputType = $this->buildVendorInputType($assistance->getLocation()->getId(), $user->getId());
         $vendor = $this->createVendor($vendorInputType, self::getContainer()->get(VendorService::class));
 
-        $smartcard = $this->em->getRepository(Smartcard::class)->findOneBy(
+        $smartcardBeneficiary = $this->em->getRepository(SmartcardBeneficiary::class)->findOneBy(
             ['serialNumber' => $reliefPackage->getAssistanceBeneficiary()->getBeneficiary()->getSmartcardSerialNumber()]
         );
 
         $purchase = SmartcardPurchase::create(
-            $smartcard,
+            $smartcardBeneficiary,
             $vendor,
             new DateTimeImmutable(),
             $assistance,

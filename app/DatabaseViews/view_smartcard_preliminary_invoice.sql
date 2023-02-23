@@ -23,14 +23,14 @@ FROM (SELECT spPre.spaid                                            as spaid,
                    SUM(spr.value)   as value,
                    spr.currency     as currency,
                    sp.vendor_id     as vendor_id,
-                   sp.smartcard_id  as smartcardId
+                   sp.smartcard_beneficiary_id  as smartcardId
             FROM smartcard_purchase AS sp
                      INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
             WHERE sp.redemption_batch_id IS NULL
               AND sp.vendor_id IS NOT NULL
               AND spr.currency IS NOT NULL
             GROUP BY spr.currency, sp.id) spPre
-               INNER JOIN smartcard s ON spPre.smartcardId = s.id
+               INNER JOIN smartcard_beneficiary s ON spPre.smartcardId = s.id
                LEFT JOIN abstract_beneficiary ab ON s.beneficiary_id = ab.id
                LEFT JOIN distribution_beneficiary db
                           ON db.beneficiary_id = ab.id AND db.assistance_id = spPre.sp_ass

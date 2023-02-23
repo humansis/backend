@@ -12,7 +12,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -114,8 +114,8 @@ class SmartcardController extends AbstractVendorAppController
     public function listOfBlocked(Request $request): Response
     {
         $country = $request->headers->get('country');
-        $smartcards = $this->managerRegistry->getRepository(Smartcard::class)->findBlocked($country);
+        $smartcardBeneficiaries = $this->managerRegistry->getRepository(SmartcardBeneficiary::class)->findBlocked($country);
 
-        return new JsonResponse($smartcards);
+        return new JsonResponse($smartcardBeneficiaries);
     }
 }

@@ -45,10 +45,10 @@ class Beneficiary extends AbstractBeneficiary
     private $vulnerabilityCriteria;
 
     /**
-     * @var Collection|Smartcard[]
+     * @var Collection|SmartcardBeneficiary[]
      */
-    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\Smartcard')]
-    private Collection |array $smartcards;
+    #[ORM\OneToMany(mappedBy: 'beneficiary', targetEntity: 'Entity\SmartcardBeneficiary')]
+    private Collection |array $smartcardBeneficiaries;
 
     /**
      * @var ImportBeneficiary[]|Collection
@@ -64,7 +64,7 @@ class Beneficiary extends AbstractBeneficiary
         parent::__construct();
         $this->vulnerabilityCriteria = new ArrayCollection();
         $this->person = new Person();
-        $this->smartcards = new ArrayCollection();
+        $this->smartcardBeneficiaries = new ArrayCollection();
         $this->setUpdatedOn(new DateTime());
         $this->importBeneficiaries = new ArrayCollection();
         //TODO check if updatedOn everytime
@@ -335,9 +335,9 @@ class Beneficiary extends AbstractBeneficiary
 
     public function getSmartcardSerialNumber(): ?string
     {
-        foreach ($this->smartcards as $smartcard) {
-            if ($smartcard->isActive()) {
-                return $smartcard->getSerialNumber();
+        foreach ($this->smartcardBeneficiaries as $smartcardBeneficiary) {
+            if ($smartcardBeneficiary->isActive()) {
+                return $smartcardBeneficiary->getSerialNumber();
             }
         }
 
@@ -363,11 +363,11 @@ class Beneficiary extends AbstractBeneficiary
         return $this->importBeneficiaries;
     }
 
-    public function getActiveSmartcard(): null|Smartcard
+    public function getActiveSmartcard(): null|SmartcardBeneficiary
     {
-        foreach ($this->smartcards as $smartcard) {
-            if ($smartcard->isActive()) {
-                return $smartcard;
+        foreach ($this->smartcardBeneficiaries as $smartcardBeneficiary) {
+            if ($smartcardBeneficiary->isActive()) {
+                return $smartcardBeneficiary;
             }
         }
 

@@ -15,11 +15,11 @@ use Entity\User;
 use InputType\Smartcard\DepositInputType;
 use Repository\Assistance\ReliefPackageRepository;
 use Entity\Product;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Model\PurchaseService;
-use Repository\SmartcardRepository;
+use Repository\SmartcardBeneficiaryRepository;
 use Utils\SmartcardService;
 
 class SmartcardFixtures extends Fixture implements DependentFixtureInterface
@@ -32,7 +32,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         private readonly PurchaseService $purchaseService,
         private readonly DepositFactory $depositFactory,
         private readonly ReliefPackageRepository $reliefPackageRepository,
-        private readonly SmartcardRepository $smartcardRepository
+        private readonly SmartcardBeneficiaryRepository $smartcardBeneficiaryRepository
     ) {
     }
 
@@ -153,13 +153,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
     private function generatePackages(ObjectManager $manager, AssistanceBeneficiary $ab, string $currency): void
     {
         $serialNumber = self::generateSerialNumber();
-        $smartcard = new Smartcard($serialNumber, new DateTimeImmutable('2000-01-01'));
-        $smartcard->setState(Smartcard::STATE_ACTIVE);
-        $smartcard->setCurrency($currency);
-        $smartcard->setBeneficiary($ab->getBeneficiary());
+        $smartcardBeneficiary = new SmartcardBeneficiary($serialNumber, new DateTimeImmutable('2000-01-01'));
+        $smartcardBeneficiary->setState(SmartcardBeneficiary::STATE_ACTIVE);
+        $smartcardBeneficiary->setCurrency($currency);
+        $smartcardBeneficiary->setBeneficiary($ab->getBeneficiary());
         $manager->persist($ab);
         $manager->persist($ab->getBeneficiary());
-        $manager->persist($smartcard);
+        $manager->persist($smartcardBeneficiary);
         $manager->flush();
 
         $reliefPackage = new ReliefPackage(
@@ -192,17 +192,17 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private function generatePurchases(ObjectManager $manager, AssistanceBeneficiary $ab, Vendor $vendor): void
     {
-        $smartcard = $this->smartcardRepository->findActiveBySerialNumber(
+        $smartcardBeneficiary = $this->smartcardBeneficiaryRepository->findActiveBySerialNumber(
             $ab->getBeneficiary()->getSmartcardSerialNumber()
         );
-        $max = $smartcard->getDeposites()[0]->getReliefPackage()->getAmountDistributed();
+        $max = $smartcardBeneficiary->getDeposites()[0]->getReliefPackage()->getAmountDistributed();
         $purchasesCount = $this->generateRandomNumbers($max, random_int(1, 10));
 
         foreach ($purchasesCount as $index => $purchaseMax) {
             if ($purchaseMax === 0) {
                 continue;
             }
-            $this->generatePurchase($index, $smartcard, $vendor, $ab->getAssistance(), $manager, $purchaseMax);
+            $this->generatePurchase($index, $smartcardBeneficiary, $vendor, $ab->getAssistance(), $manager, $purchaseMax);
         }
     }
 
@@ -215,24 +215,24 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private static function generateState()
     {
-        $i = random_int(0, count(Smartcard::states()) - 1);
+        $i = random_int(0, count(SmartcardBeneficiary::states()) - 1);
 
-        return Smartcard::states()[$i];
+        return SmartcardBeneficiary::states()[$i];
     }
 
     private function generatePurchase(
         $seed,
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         Vendor $vendor,
         Assistance $assistance,
         ObjectManager $manager,
         int $max
     ): SmartcardPurchase {
         $date = new DateTimeImmutable('now');
-        $purchase = SmartcardPurchase::create($smartcard, $vendor, $date, $assistance);
-        $purchase->setHash($this->purchaseService->hashPurchase($smartcard->getBeneficiary(), $vendor, $date));
+        $purchase = SmartcardPurchase::create($smartcardBeneficiary, $vendor, $date, $assistance);
+        $purchase->setHash($this->purchaseService->hashPurchase($smartcardBeneficiary->getBeneficiary(), $vendor, $date));
 
-        $currency = $smartcard->getDeposites()[0]->getReliefPackage()->getUnit();
+        $currency = $smartcardBeneficiary->getDeposites()[0]->getReliefPackage()->getUnit();
         $spent = 0;
 
         for ($j = 0; $j < random_int(1, 5); ++$j) {

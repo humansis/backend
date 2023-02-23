@@ -3,7 +3,6 @@
 namespace Tests\Controller\OfflineApp;
 
 use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Entity\Beneficiary;
 use Entity\Assistance;
@@ -14,7 +13,7 @@ use Enum\ModalityType;
 use InputType\Smartcard\DepositInputType;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 use Entity\SmartcardDeposit;
 use Enum\SmartcardStates;
 
@@ -37,12 +36,12 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
 
     private function removeSmartcards(string $serialNumber): void
     {
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+        $smartcardBeneficiaries = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['serialNumber' => $serialNumber],
             ['id' => 'asc']
         );
-        foreach ($smartcards as $smartcard) {
-            $this->em->remove($smartcard);
+        foreach ($smartcardBeneficiaries as $smartcardBeneficiary) {
+            $this->em->remove($smartcardBeneficiary);
         }
         $this->em->flush();
     }
@@ -51,11 +50,11 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     {
         $ab = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $ab->getBeneficiary();
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $smartcardBeneficiary = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $reliefPackage = $this->createReliefPackage($ab);
         $uniqueDate = $this->getUnusedDepositDate()->format(DateTimeInterface::ATOM);
 
-        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
+        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcardBeneficiary->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
             'value' => 255.25,
             'balance' => 300.00,
@@ -73,14 +72,14 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
     {
         $ab = $this->assistanceBeneficiaryWithoutRelief();
         $bnf = $ab->getBeneficiary();
-        $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
+        $smartcardBeneficiary = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $reliefPackage = $this->createReliefPackage($ab);
         $date = $this->getUnusedDepositDate();
         $depositFactory = self::getContainer()->get(DepositFactory::class);
         $depositCreateInputFile = DepositInputType::create($reliefPackage->getId(), 255.25, 300.00, $date);
         $depositFactory->create('1234ABC', $depositCreateInputFile, $this->getTestUser());
 
-        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcard->getSerialNumber() . '/deposit', [
+        $this->request('POST', '/api/basic/offline-app/v5/smartcards/' . $smartcardBeneficiary->getSerialNumber() . '/deposit', [
             'reliefPackageId' => $reliefPackage->getId(),
             'value' => 255.25,
             'balance' => 300.00,
@@ -153,30 +152,30 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
         return $assistanceBeneficiary;
     }
 
-    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
+    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): SmartcardBeneficiary
     {
-        /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
+        /** @var SmartcardBeneficiary[] $smartcardBeneficiaries */
+        $smartcardBeneficiaries = $this->em->getRepository(SmartcardBeneficiary::class)->findBy(
             ['serialNumber' => $serialNumber],
             ['id' => 'asc']
         );
 
-        foreach ($smartcards as $smartcard) {
-            if ($smartcard->getState() === SmartcardStates::ACTIVE) {
-                $smartcard->setBeneficiary($beneficiary);
+        foreach ($smartcardBeneficiaries as $smartcardBeneficiary) {
+            if ($smartcardBeneficiary->getState() === SmartcardStates::ACTIVE) {
+                $smartcardBeneficiary->setBeneficiary($beneficiary);
 
-                return $smartcard;
+                return $smartcardBeneficiary;
             }
         }
 
-        $smartcard = new Smartcard($serialNumber, new DateTime('now'));
-        $smartcard->setBeneficiary($beneficiary);
-        $smartcard->setState(SmartcardStates::ACTIVE);
+        $smartcardBeneficiary = new SmartcardBeneficiary($serialNumber, new DateTime('now'));
+        $smartcardBeneficiary->setBeneficiary($beneficiary);
+        $smartcardBeneficiary->setState(SmartcardStates::ACTIVE);
 
-        $this->em->persist($smartcard);
+        $this->em->persist($smartcardBeneficiary);
         $this->em->flush();
 
-        return $smartcard;
+        return $smartcardBeneficiary;
     }
 
     private function createReliefPackage(AssistanceBeneficiary $ab): ReliefPackage

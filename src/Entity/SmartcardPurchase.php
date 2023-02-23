@@ -24,9 +24,9 @@ class SmartcardPurchase
     use StandardizedPrimaryKey;
 
     #[SymfonyGroups(['FullSmartcard'])]
-    #[ORM\ManyToOne(targetEntity: 'Entity\Smartcard', inversedBy: 'purchases')]
+    #[ORM\ManyToOne(targetEntity: 'Entity\SmartcardBeneficiary', inversedBy: 'purchases')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?\Entity\Smartcard $smartcard = null;
+    private ?\Entity\SmartcardBeneficiary $smartcardBeneficiary = null;
 
     #[SymfonyGroups(['FullSmartcard'])]
     #[ORM\ManyToOne(targetEntity: '\Entity\Vendor')]
@@ -64,7 +64,7 @@ class SmartcardPurchase
     }
 
     public static function create(
-        Smartcard $smartcard,
+        SmartcardBeneficiary $smartcardBeneficiary,
         Vendor $vendor,
         DateTimeInterface $createdAt,
         ?Assistance $assistance = null
@@ -72,16 +72,16 @@ class SmartcardPurchase
         $entity = new self();
         $entity->vendor = $vendor;
         $entity->createdAt = $createdAt;
-        $entity->smartcard = $smartcard;
-        $smartcard->addPurchase($entity);
+        $entity->smartcardBeneficiary = $smartcardBeneficiary;
+        $smartcardBeneficiary->addPurchase($entity);
         $entity->assistance = $assistance;
 
         return $entity;
     }
 
-    public function getSmartcard(): Smartcard
+    public function getSmartcard(): SmartcardBeneficiary
     {
-        return $this->smartcard;
+        return $this->smartcardBeneficiary;
     }
 
     public function getVendor(): Vendor

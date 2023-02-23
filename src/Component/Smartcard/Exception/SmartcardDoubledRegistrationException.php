@@ -6,15 +6,15 @@ namespace Component\Smartcard\Exception;
 
 use DateTimeInterface;
 use Throwable;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 
 class SmartcardDoubledRegistrationException extends SmartcardException
 {
-    public function __construct(Smartcard $smartcard, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(SmartcardBeneficiary $smartcardBeneficiary, $message = "", $code = 0, Throwable $previous = null)
     {
-        parent::__construct($smartcard, $message, $code, $previous);
+        parent::__construct($smartcardBeneficiary, $message, $code, $previous);
         if (empty($message)) {
-            $this->message = "Smartcard #{$smartcard->getId()} was already registered at {$smartcard->getRegisteredAt()->format(DateTimeInterface::ATOM)}";
+            $this->message = "Smartcard #{$smartcardBeneficiary->getId()} was already registered at {$smartcardBeneficiary->getRegisteredAt()->format(DateTimeInterface::ATOM)}";
         }
     }
 }

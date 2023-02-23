@@ -6,20 +6,20 @@ namespace Component\Smartcard\Exception;
 
 use Exception;
 use Throwable;
-use Entity\Smartcard;
+use Entity\SmartcardBeneficiary;
 
 class SmartcardException extends Exception
 {
-    public function __construct(private readonly ?\Entity\Smartcard $smartcard = null, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(private readonly ?\Entity\SmartcardBeneficiary $smartcardBeneficiary = null, $message = "", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
 
     /**
-     * @return Smartcard|null
+     * @return SmartcardBeneficiary|null
      */
-    public function getSmartcard(): ?Smartcard
+    public function getSmartcard(): ?SmartcardBeneficiary
     {
-        return $this->smartcard;
+        return $this->smartcardBeneficiary;
     }
 }
