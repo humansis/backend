@@ -135,42 +135,17 @@ class SmartcardService
         }
     }
 
-    /**
-     * @throws EntityNotFoundException
-     * @throws ORMException
-     */
-    public function purchase(
-        string $serialNumber,
-        SmartcardPurchaseInput | SmartcardPurchaseInputType $data
-    ): SmartcardPurchase {
-        if (!$data instanceof SmartcardPurchaseInput && !$data instanceof SmartcardPurchaseInputType) {
-            throw new InvalidArgumentException(
-                'Argument 2 must be of type ' . SmartcardPurchaseInput::class . 'or ' . SmartcardPurchaseInputType::class
-            );
-        }
-        $beneficiary = $this->beneficiaryRepository->findOneBy([
-            'id' => $data->getBeneficiaryId(),
-            'archived' => false,
-        ]);
-        if (!$beneficiary) {
-            throw new NotFoundHttpException('Beneficiary ID must exist');
-        }
-        $smartcardBeneficiary = $this->getSmartcardForPurchase(
-            $serialNumber,
-            $beneficiary,
-            $data->getCreatedAt()
-        );
-        $this->smartcardBeneficiaryRepository->persist($smartcardBeneficiary);
-
-        return $this->purchaseService->purchaseSmartcard($smartcardBeneficiary, $data);
-    }
-
     public function getSmartcardForPurchase(
         string $serialNumber,
         Beneficiary $beneficiary,
         DateTimeInterface $createdAt
     ): SmartcardBeneficiary {
-        $smartcardBeneficiary = $this->getSmartcardForBeneficiaryBySerialNumber($serialNumber, $beneficiary, $createdAt);
+        $smartcardBeneficiary = $this->getSmartcardForBeneficiaryBySerialNumber(
+            $serialNumber,
+            $beneficiary,
+            $createdAt
+        );
+
         if (!$smartcardBeneficiary) {
             $smartcardBeneficiary = $this->createSmartcardForBeneficiary($serialNumber, $beneficiary, $createdAt);
         }

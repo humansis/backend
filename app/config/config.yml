@@ -124,6 +124,10 @@ framework:
     php_errors:
         log: true
     messenger:
+        buses:
+            default_bus:
+                middleware:
+                    - doctrine_transaction
         serializer:
             default_serializer: messenger.transport.symfony_serializer
             symfony_serializer:
@@ -131,7 +135,10 @@ framework:
                 context: { }
         failure_transport: failed
         transports:
-            #        async: "%env(MESSENGER_TRANSPORT_DSN)%"
+            smartcard_purchase:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: smartcard_purchase
             import:
                 dsn: 'doctrine://default'
                 options:
@@ -145,6 +152,7 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
         routing:
+            'Component\Smartcard\Messaging\Message\SmartcardPurchaseMessage': smartcard_purchase
             'Component\Import\Messaging\Message\ImportCheck': import
             'Component\Import\Messaging\Message\ItemBatch': import
             'Component\Import\Messaging\Message\UploadFileFinished': incoming_big_data
