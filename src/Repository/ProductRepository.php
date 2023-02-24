@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Enum\ProductCategoryType;
@@ -104,5 +105,19 @@ class ProductRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $productId): Product
+    {
+        $product = $this->find($productId);
+
+        if ($product === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(Product::class, (array) $productId);
+        }
+
+        return $product;
     }
 }

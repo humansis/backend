@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Entity\AssistanceStatistics;
@@ -21,7 +22,6 @@ use InputType\ProjectsAssistanceFilterInputType;
 use InvalidArgumentException;
 use Request\Pagination;
 use Entity\Project;
-use Component\Assistance\DTO\Statistics;
 
 /**
  * AssistanceRepository
@@ -335,5 +335,19 @@ class AssistanceRepository extends EntityRepository
             }
         }
         $qb->andWhere(implode(' OR ', $qbString));
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $assistanceId): Assistance
+    {
+        $assistance = $this->find($assistanceId);
+
+        if ($assistance === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(Assistance::class, (array) $assistanceId);
+        }
+
+        return $assistance;
     }
 }

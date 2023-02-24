@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
@@ -191,5 +192,19 @@ class VendorRepository extends EntityRepository
         foreach ($children as $childKey => $child) {
             yield $child->getId();
         }
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $vendorId): Vendor
+    {
+        $vendor = $this->find($vendorId);
+
+        if ($vendor === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(Vendor::class, (array) $vendorId);
+        }
+
+        return $vendor;
     }
 }
