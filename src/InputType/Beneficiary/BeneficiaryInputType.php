@@ -96,14 +96,7 @@ class BeneficiaryInputType implements InputTypeInterface
     ])]
     private $isHead;
 
-    /**
-     * @Assert\All(
-     *     constraints={
-     *         @Enum(enumClass="Enum\VulnerabilityCriteria")
-     *     },
-     *     groups={"Strict"}
-     * )
-     */
+    #[Assert\All(constraints: [new Enum(options: ['enumClass' => "Enum\VulnerabilityCriteria"])], groups: ['Strict'])]
     #[Assert\Type('array')]
     private array $vulnerabilityCriteria  = [];
 

@@ -70,7 +70,7 @@ class SelectionCriteria
                     ->getRepository(CountrySpecific::class)
                     ->findOneBy(['fieldString' => $this->fieldString, 'countryIso3' => $iso3]) === null;
         } elseif ($this->tableString === SelectionCriteriaField::VULNERABILITY_CRITERIA) {
-            $this->deprecated = !key_exists($this->fieldString, VulnerabilityCriteria::all());
+            $this->deprecated = !in_array($this->fieldString, VulnerabilityCriteria::values());
         } else {
             $this->deprecated = !in_array($this->fieldString, SelectionCriteriaField::values());
         }

@@ -44,9 +44,8 @@ class Beneficiary extends AbstractBeneficiary
 
     /**
      * @var string[]
-     *
-     * @ORM\Column(name="vulnerability_criterion", type="json", nullable=true)
      */
+    #[ORM\Column(name: "vulnerability_criterion", type: "json", nullable: true)]
     private array $vulnerabilityCriteria;
 
     /**
@@ -138,7 +137,6 @@ class Beneficiary extends AbstractBeneficiary
         return $this->household;
     }
 
-
     /**
      * Get vulnerabilityCriterion.
      *
@@ -146,9 +144,7 @@ class Beneficiary extends AbstractBeneficiary
      */
     public function getVulnerabilityCriteria(): array
     {
-        return array_values(
-            array_map(fn($criteria) => $criteria, $this->vulnerabilityCriteria)
-        );
+        return $this->vulnerabilityCriteria;
     }
 
     /**
@@ -159,11 +155,7 @@ class Beneficiary extends AbstractBeneficiary
     public function setVulnerabilityCriteria(array $vulnerabilityCriteria): self
     {
         self::validateValues('vulnerabilityCriteria', VulnerabilityCriteria::class, $vulnerabilityCriteria);
-        $this->vulnerabilityCriteria = array_values(
-            array_unique(
-                array_map(fn($criteria) => $criteria, $vulnerabilityCriteria)
-            )
-        );
+        $this->vulnerabilityCriteria = array_unique($vulnerabilityCriteria);
 
         return $this;
     }
@@ -194,8 +186,6 @@ class Beneficiary extends AbstractBeneficiary
 
         return $this;
     }
-
-
 
     public function getCommonBeneficiaryExportFields(): array
     {

@@ -12,7 +12,7 @@ use Utils\DateTime\DateOnlyFormat;
 
 class BeneficiaryMapper implements MapperInterface
 {
-    private ?\Entity\Beneficiary $object = null;
+    private ?Beneficiary $object = null;
 
     /**
      * {@inheritdoc}
@@ -87,9 +87,7 @@ class BeneficiaryMapper implements MapperInterface
 
     public function getVulnerabilityCriteria(): ?array
     {
-
-        return $this->object->getVulnerabilityCriteria() ?  array_values($this->object->getVulnerabilityCriteria())
-            : null;
+        return $this->object->getVulnerabilityCriteria();
     }
 
     public function getId(): int
