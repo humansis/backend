@@ -35,13 +35,13 @@ class SmartcardPurchaseController extends AbstractWebAppController
     }
 
     #[Rest\Get('/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases')]
-    #[ParamConverter('redemptionBatch', class: 'Entity\Invoice')]
-    public function purchasesByRedemptionBatch(
-        Invoice $redemptionBatch,
+    #[ParamConverter('invoice', class: 'Entity\Invoice')]
+    public function purchasesByInvoice(
+        Invoice $invoice,
         Pagination $pagination,
         SmartcardPurchaseRepository $smartcardPurchaseRepository
     ): JsonResponse {
-        $purchases = $smartcardPurchaseRepository->findByBatch($redemptionBatch, $pagination);
+        $purchases = $smartcardPurchaseRepository->findByBatch($invoice, $pagination);
 
         return $this->json($purchases);
     }

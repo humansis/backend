@@ -26,7 +26,7 @@ FROM (SELECT spPre.spaid                                            as spaid,
                    sp.smartcard_beneficiary_id  as smartcardId
             FROM smartcard_purchase AS sp
                      INNER JOIN smartcard_purchase_record AS spr ON sp.id = spr.smartcard_purchase_id
-            WHERE sp.redemption_batch_id IS NULL
+            WHERE sp.invoice_id IS NULL
               AND sp.vendor_id IS NOT NULL
               AND spr.currency IS NOT NULL
             GROUP BY spr.currency, sp.id) spPre

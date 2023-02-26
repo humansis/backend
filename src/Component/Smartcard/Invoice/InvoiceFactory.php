@@ -56,7 +56,7 @@ class InvoiceFactory
         );
 
         foreach ($purchases as $purchase) {
-            $purchase->setRedemptionBatch($invoice);
+            $purchase->setInvoice($invoice);
         }
         $this->smartcardInvoiceRepository->save($invoice);
 

@@ -17,7 +17,7 @@ SELECT
 FROM smartcard_purchase_record spr
          LEFT JOIN smartcard_purchase sp ON sp.id = spr.smartcard_purchase_id
          LEFT JOIN smartcard_beneficiary s ON sp.smartcard_beneficiary_id = s.id
-         LEFT JOIN smartcard_redemption_batch srb ON sp.redemption_batch_id = srb.id
+         LEFT JOIN invoice srb ON sp.invoice_id = srb.id
          LEFT JOIN beneficiary b ON s.beneficiary_id = b.id
          LEFT JOIN person p ON b.person_id = p.id
          LEFT JOIN national_id ni ON ni.id = ( -- to ensure that only 1 (first one) national id will be joined and no duplicities occur

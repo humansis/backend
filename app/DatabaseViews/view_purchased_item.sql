@@ -60,7 +60,7 @@ FROM distribution_beneficiary db
          LEFT JOIN smartcard_beneficiary s ON s.id=sd.smartcard_beneficiary_id
          LEFT JOIN smartcard_purchase sp ON s.id=sp.smartcard_beneficiary_id
          LEFT JOIN smartcard_purchase_record spr ON sp.id=spr.smartcard_purchase_id
-         LEFT JOIN smartcard_redemption_batch sbatch ON sp.redemption_batch_id=sbatch.id
+         LEFT JOIN invoice sbatch ON sp.invoice_id=sbatch.id
 
     -- vouchers
          LEFT JOIN booklet b ON b.distribution_beneficiary_id=db.id

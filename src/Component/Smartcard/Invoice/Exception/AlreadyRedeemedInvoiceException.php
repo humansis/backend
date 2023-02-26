@@ -11,7 +11,7 @@ class AlreadyRedeemedInvoiceException extends NotRedeemableInvoiceException
     public function __construct(SmartcardPurchase $smartcardPurchase)
     {
         parent::__construct(
-            "Purchase' #{$smartcardPurchase->getId()} was already redeemed at " . $smartcardPurchase->getRedeemedAt(
+            "Purchase' #{$smartcardPurchase->getId()} was already redeemed at " . $smartcardPurchase->getInvoicedAt(
             )->format(
                 'Y-m-d H:i:s'
             )

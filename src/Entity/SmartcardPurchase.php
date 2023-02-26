@@ -49,7 +49,7 @@ class SmartcardPurchase
 
     #[ORM\ManyToOne(targetEntity: 'Invoice', cascade: ['persist'], inversedBy: 'purchases')]
     #[ORM\JoinColumn(nullable: true)]
-    private ?\Entity\Invoice $redemptionBatch = null;
+    private ?\Entity\Invoice $invoice = null;
 
     #[ORM\Column(name: 'hash', type: 'text')]
     private ?string $hash = null;
@@ -118,19 +118,19 @@ class SmartcardPurchase
     }
 
     #[SymfonyGroups(['FullSmartcard'])]
-    public function getRedeemedAt(): ?DateTimeInterface
+    public function getInvoicedAt(): ?DateTimeInterface
     {
-        return $this->redemptionBatch?->getInvoicedAt();
+        return $this->invoice?->getInvoicedAt();
     }
 
-    public function getRedemptionBatch(): ?Invoice
+    public function getInvoice(): ?Invoice
     {
-        return $this->redemptionBatch;
+        return $this->invoice;
     }
 
-    public function setRedemptionBatch(Invoice $invoice): void
+    public function setInvoice(Invoice $invoice): void
     {
-        $this->redemptionBatch = $invoice;
+        $this->invoice = $invoice;
     }
 
     public function getCurrency(): string

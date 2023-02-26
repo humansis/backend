@@ -83,13 +83,13 @@ class SmartcardPurchaseRepository extends EntityRepository
             ->join('p.records', 'pr')
             ->join('pr.product', 'prod')
             ->join('prod.productCategory', 'category')
-            ->andWhere('IDENTITY(p.redemptionBatch) = :batch')
+            ->andWhere('IDENTITY(p.invoice) = :batch')
             ->andWhere('category.type = :type')
             ->andWhere('pr.currency = :currency')
             ->setParameter('type', $productCategoryType)
             ->setParameter('currency', $invoice->getCurrency())
             ->setParameter('batch', $invoice)
-            ->groupBy('p.redemptionBatch');
+            ->groupBy('p.invoice');
 
         try {
             return $qb->getQuery()->getSingleScalarResult();
@@ -107,8 +107,8 @@ class SmartcardPurchaseRepository extends EntityRepository
     public function findByBatch(Invoice $invoice, ?Pagination $pagination = null): \Doctrine\ORM\Tools\Pagination\Paginator|array
     {
         $qbr = $this->createQueryBuilder('sp')
-            ->andWhere('sp.redemptionBatch = :redemptionBatch')
-            ->setParameter('redemptionBatch', $invoice);
+            ->andWhere('sp.invoice = :invoice')
+            ->setParameter('invoice', $invoice);
 
         if ($pagination) {
             $qbr->setMaxResults($pagination->getLimit())

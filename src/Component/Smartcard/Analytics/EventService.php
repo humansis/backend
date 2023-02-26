@@ -146,9 +146,9 @@ class EventService
                 'value' => $purchase->getRecordsValue() . ' ' . $purchase->getCurrency(),
             ])
         );
-        if ($extractInvoices && $purchase->getRedemptionBatch()) {
+        if ($extractInvoices && $purchase->getInvoice()) {
             $collector->add(
-                new Event('purchase', 'invoiced', $purchase->getRedeemedAt(), [
+                new Event('purchase', 'invoiced', $purchase->getInvoicedAt(), [
                     $purchase,
                 ], [
                 ])

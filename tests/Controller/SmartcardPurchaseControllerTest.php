@@ -42,14 +42,14 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
         );
     }
 
-    public function testPurchasesInRedemptionBatch()
+    public function testPurchasesInInvoice()
     {
         try {
             $batchId = $this->em->createQueryBuilder()
                 ->select('srb.id')
                 ->from(SmartcardPurchase::class, 'sp')
-                ->join('sp.redemptionBatch', 'srb')
-                ->where('sp.redemptionBatch IS NOT NULL')
+                ->join('sp.invoice', 'srb')
+                ->where('sp.invoice IS NOT NULL')
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
@@ -77,7 +77,7 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
         );
     }
 
-    public function testPurchasesByRedemptionCandidates()
+    public function testPurchasesByInvoiceCandidates()
     {
         $result = $this->em->createQueryBuilder()
             ->select('p.id', 'v.vendorNo', 's.currency')
@@ -89,7 +89,7 @@ class SmartcardPurchaseControllerTest extends BMSServiceTestCase
             ->join('pack.assistanceBeneficiary', 'ab')
             ->join('ab.assistance', 'a')
             ->join('a.project', 'p')
-            ->where('sp.redemptionBatch IS NULL')
+            ->where('sp.invoice IS NULL')
             ->getQuery()
             ->setMaxResults(1)
             ->getSingleResult();

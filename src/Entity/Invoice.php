@@ -15,7 +15,7 @@ use Entity\Helper\StandardizedPrimaryKey;
 /**
  * Smartcard purchase batch for redemption feature.
  */
-#[ORM\Table(name: 'smartcard_redemption_batch')]
+#[ORM\Table(name: 'invoice')]
 #[ORM\Entity(repositoryClass: '\Repository\SmartcardInvoiceRepository')]
 class Invoice implements JsonSerializable
 {
@@ -57,7 +57,7 @@ class Invoice implements JsonSerializable
     /**
      * @var Collection|SmartcardPurchase[]
      */
-    #[ORM\OneToMany(mappedBy: 'redemptionBatch', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: false)]
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: 'Entity\SmartcardPurchase', cascade: ['persist'], orphanRemoval: false)]
     private Collection | array $purchases;
 
     /**

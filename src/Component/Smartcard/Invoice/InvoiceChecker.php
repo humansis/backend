@@ -112,7 +112,7 @@ class InvoiceChecker
      */
     private function checkIfPurchaseWasNotRedeemed(SmartcardPurchase $smartcardPurchase): void
     {
-        if ($smartcardPurchase->getRedeemedAt()) {
+        if ($smartcardPurchase->getinvoicedAt()) {
             throw new AlreadyRedeemedInvoiceException($smartcardPurchase);
         }
     }
