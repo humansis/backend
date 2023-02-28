@@ -98,7 +98,7 @@ if [[ -z `ssh-keygen -F $ec2_host` ]]; then
 fi
 
 echo "Starting application containers"
-scp docker-compose.yml app/config/parameters.yml ci/cron.sh $ec2_user@$ec2_host:/opt/humansis
+scp docker-compose.yml app/config/parameters.yml ci/cron.sh ci/cron-recalculate-spent.sh $ec2_user@$ec2_host:/opt/humansis
 if [[ -f docker-compose.consumer.yml ]]; then
   scp docker-compose.consumer.yml $ec2_user@$ec2_host:/opt/humansis
 fi

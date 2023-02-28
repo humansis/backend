@@ -14,6 +14,7 @@ use InputType\Assistance\AssistanceBeneficiariesOperationInputType;
 use JsonException;
 use Repository\BeneficiaryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -33,16 +34,19 @@ class AssistanceBeneficiaryController extends AbstractController
      */
     #[Rest\Put]
     public function addAssistanceBeneficiaries(
+        Request $request,
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkRole('ROLE_ADMIN');
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
+        $countryCode =  $this->getCountryCode($request);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities(
                 $inputType->getDocumentNumbers(),
-                $inputType->getDocumentType()
+                $inputType->getDocumentType(),
+                $countryCode
             );
             $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
@@ -64,16 +68,19 @@ class AssistanceBeneficiaryController extends AbstractController
 
     #[Rest\Delete]
     public function removeAssistanceBeneficiaries(
+        Request $request,
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkRole('ROLE_ADMIN');
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
+        $countryCode =  $this->getCountryCode($request);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities(
                 $inputType->getDocumentNumbers(),
-                $inputType->getDocumentType()
+                $inputType->getDocumentType(),
+                $countryCode
             );
             $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
