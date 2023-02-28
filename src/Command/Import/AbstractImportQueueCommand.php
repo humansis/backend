@@ -23,15 +23,6 @@ abstract class AbstractImportQueueCommand extends Command
     /** @var Import[] */
     protected $imports = [];
 
-    /** @var ObjectManager */
-    protected $manager;
-
-    /** @var ImportService */
-    protected $importService;
-
-    /** @var WorkflowInterface */
-    protected $importStateMachine;
-
     /**
      * AbstractImportQueueCommand constructor.
      *
@@ -41,16 +32,13 @@ abstract class AbstractImportQueueCommand extends Command
      * @param WorkflowInterface $importStateMachine
      */
     public function __construct(
-        ObjectManager $manager,
-        ImportService $importService,
+        protected ObjectManager $manager,
+        protected ImportService $importService,
         LoggerInterface $importLogger,
-        WorkflowInterface $importStateMachine
+        protected WorkflowInterface $importStateMachine
     ) {
         parent::__construct();
-        $this->manager = $manager;
         $this->logger = $importLogger;
-        $this->importService = $importService;
-        $this->importStateMachine = $importStateMachine;
     }
 
     protected function configure()
@@ -58,7 +46,7 @@ abstract class AbstractImportQueueCommand extends Command
         $this->addArgument('import', InputArgument::OPTIONAL, 'Filter queue by Import (ID or title)');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->hasArgument('import') && !empty($input->getArgument('import'))) {
             $byId = $this->manager->getRepository(Import::class)->find($input->getArgument('import'));
@@ -83,7 +71,6 @@ abstract class AbstractImportQueueCommand extends Command
 
     /**
      * @param Import[] $imports
-     * @param string $commandType
      */
     protected function logAffectedImports(iterable $imports, string $commandType): void
     {

@@ -25,35 +25,14 @@ use Entity\UserCountry;
  */
 class LocationController extends AbstractController
 {
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    public function __construct(
-        Countries $countries,
-        LocationRepository $locationRepository,
-        ProjectRepository $projectRepository
-    ) {
-        $this->countries = $countries;
-        $this->locationRepository = $locationRepository;
-        $this->projectRepository = $projectRepository;
+    public function __construct(private readonly Countries $countries, private readonly LocationRepository $locationRepository, private readonly ProjectRepository $projectRepository)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/countries/{iso3}")
      *
-     * @param string $iso3
      *
-     * @return JsonResponse
      */
     public function country(string $iso3): JsonResponse
     {
@@ -68,9 +47,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/users/{id}/countries")
      *
-     * @param User $user
      *
-     * @return JsonResponse
      */
     public function userCountries(User $user): JsonResponse
     {
@@ -101,8 +78,6 @@ class LocationController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/countries")
-     *
-     * @return JsonResponse
      */
     public function countries(): JsonResponse
     {
@@ -112,9 +87,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm1/{id}")
      *
-     * @param Location $adm1
      *
-     * @return JsonResponse
      */
     public function adm1(Location $adm1): JsonResponse
     {
@@ -124,9 +97,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm2/{id}")
      *
-     * @param Location $adm2
      *
-     * @return JsonResponse
      */
     public function adm2(Location $adm2): JsonResponse
     {
@@ -136,9 +107,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm3/{id}")
      *
-     * @param Location $adm3
      *
-     * @return JsonResponse
      */
     public function adm3(Location $adm3): JsonResponse
     {
@@ -148,9 +117,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm4/{id}")
      *
-     * @param Location $adm4
      *
-     * @return JsonResponse
      */
     public function adm4(Location $adm4): JsonResponse
     {
@@ -160,10 +127,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm1")
      *
-     * @param Request $request
-     * @param LocationFilterInputType $inputType
      *
-     * @return JsonResponse
      */
     public function adm1List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
@@ -174,10 +138,6 @@ class LocationController extends AbstractController
 
     /**
      * @Rest\Get("/web-app/v1/adm1/{id}/adm2")
-     *
-     * @param Request $request
-     * @param Location $location
-     * @return JsonResponse
      */
     public function adm2ListByAdm1(Request $request, Location $location): JsonResponse
     {
@@ -190,10 +150,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm2")
      *
-     * @param Request $request
-     * @param LocationFilterInputType $inputType
      *
-     * @return JsonResponse
      */
     public function adm2List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
@@ -205,10 +162,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm2/{id}/adm3")
      *
-     * @param Request $request
-     * @param Location $location
      *
-     * @return JsonResponse
      */
     public function adm3ListByAdm2(Request $request, Location $location): JsonResponse
     {
@@ -221,10 +175,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm3")
      *
-     * @param Request $request
-     * @param LocationFilterInputType $inputType
      *
-     * @return JsonResponse
      */
     public function adm3List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
@@ -236,10 +187,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm3/{id}/adm4")
      *
-     * @param Request $request
-     * @param Location $location
      *
-     * @return JsonResponse
      */
     public function adm4ListByAdm3(Request $request, Location $location): JsonResponse
     {
@@ -252,10 +200,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/adm4")
      *
-     * @param Request $request
-     * @param LocationFilterInputType $inputType
      *
-     * @return JsonResponse
      */
     public function adm4List(Request $request, LocationFilterInputType $inputType): JsonResponse
     {
@@ -267,9 +212,7 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations/{id}")
      *
-     * @param Location $location
      *
-     * @return JsonResponse
      */
     public function item(Location $location): JsonResponse
     {
@@ -279,15 +222,12 @@ class LocationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations")
      *
-     * @param Request $request
-     * @param LocationFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function locations(Request $request, LocationFilterInputType $filter): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -302,8 +242,8 @@ class LocationController extends AbstractController
         int $level,
         $parent = null
     ): OrmPaginator {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 

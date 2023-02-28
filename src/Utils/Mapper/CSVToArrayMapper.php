@@ -13,21 +13,16 @@ use Exception;
  */
 class CSVToArrayMapper
 {
-    private $adms = [];
+    private array $adms = [];
 
-    /** @var EntityManagerInterface */
-    protected $em;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(protected EntityManagerInterface $em)
     {
-        $this->em = $entityManager;
     }
 
     /**
      * Makes sure the ADM are only retrieved once from the database to save database accesses
      *
      * @param array $location
-     * @param int $level
      * @return mixed
      */
     private function getAdmByLocation(&$location, int $level)
@@ -101,7 +96,7 @@ class CSVToArrayMapper
         if ($formattedHouseholdArray['livelihood']) {
             $livelihood = null;
             foreach (Livelihood::values() as $value) {
-                if (0 === strcasecmp(Livelihood::translate($value), $formattedHouseholdArray['livelihood'])) {
+                if (0 === strcasecmp(Livelihood::translate($value), (string) $formattedHouseholdArray['livelihood'])) {
                     $livelihood = $value;
                 }
             }

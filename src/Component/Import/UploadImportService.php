@@ -21,47 +21,21 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class UploadImportService
 {
-    /** @var ImportParser */
-    private $parser;
-
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var InsertQueryCollection */
-    private $sqlCollection;
-
-    /** @var string */
-    private $uploadDirectory;
-
-    /** @var ImportFileValidator */
-    private $importFileValidator;
-
-    /** @var Integrity\DuplicityService */
-    private $integrityDuplicityService;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
+    private readonly \Component\Import\DBAL\InsertQueryCollection $sqlCollection;
 
     public function __construct(
-        string $uploadDirectory,
-        EntityManagerInterface $em,
-        ImportFileValidator $importFileValidator,
-        Integrity\DuplicityService $integrityDuplicityService,
-        MessageBusInterface $messageBus
+        private readonly string $uploadDirectory,
+        private readonly EntityManagerInterface $em,
+        private readonly ImportFileValidator $importFileValidator,
+        private readonly Integrity\DuplicityService $integrityDuplicityService,
+        private readonly ImportParser $importParser,
+        private readonly MessageBusInterface $messageBus
     ) {
-        $this->parser = new ImportParser();
-        $this->em = $em;
         $this->sqlCollection = new InsertQueryCollection($em);
-        $this->uploadDirectory = $uploadDirectory;
-        $this->importFileValidator = $importFileValidator;
-        $this->integrityDuplicityService = $integrityDuplicityService;
-        $this->messageBus = $messageBus;
     }
 
     /**
-     * @param ImportFile $importFile
      *
-     * @return ImportFile
      * @throws ConnectionException
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
@@ -75,7 +49,7 @@ class UploadImportService
         }
 
         $fileToImport = new File($this->uploadDirectory . '/' . $importFile->getSavedAsFilename());
-        $list = $this->parser->parse($fileToImport);
+        $list = $this->importParser->parse($fileToImport);
 
         $this->em->getConnection()->beginTransaction();
         try {
@@ -86,7 +60,7 @@ class UploadImportService
                 // $this->em->persist($queue);
                 // $this->em->flush();
 
-                $this->sqlCollection->add($importFile, json_encode($hhData));
+                $this->sqlCollection->add($importFile, json_encode($hhData, JSON_THROW_ON_ERROR));
             }
             $this->sqlCollection->finish();
 
@@ -113,13 +87,6 @@ class UploadImportService
         }
     }
 
-    /**
-     * @param Import $import
-     * @param UploadedFile $uploadedFile
-     * @param User $user
-     *
-     * @return ImportFile
-     */
     public function uploadFile(Import $import, UploadedFile $uploadedFile, User $user): ImportFile
     {
         $savedAsFilename = time() . '-' . $uploadedFile->getClientOriginalName();

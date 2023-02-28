@@ -74,6 +74,11 @@ services:
         public: true
         tags: [ 'console.command' ]
 
+    Command\UploadMissingTransactionsCommand:
+        arguments:
+            - '%kernel.logs_dir%'
+            - "%kernel.project_dir%"
+
     Command\Crowdin\CrowdinPullCommand:
       arguments:
         - '%crowdin_api_key%'
@@ -118,6 +123,9 @@ services:
         tags: [ 'validator.constraint_validator' ]
 
     Mapper\Assistance\AssistanceMapper:
+        arguments:
+            - '@Component\Assistance\AssistanceFactory'
+            - '@translator'
         tags: [ 'app.mapper' ]
 
     Mapper\Assistance\WebApp\DistributeReliefPackagesMapper:
@@ -142,19 +150,6 @@ services:
             - '@Component\Country\Countries'
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Project")'
         tags: [ 'app.mapper' ]
-
-    Mapper\VendorLoginMapper:
-        public: true
-        tags: [ 'app.mapper' ]
-        arguments:
-            - '@lexik_jwt_authentication.jwt_manager'
-
-    Mapper\OfflineLoginMapper:
-        public: true
-        tags: [ 'app.mapper' ]
-        arguments:
-            - '@lexik_jwt_authentication.jwt_manager'
-            - '@user.user_service'
 
     Repository\Assistance\ReliefPackageRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
@@ -288,20 +283,39 @@ services:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
 
-    Listener\AcceptHeaderListener:
+    Listener\AcceptHeaderEventSubscriber:
         arguments: [ '%app.locales%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.request }
 
-    Listener\VaryingListener:
+    Listener\CorsEventSubscriber:
+        arguments: [ '%cors%' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, priority: 256 }
+
+    Listener\SentrySubscriber:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, priority: 256 }
+
+
+    Listener\VaryingEventSubscriber:
         arguments: [ '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.response }
 
-    Listener\ErrorResponseListener:
+    Listener\ErrorResponseEventSubscriber:
         arguments: [ '@monolog.logger.exception', '%kernel.debug%' ]
         tags:
             - { name: kernel.event_listener, event: kernel.exception, priority: -100 }
+
+    Listener\AuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
+    Listener\JWTCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
+
 
     generator.household:
         class: Component\SelectionCriteria\Generator\HouseholdFieldGenerator
@@ -444,6 +458,8 @@ services:
             - '%import.uploadedFilesDirectory%'
         public: true
 
+    Component\Import\ImportParser:
+
     Command\WingMoneyReportImportCommand:
 
     Component\WingMoney\ReportParser:
@@ -465,16 +481,8 @@ services:
     Component\Smartcard\Deposit\DepositFactory:
         public: true
         arguments:
-            - '@Repository\SmartcardDepositRepository'
-            - '@smartcard_service'
-            - '@Repository\Assistance\ReliefPackageRepository'
-            - '@cache.app'
-            - '@Component\ReliefPackage\ReliefPackageService'
-            - '@logger'
+            $serializer: "@serializer"
 
-    Export\SmartcardPurchasedItemSpreadsheet:
-        arguments:
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\SmartcardPurchasedItem")'
 
     Export\AssistanceBankReportExport:
 
@@ -676,7 +684,6 @@ services:
         class: Utils\BeneficiaryService
         arguments:
             - "@doctrine.orm.entity_manager"
-            - '@Utils\ExportService'
             - '@Repository\BeneficiaryRepository'
             - '@Repository\HouseholdRepository'
             - '@Repository\VulnerabilityCriterionRepository'
@@ -786,7 +793,7 @@ services:
 
     user.user_service:
         class: Utils\UserService
-        arguments: ['@doctrine.orm.entity_manager', '@validator', '@export_csv_service', '@security.role_hierarchy','@security.helper']
+        arguments: ['@doctrine.orm.entity_manager', '@export_csv_service', '@security.role_hierarchy','@security.helper']
         public: true
 
     Utils\UserService: '@user.user_service'
@@ -889,6 +896,11 @@ services:
 
     Utils\HouseholdService: '@beneficiary.household_service'
 
+    Repository\RoleRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Role
+
     Repository\UserRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
@@ -917,7 +929,7 @@ services:
         tags:
             - { name: 'console.command' }
         arguments:
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
 
     logger:
         alias: monolog.logger
@@ -946,6 +958,10 @@ services:
         alias: Utils\ExportService
         public: true
 
+    openspout_export_service:
+        alias: Utils\OpenSpoutExportService
+        public: true
+
     Utils\PdfService:
         public: true
         arguments:
@@ -962,7 +978,7 @@ services:
     ##                                     LISTENER                                      ##
     #######################################################################################
 
-    Listener\ResponseListener:
+    Listener\ResponseEventSubscriber:
         public: true
         arguments:
             - "@doctrine.orm.entity_manager"
@@ -1014,10 +1030,10 @@ services:
     DataFixtures\UserFixtures:
         public: true
         arguments:
-            - "@fos_user.user_manager"
-            - "@security.encoder_factory"
             - "@kernel"
             - "@user.user_service"
+            - "@validator"
+            - '@Repository\UserRepository'
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1133,9 +1149,6 @@ services:
 
     DataFixtures\ServiceFixtures:
         public: true
-        arguments:
-            - "@fos_user.user_manager"
-            - "@security.encoder_factory"
         tags:
             - { name: doctrine.fixture.orm }
 
@@ -1196,6 +1209,46 @@ services:
         class: Utils\ExportService
         public: true
 
+    Utils\OpenSpoutExportService:
+        class: Utils\OpenSpoutExportService
+        public: true
+
+    Utils\ExportTableServiceInterface:
+        alias: 'Utils\OpenSpoutExportService'
+
+    Utils\BasicExportService:
+        class: Utils\BasicExportService
+        public: true
+
+    Utils\TransformDataService:
+        class:  Utils\TransformDataService
+        public: true
+
+    Utils\BeneficiaryTransformData:
+        class: Utils\BeneficiaryTransformData
+        public: true
+
+    Utils\VendorTransformData:
+        class: Utils\VendorTransformData
+        public: true
+
+    Utils\SmartcardPurchasedItemTransformData:
+        class: Utils\SmartcardPurchasedItemTransformData
+        public: true
+
+    Utils\ProjectTransformData:
+        class: Utils\ProjectTransformData
+
+    Utils\DistributedSummaryTransformData:
+        class:  Utils\DistributedSummaryTransformData
+
+    Utils\VoucherTransformData:
+        class: Utils\VoucherTransformData
+
+    Utils\UserTransformData:
+        class: Utils\UserTransformData
+        public: true
+
 #From VoucherBundle:
     Repository\VendorRepository:
         class: Doctrine\ORM\EntityRepository
@@ -1253,7 +1306,11 @@ services:
 
     voucher.voucher_service:
         class: Utils\VoucherService
-        arguments: ['@doctrine.orm.entity_manager','@service_container', '@export_csv_service', '@Twig\Environment','@pdf_service']
+        arguments: [
+            '@doctrine.orm.entity_manager',
+            '@Twig\Environment',
+            '@pdf_service'
+        ]
         public: true
 
     Utils\ProductService:
@@ -1283,8 +1340,6 @@ services:
     smartcard_service:
         class: Utils\SmartcardService
         autowire: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
         public: true
 
     Mapper\VoucherRedemptionBatchMapper:
@@ -1307,7 +1362,6 @@ services:
             - '@cache.app'
             - '@Twig\Environment'
             - '@monolog.logger'
-            - '@swiftmailer.mailer.default'
             - '@export_csv_service'
 
     transaction.default_financial_provider:
@@ -1318,7 +1372,9 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@monolog.logger'
             - '@security.token_storage'
-            - '%kernel.root_dir%'
+            - '%kernel.project_dir%'
+            -
+    Utils\Provider\DefaultFinancialProvider: '@transaction.default_financial_provider'
 
     transaction.khm_financial_provider:
         class: Utils\Provider\KHMFinancialProvider
@@ -1327,16 +1383,8 @@ services:
         autoconfigure: false
         public: true
 
-    Export\DistributedSummarySpreadsheetExport:
-        alias: export.distributed_summary.spreadsheet
+    Utils\Provider\KHMFinancialProvider: '@transaction.khm_financial_provider'
 
-    export.distributed_summary.spreadsheet:
-        class: Export\DistributedSummarySpreadsheetExport
-        arguments:
-            - '@translator'
-            - '@Component\Country\Countries'
-            - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\DistributedItem")'
-        public: true
 
     Export\PurchasedSummarySpreadsheetExport:
         alias: export.purchased_summary.spreadsheet
@@ -1386,6 +1434,16 @@ services:
         arguments:
             - Entity\VoucherPurchase
 
+    Repository\VoucherRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Voucher
+
+    Repository\BookletRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Booklet
+
     Serializer\ArrayNullableDenormalizer:
         tags: [ 'serializer.denormalizer' ]
 
@@ -1413,3 +1471,6 @@ services:
     Component\Smartcard\Invoice\InvoiceChecker:
 
     Component\Auditor\AuditorService:
+
+    DataHelper\UserDataHelper:
+        public: true

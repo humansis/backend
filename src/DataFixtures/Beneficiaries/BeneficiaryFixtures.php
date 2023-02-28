@@ -37,39 +37,13 @@ use Utils\ValueGenerator\ValueGenerator;
 
 class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
 {
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-
-    /**
-     * @var HouseholdService
-     */
-    private $householdService;
-
-    private $kernel;
-
-    public function __construct(
-        Kernel $kernel,
-        HouseholdService $householdService,
-        ProjectRepository $projectRepository,
-        LocationRepository $locationRepository
-    ) {
-        $this->householdService = $householdService;
-        $this->kernel = $kernel;
-        $this->projectRepository = $projectRepository;
-        $this->locationRepository = $locationRepository;
+    public function __construct(private readonly Kernel $kernel, private readonly HouseholdService $householdService, private readonly ProjectRepository $projectRepository, private readonly LocationRepository $locationRepository)
+    {
     }
 
     /**
      * Load data fixtures with the passed EntityManager
      *
-     * @param ObjectManager $manager
      *
      * @throws Exception
      */
@@ -78,7 +52,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         if ($this->kernel->getEnvironment() === "prod") {
             return;
         }
-        srand(50);
+        mt_srand(50);
         foreach ($this->getHouseholdData() as $householdData) {
             $this->householdService->create($this->generateHouseholdInputType($householdData, 'KHM'), 'KHM');
             $manager->flush();
@@ -491,12 +465,6 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
         return $campAddress;
     }
 
-    /**
-     * @param string $iso3
-     * @param int $level
-     *
-     * @return Location
-     */
     private function getLocation(string $iso3, int $level = 1): Location
     {
         $location = $this->locationRepository->findOneBy(['countryIso3' => $iso3, 'lvl' => $level]);
@@ -519,7 +487,7 @@ class BeneficiaryFixtures extends Fixture implements DependentFixtureInterface
     {
         return PhoneInputType::create(
             (string) ValueGenerator::int(400, 500),
-            (string) ValueGenerator::int(100000000, 999999999),
+            (string) ValueGenerator::int(100_000_000, 999_999_999),
             ValueGenerator::fromEnum(PhoneTypes::class)
         );
     }

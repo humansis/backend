@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Controller\OfflineApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Commodity;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Controller\AbstractController;
@@ -14,22 +15,22 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AssistanceCommodityController extends AbstractController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/offline-app/v2/commodities")
      *
-     * @param Request $request
-     * @param CommodityOfflineFilterInputType $filter
      *
-     * @return JsonResponse
      */
     public function commodities(Request $request, CommodityOfflineFilterInputType $filter): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $commodities = $this->getDoctrine()->getRepository(Commodity::class)->findOfflineByParams(
+        $commodities = $this->managerRegistry->getRepository(Commodity::class)->findOfflineByParams(
             $countryIso3,
             $filter
         );

@@ -16,20 +16,8 @@ use Utils\UserService;
 
 class LocationService
 {
-    /**
-     * @var string
-     */
-    private $repositoryApiUrl;
-
-    /**
-     * @var string
-     */
-    private $repositoryUrl;
-
-    public function __construct(string $repositoryApiUrl, string $repositoryUrl)
+    public function __construct(private readonly string $repositoryApiUrl, private readonly string $repositoryUrl)
     {
-        $this->repositoryApiUrl = $repositoryApiUrl;
-        $this->repositoryUrl = $repositoryUrl;
     }
 
     /**

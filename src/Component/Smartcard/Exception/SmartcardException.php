@@ -10,15 +10,9 @@ use Entity\Smartcard;
 
 class SmartcardException extends Exception
 {
-    /**
-     * @var Smartcard|null
-     */
-    private $smartcard;
-
-    public function __construct(?Smartcard $smartcard = null, $message = "", $code = 0, Throwable $previous = null)
+    public function __construct(private readonly ?\Entity\Smartcard $smartcard = null, $message = "", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->smartcard = $smartcard;
     }
 
     /**

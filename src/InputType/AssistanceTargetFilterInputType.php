@@ -11,21 +11,15 @@ class AssistanceTargetFilterInputType extends AbstractFilterInputType
 {
     /**
      * @var string
-     * @Assert\Choice(callback={"Enum\AssistanceType", "values"})
      */
+    #[Assert\Choice(callback: [\Enum\AssistanceType::class, 'values'])]
     protected $type;
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @return bool
-     */
     public function hasType(): bool
     {
         return $this->has('type');

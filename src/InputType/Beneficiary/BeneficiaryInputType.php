@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace InputType\Beneficiary;
 
 use DateTimeInterface;
+use Entity\Referral;
 use Enum\ResidencyStatus;
 use Enum\HouseholdHead;
 use Enum\PersonGender;
@@ -14,110 +15,88 @@ use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequence({"BeneficiaryInputType", "Strict"})
- */
+#[Assert\GroupSequence(['BeneficiaryInputType', 'Strict'])]
 class BeneficiaryInputType implements InputTypeInterface
 {
-    /**
-     * @var int|null
-     * @Assert\Type("integer")
-     */
-    private $id;
+    #[Assert\Type('integer')]
+    private ?int $id = null;
 
     /**
      * @Iso8601
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $dateOfBirth;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $localFamilyName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $localGivenName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $localParentsName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $enFamilyName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $enGivenName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $enParentsName;
 
     /**
-     * @Assert\NotNull()
      * @Enum(enumClass="Enum\PersonGender")
      */
+    #[Assert\NotNull]
     private $gender;
 
     /**
      * @var NationalIdCardInputType[]
-     * @Assert\Type("array")
-     * @Assert\Valid
      */
-    private $nationalIdCards = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $nationalIdCards = [];
 
     /**
-     * @var PhoneInputType
-     * @Assert\Type("array")
-     * @Assert\Valid
+     * @var PhoneInputType[]
      */
-    private $phones = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $phones = [];
 
     /**
-     * @Assert\NotNull()
      * @Enum(enumClass="Enum\ResidencyStatus")
      */
+    #[Assert\NotNull]
     private $residencyStatus;
 
-    /**
-     * @Assert\Choice(callback={"\Entity\Referral", "types"}, strict=true, groups={"Strict"})
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Choice(callback: ['\\' . Referral::class, 'types'], strict: true, groups: ['Strict'])]
+    #[Assert\Length(max: 255)]
     private $referralType;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $referralComment;
 
     /**
-     * @Assert\NotNull()
      * @Enum(enumClass="Enum\HouseholdHead")
      */
+    #[Assert\NotNull]
     private $isHead;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Enum(enumClass="Enum\VulnerabilityCriteria")
@@ -125,13 +104,14 @@ class BeneficiaryInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $vulnerabilityCriteria = [];
+    #[Assert\Type('array')]
+    private array $vulnerabilityCriteria = [];
 
     /**
-     * @Assert\NotNull
      * @return DateTimeInterface
      */
-    public function getDateOfBirth(): ?DateTimeInterface
+    #[Assert\NotNull]
+    public function getDateOfBirth()
     {
         if (!$this->dateOfBirth) {
             return null;
@@ -269,9 +249,6 @@ class BeneficiaryInputType implements InputTypeInterface
         return $this->nationalIdCards;
     }
 
-    /**
-     * @param NationalIdCardInputType $nationalIdCard
-     */
     public function addNationalIdCard(NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCards[] = $nationalIdCard;
@@ -290,9 +267,6 @@ class BeneficiaryInputType implements InputTypeInterface
         return $this->phones;
     }
 
-    /**
-     * @param PhoneInputType $phone
-     */
     public function addPhone(PhoneInputType $phone)
     {
         $this->phones[] = $phone;
@@ -365,10 +339,7 @@ class BeneficiaryInputType implements InputTypeInterface
         return HouseholdHead::valueFromAPI($this->isHead);
     }
 
-    /**
-     * @param bool|int|string $isHead
-     */
-    public function setIsHead($isHead)
+    public function setIsHead(bool|int|string $isHead)
     {
         $this->isHead = $isHead;
     }
@@ -389,11 +360,6 @@ class BeneficiaryInputType implements InputTypeInterface
         $this->vulnerabilityCriteria = $vulnerabilityCriteria;
     }
 
-    /**
-     * @param string $vulnerabilityCriteria
-     *
-     * @return void
-     */
     public function addVulnerabilityCriteria(string $vulnerabilityCriteria): void
     {
         $this->vulnerabilityCriteria[] = $vulnerabilityCriteria;
@@ -415,9 +381,7 @@ class BeneficiaryInputType implements InputTypeInterface
         $this->id = $id;
     }
 
-    /**
-     * @Assert\IsTrue(message="Secondary ID Type has to be different then Primary ID Type.")
-     */
+    #[Assert\IsTrue(message: 'Secondary ID Type has to be different then Primary ID Type.')]
     public function isSecondaryIdTypeDuplicity(): bool
     {
         if (count($this->nationalIdCards) < 2) {
@@ -427,9 +391,7 @@ class BeneficiaryInputType implements InputTypeInterface
         return $this->nationalIdCards[0]->getType() !== $this->nationalIdCards[1]->getType();
     }
 
-    /**
-     * @Assert\IsTrue(message="Tertiary ID Type has to be different then Primary ID Type and Secondary ID Type.")
-     */
+    #[Assert\IsTrue(message: 'Tertiary ID Type has to be different then Primary ID Type and Secondary ID Type.')]
     public function isTertiaryIdTypeDuplicity(): bool
     {
         if (count($this->nationalIdCards) < 3) {

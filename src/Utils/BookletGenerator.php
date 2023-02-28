@@ -12,12 +12,8 @@ use Exception;
 
 class BookletGenerator
 {
-    /** @var EntityManager */
-    private $em;
-
-    public function __construct(EntityManager $em)
+    public function __construct(private readonly EntityManager $em)
     {
-        $this->em = $em;
     }
 
     public function generate(
@@ -33,7 +29,6 @@ class BookletGenerator
 
         try {
             $this->em->beginTransaction();
-            $this->em->getConnection()->executeQuery('ALTER TABLE `voucher` DROP INDEX `UNIQ_1392A5D877153098`');
 
             $lastCode = $this->findBookletCode($code);
             $lastBatchNumber = $lastCode ? (int) substr($lastCode, strlen($code)) : 0;
@@ -55,26 +50,21 @@ class BookletGenerator
         } catch (Exception $exception) {
             $this->em->rollback();
             throw $exception;
-        } finally {
-            $this->em->getConnection()->executeQuery(
-                'ALTER TABLE `voucher` ADD UNIQUE INDEX UNIQ_1392A5D877153098 (code)'
-            );
         }
     }
 
     /**
      * Find last booklet code similar to $code, if exists.
      *
-     * @param string $code
      *
-     * @return string|null
      * @throws DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     private function findBookletCode(string $code): ?string
     {
         $code = $this->em->getConnection()
             ->executeQuery('SELECT `code` FROM booklet WHERE `code` LIKE ? ORDER BY id DESC LIMIT 1', [$code . '%'])
-            ->fetchColumn();
+            ->fetchOne();
 
         return $code ?: null;
     }
@@ -82,16 +72,7 @@ class BookletGenerator
     /**
      * Generate set of booklets since $lastBatchNumber.
      *
-     * @param int $lastBatchNumber
-     * @param Project $project
-     * @param string $code
-     * @param string $countryIso3
-     * @param int $numberOfBooklets
-     * @param int $numberOfVouchers
-     * @param string $currency
-     * @param string|null $password
      *
-     * @return int
      * @throws DBALException
      */
     private function generateBooklets(
@@ -133,9 +114,6 @@ class BookletGenerator
     /**
      * Generate vouchers for booklets >= $bookletId.
      *
-     * @param array $values
-     * @param int $numberOfVouchers
-     * @param int $bookletId
      *
      * @throws DBALException
      */
@@ -169,14 +147,11 @@ class BookletGenerator
                     s.val,
                     b.id,
                     -- code = {currency}{value}*{booklet_code}-{primary_id_of_current_voucher}-{password}
-                    CONCAT(b.currency, s.val, "*", b.code, "-ID_PLACEHOLDER", IF(b.password, CONCAT("-", b.password), ""))
+                    CONCAT(b.currency, s.val, "*", b.code, (@cnt := @cnt + 1), IF(b.password, CONCAT("-", b.password), ""))
                 FROM sequence s, booklet b
+                CROSS JOIN (SELECT @cnt := 0) AS dummy
                 WHERE b.id >= ?',
                 array_merge($values, [$bookletId])
             );
-
-        $this->em->getConnection()->executeQuery(
-            'UPDATE voucher SET code=REPLACE(code, "ID_PLACEHOLDER", id) WHERE id >= LAST_INSERT_ID()'
-        );
     }
 }

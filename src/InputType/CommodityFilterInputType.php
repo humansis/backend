@@ -7,14 +7,10 @@ namespace InputType;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"CommodityFilterInputType", "PrimaryValidation", "SecondaryValidation"})
- */
+#[Assert\GroupSequence(['CommodityFilterInputType', 'PrimaryValidation', 'SecondaryValidation'])]
 class CommodityFilterInputType extends AbstractFilterInputType
 {
     /**
-     * @Assert\NotNull
-     * @Assert\Type("array", groups={"PrimaryValidation"})
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"SecondaryValidation"})
@@ -22,6 +18,8 @@ class CommodityFilterInputType extends AbstractFilterInputType
      *     groups={"SecondaryValidation"}
      * )
      */
+    #[Assert\NotNull]
+    #[Assert\Type('array', groups: ['PrimaryValidation'])]
     protected $id;
 
     public function hasIds(): bool

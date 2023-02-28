@@ -6,7 +6,7 @@ namespace DBAL;
 
 class SectorEnum extends AbstractEnum
 {
-    protected static $values = [
+    protected static array $values = [
         self::FOOD_SECURITY,
         self::LIVELIHOODS,
         self::MULTIPURPOSE_CASH,
@@ -25,24 +25,24 @@ class SectorEnum extends AbstractEnum
         self::EARLY_RECOVERY,
     ];
 
-    public const FOOD_SECURITY = 'Food Security';
-    public const LIVELIHOODS = 'Livelihoods';
-    public const MULTIPURPOSE_CASH = 'Multi Purpose Cash Assistance';
-    public const SHELTER = 'Shelter';
-    public const WASH = 'WASH';
-    public const PROTECTION = 'Protection';
-    public const EDUCATION_TVET = 'Education & TVET';
-    public const EMERGENCY_TELCO = 'Emergency Telecomms';
-    public const HEALTH = 'Health';
-    public const LOGISTICS = 'Logistics';
-    public const NUTRITION = 'Nutrition';
-    public const MINE = 'Mine Action';
-    public const DRR_RESILIENCE = 'DRR & Resilience';
-    public const NON_SECTOR = 'Non-Sector Specific';
-    public const CAMP_MANAGEMENT = 'Camp Coordination and Management';
-    public const EARLY_RECOVERY = 'Early Recovery';
+    final public const FOOD_SECURITY = 'Food Security';
+    final public const LIVELIHOODS = 'Livelihoods';
+    final public const MULTIPURPOSE_CASH = 'Multi Purpose Cash Assistance';
+    final public const SHELTER = 'Shelter';
+    final public const WASH = 'WASH';
+    final public const PROTECTION = 'Protection';
+    final public const EDUCATION_TVET = 'Education & TVET';
+    final public const EMERGENCY_TELCO = 'Emergency Telecomms';
+    final public const HEALTH = 'Health';
+    final public const LOGISTICS = 'Logistics';
+    final public const NUTRITION = 'Nutrition';
+    final public const MINE = 'Mine Action';
+    final public const DRR_RESILIENCE = 'DRR & Resilience';
+    final public const NON_SECTOR = 'Non-Sector Specific';
+    final public const CAMP_MANAGEMENT = 'Camp Coordination and Management';
+    final public const EARLY_RECOVERY = 'Early Recovery';
 
-    public function getName()
+    public function getName(): string
     {
         return 'enum_sector';
     }

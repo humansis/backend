@@ -10,9 +10,7 @@ use InputType\FilterFragment\VendorFilterTrait;
 use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"ProductCategoryFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['ProductCategoryFilterInputType', 'Strict'])]
 class ProductCategoryFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;

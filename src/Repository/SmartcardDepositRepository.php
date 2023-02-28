@@ -5,22 +5,17 @@ declare(strict_types=1);
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance;
-use Entity\Assistance\ReliefPackage;
 use Entity\Beneficiary;
 use InputType\SmartcardDepositFilterInputType;
 use Entity\SmartcardDeposit;
+use Repository\Helper\TRepositoryHelper;
 
 class SmartcardDepositRepository extends EntityRepository
 {
-    /**
-     * @param SmartcardDepositFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
+    use TRepositoryHelper;
+
     public function findByParams(?SmartcardDepositFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('sd');
@@ -36,8 +31,6 @@ class SmartcardDepositRepository extends EntityRepository
     }
 
     /**
-     * @param Beneficiary $beneficiary
-     * @param Assistance $assistance
      * @return SmartcardDeposit[]
      */
     public function getDepositsByBeneficiaryAndAssistance(
@@ -54,28 +47,5 @@ class SmartcardDepositRepository extends EntityRepository
             ->setParameter('beneficiaryId', $beneficiary->getId());
 
         return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * @param string $hash
-     *
-     * @return object|SmartcardDeposit|null
-     */
-    public function findByHash(string $hash): ?SmartcardDeposit
-    {
-        return $this->findOneBy(['hash' => $hash]);
-    }
-
-    /**
-     * @param SmartcardDeposit $deposit
-     *
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(SmartcardDeposit $deposit)
-    {
-        $this->_em->persist($deposit);
-        $this->_em->flush();
     }
 }

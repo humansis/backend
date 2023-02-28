@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
+use DateTime;
 use DateTimeInterface;
 use Request\InputTypeInterface;
 use Validator\Constraints\Iso8601;
@@ -13,62 +14,39 @@ class SmartcardPurchaseInputType implements InputTypeInterface
 {
     /**
      * @var PurchaseProductInputType[]
-     *
-     * @Assert\Type("array")
-     * @Assert\Valid
-     * @Assert\NotBlank
      */
-    private $products = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    #[Assert\NotBlank]
+    private array $products = [];
 
     /**
-     * @var DateTimeInterface
-     *
      * @Iso8601
-     * @Assert\NotNull
-     * @Assert\NotBlank
      */
-    private $createdAt;
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    private ?DateTime $createdAt = null;
 
-    /**
-     * @var int
-     *
-     * @Assert\NotNull
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan(0)
-     */
-    private $vendorId;
+    #[Assert\NotNull]
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    private ?int $vendorId = null;
 
-    /**
-     * @var int
-     *
-     * @Assert\NotNull
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan(0)
-     */
-    private $beneficiaryId;
+    #[Assert\NotNull]
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    private ?int $beneficiaryId = null;
 
-    /**
-     * @var int|null
-     *
-     * @Assert\NotNull
-     * @Assert\Type("integer")
-     * @Assert\GreaterThan(0)
-     */
-    private $assistanceId;
+    #[Assert\NotNull]
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThan(0)]
+    private ?int $assistanceId = null;
 
-    /**
-     * @var float|int|string|null
-     *
-     * @Assert\Type(type="numeric")
-     */
-    private $balanceBefore;
+    #[Assert\Type(type: 'numeric')]
+    private float|int|string|null $balanceBefore = null;
 
-    /**
-     * @var float|int|string|null
-     *
-     * @Assert\Type(type="numeric")
-     */
-    private $balanceAfter;
+    #[Assert\Type(type: 'numeric')]
+    private float|int|string|null $balanceAfter = null;
 
     /**
      * @return PurchaseProductInputType[]
@@ -78,34 +56,22 @@ class SmartcardPurchaseInputType implements InputTypeInterface
         return $this->products;
     }
 
-    /**
-     * @param PurchaseProductInputType $purchaseProduct
-     */
     public function addProduct(PurchaseProductInputType $purchaseProduct)
     {
         $this->products[] = $purchaseProduct;
     }
 
-    /**
-     * @param PurchaseProductInputType $purchaseProduct
-     */
     public function removeProduct(PurchaseProductInputType $purchaseProduct)
     {
         // method must be declared to fullfill normalizer requirements
     }
 
-    /**
-     * @return DateTimeInterface
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $createdAt
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(?DateTime $createdAt)
     {
         $this->createdAt = $createdAt;
     }
@@ -142,17 +108,11 @@ class SmartcardPurchaseInputType implements InputTypeInterface
         $this->beneficiaryId = $beneficiaryId;
     }
 
-    /**
-     * @return int|null
-     */
     public function getAssistanceId(): ?int
     {
         return $this->assistanceId;
     }
 
-    /**
-     * @param int|null $assistanceId
-     */
     public function setAssistanceId(?int $assistanceId): void
     {
         $this->assistanceId = $assistanceId;
@@ -166,10 +126,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
         return $this->balanceBefore;
     }
 
-    /**
-     * @param float|int|string $balanceBefore
-     */
-    public function setBalanceBefore($balanceBefore)
+    public function setBalanceBefore(float|int|string $balanceBefore)
     {
         $this->balanceBefore = $balanceBefore;
     }
@@ -182,10 +139,7 @@ class SmartcardPurchaseInputType implements InputTypeInterface
         return $this->balanceAfter;
     }
 
-    /**
-     * @param float|int|string $balanceAfter
-     */
-    public function setBalanceAfter($balanceAfter): void
+    public function setBalanceAfter(float|int|string $balanceAfter): void
     {
         $this->balanceAfter = $balanceAfter;
     }

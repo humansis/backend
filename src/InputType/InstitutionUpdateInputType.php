@@ -8,13 +8,10 @@ use InputType\Beneficiary\PhoneInputType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"InstitutionUpdateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['InstitutionUpdateInputType', 'Strict'])]
 class InstitutionUpdateInputType implements InputTypeInterface
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -22,66 +19,43 @@ class InstitutionUpdateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projectIds = [];
+    #[Assert\Type('array')]
+    private array $projectIds = [];
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
     private $longitude;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="45")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 45)]
     private $latitude;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotNull]
     private $name;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $contactGivenName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $contactFamilyName;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotNull]
     private $type;
 
-    /**
-     * @var AddressInputType
-     *
-     * @Assert\Valid
-     */
-    private $address;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\AddressInputType $address = null;
 
-    /**
-     * @var NationalIdCardInputType
-     *
-     * @Assert\Valid
-     */
-    private $nationalIdCard;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\NationalIdCardInputType $nationalIdCard = null;
 
-    /**
-     * @var PhoneInputType
-     *
-     * @Assert\Valid
-     */
-    private $phone;
+    #[Assert\Valid]
+    private ?\InputType\Beneficiary\PhoneInputType $phone = null;
 
     /**
      * @return int[]
@@ -203,9 +177,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
         return $this->address;
     }
 
-    /**
-     * @param AddressInputType $address
-     */
     public function setAddress(AddressInputType $address)
     {
         $this->address = $address;
@@ -219,9 +190,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
         return $this->nationalIdCard;
     }
 
-    /**
-     * @param NationalIdCardInputType|null $nationalIdCard
-     */
     public function setNationalIdCard(?NationalIdCardInputType $nationalIdCard)
     {
         $this->nationalIdCard = $nationalIdCard;
@@ -235,9 +203,6 @@ class InstitutionUpdateInputType implements InputTypeInterface
         return $this->phone;
     }
 
-    /**
-     * @param PhoneInputType|null $phone
-     */
     public function setPhone(?PhoneInputType $phone): void
     {
         $this->phone = $phone;

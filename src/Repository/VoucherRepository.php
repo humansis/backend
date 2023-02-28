@@ -20,7 +20,6 @@ class VoucherRepository extends EntityRepository
     /**
      * Get all Vouchers by id
      *
-     * @param array $ids
      * @return mixed
      */
     public function getAllByBookletIds(array $ids)
@@ -36,7 +35,6 @@ class VoucherRepository extends EntityRepository
     /**
      * Get queryset for the streamed response
      *
-     * @param array $booklets
      * @return mixed
      */
     public function getAllByBooklets(array $booklets)
@@ -80,7 +78,7 @@ class VoucherRepository extends EntityRepository
 
         try {
             return $qb->getQuery()->getSingleScalarResult();
-        } catch (NoResultException | NonUniqueResultException $e) {
+        } catch (NoResultException | NonUniqueResultException) {
             return 0;
         }
     }

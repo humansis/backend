@@ -25,65 +25,57 @@ class SmartcardPurchase
     use StandardizedPrimaryKey;
 
     /**
-     * @var Smartcard
      *
      * @ORM\ManyToOne(targetEntity="Entity\Smartcard", inversedBy="purchases")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $smartcard;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?\Entity\Smartcard $smartcard = null;
 
     /**
-     * @var Vendor
      *
      * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $vendor;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private ?\Entity\Vendor $vendor = null;
 
     /**
      * @var Collection|SmartcardPurchaseRecord[]
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardPurchaseRecord", mappedBy="smartcardPurchase", cascade={"persist"}, orphanRemoval=true)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
      */
-    private $records;
+    #[SymfonyGroups(['FullSmartcard'])]
+    private \Doctrine\Common\Collections\Collection|array $records;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullSmartcard"})
      */
+    #[SymfonyGroups(['FullSmartcard'])]
     private $createdAt;
 
     /**
-     * @var Invoice
      *
      * @ORM\ManyToOne(targetEntity="Invoice", inversedBy="purchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $redemptionBatch;
+    private ?\Entity\Invoice $redemptionBatch = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="hash", type="text")
      */
-    private $hash;
+    private ?string $hash = null;
 
     /**
-     * @var Assistance|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="smartcardPurchases", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $assistance;
+    private ?\Entity\Assistance $assistance = null;
 
     protected function __construct()
     {
@@ -106,17 +98,11 @@ class SmartcardPurchase
         return $entity;
     }
 
-    /**
-     * @return Smartcard
-     */
     public function getSmartcard(): Smartcard
     {
         return $this->smartcard;
     }
 
-    /**
-     * @return Vendor
-     */
     public function getVendor(): Vendor
     {
         return $this->vendor;
@@ -125,17 +111,11 @@ class SmartcardPurchase
     /**
      * @return Collection|SmartcardPurchaseRecord[]
      */
-    public function getRecords()
+    public function getRecords(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->records;
     }
 
-    /**
-     * @param Product $product
-     * @param float|null $quantity
-     * @param float|null $value
-     * @param string|null $currency
-     */
     public function addRecord(Product $product, ?float $quantity, ?float $value, ?string $currency): void
     {
         $this->records->add(SmartcardPurchaseRecord::create($this, $product, $quantity, $value, $currency));
@@ -151,74 +131,47 @@ class SmartcardPurchase
         return $purchased;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @SymfonyGroups({"FullSmartcard"})
-     * @return DateTimeInterface|null
-     */
+    #[SymfonyGroups(['FullSmartcard'])]
     public function getRedeemedAt(): ?DateTimeInterface
     {
-        return $this->redemptionBatch ? $this->redemptionBatch->getInvoicedAt() : null;
+        return $this->redemptionBatch?->getInvoicedAt();
     }
 
-    /**
-     * @return Invoice|null
-     */
     public function getRedemptionBatch(): ?Invoice
     {
         return $this->redemptionBatch;
     }
 
-    /**
-     * @param Invoice $invoice
-     */
     public function setRedemptionBatch(Invoice $invoice): void
     {
         $this->redemptionBatch = $invoice;
     }
 
-    /**
-     * @return string
-     */
     public function getCurrency(): string
     {
         return $this->getRecords()->first()->getCurrency();
     }
 
-    /**
-     * @return string|null
-     */
     public function getHash(): ?string
     {
         return $this->hash;
     }
 
-    /**
-     * @param string|null $hash
-     */
     public function setHash(?string $hash): void
     {
         $this->hash = $hash;
     }
 
-    /**
-     * @return Assistance|null
-     */
     public function getAssistance(): ?Assistance
     {
         return $this->assistance;
     }
 
-    /**
-     * @param Assistance|null $assistance
-     */
     public function setAssistance(?Assistance $assistance): void
     {
         $this->assistance = $assistance;

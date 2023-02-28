@@ -6,10 +6,8 @@ use Controller\ExportController;
 use Exception;
 use InputType\Country;
 use InputType\DataTableType;
-use InputType\RequestConverter;
 use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Twig\Environment;
 use Entity\User;
 use DTO\RedemptionVoucherBatchCheck;
@@ -21,51 +19,16 @@ use InputType\VoucherRedemptionBatch;
 
 class VoucherService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**@var PdfService */
-    private $pdfService;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
-     * @param ExportService $exportService
-     * @param Environment $twig
-     * @param PdfService $pdfService
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        ExportService $exportService,
-        Environment $twig,
-        PdfService $pdfService
-    ) {
-        $this->em = $entityManager;
-        $this->container = $container;
-        $this->exportService = $exportService;
-        $this->twig = $twig;
-        $this->pdfService = $pdfService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly Environment $twig, private readonly PdfService $pdfService)
+    {
     }
 
     /**
      * Creates a new Voucher entity
      *
-     * @param array $vouchersData
-     * @param bool $flush
      *
      * @return array
      * @throws Exception
@@ -104,8 +67,6 @@ class VoucherService
     /**
      * Generate a new random code for a voucher
      *
-     * @param array $voucherData
-     * @param int $voucherId
      * @return string
      */
     public function generateCode(array $voucherData, int $voucherId)
@@ -121,13 +82,6 @@ class VoucherService
         return $fullCode;
     }
 
-    /**
-     * @param VoucherRedemptionBatch $batch
-     *
-     * @param Vendor|null $vendor
-     *
-     * @return RedemptionVoucherBatchCheck
-     */
     public function checkBatch(VoucherRedemptionBatch $batch, ?Vendor $vendor = null): RedemptionVoucherBatchCheck
     {
         $ids = $batch->getVouchers();
@@ -226,8 +180,6 @@ class VoucherService
     /**
      * Deletes a voucher from the database
      *
-     * @param Voucher $voucher
-     * @param bool $removeVoucher
      * @return bool
      * @throws Exception
      */
@@ -244,11 +196,9 @@ class VoucherService
     }
 
     // =============== DELETE A BATCH OF VOUCHERS ===============
-
     /**
      * Deletes all the vouchers of the given booklet
      *
-     * @param Booklet $booklet
      * @return bool
      * @throws Exception
      */
@@ -263,120 +213,25 @@ class VoucherService
         return true;
     }
 
-    /**
-     * Export all vouchers in a CSV file
-     *
-     * @param string $type
-     * @param string $countryIso3
-     * @param array $ids
-     * @param array $filters
-     * @return mixed
-     */
-    public function exportToCsv(string $type, string $countryIso3, $ids, $filters)
-    {
-        $booklets = null;
-        $exportableCount = 0;
-        $exportableTable = [];
 
-        if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids);
-            $exportableCount = $this->em->getRepository(Voucher::class)->countByBookletsIds($ids);
-        } else {
-            if ($filters) {
-                /** @var DataTableType $dataTableFilter */
-                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
-                    new Country($countryIso3),
-                    $dataTableFilter
-                )[1];
-            } else {
-                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
-            }
-        }
-
-        // If we only have the booklets, get the vouchers
-        if ($booklets !== null) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets);
-            $exportableCount = $this->em->getRepository(Voucher::class)->countByBooklets($booklets);
-        }
-
-        // If csv type, return the response
-        if ('csv' === $type) {
-            if ($exportableCount >= ExportController::EXPORT_LIMIT_CSV) {
-                $totalBooklets = $ids ? count($ids) : count($booklets);
-                throw new Exception(
-                    "Too much vouchers for the export ($exportableCount vouchers in $totalBooklets booklets). " .
-                    "Export the data in batches of " . ExportController::EXPORT_LIMIT_CSV . " vouchers or less"
-                );
-            }
-
-            return $this->csvExport($exportableTable);
-        }
-
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
-            Voucher::class
-        )->countByBooklets($booklets);
-        if ($total > ExportController::EXPORT_LIMIT) {
-            $totalBooklets = $ids ? count($ids) : count($booklets);
-            throw new Exception(
-                "Too much vouchers for the export ($total vouchers in $totalBooklets booklets). " .
-                "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
-            );
-        }
-
-        return $this->exportService->export(
-            $exportableTable->getResult(),
-            'bookletCodes',
-            $type
-        );
-    }
 
     /**
      * Export all vouchers in a pdf
-     *
-     * @param array $ids
-     * @param string $countryIso3
-     * @param array $filters
+     * @param array $exportableTable
      * @return mixed
      */
-    public function exportToPdf($ids, string $countryIso3, $filters)
+    public function exportToPdf(array $exportableTable)
     {
-        $booklets = null;
-        $exportableTable = [];
-
-        if ($ids) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBookletIds($ids)->getResult();
-        } else {
-            if ($filters) {
-                /** @var DataTableType $dataTableFilter */
-                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
-                $booklets = $this->container->get('voucher.booklet_service')->getAll(
-                    new Country($countryIso3),
-                    $dataTableFilter
-                )[1];
-            } else {
-                $booklets = $this->em->getRepository(Booklet::class)->getActiveBooklets($countryIso3);
-            }
-        }
-
-        if ($booklets) {
-            $exportableTable = $this->em->getRepository(Voucher::class)->getAllByBooklets($booklets)->getResult();
-        }
-
-        $total = $ids ? $this->em->getRepository(Voucher::class)->countByBookletsIds($ids) : $this->em->getRepository(
-            Voucher::class
-        )->countByBooklets($booklets);
+        $total = count($exportableTable);
         if ($total > ExportController::EXPORT_LIMIT) {
-            $totalBooklets = $ids ? count($ids) : count($booklets);
             throw new Exception(
-                "Too much vouchers for the export ($total vouchers in $totalBooklets). " .
+                "Too much vouchers ($total) for the export" .
                 "Export the data in batches of " . ExportController::EXPORT_LIMIT . " vouchers or less"
             );
         }
-
         try {
             $html = $this->twig->render(
-                '@Voucher/Pdf/codes.html.twig',
+                'Pdf/codes.html.twig',
                 array_merge(
                     ['vouchers' => $exportableTable],
                     $this->pdfService->getInformationStyle()
@@ -419,10 +274,31 @@ class VoucherService
             }
             fclose($csv);
         });
-        $response->setStatusCode(200);
+        $response->setStatusCode(\Symfony\Component\HttpFoundation\Response::HTTP_OK);
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-Disposition', 'attachment; filename="bookletCodes.csv"');
 
         return $response;
+    }
+
+    /**
+     * copy&paste Utils\BookletService::getAll()
+     * @deprecated
+     */
+    private function getAllBooklets(Country $countryISO3, DataTableType $filter): array
+    {
+        $limitMinimum = $filter->pageIndex * $filter->pageSize;
+
+        $booklets = $this->em->getRepository(Booklet::class)->getAllBy(
+            $countryISO3->getIso3(),
+            $limitMinimum,
+            $filter->pageSize,
+            $filter->getSort(),
+            $filter->getFilter()
+        );
+        $length = $booklets[0];
+        $booklets = $booklets[1];
+
+        return [$length, $booklets];
     }
 }

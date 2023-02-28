@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>{{ source('@Common/Pdf/main.css') }}</style>
+        <style>{{ source('Pdf/main.css') }}</style>
         <style>
             body {
                 font-family: {{ font }};
@@ -67,7 +67,7 @@
     </head>
     <body>
        {% set vars = {'name': organizationName, 'logo': organizationLogo, 'footer': footer, 'primaryColor': primaryColor} %}
-        {% include('@Common/Pdf/header.html.twig') with vars %}
+        {% include('Pdf/header.html.twig') with vars %}
 
         <main>
             <h3>Beneficiary's information</h3>

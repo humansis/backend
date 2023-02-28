@@ -11,9 +11,8 @@ trait GenericTypeFilterTrait
 {
     /**
      * TODO: add validation from enum
-     *
-     * @Assert\Type("string", groups={"Strict"})
      */
+    #[Assert\Type('string', groups: ['Strict'])]
     protected $type;
 
     abstract protected function availableTypes(): array;

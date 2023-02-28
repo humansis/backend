@@ -8,8 +8,7 @@ use Serializer\MapperInterface;
 
 class InstitutionMapper implements MapperInterface
 {
-    /** @var Institution */
-    private $object;
+    private ?\Entity\Institution $object = null;
 
     /**
      * {@inheritdoc}
@@ -28,7 +27,7 @@ class InstitutionMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Institution::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Institution::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -40,9 +39,7 @@ class InstitutionMapper implements MapperInterface
     public function getProjectIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getProjects()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getProjects()->toArray())
         );
     }
 
@@ -63,20 +60,12 @@ class InstitutionMapper implements MapperInterface
 
     public function getContactGivenName(): ?string
     {
-        if (null === $this->object->getContact()) {
-            return null;
-        }
-
-        return $this->object->getContact()->getEnGivenName();
+        return $this->object->getContact()?->getEnGivenName();
     }
 
     public function getContactFamilyName(): ?string
     {
-        if (null === $this->object->getContact()) {
-            return null;
-        }
-
-        return $this->object->getContact()->getEnFamilyName();
+        return $this->object->getContact()?->getEnFamilyName();
     }
 
     public function getType(): string
@@ -86,11 +75,7 @@ class InstitutionMapper implements MapperInterface
 
     public function getAddressId(): ?int
     {
-        if (null === $this->object->getAddress()) {
-            return null;
-        }
-
-        return $this->object->getAddress()->getId();
+        return $this->object->getAddress()?->getId();
     }
 
     public function getNationalId(): ?int

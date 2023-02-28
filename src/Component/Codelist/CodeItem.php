@@ -8,14 +8,8 @@ use JsonSerializable;
 
 class CodeItem implements JsonSerializable
 {
-    private $code;
-
-    private $value;
-
-    public function __construct($code, $value)
+    public function __construct(private $code, private $value)
     {
-        $this->code = $code;
-        $this->value = $value;
     }
 
     public function getCode()
@@ -28,7 +22,7 @@ class CodeItem implements JsonSerializable
         return $this->value;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'code' => (string) $this->code,

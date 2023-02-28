@@ -20,7 +20,7 @@ class ProductCategoryCodelistControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -30,7 +30,7 @@ class ProductCategoryCodelistControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/product-categories/types');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

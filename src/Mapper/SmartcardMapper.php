@@ -13,8 +13,7 @@ class SmartcardMapper implements MapperInterface
 {
     use MapperContextTrait;
 
-    /** @var Smartcard */
-    private $object;
+    private ?\Entity\Smartcard $object = null;
 
     /**
      * {@inheritdoc}
@@ -38,7 +37,7 @@ class SmartcardMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Smartcard::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Smartcard::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -64,6 +63,6 @@ class SmartcardMapper implements MapperInterface
 
     public function getCreatedAt(): string
     {
-        return $this->object->getCreatedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getCreatedAt()->format(DateTimeInterface::ATOM);
     }
 }

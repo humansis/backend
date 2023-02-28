@@ -2,8 +2,16 @@
 
 namespace Services;
 
+use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
+use Entity\AssistanceBeneficiary;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
+use Enum\ModalityType;
+use Enum\ReliefPackageState;
+use Exception\RemoveDistributionException;
+use InputType\ResetReliefPackageInputType;
+use Repository\AssistanceBeneficiaryRepository;
 use Repository\BeneficiaryRepository;
 use Repository\CountrySpecificRepository;
 use Entity\Assistance;
@@ -13,7 +21,10 @@ use InputType\Assistance\DistributeBeneficiaryReliefPackagesInputType;
 use InputType\Assistance\DistributeReliefPackagesInputType;
 use OutputType\Assistance\DistributeReliefPackagesOutputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Repository\SmartcardDepositRepository;
+use Repository\SmartcardRepository;
 use Throwable;
+use Utils\DecimalNumber\DecimalNumberFactory;
 use Workflow\ReliefPackageTransitions;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Workflow\Registry;
@@ -26,55 +37,24 @@ use Entity\User;
  */
 class AssistanceDistributionService
 {
-    public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
+    final public const COUNTRY_SPECIFIC_ID_NUMBER = 'Secondary ID Number';
 
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var CountrySpecificRepository
-     */
-    private $countrySpecificRepository;
-
-    private $logger;
-
-    /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
-     * @param ReliefPackageRepository $reliefPackageRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param CountrySpecificRepository $countrySpecificRepository
-     * @param Registry $registry
-     */
     public function __construct(
-        ReliefPackageRepository $reliefPackageRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        CountrySpecificRepository $countrySpecificRepository,
-        LoggerInterface $logger,
-        Registry $registry
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LoggerInterface $logger,
+        private readonly Registry $registry,
+        private readonly EntityManagerInterface $em,
+        private readonly SmartcardDepositRepository $smartcardDepositRepository,
+        private readonly SmartcardRepository $smartcardRepository,
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
     ) {
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->countrySpecificRepository = $countrySpecificRepository;
-        $this->registry = $registry;
-        $this->logger = $logger;
     }
 
     /**
      * @param DistributeReliefPackagesInputType[] $packages
-     * @param User $distributor
      *
-     * @return DistributeReliefPackagesOutputType
      */
     public function distributeByReliefIds(array $packages, User $distributor): DistributeReliefPackagesOutputType
     {
@@ -83,8 +63,7 @@ class AssistanceDistributionService
             try {
                 /** @var ReliefPackage $reliefPackage */
                 $reliefPackage = $this->reliefPackageRepository->find($packageUpdate->getId());
-                $amountToDistribute = $packageUpdate->getAmountDistributed(
-                ) === null ? $reliefPackage->getCurrentUndistributedAmount() : $packageUpdate->getAmountDistributed();
+                $amountToDistribute = $packageUpdate->getAmountDistributed() ?? $reliefPackage->getCurrentUndistributedAmount();
 
                 $result = $this->distributeSinglePackage(
                     $distributeReliefPackageOutputType,
@@ -105,10 +84,7 @@ class AssistanceDistributionService
 
     /**
      * @param DistributeBeneficiaryReliefPackagesInputType[] $inputPackages
-     * @param Assistance $assistance
-     * @param User $distributor
      *
-     * @return DistributeReliefPackagesOutputType
      * @throws NonUniqueResultException
      */
     public function distributeByBeneficiaryIdAndAssistanceId(
@@ -146,13 +122,13 @@ class AssistanceDistributionService
             $assistance,
             $countrySpecific
         );
-        if (count($beneficiaries) === 0) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) === 0) {
             return $distributeReliefPackageOutputType->addNotFound($packageData->getIdNumber());
         }
-        if (count($beneficiaries) > 1) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) > 1) {
             return $distributeReliefPackageOutputType->addConflictId($packageData->getIdNumber(), $beneficiaries);
         }
-        if (count($beneficiaries) === 1) {
+        if ((is_countable($beneficiaries) ? count($beneficiaries) : 0) === 1) {
             $beneficiary = array_shift($beneficiaries);
             /** @var ReliefPackage[] $packages */
             $packages = $this->reliefPackageRepository->findByAssistanceAndBeneficiary($assistance, $beneficiary);
@@ -200,7 +176,7 @@ class AssistanceDistributionService
         Beneficiary $beneficiary = null,
         $idNumber = null
     ) {
-        $beneficiaryId = isset($beneficiary) ? $beneficiary->getId() : null;
+        $beneficiaryId = $beneficiary?->getId();
         if ($reliefPackage->isFullyDistributed()) {
             $output = $distributeReliefPackageOutputType->addAlreadyDistributed(
                 $reliefPackage->getId(),
@@ -243,5 +219,109 @@ class AssistanceDistributionService
             $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::DISTRIBUTE);
         }
         $this->reliefPackageRepository->save($reliefPackage);
+    }
+
+    /**
+     * @throws RemoveDistributionException
+     */
+    private function checkDataBeforeDelete(
+        AssistanceBeneficiary $assistanceBeneficiary,
+        ResetReliefPackageInputType $inputType
+    ): void {
+        $smartcard = $this->smartcardRepository->findBySerialNumberAndBeneficiaryId(
+            $inputType->getSmartcardCode(),
+            $inputType->getBeneficiaryId()
+        );
+        if (!$smartcard) {
+            throw new RemoveDistributionException(
+                "Beneficiary ({$inputType->getBeneficiaryId()}) does not have assigned Smartcard with code ({$inputType->getSmartcardCode()})"
+            );
+        }
+
+        if ($assistanceBeneficiary->getReliefPackages()->count() > 1) {
+            throw new RemoveDistributionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) has more than one ReliefPackage in the same assistance ({$inputType->getAssistanceId()})"
+            );
+        }
+
+        $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
+        if ($reliefPackage->getSmartcardDeposits()->count() === 0) {
+            throw new RemoveDistributionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) did not receive a deposit for assistance ({$inputType->getAssistanceId()})"
+            );
+        }
+
+        if ($reliefPackage->getModalityType() != ModalityType::SMART_CARD) {
+            throw new RemoveDistributionException("Only Relief Packages that use the smartcard modality are allowed");
+        }
+
+        if ($inputType->getDepositId()) {
+            $smartcardDeposit = $this->smartcardDepositRepository->find($inputType->getDepositId());
+            if ($smartcardDeposit->getReliefPackage()->getId() !== $reliefPackage->getId()) {
+                throw new RemoveDistributionException(
+                    "Deposit #{$inputType->getDepositId()} is connected with inconsistent Relief Package id #{$smartcardDeposit->getReliefPackage()->getId()}. Beneficiary #{$inputType->getBeneficiaryId()} has generated Relief Package #{$reliefPackage->getId()}."
+                );
+            }
+        } else {
+            if ($reliefPackage->getSmartcardDeposits()->count() > 1) {
+                throw new RemoveDistributionException(
+                    "Relief Package #{$reliefPackage->getId()} has more then 1 Deposit. Please specify Deposit id to remove in the request."
+                );
+            }
+        }
+    }
+
+    /**
+     * @throws RemoveDistributionException
+     * @throws Exception
+     */
+    public function deleteDistribution(ResetReliefPackageInputType $inputType): void
+    {
+        $assistanceBeneficiary = $this->assistanceBeneficiaryRepository->findByAssistanceAndBeneficiary(
+            $inputType->getAssistanceId(),
+            $inputType->getBeneficiaryId()
+        );
+
+        if (!$assistanceBeneficiary) {
+            throw new RemoveDistributionException(
+                "This beneficiary ({$inputType->getBeneficiaryId()}) doesn't belong to this assistance ({$inputType->getAssistanceId()})"
+            );
+        }
+
+        $this->checkDataBeforeDelete($assistanceBeneficiary, $inputType);
+
+        $reliefPackage = $assistanceBeneficiary->getReliefPackages()[0];
+        $this->em->getConnection()->beginTransaction();
+        try {
+            if ($inputType->getDepositId()) {
+                $smartcardDeposit = $this->smartcardDepositRepository->find($inputType->getDepositId());
+                $restOfDistributedAmount = (DecimalNumberFactory::create($reliefPackage->getAmountDistributed()))
+                    ->minus(DecimalNumberFactory::create($smartcardDeposit->getValue()))
+                    ->round(2);
+            } else {
+                $smartcardDeposit = $reliefPackage->getSmartcardDeposits()[0];
+            }
+            $this->em->remove($smartcardDeposit);
+            if (isset($restOfDistributedAmount) && (float) $restOfDistributedAmount > 0) {
+                $reliefPackage->setAmountDistributed($restOfDistributedAmount);
+            } else {
+                $reliefPackage->setAmountDistributed('0');
+                $reliefPackage->setState(ReliefPackageState::TO_DISTRIBUTE);
+                $reliefPackage->setDistributedAt(null);
+                $reliefPackage->setDistributedBy(null);
+            }
+            if ($inputType->getNote()) {
+                $reliefPackage->setNotes($inputType->getNote());
+            }
+            $this->em->persist($reliefPackage);
+            $this->em->flush();
+            $this->em->getConnection()->commit();
+        } catch (Throwable $ex) {
+            if ($this->em->getConnection()->isTransactionActive()) {
+                $this->em->getConnection()->rollBack();
+            }
+            $this->logger->error("Can not delete distribution: " . $ex->getMessage());
+            throw new RemoveDistributionException("Can not delete distribution");
+        }
     }
 }

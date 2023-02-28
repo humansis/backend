@@ -19,31 +19,25 @@ use Exception;
 use InputType\Assistance\CommodityInputType;
 use InputType\Assistance\SelectionCriterionInputType;
 use InputType\AssistanceCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait AssistanceHelper
 {
     /**
-     * @param AssistanceCreateInputType $assistanceCreateInputType
-     * @return Assistance
      * @throws Exception
      */
     public function createAssistance(
-        AssistanceCreateInputType $assistanceCreateInputType
+        AssistanceCreateInputType $assistanceCreateInputType,
+        AssistanceFactory $assistanceFactory,
     ): Assistance {
-        $assistance = self::$container->get(AssistanceFactory::class)->create($assistanceCreateInputType);
+        $assistance = $assistanceFactory->create($assistanceCreateInputType);
         $this->em->getRepository(\Entity\Assistance::class)->save($assistance);
 
         return $assistance;
     }
 
-    /**
-     * @return SelectionCriterionInputType
-     */
     public static function buildSelectionCriteriaInputType(): SelectionCriterionInputType
     {
         $selectionCriteriaType = new SelectionCriterionInputType();
@@ -57,12 +51,6 @@ trait AssistanceHelper
         return $selectionCriteriaType;
     }
 
-    /**
-     * @param string $currency
-     * @param string $modalityType
-     * @param float $value
-     * @return CommodityInputType
-     */
     public static function buildCommoditiesType(
         string $currency,
         string $modalityType,
@@ -77,11 +65,8 @@ trait AssistanceHelper
     }
 
     /**
-     * @param Project $project
-     * @param Location $location
      * @param CommodityInputType[]|null $commodityInputTypes
      * @param SelectionCriterionInputType[]|null $selectionCriteriaInputTypes
-     * @return AssistanceCreateInputType
      */
     public static function buildAssistanceInputType(
         Project $project,

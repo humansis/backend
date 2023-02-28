@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
+use Entity\Role;
 use Entity\User;
 use Entity\UserCountry;
 use Enum\RoleType;
+use Repository\RoleRepository;
 use Repository\UserCountryRepository;
 use Repository\UserRepository;
 use Symfony\Component\Console\Command\Command;
@@ -22,58 +24,16 @@ class CredentialsCommand extends Command
 {
     protected static $defaultName = 'app:default-credentials';
 
-    /**
-     * @var string
-     */
-    private $account;
-
-    /**
-     * @var string
-     */
-    private $salt;
-
-    /**
-     * @var string
-     */
-    private $encodedPassword;
-
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @var Countries
-     */
-    private $countries;
-
-    /**
-     * @var UserCountryRepository
-     */
-    private $userCountryRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
     public function __construct(
-        string $account,
-        string $salt,
-        string $encodedPassword,
-        UserRepository $userRepository,
-        UserCountryRepository $userCountryRepository,
-        Countries $countries,
-        EntityManagerInterface $entityManager
+        private readonly string $account,
+        private readonly string $salt,
+        private readonly string $encodedPassword,
+        private readonly UserRepository $userRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly UserCountryRepository $userCountryRepository,
+        private readonly Countries $countries,
     ) {
         parent::__construct();
-        $this->account = $account;
-        $this->salt = $salt;
-        $this->encodedPassword = $encodedPassword;
-        $this->userRepository = $userRepository;
-        $this->userCountryRepository = $userCountryRepository;
-        $this->countries = $countries;
-        $this->entityManager = $entityManager;
     }
 
     protected function configure()
@@ -82,12 +42,6 @@ class CredentialsCommand extends Command
         $this->setHelp('Check if user for automatize testing is created. If no this command will create it.');
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return int
-     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if (empty($this->salt) || empty($this->encodedPassword)) {
@@ -118,30 +72,25 @@ class CredentialsCommand extends Command
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */
     private function createAccount(): void
     {
+        $roles = $this->roleRepository->findByCodes([RoleType::ADMIN]);
         $user = new User();
         $user->setUsername($this->account)
-            ->setUsernameCanonical($this->account)
-            ->setEmail($this->account)
-            ->setEmailCanonical($this->account)
             ->setEnabled(true)
             ->setSalt($this->salt)
-            ->setPassword($this->encodedPassword);
-        $user->injectObjectManager($this->entityManager);
-        $user->addRole(RoleType::ADMIN);
+            ->setPassword($this->encodedPassword)
+            ->setRoles($roles);
+
         $this->userRepository->save($user);
         $this->setCountries($user);
     }
 
     /**
-     * @param User $user
      *
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -156,9 +105,6 @@ class CredentialsCommand extends Command
         }
     }
 
-    /**
-     * @return bool
-     */
     private function checkIfUserExists(): bool
     {
         return (bool) $this->userRepository->findOneBy(['email' => $this->account]);

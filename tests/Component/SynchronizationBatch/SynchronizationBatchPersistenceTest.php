@@ -4,37 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Component\SynchronizationBatch;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Entity\SynchronizationBatch;
 use Entity\SynchronizationBatch\Deposits;
-use Enum\SynchronizationBatchValidationType;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Form\Extension\Validator\ViolationMapper\ViolationPath;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 
 class SynchronizationBatchPersistenceTest extends WebTestCase
 {
-    /** @var ObjectManager */
-    private $manager;
+    private EntityManagerInterface $manager;
 
-    /** @var EntityRepository */
-    private $syncRepo;
+    private EntityRepository $syncRepo;
 
-    /** @var Deposits */
-    private $sync;
+    private Deposits $sync;
 
     protected function setUp(): void
     {
         parent::setUp();
         self::bootKernel();
 
-        $container = self::$kernel->getContainer();
+        $container = self::getContainer();
         $this->manager = $container->get('doctrine.orm.default_entity_manager');
         $this->syncRepo = $this->manager->getRepository(SynchronizationBatch::class);
         $this->sync = new Deposits(['test' => 'xyz', 'array' => [1, 2, 5, 1024], 0 => 0, false => true]);
@@ -58,10 +49,5 @@ class SynchronizationBatchPersistenceTest extends WebTestCase
 
         $this->assertArrayHasKey('fst', $this->sync->getViolations());
         $this->assertArrayHasKey('snd', $this->sync->getViolations());
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
     }
 }

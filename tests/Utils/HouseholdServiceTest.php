@@ -2,11 +2,12 @@
 
 namespace Tests\Utils;
 
+use DateTime;
+use Doctrine\Persistence\ObjectManager;
 use Entity\Household;
 use Entity\HouseholdLocation;
 use Enum\ResidencyStatus;
 use Utils\HouseholdService;
-use Doctrine\Common\Persistence\ObjectManager;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\NationalIdType;
@@ -39,13 +40,13 @@ class HouseholdServiceTest extends KernelTestCase
         $kernel = self::bootKernel();
         // $this->application = new Application($kernel);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->householdService = $kernel->getContainer()->get('beneficiary.household_service');
-        $this->validator = $kernel->getContainer()->get('validator');
-        // $this->householdService = $kernel->getContainer()->get(HouseholdService::class);
+        $this->householdService = self::getContainer()->get('beneficiary.household_service');
+        $this->validator = self::getContainer()->get('validator');
+        // $this->householdService = self::getContainer()->get(HouseholdService::class);
     }
 
     public function testCreate()
@@ -61,7 +62,7 @@ class HouseholdServiceTest extends KernelTestCase
         $createData->setFoodConsumptionScore(3);
         $createData->setShelterStatus('3');
         $createData->setDebtLevel(3);
-        $createData->setSupportDateReceived('1900-01-01');
+        $createData->setSupportDateReceived(new DateTime('1900-01-01'));
         $createData->setSupportOrganizationName('OSN');
         $createData->setIncomeSpentOnFood(100000);
         $createData->setIncome(3);

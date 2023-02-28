@@ -8,8 +8,7 @@ use Entity\Vendor;
 
 class VendorMapper implements MapperInterface
 {
-    /** @var Vendor */
-    private $object;
+    private ?\Entity\Vendor $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -25,7 +24,7 @@ class VendorMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Vendor::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Vendor::class . ', ' . $object::class . ' given.'
         );
     }
 

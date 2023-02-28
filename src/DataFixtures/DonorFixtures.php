@@ -9,9 +9,6 @@ use Entity\Donor;
 
 class DonorFixtures extends Fixture
 {
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         $donor = new Donor();

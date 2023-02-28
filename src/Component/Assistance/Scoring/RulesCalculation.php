@@ -124,16 +124,11 @@ final class RulesCalculation
     {
         $hhhGender = $household->getHouseholdHead()->getPerson()->getGender();
 
-        switch ($hhhGender) {
-            case PersonGender::FEMALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore();
-
-            case PersonGender::MALE:
-                return $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore();
-
-            default:
-                return 0;
-        }
+        return match ($hhhGender) {
+            PersonGender::FEMALE => $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_FEMALE)->getScore(),
+            PersonGender::MALE => $rule->getOptionByValue(ScoringRuleCalculationOptionsEnum::GENDER_MALE)->getScore(),
+            default => 0,
+        };
     }
 
     public function dependencyRatioSyrNWS(Household $household, ScoringRule $rule): float
@@ -366,5 +361,32 @@ final class RulesCalculation
         }
 
         return $result;
+    }
+
+    /**
+     * For each Vulnerability Criterion presented in household, the score is added to the total score.
+     * If some criterion is presented more than once (e.g. two members are pregnant), the score is added only once.
+     * This includes both head and members of household.
+     */
+    public function vulnerabilityCriterion(Household $household, ScoringRule $rule): float
+    {
+        $vulnerabilityCriteria = [];
+
+        foreach ($household->getBeneficiaries() as $householdMember) {
+            /** @var VulnerabilityCriterion $vulnerabilityCriterion */
+            foreach ($householdMember->getVulnerabilityCriteria() as $vulnerabilityCriterion) {
+                $vulnerabilityCriteria[$vulnerabilityCriterion->getFieldString()] = true;
+            }
+        }
+
+        $score = 0;
+
+        foreach ($rule->getOptions() as $option) {
+            if (isset($vulnerabilityCriteria[$option->getValue()])) {
+                $score += $option->getScore();
+            }
+        }
+
+        return $score;
     }
 }

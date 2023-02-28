@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class ImportQueueMapper implements MapperInterface
 {
-    /** @var ImportQueue */
-    private $object;
+    private ?\Entity\ImportQueue $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -27,7 +26,7 @@ class ImportQueueMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ImportQueue::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . ImportQueue::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -38,12 +37,8 @@ class ImportQueueMapper implements MapperInterface
 
     public function getValues(): array
     {
-        $extractValue = function ($values) {
-            return $values['value'];
-        };
-        $extractValueFromAllBeneficiaries = function ($values) use ($extractValue) {
-            return array_map($extractValue, $values);
-        };
+        $extractValue = fn($values) => $values['value'];
+        $extractValueFromAllBeneficiaries = fn($values) => array_map($extractValue, $values);
 
         return array_values(array_map($extractValueFromAllBeneficiaries, $this->object->getContent()));
     }

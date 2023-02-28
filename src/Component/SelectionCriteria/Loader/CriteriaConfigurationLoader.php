@@ -9,26 +9,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CriteriaConfigurationLoader
 {
-    public const
+    final public const
         TYPE_KEY = 'type',
         TARGET_KEY = 'target',
         VALUE_TRANSFORMER_KEY = 'valueTransformer';
 
-    /**
-     * @var array
-     */
-    private $configuration;
-
-    public function __construct(array $configuration)
+    public function __construct(private readonly array $configuration)
     {
-        $this->configuration = $configuration;
     }
 
-    /**
-     * @param string $key
-     *
-     * @return CriterionConfiguration
-     */
     public function getCriterionConfiguration(string $key): CriterionConfiguration
     {
         if (key_exists($key, $this->configuration)) {
@@ -53,7 +42,7 @@ class CriteriaConfigurationLoader
         if (!is_numeric($value)) {
             return CriteriaValueTransformerEnum::CONVERT_TO_STRING;
         }
-        if (strpos($value, '.') !== false) {
+        if (str_contains($value, '.')) {
             return CriteriaValueTransformerEnum::CONVERT_TO_FLOAT;
         }
 

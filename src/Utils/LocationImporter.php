@@ -14,55 +14,27 @@ use XMLReader;
 
 class LocationImporter
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
+    private ?int $limit = null;
 
-    /** @var string path */
-    private $file;
+    private readonly string $iso3;
 
-    /** @var int|null */
-    private $limit;
+    private int $importedLocations = 0;
 
-    /** @var string */
-    private $iso3;
-
-    /** @var int */
-    private $importedLocations = 0;
-
-    /** @var int */
-    private $omittedLocations = 0;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    private int $omittedLocations = 0;
 
     /**
      * LocationService constructor.
-     *
-     * @param ObjectManager $entityManager
-     * @param string $file
-     * @param LocationRepository $locationRepository
      */
-    public function __construct(ObjectManager $entityManager, string $file, LocationRepository $locationRepository)
+    public function __construct(private readonly ObjectManager $em, private string|null $file, private readonly LocationRepository $locationRepository)
     {
-        $this->em = $entityManager;
-        $this->file = $file;
-        $this->locationRepository = $locationRepository;
         $this->iso3 = strtoupper(pathinfo($this->file, PATHINFO_FILENAME));
     }
 
-    /**
-     * @return int|null
-     */
     public function getLimit(): ?int
     {
         return $this->limit;
     }
 
-    /**
-     * @param int|null $limit
-     */
     public function setLimit(?int $limit): void
     {
         $this->limit = $limit;
@@ -75,16 +47,12 @@ class LocationImporter
         return count($xml->xpath('//*'));
     }
 
-    /**
-     * @return string
-     */
     public function getIso3(): string
     {
         return $this->iso3;
     }
 
     /**
-     * @return iterable
      * @throws Exception
      */
     public function importLocations(): iterable
@@ -194,17 +162,11 @@ class LocationImporter
         return $location;
     }
 
-    /**
-     * @return int
-     */
     public function getImportedLocations(): int
     {
         return $this->importedLocations;
     }
 
-    /**
-     * @return int
-     */
     public function getOmittedLocations(): int
     {
         return $this->omittedLocations;

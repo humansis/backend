@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
+use Component\Import\Enum\ImportCsoEnum;
 use DateTime;
-use Entity\CountrySpecific;
 use Exception;
+use Repository\CountrySpecificRepository;
+use Repository\LocationRepository;
 use Utils\HouseholdExportCSVService;
-use Entity\Location;
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\CellError\CellError;
 use Component\Import\CellParameters;
 use Component\Import\Utils\ImportDateConverter;
@@ -22,6 +22,7 @@ use Validator\Constraints\Enum;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Validator\Constraints\CountrySpecificDataType;
+use Validator\Constraints\PhonePrefix;
 
 class ImportLine
 {
@@ -35,29 +36,19 @@ class ImportLine
      */
     public $humansisComment;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $addressStreet;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $addressNumber;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $addressPostcode;
 
-    /**
-     * @Assert\Type(type={"string", "numeric"}, groups={"household", "member"})
-     */
+    #[Assert\Type(type: ['string', 'numeric'], groups: ['household', 'member'])]
     public $campName;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $tentNumber;
 
     /**
@@ -65,123 +56,89 @@ class ImportLine
      */
     public $livelihood;
 
-    /**
-     * @Assert\Type("integer", groups={"household", "member"}),
-     * @Assert\GreaterThanOrEqual("0")
-     */
+    #[Assert\Type('integer', groups: ['household', 'member'])]
+    #[Assert\GreaterThanOrEqual(0)]
     public $income;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $foodConsumptionScore;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $copingStrategiesIndex;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $notes;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $enumeratorName;
 
-    /**
-     * @Assert\Type("float", groups={"household", "member"})
-     */
+    #[Assert\Type('float', groups: ['household', 'member'])]
     public $latitude;
 
-    /**
-     * @Assert\Type("float", groups={"household", "member"})
-     */
+    #[Assert\Type('float', groups: ['household', 'member'])]
     public $longitude;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     * @Assert\NotBlank(groups={"household"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
+    #[Assert\NotBlank(groups: ['household'])]
     public $adm1;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $adm2;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $adm3;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $adm4;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     * @Assert\NotBlank(groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
+    #[Assert\NotBlank(groups: ['household', 'member'])]
     public $localGivenName;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     * @Assert\NotBlank(groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
+    #[Assert\NotBlank(groups: ['household', 'member'])]
     public $localFamilyName;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $localParentsName;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $englishGivenName;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $englishFamilyName;
 
-    /**
-     * @Assert\Type("string", groups={"household", "member"})
-     */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $englishParentsName;
 
     /**
-     * @Assert\NotNull(groups={"household", "member"})
      * @Enum(enumClass="Enum\PersonGender", groups={"household", "member"})
      */
+    #[Assert\NotNull(groups: ['household', 'member'])]
     public $gender;
 
     /**
-     * @Assert\NotNull(groups={"household", "member"})
      * @Enum(enumClass="Enum\HouseholdHead", groups={"household", "member"})
      */
+    #[Assert\NotNull(groups: ['household', 'member'])]
     public $head;
 
     /**
-     * @Assert\NotNull(groups={"household", "member"})
      * @Enum(enumClass="Enum\ResidencyStatus", groups={"household", "member"})
      */
+    #[Assert\NotNull(groups: ['household', 'member'])]
     public $residencyStatus;
 
     /**
      * @ImportDate(groups={"household", "member"})
-     * @Assert\NotBlank(groups={"household", "member"})
      */
+    #[Assert\NotBlank(groups: ['household', 'member'])]
     public $dateOfBirth;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
      * @Enum(enumClass="Enum\VulnerabilityCriteria", array=true, groups={"household", "member"})
      */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $vulnerabilityCriteria;
 
     /**
@@ -189,14 +146,10 @@ class ImportLine
      */
     public $typePhone1;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone1;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $numberPhone1;
 
     /**
@@ -209,14 +162,10 @@ class ImportLine
      */
     public $typePhone2;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[PhonePrefix(groups: ['household', 'member'])]
     public $prefixPhone2;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $numberPhone2;
 
     /**
@@ -229,9 +178,7 @@ class ImportLine
      */
     public $primaryIdType;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $primaryIdNumber;
 
     /**
@@ -239,9 +186,7 @@ class ImportLine
      */
     public $secondaryIdType;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $secondaryIdNumber;
 
     /**
@@ -249,9 +194,7 @@ class ImportLine
      */
     public $tertiaryIdType;
 
-    /**
-     * @Assert\Type("scalar", groups={"household", "member"})
-     */
+    #[Assert\Type('scalar', groups: ['household', 'member'])]
     public $tertiaryIdNumber;
 
     /**
@@ -260,20 +203,18 @@ class ImportLine
     public $shelterStatus;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
      * @Enum(enumClass="Enum\HouseholdAssets", array=true, groups={"household", "member"})
      */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $assets;
 
-    /**
-     * @Assert\Type("numeric", groups={"household", "member"})
-     */
+    #[Assert\Type('numeric', groups: ['household', 'member'])]
     public $debtLevel;
 
     /**
-     * @Assert\Type("string", groups={"household", "member"})
      * @Enum(enumClass="Enum\HouseholdSupportReceivedType", array=true, groups={"household", "member"})
      */
+    #[Assert\Type('string', groups: ['household', 'member'])]
     public $supportReceivedTypes;
 
     /**
@@ -281,74 +222,54 @@ class ImportLine
      */
     public $supportDateReceived;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $f0;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $f2;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $f6;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $f18;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $f60;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $m0;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $m2;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $m6;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $m18;
 
-    /**
-     * @Assert\IsNull(groups={"member"}),
-     * @Assert\Type(type={"integer", "null"}, groups={"household"}),
-     * @Assert\GreaterThanOrEqual(value=0, groups={"household"}),
-     */
+    #[Assert\IsNull(groups: ['member'])]
+    #[Assert\Type(type: ['integer', null], groups: ['household'])]
+    #[Assert\GreaterThanOrEqual(value: 0, groups: ['household'])]
     public $m60;
 
     /**
@@ -361,25 +282,20 @@ class ImportLine
      *     groups={"household"}
      * )
      */
-    public $countrySpecifics = [];
-
-    /** @var string */
-    private $countryIso3;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    public array $countrySpecifics = [];
 
     /** @var string[] */
-    private $excelDateTimeFormatProperties = [];
+    private array $excelDateTimeFormatProperties = [];
 
     /** @var CellError[] */
-    private $errors = [];
+    private array $errors = [];
 
-    public function __construct(array $content, string $countryIso3, EntityManagerInterface $entityManager)
-    {
-        $this->countryIso3 = $countryIso3;
-        $this->entityManager = $entityManager;
-
+    public function __construct(
+        array $content,
+        private readonly string $countryIso3,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LocationRepository $locationRepository,
+    ) {
         foreach (HouseholdExportCSVService::MAPPING_PROPERTIES as $header => $property) {
             if (isset($content[$header])) {
                 $value = $content[$header][CellParameters::VALUE];
@@ -393,7 +309,7 @@ class ImportLine
                     $this->$property = trim($this->$property);
 
                     // back retype to int if there is only numbers
-                    if (ctype_digit($this->$property) && !(substr($this->$property, 0, 1) === '0')) {
+                    if (ctype_digit($this->$property) && !(str_starts_with($this->$property, '0'))) {
                         $this->$property = (int) $this->$property;
                     }
                 } else {
@@ -406,29 +322,21 @@ class ImportLine
             }
         }
 
-        $countrySpecifics = $entityManager->getRepository(CountrySpecific::class)->findBy(
-            ['countryIso3' => $countryIso3],
-            ['id' => 'asc']
-        );
+        $countrySpecifics = $this->countrySpecificRepository->findForCriteria($this->countryIso3);
         foreach ($countrySpecifics as $countrySpecific) {
             if (
                 isset($content[$countrySpecific->getFieldString()]) && $content[$countrySpecific->getFieldString(
                 )][CellParameters::DATA_TYPE] !== DataType::TYPE_NULL
             ) {
                 $this->countrySpecifics[$countrySpecific->getId()] = [
-                    'countrySpecific' => $countrySpecific,
-                    'value' => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
+                    ImportCsoEnum::ImportLineEntityKey->value => $countrySpecific,
+                    ImportCsoEnum::ImportLineValueKey->value => $content[$countrySpecific->getFieldString()][CellParameters::VALUE],
                 ];
             }
         }
     }
 
-    /**
-     * @param ExecutionContextInterface $context
-     *
-     * @return void
-     * @Assert\Callback(groups={"household", "member"})
-     */
+    #[Assert\Callback(groups: ['household', 'member'])]
     public function violateCellErrors(ExecutionContextInterface $context): void
     {
         foreach ($this->errors as $error) {
@@ -439,25 +347,43 @@ class ImportLine
         }
     }
 
-    /**
-     * @Assert\IsTrue(message="Prefix should not be blank if phone number is filled", payload={"propertyPath"="prefixPhone1"}, groups={"household", "member"})
-     */
-    public function isPrefixPhone1Valid(): bool
+    #[Assert\IsTrue(message: 'All required columns for Phone 1 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone1', 'prefixPhone1', 'typePhone1']])]
+    public function isPhone1Complete(): bool
     {
-        return !$this->numberPhone1 || $this->prefixPhone1;
+        $phone1Set = [
+            $this->prefixPhone1,
+            $this->numberPhone1,
+            $this->typePhone1,
+        ];
+        if ($this->isOneFromListNonEmpty($phone1Set)) {
+            return $this->isAllFromListNonEmpty($phone1Set);
+        }
+
+        return true;
     }
 
-    /**
-     * @Assert\IsTrue(message="Prefix should not be blank if phone number is filled", payload={"propertyPath"="prefixPhone2"}, groups={"household", "member"})
-     */
-    public function isPrefixPhone2Valid(): bool
+    #[Assert\IsTrue(message: 'All required columns for Phone 2 should be set', groups: [
+        'household',
+        'member',
+    ], payload: ['propertyPath' => ['numberPhone2', 'prefixPhone2', 'typePhone2']])]
+    public function isPhone2Complete(): bool
     {
-        return !$this->numberPhone2 || $this->prefixPhone2;
+        $phone2Set = [
+            $this->prefixPhone2,
+            $this->numberPhone2,
+            $this->typePhone2,
+        ];
+        if ($this->isOneFromListNonEmpty($phone2Set)) {
+            return $this->isAllFromListNonEmpty($phone2Set);
+        }
+
+        return true;
     }
 
-    /**
-     * @Assert\IsTrue(message="Camp must have defined both Tent number and Camp name", payload={"propertyPath"="campName"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Camp must have defined both Tent number and Camp name', payload: ['propertyPath' => 'campName'], groups: ['household', 'member'])]
     public function isCampValidOrEmpty(): bool
     {
         return $this->isCampValid()
@@ -469,9 +395,7 @@ class ImportLine
         return (!$this->isEmpty($this->tentNumber) && !$this->isEmpty($this->campName));
     }
 
-    /**
-     * @Assert\IsTrue(message="Address must have defined street, number and postcode", payload={"propertyPath"="addressStreet"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Address must have defined street, number and postcode', payload: ['propertyPath' => 'addressStreet'], groups: ['household', 'member'])]
     public function isAddressValidOrEmpty(): bool
     {
         return $this->isAddressValid()
@@ -492,19 +416,13 @@ class ImportLine
         return "" === trim((string) $value);
     }
 
-    /**
-     * @Assert\IsTrue(message="Camp or address must be fully defined", payload={"propertyPath"="addressStreet"}, groups={"household"})
-     */
+    #[Assert\IsTrue(message: 'Camp or address must be fully defined', payload: ['propertyPath' => 'addressStreet'], groups: ['household'])]
     public function isAddressExists(): bool
     {
         return $this->isAddressValid() || $this->isCampValid();
     }
 
-    /**
-     * @Assert\IsFalse(message="Address or Camp must be defined, not both", payload={"propertyPath"="addressStreet"}, groups={"household"})
-     *
-     * @return bool
-     */
+    #[Assert\IsFalse(message: 'Address or Camp must be defined, not both', payload: ['propertyPath' => 'addressStreet'], groups: ['household'])]
     public function isFilledAddressOrCamp(): bool
     {
         $isCompleteAddress = !empty($this->addressNumber) && !empty($this->addressPostcode) && !empty($this->addressStreet);
@@ -513,9 +431,7 @@ class ImportLine
         return $isCompleteAddress && $isCompleteCamp;
     }
 
-    /**
-     * @Assert\IsTrue(message="There is no Adm1 like this", payload={"propertyPath"="adm1"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'There is no Adm1 like this', payload: ['propertyPath' => 'adm1'], groups: ['household', 'member'])]
     public function isValidAdm1(): bool
     {
         if (!$this->adm1) {
@@ -524,7 +440,7 @@ class ImportLine
 
         $locationsArray = [EnumTrait::normalizeValue($this->adm1)];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -532,9 +448,7 @@ class ImportLine
         return null !== $location;
     }
 
-    /**
-     * @Assert\IsTrue(message="There is no Adm2 in this location", payload={"propertyPath"="adm2"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'There is no Adm2 in this location', payload: ['propertyPath' => 'adm2'], groups: ['household', 'member'])]
     public function isValidAdm2(): bool
     {
         if (!$this->adm2) {
@@ -543,7 +457,7 @@ class ImportLine
 
         $locationsArray = [EnumTrait::normalizeValue($this->adm1), EnumTrait::normalizeValue($this->adm2)];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -551,9 +465,7 @@ class ImportLine
         return null !== $location;
     }
 
-    /**
-     * @Assert\IsTrue(message="There is no Adm3 in this location", payload={"propertyPath"="adm3"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'There is no Adm3 in this location', payload: ['propertyPath' => 'adm3'], groups: ['household', 'member'])]
     public function isValidAdm3(): bool
     {
         if (!$this->adm3) {
@@ -566,7 +478,7 @@ class ImportLine
             EnumTrait::normalizeValue($this->adm3),
         ];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -574,9 +486,7 @@ class ImportLine
         return null !== $location;
     }
 
-    /**
-     * @Assert\IsTrue(message="There is no Adm4 in this location", payload={"propertyPath"="adm4"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'There is no Adm4 in this location', payload: ['propertyPath' => 'adm4'], groups: ['household', 'member'])]
     public function isValidAdm4(): bool
     {
         if (!$this->adm4) {
@@ -590,7 +500,7 @@ class ImportLine
             EnumTrait::normalizeValue($this->adm4),
         ];
 
-        $location = $this->entityManager->getRepository(Location::class)->getByNormalizedNames(
+        $location = $this->locationRepository->getByNormalizedNames(
             $this->countryIso3,
             $locationsArray
         );
@@ -598,9 +508,7 @@ class ImportLine
         return null !== $location;
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="primaryIdType"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Number is filled, ID type has to be filled too.', payload: ['propertyPath' => 'primaryIdType'], groups: ['household', 'member'])]
     public function isPrimaryIdTypeCorrectlyFilled(): bool
     {
         if (empty($this->primaryIdNumber)) {
@@ -610,9 +518,7 @@ class ImportLine
         return !empty($this->primaryIdType);
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Type is filled, ID number has to be filled too.', payload: ['propertyPath' => 'primaryIdNumber'], groups: ['household', 'member'])]
     public function isIdNumberCorrectlyFilled(): bool
     {
         if (empty($this->primaryIdType)) {
@@ -622,9 +528,7 @@ class ImportLine
         return !empty($this->primaryIdNumber);
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Number is filled, ID type has to be filled too.', payload: ['propertyPath' => 'secondaryIdType'], groups: ['household', 'member'])]
     public function isSecondaryIdTypeCorrectlyFilled(): bool
     {
         if (empty($this->secondaryIdNumber)) {
@@ -634,9 +538,7 @@ class ImportLine
         return !empty($this->secondaryIdType);
     }
 
-    /**
-     * @Assert\IsTrue(message="Has to be different then Primary ID type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Has to be different then Primary ID type.', payload: ['propertyPath' => 'secondaryIdType'], groups: ['household', 'member'])]
     public function isSecondaryIdTypeDuplicity(): bool
     {
         if (empty($this->secondaryIdType)) {
@@ -646,9 +548,7 @@ class ImportLine
         return $this->primaryIdType !== $this->secondaryIdType;
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Type is filled, ID number has to be filled too.', payload: ['propertyPath' => 'secondaryIdNumber'], groups: ['household', 'member'])]
     public function isSecondaryIdNumberCorrectlyFilled(): bool
     {
         if (empty($this->secondaryIdType)) {
@@ -658,9 +558,7 @@ class ImportLine
         return !empty($this->secondaryIdNumber);
     }
 
-    /**
-     * @Assert\IsTrue(message="Primary ID has to be filled before Secondary ID.", payload={"propertyPath"="primaryIdNumber"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Primary ID has to be filled before Secondary ID.', payload: ['propertyPath' => 'primaryIdNumber'], groups: ['household', 'member'])]
     public function isPrimaryIdFilledWithSecondaryId(): bool
     {
         if (empty($this->secondaryIdNumber)) {
@@ -669,9 +567,7 @@ class ImportLine
         return !empty($this->primaryIdNumber);
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Number is filled, ID type has to be filled too.", payload={"propertyPath"="tertiaryIdType"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Number is filled, ID type has to be filled too.', payload: ['propertyPath' => 'tertiaryIdType'], groups: ['household', 'member'])]
     public function isTertiaryIdTypeCorrectlyFilled(): bool
     {
         if (empty($this->tertiaryIdNumber)) {
@@ -681,9 +577,7 @@ class ImportLine
         return !empty($this->tertiaryIdType);
     }
 
-    /**
-     * @Assert\IsTrue(message="Has to be different then Primary ID type or Secondary type.", payload={"propertyPath"="secondaryIdType"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Has to be different then Primary ID type or Secondary type.', payload: ['propertyPath' => 'secondaryIdType'], groups: ['household', 'member'])]
     public function isTertiaryIdTypeDuplicity(): bool
     {
         if (empty($this->tertiaryIdType)) {
@@ -693,9 +587,7 @@ class ImportLine
         return $this->primaryIdType !== $this->tertiaryIdType && $this->secondaryIdType !== $this->tertiaryIdType;
     }
 
-    /**
-     * @Assert\IsTrue(message="When ID Type is filled, ID number has to be filled too.", payload={"propertyPath"="tertiaryIdNumber"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'When ID Type is filled, ID number has to be filled too.', payload: ['propertyPath' => 'tertiaryIdNumber'], groups: ['household', 'member'])]
     public function isTertiaryIdNumberCorrectlyFilled(): bool
     {
         if (empty($this->tertiaryIdType)) {
@@ -705,9 +597,7 @@ class ImportLine
         return !empty($this->tertiaryIdNumber);
     }
 
-    /**
-     * @Assert\IsTrue(message="Secondary ID has to be filled before Tertiary ID.", payload={"propertyPath"="secondaryIdNumber"}, groups={"household", "member"})
-     */
+    #[Assert\IsTrue(message: 'Secondary ID has to be filled before Tertiary ID.', payload: ['propertyPath' => 'secondaryIdNumber'], groups: ['household', 'member'])]
     public function isSecondaryIdFilledWithTertiaryId(): bool
     {
         if (empty($this->tertiaryIdNumber)) {
@@ -717,10 +607,9 @@ class ImportLine
     }
 
     /**
-     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.", payload={"propertyPath"="dateOfBirth"}, groups={"household", "member"})
-     * @return bool
      * @throws Exception
      */
+    #[Assert\IsTrue(message: 'Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.', payload: ['propertyPath' => 'dateOfBirth'], groups: ['household', 'member'])]
     public function isDateOfBirthValid(): bool
     {
         if (null === $this->dateOfBirth) {
@@ -734,10 +623,7 @@ class ImportLine
         return true;
     }
 
-    /**
-     * @Assert\IsTrue(message="Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.", payload={"propertyPath"="supportDateReceived"}, groups={"household", "member"})
-     * @return bool
-     */
+    #[Assert\IsTrue(message: 'Date is not valid. Use Excel Date format or string in format DD-MM-YYYY.', payload: ['propertyPath' => 'supportDateReceived'], groups: ['household', 'member'])]
     public function isSupportDateReceivedValid(): bool
     {
         if (null === $this->supportDateReceived) {
@@ -751,51 +637,31 @@ class ImportLine
         return true;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getDateOfBirth(): DateTime
     {
         return ImportDateConverter::toDatetime($this->dateOfBirth);
     }
 
-    /**
-     * @return DateTime
-     */
     public function getSupportDateReceived(): DateTime
     {
         return ImportDateConverter::toDatetime($this->supportDateReceived);
     }
 
-    /**
-     * @return bool
-     */
     public function hasPrimaryId(): bool
     {
         return $this->hasId(0);
     }
 
-    /**
-     * @return bool
-     */
     public function hasSecondaryId(): bool
     {
         return $this->hasId(1);
     }
 
-    /**
-     * @return bool
-     */
     public function hasTertiaryId(): bool
     {
         return $this->hasId(2);
     }
 
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
     public function hasId(int $index): bool
     {
         $ids = $this->getIds();
@@ -828,9 +694,6 @@ class ImportLine
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getFilledIds(): array
     {
         $ids = $this->getIds();
@@ -842,5 +705,27 @@ class ImportLine
         }
 
         return $filledIds;
+    }
+
+    private function isOneFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (!empty($item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isAllFromListNonEmpty(array $list): bool
+    {
+        foreach ($list as $item) {
+            if (empty($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

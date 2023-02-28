@@ -62,7 +62,6 @@ services:
             RDS_USERNAME: bms_user
             RDS_PASSWORD: aA123
             HID_SECRET: xxx
-            GOOGLE_CLIENT: xxx
             MOBILE_MASTER_KEY: xxx
             MOBILE_MASTER_KEY_VERSION: xxx
             JWT_PASSPHRASE: xxx
@@ -94,7 +93,7 @@ services:
         networks:
             - backend
             - database
-        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100"
+        entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=2000"
         environment:
             ENVIRONMENT: local
             XDEBUG_CONFIG: 'remote_host=172.17.0.1'
@@ -111,7 +110,6 @@ services:
             RDS_USERNAME: bms_user
             RDS_PASSWORD: aA123
             HID_SECRET: xxx
-            GOOGLE_CLIENT: xxx
             MOBILE_MASTER_KEY: xxx
             MOBILE_MASTER_KEY_VERSION: xxx
             JWT_PASSPHRASE: xxx

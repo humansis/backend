@@ -32,10 +32,7 @@ class StorageAwsTest extends KernelTestCase
      */
     private static $aws;
 
-    /**
-     * @var string
-     */
-    private static $filePath;
+    private static string $filePath;
 
     public static function setUpBeforeClass(): void
     {
@@ -43,8 +40,8 @@ class StorageAwsTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        self::$awsStorageFactory = $kernel->getContainer()->get(AwsStorageFactory::class);
-        self::$awsConfig = ($kernel->getContainer()->get(LogsStorageConfigFactory::class))->create();
+        self::$awsStorageFactory = self::getContainer()->get(AwsStorageFactory::class);
+        self::$awsConfig = (self::getContainer()->get(LogsStorageConfigFactory::class))->create();
         self::$aws = self::$awsStorageFactory->create(self::$awsConfig);
         self::$filePath = self::FOLDER . '/' . self::FILE_NAME;
     }

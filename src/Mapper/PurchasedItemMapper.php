@@ -11,8 +11,7 @@ use Serializer\MapperInterface;
 
 class PurchasedItemMapper implements MapperInterface
 {
-    /** @var PurchasedItem */
-    private $object;
+    private ?\Entity\PurchasedItem $object = null;
 
     /**
      * {@inheritdoc}
@@ -35,7 +34,7 @@ class PurchasedItemMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . PurchasedItem::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . PurchasedItem::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -86,7 +85,7 @@ class PurchasedItemMapper implements MapperInterface
 
     public function getDatePurchase(): string
     {
-        return $this->object->getDatePurchase()->format(DateTimeInterface::ISO8601);
+        return $this->object->getDatePurchase()->format(DateTimeInterface::ATOM);
     }
 
     public function getCommodityId(): int

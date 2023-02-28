@@ -5,51 +5,29 @@ namespace InputType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"UserCreateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['UserCreateInputType', 'Strict'])]
 class UserCreateInputType implements InputTypeInterface
 {
-    /**
-     * @var string $email
-     *
-     * @Assert\Length(max="180")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     */
-    private $email;
+    #[Assert\Length(max: 180)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    private ?string $email = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    private ?string $password = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $phonePrefix = null;
+
+    #[Assert\Length(min: 2, max: 45)]
+    #[Assert\Type('string')]
+    private ?string $phoneNumber = null;
 
     /**
-     * @var string $password
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     */
-    private $password;
-
-    /**
-     * @var string|null $phonePrefix
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $phonePrefix;
-
-    /**
-     * @var int|null $phoneNumber
-     *
-     * @Assert\Length(min="2", max="45")
-     * @Assert\Type("string")
-     */
-    private $phoneNumber;
-
-    /**
-     * @var array|null $countries
-     *
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"}),
@@ -58,22 +36,14 @@ class UserCreateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $countries;
+    #[Assert\Type('array')]
+    private ?array $countries = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    private ?string $language = null;
 
     /**
-     * @var string|null $language
-     *
-     * @Assert\Length(max="255")
-     * @Assert\Type("string")
-     */
-    private $language;
-
-    /**
-     * @var array $roles
-     *
-     * @Assert\Type("array")
-     * @Assert\NotBlank
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -81,12 +51,11 @@ class UserCreateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $roles;
+    #[Assert\Type('array')]
+    #[Assert\NotBlank]
+    private ?array $roles = null;
 
     /**
-     * @var array|null $projectIds
-     *
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
@@ -94,15 +63,12 @@ class UserCreateInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
-    private $projectIds;
+    #[Assert\Type('array')]
+    private ?array $projectIds = null;
 
-    /**
-     * @var bool $changePassword
-     *
-     * @Assert\Type("boolean")
-     * @Assert\NotNull
-     */
-    private $changePassword;
+    #[Assert\Type('boolean')]
+    #[Assert\NotNull]
+    private ?bool $changePassword = null;
 
     /**
      * @return string
@@ -224,9 +190,6 @@ class UserCreateInputType implements InputTypeInterface
         return $this->projectIds;
     }
 
-    /**
-     * @param array|null $projectIds
-     */
     public function setProjectIds(?array $projectIds)
     {
         $this->projectIds = $projectIds;

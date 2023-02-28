@@ -12,8 +12,7 @@ use Serializer\MapperInterface;
 
 class DistributeReliefPackagesMapper implements MapperInterface
 {
-    /** @var DistributeReliefPackagesOutputType */
-    private $object;
+    private ?\OutputType\Assistance\DistributeReliefPackagesOutputType $object = null;
 
     /**
      * {@inheritdoc}
@@ -37,9 +36,7 @@ class DistributeReliefPackagesMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . DistributeReliefPackagesOutputType::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . DistributeReliefPackagesOutputType::class . ', ' . $object::class . ' given.'
         );
     }
 

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class EmptyCountrySpecifics extends Constraint
 {
-    public $message = 'This value should be empty.';
+    public string $message = 'This value should be empty.';
 
     public function __construct($options = null)
     {

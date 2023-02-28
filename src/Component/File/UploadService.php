@@ -10,25 +10,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadService
 {
-    /** @var FilesystemMap */
-    private $filesystemMap;
-
-    /** @var string */
-    private $bucketName;
-
-    /** @var string */
-    private $region;
-
-    public function __construct(FilesystemMap $filesystemMap, string $bucketName, string $region)
+    public function __construct(private readonly FilesystemMap $filesystemMap, private readonly string $bucketName, private readonly string $region)
     {
-        $this->filesystemMap = $filesystemMap;
-        $this->bucketName = $bucketName;
-        $this->region = $region;
     }
 
     /**
-     * @param UploadedFile $uploadedFile
-     * @param string $filesystem
      *
      * @return string URL of file
      *

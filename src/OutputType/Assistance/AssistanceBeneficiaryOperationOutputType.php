@@ -12,50 +12,22 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
 {
     private $documentNumbers;
 
-    private $documentType;
+    private array $notFound = [];
 
-    /**
-     * @var array
-     */
-    private $notFound = [];
+    private array $success = [];
 
-    /**
-     * @var array
-     */
-    private $success = [];
+    private array $alreadyProcessed = [];
 
-    /**
-     * @var array
-     */
-    private $alreadyRemoved = [];
+    private array $failed = [];
 
-    /**
-     * @var array
-     */
-    private $failed = [];
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /**
-     * @param array|null $documentNumbers
-     * @param string|null $documentType
-     */
     public function __construct(
-        TranslatorInterface $translator,
+        private readonly TranslatorInterface $translator,
         array $documentNumbers = [],
-        string $documentType = null
+        private readonly ?string $documentType = null
     ) {
-        $this->documentNumbers = array_map(function ($number) {
-            return strtolower($number);
-        }, $documentNumbers);
-        $this->documentType = $documentType;
-        $this->translator = $translator;
+        $this->documentNumbers = array_map(fn($number) => strtolower((string) $number), $documentNumbers);
     }
 
-    /**
-     * @return array
-     */
     public function getNotFound(): array
     {
         return $this->notFound;
@@ -74,7 +46,7 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'documentNumber' => $number,
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
-                . $this->translator->trans('was not found in the assistance.'),
+                . $this->translator->trans('was not found.'),
         ];
 
         return $this;
@@ -88,17 +60,12 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
-                . $this->translator->trans('was not found in the assistance.'),
+                . $this->translator->trans('was not found.'),
         ];
 
         return $this;
     }
 
-    /**
-     * @param array $notFound
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setNotFound(array $notFound): AssistanceBeneficiaryOperationOutputType
     {
         $this->notFound = $notFound;
@@ -106,19 +73,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getSuccess(): array
     {
         return $this->success;
     }
 
-    /**
-     * @param array $success
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setSuccess(array $success): AssistanceBeneficiaryOperationOutputType
     {
         $this->success = $success;
@@ -144,19 +103,11 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getFailed(): array
     {
         return $this->failed;
     }
 
-    /**
-     * @param array $failed
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
     public function setFailed(array $failed): AssistanceBeneficiaryOperationOutputType
     {
         $this->failed = $failed;
@@ -171,12 +122,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     * @param string $message
-     *
-     * @return $this
-     */
     public function addBeneficiaryFailed(
         Beneficiary $beneficiary,
         string $message
@@ -191,13 +136,6 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return $this;
     }
 
-    /**
-     * @param Beneficiary $beneficiary
-     * @param array|null $documentNumbers
-     * @param string|null $documentType
-     *
-     * @return string|null
-     */
     private function getInputIdNumber(Beneficiary $beneficiary, ?array $documentNumbers, ?string $documentType): ?string
     {
         if ($documentNumbers === null || $documentType === null) {
@@ -213,18 +151,15 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
         return null;
     }
 
-    /**
-     * @return array
-     */
-    public function getAlreadyRemoved(): array
+    public function getAlreadyProcessed(): array
     {
-        return $this->alreadyRemoved;
+        return $this->alreadyProcessed;
     }
 
-    public function addBeneficiaryAlreadyRemoved(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
+    public function addBeneficiaryAlreadyProcessed(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
         $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
-        $this->alreadyRemoved[] = [
+        $this->alreadyProcessed[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
         ];
@@ -235,27 +170,22 @@ class AssistanceBeneficiaryOperationOutputType implements InputTypeInterface
     public function addBeneficiaryMismatch(Beneficiary $beneficiary): AssistanceBeneficiaryOperationOutputType
     {
         $number = $this->getInputIdNumber($beneficiary, $this->documentNumbers, $this->documentType);
-        $this->notFound[] = [
+        $this->failed[] = [
             'documentNumber' => $number,
             'beneficiaryId' => $beneficiary->getId(),
             'message' => $this->translator->trans('Beneficiary')
                 . " ({$this->documentType} '{$number}') "
                 . $this->translator->trans(
-                    'cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.'
+                    'cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.'
                 ),
         ];
 
         return $this;
     }
 
-    /**
-     * @param array $alreadyRemoved
-     *
-     * @return AssistanceBeneficiaryOperationOutputType
-     */
-    public function setAlreadyRemoved(array $alreadyRemoved): AssistanceBeneficiaryOperationOutputType
+    public function setAlreadyProcessed(array $alreadyProcessed): AssistanceBeneficiaryOperationOutputType
     {
-        $this->alreadyRemoved = $alreadyRemoved;
+        $this->alreadyProcessed = $alreadyProcessed;
 
         return $this;
     }

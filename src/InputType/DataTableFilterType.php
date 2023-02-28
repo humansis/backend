@@ -8,13 +8,13 @@ class DataTableFilterType implements InputTypeInterface
 {
     /**
      * @var string
-     * @Assert\NotBlank()
      */
+    #[Assert\NotBlank]
     public $category;
 
     /**
      * @var string|array
-     * @Assert\NotBlank()
      */
+    #[Assert\NotBlank]
     public $filter;
 }

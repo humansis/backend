@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
-use DateTimeInterface;
+use DateTime;
 use Enum\HouseholdAssets;
 use Enum\HouseholdShelterStatus;
 use Enum\HouseholdSupportReceivedType;
@@ -18,19 +18,17 @@ use InputType\Beneficiary\PhoneInputType;
 use InputType\Helper\EnumsBuilder;
 use Exception\MissingHouseholdHeadException;
 use Request\InputTypeInterface;
-use Utils\DateTime\Iso8601Converter;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Validator\Constraints\Iso8601;
 use Enum\Livelihood;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequenceProvider()
- */
+#[Assert\GroupSequenceProvider]
 class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProviderInterface
 {
-    public function getGroupSequence()
+    public function getGroupSequence(): array | GroupSequence
     {
         $commonSequence = [
             'HouseholdUpdateInputType',
@@ -61,26 +59,22 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @deprecated
      */
-    private $iso3;
+    private string $iso3;
 
     /**
      * @Enum(enumClass="Enum\Livelihood")
      */
-    private $livelihood;
+    private ?string $livelihood = null;
 
-    /**
-     * @Assert\Type({"array", "string"})
-     */
-    private $assets;
+    #[Assert\Type(['array', 'string'])]
+    private array|string|null $assets = null;
 
     /**
      * @Enum(enumClass="Enum\HouseholdShelterStatus")
      */
-    private $shelterStatus;
+    private int|string|null $shelterStatus = null;
 
     /**
-     * @Assert\Type("array")
-     * @Assert\NotNull
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("integer", groups={"Strict"})
@@ -88,186 +82,121 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
      *     groups={"Strict"}
      * )
      */
-    private $projectIds;
+    #[Assert\Type('array')]
+    #[Assert\NotNull]
+    private array $projectIds;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $notes;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $notes = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $longitude;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $longitude = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $latitude;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $latitude = null;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $beneficiaries = []; // todo validate only one head is allowed
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $beneficiaries = [];
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $income;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $income = null;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $foodConsumptionScore;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $foodConsumptionScore = null;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $copingStrategiesIndex;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $copingStrategiesIndex = null;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $debtLevel;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $debtLevel = null;
 
     /**
      * @Iso8601
      */
-    private $supportDateReceived;
+    private ?DateTime $supportDateReceived = null;
 
-    /**
-     * @Assert\Type({"array", "string"})
-     */
-    private $supportReceivedTypes = [];
+    #[Assert\Type(['array', 'string'])]
+    private array|string|null $supportReceivedTypes = [];
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $supportOrganizationName;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $supportOrganizationName = null;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $incomeSpentOnFood;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $incomeSpentOnFood = null;
 
-    /**
-     * @Assert\Type("integer")
-     * @Assert\GreaterThanOrEqual("0")
-     */
-    private $houseIncome;
+    #[Assert\Type('integer')]
+    #[Assert\GreaterThanOrEqual(0)]
+    private ?int $houseIncome = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
-    private $enumeratorName;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    private ?string $enumeratorName = null;
 
-    /**
-     * @var ResidenceAddressInputType
-     * @Assert\Valid
-     */
-    private $residenceAddress;
+    #[Assert\Valid]
+    private ?ResidenceAddressInputType $residenceAddress = null;
 
-    /**
-     * @var TemporarySettlementAddressInputType
-     * @Assert\Valid
-     */
-    private $temporarySettlementAddress;
+    #[Assert\Valid]
+    private ?TemporarySettlementAddressInputType $temporarySettlementAddress = null;
 
-    /**
-     * @var CampAddressInputType
-     * @Assert\Valid
-     */
-    private $campAddress;
+    #[Assert\Valid]
+    private ?CampAddressInputType $campAddress = null;
 
-    /**
-     * @Assert\Type("array")
-     * @Assert\Valid
-     */
-    private $countrySpecificAnswers = [];
+    #[Assert\Type('array')]
+    #[Assert\Valid]
+    private array $countrySpecificAnswers = [];
 
-    /**
-     * @Assert\Type("string")
-     */
-    private $proxyEnGivenName;
+    #[Assert\Type('string')]
+    private ?string $proxyEnGivenName = null;
 
-    /**
-     * @Assert\Type("string")
-     */
-    private $proxyEnFamilyName;
+    #[Assert\Type('string')]
+    private ?string $proxyEnFamilyName = null;
 
-    /**
-     * @Assert\Type("string")
-     */
-    private $proxyEnParentsName;
+    #[Assert\Type('string')]
+    private ?string $proxyEnParentsName = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(groups={"Proxy"})
-     */
-    private $proxyLocalGivenName;
+    #[Assert\Type('string')]
+    #[Assert\NotBlank(groups: ['Proxy'])]
+    private ?string $proxyLocalGivenName = null;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank(groups={"Proxy"})
-     */
-    private $proxyLocalFamilyName;
+    #[Assert\Type('string')]
+    #[Assert\NotBlank(groups: ['Proxy'])]
+    private ?string $proxyLocalFamilyName = null;
 
-    /**
-     * @Assert\Type("string")
-     */
-    private $proxyLocalParentsName;
+    #[Assert\Type('string')]
+    private ?string $proxyLocalParentsName = null;
 
-    /**
-     * @var NationalIdCardInputType|null
-     * @Assert\Valid
-     */
-    private $proxyNationalIdCard;
+    #[Assert\Valid]
+    private ?NationalIdCardInputType $proxyNationalIdCard = null;
 
-    /**
-     * @var PhoneInputType|null
-     * @Assert\Valid
-     */
-    private $proxyPhone;
+    #[Assert\Valid]
+    private ?PhoneInputType $proxyPhone = null;
 
-    /**
-     * @return string
-     */
-    public function getIso3()
+    public function getIso3(): string
     {
         return $this->iso3;
     }
 
-    /**
-     * @param string $iso3
-     */
-    public function setIso3($iso3)
+    public function setIso3(string $iso3): void
     {
         $this->iso3 = $iso3;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getLivelihood()
+    public function getLivelihood(): ?string
     {
         return $this->livelihood ? Livelihood::valueFromAPI($this->livelihood) : null;
     }
 
-    /**
-     * @param string|null $livelihood
-     */
-    public function setLivelihood($livelihood)
+    public function setLivelihood(?string $livelihood): void
     {
         $this->livelihood = $livelihood;
     }
@@ -293,23 +222,17 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @param int[] $assets
      */
-    public function setAssets($assets)
+    public function setAssets(array|string|null $assets): void
     {
         $this->assets = $assets;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getShelterStatus()
+    public function getShelterStatus(): ?string
     {
         return $this->shelterStatus ? HouseholdShelterStatus::valueFromAPI($this->shelterStatus) : null;
     }
 
-    /**
-     * @param int|string|null $shelterStatus
-     */
-    public function setShelterStatus($shelterStatus)
+    public function setShelterStatus(int | string | null $shelterStatus): void
     {
         $this->shelterStatus = $shelterStatus;
     }
@@ -317,63 +240,42 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @return int[]
      */
-    public function getProjectIds()
+    public function getProjectIds(): array
     {
         return $this->projectIds;
     }
 
-    /**
-     * @param int[] $projectIds
-     */
-    public function setProjectIds($projectIds)
+    public function setProjectIds(array $projectIds): void
     {
         $this->projectIds = $projectIds;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
 
-    /**
-     * @param string|null $notes
-     */
-    public function setNotes($notes)
+    public function setNotes(?string $notes): void
     {
         $this->notes = $notes;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getLongitude()
+    public function getLongitude(): ?string
     {
         return $this->longitude;
     }
 
-    /**
-     * @param string|null $longitude
-     */
-    public function setLongitude($longitude)
+    public function setLongitude(?string $longitude): void
     {
         $this->longitude = $longitude;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getLatitude()
+    public function getLatitude(): ?string
     {
         return $this->latitude;
     }
 
-    /**
-     * @param string|null $latitude
-     */
-    public function setLatitude($latitude)
+    public function setLatitude(?string $latitude): void
     {
         $this->latitude = $latitude;
     }
@@ -381,117 +283,79 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @return BeneficiaryInputType[]
      */
-    public function getBeneficiaries()
+    public function getBeneficiaries(): array
     {
         return $this->beneficiaries;
     }
 
-    /**
-     * @param BeneficiaryInputType $beneficiary
-     */
-    public function addBeneficiary(BeneficiaryInputType $beneficiary)
+    public function addBeneficiary(BeneficiaryInputType $beneficiary): void
     {
         $this->beneficiaries[] = $beneficiary;
     }
 
-    /**
-     * @param BeneficiaryInputType $beneficiary
-     */
-    public function removeBeneficiary(BeneficiaryInputType $beneficiary)
+    public function removeBeneficiary(BeneficiaryInputType $beneficiary): void
     {
         // method must be declared to fullfill normalizer requirements
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIncome()
+    public function getIncome(): ?int
     {
         return $this->income;
     }
 
-    /**
-     * @param int|null $income
-     */
-    public function setIncome($income)
+    public function setIncome(?int $income): void
     {
         $this->income = $income;
     }
 
     /**
      * Backward compatibility for API
-     *
-     * @param int|null $income
      */
-    public function setIncomeLevel($income)
+    public function setIncomeLevel(?int $income): void
     {
         $this->income = $income;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getFoodConsumptionScore()
+    public function getFoodConsumptionScore(): ?int
     {
         return $this->foodConsumptionScore;
     }
 
-    /**
-     * @param int|null $foodConsumptionScore
-     */
-    public function setFoodConsumptionScore($foodConsumptionScore)
+    public function setFoodConsumptionScore(?int $foodConsumptionScore): void
     {
         $this->foodConsumptionScore = $foodConsumptionScore;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getCopingStrategiesIndex()
+    public function getCopingStrategiesIndex(): ?int
     {
         return $this->copingStrategiesIndex;
     }
 
-    /**
-     * @param int|null $copingStrategiesIndex
-     */
-    public function setCopingStrategiesIndex($copingStrategiesIndex)
+    public function setCopingStrategiesIndex(?int $copingStrategiesIndex): void
     {
         $this->copingStrategiesIndex = $copingStrategiesIndex;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getDebtLevel()
+    public function getDebtLevel(): ?int
     {
         return $this->debtLevel;
     }
 
-    /**
-     * @param int|null $debtLevel
-     */
-    public function setDebtLevel($debtLevel)
+    public function setDebtLevel(?int $debtLevel): void
     {
         $this->debtLevel = $debtLevel;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
-    public function getSupportDateReceived(): ?DateTimeInterface
+    public function getSupportDateReceived(): ?DateTime
     {
         if (!$this->supportDateReceived) {
             return null;
         }
 
-        return Iso8601Converter::toDateTime($this->supportDateReceived) ?: null;
+        return $this->supportDateReceived;
     }
 
-    /**
-     * @param string|null $supportDateReceived
-     */
-    public function setSupportDateReceived($supportDateReceived)
+    public function setSupportDateReceived(?DateTime $supportDateReceived): void
     {
         $this->supportDateReceived = $supportDateReceived;
     }
@@ -514,122 +378,81 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
         return $enumBuilder->buildInputValues($this->supportReceivedTypes);
     }
 
-    /**
-     * @param array|null $supportReceivedTypes
-     */
-    public function setSupportReceivedTypes($supportReceivedTypes)
+    public function setSupportReceivedTypes(array|string|null $supportReceivedTypes): void
     {
+        if (is_string($supportReceivedTypes)) {
+            $supportReceivedTypes = explode(',', $supportReceivedTypes);
+        }
+
         $this->supportReceivedTypes = $supportReceivedTypes;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getSupportOrganizationName()
+    public function getSupportOrganizationName(): ?string
     {
         return $this->supportOrganizationName;
     }
 
-    /**
-     * @param string|null $supportOrganizationName
-     */
-    public function setSupportOrganizationName($supportOrganizationName)
+    public function setSupportOrganizationName(?string $supportOrganizationName): void
     {
         $this->supportOrganizationName = $supportOrganizationName;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIncomeSpentOnFood()
+    public function getIncomeSpentOnFood(): ?int
     {
         return $this->incomeSpentOnFood;
     }
 
-    /**
-     * @param int|null $incomeSpentOnFood
-     */
-    public function setIncomeSpentOnFood($incomeSpentOnFood)
+    public function setIncomeSpentOnFood(?int $incomeSpentOnFood): void
     {
         $this->incomeSpentOnFood = $incomeSpentOnFood;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getHouseIncome()
+    public function getHouseIncome(): ?int
     {
         return $this->houseIncome;
     }
 
-    /**
-     * @param int|null $houseIncome
-     */
-    public function setHouseIncome($houseIncome)
+    public function setHouseIncome(?int $houseIncome): void
     {
         $this->houseIncome = $houseIncome;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getEnumeratorName()
+    public function getEnumeratorName(): ?string
     {
         return $this->enumeratorName;
     }
 
-    /**
-     * @param string|null $enumeratorName
-     */
-    public function setEnumeratorName($enumeratorName)
+    public function setEnumeratorName(?string $enumeratorName): void
     {
         $this->enumeratorName = $enumeratorName;
     }
 
-    /**
-     * @return ResidenceAddressInputType|null
-     */
-    public function getResidenceAddress()
+    public function getResidenceAddress(): ?ResidenceAddressInputType
     {
         return $this->residenceAddress;
     }
 
-    /**
-     * @param ResidenceAddressInputType|null $address
-     */
-    public function setResidenceAddress(ResidenceAddressInputType $address)
+    public function setResidenceAddress(?ResidenceAddressInputType $address): void
     {
         $this->residenceAddress = $address;
     }
 
-    /**
-     * @return TemporarySettlementAddressInputType|null
-     */
-    public function getTemporarySettlementAddress()
+    public function getTemporarySettlementAddress(): ?TemporarySettlementAddressInputType
     {
         return $this->temporarySettlementAddress;
     }
 
-    /**
-     * @param TemporarySettlementAddressInputType|null $address
-     */
-    public function setTemporarySettlementAddress(TemporarySettlementAddressInputType $address)
+    public function setTemporarySettlementAddress(?TemporarySettlementAddressInputType $address): void
     {
         $this->temporarySettlementAddress = $address;
     }
 
-    /**
-     * @return CampAddressInputType|null
-     */
-    public function getCampAddress()
+    public function getCampAddress(): ?CampAddressInputType
     {
         return $this->campAddress;
     }
 
-    /**
-     * @param CampAddressInputType|null $address
-     */
-    public function setCampAddress(CampAddressInputType $address)
+    public function setCampAddress(?CampAddressInputType $address): void
     {
         $this->campAddress = $address;
     }
@@ -637,159 +460,105 @@ class HouseholdUpdateInputType implements InputTypeInterface, GroupSequenceProvi
     /**
      * @return CountrySpecificsAnswerInputType[]
      */
-    public function getCountrySpecificAnswers()
+    public function getCountrySpecificAnswers(): array
     {
         return $this->countrySpecificAnswers;
     }
 
-    /**
-     * @param CountrySpecificsAnswerInputType $inputType
-     */
-    public function addCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType)
+    public function addCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType): void
     {
         $this->countrySpecificAnswers[] = $inputType;
     }
 
-    /**
-     * @param CountrySpecificsAnswerInputType $beneficiary
-     */
-    public function removeCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType)
+    public function removeCountrySpecificAnswer(CountrySpecificsAnswerInputType $inputType): void
     {
         // method must be declared to fullfill normalizer requirements
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyEnGivenName()
+    public function getProxyEnGivenName(): ?string
     {
         return $this->proxyEnGivenName;
     }
 
-    /**
-     * @param string|null $proxyEnGivenName
-     */
-    public function setProxyEnGivenName($proxyEnGivenName)
+    public function setProxyEnGivenName(?string $proxyEnGivenName): void
     {
         $this->proxyEnGivenName = $proxyEnGivenName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyEnFamilyName()
+    public function getProxyEnFamilyName(): ?string
     {
         return $this->proxyEnFamilyName;
     }
 
-    /**
-     * @param string|null $proxyEnFamilyName
-     */
-    public function setProxyEnFamilyName($proxyEnFamilyName)
+    public function setProxyEnFamilyName(?string $proxyEnFamilyName): void
     {
         $this->proxyEnFamilyName = $proxyEnFamilyName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyEnParentsName()
+    public function getProxyEnParentsName(): ?string
     {
         return $this->proxyEnParentsName;
     }
 
-    /**
-     * @param string|null $proxyEnParentsName
-     */
-    public function setProxyEnParentsName($proxyEnParentsName)
+    public function setProxyEnParentsName(?string $proxyEnParentsName): void
     {
         $this->proxyEnParentsName = $proxyEnParentsName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyLocalGivenName()
+    public function getProxyLocalGivenName(): ?string
     {
         return $this->proxyLocalGivenName;
     }
 
-    /**
-     * @param string|null $proxyLocalGivenName
-     */
-    public function setProxyLocalGivenName($proxyLocalGivenName)
+    public function setProxyLocalGivenName(?string $proxyLocalGivenName): void
     {
         $this->proxyLocalGivenName = $proxyLocalGivenName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyLocalFamilyName()
+    public function getProxyLocalFamilyName(): ?string
     {
         return $this->proxyLocalFamilyName;
     }
 
-    /**
-     * @param string|null $proxyLocalFamilyName
-     */
-    public function setProxyLocalFamilyName($proxyLocalFamilyName)
+    public function setProxyLocalFamilyName(?string $proxyLocalFamilyName): void
     {
         $this->proxyLocalFamilyName = $proxyLocalFamilyName;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getProxyLocalParentsName()
+    public function getProxyLocalParentsName(): ?string
     {
         return $this->proxyLocalParentsName;
     }
 
-    /**
-     * @param string|null $proxyLocalParentsName
-     */
-    public function setProxyLocalParentsName($proxyLocalParentsName)
+    public function setProxyLocalParentsName(?string $proxyLocalParentsName): void
     {
         $this->proxyLocalParentsName = $proxyLocalParentsName;
     }
 
-    /**
-     * @return NationalIdCardInputType|null
-     */
-    public function getProxyNationalIdCard()
+    public function getProxyNationalIdCard(): ?NationalIdCardInputType
     {
         return $this->proxyNationalIdCard;
     }
 
-    /**
-     * @param NationalIdCardInputType|null $proxyNationalIdCard
-     */
-    public function setProxyNationalIdCard(?NationalIdCardInputType $proxyNationalIdCard)
+    public function setProxyNationalIdCard(?NationalIdCardInputType $proxyNationalIdCard): void
     {
         $this->proxyNationalIdCard = $proxyNationalIdCard;
     }
 
-    /**
-     * @return PhoneInputType|null
-     */
-    public function getProxyPhone()
+    public function getProxyPhone(): ?PhoneInputType
     {
         return $this->proxyPhone;
     }
 
-    /**
-     * @param PhoneInputType|null $proxyPhone
-     */
-    public function setProxyPhone(?PhoneInputType $proxyPhone)
+    public function setProxyPhone(?PhoneInputType $proxyPhone): void
     {
         $this->proxyPhone = $proxyPhone;
     }
 
     /**
-     * @Assert\EqualTo(1)
      * @return int
      */
+    #[Assert\EqualTo(1)]
     public function getBeneficiaryHeadCount(): int
     {
         $headCount = 0;

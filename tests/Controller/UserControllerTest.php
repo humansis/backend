@@ -10,11 +10,9 @@ use Tests\BMSServiceTestCase;
 
 class UserControllerTest extends BMSServiceTestCase
 {
-    /** @var string */
-    private $username;
+    private readonly string $username;
 
-    /** @var string */
-    private $email;
+    private readonly string $email;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -34,7 +32,7 @@ class UserControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -48,7 +46,7 @@ class UserControllerTest extends BMSServiceTestCase
             'username' => $this->username,
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -65,7 +63,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testInitialize
      *
-     * @param int $userId
      *
      * @return int
      * @throws ORMException
@@ -74,7 +71,7 @@ class UserControllerTest extends BMSServiceTestCase
     public function testCreate(int $userId)
     {
         /** @var Project|null $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -100,7 +97,7 @@ class UserControllerTest extends BMSServiceTestCase
             'changePassword' => false,
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -123,7 +120,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreate
      *
-     * @param array $result
      *
      * @throws ORMException
      * @throws OptimisticLockException
@@ -132,7 +128,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/users/salt/' . $result['username']);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -146,7 +142,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testCreate
      *
-     * @param array $result
      *
      * @return int
      * @throws ORMException
@@ -155,7 +150,7 @@ class UserControllerTest extends BMSServiceTestCase
     public function testUpdate(array $result)
     {
         /** @var Project|null $project */
-        $project = self::$container->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->findBy([], ['id' => 'asc'])[0];
 
         if (null === $project) {
             $this->markTestSkipped('There needs to be at least one project in system to complete this test');
@@ -183,7 +178,7 @@ class UserControllerTest extends BMSServiceTestCase
 
         $this->request('PUT', '/api/basic/web-app/v1/users/' . $result['id'], $data);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -209,7 +204,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      *
      * @return int
      * @throws ORMException
@@ -219,7 +213,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/users/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -243,7 +237,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testUpdate
      *
-     * @param int $id
      *
      * @throws ORMException
      * @throws OptimisticLockException
@@ -252,7 +245,7 @@ class UserControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/users?sort[]=id.desc&filter[fulltext]=test&filter[id][]=' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -268,7 +261,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testGet
      *
-     * @param int $id
      *
      * @return int
      * @throws ORMException
@@ -286,7 +278,6 @@ class UserControllerTest extends BMSServiceTestCase
     /**
      * @depends testDelete
      *
-     * @param int $id
      *
      * @throws ORMException
      * @throws OptimisticLockException

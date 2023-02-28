@@ -10,33 +10,22 @@ use Entity\Project;
 use Entity\User;
 use Exception;
 use InputType\ProjectCreateInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\ProjectService;
 use Utils\ValueGenerator\ValueGenerator;
 
-/**
- * @property Container $container
- */
 trait ProjectHelper
 {
     /**
-     * @param User $user
-     * @param ProjectCreateInputType|null $createInputType
-     * @return Project
      * @throws Exception
      */
-    public function createProject(User $user, ?ProjectCreateInputType $createInputType = null): Project
+    public function createProject(User $user, ProjectService $projectService, ?ProjectCreateInputType $createInputType = null): Project
     {
-        return self::$container->get(ProjectService::class)->create(
-            $createInputType ?? self::getCreateInputType(),
+        return $projectService->create(
+            $createInputType ?? self::getCreateInputType('SYR'),
             $user
         );
     }
 
-    /**
-     * @param string $iso3
-     * @return ProjectCreateInputType
-     */
     public static function getCreateInputType(string $iso3): ProjectCreateInputType
     {
         $createInputType = new ProjectCreateInputType();

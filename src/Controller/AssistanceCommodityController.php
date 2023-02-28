@@ -3,9 +3,9 @@
 namespace Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Exception\CsvParserException;
 use Pagination\Paginator;
 use Entity\Assistance;
@@ -21,10 +21,7 @@ class AssistanceCommodityController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/commodities")
      *
-     * @param CommodityFilterInputType $filter
-     * @param CommodityRepository $commodityRepository
      *
-     * @return JsonResponse
      */
     public function commodities(
         CommodityFilterInputType $filter,
@@ -38,9 +35,7 @@ class AssistanceCommodityController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/assistances/{id}/commodities")
      *
-     * @param Assistance $assistance
      *
-     * @return JsonResponse
      */
     public function commoditiesByAssistance(Assistance $assistance): JsonResponse
     {
@@ -54,10 +49,7 @@ class AssistanceCommodityController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/assistances/commodities")
      *
-     * @param AssistanceCreateInputType $inputType
-     * @param AssistanceFactory $factory
      *
-     * @return JsonResponse
      * @throws CsvParserException
      * @throws EntityNotFoundException
      * @throws NoResultException

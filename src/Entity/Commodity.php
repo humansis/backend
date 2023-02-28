@@ -23,52 +23,45 @@ class Commodity
     use EnumTrait;
 
     /**
-     * @var string|null
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance"})
      * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=true)
      */
-    private $modalityType;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
+    private string|null $modalityType = null;
 
     /**
-     * @var string
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      * @ORM\Column(name="unit", type="string", length=45)
      */
-    private $unit;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    private string $unit;
 
     /**
-     * @var float
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      * @ORM\Column(name="value", type="float")
      */
-    private $value;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    private float $value;
 
     /**
-     * @var Assistance
      * @ORM\ManyToOne(targetEntity="Entity\Assistance", inversedBy="commodities")
      * @ORM\JoinColumn(name="assistance_id")
      */
-    private $assistance;
+    private ?\Entity\Assistance $assistance = null;
 
     /**
-     * @var string
-     * @SymfonyGroups({"FullAssistance", "SmallAssistance", "AssistanceOverview"})
      * @ORM\Column(name="description", type="string",length=511, nullable=true)
      */
-    private $description;
+    #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
+    private string|null $description = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="division", type="enum_assitance_commodity_division", nullable=true)
      */
-    private $division;
+    private string|null $division = null;
 
     /**
      * @var DivisionGroup[]|Collection
-     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="Entity\DivisionGroup", mappedBy="commodity", fetch="EAGER", cascade={"persist", "remove"})
      */
-    private $divisionGroups;
+    private Collection |array|null $divisionGroups = null;
 
     /**
      * Set unit.
@@ -145,7 +138,6 @@ class Commodity
     /**
      * Set modalityType.
      *
-     * @param string|null $modalityType
      *
      * @return Commodity
      */
@@ -158,8 +150,6 @@ class Commodity
 
     /**
      * Get modalityType.
-     *
-     * @return string|null
      */
     public function getModalityType(): ?string
     {
@@ -190,17 +180,12 @@ class Commodity
         return $this->description;
     }
 
-    /**
-     * @return string|null
-     */
     public function getDivision(): ?string
     {
         return $this->division;
     }
 
     /**
-     * @param string|null $division
-     *
      * @throws EnumValueNoFoundException
      */
     public function setDivision(?string $division): void
@@ -213,25 +198,17 @@ class Commodity
     /**
      * @return DivisionGroup[]|Collection
      */
-    public function getDivisionGroups()
+    public function getDivisionGroups(): array| Collection
     {
         return $this->divisionGroups;
     }
 
-    /**
-     * @param DivisionGroup $divisionGroup
-     *
-     * @return void
-     */
     public function addDivisionGroup(DivisionGroup $divisionGroup): void
     {
         $divisionGroup->setCommodity($this);
         $this->divisionGroups[] = $divisionGroup;
     }
 
-    /**
-     * @return DivisionSummary
-     */
     public function getDivisionSummary(): DivisionSummary
     {
         return new DivisionSummary($this->division, $this->divisionGroups);

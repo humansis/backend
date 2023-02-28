@@ -27,10 +27,19 @@ final class ReliefPackageState
         return self::RELIEF_PACKAGE_STATES;
     }
 
-    public static function startupValues(): array
+    public static function distributableStates(): array
     {
         return [
             self::TO_DISTRIBUTE,
+            self::CANCELED,
+        ];
+    }
+
+    public static function distributionStartedStates(): array
+    {
+        return [
+            self::DISTRIBUTION_IN_PROGRESS,
+            self::DISTRIBUTED,
         ];
     }
 }

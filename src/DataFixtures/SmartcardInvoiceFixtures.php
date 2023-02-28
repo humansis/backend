@@ -4,54 +4,30 @@ declare(strict_types=1);
 
 namespace DataFixtures;
 
-use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
-use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectManager;
 use Entity\User;
 use Entity\Vendor;
 use InputType\SmartcardInvoiceCreateInputType;
+use Repository\Smartcard\PreliminaryInvoiceRepository;
 use Repository\SmartcardPurchaseRepository;
 
 class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var string */
-    private $environment;
-
-    /**
-     * @var SmartcardPurchaseRepository
-     */
-    private $smartcardPurchaseRepository;
-
-    /**
-     * @var InvoiceFactory
-     */
-    private $invoiceFactory;
-
-    /**
-     * @param string $environment
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
-     * @param InvoiceFactory $invoiceFactory
-     */
     public function __construct(
-        string $environment,
-        SmartcardPurchaseRepository $smartcardPurchaseRepository,
-        InvoiceFactory $invoiceFactory
+        private readonly string $environment,
+        private readonly SmartcardPurchaseRepository $smartcardPurchaseRepository,
+        private readonly InvoiceFactory $invoiceFactory,
+        private readonly PreliminaryInvoiceRepository $preliminaryInvoiceRepository,
     ) {
-        $this->environment = $environment;
-        $this->smartcardPurchaseRepository = $smartcardPurchaseRepository;
-        $this->invoiceFactory = $invoiceFactory;
     }
 
     /**
-     * @param ObjectManager $manager
      *
-     * @throws AlreadyRedeemedInvoiceException
-     * @throws NotRedeemableInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -63,7 +39,7 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         /**
          * @var User $adminUser
@@ -80,8 +56,8 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
          */
         $syrVendor = $this->getReference(VendorFixtures::REF_VENDOR_SYR);
 
-        $this->createInvoices($khmVendor, $adminUser);
-        $this->createInvoices($syrVendor, $adminUser);
+        $this->createInvoices($khmVendor, $adminUser, 'KHR');
+        $this->createInvoices($syrVendor, $adminUser, 'SYP');
     }
 
     public function getDependencies(): array
@@ -94,32 +70,21 @@ class SmartcardInvoiceFixtures extends Fixture implements DependentFixtureInterf
     }
 
     /**
-     * @param Vendor $vendor
-     * @param User $user
      *
-     * @return void
-     * @throws AlreadyRedeemedInvoiceException
      * @throws ORMException
      * @throws OptimisticLockException
-     * @throws NotRedeemableInvoiceException
      */
-    private function createInvoices(Vendor $vendor, User $user): void
+    private function createInvoices(Vendor $vendor, User $user, string $currency): void
     {
-        $purchases = $this->smartcardPurchaseRepository->findBy([
-            'vendor' => $vendor,
-            'redemptionBatch' => null,
-        ], ['id' => 'asc']);
-        $purchaseIds = [];
-        foreach ($purchases as $purchase) {
-            $purchaseIds[$purchase->getAssistance()->getProject()->getId()][] = $purchase->getId();
-        }
-
-        foreach ($purchaseIds as $projectId => $ids) {
-            $invoice = new SmartcardInvoiceCreateInputType();
-            $invoice->setPurchaseIds(array_slice($ids, 1, 5));
+        $preliminaryInvoices = $this->preliminaryInvoiceRepository->findBy(
+            ['vendor' => $vendor, 'currency' => $currency]
+        );
+        foreach ($preliminaryInvoices as $preliminaryInvoice) {
+            $invoiceInputType = new SmartcardInvoiceCreateInputType();
+            $invoiceInputType->setPurchaseIds(array_slice($preliminaryInvoice->getPurchaseIds(), 1, 5));
             $this->invoiceFactory->create(
                 $vendor,
-                $invoice,
+                $invoiceInputType,
                 $user
             );
         }

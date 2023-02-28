@@ -18,39 +18,31 @@ class ImportBeneficiaryDuplicity
     use StandardizedPrimaryKey;
 
     /**
-     * @var ImportQueue
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ImportQueue")
      */
-    private $queue;
+    private ImportQueue $queue;
 
     /**
-     * @var int
-     *
      * @ORM\Column(type="integer")
      */
-    private $memberIndex;
+    private int $memberIndex;
 
     /**
-     * @var Beneficiary
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Beneficiary")
      */
-    private $beneficiary;
+    private Beneficiary $beneficiary;
 
     /**
-     * @var ImportHouseholdDuplicity
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ImportHouseholdDuplicity")
      */
-    private $householdDuplicity;
+    private ImportHouseholdDuplicity $householdDuplicity;
 
     /**
      * @var string[]
      *
      * @ORM\Column(type="array", nullable=true)
      */
-    private $reasons;
+    private array $reasons;
 
     public function __construct(
         ImportHouseholdDuplicity $householdDuplicity,
@@ -65,33 +57,21 @@ class ImportBeneficiaryDuplicity
         $this->householdDuplicity = $householdDuplicity;
     }
 
-    /**
-     * @return ImportQueue
-     */
     public function getQueue(): ImportQueue
     {
         return $this->queue;
     }
 
-    /**
-     * @return int
-     */
     public function getMemberIndex(): int
     {
         return $this->memberIndex;
     }
 
-    /**
-     * @return Beneficiary
-     */
     public function getBeneficiary(): Beneficiary
     {
         return $this->beneficiary;
     }
 
-    /**
-     * @return ImportHouseholdDuplicity
-     */
     public function getHouseholdDuplicity(): ImportHouseholdDuplicity
     {
         return $this->householdDuplicity;
@@ -105,9 +85,6 @@ class ImportBeneficiaryDuplicity
         return $this->reasons;
     }
 
-    /**
-     * @param array $reason
-     */
     public function addReason(array $reason): void
     {
         $this->reasons[] = $reason;

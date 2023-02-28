@@ -87,11 +87,21 @@ parameters:
 
     app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
 
+    cors:
+        allow_credentials: 'true'
+        allow_origin: [ 'http://localhost:8080' ]
+        allow_headers: [ '*' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: []
+        max_age: 3600
+
     adm.repositoryApiUrl: 'https://gitlab-public.quanti.cz/api/v4/projects/33/repository/tree?path=locations'
     adm.repositoryUrl: 'https://gitlab-public.quanti.cz/humansis/web-platform/administrative-areas/-/raw/master/locations/'
-    
+
 framework:
     #esi: ~
+    mailer:
+        dsn: '%mailer_dsn%'
     translator:
         fallbacks: ['%locale%']
         default_path: '%app.translations_dir%'
@@ -142,9 +152,6 @@ framework:
 sensio_framework_extra:
     router:
         annotations: false
-    #todo remove before merging to devel
-    psr_message:
-        enabled: false
 
 # Twig Configuration
 twig:
@@ -155,17 +162,21 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver: pdo_mysql
-        host: '%database_host%'
-        dbname: '%database_name%'
-        user: '%database_user%'
-        password: '%database_password%'
-        charset: UTF8
-        server_version: '8.0'
-        mapping_types:
-            enum: string
-        schema_filter: '~^(?!view_)~' # support views with prefix "view_"
-#            - '~^(?!messenger_messages)~'
+        default_connection: default
+        connections:
+            default:
+                # configure these for your database server
+                driver: pdo_mysql
+                host: '%database_host%'
+                dbname: '%database_name%'
+                user: '%database_user%'
+                password: '%database_password%'
+                charset: UTF8
+                server_version: '8.0.28'
+                mapping_types:
+                    enum: string
+                schema_filter: '~^(?!view_)~' # support views with prefix "view_"
+        #            - '~^(?!messenger_messages)~'
         types:
             enum_source_type: DBAL\SourceEnum
             enum_assistance_type: DBAL\AssistanceTypeEnum
@@ -190,63 +201,57 @@ doctrine:
             enum_assitance_commodity_division: DBAL\AssistanceCommodityDivisionEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        mappings:
-            FOSUserBundle: ~
-            App:
-                type: annotation
-                dir: "%kernel.root_dir%/../src/Entity"
-                prefix: "Entity"
-        dql:
-            string_functions:
-                 soundex:       DoctrineExtensions\Query\Mysql\Soundex
-                 date_format:   DoctrineExtensions\Query\Mysql\DateFormat
-                 timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
-                 quarter: DoctrineExtensions\Query\Mysql\Quarter
-                 month: DoctrineExtensions\Query\Mysql\Month
-                 year: DoctrineExtensions\Query\Mysql\Year
-                 any_value: DoctrineExtensions\Query\Mysql\AnyValue
+        entity_managers:
+            default:
+                naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+                auto_mapping: true
+                connection: default
+                mappings:
+                    Main:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'Entity'
+                        alias: Entity
+                dql:
+                    string_functions:
+                         soundex:       DoctrineExtensions\Query\Mysql\Soundex
+                         date_format:   DoctrineExtensions\Query\Mysql\DateFormat
+                         timestampdiff: DoctrineExtensions\Query\Mysql\TimestampDiff
+                         quarter: DoctrineExtensions\Query\Mysql\Quarter
+                         month: DoctrineExtensions\Query\Mysql\Month
+                         year: DoctrineExtensions\Query\Mysql\Year
+                         any_value: DoctrineExtensions\Query\Mysql\AnyValue
+                         group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
 
-            numeric_functions:
-                levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
-                levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
-        metadata_cache_driver:
-            type: array
-        result_cache_driver:
-            type: array
-        query_cache_driver:
-            type: array
-        hydrators:
-            plain_values_hydrator: Hydration\PlainValuesHydrator
+                    numeric_functions:
+                        levenshtein:        Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinFunction
+                        levenshtein_ratio:  Jrk\LevenshteinBundle\ORM\Doctrine\DQL\LevenshteinRatioFunction
+                metadata_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                result_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                query_cache_driver:
+                    type: pool
+                    id: doctrine.system_cache_pool
+                hydrators:
+                    plain_values_hydrator: Hydration\PlainValuesHydrator
 
-# Swiftmailer Configuration
-swiftmailer:
-    transport:  '%mailer_transport%'
-    host:       '%mailer_host%'
-    username:   '%mailer_user%'
-    password:   '%mailer_password%'
-    port:       '%mailer_port%'
-    encryption: '%mailer_encryption%'
-    spool:      { type: memory }
 
 doctrine_migrations:
-    dir_name:             "%kernel.root_dir%/DoctrineMigrations"
-    namespace:            Application\Migrations
-    table_name:           migration_versions
-    name:                 Application Migrations
+    migrations_paths:
+        'Application\Migrations': "%kernel.project_dir%/app/DoctrineMigrations"
+    storage:
+        # Default (SQL table) metadata storage configuration
+        table_storage:
+            table_name: 'migration_versions'
+            version_column_name: 'version'
+            version_column_length: 192
     organize_migrations:  false # Version >= 1.2, possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false
     custom_template:      ~ # Version >= 1.2, path to your custom migrations template
-#    all_or_nothing:       true # we have too old doctrine version
-
-fos_user:
-    db_driver: orm
-    firewall_name: main
-    user_class: Entity\User
-    from_email:
-        address: "%email%"
-        sender_name: "BMS Support"
-    service:
-        mailer: fos_user.mailer.twig_swift
+    all_or_nothing:       true # we have too old doctrine version
 
 fos_rest:
     param_fetcher_listener: true
@@ -262,25 +267,7 @@ fos_rest:
     serializer:
         serialize_null: true
 
-# Nelmio ApiDoc Bundle
-nelmio_api_doc:
-    areas:
-        path_patterns: # an array of regexps
-            - ^/api(?!/doc$)
-    documentation:
-        info:
-            title: Beneficiary Management System
 
-nelmio_cors:
-    defaults:
-        allow_credentials: true
-        allow_origin: []
-        allow_headers: ['*']
-        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
-        max_age: 3600
-        expose_headers: []
-        hosts: []
-        origin_regex: false
 
 services:
     acme.aws_s3.client:

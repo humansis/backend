@@ -2,7 +2,6 @@
 
 namespace Entity;
 
-use Utils\ExportableInterface;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
@@ -13,55 +12,49 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
  * @ORM\Table(name="voucher")
  * @ORM\Entity(repositoryClass="Repository\VoucherRepository")
  */
-class Voucher implements ExportableInterface
+class Voucher
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $code;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="value", type="integer")
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
-     */
-    private $value;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
-     * @ORM\JoinColumn(nullable=false)
-     * @SymfonyGroups({"FullVoucher"})
-     */
-    private $booklet;
+    #[SymfonyGroups(['FullVoucher'])]
+    private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\VoucherPurchase", inversedBy="vouchers")
      * @ORM\JoinColumn(nullable=true)
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $voucherPurchase;
+    #[SymfonyGroups(['FullVoucher'])]
+    private ?VoucherPurchase $voucherPurchase;
 
     /**
-     * @var VoucherRedemptionBatch|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\VoucherRedemptionBatch", inversedBy="vouchers", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $redemptionBatch;
+    private ?\Entity\VoucherRedemptionBatch $redemptionBatch = null;
+
+    /**
+     * @ORM\Column(name="code", type="string", length=255, unique=true)
+     */
+    #[SymfonyGroups(['FullVoucher'])]
+    private string $code;
+
+    /**
+     * @ORM\Column(name="value", type="integer")
+     */
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
+    private int $value;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="\Entity\Booklet", inversedBy="vouchers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    #[SymfonyGroups(['FullVoucher'])]
+    private Booklet $booklet;
 
     public function __construct(string $code, int $value, Booklet $booklet)
     {
@@ -70,44 +63,24 @@ class Voucher implements ExportableInterface
         $this->booklet = $booklet;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * Set value.
-     *
-     * @param int $value
-     *
-     * @return Voucher
-     */
-    public function setValue($value)
+    public function setValue(int $value): self
     {
         $this->value = $value;
 
         return $this;
     }
 
-    /**
-     * Get individual value.
-     *
-     * @return int
-     */
-    public function getValue()
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
-     */
+    #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
     public function getRedeemedAt(): ?DateTimeInterface
     {
         if (null !== $this->redemptionBatch) {
@@ -117,11 +90,7 @@ class Voucher implements ExportableInterface
         return null;
     }
 
-    /**
-     * @SymfonyGroups({"FullVoucher", "FullBooklet", "ValidatedAssistance"})
-     *
-     * @return string|null
-     */
+    #[SymfonyGroups(['FullVoucher', 'FullBooklet', 'ValidatedAssistance'])]
     public function getUsedAt(): ?string
     {
         if (!$this->getUsedAtDate()) {
@@ -131,38 +100,19 @@ class Voucher implements ExportableInterface
         return $this->getUsedAtDate()->format('Y-m-d');
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getUsedAtDate(): ?DateTimeInterface
     {
-        if (!$this->getVoucherPurchase()) {
-            return null;
-        }
-
-        return $this->getVoucherPurchase()->getCreatedAt();
+        return $this->getVoucherPurchase()?->getCreatedAt();
     }
 
-    /**
-     * Set code.
-     *
-     * @param string $code
-     *
-     * @return Voucher
-     */
-    public function setCode($code)
+    public function setCode(string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    /**
-     * Get code.
-     *
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -179,17 +129,12 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return VoucherPurchase|null
-     */
     public function getVoucherPurchase(): ?VoucherPurchase
     {
         return $this->voucherPurchase;
     }
 
     /**
-     * @param VoucherPurchase $purchase
-     *
      * @return $this
      */
     public function setVoucherPurchase(VoucherPurchase $purchase): self
@@ -199,32 +144,12 @@ class Voucher implements ExportableInterface
         return $this;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export.
-     *
-     * @return array
-     */
-    public function getMappedValueForExport(): array
-    {
-        return [
-            'Booklet Number' => $this->getBooklet()->getCode(),
-            'Voucher Codes' => $this->getCode(),
-        ];
-    }
 
-    /**
-     * @return VoucherRedemptionBatch|null
-     */
     public function getRedemptionBatch(): ?VoucherRedemptionBatch
     {
         return $this->redemptionBatch;
     }
 
-    /**
-     * @param VoucherRedemptionBatch|null $redemptionBatch
-     *
-     * @return Voucher
-     */
     public function setRedemptionBatch(?VoucherRedemptionBatch $redemptionBatch): Voucher
     {
         $this->redemptionBatch = $redemptionBatch;

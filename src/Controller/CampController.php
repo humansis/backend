@@ -2,6 +2,7 @@
 
 namespace Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Camp;
 use Entity\Location;
 use Pagination\Paginator;
@@ -13,22 +14,22 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class CampController extends AbstractController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/web-app/v1/camps")
      *
-     * @param Request $request
-     * @param CampFilterInputType $filterInputType
      *
-     * @return JsonResponse
      */
     public function camps(Request $request, CampFilterInputType $filterInputType): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $beneficiaries = $this->getDoctrine()->getRepository(Camp::class)->findByCountry(
+        $beneficiaries = $this->managerRegistry->getRepository(Camp::class)->findByCountry(
             $countryIso3,
             $filterInputType
         );
@@ -39,9 +40,7 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/camps/{id}")
      *
-     * @param Camp $camp
      *
-     * @return JsonResponse
      */
     public function camp(Camp $camp): JsonResponse
     {
@@ -51,13 +50,11 @@ class CampController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/locations/{id}/camps")
      *
-     * @param Location $location
      *
-     * @return JsonResponse
      */
     public function campsByLocation(Location $location): JsonResponse
     {
-        $camps = $this->getDoctrine()->getRepository(Camp::class)->findBy(['location' => $location]);
+        $camps = $this->managerRegistry->getRepository(Camp::class)->findBy(['location' => $location]);
 
         return $this->json(new Paginator($camps));
     }

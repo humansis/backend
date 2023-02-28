@@ -31,11 +31,11 @@ class UploadImportServiceTest extends KernelTestCase
 
         $kernel = self::bootKernel();
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
+        $this->uploadService = self::getContainer()->get(UploadImportService::class);
     }
 
     protected function tearDown(): void

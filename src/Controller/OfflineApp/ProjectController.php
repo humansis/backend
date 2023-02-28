@@ -13,33 +13,19 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ProjectController extends AbstractOfflineAppController
 {
-    /**
-     * @var ProjectRepository
-     */
-    private $projectRepository;
-
-    /**
-     * @var ProjectMapper
-     */
-    private $projectMapper;
-
-    public function __construct(ProjectRepository $projectRepository, ProjectMapper $projectMapper)
+    public function __construct(private readonly ProjectRepository $projectRepository, private readonly ProjectMapper $projectMapper)
     {
-        $this->projectRepository = $projectRepository;
-        $this->projectMapper = $projectMapper;
     }
 
     /**
      * @Rest\Get("/offline-app/v1/projects")
      *
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function getProjects(Request $request): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
@@ -51,18 +37,15 @@ class ProjectController extends AbstractOfflineAppController
     }
 
     /**
-     * @param Request $request
      *
-     * @return JsonResponse
      * @deprecated This endpoint is not consumed by app because of different interface
-     *
      * @Rest\Get("/offline-app/v2/projects")
      *
      */
     public function list(Request $request): JsonResponse
     {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 

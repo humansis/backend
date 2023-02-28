@@ -26,7 +26,7 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreateMissingData()
@@ -36,7 +36,7 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
         ]);
         $response = $this->client->getResponse();
         $this->assertEquals(
-            400,
+            \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST,
             $response->getStatusCode(),
             'Expected different response code'
         );
@@ -50,7 +50,7 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
         ]);
         $response = $this->client->getResponse();
         $this->assertEquals(
-            400,
+            \Symfony\Component\HttpFoundation\Response::HTTP_BAD_REQUEST,
             $response->getStatusCode(),
             'Expected different response code'
         );
@@ -64,11 +64,11 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
         ]);
         $response = $this->client->getResponse();
         $this->assertEquals(
-            201,
+            \Symfony\Component\HttpFoundation\Response::HTTP_CREATED,
             $response->getStatusCode(),
             'Expected different response code'
         );
-        $data = json_decode($response->getContent());
+        $data = json_decode($response->getContent(), null, 512, JSON_THROW_ON_ERROR);
 
         return $data->id;
     }
@@ -80,10 +80,10 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/scoring-blueprints');
         $response = $this->client->getResponse();
-        $result = json_decode($response->getContent(), true);
+        $result = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertEquals(
-            200,
+            \Symfony\Component\HttpFoundation\Response::HTTP_OK,
             $response->getStatusCode(),
             'Expected different response code'
         );
@@ -114,7 +114,7 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
             ]
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -133,7 +133,7 @@ class ScoringBlueprintControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/scoring-blueprints/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

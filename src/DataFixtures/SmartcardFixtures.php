@@ -26,59 +26,16 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 {
     private const MAX_SMARTCARDS = 20;
 
-    /** @var string */
-    private $environment;
-
-    /** @var SmartcardService */
-    private $smartcardService;
-
-    /**
-     * @var PurchaseService
-     */
-    private $purchaseService;
-
-    /**
-     * @var DepositFactory
-     */
-    private $depositFactory;
-
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
-    /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
-
-    /**
-     * @param string $environment
-     * @param SmartcardService $smartcardService
-     * @param PurchaseService $purchaseService
-     * @param DepositFactory $depositFactory
-     * @param ReliefPackageRepository $reliefPackageRepository
-     * @param SmartcardRepository $smartcardRepository
-     */
     public function __construct(
-        string $environment,
-        SmartcardService $smartcardService,
-        PurchaseService $purchaseService,
-        DepositFactory $depositFactory,
-        ReliefPackageRepository $reliefPackageRepository,
-        SmartcardRepository $smartcardRepository
+        private readonly string $environment,
+        private readonly SmartcardService $smartcardService,
+        private readonly PurchaseService $purchaseService,
+        private readonly DepositFactory $depositFactory,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly SmartcardRepository $smartcardRepository
     ) {
-        $this->environment = $environment;
-        $this->smartcardService = $smartcardService;
-        $this->purchaseService = $purchaseService;
-        $this->depositFactory = $depositFactory;
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->smartcardRepository = $smartcardRepository;
     }
 
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         if ('prod' === $this->environment) {
@@ -87,7 +44,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         }
 
         // set up seed will make random values will be same for each run of fixtures
-        srand(42);
+        mt_srand(42);
 
         foreach (
             $this->getReference(
@@ -97,13 +54,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePackages($manager, $ab, 'KHR');
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePackages($manager, $ab, 'USD');
-        }
+        //todo to not use XXX_USD until todo in AssistanceFixtures is resolved
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePackages($manager, $ab, 'USD');
+//        }
 
         foreach (
             $this->getReference(
@@ -113,13 +71,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePackages($manager, $ab, 'SYP');
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePackages($manager, $ab, 'USD');
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePackages($manager, $ab, 'USD');
+//        }
 
         $manager->flush();
 
@@ -131,13 +89,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+//        }
 
         foreach (
             $this->getReference(
@@ -147,13 +105,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generateDeposits($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+//        }
 
         $manager->flush();
 
@@ -165,13 +123,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_KHM_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_KHM));
+//        }
 
         foreach (
             $this->getReference(
@@ -181,13 +139,13 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
         }
 
-        foreach (
-            $this->getReference(
-                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
-            )->getDistributionBeneficiaries() as $ab
-        ) {
-            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
-        }
+//        foreach (
+//            $this->getReference(
+//                AssistanceFixtures::REF_SMARTCARD_ASSISTANCE_SYR_USD
+//            )->getDistributionBeneficiaries() as $ab
+//        ) {
+//            $this->generatePurchases($manager, $ab, $this->getReference(VendorFixtures::REF_VENDOR_SYR));
+//        }
 
         $manager->flush();
     }
@@ -218,14 +176,14 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $packages = $this->reliefPackageRepository->findBy(['assistanceBeneficiary' => $ab], ['id' => 'asc']);
 
         foreach ($packages as $package) {
-            $i = rand(5, 10);
+            $i = random_int(5, 10);
             $this->depositFactory->create(
                 $ab->getBeneficiary()->getSmartcardSerialNumber(),
                 DepositInputType::create(
                     $package->getId(),
                     $package->getAmountToDistribute(),
                     null,
-                    new DateTimeImmutable("now-${i} days")
+                    new \DateTime("now-${i} days")
                 ),
                 $this->randomEntity(User::class, $manager)
             );
@@ -238,7 +196,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             $ab->getBeneficiary()->getSmartcardSerialNumber()
         );
         $max = $smartcard->getDeposites()[0]->getReliefPackage()->getAmountDistributed();
-        $purchasesCount = $this->generateRandomNumbers($max, rand(1, 10));
+        $purchasesCount = $this->generateRandomNumbers($max, random_int(1, 10));
 
         foreach ($purchasesCount as $index => $purchaseMax) {
             if ($purchaseMax === 0) {
@@ -257,7 +215,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
 
     private static function generateState()
     {
-        $i = rand(0, count(Smartcard::states()) - 1);
+        $i = random_int(0, count(Smartcard::states()) - 1);
 
         return Smartcard::states()[$i];
     }
@@ -277,9 +235,9 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $currency = $smartcard->getDeposites()[0]->getReliefPackage()->getUnit();
         $spent = 0;
 
-        for ($j = 0; $j < rand(1, 5); ++$j) {
-            $quantity = rand(1, 10000);
-            $value = rand(1, $max);
+        for ($j = 0; $j < random_int(1, 5); ++$j) {
+            $quantity = random_int(1, 10000);
+            $value = random_int(1, $max);
             $spent += $value;
             if ($spent > $max) {
                 break;
@@ -297,7 +255,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
             return null;
         }
 
-        $i = rand(0, count($entities) - 1);
+        $i = random_int(0, count($entities) - 1);
 
         return $entities[$i];
     }
@@ -318,7 +276,7 @@ class SmartcardFixtures extends Fixture implements DependentFixtureInterface
         $numbers = [];
 
         for ($i = 1; $i < $count; $i++) {
-            $random = rand(1, $max / ($count - $i));
+            $random = random_int(1, (int)($max / ($count - $i)));
             $numbers[] = $random;
             $max -= $random;
         }

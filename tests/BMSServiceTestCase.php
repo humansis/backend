@@ -24,10 +24,10 @@ class BMSServiceTestCase extends KernelTestCase
     /** @var HttpKernelBrowser $client */
     protected $client;
 
-    public const USER_PHPUNIT = 'phpunit';
-    public const USER_TESTER = 'test@example.org';
-    public const USER_TESTER_VENDOR = 'vendor.eth@example.org';
-    // SERVICES
+    final public const USER_PHPUNIT = 'phpunit';
+    final public const USER_TESTER = 'test@example.org';
+    final public const USER_TESTER_VENDOR = 'vendor.eth@example.org';
+    final public const USER_ADMIN = 'admin@example.org';
 
     /** @var EntityManager $em */
     protected $em;
@@ -219,10 +219,11 @@ class BMSServiceTestCase extends KernelTestCase
     {
         $headers = array_merge([
             'HTTP_COUNTRY' => 'KHM',
-            'PHP_AUTH_USER' => 'admin@example.org',
+            'PHP_AUTH_USER' => self::USER_ADMIN,
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ], (array) $headers);
-        $this->client->request($method, $uri, $body, $files, $headers);
+        $this->client->request($method, $uri, [], $files, $headers, content: json_encode($body));
     }
 
     public function setDefaultSerializerName($serializerName)
@@ -237,22 +238,22 @@ class BMSServiceTestCase extends KernelTestCase
         self::bootKernel();
 
         //Preparing the EntityManager
-        $this->em = self::$container
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
         //Mocking Serializer, Container
-        $this->serializer = self::$container
+        $this->serializer = self::getContainer()
             ->get($this->defaultSerializerName);
 
         //Symdfony Validator
-        $this->validator = self::$container
+        $this->validator = self::getContainer()
             ->get('validator');
 
         //setting the token_storage
-        $this->tokenStorage = self::$container->get('security.token_storage');
-        $this->householdService = self::$container->get('beneficiary.household_service');
-        $this->commodityService = self::$container->get('distribution.commodity_service');
+        $this->tokenStorage = self::getContainer()->get('security.token_storage');
+        $this->householdService = self::getContainer()->get('beneficiary.household_service');
+        $this->commodityService = self::getContainer()->get('distribution.commodity_service');
         $this->bodyHousehold['iso3'] = $this->iso3;
     }
 
@@ -263,7 +264,7 @@ class BMSServiceTestCase extends KernelTestCase
         //Serializer mocking
         $this->mockSerializer();
         //Container mocking
-        $this->mockContainer();
+        //$this->mockContainer();
     }
 
     /**
@@ -315,20 +316,19 @@ class BMSServiceTestCase extends KernelTestCase
 
     protected function mockContainer()
     {
-        self::$container = $this->getMockBuilder(Container::class)
+        /*self::getContainer() = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        self::$container->method('get')
+        self::getContainer()->method('get')
             ->with($this->defaultSerializerName)
             ->will($this->returnValue($this->serializer));
 
-        return self::$container;
+        return self::getContainer();*/
     }
 
     /**
      * Require Functional tests and real Entity Manager
      *
-     * @param string $username
      * @return null|object|User {[type] [description]
      * @throws ORMException
      * @throws OptimisticLockException
@@ -380,6 +380,6 @@ class BMSServiceTestCase extends KernelTestCase
     {
         static::assertJson($expected);
         static::assertJson($actual);
-        static::assertArrayFragment(json_decode($expected, true), json_decode($actual, true), $message);
+        static::assertArrayFragment(json_decode((string) $expected, true, 512, JSON_THROW_ON_ERROR), json_decode((string) $actual, true, 512, JSON_THROW_ON_ERROR), $message);
     }
 }

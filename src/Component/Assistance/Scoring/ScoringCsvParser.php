@@ -17,8 +17,6 @@ final class ScoringCsvParser extends AbstractCsvParser
     }
 
     /**
-     * @param array $csv
-     *
      * @return ScoringRule[]
      */
     protected function processCsv(array $csv): array

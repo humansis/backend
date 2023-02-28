@@ -26,31 +26,21 @@ class CrowdinPushCommand extends Command
 {
     use CrowdinRequestTrait;
 
+    protected static $defaultName = 'crowdin:push';
+
+
     /** @var HttpClient $client */
     private $client;
-
-    /** @var string */
-    private $crowdinApiKey;
-
-    /** @var int */
-    private $crowdinProjectId;
 
     /** @var OutputInterface */
     private $output;
 
-    /** @var string */
-    private $translationsDir;
-
     public function __construct(
-        string $crowdinApiKey,
-        string $crowdinProjectId,
-        string $translationsDir
+        private readonly string $crowdinApiKey,
+        private readonly string $crowdinProjectId,
+        private readonly string $translationsDir
     ) {
         parent::__construct();
-
-        $this->crowdinApiKey = $crowdinApiKey;
-        $this->crowdinProjectId = $crowdinProjectId;
-        $this->translationsDir = $translationsDir;
 
         $this->client = HttpClient::create();
     }
@@ -58,9 +48,7 @@ class CrowdinPushCommand extends Command
     protected function configure(): void
     {
         parent::configure();
-        $this
-            ->setName('crowdin:push')
-            ->setDescription('Upload translation sources to Crowdin');
+        $this->setDescription('Upload translation sources to Crowdin');
     }
 
     /**

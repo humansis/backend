@@ -4,119 +4,79 @@ declare(strict_types=1);
 
 namespace Entity;
 
-use Entity\Assistance;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Read only entity.
  *
- * @ORM\MappedSuperclass(repositoryClass="Repository\AssistanceStatisticsRepository")
+ * @ORM\Entity(repositoryClass="Repository\AssistanceStatisticsRepository", readOnly=true)
  * @ORM\Table(name="view_assistance_statistics")
  */
 class AssistanceStatistics
 {
     /**
-     * @var int
      * @ORM\Column(name="assistance_id", type="integer")
      * @ORM\Id
      */
-    private $id;
+    private ?int $id;
 
     /**
-     * @var Assistance
      * @ORM\ManyToOne(targetEntity="Entity\Assistance")
      */
-    private $assistance;
+    private \Entity\Assistance $assistance;
 
     /**
-     * @var int
      * @ORM\Column(name="number_of_beneficiaries", type="integer")
      */
-    private $numberOfBeneficiaries;
+    private int $numberOfBeneficiaries;
 
     /**
-     * @var float
      * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $amountTotal;
+    private float | null $amountTotal;
 
     /**
-     * @var float
      * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $amountDistributed;
+    private float | null $amountDistributed;
 
     /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     * @ORM\Column(name="beneficiaries_deleted", type="integer")
      */
-    private $amountUsed;
+    private int $beneficiariesDeleted;
 
     /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
+     * @ORM\Column(name="beneficiaries_reached", type="integer")
      */
-    private $amountSent;
+    private int $beneficiariesReached;
 
-    /**
-     * @var float|null
-     * @ORM\Column(type="decimal", precision=10, scale=2, nullable=true)
-     */
-    private $amountPickedUp;
-
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return int
-     */
     public function getNumberOfBeneficiaries(): int
     {
         return $this->numberOfBeneficiaries;
     }
 
-    /**
-     * @return float|null
-     */
     public function getAmountTotal(): ?float
     {
         return null === $this->amountTotal ? null : (float) $this->amountTotal;
     }
 
-    /**
-     * @return float|null
-     */
     public function getAmountDistributed(): ?float
     {
         return null === $this->amountDistributed ? null : (float) $this->amountDistributed;
     }
 
-    /**
-     * @return float|null
-     */
-    public function getAmountUsed(): ?float
+    public function getBeneficiariesDeleted(): int
     {
-        return null === $this->amountUsed ? null : (float) $this->amountUsed;
+        return $this->beneficiariesDeleted;
     }
 
-    /**
-     * @return float|null
-     */
-    public function getAmountSent(): ?float
+    public function getBeneficiariesReached(): int
     {
-        return null === $this->amountSent ? null : (float) $this->amountSent;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getAmountPickedUp(): ?float
-    {
-        return null === $this->amountPickedUp ? null : (float) $this->amountPickedUp;
+        return $this->beneficiariesReached;
     }
 }

@@ -7,6 +7,7 @@ namespace Component\Assistance\Services;
 use Component\Assistance\CommodityAssignBuilder;
 use Component\Assistance\Enum\CommodityDivision;
 use Component\Assistance\Scoring\Model\ScoringProtocol;
+use Component\ReliefPackage\ReliefPackageService;
 use DateTime;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
@@ -17,7 +18,9 @@ use Entity\Commodity;
 use Entity\Household;
 use Enum\AssistanceTargetType;
 use Enum\CacheTarget;
+use Enum\ReliefPackageState;
 use Exception\AssistanceTargetMismatchException;
+use Exception\BeneficiaryAlreadyAddedException;
 use Exception\ManipulationOverValidatedAssistanceException;
 use Exception\BeneficiaryAlreadyRemovedException;
 use JsonException;
@@ -29,49 +32,45 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
+use Utils\Exception\AddBeneficiaryWithReliefException;
 use Utils\Exception\RemoveBeneficiaryWithReliefException;
 use Workflow\ReliefPackageTransitions;
 
 class AssistanceBeneficiaryService
 {
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
-    private $assistanceBeneficiaryRepository;
-
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var Registry $workflowRegistry */
-    private $workflowRegistry;
-
-    /** @var TranslatorInterface */
-    private $translator;
-
-    /**
-     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
-     * @param CacheInterface $cache
-     * @param Registry $workflowRegistry
-     * @param TranslatorInterface $translator
-     */
     public function __construct(
-        AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
-        CacheInterface $cache,
-        Registry $workflowRegistry,
-        TranslatorInterface $translator
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        private readonly CacheInterface $cache,
+        private readonly Registry $workflowRegistry,
+        private readonly TranslatorInterface $translator,
+        private readonly ReliefPackageService $reliefPackageService,
     ) {
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
-        $this->cache = $cache;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->translator = $translator;
+    }
+
+    public function prepareReliefPackageForDistribution(
+        AssistanceBeneficiary $assistanceBeneficiary,
+        string $modalityName,
+        string $unit,
+        string | int | float $value,
+        bool $tryToReuseReliefPackage = false
+    ): void {
+        $alreadyGeneratedReliefPackage = $assistanceBeneficiary->getDistributableReliefPackage($modalityName, $unit);
+        if ($alreadyGeneratedReliefPackage) {
+            $alreadyGeneratedReliefPackage->setAmountToDistribute($value);
+            if ($tryToReuseReliefPackage) {
+                $this->reliefPackageService->applyReliefPackageTransition(
+                    $alreadyGeneratedReliefPackage,
+                    ReliefPackageTransitions::REUSE
+                );
+            }
+        } else {
+            $assistanceBeneficiary->addReliefPackage($modalityName, $unit, $value);
+        }
     }
 
     /**
      * @param Beneficiary[] $beneficiaries
-     * @param array $documentNumbers
-     * @param string $documentType
      *
-     * @return AssistanceBeneficiaryOperationOutputType
      */
     public function prepareOutputForDocumentNumbers(
         array $beneficiaries,
@@ -89,7 +88,7 @@ class AssistanceBeneficiaryService
             }
         }
         foreach ($documentNumbers as $documentNumber) {
-            $key = strtolower($documentNumber);
+            $key = strtolower((string) $documentNumber);
             if (!key_exists($key, $beneficiaryDocuments)) {
                 $output->addDocumentNotFound($documentNumber);
             }
@@ -103,9 +102,7 @@ class AssistanceBeneficiaryService
         array $beneficiaryIds
     ): AssistanceBeneficiaryOperationOutputType {
         $output = new AssistanceBeneficiaryOperationOutputType($this->translator);
-        $foundBeneficiaries = array_map(function (Beneficiary $beneficiary) {
-            return $beneficiary->getId();
-        }, $beneficiaries);
+        $foundBeneficiaries = array_map(fn(Beneficiary $beneficiary) => $beneficiary->getId(), $beneficiaries);
 
         $notFoundBeneficiaries = array_diff($beneficiaryIds, $foundBeneficiaries);
         foreach ($notFoundBeneficiaries as $notFoundBeneficiaryId) {
@@ -115,15 +112,6 @@ class AssistanceBeneficiaryService
         return $output;
     }
 
-    /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
-     * @param Beneficiary[] $beneficiaries
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
-     *
-     * @return void
-     */
     public function addBeneficiariesToAssistance(
         AssistanceBeneficiaryOperationOutputType $output,
         Assistance $assistance,
@@ -133,47 +121,48 @@ class AssistanceBeneficiaryService
     ): AssistanceBeneficiaryOperationOutputType {
         if ($assistance->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException(
-                "It is not possible to add a beneficiary to validated and locked assistance"
+                $this->translator->trans('It is not possible to add a beneficiary to validated and locked assistance')
             );
         }
 
-        $assistanceBeneficiaries = [];
+        $targets = [];
         foreach ($beneficiaries as $beneficiary) {
             try {
-                $assistanceBeneficiaries[] = $this->addAssistanceBeneficiary(
+                $assistanceBeneficiary = $this->addAssistanceBeneficiary(
                     $assistance,
                     $beneficiary,
                     $justification,
                     $vulnerabilityScore
                 );
-                $output->addBeneficiarySuccess($beneficiary);
+                if ($assistanceBeneficiary !== null) {
+                    $targets[] = $assistanceBeneficiary;
+                    $output->addBeneficiarySuccess($beneficiary);
+                } else {
+                    $output->addBeneficiaryNotFound($beneficiary);
+                }
+            } catch (AssistanceTargetMismatchException) {
+                $output->addBeneficiaryMismatch($beneficiary);
+            } catch (BeneficiaryAlreadyAddedException) {
+                $output->addBeneficiaryAlreadyProcessed($beneficiary);
             } catch (Throwable $ex) {
                 $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
             }
         }
 
-        $this->recountReliefPackages($assistance, $assistanceBeneficiaries);
+        $this->transitReliefPackages($assistance, ReliefPackageTransitions::REUSE, $targets);
+        $this->recountReliefPackages($assistance, $targets);
         $assistance->setUpdatedOn(new DateTime());
         $this->cleanCache($assistance);
 
         return $output;
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param AbstractBeneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
-     *
-     * @return AssistanceBeneficiary|object|null
-     * @throws JsonException
-     */
     private function addAssistanceBeneficiary(
         Assistance $assistance,
         AbstractBeneficiary $beneficiary,
         ?string $justification = null,
         ?ScoringProtocol $vulnerabilityScore = null
-    ) {
+    ): ?AssistanceBeneficiary {
         if (
             $assistance->getTargetType() === AssistanceTargetType::HOUSEHOLD
             && !$beneficiary->isHead()
@@ -192,11 +181,16 @@ class AssistanceBeneficiaryService
                 ->setBeneficiary($beneficiary)
                 ->setRemoved(false);
             $assistance->addAssistanceBeneficiary($assistanceBeneficiary);
-            if (!is_null($vulnerabilityScore)) {
-                $assistanceBeneficiary->setVulnerabilityScores($vulnerabilityScore);
-            }
-        } else {
+        } elseif ($assistanceBeneficiary->hasDistributionStarted()) {
+            throw new AddBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary(), $this->translator);
+        } elseif ($assistanceBeneficiary->getRemoved()) {
             $assistanceBeneficiary->setRemoved(false);
+        } else {
+            throw new BeneficiaryAlreadyAddedException();
+        }
+
+        if (!is_null($vulnerabilityScore)) {
+            $assistanceBeneficiary->setVulnerabilityScores($vulnerabilityScore);
         }
         if (!empty($justification)) {
             $assistanceBeneficiary->setJustification($justification);
@@ -206,13 +200,8 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
-     * @param string|null $justification
-     * @param ScoringProtocol|null $vulnerabilityScore
      *
-     * @return void
      * @throws JsonException
      */
     public function addBeneficiaryToAssistance(
@@ -228,10 +217,9 @@ class AssistanceBeneficiaryService
     /**
      * @param AssistanceBeneficiaryOperationOutputType $output
      * @param Assistance $assistance
-     * @param Beneficiary[] $beneficiaries
+     * @param array $beneficiaries
      * @param string $justification
-     *
-     * @return void
+     * @return AssistanceBeneficiaryOperationOutputType
      */
     public function removeBeneficiariesFromAssistance(
         AssistanceBeneficiaryOperationOutputType $output,
@@ -241,7 +229,7 @@ class AssistanceBeneficiaryService
     ): AssistanceBeneficiaryOperationOutputType {
         if ($assistance->isValidated()) {
             throw new ManipulationOverValidatedAssistanceException(
-                'It is not possible to remove a beneficiary from validated and locked assistance'
+                $this->translator->trans('It is not possible to remove a beneficiary from validated and locked assistance')
             );
         }
 
@@ -258,26 +246,19 @@ class AssistanceBeneficiaryService
             } catch (AssistanceTargetMismatchException $ex) {
                 $output->addBeneficiaryMismatch($beneficiary);
             } catch (BeneficiaryAlreadyRemovedException $ex) {
-                $output->addBeneficiaryAlreadyRemoved($beneficiary);
+                $output->addBeneficiaryAlreadyProcessed($beneficiary);
             } catch (Throwable $ex) {
                 $output->addBeneficiaryFailed($beneficiary, $ex->getMessage());
             }
         }
 
         $assistance->setUpdatedOn(new DateTime());
-        $this->cancelUnusedReliefPackages($assistance, $targets);
+        $this->transitReliefPackages($assistance, ReliefPackageTransitions::CANCEL, $targets);
         $this->cleanCache($assistance);
 
         return $output;
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     * @param string $justification
-     *
-     * @return AssistanceBeneficiary|null
-     */
     private function removeAssistanceBeneficiary(
         Assistance $assistance,
         Beneficiary $beneficiary,
@@ -297,7 +278,7 @@ class AssistanceBeneficiaryService
                 throw new BeneficiaryAlreadyRemovedException();
             }
             if ($assistanceBeneficiary->hasDistributionStarted()) {
-                throw new RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary());
+                throw new RemoveBeneficiaryWithReliefException($assistanceBeneficiary->getBeneficiary(), $this->translator);
             }
             $assistanceBeneficiary->setRemoved(true)
                 ->setJustification($justification);
@@ -307,10 +288,7 @@ class AssistanceBeneficiaryService
     }
 
     /**
-     * @param AssistanceBeneficiaryOperationOutputType $output
-     * @param Assistance $assistance
      * @param Beneficiary $beneficiary
-     * @param string $justification
      *
      */
     public function removeBeneficiaryFromAssistance(
@@ -322,22 +300,19 @@ class AssistanceBeneficiaryService
         $this->removeBeneficiariesFromAssistance($output, $assistance, [$beneficiary], $justification);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param array|null $targets
-     *
-     * @return void
-     */
-    private function cancelUnusedReliefPackages(Assistance $assistance, ?array $targets = null): void
-    {
+    private function transitReliefPackages(
+        Assistance $assistance,
+        $transitionState,
+        ?array $targets = null
+    ): void {
         /** @var AssistanceBeneficiary $assistanceBeneficiary */
         foreach ($targets ?? $assistance->getDistributionBeneficiaries() as $assistanceBeneficiary) {
             /** @var ReliefPackage $reliefPackage */
             foreach ($assistanceBeneficiary->getReliefPackages() as $reliefPackage) {
                 $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
 
-                if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageTransitions::CANCEL)) {
-                    $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageTransitions::CANCEL);
+                if ($reliefPackageWorkflow->can($reliefPackage, $transitionState)) {
+                    $reliefPackageWorkflow->apply($reliefPackage, $transitionState);
                 }
             }
         }
@@ -378,22 +353,18 @@ class AssistanceBeneficiaryService
         foreach ($modalityUnits as $modalityName => $units) {
             foreach ($units as $unit) {
                 foreach ($targets ?? $assistance->getDistributionBeneficiaries() as $target) {
-                    $target->setCommodityToDistribute(
+                    $this->prepareReliefPackageForDistribution(
+                        $target,
                         $modalityName,
                         $unit,
-                        $commodityBuilder->getValue($target, $modalityName, $unit)
+                        $commodityBuilder->getValue($target, $modalityName, $unit),
+                        true
                     );
                 }
             }
         }
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallback(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -418,12 +389,6 @@ class AssistanceBeneficiaryService
         return $commodityBuilder;
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallbackPerHouseholdMember(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -447,12 +412,6 @@ class AssistanceBeneficiaryService
         return $commodityBuilder;
     }
 
-    /**
-     * @param Commodity $commodity
-     * @param CommodityAssignBuilder $commodityBuilder
-     *
-     * @return CommodityAssignBuilder
-     */
     private function addCommodityCallbackPerHouseholdMembers(
         Commodity $commodity,
         CommodityAssignBuilder $commodityBuilder
@@ -494,7 +453,7 @@ class AssistanceBeneficiaryService
         } // not persisted yet
         try {
             $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             // TODO: log but ignore
         }
     }

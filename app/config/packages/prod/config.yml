@@ -37,9 +37,12 @@ monolog:
             level: !php/const Monolog\Logger::ERROR
             hub_id: Sentry\State\HubInterface
 
-nelmio_cors:
-    defaults:
-        allow_origin: ['https://pin.humansis.org', 'https://prod-pin.humansis.org', 'https://humansis-smartcard.web.app']
-
 parameters:
     frontendUrl: 'https://pin.humansis.org'
+    cors:
+        allow_origin: [ 'https://pin.humansis.org', 'https://prod-pin.humansis.org', 'https://humansis-smartcard.web.app' ]
+        allow_credentials: 'true'
+        allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: [ ]
+        max_age: 3600

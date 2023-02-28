@@ -24,32 +24,22 @@ class CountrySpecific extends Criteria implements ExportableInterface
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="field_string", type="string", length=45)
      */
-    private $fieldString;
+    private ?string $fieldString = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="type", type="string", length=45)
      */
-    private $type;
+    private ?string $type = null;
 
     /**
-     * @var CountrySpecificAnswer
-     *
      * @ORM\OneToMany(targetEntity="Entity\CountrySpecificAnswer", mappedBy="countrySpecific", cascade={"remove"})
      */
-    private $countrySpecificAnswers;
+    private \Doctrine\Common\Collections\Collection|array $countrySpecificAnswers;
 
     /**
      * CountrySpecific constructor.
-     *
-     * @param string $field
-     * @param string $type
-     * @param string $countryIso3
      */
     public function __construct(string $field, string $type, string $countryIso3)
     {
@@ -62,9 +52,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Set type.
      *
-     * @param string $type
      *
-     * @return CountrySpecific
      */
     public function setType(string $type): CountrySpecific
     {
@@ -75,8 +63,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
 
     /**
      * Get type.
-     *
-     * @return string
      */
     public function getType(): string
     {
@@ -86,9 +72,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Add countrySpecificAnswer.
      *
-     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
-     * @return CountrySpecific
      */
     public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): CountrySpecific
     {
@@ -100,7 +84,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Remove countrySpecificAnswer.
      *
-     * @param CountrySpecificAnswer $countrySpecificAnswer
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -122,9 +105,7 @@ class CountrySpecific extends Criteria implements ExportableInterface
     /**
      * Set fieldString.
      *
-     * @param string $fieldString
      *
-     * @return CountrySpecific
      */
     public function setFieldString(string $fieldString): CountrySpecific
     {
@@ -135,8 +116,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
 
     /**
      * Get fieldString.
-     *
-     * @return string
      */
     public function getFieldString(): string
     {

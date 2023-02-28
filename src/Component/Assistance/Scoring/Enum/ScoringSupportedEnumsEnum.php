@@ -6,7 +6,7 @@ namespace Component\Assistance\Scoring\Enum;
 
 final class ScoringSupportedEnumsEnum
 {
-    public const HOUSEHOLD_SHELTER_STATUS = 'HouseholdShelterStatus';
+    final public const HOUSEHOLD_SHELTER_STATUS = 'HouseholdShelterStatus';
 
     public static function values(): array
     {

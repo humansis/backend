@@ -19,7 +19,7 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $this->em = $kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
     }
@@ -33,8 +33,6 @@ class BeneficiaryRepositoryTest extends KernelTestCase
     }
 
     /**
-     * @param int $householdId
-     * @param int $expectedBeneficiariesCount
      *
      * @throws NoResultException
      * @throws NonUniqueResultException

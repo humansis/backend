@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\SelectionCriteria\Generator\HouseholdFieldGenerator;
 use Entity\CountrySpecific;
+use Entity\HouseholdLocation;
 use Entity\Location;
 use Entity\VulnerabilityCriterion;
 use Repository\CountrySpecificRepository;
@@ -22,34 +24,8 @@ use InputType\Assistance\SelectionCriterionInputType;
 
 class SelectionCriteriaFactory
 {
-    /** @var CriteriaConfigurationLoader $configurationLoader */
-    private $configurationLoader;
-
-    /** @var CountrySpecificRepository */
-    private $countrySpecificRepository;
-
-    /** @var VulnerabilityCriterionRepository */
-    private $vulnerabilityCriterionRepository;
-
-    /** @var LocationRepository */
-    private $locationRepository;
-
-    /**
-     * @param CriteriaConfigurationLoader $configurationLoader
-     * @param CountrySpecificRepository $countrySpecificRepository
-     * @param VulnerabilityCriterionRepository $vulnerabilityCriterionRepository
-     * @param LocationRepository $locationRepository
-     */
-    public function __construct(
-        CriteriaConfigurationLoader $configurationLoader,
-        CountrySpecificRepository $countrySpecificRepository,
-        VulnerabilityCriterionRepository $vulnerabilityCriterionRepository,
-        LocationRepository $locationRepository
-    ) {
-        $this->configurationLoader = $configurationLoader;
-        $this->countrySpecificRepository = $countrySpecificRepository;
-        $this->vulnerabilityCriterionRepository = $vulnerabilityCriterionRepository;
-        $this->locationRepository = $locationRepository;
+    public function __construct(private readonly CriteriaConfigurationLoader $configurationLoader, private readonly CountrySpecificRepository $countrySpecificRepository, private readonly VulnerabilityCriterionRepository $vulnerabilityCriterionRepository, private readonly LocationRepository $locationRepository)
+    {
     }
 
     public function create(SelectionCriterionInputType $input): SelectionCriteriaEntity
@@ -58,7 +34,7 @@ class SelectionCriteriaFactory
         $criterium->setConditionString($input->getCondition());
         $criterium->setFieldString($input->getField());
         $criterium->setTarget($input->getTarget());
-        $criterium->setValueString($input->getValue());
+        $criterium->setValueString((string) $input->getValue());
         $criterium->setWeight($input->getWeight());
         $criterium->setGroupNumber($input->getGroup());
         $criterium->setTableString('Personnal');
@@ -86,7 +62,7 @@ class SelectionCriteriaFactory
                 }
 
                 $criterium->setFieldString(SelectionCriteriaField::CURRENT_LOCATION);
-                $criterium->setValueString($location->getId());
+                $criterium->setValueString((string) $location->getId());
 
                 return $criterium;
             }
@@ -98,6 +74,13 @@ class SelectionCriteriaFactory
             $criterium->setFieldString(SelectionCriteriaField::GENDER);
 
             return $criterium;
+        }
+
+        if (
+            SelectionCriteriaField::LOCATION_TYPE === $input->getField()
+            && HouseholdFieldGenerator::isValueIndexOfHouseholdLocationTypeArray($input->getValue())
+        ) {
+            $criterium->setValueString(HouseholdLocation::LOCATION_TYPES[(int) $input->getValue()]);
         }
 
         return $criterium;

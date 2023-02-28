@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 abstract class AbstractSortInputType implements SortInputTypeInterface
 {
-    private $sort = [];
+    private array $sort = [];
 
     /**
      * @return array list of accepted sort names
@@ -24,19 +24,20 @@ abstract class AbstractSortInputType implements SortInputTypeInterface
         $validNames = $this->getValidNames();
 
         foreach ($sorts as $value) {
-            if (false === strpos($value, '.')) {
+            if (!str_contains((string) $value, '.')) {
                 $name = $value;
                 $direction = 'asc';
             } else {
-                [$name, $direction] = explode('.', $value);
+                [$name, $direction] = explode('.', (string) $value);
             }
 
+
             if (!in_array(strtolower($direction), ['asc', 'desc'])) {
-                throw new BadRequestHttpException('Invalid sort direction for ' . $value);
+                throw new BadRequestHttpException("Invalid sort direction for '{$direction}'");
             }
 
             if (!in_array($name, $validNames)) {
-                throw new BadRequestHttpException('Invalid sort name for ' . $value);
+                throw new BadRequestHttpException("Invalid sort name for '{$name}'");
             }
 
             $this->sort[$name] = $direction;

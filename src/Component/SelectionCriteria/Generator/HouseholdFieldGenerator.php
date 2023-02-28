@@ -15,12 +15,8 @@ use RuntimeException;
 
 class HouseholdFieldGenerator implements FieldGeneratorInterface
 {
-    /** @var CountrySpecificRepository */
-    private $countrySpecificRepository;
-
-    public function __construct(CountrySpecificRepository $countrySpecificRepository)
+    public function __construct(private readonly CountrySpecificRepository $countrySpecificRepository)
     {
-        $this->countrySpecificRepository = $countrySpecificRepository;
     }
 
     /**
@@ -44,17 +40,13 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
                      * Pro cislo zadane bez desetinne tecky vraci is_double() false
                      * is_double(1) vraci false, is_double(1.1) vraci true
                      */
-                    $validator = function ($value) {
-                        return is_numeric($value);
-                    };
+                    $validator = fn($value) => is_numeric($value);
                     break;
 
                 case "string":
                 default:
                     $conditionList = ['='];
-                    $validator = function ($value) {
-                        return is_string($value);
-                    };
+                    $validator = fn($value) => is_string($value);
                     break;
             }
 
@@ -68,9 +60,6 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
         }
     }
 
-    /**
-     * @return Generator
-     */
     private function getStaticFields(): Generator
     {
         //yield new Field('copingStrategiesIndex', 'Coping Strategies Index', ['=', '<', '>', '<=', '>='], 'integer');
@@ -108,6 +97,15 @@ class HouseholdFieldGenerator implements FieldGeneratorInterface
 
     public static function validateLocationType($value): bool
     {
-        return is_int($value) || in_array($value, HouseholdLocation::LOCATION_TYPES, true);
+        return self::isValueIndexOfHouseholdLocationTypeArray($value) || in_array($value, HouseholdLocation::LOCATION_TYPES, true);
+    }
+
+    public static function isValueIndexOfHouseholdLocationTypeArray(string|int $value): bool
+    {
+        if (!ctype_digit($value) && !is_int($value)) {
+            return false;
+        }
+
+        return array_key_exists((int) $value, HouseholdLocation::LOCATION_TYPES);
     }
 }

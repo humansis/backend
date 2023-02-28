@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="beneficiary")
  * @ORM\Entity(repositoryClass="Repository\BeneficiaryRepository")
  */
-class Beneficiary extends AbstractBeneficiary implements ExportableInterface
+class Beneficiary extends AbstractBeneficiary
 {
     /**
      * @ORM\OneToOne(targetEntity="Entity\Person", cascade={"persist", "remove"})
@@ -28,34 +28,26 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     private $person;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="status", type="boolean")
-     * @Assert\NotBlank(message="The status is required.")
      */
-    private $status;
+    #[Assert\NotBlank(message: 'The status is required.')]
+    private bool $status;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="residency_status", type="string", length=20)
-     * @Assert\Regex("/^(refugee|IDP|resident|returnee)$/i")
      */
-    private $residencyStatus;
+    #[Assert\Regex('/^(refugee|IDP|resident|returnee)$/i')]
+    private string $residencyStatus;
 
     /**
-     * @var DateTime|null
-     *
      * @ORM\Column(name="updated_on", type="datetime", nullable=true)
      */
-    private $updatedOn;
+    private ?DateTime $updatedOn;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household", inversedBy="beneficiaries")
      */
-    private $household;
+    private ?Household $household = null;
 
     /**
      * @var VulnerabilityCriterion
@@ -69,14 +61,14 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
      *
      * @var Collection|Smartcard[]
      */
-    private $smartcards;
+    private Collection |array $smartcards;
 
     /**
      * @var ImportBeneficiary[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiary", mappedBy="beneficiary", cascade={"persist", "remove"})
      */
-    private $importBeneficiaries;
+    private array| Collection $importBeneficiaries;
 
     /**
      * Constructor.
@@ -102,9 +94,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->getHousehold() ? $this->getHousehold()->getId() : null;
     }
 
-    /**
-     * @return Person
-     */
     public function getPerson(): Person
     {
         return $this->person;
@@ -161,7 +150,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Add vulnerabilityCriterion.
      *
-     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return Beneficiary
      */
@@ -177,7 +165,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * Remove vulnerabilityCriterion.
      *
-     * @param VulnerabilityCriterion $vulnerabilityCriterion
      *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
@@ -222,9 +209,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this->status;
     }
 
-    /**
-     * @return string
-     */
     public function getResidencyStatus(): string
     {
         return $this->residencyStatus;
@@ -232,8 +216,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * @param string $residencyStatus
-     *
-     * @return Beneficiary
      */
     public function setResidencyStatus(string $residencyStatus): self
     {
@@ -242,154 +224,7 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return $this;
     }
 
-    /**
-     * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
-     * @throws Exception
-     */
-    public function getMappedValueForExport(): array
-    {
-        // Recover the phones of the beneficiary
-        $phoneTypes = ["", ""];
-        $phonePrefix = ["", ""];
-        $phoneValues = ["", ""];
-        $phoneProxies = ["", ""];
 
-        $index = 0;
-        foreach ($this->getPerson()->getPhones()->getValues() as $value) {
-            $phoneTypes[$index] = $value->getType();
-            $phonePrefix[$index] = $value->getPrefix();
-            $phoneValues[$index] = $value->getNumber();
-            $phoneProxies[$index] = $value->getProxy();
-            $index++;
-        }
-
-        // Recover the  criterions from Vulnerability criteria object
-        $valuesCriteria = [];
-        foreach ($this->getVulnerabilityCriteria()->getValues() as $value) {
-            $valuesCriteria[] = $value->getFieldString();
-        }
-        $valuesCriteria = join(',', $valuesCriteria);
-
-        $primaryDocument = $this->getPerson()->getPrimaryNationalId();
-        $secondaryDocument = $this->getPerson()->getSecondaryNationalId();
-        $tertiaryDocument = $this->getPerson()->getTertiaryNationalId();
-
-        //Recover country specifics for the household
-        $valueCountrySpecific = [];
-        foreach ($this->getHousehold()->getCountrySpecificAnswers()->getValues() as $value) {
-            $valueCountrySpecific[$value->getCountrySpecific()->getFieldString()] = $value->getAnswer();
-        }
-
-        if ($this->getPerson()->getGender() == PersonGender::FEMALE) {
-            $valueGender = "Female";
-        } else {
-            $valueGender = "Male";
-        }
-
-        $householdLocations = $this->getHousehold()->getHouseholdLocations();
-
-        $currentHouseholdLocation = null;
-
-        /** @var HouseholdLocation $householdLocation */
-        foreach ($householdLocations as $householdLocation) {
-            if ($householdLocation->getLocationGroup() === HouseholdLocation::LOCATION_GROUP_CURRENT) {
-                $currentHouseholdLocation = $householdLocation;
-            }
-        }
-
-        $location = $currentHouseholdLocation->getLocation();
-
-        $adm1 = $location->getAdm1Name();
-        $adm2 = $location->getAdm2Name();
-        $adm3 = $location->getAdm3Name();
-        $adm4 = $location->getAdm4Name();
-
-        $householdFields = $this->getCommonHouseholdExportFields();
-
-        if ($this->status === true) {
-            $finalArray = array_merge(
-                ["household ID" => $this->getHousehold()->getId()],
-                $householdFields,
-                [
-                    "adm1" => $adm1,
-                    "adm2" => $adm2,
-                    "adm3" => $adm3,
-                    "adm4" => $adm4,
-                ]
-            );
-        } else {
-            $finalArray = [
-                "household ID" => "",
-                "addressStreet" => "",
-                "addressNumber" => "",
-                "addressPostcode" => "",
-                "camp" => "",
-                "tent number" => "",
-                "livelihood" => "",
-                "incomeLevel" => "",
-                "foodConsumptionScore" => "",
-                "copingStrategiesIndex" => "",
-                "notes" => "",
-                "latitude" => "",
-                "longitude" => "",
-                "adm1" => "",
-                "adm2" => "",
-                "adm3" => "",
-                "adm4" => "",
-            ];
-        }
-
-        $shelterStatus = '';
-        if ($this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = $this->getHousehold()->getShelterStatus() ? $this->getHousehold()->getShelterStatus() : '';
-        }
-
-        $tempBenef = [
-            "beneficiary ID" => $this->getId(),
-            "localGivenName" => $this->getPerson()->getLocalGivenName(),
-            "localFamilyName" => $this->getPerson()->getLocalFamilyName(),
-            "enGivenName" => $this->getPerson()->getEnGivenName(),
-            "enFamilyName" => $this->getPerson()->getEnFamilyName(),
-            "gender" => $valueGender,
-            "head" => $this->isHead() ? "true" : "false",
-            "residencyStatus" => $this->getResidencyStatus(),
-            "dateOfBirth" => $this->getPerson()->getDateOfBirth(),
-            "vulnerabilityCriteria" => $valuesCriteria,
-            "type phone 1" => $phoneTypes[0],
-            "prefix phone 1" => $phonePrefix[0],
-            "phone 1" => $phoneValues[0],
-            "proxy phone 1" => $phoneProxies[0],
-            "type phone 2" => $phoneTypes[1],
-            "prefix phone 2" => $phonePrefix[1],
-            "phone 2" => $phoneValues[1],
-            "proxy phone 2" => $phoneProxies[1],
-            "primary ID type" => $primaryDocument ? $primaryDocument->getIdType() : '',
-            "primary ID number" => $primaryDocument ? $primaryDocument->getIdNumber() : '',
-            "secondary ID type" => $secondaryDocument ? $secondaryDocument->getIdType() : '',
-            "secondary ID number" => $secondaryDocument ? $secondaryDocument->getIdNumber() : '',
-            "tertiary ID type" => $tertiaryDocument ? $tertiaryDocument->getIdType() : '',
-            "tertiary ID number" => $tertiaryDocument ? $tertiaryDocument->getIdNumber() : '',
-            "Assets" => implode(', ', $this->getHousehold()->getAssets()),
-            "Shelter Status" => $shelterStatus,
-            "Debt Level" => $this->getHousehold()->getDebtLevel(),
-            "Support Received Types" => implode(', ', $this->getHousehold()->getSupportReceivedTypes()),
-            "Support Date Received" => $this->getHousehold()->getSupportDateReceived()
-                ? $this->getHousehold()->getSupportDateReceived()->format('d-m-Y')
-                : null,
-        ];
-
-        foreach ($valueCountrySpecific as $key => $value) {
-            $finalArray[$key] = $value;
-        }
-
-        foreach ($tempBenef as $key => $value) {
-            $finalArray[$key] = $value;
-        }
-
-        return $finalArray;
-    }
 
     public function getCommonBeneficiaryExportFields(): array
     {
@@ -441,13 +276,11 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
         $shelterStatus = null;
         if (null !== $this->getHousehold()->getShelterStatus()) {
-            $shelterStatus = HouseholdShelterStatus::valueToAPI($this->getHousehold()->getShelterStatus());
+            $shelterStatus = HouseholdShelterStatus::valueFromAPI($this->getHousehold()->getShelterStatus());
         }
 
         $supportReceivedTypes = array_values(
-            array_map(function ($value) {
-                return HouseholdSupportReceivedType::valueFromAPI($value);
-            }, (array) $this->getHousehold()->getSupportReceivedTypes())
+            array_map(fn($value) => HouseholdSupportReceivedType::valueFromAPI($value), (array) $this->getHousehold()->getSupportReceivedTypes())
         );
 
         $supportDateReceived = null;
@@ -482,8 +315,8 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         $referral_type = null;
         $referral_comment = null;
         if ($this->getPerson()->getReferral()) {
-            $referral_type = $this->$this->getPerson()->getReferral()->getType();
-            $referral_comment = $this->$this->getPerson()->getReferral()->getComment();
+            $referral_type = $this->getPerson()->getReferral()->getType();
+            $referral_comment = $this->getPerson()->getReferral()->getComment();
         }
 
         $referralInfo = [
@@ -500,15 +333,13 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
 
     /**
      * Returns age of beneficiary in years
-     *
-     * @return int|null
      */
     public function getAge(): ?int
     {
         if ($this->person->getDateOfBirth()) {
             try {
                 return $this->person->getDateOfBirth()->diff(new DateTime('now'))->y;
-            } catch (Exception $ex) {
+            } catch (Exception) {
                 return null;
             }
         }
@@ -516,9 +347,6 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
         return null;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSmartcardSerialNumber(): ?string
     {
         foreach ($this->smartcards as $smartcard) {
@@ -544,8 +372,19 @@ class Beneficiary extends AbstractBeneficiary implements ExportableInterface
     /**
      * @return Collection|ImportBeneficiary[]
      */
-    public function getImportBeneficiaries()
+    public function getImportBeneficiaries(): Collection |array
     {
         return $this->importBeneficiaries;
+    }
+
+    public function getActiveSmartcard(): null|Smartcard
+    {
+        foreach ($this->smartcards as $smartcard) {
+            if ($smartcard->isActive()) {
+                return $smartcard;
+            }
+        }
+
+        return null;
     }
 }

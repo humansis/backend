@@ -21,9 +21,6 @@ trait CreatedAt
      */
     protected $createdAt;
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         if (null === $this->createdAt) {

@@ -10,7 +10,6 @@ use Happyr\Validator\Constraint\EntityExist;
 trait AssistanceFilterTrait
 {
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"}),
@@ -19,6 +18,7 @@ trait AssistanceFilterTrait
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $assistances;
 
     public function hasAssistances(): bool

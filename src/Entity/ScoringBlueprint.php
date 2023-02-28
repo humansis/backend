@@ -25,18 +25,14 @@ class ScoringBlueprint
     use PropertySetter;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", nullable=false)
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="archived", type="boolean", nullable=false)
      */
-    private $archived = false;
+    private bool $archived = false;
 
     /**
      * @var string|resource
@@ -45,27 +41,16 @@ class ScoringBlueprint
      */
     private $content;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return ScoringBlueprint
-     */
     public function setName(string $name): ScoringBlueprint
     {
         $this->name = $name;
@@ -73,19 +58,11 @@ class ScoringBlueprint
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isArchived(): bool
     {
         return $this->archived;
     }
 
-    /**
-     * @param bool $archived
-     *
-     * @return ScoringBlueprint
-     */
     public function setArchived(bool $archived): ScoringBlueprint
     {
         $this->archived = $archived;
@@ -116,7 +93,6 @@ class ScoringBlueprint
 
     /**
      * @param resource $content
-     * @return ScoringBlueprint
      */
     public function setContent($content): ScoringBlueprint
     {

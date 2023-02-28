@@ -6,7 +6,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\Project;
 use Exception;
-use Symfony\Component\BrowserKit\Client;
 use Tests\BMSServiceTestCase;
 use Entity\UserProject;
 
@@ -22,7 +21,7 @@ class ExportControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function availableExportProvider(): array
@@ -66,14 +65,11 @@ class ExportControllerTest extends BMSServiceTestCase
     /**
      * @dataProvider availableExportProvider
      *
-     * @param string $type
-     * @param string $otherQuery
-     * @param array $body
      *
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function testExport(string $type, string $otherQuery, array $body = [])
+    public function testExport(string $type, string $otherQuery, array $body = []): void
     {
         $this->markTestSkipped('Export tests takes too much time. It kills processing.');
 

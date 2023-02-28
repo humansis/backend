@@ -10,72 +10,59 @@ use Entity\Helper\CreatedAt;
 use Entity\Helper\CreatedBy;
 use Entity\Helper\StandardizedPrimaryKey;
 use Entity\User;
+use Stringable;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\ImportFileRepository")
  * @ORM\HasLifecycleCallbacks()
  */
-class ImportFile
+class ImportFile implements Stringable
 {
     use StandardizedPrimaryKey;
     use CreatedAt;
     use CreatedBy;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="filename", type="string", nullable=false)
      */
-    private $filename;
+    private string $filename;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="is_loaded", type="boolean")
      */
-    private $isLoaded;
+    private bool $isLoaded;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="saved_as_filename", type="string", nullable=true)
      */
-    private $savedAsFilename;
+    private ?string $savedAsFilename = null;
 
     /**
-     * @var Import
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Import", inversedBy="importFiles")
      */
-    private $import;
+    private Import $import;
 
     /**
      * @var ImportQueue[]|Collection
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportQueue", mappedBy="file", cascade={"remove"})
      */
-    private $importQueues;
+    private array | Collection $importQueues;
 
     /**
-     * @var array|null
-     *
      * @ORM\Column(name="expected_valid_columns", type="simple_array", nullable=true)
      */
-    private $expectedValidColumns;
+    private ?array $expectedValidColumns = null;
 
     /**
-     * @var array|null
-     *
      * @ORM\Column(name="expected_missing_columns", type="simple_array", nullable=true)
      */
-    private $expectedMissingColumns;
+    private ?array $expectedMissingColumns = null;
 
     /**
-     * @var array|null
-     *
      * @ORM\Column(name="unexpected_columns", type="simple_array", nullable=true)
      */
-    private $unexpectedColumns;
+    private ?array $unexpectedColumns = null;
 
     /**
      * @var string|null
@@ -84,47 +71,41 @@ class ImportFile
      */
     private $structureViolations;
 
-    public function __construct(string $filename, Import $import, User $user)
-    {
+    public function __construct(
+        string $filename,
+        Import $import,
+        User $user
+    ) {
         $this->filename = $filename;
         $this->import = $import;
         $this->createdBy = $user;
         $this->isLoaded = false;
     }
 
-    /**
-     * @return string
-     */
     public function getFilename(): string
     {
         return $this->filename;
     }
 
-    /**
-     * @return Import
-     */
     public function getImport(): Import
     {
         return $this->import;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->createdBy;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
-        return "ImportFile#{$this->getId()} ({$this->getFilename()})";
+        return (string) "ImportFile#{$this->getId()} ({$this->getFilename()})";
     }
 
     /**
      * @return Collection|ImportQueue[]
      */
-    public function getImportQueues()
+    public function getImportQueues(): Collection |array
     {
         return $this->importQueues;
     }
@@ -132,86 +113,56 @@ class ImportFile
     /**
      * @param Collection|ImportQueue[] $importQueues
      */
-    public function setImportQueues($importQueues): void
+    public function setImportQueues(Collection |array $importQueues): void
     {
         $this->importQueues = $importQueues;
     }
 
-    /**
-     * @return bool
-     */
     public function isLoaded(): bool
     {
         return $this->isLoaded;
     }
 
-    /**
-     * @param bool $isLoaded
-     */
     public function setIsLoaded(bool $isLoaded): void
     {
         $this->isLoaded = $isLoaded;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSavedAsFilename(): ?string
     {
         return $this->savedAsFilename;
     }
 
-    /**
-     * @param string|null $savedAsFilename
-     */
     public function setSavedAsFilename(?string $savedAsFilename): void
     {
         $this->savedAsFilename = $savedAsFilename;
     }
 
-    /**
-     * @return array|null
-     */
     public function getExpectedValidColumns(): ?array
     {
         return $this->expectedValidColumns;
     }
 
-    /**
-     * @param array|null $expectedValidColumns
-     */
     public function setExpectedValidColumns(?array $expectedValidColumns): void
     {
         $this->expectedValidColumns = $expectedValidColumns;
     }
 
-    /**
-     * @return array|null
-     */
     public function getExpectedMissingColumns(): ?array
     {
         return $this->expectedMissingColumns;
     }
 
-    /**
-     * @param array|null $expectedMissingColumns
-     */
     public function setExpectedMissingColumns(?array $expectedMissingColumns): void
     {
         $this->expectedMissingColumns = $expectedMissingColumns;
     }
 
-    /**
-     * @return array|null
-     */
     public function getUnexpectedColumns(): ?array
     {
         return $this->unexpectedColumns;
     }
 
-    /**
-     * @param array|null $unexpectedColumns
-     */
     public function setUnexpectedColumns(?array $unexpectedColumns): void
     {
         $this->unexpectedColumns = $unexpectedColumns;
@@ -225,9 +176,6 @@ class ImportFile
         return $this->structureViolations;
     }
 
-    /**
-     * @param array|null $structureViolations
-     */
     public function setStructureViolations(?array $structureViolations): void
     {
         $this->structureViolations = $structureViolations;

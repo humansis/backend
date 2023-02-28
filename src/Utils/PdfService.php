@@ -13,17 +13,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PdfService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em = $entityManager;
     }
 
     public function printPdf($html, string $orientation, string $name)

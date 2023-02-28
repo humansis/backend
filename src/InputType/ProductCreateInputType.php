@@ -9,19 +9,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductCreateInputType extends ProductUpdateInputType
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $name;
 
     /**
      * @Country
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $iso3;
 
     /**

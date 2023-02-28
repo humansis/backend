@@ -8,19 +8,14 @@ use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequence({"AssistanceBeneficiariesOperationInputType", "Strict"})
- */
+#[Assert\GroupSequence(['AssistanceBeneficiariesOperationInputType', 'Strict'])]
 class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Type("string")
-     * @Assert\NotBlank
-     */
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
     protected $justification;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("string", groups={"Strict"})
@@ -28,6 +23,7 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $documentNumbers = [];
 
     /**
@@ -36,7 +32,6 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
     protected $documentType;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Type("int", groups={"Strict"})
@@ -44,22 +39,17 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $beneficiaryIds = [];
 
-    /**
-     * @Assert\IsTrue(groups="Strict", message="Only one array can have values.")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Strict'], message: 'Only one array can have values.')]
     public function isOneOfArraysNotEmpty(): bool
     {
         return (empty($this->beneficiaryIds) && !empty($this->documentNumbers))
             || (!empty($this->beneficiaryIds) && empty($this->documentNumbers));
     }
 
-    /**
-     * @Assert\IsTrue(groups="Strict", message="You must choose type of ID when using document numbers")
-     * @return bool
-     */
+    #[Assert\IsTrue(groups: ['Strict'], message: 'You must choose type of ID when using document numbers')]
     public function hasDocumentTypeWithPresentDocumentNumbers(): bool
     {
         if (empty($this->documentNumbers)) {
@@ -89,31 +79,18 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
         return $this->justification;
     }
 
-    /**
-     * @param mixed $justification
-     *
-     * @return AssistanceBeneficiariesOperationInputType
-     */
-    public function setJustification($justification): AssistanceBeneficiariesOperationInputType
+    public function setJustification(mixed $justification): AssistanceBeneficiariesOperationInputType
     {
         $this->justification = $justification;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getDocumentNumbers(): array
     {
         return $this->documentNumbers;
     }
 
-    /**
-     * @param array $documentNumbers
-     *
-     * @return AssistanceBeneficiariesOperationInputType
-     */
     public function setDocumentNumbers(array $documentNumbers): AssistanceBeneficiariesOperationInputType
     {
         $this->documentNumbers = $documentNumbers;
@@ -129,12 +106,7 @@ class AssistanceBeneficiariesOperationInputType implements InputTypeInterface
         return $this->documentType;
     }
 
-    /**
-     * @param mixed $documentType
-     *
-     * @return AssistanceBeneficiariesOperationInputType
-     */
-    public function setDocumentType($documentType): AssistanceBeneficiariesOperationInputType
+    public function setDocumentType(mixed $documentType): AssistanceBeneficiariesOperationInputType
     {
         $this->documentType = $documentType;
 

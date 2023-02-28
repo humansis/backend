@@ -72,7 +72,7 @@ class TargetExpandedMapper implements MapperInterface
     public function getDistributedAt(): ?string
     {
         return $this->object->getSmartcardDistributedAt()
-            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ISO8601)
+            ? $this->object->getSmartcardDistributedAt()->format(DateTimeInterface::ATOM)
             : null;
     }
 
@@ -96,9 +96,7 @@ class TargetExpandedMapper implements MapperInterface
                 'code' => $booklet->getCode(),
                 'currency' => $booklet->getCurrency(),
                 'status' => $booklet->getStatus(),
-                'voucherValues' => $booklet->getVouchers()->map(function (Voucher $voucher) {
-                    return $voucher->getValue();
-                }),
+                'voucherValues' => $booklet->getVouchers()->map(fn(Voucher $voucher) => $voucher->getValue()),
             ];
         }
 
@@ -114,9 +112,7 @@ class TargetExpandedMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . $object::class . ' given.'
         );
     }
 }

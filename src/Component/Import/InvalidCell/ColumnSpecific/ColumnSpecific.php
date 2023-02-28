@@ -10,8 +10,6 @@ interface ColumnSpecific
 
     /**
      * function($value, string $type)
-     *
-     * @return callable
      */
     public function getValueCallback(): callable;
 }

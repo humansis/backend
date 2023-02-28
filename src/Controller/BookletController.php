@@ -7,7 +7,11 @@ namespace Controller;
 use Entity\Beneficiary;
 use Entity\Community;
 use Entity\Institution;
+use Entity\Voucher;
 use Exception;
+use InputType\Country;
+use InputType\DataTableType;
+use InputType\RequestConverter;
 use Pagination\Paginator;
 use Entity\Assistance;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -17,6 +21,8 @@ use InputType\BookletFilterInputType;
 use InputType\BookletOrderInputType;
 use InputType\BookletPrintFilterInputType;
 use InputType\BookletUpdateInputType;
+use Repository\BookletRepository;
+use Repository\VoucherRepository;
 use Request\Pagination;
 use Services\CodeListService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -26,27 +32,25 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Booklet;
 use Utils\BookletService;
+use Utils\ExportTableServiceInterface;
+use Utils\VoucherService;
+use Utils\VoucherTransformData;
 
 class BookletController extends AbstractController
 {
-    /** @var BookletService */
-    private $bookletService;
-
-    /** @var CodeListService */
-    private $codeListService;
-
     public function __construct(
-        BookletService $bookletService,
-        CodeListService $codeListService
+        private readonly BookletService $bookletService,
+        private readonly CodeListService $codeListService,
+        private readonly VoucherService $voucherService,
+        private readonly VoucherTransformData $voucherTransformData,
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly VoucherRepository $voucherRepository,
+        private readonly BookletRepository $bookletRepository
     ) {
-        $this->bookletService = $bookletService;
-        $this->codeListService = $codeListService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/booklets/statuses")
-     *
-     * @return JsonResponse
      */
     public function statuses(): JsonResponse
     {
@@ -58,37 +62,44 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/exports")
      *
-     * @param Request $request
-     * @param BookletExportFilterInputType $inputType
      *
-     * @return Response
      */
     public function exports(Request $request, BookletExportFilterInputType $inputType): Response
     {
-        $request->query->add([
-            'bookletCodes' => true,
-        ]);
-        $request->request->add([
-            '__country' => $request->headers->get('country'),
-        ]);
+        $countryIso3 = $request->headers->get("country");
+        $filters = $request->request->get('filters');
+        $type = $request->query->get('type');
 
         if ($inputType->hasIds()) {
-            $request->request->add(['ids' => $inputType->getIds()]);
+            $ids = $inputType->getIds();
+            $allVouchers = $this->voucherRepository->getAllByBookletIds($ids)->getResult();
+        } else {
+            if ($filters) {
+                /** @var DataTableType $dataTableFilter */
+                $dataTableFilter = RequestConverter::normalizeInputType($filters, DataTableType::class);
+                $booklets = $this->bookletService->getAll(new Country($countryIso3), $dataTableFilter)[1];
+            } else {
+                $booklets = $this->bookletRepository->getActiveBooklets($countryIso3);
+            }
+            $allVouchers = $this->voucherRepository->getAllByBooklets($booklets)->getResult();
         }
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        if ($type == 'pdf') {
+            return $this->voucherService->exportToPdf($allVouchers);
+        } else {
+            $exportableTable = $this->voucherTransformData->transformData($allVouchers);
+            return $this->exportTableService->export($exportableTable, 'bookletCodes', $type);
+        }
     }
 
     /**
      * @Rest\Get("/web-app/v1/booklets/prints")
      *
-     * @param BookletPrintFilterInputType $inputType
      *
-     * @return Response
      */
     public function bookletPrings(BookletPrintFilterInputType $inputType): Response
     {
-        $booklets = $this->getDoctrine()->getRepository(Booklet::class)->findBy(['id' => $inputType->getIds()]);
+        $booklets = $this->bookletRepository->findBy(['id' => $inputType->getIds()]);
 
         return $this->bookletService->generatePdf($booklets);
     }
@@ -96,9 +107,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
      *
-     * @return JsonResponse
      */
     public function item(Booklet $object): JsonResponse
     {
@@ -108,10 +117,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
-     * @param BookletUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(Booklet $object, BookletUpdateInputType $inputType): JsonResponse
     {
@@ -128,12 +134,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/booklets")
      *
-     * @param Request $request
-     * @param BookletFilterInputType $filter
-     * @param Pagination $pagination
-     * @param BookletOrderInputType $orderBy
      *
-     * @return JsonResponse
      */
     public function list(
         Request $request,
@@ -141,13 +142,12 @@ class BookletController extends AbstractController
         Pagination $pagination,
         BookletOrderInputType $orderBy
     ): JsonResponse {
-        $countryIso3 = $request->headers->get('country', false);
-        if (!$countryIso3) {
+        $countryIso3 = $request->headers->get('country');
+        if (is_null($countryIso3)) {
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $list = $this->getDoctrine()->getRepository(Booklet::class)
-            ->findByParams($countryIso3, $filter, $orderBy, $pagination);
+        $list = $this->bookletRepository->findByParams($countryIso3, $filter, $orderBy, $pagination);
 
         return $this->json($list);
     }
@@ -155,9 +155,7 @@ class BookletController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/booklets/batches")
      *
-     * @param BookletBatchCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(BookletBatchCreateInputType $inputType): JsonResponse
     {
@@ -169,15 +167,13 @@ class BookletController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/booklets/{id}")
      *
-     * @param Booklet $object
      *
-     * @return JsonResponse
      */
     public function delete(Booklet $object): JsonResponse
     {
         try {
             $deleted = $this->bookletService->deleteBookletFromDatabase($object);
-        } catch (Exception $exception) {
+        } catch (Exception) {
             $deleted = false;
         }
 
@@ -190,11 +186,7 @@ class BookletController extends AbstractController
      * @ParamConverter("beneficiary", options={"mapping": {"beneficiaryId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToBeneficiary(
         Assistance $assistance,
@@ -212,11 +204,7 @@ class BookletController extends AbstractController
      * @ParamConverter("community", options={"mapping": {"communityId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Community $community
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToCommunity(Assistance $assistance, Community $community, Booklet $booklet): JsonResponse
     {
@@ -231,11 +219,7 @@ class BookletController extends AbstractController
      * @ParamConverter("institution", options={"mapping": {"institutionId" : "id"}})
      * @ParamConverter("booklet", options={"mapping": {"bookletCode" : "code"}})
      *
-     * @param Assistance $assistance
-     * @param Institution $institution
-     * @param Booklet $booklet
      *
-     * @return JsonResponse
      */
     public function assignToInstitution(
         Assistance $assistance,

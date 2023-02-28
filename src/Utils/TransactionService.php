@@ -11,15 +11,14 @@ use Exception;
 use Enum\CacheTarget;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\InvalidArgumentException;
-use Swift_Mailer;
-use Swift_Message;
-use Symfony\Component\Cache\Simple\FilesystemCache;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Transaction;
 use Utils\Provider\DefaultFinancialProvider;
 use Twig\Environment;
 use Entity\User;
+use Utils\Provider\KHMFinancialProvider;
 
 /**
  * Class TransactionService
@@ -31,79 +30,32 @@ class TransactionService
     /** @var string */
     private $email;
 
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ContainerInterface $container */
-    private $container;
-
-    /** @var DefaultFinancialProvider $financialProvider */
-    private $financialProvider;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /** @var Swift_Mailer */
-    private $mailer;
-
-    /** @var ExportService */
-    private $exportService;
-
     /**
      * TransactionService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ContainerInterface $container
-     * @param CacheInterface $cache
-     * @param Environment $twig
-     * @param LoggerInterface $mobileLogger
-     * @param Swift_Mailer $mailer
-     * @param ExportService $exportService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ContainerInterface $container,
-        CacheInterface $cache,
-        Environment $twig,
-        LoggerInterface $mobileLogger,
-        Swift_Mailer $mailer,
-        ExportService $exportService
+        private readonly EntityManagerInterface $em,
+        private readonly ContainerInterface $container,
+        private readonly CacheInterface $cache,
+        private readonly Environment $twig,
+        private readonly LoggerInterface $logger,
+        private readonly ExportService $exportService,
+        private readonly KHMFinancialProvider $khmFinancialProvider
     ) {
-        $this->em = $entityManager;
-        $this->container = $container;
         $this->email = $this->container->getParameter('email');
-        $this->logger = $mobileLogger;
-        $this->cache = $cache;
-        $this->twig = $twig;
-        $this->mailer = $mailer;
-        $this->exportService = $exportService;
     }
 
     /**
      * Send money to distribution beneficiaries
      *
-     * @param string $countryISO3
-     * @param Assistance $assistance
-     * @param User $user
      *
-     * @return object
      * @throws InvalidArgumentException
      * @throws \Psr\Cache\InvalidArgumentException
      * @throws Exception
      */
     public function sendMoney(string $countryISO3, Assistance $assistance, User $user): object
     {
-        $this->financialProvider = $this->getFinancialProviderForCountry($countryISO3);
+        $financialProvider = $this->getFinancialProviderForCountry($countryISO3);
 
         if ($assistance->getCommodities()[0]->getModalityType() === ModalityType::MOBILE_MONEY) {
             $amountToSend = $assistance->getCommodities()[0]->getValue();
@@ -116,7 +68,7 @@ class TransactionService
         $from = $user->getId();
         $this->cache->delete(CacheTarget::assistanceId($assistance->getId()));
 
-        return $this->financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
+        return $financialProvider->sendMoneyToAll($assistance, $amountToSend, $currencyToSend, $from);
     }
 
     /**
@@ -129,8 +81,12 @@ class TransactionService
     private function getFinancialProviderForCountry(string $countryISO3)
     {
         try {
-            $provider = $this->container->get('transaction.' . strtolower($countryISO3) . '_financial_provider');
-        } catch (Exception $e) {
+            if ($countryISO3 === 'KHM') {
+                $provider = $this->khmFinancialProvider;
+            } else {
+                $provider = null;
+            }
+        } catch (Exception) {
             $provider = null;
         }
 
@@ -138,7 +94,7 @@ class TransactionService
             $this->logger->error("Country $countryISO3 has no defined financial provider");
             throw new Exception("The financial provider for " . $countryISO3 . " is not properly defined");
         }
-        $this->logger->error("Financial provider for country $countryISO3: " . get_class($provider));
+        $this->logger->error("Financial provider for country $countryISO3: " . $provider::class);
 
         return $provider;
     }
@@ -146,8 +102,6 @@ class TransactionService
     /**
      * Send email to confirm transaction
      *
-     * @param User $user
-     * @param Assistance $assistance
      * @return void
      * @throws InvalidArgumentException
      */
@@ -156,14 +110,16 @@ class TransactionService
         $code = random_int(100000, 999999);
 
         $id = $user->getId();
-        $cache = new FilesystemCache();
-        $cache->set($assistance->getId() . '-' . $id . '-code_transaction_confirmation', $code);
+        $cache = new FilesystemAdapter();
+        $item = $cache->getItem($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+        $item->set($code);
+        $cache->save($item);
 
         $commodity = $assistance->getCommodities()->get(0);
         $numberOfBeneficiaries = count($assistance->getDistributionBeneficiaries());
         $amountToSend = $numberOfBeneficiaries * $commodity->getValue();
 
-        $message = (new Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
+        /*$message = (new Swift_Message('Confirm transaction for distribution ' . $assistance->getName()))
             ->setFrom($this->email)
             ->setTo($user->getEmail())
             ->setBody(
@@ -179,43 +135,44 @@ class TransactionService
                     ]
                 ),
                 'text/html'
-            );
+            );*/
 
-        $this->mailer->send($message);
+        //$this->mailer->send($message);
         $this->logger->error("Code for verify assistance was sent to " . $user->getEmail(), [$assistance]);
     }
 
     /**
      * Verify confirmation code
      *
-     * @param int $code
-     * @param User $user
-     * @param Assistance $assistance
      * @return bool
      * @throws InvalidArgumentException
      */
     public function verifyCode(int $code, User $user, Assistance $assistance)
     {
-        $cache = new FilesystemCache();
+        $cache = new FilesystemAdapter();
+        $id = $user->getId();
+        $item = $cache->getItem($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+        $item->set($code);
+        $cache->save($item);
 
         $checkedAgainst = '';
-        $id = $user->getId();
-        if ($cache->has($assistance->getId() . '-' . $id . '-code_transaction_confirmation')) {
-            $checkedAgainst = $cache->get($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+
+        $key = $assistance->getId() . '-' . $id . '-code_transaction_confirmation';
+        if ($cache->hasItem($key)) {
+            $item = $cache->getItem($key);
+            $checkedAgainst = $item->get();
         }
 
         $result = ($code === intval($checkedAgainst));
 
         if ($result) {
-            $cache->delete($assistance->getId() . '-' . $id . '-code_transaction_confirmation');
+            $cache->delete($key);
         }
 
         return $result;
     }
 
     /**
-     * @param Assistance $assistance
-     * @param string $type
      * @return mixed
      */
     public function exportToCsv(Assistance $assistance, string $type)

@@ -12,8 +12,7 @@ use Serializer\MapperInterface;
 
 class ReliefPackageMapper implements MapperInterface
 {
-    /** @var ReliefPackage */
-    private $object;
+    private ?\Entity\Assistance\ReliefPackage $object = null;
 
     /**
      * {@inheritdoc}
@@ -37,7 +36,7 @@ class ReliefPackageMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . ReliefPackage::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -132,6 +131,6 @@ class ReliefPackageMapper implements MapperInterface
     {
         $expirationDate = $this->object->getAssistanceBeneficiary()->getAssistance()->getDateExpiration();
 
-        return $expirationDate ? $expirationDate->format(DateTimeInterface::ISO8601) : null;
+        return $expirationDate?->format(DateTimeInterface::ATOM);
     }
 }

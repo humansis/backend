@@ -8,8 +8,7 @@ use Serializer\MapperInterface;
 
 class AssistanceBeneficiariesUpdateMapper implements MapperInterface
 {
-    /** @var AssistanceBeneficiaryOperationOutputType */
-    private $object;
+    private ?\OutputType\Assistance\AssistanceBeneficiaryOperationOutputType $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -25,9 +24,7 @@ class AssistanceBeneficiariesUpdateMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceBeneficiaryOperationOutputType::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiaryOperationOutputType::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -46,8 +43,8 @@ class AssistanceBeneficiariesUpdateMapper implements MapperInterface
         return $this->object->getFailed();
     }
 
-    public function getAlreadyRemoved(): array
+    public function getAlreadyProcessed(): array
     {
-        return $this->object->getAlreadyRemoved();
+        return $this->object->getAlreadyProcessed();
     }
 }

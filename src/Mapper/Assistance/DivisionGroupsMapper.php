@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class DivisionGroupsMapper implements MapperInterface
 {
-    /** @var DivisionGroup */
-    private $object;
+    private ?\Entity\DivisionGroup $object = null;
 
     /**
      * {@inheritdoc}
@@ -33,7 +32,7 @@ class DivisionGroupsMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . DivisionGroup::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . DivisionGroup::class . ', ' . $object::class . ' given.'
         );
     }
 

@@ -4,27 +4,19 @@ declare(strict_types=1);
 
 namespace Component\Import\Integrity;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Component\Country\Countries;
 use Entity\ImportQueue;
 use InvalidArgumentException;
+use Repository\CountrySpecificRepository;
+use Repository\LocationRepository;
 
 class ImportLineFactory
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var Countries */
-    private $countries;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param Countries $countries
-     */
-    public function __construct(EntityManagerInterface $entityManager, Countries $countries)
-    {
-        $this->entityManager = $entityManager;
-        $this->countries = $countries;
+    public function __construct(
+        private readonly Countries $countries,
+        private readonly CountrySpecificRepository $countrySpecificRepository,
+        private readonly LocationRepository $locationRepository,
+    ) {
     }
 
     public function createFromData(array $data, string $countryIso): ImportLine
@@ -33,12 +25,10 @@ class ImportLineFactory
             throw new InvalidArgumentException("Country $countryIso doesn't exist");
         }
 
-        return new ImportLine($data, $countryIso, $this->entityManager);
+        return new ImportLine($data, $countryIso, $this->countrySpecificRepository, $this->locationRepository);
     }
 
     /**
-     * @param ImportQueue $importQueue
-     *
      * @return ImportLine[]
      */
     public function createAll(ImportQueue $importQueue): iterable
@@ -48,12 +38,6 @@ class ImportLineFactory
         }
     }
 
-    /**
-     * @param ImportQueue $importQueue
-     * @param int $beneficiaryIndex
-     *
-     * @return ImportLine
-     */
     public function create(ImportQueue $importQueue, int $beneficiaryIndex): ImportLine
     {
         return $this->createFromData(

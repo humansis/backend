@@ -6,6 +6,8 @@ namespace Entity;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CreatedAt;
 use Entity\Helper\CreatedBy;
@@ -34,32 +36,26 @@ abstract class SynchronizationBatch
     use CreatedBy;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_synchronization_batch_state", nullable=false)
      */
-    private $state = SynchronizationBatchState::UPLOADED;
+    private string $state = SynchronizationBatchState::UPLOADED;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="request_data", type="json", nullable=false)
-     */
-    private $requestData;
-
-    /**
-     * @var string serialized ConstraintViolationListInterface[]
+     * serialized ConstraintViolationListInterface[]
      *
      * @ORM\Column(name="violations", type="json", nullable=true)
      */
-    private $violations;
+    private array | null $violations = null;
 
     /**
-     * @var DateTimeInterface|null
-     *
      * @ORM\Column(name="validated_at", type="datetime", nullable=true)
      */
-    private $validatedAt;
+    private ?\DateTimeInterface $validatedAt = null;
+
+    /**
+     * @ORM\Column(name="request_data", type="json", nullable=false)
+     */
+    private array $requestData;
 
     /**
      * @param array $requestData
@@ -69,37 +65,25 @@ abstract class SynchronizationBatch
         $this->requestData = $requestData;
     }
 
-    /**
-     * @param string $state
-     */
     public function setState(string $state): void
     {
         if (!in_array($state, SynchronizationBatchState::values())) {
-            throw new InvalidArgumentException("Invalid " . get_class($this) . " state: " . $state);
+            throw new InvalidArgumentException("Invalid " . $this::class . " state: " . $state);
         }
         $this->state = $state;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @return array
-     */
     public function getRequestData(): array
     {
         return $this->requestData;
     }
 
-    /**
-     * @return array[]|null
-     */
-    public function getViolations(): ?array
+    public function getViolations(): array|null
     {
         return $this->violations;
     }
@@ -113,9 +97,11 @@ abstract class SynchronizationBatch
             throw new InvalidArgumentException("Violation shouldn't be added to processed batches");
         }
         $this->validatedAt = $validatedAt ?? new DateTimeImmutable();
-        $this->violations = [];
-        foreach ($violations as $rowKey => $violationList) {
-            $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
+        if (count($violations) > 0) {
+            $this->violations = [];
+            foreach ($violations as $rowKey => $violationList) {
+                $this->violations[$rowKey] = $violationList ? $this->serializeViolations($violationList) : null;
+            }
         }
     }
 
@@ -139,9 +125,6 @@ abstract class SynchronizationBatch
         $this->violations[$index] = $violations;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getValidatedAt(): ?DateTimeInterface
     {
         return $this->validatedAt;

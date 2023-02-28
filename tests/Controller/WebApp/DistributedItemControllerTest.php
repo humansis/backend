@@ -24,7 +24,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testList()
@@ -91,7 +91,6 @@ class DistributedItemControllerTest extends BMSServiceTestCase
     /**
      * @dataProvider modalityTypeGenerator
      *
-     * @param string $modalityType
      *
      * @throws NonUniqueResultException
      */
@@ -130,7 +129,7 @@ class DistributedItemControllerTest extends BMSServiceTestCase
             'Request failed' . $this->client->getResponse()->getContent()
         );
 
-        $items = json_decode($this->client->getResponse()->getContent());
+        $items = json_decode($this->client->getResponse()->getContent(), null, 512, JSON_THROW_ON_ERROR);
 
         $beneficiaryAmounts = [];
         foreach ($items->data as $distributedItem) {

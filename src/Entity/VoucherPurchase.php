@@ -18,49 +18,45 @@ use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 class VoucherPurchase
 {
     /**
-     * @var int
      *
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $id;
+    #[SymfonyGroups(['FullVoucher'])]
+    private ?int $id;
 
     /**
-     * @var Vendor
      *
      * @ORM\ManyToOne(targetEntity="\Entity\Vendor")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @SymfonyGroups({"FullVoucher"})
      */
-    private $vendor;
+    #[SymfonyGroups(['FullVoucher'])]
+    private ?\Entity\Vendor $vendor = null;
 
     /**
      * @var Collection|Voucher[]
      *
      * @ORM\OneToMany(targetEntity="Entity\Voucher", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
      */
-    private $vouchers;
+    private \Doctrine\Common\Collections\Collection|array $vouchers;
 
     /**
      * @var Collection|VoucherPurchaseRecord[]
      *
      * @ORM\OneToMany(targetEntity="Entity\VoucherPurchaseRecord", mappedBy="voucherPurchase", cascade={"persist"}, orphanRemoval=true)
-     *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
-    private $records;
+    #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
+    private \Doctrine\Common\Collections\Collection|array $records;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(name="used_at", type="datetime", nullable=true)
-     *
-     * @SymfonyGroups({"FullVoucher", "ValidatedAssistance"})
      */
+    #[SymfonyGroups(['FullVoucher', 'ValidatedAssistance'])]
     private $createdAt;
 
     protected function __construct()
@@ -99,14 +95,11 @@ class VoucherPurchase
     /**
      * @return Collection|Voucher[]
      */
-    public function getVouchers()
+    public function getVouchers(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->vouchers;
     }
 
-    /**
-     * @param Voucher $voucher
-     */
     public function addVoucher(Voucher $voucher): void
     {
         if (!$this->vouchers->contains($voucher)) {
@@ -118,24 +111,16 @@ class VoucherPurchase
     /**
      * @return Collection|VoucherPurchaseRecord[]
      */
-    public function getRecords()
+    public function getRecords(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->records;
     }
 
-    /**
-     * @param Product $product
-     * @param float|null $quantity
-     * @param float|null $value
-     */
     public function addRecord(Product $product, ?float $quantity, ?float $value): void
     {
         $this->records->add(VoucherPurchaseRecord::create($this, $product, $quantity, $value));
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;

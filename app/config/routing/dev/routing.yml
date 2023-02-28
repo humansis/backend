@@ -7,10 +7,11 @@ _profiler:
     prefix: /_profiler
 
 _errors:
-    resource: '@TwigBundle/Resources/config/routing/errors.xml'
+    resource: '@FrameworkBundle/Resources/config/routing/errors.xml'
     prefix: /_error
 
 app.swagger_ui:
     path: /swg/doc
     methods: GET
     defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+

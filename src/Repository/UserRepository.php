@@ -3,13 +3,14 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use InvalidArgumentException;
 use Entity\User;
 use InputType\UserFilterInputType;
 use InputType\UserOrderInputType;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 
 /**
@@ -20,6 +21,8 @@ use Request\Pagination;
  */
 class UserRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function toggleTwoFA(bool $enable)
     {
         if ($enable) {
@@ -77,43 +80,19 @@ class UserRepository extends EntityRepository
 
         if (null !== $orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case UserOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('u.id', $direction);
-                        break;
-                    case UserOrderInputType::SORT_BY_EMAIL:
-                        $qb->orderBy('u.email', $direction);
-                        break;
-                    case UserOrderInputType::SORT_BY_RIGHTS:
-                        $qb
-                            ->join('u.roles', 'r')
-                            ->orderBy('r.name', $direction);
-                        break;
-                    case UserOrderInputType::SORT_BY_PREFIX:
-                        $qb->orderBy('u.phonePrefix', $direction);
-                        break;
-                    case UserOrderInputType::SORT_BY_PHONE:
-                        $qb->orderBy('u.phoneNumber', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order by directive ' . $name);
-                }
+                match ($name) {
+                    UserOrderInputType::SORT_BY_ID => $qb->orderBy('u.id', $direction),
+                    UserOrderInputType::SORT_BY_EMAIL => $qb->orderBy('u.email', $direction),
+                    UserOrderInputType::SORT_BY_RIGHTS => $qb
+                        ->join('u.roles', 'r')
+                        ->orderBy('r.name', $direction),
+                    UserOrderInputType::SORT_BY_PREFIX => $qb->orderBy('u.phonePrefix', $direction),
+                    UserOrderInputType::SORT_BY_PHONE => $qb->orderBy('u.phoneNumber', $direction),
+                    default => throw new InvalidArgumentException('Invalid order by directive ' . $name),
+                };
             }
         }
 
         return new Paginator($qb);
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(User $user): void
-    {
-        $this->_em->persist($user);
-        $this->_em->flush();
     }
 }

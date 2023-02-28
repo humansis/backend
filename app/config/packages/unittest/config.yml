@@ -1,7 +1,7 @@
 framework:
     test: ~
     session:
-        storage_id: session.storage.mock_file
+        storage_factory_id: session.storage.factory.mock_file
     profiler:
         collect: false
     messenger:
@@ -13,9 +13,6 @@ sentry:
     #do not log during unit tests
     dsn: ''
 
-swiftmailer:
-    disable_delivery: true
-
 monolog:
     channels: [ 'import', 'exception' ]
     handlers:
@@ -26,4 +23,5 @@ monolog:
             channels: [import]
 
 parameters:
+    mailer_dsn: 'null://null'
     frontendUrl: 'http://localhost:8080'

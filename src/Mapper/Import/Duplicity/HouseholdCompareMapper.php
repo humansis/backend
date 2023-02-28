@@ -18,34 +18,10 @@ class HouseholdCompareMapper implements MapperInterface
 {
     use CompareTrait;
 
-    /** @var HouseholdDecoratorBuilder */
-    private $decoratorBuilder;
+    private ?\Component\Import\ValueObject\HouseholdCompare $object = null;
 
-    /** @var HouseholdCompare */
-    private $object;
-
-    /** @var LocationRepository */
-    private $locationRepository;
-
-    /** @var CountrySpecificRepository */
-    private $countrySpecificsRepository;
-
-    /** @var HouseholdCreateInputType */
-    private $importingHousehold;
-
-    /**
-     * @param HouseholdDecoratorBuilder $decoratorBuilder
-     * @param LocationRepository $locationRepository
-     * @param CountrySpecificRepository $countrySpecificsRepository
-     */
-    public function __construct(
-        HouseholdDecoratorBuilder $decoratorBuilder,
-        LocationRepository $locationRepository,
-        CountrySpecificRepository $countrySpecificsRepository
-    ) {
-        $this->decoratorBuilder = $decoratorBuilder;
-        $this->locationRepository = $locationRepository;
-        $this->countrySpecificsRepository = $countrySpecificsRepository;
+    public function __construct(private readonly HouseholdDecoratorBuilder $decoratorBuilder, private readonly LocationRepository $locationRepository, private readonly CountrySpecificRepository $countrySpecificsRepository)
+    {
     }
 
     /**
@@ -68,9 +44,7 @@ class HouseholdCompareMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . HouseholdCompare::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . HouseholdCompare::class . ', ' . $object::class . ' given.'
         );
     }
 

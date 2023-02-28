@@ -32,7 +32,7 @@ class ImportDuplicityTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    final public const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -46,25 +46,18 @@ class ImportDuplicityTest extends KernelTestCase
     /** @var UploadImportService */
     private $uploadService;
 
-    /** @var Project */
-    private $project;
+    private \Entity\Project $project;
 
-    /** @var Import */
-    private $import;
+    private readonly \Entity\Import $import;
 
-    /** @var Household */
-    private $originHousehold;
+    private \Entity\Household $originHousehold;
 
-    /** @var ImportFile */
-    private $importFile;
+    private readonly \Entity\ImportFile $importFile;
 
     /** @var ProjectService */
     private $projectService;
 
-    /**
-     * @var object|KernelBrowser|null
-     */
-    private $client;
+    private \Symfony\Bundle\FrameworkBundle\KernelBrowser|null $client;
 
     protected function setUp(): void
     {
@@ -72,24 +65,24 @@ class ImportDuplicityTest extends KernelTestCase
 
         $kernel = self::bootKernel();
         $this->application = new Application($kernel);
-        $this->client = $kernel->getContainer()->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->importService = $kernel->getContainer()->get(ImportService::class);
+        $this->importService = self::getContainer()->get(ImportService::class);
 
-        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
-        $this->projectService = $kernel->getContainer()->get('project.project_service');
+        $this->uploadService = self::getContainer()->get(UploadImportService::class);
+        $this->projectService = self::getContainer()->get('project.project_service');
 
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
                 if ($bnf->getHousehold()) {
-                    $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                    self::getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
                 }
-                $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
+                self::getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
 
@@ -97,7 +90,7 @@ class ImportDuplicityTest extends KernelTestCase
         $this->originHousehold = $this->createBlankHousehold($this->project);
     }
 
-    public function testUpdateDuplicities()
+    public function testUpdateDuplicities(): void
     {
         $import = $this->makeIdentityCheckFailed(
             $this->project,

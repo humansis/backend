@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Component\Import;
 
 use BadMethodCallException;
+use Component\Import\Enum\ImportCsoEnum;
 use Entity\CountrySpecific;
 use Exception\MissingHouseholdHeadException;
 use InvalidArgumentException;
@@ -12,8 +13,6 @@ use Utils\HouseholdExportCSVService;
 use Doctrine\ORM\EntityManagerInterface;
 use Component\Import\Finishing;
 use Component\Import\Integrity;
-use Component\Import\Integrity\DuplicityService;
-use Component\Import\Integrity\ImportLineFactory;
 use Entity\Import;
 use Entity\ImportFile;
 use Entity\ImportQueue;
@@ -29,57 +28,20 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class IntegrityChecker
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var ImportQueueRepository */
-    private $queueRepository;
-
-    /** @var ImportLineFactory */
-    private $importLineFactory;
-
-    /** @var Finishing\HouseholdDecoratorBuilder */
-    private $householdDecoratorBuilder;
-
-    /** @var Finishing\BeneficiaryDecoratorBuilder */
-    private $beneficiaryDecoratorBuilder;
-
-    /** @var WorkflowInterface */
-    private $importStateMachine;
-
-    /** @var WorkflowInterface */
-    private $importQueueStateMachine;
-
-    /** @var DuplicityService */
-    private $duplicityService;
-
     public function __construct(
-        ValidatorInterface $validator,
-        EntityManagerInterface $entityManager,
-        WorkflowInterface $importStateMachine,
-        WorkflowInterface $importQueueStateMachine,
-        Integrity\ImportLineFactory $importLineFactory,
-        Integrity\DuplicityService $duplicityService,
-        Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
-        Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
-        ImportQueueRepository $queueRepository
+        private readonly ValidatorInterface $validator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly WorkflowInterface $importStateMachine,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly Integrity\ImportLineFactory $importLineFactory,
+        private readonly Integrity\DuplicityService $duplicityService,
+        private readonly Finishing\HouseholdDecoratorBuilder $householdDecoratorBuilder,
+        private readonly Finishing\BeneficiaryDecoratorBuilder $beneficiaryDecoratorBuilder,
+        private readonly ImportQueueRepository $queueRepository
     ) {
-        $this->validator = $validator;
-        $this->entityManager = $entityManager;
-        $this->queueRepository = $queueRepository;
-        $this->importStateMachine = $importStateMachine;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->importLineFactory = $importLineFactory;
-        $this->duplicityService = $duplicityService;
-        $this->householdDecoratorBuilder = $householdDecoratorBuilder;
-        $this->beneficiaryDecoratorBuilder = $beneficiaryDecoratorBuilder;
     }
 
     /**
-     * @param Import $import
      * @param int|null $batchSize if null => all
      * @deprecated This was reworked to queues if you want to use this beaware of flush at checkOne method
      */
@@ -104,9 +66,6 @@ class IntegrityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     public function checkOne(ImportQueue $item): void
     {
         if (in_array($item->getState(), [ImportQueueState::INVALID, ImportQueueState::VALID])) {
@@ -126,16 +85,16 @@ class IntegrityChecker
         $this->entityManager->flush();
     }
 
-    /**
-     * @param ImportQueue $item
-     */
     private function validateItem(ImportQueue $item): void
     {
         $householdLine = $this->importLineFactory->create($item, 0);
         $violations = $this->validator->validate($householdLine, null, ["household"]);
 
         foreach ($violations as $violation) {
-            $item->addViolation($this->buildErrorMessage($violation, 0));
+            $queueViolations = $this->buildErrorMessage($violation, 0);
+            foreach ($queueViolations as $queueViolation) {
+                $item->addViolation($queueViolation);
+            }
         }
 
         $index = 1;
@@ -144,7 +103,10 @@ class IntegrityChecker
             $violations = $this->validator->validate($hhm, null, ["member"]);
 
             foreach ($violations as $violation) {
-                $item->addViolation($this->buildErrorMessage($violation, $index));
+                $queueViolations = $this->buildErrorMessage($violation, $index);
+                foreach ($queueViolations as $queueViolation) {
+                    $item->addViolation($queueViolation);
+                }
             }
             $index++;
         }
@@ -188,7 +150,7 @@ class IntegrityChecker
                 foreach ($violations as $violation) {
                     $item->addViolation($this->buildNormalizedErrorMessage($violation, 0));
                 }
-            } catch (MissingHouseholdHeadException $e) {
+            } catch (MissingHouseholdHeadException) {
                 $item->addViolation(
                     Integrity\QueueViolation::create(
                         0,
@@ -220,28 +182,42 @@ class IntegrityChecker
         return $queueSize == 0;
     }
 
+    /**
+     * @param ConstraintViolationInterface $violation
+     * @param int $lineIndex
+     * @return Integrity\QueueViolation[]
+     */
     private function buildErrorMessage(
         ConstraintViolationInterface $violation,
         int $lineIndex
-    ): Integrity\QueueViolation {
+    ): array {
         $property = $violation->getConstraint()->payload['propertyPath'] ?? $violation->getPropertyPath();
 
         static $mapping;
         if (null === $mapping) {
             $mapping = array_flip(HouseholdExportCSVService::MAPPING_PROPERTIES);
             foreach ($this->entityManager->getRepository(CountrySpecific::class)->findAll() as $countrySpecific) {
-                $mapping['countrySpecifics[' . $countrySpecific->getId() . ']'] = $countrySpecific->getFieldString();
-                $mapping['countrySpecifics.' . $countrySpecific->getId()] = $countrySpecific->getFieldString();
+                $mapping[ImportCsoEnum::MappingKey->value . '[' . $countrySpecific->getId(
+                ) . ']'] = $countrySpecific->getFieldString();
+                $mapping[ImportCsoEnum::MappingKey->value . '.' . $countrySpecific->getId(
+                )] = $countrySpecific->getFieldString();
             }
         }
-        $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
 
-        return Integrity\QueueViolation::create(
-            $lineIndex,
-            $column,
-            $violation->getMessage(),
-            $violation->getInvalidValue()
-        );
+        $properties = is_array($property) ? $property : [$property];
+        $queueViolations = [];
+        foreach ($properties as $property) {
+            $column = key_exists($property, $mapping) ? $mapping[$property] : $property;
+
+            $queueViolations[] = Integrity\QueueViolation::create(
+                $lineIndex,
+                $column,
+                $violation->getMessage(),
+                $violation->getInvalidValue()
+            );
+        }
+
+        return $queueViolations;
     }
 
     private function buildNormalizedErrorMessage(
@@ -258,11 +234,6 @@ class IntegrityChecker
         );
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
     private function hasImportValidFile(Import $import): bool
     {
         return (0 != $this->entityManager->getRepository(ImportFile::class)->count([
@@ -271,13 +242,6 @@ class IntegrityChecker
             ]));
     }
 
-    /**
-     * @param ImportQueue $importQueue
-     * @param int $index
-     * @param BeneficiaryInputType $beneficiaryInputType
-     *
-     * @return void
-     */
     private function checkFileDuplicity(
         ImportQueue $importQueue,
         int $index,

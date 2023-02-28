@@ -16,25 +16,11 @@ use Tests\BMSServiceTestCase;
 
 class AssistanceStatisticsControllerTest extends BMSServiceTestCase
 {
-    /**
-     * @var AssistanceRepository
-     */
-    private $assistanceRepository;
+    private AssistanceRepository $assistanceRepository;
 
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
+    private ReliefPackageRepository $reliefPackageRepository;
 
-    /**
-     * @var AssistanceBeneficiaryRepository
-     */
-    private $assistanceBeneficiaryRepository;
-
-    /**
-     * @var AssistanceFactory
-     */
-    private $assistanceFactory;
+    private AssistanceFactory $assistanceFactory;
 
     /**
      * @throws Exception
@@ -46,17 +32,17 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
-        $this->assistanceRepository = self::$container->get(AssistanceRepository::class);
-        $this->reliefPackageRepository = self::$container->get(ReliefPackageRepository::class);
-        $this->assistanceBeneficiaryRepository = self::$container->get(AssistanceBeneficiaryRepository::class);
-        $this->assistanceFactory = self::$container->get(AssistanceFactory::class);
+        $this->client = self::getContainer()->get('test.client');
+        $this->assistanceRepository = self::getContainer()->get(AssistanceRepository::class);
+        $this->reliefPackageRepository = self::getContainer()->get(ReliefPackageRepository::class);
+        $this->assistanceBeneficiaryRepository = self::getContainer()->get(AssistanceBeneficiaryRepository::class);
+        $this->assistanceFactory = self::getContainer()->get(AssistanceFactory::class);
     }
 
     public function testStatistics()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/statistics');
 
@@ -67,12 +53,12 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
         $this->assertJsonFragment(
             '{
             "id": ' . $assistance->getId() . ',
-            "numberOfBeneficiaries": "*",
+            "beneficiariesTotal": "*",
             "amountTotal": "*",
             "amountDistributed": "*",
-            "amountUsed": "*",
-            "amountSent": "*",
-            "amountPickedUp": "*"
+            "beneficiariesDeleted": "*",
+            "beneficiariesReached": "*",
+            "progress": "*"
         }',
             $this->client->getResponse()->getContent()
         );
@@ -81,7 +67,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
     public function testList()
     {
         /** @var Assistance $assistance */
-        $assistance = self::$container->get('doctrine')->getRepository(Assistance::class)->findBy(
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findBy(
             ['archived' => false],
             ['id' => 'asc']
         )[0];
@@ -97,7 +83,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('totalCount', $result);
@@ -139,12 +125,15 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertArrayHasKey('amountDistributed', $result);
         $this->assertArrayHasKey('id', $result);
-        $this->assertArrayHasKey('numberOfBeneficiaries', $result);
+        $this->assertArrayHasKey('beneficiariesTotal', $result);
+        $this->assertArrayHasKey('beneficiariesDeleted', $result);
+        $this->assertArrayHasKey('beneficiariesReached', $result);
+        $this->assertArrayHasKey('progress', $result);
         $this->assertEquals((float) $expectedTotalSum, (float) $result['amountTotal']);
         $this->assertEquals((float) $expectedDistributed, (float) $result['amountDistributed']);
     }
@@ -184,7 +173,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy([]);
+        $user = self::getContainer()->get('doctrine')->getRepository(User::class)->findOneBy([]);
 
         // validate assistance
         $assistance->validate($user);
@@ -200,7 +189,7 @@ class AssistanceStatisticsControllerTest extends BMSServiceTestCase
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('amountTotal', $result);
         $this->assertEquals($expectedTotalSumAfter, (float) $result['amountTotal']);

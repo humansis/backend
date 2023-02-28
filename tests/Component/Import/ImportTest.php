@@ -45,7 +45,7 @@ class ImportTest extends KernelTestCase
     use ChecksTrait;
     use DefaultDataTrait;
 
-    public const TEST_COUNTRY = 'KHM';
+    final public const TEST_COUNTRY = 'KHM';
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -59,17 +59,13 @@ class ImportTest extends KernelTestCase
     /** @var UploadImportService */
     private $uploadService;
 
-    /** @var Project */
-    private $project;
+    private ?\Entity\Project $project = null;
 
-    /** @var Import */
-    private $import;
+    private readonly \Entity\Import $import;
 
-    /** @var Household */
-    private $originHousehold;
+    private ?\Entity\Household $originHousehold = null;
 
-    /** @var ImportFile */
-    private $importFile;
+    private readonly \Entity\ImportFile $importFile;
 
     /** @var ProjectService */
     private $projectService;
@@ -81,22 +77,22 @@ class ImportTest extends KernelTestCase
         $kernel = self::bootKernel();
         $this->application = new Application($kernel);
 
-        $this->entityManager = $kernel->getContainer()
+        $this->entityManager = self::getContainer()
             ->get('doctrine')
             ->getManager();
 
-        $this->importService = $kernel->getContainer()->get(ImportService::class);
+        $this->importService = self::getContainer()->get(ImportService::class);
 
-        $this->uploadService = $kernel->getContainer()->get(UploadImportService::class);
-        $this->projectService = $kernel->getContainer()->get('project.project_service');
+        $this->uploadService = self::getContainer()->get(UploadImportService::class);
+        $this->projectService = self::getContainer()->get('project.project_service');
 
         foreach ($this->entityManager->getRepository(Import::class)->findAll() as $import) {
             $this->entityManager->remove($import);
             foreach ($this->entityManager->getRepository(Beneficiary::class)->getImported($import) as $bnf) {
                 if ($bnf->getHousehold()) {
-                    $kernel->getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
+                    self::getContainer()->get('beneficiary.household_service')->remove($bnf->getHousehold());
                 }
-                $kernel->getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
+                self::getContainer()->get('beneficiary.beneficiary_service')->remove($bnf);
             }
         }
     }
@@ -218,12 +214,6 @@ class ImportTest extends KernelTestCase
 
     /**
      * @dataProvider integrityFixedFiles
-     *
-     * @param string $country
-     * @param string $integrityWrongFile
-     * @param string $fixedFile
-     * @param int $expectedHouseholdCount
-     * @param int $expectedBeneficiaryCount
      */
     public function testFixIntegrityErrors(
         string $country,
@@ -685,7 +675,7 @@ class ImportTest extends KernelTestCase
         // SYR project
         $project = new Project();
         $project->setName(uniqid());
-        $project->setNotes(get_class($this));
+        $project->setNotes($this::class);
         $project->setStartDate(new DateTime());
         $project->setEndDate(new DateTime());
         $project->setCountryIso3('ARM');
@@ -702,7 +692,6 @@ class ImportTest extends KernelTestCase
 
     /**
      * @dataProvider incorrectFiles
-     * @param string $fileName
      */
     public function testIncorrectImportFileInIntegrityCheck(string $fileName): void
     {
@@ -743,10 +732,7 @@ class ImportTest extends KernelTestCase
     }
 
     /**
-     * @param Import $import
      * @param        $phase
-     *
-     * @return int
      * @deprecated
      */
     private function getBatchCount(Import $import, $phase): int

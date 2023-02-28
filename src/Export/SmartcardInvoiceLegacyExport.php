@@ -25,17 +25,11 @@ use Entity\Vendor;
 
 class SmartcardInvoiceLegacyExport
 {
-    /** @var TranslatorInterface */
-    private $translator;
-
     /**
      * SmartcardInvoiceExport constructor.
-     *
-     * @param TranslatorInterface $translator
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function export(Invoice $invoice, Organization $organization, User $user)
@@ -109,10 +103,6 @@ class SmartcardInvoiceLegacyExport
     /**
      * Line with Boxes with invoice No. and logos
      *
-     * @param Worksheet $worksheet
-     * @param TranslatorInterface $translator
-     * @param Organization $organization
-     * @param Invoice $invoice
      *
      * @throws Exception
      */
@@ -122,9 +112,9 @@ class SmartcardInvoiceLegacyExport
         Organization $organization,
         Invoice $invoice
     ): void {
-        $worksheet->getRowDimension('2')->setRowHeight(24.02);
-        $worksheet->getRowDimension('3')->setRowHeight(19.70);
-        $worksheet->getRowDimension('5')->setRowHeight(26.80);
+        $worksheet->getRowDimension(2)->setRowHeight(24.02);
+        $worksheet->getRowDimension(3)->setRowHeight(19.70);
+        $worksheet->getRowDimension(5)->setRowHeight(26.80);
 
         // Temporary Invoice No. box
         $worksheet->setCellValue('B2', $translator->trans('temporary_invoice_no'));
@@ -135,7 +125,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->mergeCells('D2:E2');
         $worksheet->mergeCells('D3:E3');
         $worksheet->setCellValue('D2', 'Humansis Vendor Username');
-        $worksheet->setCellValue('D3', $invoice->getVendor()->getUser()->getUsername());
+        $worksheet->setCellValue('D3', $invoice->getVendor()->getUser()->getUserIdentifier());
         self::setSmallHeadline($worksheet, 'D2:E3');
         self::setSmallBorder($worksheet, 'D2:E3');
 
@@ -167,7 +157,7 @@ class SmartcardInvoiceLegacyExport
                 $drawing->setMimeType(MemoryDrawing::MIMETYPE_DEFAULT);
                 $drawing->setHeight(60);
                 $drawing->setWorksheet($worksheet);
-            } catch (ImageException $e) {
+            } catch (ImageException) {
                 // invoice will be without logo
             }
         }
@@ -190,7 +180,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->setCellValue('I7', $invoice->getInvoicedAt()->format('j-n-y'));
         $worksheet->setCellValue('H7', $translator->trans('invoice_date'));
         // style
-        $worksheet->getRowDimension('7')->setRowHeight(50);
+        $worksheet->getRowDimension(7)->setRowHeight(50);
         $worksheet->getStyle('E7')->getAlignment()->setWrapText(true);
         self::setSmallHeadline($worksheet, 'B7');
         self::setImportantFilledInfo($worksheet, 'C7:D7');
@@ -213,7 +203,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->setCellValue('C8', $invoice->getVendor()->getName());
         $worksheet->setCellValue('H8', $translator->trans('supplier_no'));
         // style
-        $worksheet->getRowDimension('8')->setRowHeight(25);
+        $worksheet->getRowDimension(8)->setRowHeight(25);
         $worksheet->getStyle('H8')->getAlignment()->setWrapText(true);
         self::setSmallHeadline($worksheet, 'B8');
         self::setImportantFilledInfo($worksheet, 'C8');
@@ -238,8 +228,8 @@ class SmartcardInvoiceLegacyExport
         $worksheet->setCellValue('I10', '');
         $worksheet->setCellValue('J10', '');
         // style
-        $worksheet->getRowDimension('9')->setRowHeight(25);
-        $worksheet->getRowDimension('10')->setRowHeight(25);
+        $worksheet->getRowDimension(9)->setRowHeight(25);
+        $worksheet->getRowDimension(10)->setRowHeight(25);
         self::setSmallHeadline($worksheet, 'B9');
         self::setSmallHeadline($worksheet, 'D9');
         self::setSmallHeadline($worksheet, 'E9');
@@ -268,7 +258,7 @@ class SmartcardInvoiceLegacyExport
         $worksheet->setCellValue('G13', $translator->trans('unit_price'));
 
         // style
-        $worksheet->getRowDimension('13')->setRowHeight(30);
+        $worksheet->getRowDimension(13)->setRowHeight(30);
         self::setSmallHeadline($worksheet, 'B13:J13');
         self::setSmallBorder($worksheet, 'B13:J13');
     }

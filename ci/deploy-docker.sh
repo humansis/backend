@@ -46,8 +46,13 @@ elif [[ $1 == "dev3" ]]; then
   mv docker/docker-compose.dev.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
   sed -i -e "s|__DEV__|dev3|g" docker-compose.yml
+elif [[ $1 == "arm" ]]; then
+  EC2_ASG=arm-asg
+  mv docker/docker-compose.arm.yml docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__DEV__|arm|g" docker-compose.yml
 else
-  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, demo, production]"
+  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, arm, test, stage, demo, production]"
   exit 1
 fi
 
@@ -56,7 +61,8 @@ fi
 
 echo "...done"
 
-while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -gt 1 ] ; do
+echo "scale down running instances"
+while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -ne 1 ] ; do
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${EC2_ASG} --desired-capacity 1
   echo "waiting for scale down, sleep for 20s"
   if [[ -f docker-compose.consumer.yml ]]; then
@@ -67,10 +73,11 @@ while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name
 done
 INSTANCE_ID=$(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${EC2_ASG} --output text --query 'AutoScalingGroups[*].Instances[?LifecycleState==`InService`].InstanceId')
 ec2_host=$(aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --output text --query 'Reservations[*].Instances[*].PublicIpAddress')
+echo "...done"
 
 # safely wait for the consumer instance to be turned off
 if [[ -f docker-compose.consumer.yml ]]; then
-  while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${CONSUMER_EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -gt 0 ] ; do
+  while [ $(aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name ${CONSUMER_EC2_ASG} --query 'length(AutoScalingGroups[*].Instances[?LifecycleState==`InService`][])') -ne 0 ] ; do
     echo "waiting for scale down, sleep for 20s"
     # turn off consumer instance before deployment
     aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 0
@@ -83,7 +90,7 @@ if [[ -z `ssh-keygen -F $ec2_host` ]]; then
 fi
 
 echo "Starting application containers"
-scp docker-compose.yml app/config/parameters.yml ci/cron.sh $ec2_user@$ec2_host:/opt/humansis
+scp docker-compose.yml app/config/parameters.yml ci/cron.sh ci/cron-recalculate-spent.sh $ec2_user@$ec2_host:/opt/humansis
 if [[ -f docker-compose.consumer.yml ]]; then
   scp docker-compose.consumer.yml $ec2_user@$ec2_host:/opt/humansis
 fi
@@ -96,6 +103,15 @@ if [[ ! -f docker-compose.consumer.yml ]]; then
   stop_consumer="cd /opt/humansis && sudo docker-compose stop consumer"
   ssh $ec2_user@$ec2_host $stop_consumer
 fi
+
+# clear cache
+# normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
+# aggressive: normal + rm ./var/cache/* + docker restart php_container
+echo "Clearing cache"
+scp ./ci/clear-cache.sh $ec2_user@$ec2_host:/opt/humansis
+cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
+ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
+echo "...done"
 
 # clean database
 if [[ $2 == "true" ]]; then
@@ -137,15 +153,6 @@ if [[ $3 != "false" ]]; then
     ssh $ec2_user@$ec2_host $load_fixtures
   fi
 fi
-echo "...done"
-
-# clear cache
-# normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
-# aggressive: normal + rm ./var/cache/* + docker restart php_container
-echo "Clearing cache"
-scp ./ci/clear-cache.sh $ec2_user@$ec2_host:/opt/humansis
-cache_clear="cd /opt/humansis && bash ./clear-cache.sh $4"
-ssh $ec2_user@$ec2_host "$cache_clear" || exit 1
 echo "...done"
 
 echo "Downloading crowdin translations"

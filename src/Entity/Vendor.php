@@ -15,123 +15,95 @@ use Utils\ExportableInterface;
  * @ORM\Table(name="vendor")
  * @ORM\Entity(repositoryClass="Repository\VendorRepository")
  */
-class Vendor implements ExportableInterface
+class Vendor
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $id;
+    #[SymfonyGroups(['FullVendor'])]
+    private ?int $id;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $name;
+    #[SymfonyGroups(['FullVendor'])]
+    private string $name;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="shop", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $shop;
+    #[SymfonyGroups(['FullVendor'])]
+    private string|null $shop = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="address_street", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $addressStreet;
+    #[SymfonyGroups(['FullVendor'])]
+    private string|null $addressStreet;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="address_number", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $addressNumber;
+    #[SymfonyGroups(['FullVendor'])]
+    private string|null $addressNumber;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="address_postcode", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $addressPostcode;
+    #[SymfonyGroups(['FullVendor'])]
+    private string|null $addressPostcode;
 
     /**
-     * @var Location
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Location")
-     *
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $location;
+    #[SymfonyGroups(['FullVendor'])]
+    private ?\Entity\Location $location = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="archived", type="boolean")
-     * @SymfonyGroups({"FullVendor"})
      */
-    private $archived;
+    #[SymfonyGroups(['FullVendor'])]
+    private bool $archived;
 
     /**
      * @ORM\OneToOne(targetEntity="\Entity\User", inversedBy="vendor", cascade={"persist","remove"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @SymfonyGroups({"FullVendor"})
      */
+    #[SymfonyGroups(['FullVendor'])]
     private $user;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="vendor_no", type="string", nullable=true)
      */
-    private $vendorNo;
+    private string|null $vendorNo = null;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="contract_no", type="string", nullable=true)
      */
-    private $contractNo;
+    private string|null $contractNo = null;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="can_sell_food", type="boolean")
      */
-    private $canSellFood = true;
+    private bool $canSellFood = true;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="can_sell_non_food", type="boolean")
      */
-    private $canSellNonFood = true;
+    private bool $canSellNonFood = true;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="can_sell_cashback", type="boolean")
      */
-    private $canSellCashback = true;
+    private bool $canSellCashback = true;
 
     /**
-     * @var bool
-     *
      * @ORM\Column(name="can_do_remote_distributions", type="boolean", nullable=false)
      */
-    private $canDoRemoteDistributions = false;
+    private bool $canDoRemoteDistributions = false;
 
     /**
      * @var PreliminaryInvoice[]|Collection
@@ -349,42 +321,12 @@ class Vendor implements ExportableInterface
         return $this->user;
     }
 
-    public function getMappedValueForExport(): array
-    {
-        $adm1 = $this->getLocation() ? $this->getLocation()->getAdm1Name() : null;
-        $adm2 = $this->getLocation() ? $this->getLocation()->getAdm2Name() : null;
-        $adm3 = $this->getLocation() ? $this->getLocation()->getAdm3Name() : null;
-        $adm4 = $this->getLocation() ? $this->getLocation()->getAdm4Name() : null;
 
-        return [
-            "Vendor's name" => $this->getUser()->getUsername(),
-            "Shop's name" => $this->getName(),
-            "Shop's type" => $this->getShop(),
-            "Address number" => $this->getAddressNumber(),
-            "Address street" => $this->getAddressStreet(),
-            "Address postcode" => $this->getAddressPostcode(),
-            'Contract No.' => $this->getContractNo(),
-            'Vendor No.' => $this->getVendorNo(),
-            "adm1" => $adm1,
-            "adm2" => $adm2,
-            "adm3" => $adm3,
-            "adm4" => $adm4,
-        ];
-    }
-
-    /**
-     * @return string|null
-     */
     public function getVendorNo(): ?string
     {
         return $this->vendorNo;
     }
 
-    /**
-     * @param string|null $vendorNo
-     *
-     * @return Vendor
-     */
     public function setVendorNo(?string $vendorNo): self
     {
         $this->vendorNo = $vendorNo;
@@ -392,19 +334,11 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getContractNo(): ?string
     {
         return $this->contractNo;
     }
 
-    /**
-     * @param string|null $contractNo
-     *
-     * @return Vendor
-     */
     public function setContractNo(?string $contractNo): self
     {
         $this->contractNo = $contractNo;
@@ -412,19 +346,11 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function canSellFood(): bool
     {
         return $this->canSellFood;
     }
 
-    /**
-     * @param bool $canSellFood
-     *
-     * @return Vendor
-     */
     public function setCanSellFood(bool $canSellFood): self
     {
         $this->canSellFood = $canSellFood;
@@ -432,19 +358,11 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function canSellNonFood(): bool
     {
         return $this->canSellNonFood;
     }
 
-    /**
-     * @param bool $canSellNonFood
-     *
-     * @return Vendor
-     */
     public function setCanSellNonFood(bool $canSellNonFood): self
     {
         $this->canSellNonFood = $canSellNonFood;
@@ -452,19 +370,11 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function canSellCashback(): bool
     {
         return $this->canSellCashback;
     }
 
-    /**
-     * @param bool $canSellCashback
-     *
-     * @return Vendor
-     */
     public function setCanSellCashback(bool $canSellCashback): self
     {
         $this->canSellCashback = $canSellCashback;
@@ -472,17 +382,11 @@ class Vendor implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function canDoRemoteDistributions(): bool
     {
         return $this->canDoRemoteDistributions;
     }
 
-    /**
-     * @param bool $canDoRemoteDistributions
-     */
     public function setCanDoRemoteDistributions(bool $canDoRemoteDistributions): void
     {
         $this->canDoRemoteDistributions = $canDoRemoteDistributions;

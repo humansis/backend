@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Entity;
 
 use DateTimeInterface;
-use Entity\Household;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\ImportDuplicityState;
-use Entity\User;
 use InvalidArgumentException;
 
 /**
@@ -23,75 +22,61 @@ class ImportHouseholdDuplicity
     use StandardizedPrimaryKey;
 
     /**
-     * @var ImportQueue
-     *
      * @ORM\ManyToOne(targetEntity="Entity\ImportQueue", inversedBy="importBeneficiaryDuplicities")
      */
-    private $ours;
+    private ImportQueue $ours;
 
     /**
-     * @var Household
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Household")
      */
-    private $theirs;
+    private Household $theirs;
 
     /**
      * @var ImportBeneficiaryDuplicity[]
      *
      * @ORM\OneToMany(targetEntity="Entity\ImportBeneficiaryDuplicity", mappedBy="householdDuplicity", cascade={"persist", "remove"})
      */
-    private $beneficiaryDuplicities;
+    private Collection $beneficiaryDuplicities;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_import_duplicity_state", nullable=false)
      */
-    private $state;
+    private string $state;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="importBeneficiaryDuplicities")
      */
-    private $decideBy;
+    private ?User $decideBy = null;
 
     /**
-     * @var DateTimeInterface
-     *
      * @ORM\Column(name="decide_at", type="datetimetz", nullable=true)
      */
-    private $decideAt;
+    private ?DateTimeInterface $decideAt = null;
 
-    public function __construct(ImportQueue $ours, Household $theirs)
-    {
+    public function __construct(
+        ImportQueue $ours,
+        Household $theirs
+    ) {
         $this->ours = $ours;
         $this->theirs = $theirs;
         $this->state = ImportDuplicityState::DUPLICITY_CANDIDATE;
         $this->beneficiaryDuplicities = new ArrayCollection();
     }
 
-    /**
-     * @return ImportQueue
-     */
     public function getOurs(): ImportQueue
     {
         return $this->ours;
     }
 
-    /**
-     * @return Household
-     */
     public function getTheirs(): Household
     {
         return $this->theirs;
     }
 
     /**
-     * @return ArrayCollection|ImportBeneficiaryDuplicity[]
+     * @return Collection|ImportBeneficiaryDuplicity[]
      */
-    public function getBeneficiaryDuplicities()
+    public function getBeneficiaryDuplicities(): Collection | array
     {
         return $this->beneficiaryDuplicities;
     }
@@ -116,33 +101,21 @@ class ImportHouseholdDuplicity
         $this->state = $state;
     }
 
-    /**
-     * @param User $decideBy
-     */
     public function setDecideBy(User $decideBy): void
     {
         $this->decideBy = $decideBy;
     }
 
-    /**
-     * @return User
-     */
     public function getDecideBy(): User
     {
         return $this->decideBy;
     }
 
-    /**
-     * @param DateTimeInterface $dateTime
-     */
     public function setDecideAt(DateTimeInterface $dateTime): void
     {
         $this->decideAt = $dateTime;
     }
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getDecideAt(): DateTimeInterface
     {
         return $this->decideAt;

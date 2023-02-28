@@ -16,21 +16,13 @@ trait CreatedBy
      * @ORM\ManyToOne(targetEntity="Entity\User")
      * @ORM\JoinColumn(name="created_by_user_id")
      */
-    private $createdBy;
+    private ?User $createdBy;
 
-    /**
-     * @return User|null
-     */
     public function getCreatedBy(): ?User
     {
         return $this->createdBy;
     }
 
-    /**
-     * @param User|null $createdBy
-     *
-     * @return self
-     */
     public function setCreatedBy(?User $createdBy): self
     {
         $this->createdBy = $createdBy;

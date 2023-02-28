@@ -14,6 +14,7 @@ use InputType\Assistance\AssistanceBeneficiariesOperationInputType;
 use JsonException;
 use Repository\BeneficiaryRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -23,50 +24,33 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  */
 class AssistanceBeneficiaryController extends AbstractController
 {
-    public const MAX_ALLOWED_OPERATIONS = 5000;
+    final public const MAX_ALLOWED_OPERATIONS = 5000;
 
-    /**
-     * @var BeneficiaryRepository
-     */
-    private $beneficiaryRepository;
-
-    /**
-     * @var AssistanceBeneficiaryService
-     */
-    private $assistanceBeneficiaryService;
-
-    /**
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceBeneficiaryService $assistanceBeneficiaryService
-     */
-    public function __construct(
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceBeneficiaryService $assistanceBeneficiaryService
-    ) {
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->assistanceBeneficiaryService = $assistanceBeneficiaryService;
+    public function __construct(private readonly BeneficiaryRepository $beneficiaryRepository, private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService)
+    {
     }
 
     /**
      * @Rest\Put
-     *
+     * @param Request $request
      * @param Assistance $assistance
      * @param AssistanceBeneficiariesOperationInputType $inputType
-     *
      * @return JsonResponse
-     * @throws JsonException
      */
     public function addAssistanceBeneficiaries(
+        Request $request,
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkRole('ROLE_ADMIN');
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
+        $countryCode =  $this->getCountryCode($request);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities(
                 $inputType->getDocumentNumbers(),
-                $inputType->getDocumentType()
+                $inputType->getDocumentType(),
+                $countryCode
             );
             $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
@@ -89,22 +73,22 @@ class AssistanceBeneficiaryController extends AbstractController
     /**
      * @Rest\Delete
      *
-     * @param Assistance $assistance
-     * @param AssistanceBeneficiariesOperationInputType $inputType
      *
-     * @return JsonResponse
      */
     public function removeAssistanceBeneficiaries(
+        Request $request,
         Assistance $assistance,
         AssistanceBeneficiariesOperationInputType $inputType
     ): JsonResponse {
         $this->checkRole('ROLE_ADMIN');
         $this->checkAssistance($assistance);
         $this->checkAllowedOperations($inputType);
+        $countryCode =  $this->getCountryCode($request);
         try {
             $beneficiaries = $this->beneficiaryRepository->findByIdentities(
                 $inputType->getDocumentNumbers(),
-                $inputType->getDocumentType()
+                $inputType->getDocumentType(),
+                $countryCode
             );
             $output = $this->assistanceBeneficiaryService->prepareOutputForDocumentNumbers(
                 $beneficiaries,
@@ -124,11 +108,6 @@ class AssistanceBeneficiaryController extends AbstractController
         return $this->json($output, Response::HTTP_OK);
     }
 
-    /**
-     * @param string $role
-     *
-     * @return void
-     */
     private function checkRole(string $role): void
     {
         if (!in_array($role, $this->getUser()->getRoles())) {
@@ -136,11 +115,6 @@ class AssistanceBeneficiaryController extends AbstractController
         }
     }
 
-    /**
-     * @param Assistance $assistance
-     *
-     * @return void
-     */
     private function checkAssistance(Assistance $assistance): void
     {
         if (
@@ -151,11 +125,6 @@ class AssistanceBeneficiaryController extends AbstractController
         }
     }
 
-    /**
-     * @param AssistanceBeneficiariesOperationInputType $inputType
-     *
-     * @return void
-     */
     private function checkAllowedOperations(AssistanceBeneficiariesOperationInputType $inputType): void
     {
         $operations = count($inputType->getDocumentNumbers());

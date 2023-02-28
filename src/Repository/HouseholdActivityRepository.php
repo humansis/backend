@@ -9,8 +9,6 @@ use Doctrine\ORM\EntityRepository;
 class HouseholdActivityRepository extends EntityRepository
 {
     /**
-     * @param Household $household
-     *
      * @return HouseholdActivity[]
      */
     public function findByHousehold(Household $household)

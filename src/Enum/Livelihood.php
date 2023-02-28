@@ -24,7 +24,7 @@ final class Livelihood
     public const REFUSED_TO_ANSWER = 'Refused to answer';
     public const OTHER = 'Other';
 
-    public static function values()
+    public static function values(): array
     {
         return [
             self::IRREGULAR_EARNINGS,

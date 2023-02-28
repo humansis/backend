@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, DependentFixtureInterface
 {
-    private $householdTypes = [
+    private array $householdTypes = [
         'single male family' => ['M-25'],
         'single female family' => ['F-25'],
         'mother with kids' => ['F-20', 'F-1', 'F-5', 'M-15'],
@@ -34,7 +34,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'grandparents with kids' => ['M-60', 'F-55', 'F-2', 'F-10'],
     ];
 
-    private $beneficiaryTemplate = [
+    private array $beneficiaryTemplate = [
         'en_given_name' => '{gender} {age}',
         'en_family_name' => '[{householdType} found by {project}]',
         'local_given_name' => '{gender} {age}',
@@ -52,7 +52,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         ],
     ];
 
-    private $householdTemplate = [
+    private array $householdTemplate = [
         'livelihood' => Livelihood::REGULAR_SALARY_PUBLIC,
         'income' => 3,
         'notes' => null,
@@ -79,20 +79,12 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         'beneficiaries' => [],
     ];
 
-    private $householdService;
-
-    private $kernel;
-
-    public function __construct(Kernel $kernel, HouseholdService $householdService)
+    public function __construct(private readonly Kernel $kernel, private readonly HouseholdService $householdService)
     {
-        $this->householdService = $householdService;
-        $this->kernel = $kernel;
     }
 
     /**
      * Load data fixtures with the passed EntityManager.
-     *
-     * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
     {
@@ -102,7 +94,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
             return;
         }
 
-        srand(42);
+        mt_srand(42);
 
         $projects = $manager->getRepository(Project::class)->findAll();
         foreach ($projects as $project) {
@@ -119,19 +111,16 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
     private function randomLocation(ObjectManager $manager, string $countryIso3): ?Location
     {
         $entities = $manager->getRepository(Location::class)->getByCountry($countryIso3);
-        if (0 === count($entities)) {
+        if (0 === (is_countable($entities) ? count($entities) : 0)) {
             return null;
         }
 
-        $i = rand(0, count($entities) - 1);
+        $i = random_int(0, (is_countable($entities) ? count($entities) : 0) - 1);
 
         return $entities[$i];
     }
 
     /**
-     * @param ObjectManager $manager
-     * @param Location $location
-     * @param Project $project
      *
      * @throws Exception
      */
@@ -173,7 +162,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $household->setCountryIso3($project->getCountryIso3());
 
         foreach ($members as $member) {
-            [$gender, $age] = explode('-', $member);
+            [$gender, $age] = explode('-', (string) $member);
             $bnfData = $this->replacePlaceholders($this->beneficiaryTemplate, [
                 '{age}' => $age,
                 '{project}' => $project->getName(),
@@ -211,18 +200,15 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         echo '.';
     }
 
-    private function replacePlaceholders(array $data, array $replaces)
+    private function replacePlaceholders(array $data, array $replaces): array
     {
-        foreach ($data as $key => $value) {
-            $newValue = $value;
-            foreach ($replaces as $placeholder => $replace) {
-                $newValue = str_replace($placeholder, $replace, $newValue);
-            }
-            $data[$key] = $newValue;
+        $stringData = json_encode($data);
+        foreach ($replaces as $placeholder => $replace) {
+            $stringData = str_replace($placeholder, $replace, $stringData);
         }
-
-        return $data;
+        return json_decode($stringData, true);
     }
+
 
     private function getHouseholdLocation(Location $location): HouseholdLocation
     {
@@ -233,7 +219,7 @@ class BeneficiaryTestFixtures extends Fixture implements FixtureGroupInterface, 
         $address = new Address();
         $address->setStreet(md5($location->getId() . $location->getCode()));
         $address->setNumber($location->getId());
-        $address->setPostcode(rand(10001, 99999));
+        $address->setPostcode(random_int(10001, 99999));
         $address->setLocation($location);
         $hhLocation->setAddress($address);
 

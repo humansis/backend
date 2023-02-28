@@ -6,8 +6,8 @@ namespace Component\Import;
 
 class CellParameters
 {
-    public const VALUE = 'value';
-    public const DATA_TYPE = 'dataType';
-    public const NUMBER_FORMAT = 'numberFormat';
-    public const ERRORS = 'errors';
+    final public const VALUE = 'value';
+    final public const DATA_TYPE = 'dataType';
+    final public const NUMBER_FORMAT = 'numberFormat';
+    final public const ERRORS = 'errors';
 }

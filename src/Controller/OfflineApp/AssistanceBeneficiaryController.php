@@ -21,27 +21,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AssistanceBeneficiaryController extends AbstractOfflineAppController
 {
-    /** @var AssistanceBeneficiaryRepository */
-    private $assistanceBeneficiaryRepository;
-
-    /**
-     * @param AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository
-     */
-    public function __construct(AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
+    public function __construct(private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository)
     {
-        $this->assistanceBeneficiaryRepository = $assistanceBeneficiaryRepository;
     }
 
     /**
      * @Rest\Get("/offline-app/v2/assistances/{id}/assistances-beneficiaries")
      *
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType $orderBy
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function assistanceBeneficiariesByAssistance(
         Request $request,
@@ -68,14 +55,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/{version}/assistances/{id}/targets/beneficiaries")
      *
-     * @param string $version
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param BeneficiaryFilterInputType $filter
-     * @param BeneficiaryOrderInputType $orderBy
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function beneficiaryTargetByAssistance(
         string $version,
@@ -118,13 +98,7 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-institutions")
      *
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param InstitutionFilterInputType $filter
-     * @param InstitutionOrderInputType $orderBy
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function assistanceInstitutionsByAssistance(
         Request $request,
@@ -156,14 +130,6 @@ class AssistanceBeneficiaryController extends AbstractOfflineAppController
 
     /**
      * @Rest\Get("/offline-app/v1/assistances/{id}/assistances-communities")
-     *
-     * @param Request $request
-     * @param Assistance $assistance
-     * @param CommunityFilterType $filter
-     * @param CommunityOrderInputType $orderBy
-     * @param Pagination $pagination
-     *
-     * @return JsonResponse
      */
     public function assistanceCommunitiesByAssistance(
         Request $request,

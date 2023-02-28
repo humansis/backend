@@ -37,10 +37,6 @@ class ProductRepository extends EntityRepository
     }
 
     /**
-     * @param string $countryIso3
-     * @param ProductFilterInputType|null $filter
-     * @param ProductOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
      *
      * @return Paginator|Product[]
      */
@@ -97,22 +93,13 @@ class ProductRepository extends EntityRepository
 
         if ($orderBy) {
             foreach ($orderBy->toArray() as $name => $direction) {
-                switch ($name) {
-                    case ProductOrderInputType::SORT_BY_ID:
-                        $qb->orderBy('p.id', $direction);
-                        break;
-                    case ProductOrderInputType::SORT_BY_NAME:
-                        $qb->orderBy('p.name', $direction);
-                        break;
-                    case ProductOrderInputType::SORT_BY_UNIT:
-                        $qb->orderBy('p.unit', $direction);
-                        break;
-                    case ProductOrderInputType::SORT_BY_CATEGORY:
-                        $qb->orderBy('c.name', $direction);
-                        break;
-                    default:
-                        throw new InvalidArgumentException('Invalid order directive ' . $name);
-                }
+                match ($name) {
+                    ProductOrderInputType::SORT_BY_ID => $qb->orderBy('p.id', $direction),
+                    ProductOrderInputType::SORT_BY_NAME => $qb->orderBy('p.name', $direction),
+                    ProductOrderInputType::SORT_BY_UNIT => $qb->orderBy('p.unit', $direction),
+                    ProductOrderInputType::SORT_BY_CATEGORY => $qb->orderBy('c.name', $direction),
+                    default => throw new InvalidArgumentException('Invalid order directive ' . $name),
+                };
             }
         }
 

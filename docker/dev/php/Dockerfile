@@ -1,4 +1,4 @@
-FROM php:7.3-fpm AS base
+FROM php:8.1-fpm AS base
 
 
 RUN apt-get update && \
@@ -14,7 +14,7 @@ RUN apt-get update && \
     p7zip-full
 
 
-RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ && \
+RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ && \
     docker-php-ext-install pdo_mysql zip gd opcache intl bcmath && \
     pecl install apcu && \
     docker-php-ext-enable apcu

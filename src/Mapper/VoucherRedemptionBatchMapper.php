@@ -9,8 +9,7 @@ use Entity\VoucherRedemptionBatch;
 
 class VoucherRedemptionBatchMapper implements MapperInterface
 {
-    /** @var VoucherRedemptionBatch */
-    private $object;
+    private ?\Entity\VoucherRedemptionBatch $object = null;
 
     public function supports(object $object, $format = null, array $context = null): bool
     {
@@ -26,9 +25,7 @@ class VoucherRedemptionBatchMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . VoucherRedemptionBatch::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . VoucherRedemptionBatch::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -71,19 +68,13 @@ class VoucherRedemptionBatchMapper implements MapperInterface
     {
         $redeemedBy = $this->object->getRedeemedBy();
 
-        if (null !== $redeemedBy) {
-            return $redeemedBy->getId();
-        }
-
-        return null;
+        return $redeemedBy?->getId();
     }
 
     public function getVoucherIds(): array
     {
         return array_values(
-            array_map(function (Voucher $item) {
-                return $item->getId();
-            }, $this->object->getVouchers()->toArray())
+            array_map(fn(Voucher $item) => $item->getId(), $this->object->getVouchers()->toArray())
         );
     }
 }

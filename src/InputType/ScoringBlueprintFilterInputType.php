@@ -9,36 +9,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ScoringBlueprintFilterInputType extends AbstractFilterInputType
 {
-    /**
-     * @var string
-     * @Assert\Choice({"true", "false"})
-     */
-    protected $archived;
+    #[Assert\Choice([true, false])]
+    protected bool $archived;
 
-    /**
-     * @return bool
-     */
     public function isArchived(): bool
     {
-        return "true" === $this->archived;
+        return $this->archived;
     }
 
-    /**
-     * @param string $archived
-     *
-     * @return ScoringBlueprintFilterInputType
-     */
-    public function setArchived(string $archived): ScoringBlueprintFilterInputType
+    public function setArchived(bool $archived): ScoringBlueprintFilterInputType
     {
         $this->archived = $archived;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasArchived()
+    public function hasArchived(): bool
     {
         return $this->has('archived');
     }

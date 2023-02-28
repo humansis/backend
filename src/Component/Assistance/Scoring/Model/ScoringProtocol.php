@@ -7,10 +7,10 @@ namespace Component\Assistance\Scoring\Model;
 use JsonException;
 use Serializable;
 
-final class ScoringProtocol implements Serializable
+final class ScoringProtocol
 {
     /** @var float[] */
-    private $score = [];
+    private array $score = [];
 
     /**
      * @var float|null
@@ -62,20 +62,21 @@ final class ScoringProtocol implements Serializable
     }
 
     /**
-     * @return string
      * @throws JsonException
      */
-    public function serialize(): string
+    public function serializeToJson(): string
     {
         return json_encode($this->score, JSON_THROW_ON_ERROR);
     }
 
     /**
-     * @param string $data
      * @throws JsonException
      */
-    public function unserialize($data): void
+    public static function unserializeFromJson(string $data): self
     {
-        $this->score = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+        $scoringProtocol = new self();
+        $scoringProtocol->score = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+        return $scoringProtocol;
     }
 }

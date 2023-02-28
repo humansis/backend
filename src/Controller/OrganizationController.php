@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Doctrine\ORM\Exception\ORMException;
 use Entity\Organization;
 use Entity\OrganizationServices;
 use Repository\OrganizationRepository;
 use Repository\OrganizationServicesRepository;
 use Utils\OrganizationService;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Component\File\UploadService;
 use InputType\OrganizationUpdateInputType;
@@ -21,26 +21,17 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OrganizationController extends AbstractController
 {
-    /** @var UploadService */
-    private $uploadService;
-
     /**
-     * @var string[]
+     * @param string[] $allowedMimeTypes
      */
-    private $allowedMimeTypes;
-
-    public function __construct(UploadService $uploadService, array $allowedMimeTypes)
+    public function __construct(private readonly UploadService $uploadService, private readonly array $allowedMimeTypes)
     {
-        $this->uploadService = $uploadService;
-        $this->allowedMimeTypes = $allowedMimeTypes;
     }
 
     /**
      * @Rest\Get("/web-app/v1/organizations/{id}")
      *
-     * @param Organization $organization
      *
-     * @return JsonResponse
      */
     public function item(Organization $organization): JsonResponse
     {
@@ -50,11 +41,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/organizations/{id}")
      *
-     * @param Organization $organization
-     * @param OrganizationUpdateInputType $inputType
-     * @param OrganizationService $organizationService
      *
-     * @return JsonResponse
      */
     public function update(
         Organization $organization,
@@ -69,10 +56,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations")
      *
-     * @param Pagination $pagination
-     * @param OrganizationRepository $organizationRepository
      *
-     * @return JsonResponse
      */
     public function list(Pagination $pagination, OrganizationRepository $organizationRepository): JsonResponse
     {
@@ -84,11 +68,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/organizations/{id}/services")
      *
-     * @param Organization $organization
-     * @param Pagination $pagination
-     * @param OrganizationServicesRepository $organizationServicesRepository
      *
-     * @return JsonResponse
      */
     public function listServices(
         Organization $organization,
@@ -103,11 +83,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/organizations/services/{id}")
      *
-     * @param Request $request
-     * @param OrganizationServices $organizationServices
-     * @param OrganizationService $organizationService
      *
-     * @return JsonResponse
      */
     public function updateService(
         Request $request,
@@ -128,11 +104,7 @@ class OrganizationController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/organizations/{id}/images")
      *
-     * @param Organization $organization
-     * @param Request $request
-     * @param OrganizationRepository $organizationRepository
      *
-     * @return JsonResponse
      * @throws ORMException
      * @throws OptimisticLockException
      */

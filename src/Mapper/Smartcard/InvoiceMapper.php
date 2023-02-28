@@ -11,8 +11,7 @@ use Entity\Invoice;
 
 class InvoiceMapper implements MapperInterface
 {
-    /** @var Invoice */
-    private $object;
+    private ?\Entity\Invoice $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class InvoiceMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Invoice::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Invoice::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -70,6 +69,6 @@ class InvoiceMapper implements MapperInterface
 
     public function getDate(): string
     {
-        return $this->object->getInvoicedAt()->format(DateTimeInterface::ISO8601);
+        return $this->object->getInvoicedAt()->format(DateTimeInterface::ATOM);
     }
 }

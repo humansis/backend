@@ -9,43 +9,15 @@ use Validator\Constraints\ImportDate;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"TestGroupedObject"})
- */
+#[Assert\GroupSequence(['TestGroupedObject'])]
 class TestGroupedObject
 {
-    /**
-     * @Iso8601(groups={"date", "iso", "isodate", "TestGroupedObject"})
-     * @var string
-     */
-    private $isoDate;
-
-    /**
-     * @ImportDate(groups={"date", "importdate", "TestGroupedObject"})
-     * @var string
-     */
-    private $importDate;
-
-    /**
-     * @Country(groups={"country", "iso", "TestGroupedObject"})
-     * @var string
-     */
-    private $countryISO3;
-
-    /**
-     * @param string|null $isoDate
-     * @param string|null $importDate
-     * @param string|null $countryISO3
-     */
-    public function __construct(?string $isoDate, ?string $importDate, ?string $countryISO3)
+    public function __construct(private readonly ?string $isoDate, private readonly ?string $importDate, private readonly ?string $countryISO3)
     {
-        $this->isoDate = $isoDate;
-        $this->importDate = $importDate;
-        $this->countryISO3 = $countryISO3;
     }
 
     /**
-     * @return string
+     * @Iso8601(groups={"date", "iso", "isodate", "TestGroupedObject"})
      */
     public function getIsoDate(): string
     {
@@ -53,7 +25,7 @@ class TestGroupedObject
     }
 
     /**
-     * @return string
+     * @ImportDate(groups={"date", "importdate", "TestGroupedObject"})
      */
     public function getImportDate(): string
     {
@@ -61,7 +33,7 @@ class TestGroupedObject
     }
 
     /**
-     * @return string
+     * @Country(groups={"country", "iso", "TestGroupedObject"})
      */
     public function getCountryISO3(): string
     {

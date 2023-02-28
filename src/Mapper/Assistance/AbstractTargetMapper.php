@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Mapper\Assistance;
 
 use Entity\AssistanceBeneficiary;
-use Entity\GeneralReliefItem;
 use Entity\Assistance\ReliefPackage;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Entity\Booklet;
 
 abstract class AbstractTargetMapper implements MapperInterface
 {
@@ -30,9 +28,7 @@ abstract class AbstractTargetMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . AssistanceBeneficiary::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -46,7 +42,7 @@ abstract class AbstractTargetMapper implements MapperInterface
         return (bool) $this->object->getRemoved();
     }
 
-    public function getJustification(): ?string
+    public function getJustification(): string|null
     {
         return $this->object->getJustification();
     }
@@ -54,9 +50,7 @@ abstract class AbstractTargetMapper implements MapperInterface
     public function getReliefPackageIds(): array
     {
         return array_values(
-            array_map(function (ReliefPackage $package) {
-                return $package->getId();
-            }, $this->object->getReliefPackages()->toArray())
+            array_map(fn(ReliefPackage $package) => $package->getId(), $this->object->getReliefPackages()->toArray())
         );
     }
 }

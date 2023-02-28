@@ -31,7 +31,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
         $this->location = $this->em->getRepository(Location::class)->findOneBy(['code' => self::LOCATION_CODE]);
     }
 
@@ -41,8 +41,6 @@ class SelectionCriteriaTest extends BMSServiceTestCase
 
     /**
      * @param $criteria array[] will be in distinct groups
-     *
-     * @return array
      */
     private function assistanceWithCriteria($criteria): array
     {
@@ -216,7 +214,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
         }',
             $this->client->getResponse()->getContent(),
         );
-        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($contentArray['data'] as $summary) {
             $this->assertTrue(in_array($summary['modalityType'], [ModalityType::SMART_CARD, ModalityType::CASH]));
             $this->assertTrue(in_array($summary['unit'], ['CZK', 'USD']));
@@ -235,7 +233,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $contentArray = json_decode($this->client->getResponse()->getContent(), true);
+        $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertGreaterThan(0, $contentArray['totalCount']);
     }
 
@@ -271,7 +269,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             "dateDistribution": "*",
             "dateExpiration": null,
             "projectId": "*",
-            "locationId": "*",
+            "location": "*",
             "target": "*",
             "type": "*",
             "sector": "*",
@@ -279,7 +277,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             "householdsTargeted": "*",
             "individualsTargeted": "*",
             "description": "*",
-            "commodityIds": ["*"],
+            "commodities": ["*"],
             "foodLimit": 10.99,
             "nonFoodLimit": null,
             "cashbackLimit": 1024,

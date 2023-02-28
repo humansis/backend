@@ -27,13 +27,13 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testGetAssistanceBeneficiariesByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -46,12 +46,10 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with beneficiary in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request('GET', '/api/basic/offline-app/v2/assistances/' . $assistanceId . '/assistances-beneficiaries');
@@ -79,7 +77,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetAssistanceInstitutionsByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -91,12 +89,10 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with institution in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request(
@@ -127,7 +123,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testGetAssistanceCommunitiesByAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
 
         try {
             $assistanceId = $em->createQueryBuilder()
@@ -139,12 +135,10 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
                 ->getQuery()
                 ->setMaxResults(1)
                 ->getSingleScalarResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             $this->markTestSkipped(
                 'You need to have at least one assistance with community in database to complete this test.'
             );
-
-            return;
         }
 
         $this->request(
@@ -175,10 +169,10 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testAddBeneficiaryToAssistance()
+    public function testAddBeneficiaryToAssistanceByIds()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
@@ -201,7 +195,6 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             [
                 'beneficiaryIds' => [$beneficiary->getId()],
                 'justification' => 'test',
-                'added' => true,
             ]
         );
 
@@ -214,16 +207,15 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @depends testAddBeneficiaryToAssistance
+     * @depends testAddBeneficiaryToAssistanceByIds
      */
-    public function testRemoveBeneficiaryFromAssistance($data)
+    public function testRemoveBeneficiaryFromAssistanceByIds(array $data)
     {
         [$assistanceId, $beneficiaryId] = $data;
 
-        $this->request('PUT', '/api/basic/web-app/v1/assistances/' . $assistanceId . '/assistances-beneficiaries', [
+        $this->request('DELETE', '/api/basic/web-app/v1/assistances/' . $assistanceId . '/assistances-beneficiaries', [
             'beneficiaryIds' => [$beneficiaryId],
             'justification' => 'test',
-            'removed' => true,
         ]);
 
         $this->assertTrue(
@@ -240,7 +232,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             $this->assertNotEquals($beneficiaryId, $data['beneficiary']['id'], "Target $beneficiaryId wasn't removed");
         }
@@ -252,7 +244,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testAddInstitutionToAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
@@ -306,7 +298,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             $this->assertNotEquals($institutionId, $data['institutionId'], "Target $institutionId wasn't removed");
         }
@@ -318,7 +310,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
     public function testAddCommunityToAssistance()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $assistance = $em->getRepository(Assistance::class)->findOneBy([
             'validatedBy' => null,
             'completed' => false,
@@ -372,7 +364,7 @@ class AssistanceBeneficiaryControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         foreach ($result['data'] as $data) {
             $this->assertNotEquals($communityId, $data['communityId'], "Target $communityId wasn't removed");
         }

@@ -10,38 +10,12 @@ use Validator\Constraints\Iso8601;
 
 class TestDummyObject
 {
-    /**
-     * @Iso8601()
-     * @var string
-     */
-    private $isoDate;
-
-    /**
-     * @ImportDate()
-     * @var string
-     */
-    private $importDate;
-
-    /**
-     * @Country()
-     * @var string
-     */
-    private $countryISO3;
-
-    /**
-     * @param string|null $isoDate
-     * @param string|null $importDate
-     * @param string|null $countryISO3
-     */
-    public function __construct(?string $isoDate, ?string $importDate, ?string $countryISO3)
+    public function __construct(private readonly ?string $isoDate, private readonly ?string $importDate, private readonly ?string $countryISO3)
     {
-        $this->isoDate = $isoDate;
-        $this->importDate = $importDate;
-        $this->countryISO3 = $countryISO3;
     }
 
     /**
-     * @return string
+     * @Iso8601()
      */
     public function getIsoDate(): string
     {
@@ -49,7 +23,7 @@ class TestDummyObject
     }
 
     /**
-     * @return string
+     * @ImportDate()
      */
     public function getImportDate(): string
     {
@@ -57,7 +31,7 @@ class TestDummyObject
     }
 
     /**
-     * @return string
+     * @Country()
      */
     public function getCountryISO3(): string
     {

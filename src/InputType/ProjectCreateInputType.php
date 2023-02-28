@@ -6,9 +6,7 @@ namespace InputType;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"ProjectCreateInputType", "Strict"})
- */
+#[Assert\GroupSequence(['ProjectCreateInputType', 'Strict'])]
 class ProjectCreateInputType extends ProjectUpdateInputType
 {
 }

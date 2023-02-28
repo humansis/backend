@@ -20,24 +20,11 @@ use Entity\Project;
  */
 class CommunityService
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var LocationMapper */
-    private $locationMapper;
-
     /**
      * CommunityService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param LocationMapper $locationMapper
      */
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        LocationMapper $locationMapper
-    ) {
-        $this->em = $entityManager;
-        $this->locationMapper = $locationMapper;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly LocationMapper $locationMapper)
+    {
     }
 
     public function remove(Community $community)
@@ -48,9 +35,7 @@ class CommunityService
     }
 
     /**
-     * @param CommunityCreateInputType $inputType
      *
-     * @return Community
      * @throws EntityNotFoundException
      * @throws EnumValueNoFoundException
      */

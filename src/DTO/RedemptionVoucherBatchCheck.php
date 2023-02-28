@@ -8,22 +8,22 @@ use JsonSerializable;
 class RedemptionVoucherBatchCheck implements JsonSerializable
 {
     /** @var Voucher[] */
-    private $validVouchers = [];
+    private array $validVouchers = [];
 
     /** @var Voucher[] */
-    private $alreadyRedeemedVouchers = [];
+    private array $alreadyRedeemedVouchers = [];
 
     /** @var Voucher[] */
-    private $unassignedVouchers = [];
+    private array $unassignedVouchers = [];
 
     /** @var Voucher[] */
-    private $unusedVouchers = [];
+    private array $unusedVouchers = [];
 
     /** @var Voucher[] */
-    private $vendorInconsistentVouchers = [];
+    private array $vendorInconsistentVouchers = [];
 
     /** @var string[] */
-    private $notExistedIds = [];
+    private array $notExistedIds = [];
 
     public function addValidVoucher(Voucher $voucher): void
     {
@@ -88,7 +88,7 @@ class RedemptionVoucherBatchCheck implements JsonSerializable
             || !empty($this->alreadyRedeemedVouchers);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'valid' => $this->toIdArray($this->validVouchers),
@@ -103,9 +103,7 @@ class RedemptionVoucherBatchCheck implements JsonSerializable
     private function toIdArray(array $vouchers): array
     {
         return array_values(
-            array_map(function (Voucher $voucher) {
-                return $voucher->getId();
-            }, $vouchers)
+            array_map(fn(Voucher $voucher) => $voucher->getId(), $vouchers)
         );
     }
 }

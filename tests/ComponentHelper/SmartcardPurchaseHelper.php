@@ -5,44 +5,32 @@ declare(strict_types=1);
 namespace Tests\ComponentHelper;
 
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Entity\SmartcardPurchase;
 use Exception;
 use InputType\PurchaseProductInputType;
 use InputType\SmartcardPurchaseInputType;
-use Symfony\Component\DependencyInjection\Container;
 use Utils\SmartcardService;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait SmartcardPurchaseHelper
 {
     /**
-     * @param string $serialNumber
-     * @param SmartcardPurchaseInputType $smartcardPurchaseInputType
-     * @return SmartcardPurchase
      * @throws Exception
      */
     public function createPurchase(
         string $serialNumber,
-        SmartcardPurchaseInputType $smartcardPurchaseInputType
+        SmartcardPurchaseInputType $smartcardPurchaseInputType,
+        SmartcardService $smartcardService,
     ): SmartcardPurchase {
-        return self::$container->get(SmartcardService::class)->purchase(
+        return $smartcardService->purchase(
             $serialNumber,
             $smartcardPurchaseInputType
         );
     }
 
-    /**
-     * @param int $assistanceId
-     * @param int $beneficiaryId
-     * @param int $vendorId
-     * @param PurchaseProductInputType $productInputType
-     * @return SmartcardPurchaseInputType
-     */
     public static function buildSmartcardPurchaseInputType(
         int $assistanceId,
         int $beneficiaryId,

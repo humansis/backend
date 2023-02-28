@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Controller\WebApp\Smartcard;
 
 use Component\Smartcard\Invoice\InvoiceFactory;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Component\Country\Countries;
 use Export\SmartcardInvoiceExport;
 use Export\SmartcardInvoiceLegacyExport;
@@ -31,12 +31,6 @@ class InvoiceController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/exports")
-     *
-     * @param Invoice $invoice
-     * @param Countries $countries
-     * @param SmartcardInvoiceExport $smartcardInvoiceExport
-     * @param OrganizationRepository $organizationRepository
-     * @return Response
      */
     public function export(
         Invoice $invoice,
@@ -63,11 +57,6 @@ class InvoiceController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/legacy-exports")
-     *
-     * @param Invoice $invoice
-     * @param OrganizationRepository $organizationRepository
-     * @param SmartcardInvoiceLegacyExport $smartcardInvoiceLegacyExport
-     * @return Response
      */
     public function legacyExport(
         Invoice $invoice,
@@ -83,11 +72,6 @@ class InvoiceController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
-     *
-     * @param Vendor $vendor
-     * @param Pagination $pagination
-     * @param SmartcardInvoiceRepository $smartcardInvoiceRepository
-     * @return JsonResponse
      */
     public function invoices(
         Vendor $vendor,
@@ -102,8 +86,6 @@ class InvoiceController extends AbstractWebAppController
     /**
      * @Rest\Get("/vendor-app/v2/vendors/{id}/smartcard-redemption-batches")
      *
-     * @param Vendor $vendor
-     * @param Pagination $pagination
      *
      * @return JsonResponse
      */
@@ -115,10 +97,6 @@ class InvoiceController extends AbstractWebAppController
     /**
      * @Rest\Post("/web-app/v1/vendors/{id}/smartcard-redemption-batches")
      *
-     * @param Vendor $vendor
-     * @param SmartcardInvoiceCreateInputType $inputType
-     * @param InvoiceFactory $invoiceFactory
-     * @return JsonResponse
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -134,10 +112,6 @@ class InvoiceController extends AbstractWebAppController
 
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/smartcard-redemption-candidates")
-     *
-     * @param Vendor $vendor
-     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
-     * @return JsonResponse
      */
     public function preliminaryInvoices(
         Vendor $vendor,
@@ -149,8 +123,6 @@ class InvoiceController extends AbstractWebAppController
     /**
      * @Rest\Get("/vendor-app/v3/vendors/{id}/smartcard-redemption-candidates")
      *
-     * @param Vendor $vendor
-     * @param PreliminaryInvoiceRepository $preliminaryInvoiceRepository
      * @return JsonResponse
      */
     public function preliminariesForVendorApp(

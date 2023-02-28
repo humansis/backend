@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Controller;
 
+use Component\Country\Countries;
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use Entity\Household;
+use Entity\SmartcardPurchasedItem;
 use Export\PurchasedSummarySpreadsheetExport;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Entity\SmartcardPurchasedItem;
-use Export\SmartcardPurchasedItemSpreadsheet;
 use InputType\PurchasedItemFilterInputType;
 use InputType\PurchasedItemOrderInputType;
 use InputType\SmartcardPurchasedItemFilterInputType;
@@ -23,35 +24,25 @@ use Entity\PurchasedItem;
 use Repository\PurchasedItemRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Utils\ExportTableServiceInterface;
+use Utils\SmartcardPurchasedItemTransformData;
 
 class PurchasedItemController extends AbstractController
 {
-    /** @var SmartcardPurchasedItemSpreadsheet */
-    private $smartcardPurchasedItemSpreadsheet;
-
-    /** @var PurchasedSummarySpreadsheetExport */
-    private $purchasedSummarySpreadsheetExport;
-
-    public function __construct(
-        SmartcardPurchasedItemSpreadsheet $smartcardPurchasedItemSpreadsheet,
-        PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport
-    ) {
-        $this->smartcardPurchasedItemSpreadsheet = $smartcardPurchasedItemSpreadsheet;
-        $this->purchasedSummarySpreadsheetExport = $purchasedSummarySpreadsheetExport;
+    public function __construct(private readonly PurchasedSummarySpreadsheetExport $purchasedSummarySpreadsheetExport, private readonly ManagerRegistry $managerRegistry, private readonly Countries $countries, private readonly SmartcardPurchasedItemTransformData $smartcardPurchasedItemTransformData, private readonly ExportTableServiceInterface $exportTableService)
+    {
     }
 
     /**
      * @Rest\Get("/web-app/v1/beneficiaries/{id}/purchased-items")
      * @ParamConverter("beneficiary")
      *
-     * @param Beneficiary $beneficiary
      *
-     * @return JsonResponse
      */
     public function listByBeneficiary(Beneficiary $beneficiary): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByBeneficiary($beneficiary);
 
@@ -62,14 +53,12 @@ class PurchasedItemController extends AbstractController
      * @Rest\Get("/web-app/v1/households/{id}/purchased-items")
      * @ParamConverter("household")
      *
-     * @param Household $household
      *
-     * @return JsonResponse
      */
     public function listByHousehold(Household $household): JsonResponse
     {
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByHousehold($household);
 
@@ -79,7 +68,6 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/purchased-items")
      *
-     * @return JsonResponse
      *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
@@ -94,7 +82,7 @@ class PurchasedItemController extends AbstractController
         }
 
         /** @var PurchasedItemRepository $repository */
-        $repository = $this->getDoctrine()->getRepository(PurchasedItem::class);
+        $repository = $this->managerRegistry->getRepository(PurchasedItem::class);
 
         $data = $repository->findByParams($request->headers->get('country'), $filterInputType, $order, $pagination);
 
@@ -104,10 +92,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/purchased-items/exports")
      *
-     * @param Request $request
-     * @param PurchasedItemFilterInputType $filter
      *
-     * @return Response
      *
      * @deprecated This endpoint is deprecated and will be removed soon
      */
@@ -124,7 +109,7 @@ class PurchasedItemController extends AbstractController
         );
 
         $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename((string) $filename));
 
         return $response;
     }
@@ -132,13 +117,7 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items")
      *
-     * @param Request $request
-     * @param SmartcardPurchasedItemFilterInputType $filterInputType
-     * @param PurchasedItemOrderInputType $order
-     * @param SmartcardPurchasedItemRepository $purchasedItemRepository
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function listSmartcardItems(
         Request $request,
@@ -164,26 +143,18 @@ class PurchasedItemController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchased-items/exports")
      *
-     * @param Request $request
-     * @param SmartcardPurchasedItemFilterInputType $filter
      *
-     * @return Response
      */
     public function exportSmartcardItems(Request $request, SmartcardPurchasedItemFilterInputType $filter): Response
     {
         if (!$request->headers->has('country')) {
             throw $this->createNotFoundException('Missing header attribute country');
         }
+        $repository = $this->managerRegistry->getRepository(SmartcardPurchasedItem::class);
+        $country = $this->countries->getCountry($request->headers->get('country'));
+        $purchasedItems = $repository->findByParams($country->getIso3(), $filter);
+        $exportableTable  = $this->smartcardPurchasedItemTransformData->transformData($purchasedItems, $country);
 
-        $filename = $this->smartcardPurchasedItemSpreadsheet->export(
-            $request->headers->get('country'),
-            $request->get('type'),
-            $filter
-        );
-
-        $response = new BinaryFileResponse($filename);
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, basename($filename));
-
-        return $response;
+        return $this->exportTableService->export($exportableTable, 'purchased_items', $request->get('type'), false, true);
     }
 }

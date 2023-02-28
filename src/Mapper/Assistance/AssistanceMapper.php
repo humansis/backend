@@ -4,33 +4,29 @@ declare(strict_types=1);
 
 namespace Mapper\Assistance;
 
+use Component\Assistance\Domain\Assistance;
+use Component\Codelist\CodeItem;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\Collection;
 use Entity;
 use Component\Assistance\AssistanceFactory;
-use Component\Assistance\Domain;
+use Entity\Location;
 use InvalidArgumentException;
-use Utils\AssistanceService;
 use Entity\ScoringBlueprint;
 use Serializer\MapperInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssistanceMapper implements MapperInterface
 {
-    /** @var Entity\Assistance */
-    private $object;
+    private ?\Entity\Assistance $object = null;
 
-    /** @var Domain\Assistance */
-    private $domainObject;
+    private ?Assistance $domainObject = null;
 
-    /** @var AssistanceFactory */
-    private $factory;
-
-    /**
-     * @param AssistanceFactory $factory
-     */
-    public function __construct(AssistanceFactory $factory)
-    {
-        $this->factory = $factory;
+    public function __construct(
+        private readonly AssistanceFactory $factory,
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     /**
@@ -38,7 +34,7 @@ class AssistanceMapper implements MapperInterface
      */
     public function supports(object $object, $format = null, array $context = null): bool
     {
-        return ($object instanceof Entity\Assistance || $object instanceof Domain\Assistance)
+        return ($object instanceof Entity\Assistance || $object instanceof Assistance)
             && isset($context[self::NEW_API])
             && true === $context[self::NEW_API]
             && !isset($context['offline-app']);
@@ -56,7 +52,7 @@ class AssistanceMapper implements MapperInterface
             return;
         }
 
-        if ($object instanceof Domain\Assistance) {
+        if ($object instanceof Assistance) {
             $this->object = $object->getAssistanceRoot();
             $this->domainObject = $object;
 
@@ -64,9 +60,7 @@ class AssistanceMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . Entity\Assistance::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -82,14 +76,12 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateDistribution(): string
     {
-        return $this->object->getDateDistribution()->format(DateTime::ISO8601);
+        return $this->object->getDateDistribution()->format(DateTime::ATOM);
     }
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration() ? $this->object->getDateExpiration()->format(
-            DateTimeInterface::ISO8601
-        ) : null;
+        return $this->object->getDateExpiration()?->format(DateTimeInterface::ATOM);
     }
 
     public function getProjectId(): int
@@ -107,29 +99,29 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getAssistanceType();
     }
 
-    public function getLocationId(): int
+    public function getLocation(): Location
     {
-        return $this->object->getLocation()->getId();
+        return $this->object->getLocation();
     }
 
-    public function getAdm1Id(): ?int
+    public function getAdm1(): ?Location
     {
-        return $this->object->getLocation()->getAdm1Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(1) ?: null;
     }
 
-    public function getAdm2Id(): ?int
+    public function getAdm2(): ?Location
     {
-        return $this->object->getLocation()->getAdm2Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(2) ?: null;
     }
 
-    public function getAdm3Id(): ?int
+    public function getAdm3(): ?Location
     {
-        return $this->object->getLocation()->getAdm3Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(3) ?: null;
     }
 
-    public function getAdm4Id(): ?int
+    public function getAdm4(): ?Location
     {
-        return $this->object->getLocation()->getAdm4Id() ?: null;
+        return $this->object->getLocation()->getLocationByLevel(4) ?: null;
     }
 
     public function getSector(): string
@@ -147,9 +139,9 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getScoringBlueprint();
     }
 
-    public function getCommodityIds(): array
+    public function getCommodities(): Collection | array
     {
-        return $this->domainObject->getCommodityIds();
+        return $this->domainObject->getCommodities();
     }
 
     public function getDescription(): ?string
@@ -174,7 +166,30 @@ class AssistanceMapper implements MapperInterface
 
     public function getCompleted(): bool
     {
-        return (bool) $this->object->getCompleted();
+        return $this->object->getCompleted();
+    }
+
+    public function getState(): CodeItem
+    {
+        return new CodeItem(
+            $this->object->getState(),
+            $this->translator->trans($this->object->getState())
+        );
+    }
+
+    public function getProgress(): float
+    {
+        return $this->domainObject->getStatistics()->getProgress();
+    }
+
+    public function getTotal(): int
+    {
+        return $this->domainObject->getStatistics()->getReachedBeneficiariesTotal();
+    }
+
+    public function getReached(): int
+    {
+        return $this->domainObject->getStatistics()->getBeneficiariesReached();
     }
 
     public function getDistributionStarted(): bool
@@ -212,25 +227,16 @@ class AssistanceMapper implements MapperInterface
         return $this->object->getNote();
     }
 
-    /**
-     * @return string|null
-     */
     public function getFoodLimit(): ?string
     {
         return $this->object->getFoodLimit();
     }
 
-    /**
-     * @return string|null
-     */
     public function getNonFoodLimit(): ?string
     {
         return $this->object->getNonFoodLimit();
     }
 
-    /**
-     * @return string|null
-     */
     public function getCashbackLimit(): ?string
     {
         return $this->object->getCashbackLimit();

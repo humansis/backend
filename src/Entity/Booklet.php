@@ -25,71 +25,60 @@ class Booklet implements ExportableInterface
     use StandardizedPrimaryKey;
     use CountryDependent;
 
-    public const UNASSIGNED = 0;
-    public const DISTRIBUTED = 1;
-    public const USED = 2;
-    public const DEACTIVATED = 3;
+    final public const UNASSIGNED = 0;
+    final public const DISTRIBUTED = 1;
+    final public const USED = 2;
+    final public const DEACTIVATED = 3;
 
     /**
-     * @var ReliefPackage|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\Assistance\ReliefPackage")
      * @ORM\JoinColumn(name="relief_package_id")
      */
-    private $reliefPackage;
+    private ?\Entity\Assistance\ReliefPackage $reliefPackage = null;
 
     /**
-     * @var Project|null
-     *
      * @ORM\ManyToOne(targetEntity="Entity\Project")
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
-    private $project;
+    #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    private ?\Entity\Project $project = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="code", type="string", length=255, unique=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
-    private $code;
+    #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    private ?string $code = null;
 
     /**
-     * @var int
-     *
      * @ORM\Column(name="number_vouchers", type="integer")
-     * @SymfonyGroups({"FullBooklet"})
      */
-    private $numberVouchers;
+    #[SymfonyGroups(['FullBooklet'])]
+    private ?int $numberVouchers = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="currency", type="string", length=255)
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
-    private $currency;
+    #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    private ?string $currency = null;
 
     /**
-     * @var int|null
-     *
      * @ORM\Column(name="status", type="integer", nullable=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
-    private $status;
+    #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
+    private ?int $status = null;
 
     /**
      * @var string|null
      *
      * @ORM\Column(name="password", type="string", length=255, nullable=true)
-     * @SymfonyGroups({"FullBooklet"})
      */
+    #[SymfonyGroups(['FullBooklet'])]
     public $password;
 
     /**
      * @ORM\OneToMany(targetEntity="Entity\Voucher", mappedBy="booklet", cascade={"persist"}, orphanRemoval=true)
-     * @SymfonyGroups({"FullBooklet", "ValidatedAssistance"})
      */
+    #[SymfonyGroups(['FullBooklet', 'ValidatedAssistance'])]
     private $vouchers;
 
     /**
@@ -114,28 +103,19 @@ class Booklet implements ExportableInterface
     }
 
     /**
-     * @return AssistanceBeneficiary|null
      * @deprecated use getAssistanceBeneficiary instead if you can
-     * @SymfonyGroups({"FullBooklet"})
      */
+    #[SymfonyGroups(['FullBooklet'])]
     public function getDistributionBeneficiary(): ?AssistanceBeneficiary
     {
         return $this->getAssistanceBeneficiary();
     }
 
-    /**
-     * @return ReliefPackage|null
-     */
     public function getReliefPackage(): ?ReliefPackage
     {
         return $this->reliefPackage;
     }
 
-    /**
-     * @param ReliefPackage|null $reliefPackage
-     *
-     * @return Booklet
-     */
     public function setReliefPackage(?ReliefPackage $reliefPackage): Booklet
     {
         $this->reliefPackage = $reliefPackage;
@@ -143,16 +123,12 @@ class Booklet implements ExportableInterface
         return $this;
     }
 
-    /**
-     * @return Project|null
-     */
     public function getProject(): ?Project
     {
         return $this->project;
     }
 
     /**
-     * @param Project|null $project
      * @return $this
      */
     public function setProject(?Project $project): self
@@ -165,9 +141,7 @@ class Booklet implements ExportableInterface
     /**
      * Set code.
      *
-     * @param string $code
      *
-     * @return Booklet
      */
     public function setCode(string $code): Booklet
     {
@@ -178,8 +152,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Get code.
-     *
-     * @return string
      */
     public function getCode(): string
     {
@@ -189,9 +161,7 @@ class Booklet implements ExportableInterface
     /**
      * Set numberVouchers.
      *
-     * @param int $numberVouchers
      *
-     * @return Booklet
      */
     public function setNumberVouchers(int $numberVouchers): Booklet
     {
@@ -202,8 +172,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Get numberVouchers.
-     *
-     * @return int
      */
     public function getNumberVouchers(): int
     {
@@ -213,9 +181,7 @@ class Booklet implements ExportableInterface
     /**
      * Set currency.
      *
-     * @param string $currency
      *
-     * @return Booklet
      */
     public function setCurrency(string $currency): Booklet
     {
@@ -226,8 +192,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Get currency.
-     *
-     * @return string
      */
     public function getCurrency(): string
     {
@@ -237,9 +201,7 @@ class Booklet implements ExportableInterface
     /**
      * Set status.
      *
-     * @param int|null $status
      *
-     * @return Booklet
      */
     public function setStatus(?int $status = null): Booklet
     {
@@ -250,8 +212,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Get status.
-     *
-     * @return int|null
      */
     public function getStatus(): ?int
     {
@@ -261,9 +221,7 @@ class Booklet implements ExportableInterface
     /**
      * Set password.
      *
-     * @param string|null $password
      *
-     * @return Booklet
      */
     public function setPassword(?string $password = null): Booklet
     {
@@ -274,8 +232,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Get password.
-     *
-     * @return string|null
      */
     public function getPassword(): ?string
     {
@@ -327,8 +283,6 @@ class Booklet implements ExportableInterface
 
     /**
      * Returns an array representation of this class in order to prepare the export
-     *
-     * @return array
      */
     public function getMappedValueForExport(): array
     {
@@ -345,12 +299,8 @@ class Booklet implements ExportableInterface
         }
 
         $password = empty($this->getPassword()) ? 'No' : 'Yes';
-        $distribution = $this->getAssistanceBeneficiary() ?
-            $this->getAssistanceBeneficiary()->getAssistance()->getName() :
-            null;
-        $beneficiary = $this->getAssistanceBeneficiary() ?
-            $this->getAssistanceBeneficiary()->getBeneficiary()->getPerson()->getLocalGivenName() :
-            null;
+        $distribution = $this->getAssistanceBeneficiary()?->getAssistance()->getName();
+        $beneficiary = $this->getAssistanceBeneficiary()?->getBeneficiary()->getPerson()->getLocalGivenName();
 
         $finalArray = [
             'Code' => $this->getCode(),

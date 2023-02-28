@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Component\Import;
 
+use Component\Import\Enum\ImportCsoEnum;
 use InvalidArgumentException;
 use JsonException;
 use Utils\HouseholdExportCSVService;
@@ -30,59 +31,19 @@ class ImportInvalidFileService
     private const
         MEMBER_ERROR = 'ERROR',
         HOUSEHOLD_ERROR = 'ERROR in Household',
-        MEMBER_IS_OK_MESSAGE = 'Beneficiary is OK, but cannot be imported due to errors in another beneficiaries in the same household';
-
-    /**
-     * @var ImportQueueRepository
-     */
-    private $importQueueRepository;
-
-    /**
-     * @var ImportTemplate
-     */
-    private $importTemplate;
-
-    /**
-     * @var string
-     */
-    private $importInvalidFilesDirectory;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importQueueStateMachine;
-
-    /**
-     * @var ExportService
-     */
-    private $exportService;
-
-    /**
-     * @var HouseholdExportCSVService
-     */
-    private $householdExportCSVService;
+        MEMBER_IS_OK_MESSAGE = 'Beneficiary is OK, but cannot be imported due to errors in another beneficiaries in the same household',
+        SUCCESS_COLOR = 'CCFF99',
+        WARNING_COLOR = 'ffff00';
 
     public function __construct(
-        ImportQueueRepository $importQueueRepository,
-        ImportTemplate $importTemplate,
-        string $importInvalidFilesDirectory,
-        EntityManagerInterface $em,
-        WorkflowInterface $importQueueStateMachine,
-        ExportService $exportService,
-        HouseholdExportCSVService $householdExportCSVService
+        private readonly ImportQueueRepository $importQueueRepository,
+        private readonly ImportTemplate $importTemplate,
+        private readonly string $importInvalidFilesDirectory,
+        private readonly EntityManagerInterface $em,
+        private readonly WorkflowInterface $importQueueStateMachine,
+        private readonly ExportService $exportService,
+        private readonly HouseholdExportCSVService $householdExportCSVService
     ) {
-        $this->importTemplate = $importTemplate;
-        $this->importQueueRepository = $importQueueRepository;
-        $this->importInvalidFilesDirectory = $importInvalidFilesDirectory;
-        $this->em = $em;
-        $this->importQueueStateMachine = $importQueueStateMachine;
-        $this->exportService = $exportService;
-        $this->householdExportCSVService = $householdExportCSVService;
     }
 
     /**
@@ -168,7 +129,7 @@ class ImportInvalidFileService
         try {
             //depth=512 is default value
             return json_decode($messageJson, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return [];
         }
     }
@@ -179,9 +140,7 @@ class ImportInvalidFileService
             return [];
         }
 
-        return array_map(function (array $messages) {
-            return $messages['column'];
-        }, $messages[$rowNumber]);
+        return array_map(fn(array $messages) => $messages['column'], $messages[$rowNumber]);
     }
 
     private function parseViolations(array $messages, $rowNumber): array
@@ -190,9 +149,10 @@ class ImportInvalidFileService
             return [];
         }
 
-        return array_map(function (array $messages) {
-            return $messages['column'] . ": " . $messages['violation'];
-        }, $messages[$rowNumber]);
+        return array_map(
+            fn(array $messages) => $messages['column'] . ": " . $messages['violation'],
+            $messages[$rowNumber]
+        );
     }
 
     public function removeInvalidFiles(Import $import): void
@@ -209,12 +169,6 @@ class ImportInvalidFileService
     }
 
     /**
-     * @param Worksheet $sheet
-     * @param array $header
-     * @param array $row
-     * @param array $invalidColumns
-     * @param int $currentRow
-     * @param array $validationViolations
      *
      * @throws Exception
      */
@@ -259,18 +213,26 @@ class ImportInvalidFileService
                     ->getFill()
                     ->setFillType(Fill::FILL_SOLID)
                     ->getStartColor()
-                    ->setRGB('CCFF99');
+                    ->setRGB(self::SUCCESS_COLOR);
             } else {
-                if (in_array($column, $invalidColumns)) {
+                if ($this->hasColumnWarning($column, $invalidColumns)) {
                     $cell->getStyle()
                         ->getFill()
                         ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()
-                        ->setRGB('ffff00');
+                        ->setRGB(self::WARNING_COLOR);
                 }
             }
 
             ++$currentColumn;
         }
+    }
+
+    private function hasColumnWarning(string $column, array $invalidColumns): bool
+    {
+        return in_array($column, $invalidColumns) || in_array(
+            ImportCsoEnum::getCsoColumnMapping($column),
+            $invalidColumns
+        );
     }
 }

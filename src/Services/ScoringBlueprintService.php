@@ -16,35 +16,11 @@ use Utils\UserService;
 
 class ScoringBlueprintService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var UserService */
-    private $userService;
-
-    /** @var ScoringService */
-    private $scoringService;
-
-    /**
-     * @param EntityManagerInterface $em
-     * @param UserService $userService
-     * @param ScoringService $scoringService
-     */
-    public function __construct(
-        EntityManagerInterface $em,
-        UserService $userService,
-        ScoringService $scoringService
-    ) {
-        $this->userService = $userService;
-        $this->em = $em;
-        $this->scoringService = $scoringService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly UserService $userService, private readonly ScoringService $scoringService)
+    {
     }
 
     /**
-     * @param ScoringInputType $scoringInput
-     * @param string $iso3
-     *
-     * @return ScoringBlueprint
      * @throws CsvParserException
      * @throws ScoreValidationException
      */
@@ -63,10 +39,6 @@ class ScoringBlueprintService
         return $scoringBlueprint;
     }
 
-    /**
-     * @param ScoringPatchInputType $scoringInput
-     * @param ScoringBlueprint $blueprint
-     */
     public function patch(ScoringPatchInputType $scoringInput, ScoringBlueprint $blueprint): void
     {
         $blueprint->setValues($scoringInput->getFilledValues());
@@ -74,9 +46,6 @@ class ScoringBlueprintService
         $this->em->flush();
     }
 
-    /**
-     * @param ScoringBlueprint $scoring
-     */
     public function archive(ScoringBlueprint $scoring): void
     {
         if ($scoring->isArchived()) {

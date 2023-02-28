@@ -13,9 +13,7 @@ use Request\FilterInputType\AbstractFilterInputType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Enum;
 
-/**
- * @Assert\GroupSequence({"VendorFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['VendorFilterInputType', 'Strict'])]
 class VendorFilterInputType extends AbstractFilterInputType
 {
     use PrimaryIdFilterTrait;
@@ -28,16 +26,12 @@ class VendorFilterInputType extends AbstractFilterInputType
      */
     protected $invoicing;
 
-    /**
-     * @return bool
-     */
     public function hasInvoicing(): bool
     {
         return $this->has('invoicing');
     }
 
     /**
-     * @return string
      * @throws EnumValueNoFoundException
      */
     public function getInvoicing(): string

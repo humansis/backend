@@ -41,7 +41,7 @@ diff: ## Generate diff migration
 
 translation-keys: ## generate new translation keys
 	docker-compose exec php bash -c 'bin/console cache:clear'
-	docker-compose exec php bash -c 'bin/console translation:update --force en'
+	docker-compose exec php bash -c 'bin/console translation:extract --force en'
 
 translation-get: ## get translations from remote env
 	docker-compose exec php bash -c 'bin/console translations:download $(c)'
@@ -65,6 +65,9 @@ test: ## Run phpunit tests
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/'
 	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit'
 	docker-compose exec php bash -c 'vendor/bin/phpcs --standard=psr12 ./src ./tests'
+
+test-filter: ## Run single phpunit test
+	docker-compose exec php bash -c 'php -d memory_limit=-1 vendor/bin/phpunit --filter $(c)'
 
 cache: ## Remove cache
 	docker-compose exec php bash -c 'rm -rf var/cache'

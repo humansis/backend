@@ -19,7 +19,7 @@ class ModalityControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -45,7 +45,7 @@ class ModalityControllerTest extends BMSServiceTestCase
     public function testGetModalityTypes()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $modality = Modality::values()[0];
 
         $this->request('GET', '/api/basic/web-app/v1/modalities/' . $modality . '/types');

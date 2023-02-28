@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Component\Assistance;
 
+use Component\Assistance\Services\AssistanceBeneficiaryService;
 use Component\Auditor\AuditorService;
+use Component\ReliefPackage\ReliefPackageService;
+use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
 use Entity\Assistance;
 use Exception\CsvParserException;
@@ -15,11 +18,11 @@ use Repository\LocationRepository;
 use Entity;
 use Enum\AssistanceTargetType;
 use Repository\AssistanceBeneficiaryRepository;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Utils\CriteriaAssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Component\Assistance\Domain;
 use InputType\AssistanceCreateInputType;
 use Repository\AssistanceStatisticsRepository;
@@ -27,102 +30,29 @@ use Repository\ScoringBlueprintRepository;
 use Entity\Project;
 use Repository\ProjectRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Workflow\Registry;
 use Symfony\Contracts\Cache\CacheInterface;
+use Utils\ProjectService;
 
 class AssistanceFactory
 {
-    /** @var CacheInterface */
-    private $cache;
-
-    /** @var CriteriaAssistanceService */
-    private $criteriaAssistanceService;
-
-    /** @var SerializerInterface */
-    private $serializer;
-
-    /** @var LocationRepository */
-    private $locationRepository;
-
-    /** @var ProjectRepository */
-    private $projectRepository;
-
-    /** @var CommunityRepository */
-    private $communityRepository;
-
-    /** @var InstitutionRepository */
-    private $institutionRepository;
-
-    /** @var BeneficiaryRepository */
-    private $beneficiaryRepository;
-
-    /** @var AssistanceStatisticsRepository */
-    private $assistanceStatisticRepository;
-
-    /** @var Registry */
-    private $workflowRegistry;
-
-    /** @var AssistanceBeneficiaryRepository */
-    private $targetRepository;
-
-    /** @var SelectionCriteriaFactory */
-    private $selectionCriteriaFactory;
-
-    /** @var ScoringBlueprintRepository */
-    private $scoringBlueprintRepository;
-
-    /**
-     * @var AuditorService
-     */
-    private $auditorService;
-
-    /**
-     * @param CacheInterface $cache
-     * @param CriteriaAssistanceService $criteriaAssistanceService
-     * @param SerializerInterface $serializer
-     * @param LocationRepository $locationRepository
-     * @param ProjectRepository $projectRepository
-     * @param CommunityRepository $communityRepository
-     * @param InstitutionRepository $institutionRepository
-     * @param BeneficiaryRepository $beneficiaryRepository
-     * @param AssistanceStatisticsRepository $assistanceStatisticRepository
-     * @param Registry $workflowRegistry
-     * @param AssistanceBeneficiaryRepository $targetRepository
-     * @param SelectionCriteriaFactory $selectionCriteriaFactory
-     * @param ScoringBlueprintRepository $scoringBlueprintRepository
-     * @param AuditorService $auditorService
-     */
     public function __construct(
-        CacheInterface $cache,
-        CriteriaAssistanceService $criteriaAssistanceService,
-        SerializerInterface $serializer,
-        LocationRepository $locationRepository,
-        ProjectRepository $projectRepository,
-        CommunityRepository $communityRepository,
-        InstitutionRepository $institutionRepository,
-        BeneficiaryRepository $beneficiaryRepository,
-        AssistanceStatisticsRepository $assistanceStatisticRepository,
-        Registry $workflowRegistry,
-        AssistanceBeneficiaryRepository $targetRepository,
-        SelectionCriteriaFactory $selectionCriteriaFactory,
-        ScoringBlueprintRepository $scoringBlueprintRepository,
-        AuditorService $auditorService
+        private readonly CacheInterface $cache,
+        private readonly CriteriaAssistanceService $criteriaAssistanceService,
+        private readonly LocationRepository $locationRepository,
+        private readonly ProjectRepository $projectRepository,
+        private readonly CommunityRepository $communityRepository,
+        private readonly InstitutionRepository $institutionRepository,
+        private readonly BeneficiaryRepository $beneficiaryRepository,
+        private readonly AssistanceStatisticsRepository $assistanceStatisticRepository,
+        private readonly AssistanceBeneficiaryRepository $targetRepository,
+        private readonly SelectionCriteriaFactory $selectionCriteriaFactory,
+        private readonly ScoringBlueprintRepository $scoringBlueprintRepository,
+        private readonly AuditorService $auditorService,
+        private readonly ReliefPackageService $reliefPackageService,
+        private readonly AssistanceBeneficiaryService $assistanceBeneficiaryService,
+        private readonly TranslatorInterface $translator,
+        private readonly ProjectService $projectService,
     ) {
-        $this->cache = $cache;
-        $this->criteriaAssistanceService = $criteriaAssistanceService;
-        $this->serializer = $serializer;
-        $this->locationRepository = $locationRepository;
-        $this->projectRepository = $projectRepository;
-        $this->communityRepository = $communityRepository;
-        $this->institutionRepository = $institutionRepository;
-        $this->beneficiaryRepository = $beneficiaryRepository;
-        $this->assistanceStatisticRepository = $assistanceStatisticRepository;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->targetRepository = $targetRepository;
-        $this->selectionCriteriaFactory = $selectionCriteriaFactory;
-        $this->scoringBlueprintRepository = $scoringBlueprintRepository;
-        $this->auditorService = $auditorService;
     }
 
     /**
@@ -230,13 +160,15 @@ class AssistanceFactory
                 break;
         }
 
+        $this->projectService->removeAssistanceCountCache($project);
+
         return $assistance;
     }
 
-    private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project)
+    private function checkExpirationDate(AssistanceCreateInputType $inputType, Project $project): void
     {
-        $dateToCheck = $inputType->getDateExpiration() === null ? $inputType->getDateDistribution(
-        ) : $inputType->getDateExpiration();
+        $dateToCheck = $inputType->getDateExpiration() ?? $inputType->getDateDistribution(
+        );
 
         if ($dateToCheck > $project->getEndDate()) {
             throw new BadRequestHttpException(
@@ -251,9 +183,11 @@ class AssistanceFactory
             $assistance,
             $this->cache,
             $this->assistanceStatisticRepository,
-            $this->workflowRegistry,
             $this->targetRepository,
-            $this->selectionCriteriaFactory
+            $this->selectionCriteriaFactory,
+            $this->reliefPackageService,
+            $this->assistanceBeneficiaryService,
+            $this->translator,
         );
     }
 

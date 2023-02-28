@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Tests\ComponentHelper;
 
 use Component\Smartcard\Deposit\DepositFactory;
+use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Entity\SmartcardDeposit;
 use Entity\User;
-use Exception;
 use InputType\Smartcard\DepositInputType;
-use Symfony\Component\DependencyInjection\Container;
+use Psr\Cache\InvalidArgumentException;
 
 /**
- * @property Container $container
  * @property EntityManagerInterface $em
  */
 trait DepositHelper
@@ -24,26 +24,26 @@ trait DepositHelper
      * @param string $smartcardNumber
      * @param DepositInputType $depositInputType
      * @param User $user
+     * @param DepositFactory $depositFactory
      * @return SmartcardDeposit
-     * @throws Exception
+     * @throws DoubledDepositException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws InvalidArgumentException
      */
     public function createDeposit(
         string $smartcardNumber,
         DepositInputType $depositInputType,
-        User $user
+        User $user,
+        DepositFactory $depositFactory,
     ): SmartcardDeposit {
-        return self::$container->get(DepositFactory::class)->create($smartcardNumber, $depositInputType, $user);
+        return $depositFactory->create($smartcardNumber, $depositInputType, $user);
     }
 
-    /**
-     * @param int $reliefPackageId
-     * @param float $value
-     * @return DepositInputType
-     */
     public static function buildDepositInputType(int $reliefPackageId, float $value): DepositInputType
     {
         $depositInputType = new DepositInputType();
-        $depositInputType->setCreatedAt((new DateTime())->format(DateTimeInterface::ATOM));
+        $depositInputType->setCreatedAt((new DateTime()));
         $depositInputType->setReliefPackageId($reliefPackageId);
         $depositInputType->setValue($value);
 

@@ -22,13 +22,13 @@ class ProductControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     public function testCreate()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+        $productCategory = self::getContainer()->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
             ['type' => ProductCategoryType::FOOD],
             ['id' => 'asc']
         );
@@ -45,7 +45,7 @@ class ProductControllerTest extends BMSServiceTestCase
             'productCategoryId' => $productCategory->getId(),
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -71,7 +71,7 @@ class ProductControllerTest extends BMSServiceTestCase
     public function testCreateCashback()
     {
         /** @var ProductCategory|null $productCategory */
-        $productCategory = self::$container->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
+        $productCategory = self::getContainer()->get('doctrine')->getRepository(ProductCategory::class)->findOneBy(
             ['type' => ProductCategoryType::CASHBACK],
             ['id' => 'asc']
         );
@@ -90,7 +90,7 @@ class ProductControllerTest extends BMSServiceTestCase
             'currency' => 'USD',
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -124,7 +124,7 @@ class ProductControllerTest extends BMSServiceTestCase
             'image' => 'http://example.org/image2.jpg',
         ]);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -149,7 +149,7 @@ class ProductControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/products/' . $id);
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -174,7 +174,7 @@ class ProductControllerTest extends BMSServiceTestCase
     {
         $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[id][]=1');
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -225,18 +225,18 @@ class ProductControllerTest extends BMSServiceTestCase
 
         $expectedFilteredProducts = 0;
         if ($canSellFood) {
-            $expectedFilteredProducts += count($foods);
+            $expectedFilteredProducts += is_countable($foods) ? count($foods) : 0;
         }
         if ($canSellNonFood) {
-            $expectedFilteredProducts += count($nonfoods);
+            $expectedFilteredProducts += is_countable($nonfoods) ? count($nonfoods) : 0;
         }
         if ($canSellCashback) {
-            $expectedFilteredProducts += count($cashbacks);
+            $expectedFilteredProducts += is_countable($cashbacks) ? count($cashbacks) : 0;
         }
 
         $this->request('GET', '/api/basic/web-app/v1/products?sort[]=name.asc&filter[vendors][]=' . $vendor->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),

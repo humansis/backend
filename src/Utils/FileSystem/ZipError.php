@@ -10,27 +10,17 @@ trait ZipError
 {
     private function getZipError(int $res): string
     {
-        switch ($res) {
-            case ZipArchive::ER_EXISTS:
-                return 'File already exists.';
-            case ZipArchive::ER_INCONS:
-                return 'Zip archive inconsistent.';
-            case ZipArchive::ER_INVAL:
-                return 'Invalid argument.';
-            case ZipArchive::ER_MEMORY:
-                return 'Malloc failure.';
-            case ZipArchive::ER_NOENT:
-                return 'No such file.';
-            case ZipArchive::ER_NOZIP:
-                return 'Not a zip archive.';
-            case ZipArchive::ER_OPEN:
-                return 'Can\'t open file.';
-            case ZipArchive::ER_READ:
-                return 'Read error.';
-            case ZipArchive::ER_SEEK:
-                return 'Seek error.';
-        }
-
-        return 'error code ' . $res;
+        return match ($res) {
+            ZipArchive::ER_EXISTS => 'File already exists.',
+            ZipArchive::ER_INCONS => 'Zip archive inconsistent.',
+            ZipArchive::ER_INVAL => 'Invalid argument.',
+            ZipArchive::ER_MEMORY => 'Malloc failure.',
+            ZipArchive::ER_NOENT => 'No such file.',
+            ZipArchive::ER_NOZIP => 'Not a zip archive.',
+            ZipArchive::ER_OPEN => 'Can\'t open file.',
+            ZipArchive::ER_READ => 'Read error.',
+            ZipArchive::ER_SEEK => 'Seek error.',
+            default => 'error code ' . $res,
+        };
     }
 }

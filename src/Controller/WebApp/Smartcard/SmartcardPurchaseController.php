@@ -18,23 +18,15 @@ use Repository\SmartcardPurchaseRepository;
 
 class SmartcardPurchaseController extends AbstractWebAppController
 {
-    /** @var SmartcardPurchaseService */
-    private $smartcardPurchaseService;
-
-    public function __construct(SmartcardPurchaseService $smartcardPurchaseService)
+    public function __construct(private readonly SmartcardPurchaseService $smartcardPurchaseService)
     {
-        $this->smartcardPurchaseService = $smartcardPurchaseService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/smartcard-purchases")
      * @Rest\Get("/vendor-app/v2/smartcard-purchases")
      *
-     * @param SmartcardPurchaseFilterInputType $filter
-     * @param Pagination $pagination
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      *
-     * @return JsonResponse
      */
     public function purchases(
         SmartcardPurchaseFilterInputType $filter,
@@ -50,11 +42,7 @@ class SmartcardPurchaseController extends AbstractWebAppController
      * @Rest\Get("/web-app/v1/smartcard-redemption-batches/{id}/smartcard-purchases")
      * @ParamConverter("redemptionBatch", class="Entity\Invoice")
      *
-     * @param Invoice $redemptionBatch
-     * @param Pagination $pagination
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
      *
-     * @return JsonResponse
      */
     public function purchasesByRedemptionBatch(
         Invoice $redemptionBatch,
@@ -71,11 +59,7 @@ class SmartcardPurchaseController extends AbstractWebAppController
      * @ParamConverter("vendor", options={"mapping": {"vendorId": "id"}})
      * @ParamConverter("project", options={"mapping": {"projectId" : "id"}})
      *
-     * @param Vendor $vendor
-     * @param Project $project
-     * @param string $currency
      *
-     * @return JsonResponse
      */
     public function purchasesByPreliminaryInvoiceCandidate(
         Vendor $vendor,

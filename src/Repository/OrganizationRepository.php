@@ -3,10 +3,11 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Organization;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 
 /**
@@ -17,6 +18,8 @@ use Request\Pagination;
  */
 class OrganizationRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function findByParams(?Pagination $pagination = null): Paginator
     {
         $qb = $this->createQueryBuilder('o');
@@ -27,18 +30,5 @@ class OrganizationRepository extends EntityRepository
         }
 
         return new Paginator($qb);
-    }
-
-    /**
-     * @param Organization $organization
-     *
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(Organization $organization): void
-    {
-        $this->_em->persist($organization);
-        $this->_em->flush();
     }
 }

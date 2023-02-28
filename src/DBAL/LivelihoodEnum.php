@@ -8,7 +8,7 @@ class LivelihoodEnum extends AbstractEnum
 {
     use EnumTrait;
 
-    public function getName()
+    public function getName(): string
     {
         return 'enum_livelihood';
     }

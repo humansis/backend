@@ -11,20 +11,16 @@ use InvalidArgumentException;
 
 class SelectionCriterionService
 {
-    /** @var FieldGeneratorInterface[] */
-    private $generators = [];
-
-    public function __construct(array $generators)
+    /**
+     * @param \Component\SelectionCriteria\FieldGeneratorInterface[] $generators
+     */
+    public function __construct(private readonly array $generators)
     {
-        $this->generators = $generators;
     }
 
     /**
-     * @param string $target
-     * @param string $countryIso3
      *
      * @return Field[]
-     *
      * @throws InvalidArgumentException
      * @throws BadMethodCallException
      */
@@ -45,11 +41,6 @@ class SelectionCriterionService
     }
 
     /**
-     * @param string $fieldCode
-     * @param string $target
-     * @param string $countryIso3
-     *
-     * @return array
      *
      * @throws InvalidArgumentException
      * @throws BadMethodCallException
@@ -67,9 +58,7 @@ class SelectionCriterionService
     }
 
     /**
-     * @param string $target
      *
-     * @return FieldGeneratorInterface
      *
      * @throws BadMethodCallException
      */

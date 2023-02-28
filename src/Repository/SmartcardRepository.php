@@ -2,14 +2,14 @@
 
 namespace Repository;
 
+use DateTimeImmutable;
 use DateTimeInterface;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Beneficiary;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Entity\Smartcard;
 use Enum\SmartcardStates;
+use Repository\Helper\TRepositoryHelper;
 
 /**
  * Class SmartcardRepository.
@@ -18,6 +18,8 @@ use Enum\SmartcardStates;
  */
 class SmartcardRepository extends EntityRepository
 {
+    use TRepositoryHelper;
+
     public function findBySerialNumberAndBeneficiary(string $serialNumber, ?Beneficiary $beneficiary = null): ?Smartcard
     {
         $qb = $this->createQueryBuilder('s')
@@ -37,9 +39,16 @@ class SmartcardRepository extends EntityRepository
 
         try {
             return $qb->getQuery()->getSingleResult();
-        } catch (NoResultException $e) {
+        } catch (NoResultException) {
             return null;
         }
+    }
+
+    public function disable(Smartcard $smartcard): void
+    {
+        $smartcard->setState(SmartcardStates::INACTIVE);
+        $smartcard->setDisabledAt(new DateTimeImmutable());
+        $this->_em->persist($smartcard);
     }
 
     public function disableBySerialNumber(
@@ -62,11 +71,10 @@ class SmartcardRepository extends EntityRepository
     /**
      * Returns list of blocked smardcards.
      *
-     * @param string $countryCode
      *
      * @return string[] list of smartcard serial numbers
      */
-    public function findBlocked(string $countryCode)
+    public function findBlocked(string $countryCode): array
     {
         $qb = $this->createQueryBuilder('s')
             ->distinct(true)
@@ -99,7 +107,7 @@ class SmartcardRepository extends EntityRepository
         if (empty($smartcards)) {
             return null;
         } else {
-            if (count($smartcards) > 1) {
+            if ((is_countable($smartcards) ? count($smartcards) : 0) > 1) {
                 //TODO log
                 //$this->logger->error("There is inconsistency in the database. Smartcard '$serialNumber' has " . count($smartcards) . ' active entries.');
             }
@@ -108,16 +116,19 @@ class SmartcardRepository extends EntityRepository
         }
     }
 
-    /**
-     * @param Smartcard $smartcard
-     *
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(Smartcard $smartcard): void
+    public function findBySerialNumberAndBeneficiaryId(string $serialNumber, int $beneficiary): ?Smartcard
     {
-        $this->_em->persist($smartcard);
-        $this->_em->flush();
+        $smartcards = $this->createQueryBuilder('s')
+            ->andWhere('s.serialNumber = :serialNumber')
+            ->andWhere('s.beneficiary = :beneficiary')
+            ->setParameter('beneficiary', $beneficiary)
+            ->setParameter('serialNumber', strtoupper($serialNumber))
+            ->orderBy('s.disabledAt', 'desc')
+            ->orderBy('s.createdAt', 'desc')
+            ->orderBy('s.id', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()->getResult();
+
+        return empty($smartcards) ? null : $smartcards[0];
     }
 }

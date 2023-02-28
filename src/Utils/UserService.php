@@ -9,6 +9,8 @@ use InputType\UserCreateInputType;
 use InputType\UserUpdateInputType;
 use InputType\UserInitializeInputType;
 use Entity\Project;
+use Repository\RoleRepository;
+use Services\CountryLocaleResolverService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
@@ -26,53 +28,23 @@ use Repository\UserRepository;
  */
 class UserService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ValidatorInterface $validator */
-    private $validator;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**
-     * @var RoleHierarchyInterface
-     */
-    private $roleHierarchy;
-
-    /** @var Security $security */
-    private $security;
-
     /**
      * UserService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ValidatorInterface $validator
-     * @param ExportService $exportService
-     * @param RoleHierarchyInterface $roleHierarchy
-     * @param Security $security
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        ExportService $exportService,
-        RoleHierarchyInterface $roleHierarchy,
-        Security $security
+        private readonly EntityManagerInterface $em,
+        private readonly ExportService $exportService,
+        private readonly RoleHierarchyInterface $roleHierarchy,
+        private readonly Security $security,
+        private readonly RoleRepository $roleRepository,
+        private readonly CountryLocaleResolverService $countryLocaleResolverService
     ) {
-        $this->em = $entityManager;
-        $this->validator = $validator;
-        $this->exportService = $exportService;
-        $this->roleHierarchy = $roleHierarchy;
-        $this->security = $security;
     }
 
     /**
-     * @param UserInitializeInputType $inputType
-     *
-     * @return array
      * @throws Exception
      */
-    public function initialize(UserInitializeInputType $inputType): array
+    public function initialize(UserInitializeInputType $inputType, ?string $userDefinedSalt = null): array
     {
         $user = $this->em->getRepository(User::class)
             ->findBy(['email' => $inputType->getUsername()]);
@@ -81,16 +53,12 @@ class UserService
             throw new InvalidArgumentException('User with username ' . $inputType->getUsername());
         }
 
-        $salt = $this->generateSalt();
+        $salt = $userDefinedSalt ?: $this->generateSalt();
 
         $user = new User();
 
-        $user->injectObjectManager($this->em);
-
         $user->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEmail($inputType->getUsername())
-            ->setEmailCanonical($inputType->getUsername())
             ->setEnabled(false)
             ->setSalt($salt)
             ->setPassword('');
@@ -101,11 +69,6 @@ class UserService
         return ['userId' => $user->getId(), 'salt' => $user->getSalt()];
     }
 
-    /**
-     * @param string $username
-     *
-     * @return array
-     */
     public function getSalt(string $username): array
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
@@ -118,8 +81,6 @@ class UserService
     }
 
     /**
-     * @param string $username
-     * @param string $saltedPassword
      * @return mixed
      * @throws Exception
      */
@@ -140,28 +101,16 @@ class UserService
         return $user;
     }
 
-    /**
-     * Export all users in a CSV file
-     *
-     * @param string $type
-     * @return mixed
-     */
-    public function exportToCsv(string $type)
-    {
-        $exportableTable = $this->em->getRepository(User::class)->findAll();
 
-        return $this->exportService->export($exportableTable, 'users', $type);
-    }
-
-    public function getCountries(User $user): array
+    public function getAvailableCountries(User $user): array
     {
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return ['KHM', 'SYR', 'UKR', "ETH", "MNG", "ARM", "ZMB"];
+            return $this->countryLocaleResolverService->getCountryCodes();
         }
 
         $countries = [];
         foreach ($user->getCountries() as $country) {
-            $countries[$country->getIso3()] = true;
+            $countries[$country->getCountryIso3()] = true;
         }
 
         foreach ($user->getProjects() as $userProject) {
@@ -177,16 +126,17 @@ class UserService
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
 
-        if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
+        /*if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
             throw new InvalidArgumentException(
                 'The user with email ' . $inputType->getEmail() . ' has already been added'
             );
-        }
+        }*/
+
+        $roles = $this->roleRepository->findByCodes($inputType->getRoles());
 
         $initializedUser->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setEnabled(true)
-            ->setRoles($inputType->getRoles())
+            ->setRoles($roles)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
@@ -236,6 +186,7 @@ class UserService
         /** @var UserRepository $userRepository */
         $userRepository = $this->em->getRepository(User::class);
 
+
         $existingUser = $userRepository->findOneBy(['email' => $inputType->getEmail()]);
         if ($existingUser instanceof User && $existingUser->getId() !== $user->getId()) {
             throw new InvalidArgumentException('The user with email ' . $inputType->getEmail() . ' already exists');
@@ -248,14 +199,14 @@ class UserService
             );
         }
 
+        $roles = $this->roleRepository->findByCodes($inputType->getRoles());
+
         $user->setEmail($inputType->getEmail())
-            ->setEmailCanonical($inputType->getEmail())
             ->setUsername($inputType->getUsername())
-            ->setUsernameCanonical($inputType->getUsername())
             ->setEnabled(true)
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
-            ->setRoles($inputType->getRoles())
+            ->setRoles($roles)
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
 
@@ -318,12 +269,6 @@ class UserService
         $this->em->flush();
     }
 
-    /**
-     * @param User $user
-     * @param string $role
-     *
-     * @return bool
-     */
     public function isGranted(User $user, string $role): bool
     {
         foreach ($this->roleHierarchy->getReachableRoleNames($user->getRoles()) as $reachableRole) {
@@ -350,7 +295,7 @@ class UserService
     public function getCurrentUser()
     {
         return $this->em->getRepository(User::class)->findOneBy(
-            ['username' => $this->security->getUser()->getUsername()]
+            ['username' => $this->security->getUser()->getUserIdentifier()]
         );
     }
 }

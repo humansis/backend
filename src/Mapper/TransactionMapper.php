@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Mapper;
 
 use DateTime;
+use DateTimeInterface;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
 use Entity\Transaction;
 
 class TransactionMapper implements MapperInterface
 {
-    /** @var Transaction */
-    private $object;
+    private ?\Entity\Transaction $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +34,7 @@ class TransactionMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Transaction::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Transaction::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -60,12 +60,12 @@ class TransactionMapper implements MapperInterface
 
     public function getDateSent(): string
     {
-        return $this->object->getDateSent()->format(DateTime::ISO8601);
+        return $this->object->getDateSent()->format(DateTimeInterface::ATOM);
     }
 
     public function getDatePickedUp(): ?string
     {
-        return $this->object->getPickupDate() ? $this->object->getPickupDate()->format(DateTime::ISO8601) : null;
+        return $this->object->getPickupDate()?->format(DateTimeInterface::ATOM);
     }
 
     public function getStatus(): string

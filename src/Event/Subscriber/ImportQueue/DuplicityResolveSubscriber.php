@@ -18,20 +18,8 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 class DuplicityResolveSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var DuplicityResolver
-     */
-    private $duplicityResolver;
-
-    /**
-     * @var WorkflowInterface
-     */
-    private $importStateMachine;
-
-    public function __construct(DuplicityResolver $duplicityResolver, WorkflowInterface $importStateMachine)
+    public function __construct(private readonly DuplicityResolver $duplicityResolver, private readonly WorkflowInterface $importStateMachine)
     {
-        $this->duplicityResolver = $duplicityResolver;
-        $this->importStateMachine = $importStateMachine;
     }
 
     public static function getSubscribedEvents(): array
@@ -48,9 +36,6 @@ class DuplicityResolveSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param CompletedEvent $enteredEvent
-     */
     public function resolveImport(CompletedEvent $enteredEvent): void
     {
         /** @var ImportQueue $importQueue */

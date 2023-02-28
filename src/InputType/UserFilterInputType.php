@@ -12,22 +12,14 @@ class UserFilterInputType extends AbstractFilterInputType
     use PrimaryIdFilterTrait;
     use FulltextFilterTrait;
 
-    /**
-     * @Assert\Choice({"true", "false"})
-     */
-    protected $showVendors;
+    #[Assert\Choice([true, false])]
+    protected bool $showVendors;
 
-    /**
-     * @return bool
-     */
-    public function getShowVendors()
+    public function getShowVendors(): bool
     {
-        return "true" === $this->showVendors;
+        return $this->showVendors;
     }
 
-    /**
-     * @return bool
-     */
     public function hasShowVendors(): bool
     {
         return $this->has('showVendors');

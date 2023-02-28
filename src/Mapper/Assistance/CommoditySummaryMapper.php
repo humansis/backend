@@ -14,8 +14,7 @@ use Serializer\MapperInterface;
 
 class CommoditySummaryMapper implements MapperInterface
 {
-    /** @var CommoditySummary */
-    private $object;
+    private ?\Component\Assistance\DTO\CommoditySummary $object = null;
 
     /**
      * {@inheritdoc}
@@ -39,9 +38,7 @@ class CommoditySummaryMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . CommoditySummary::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . CommoditySummary::class . ', ' . $object::class . ' given.'
         );
     }
 

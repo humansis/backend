@@ -12,7 +12,6 @@ class Reflection
     /**
      * @param object|string $object
      *
-     * @return ReflectionClass
      * @throws ReflectionException
      */
     public static function getReflectionClass($object): ReflectionClass
@@ -22,9 +21,7 @@ class Reflection
 
     /**
      * @param        $object
-     * @param string $traitName
      *
-     * @return bool
      * @throws ReflectionException
      */
     public static function hasTrait($object, string $traitName): bool

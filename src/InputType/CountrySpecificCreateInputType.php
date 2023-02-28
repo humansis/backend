@@ -11,9 +11,9 @@ class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
 {
     /**
      * @Country
-     * @Assert\NotBlank
-     * @Assert\NotNull
      */
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
     private $iso3;
 
     /**

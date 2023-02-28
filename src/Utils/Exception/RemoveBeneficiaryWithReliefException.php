@@ -5,71 +5,26 @@ declare(strict_types=1);
 namespace Utils\Exception;
 
 use Entity\Beneficiary;
-use InvalidArgumentException;
-use Symfony\Component\Validator\ConstraintViolationInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class RemoveBeneficiaryWithReliefException extends InvalidArgumentException implements ConstraintViolationInterface
+class RemoveBeneficiaryWithReliefException extends HttpException
 {
-    /** @var Beneficiary */
-    protected $beneficiary;
-
-    protected $atPath;
-
-    public function __construct(Beneficiary $beneficiary)
-    {
-        parent::__construct();
-
-        $this->beneficiary = $beneficiary;
-        $this->message = strtr($this->getMessageTemplate(), $this->getParameters());
+    public function __construct(
+        private readonly Beneficiary $beneficiary,
+        private readonly TranslatorInterface $translator,
+    ) {
+        parent::__construct(400, $this->message());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getMessageTemplate()
+    private function message(): string
     {
-        return 'Beneficiary {{ name }} can\'t be removed from assistance. He has already received a relief.';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParameters()
-    {
-        return [
-            '{{ name }}' => $this->beneficiary->getPerson()->getLocalGivenName() . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName(),
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPlural()
-    {
-        return 1;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRoot()
-    {
-        return $this->beneficiary;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPropertyPath()
-    {
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidValue()
-    {
-        return $this->beneficiary;
+        return $this->translator->trans(
+            "Beneficiary %name% can't be removed from assistance. He has already received a relief package.",
+            [
+                '%name%' => $this->beneficiary->getPerson()->getLocalGivenName()
+                    . ' ' . $this->beneficiary->getPerson()->getLocalFamilyName()
+            ],
+        );
     }
 }

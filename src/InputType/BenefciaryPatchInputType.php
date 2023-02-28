@@ -9,16 +9,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BenefciaryPatchInputType implements InputTypeInterface
 {
-    /**
-     * @Assert\Choice(callback={"Entity\Referral", "types"})
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Choice(callback: [\Entity\Referral::class, 'types'])]
+    #[Assert\Length(max: 255)]
     private $referralType;
 
-    /**
-     * @Assert\Type("string")
-     * @Assert\Length(max="255")
-     */
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 255)]
     private $referralComment;
 
     /**

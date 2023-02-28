@@ -2,6 +2,7 @@
 
 namespace Controller\OfflineApp;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Entity\Beneficiary;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\BeneficiaryFilterInputType;
@@ -12,18 +13,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BeneficiaryController extends AbstractOfflineAppController
 {
+    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    {
+    }
     /**
      * @Rest\Get("/offline-app/v2/beneficiaries")
      *
-     * @param Request $request
-     * @param BeneficiaryFilterInputType $filter
      *
-     * @return JsonResponse
      * @deprecated Application require only one beneficiary at a time
      */
     public function beneficiaries(Request $request, BeneficiaryFilterInputType $filter): JsonResponse
     {
-        $beneficiaries = $this->getDoctrine()->getRepository(Beneficiary::class)->findByParams($filter);
+        $beneficiaries = $this->managerRegistry->getRepository(Beneficiary::class)->findByParams($filter);
 
         $response = $this->json($beneficiaries, Response::HTTP_OK, [], [MapperInterface::OFFLINE_APP => false]);
         $response->setEtag(md5($response->getContent()));
@@ -36,10 +37,7 @@ class BeneficiaryController extends AbstractOfflineAppController
     /**
      * @Rest\Get("/offline-app/v2/beneficiary/{id}")
      *
-     * @param Beneficiary $beneficiary
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function beneficiary(Beneficiary $beneficiary, Request $request): JsonResponse
     {

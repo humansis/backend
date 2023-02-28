@@ -7,29 +7,22 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Component\Country\Countries;
+use Entity\Role;
 use Symfony\Component\HttpKernel\Kernel;
 use Entity\User;
 use Entity\Vendor;
 
 class VendorFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const REF_VENDOR_KHM = 'vendor_fixtures_khm';
-    public const REF_VENDOR_SYR = 'vendor_fixtures_syr';
-    public const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
-    public const VENDOR_KHM_NAME = 'Vendor from Cambodia';
-    public const VENDOR_SYR_NAME = 'Vendor from Syria';
-    public const VENDOR_COUNT_PER_COUNTRY = 3;
+    final public const REF_VENDOR_KHM = 'vendor_fixtures_khm';
+    final public const REF_VENDOR_SYR = 'vendor_fixtures_syr';
+    final public const REF_VENDOR_GENERIC = 'vendor_fixtures_generic';
+    final public const VENDOR_KHM_NAME = 'Vendor from Cambodia';
+    final public const VENDOR_SYR_NAME = 'Vendor from Syria';
+    final public const VENDOR_COUNT_PER_COUNTRY = 3;
 
-    /** @var Kernel */
-    private $kernel;
-
-    /** @var Countries */
-    private $countries;
-
-    public function __construct(Kernel $kernel, Countries $countries)
+    public function __construct(private readonly Kernel $kernel, private readonly Countries $countries)
     {
-        $this->kernel = $kernel;
-        $this->countries = $countries;
     }
 
     /**
@@ -41,7 +34,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
-        srand(42);
+        mt_srand(42);
 
         $vendorSyr = $this->createSyrVendor($manager);
         $vendorKhm = $this->createKhmVendor($manager);
@@ -72,7 +65,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    private function createSyrVendor(ObjectManager $manager)
+    private function createSyrVendor(ObjectManager $manager): Vendor
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_SYR);
 
@@ -97,7 +90,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         return $vendor;
     }
 
-    private function createKhmVendor(ObjectManager $manager)
+    private function createKhmVendor(ObjectManager $manager): Vendor
     {
         $user = $this->getReference(UserFixtures::REF_VENDOR_KHM);
 
@@ -135,9 +128,9 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $vendor
             ->setName('Generic vendor from ' . $country)
             ->setShop('generic')
-            ->setAddressNumber(rand(1, 1000))
+            ->setAddressNumber(random_int(1, 1000))
             ->setAddressStreet('Main street')
-            ->setAddressPostcode(rand(10000, 99999))
+            ->setAddressPostcode(random_int(10000, 99999))
             ->setArchived(false)
             ->setUser($user)
             ->setLocation($adm2)
@@ -156,15 +149,13 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         $email = "vendor$userIndex.$country@example.org";
         $instance = new User();
 
-        $instance->injectObjectManager($manager);
+        $roles = $manager->getRepository(Role::class)->findByCodes(['ROLE_ADMIN']);
 
         $instance->setEnabled(1)
             ->setEmail($email)
-            ->setEmailCanonical($email)
             ->setUsername($email)
-            ->setUsernameCanonical($email)
             ->setSalt('no salt')
-            ->setRoles(['ROLE_VENDOR'])
+            ->setRoles($roles)
             ->setChangePassword(0);
         $instance->setPassword('no passwd');
         $manager->persist($instance);

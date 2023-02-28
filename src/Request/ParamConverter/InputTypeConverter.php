@@ -10,23 +10,18 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class InputTypeConverter implements ParamConverterInterface
 {
-    /** @var ValidatorInterface */
-    private $validator;
-
-    /**
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(private readonly ValidatorInterface $validator)
     {
-        $this->validator = $validator;
     }
 
     /**
@@ -35,6 +30,7 @@ class InputTypeConverter implements ParamConverterInterface
     public function apply(Request $request, ParamConverter $configuration): bool
     {
         $serializer = new Serializer([
+            new DateTimeNormalizer(),
             new ObjectNormalizer(
                 null,
                 null,
@@ -44,7 +40,7 @@ class InputTypeConverter implements ParamConverterInterface
             $this->getArrayDenormalizer(),
         ]);
         $inputType = $serializer->denormalize($request->request->all(), $configuration->getClass(), null, [
-            ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
         ]);
 
         $errors = $this->validator->validate($inputType);
@@ -70,19 +66,11 @@ class InputTypeConverter implements ParamConverterInterface
         return in_array(InputTypeInterface::class, class_implements($class));
     }
 
-    /**
-     * @return ContextAwareDenormalizerInterface
-     */
-    protected function getArrayDenormalizer(): ContextAwareDenormalizerInterface
+    protected function getArrayDenormalizer(): DenormalizerInterface
     {
         return new ArrayDenormalizer();
     }
 
-    /**
-     * @param ParamConverter $configuration
-     *
-     * @return string|null
-     */
     protected function getClassFromConfiguration(ParamConverter $configuration): ?string
     {
         $class = $configuration->getClass();

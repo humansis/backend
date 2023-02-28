@@ -2,6 +2,7 @@
 
 namespace Tests\Controller;
 
+use Component\Smartcard\Deposit\DepositFactory;
 use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -9,31 +10,36 @@ use Entity\Beneficiary;
 use DataFixtures\VendorFixtures;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
-use Component\Smartcard\SmartcardDepositService;
 use Entity\Assistance\ReliefPackage;
 use Entity\Commodity;
 use Enum\ModalityType;
 use InputType\Smartcard\ChangeSmartcardInputType;
+use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
-use PhpParser\Node\Expr\AssignOp\Mod;
+use Repository\BeneficiaryRepository;
 use Tests\BMSServiceTestCase;
 use Entity\User;
 use Entity\Smartcard;
-use Entity\SmartcardDeposit;
 use Entity\SmartcardPurchase;
 use Entity\Vendor;
 use Enum\SmartcardStates;
 use Repository\SmartcardRepository;
+use Tests\ComponentHelper\SmartcardHelper;
 use Utils\SmartcardService;
 
 class SmartcardControllerTest extends BMSServiceTestCase
 {
+    use SmartcardHelper;
+
+    private DepositFactory $depositFactory;
+
     public function setUp(): void
     {
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
+        $this->depositFactory = self::getContainer()->get(DepositFactory::class);
     }
 
     protected function tearDown(): void
@@ -70,26 +76,92 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(\Symfony\Component\HttpFoundation\Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
         $smartcard = $this->em->getRepository(Smartcard::class)->findBySerialNumberAndBeneficiary('1111111', $bnf);
         $this->em->remove($smartcard);
         $this->em->flush();
     }
 
+    public function testReRegisterSmartcard(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $firstSmartcardCode = '1111111';
+        $secondSmartcardCode = '2222222';
+        $bnf = self::getContainer()->get(BeneficiaryRepository::class)->findOneBy([], ['id' => 'asc']);
+        $this->getSmartcardForBeneficiary($firstSmartcardCode, $bnf);
+
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
+            'serialNumber' => $secondSmartcardCode,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        /**
+         * @var Smartcard[] $activeSmartcards
+         */
+        $activeSmartcards = $smartcardRepository->findBy(['beneficiary' => $bnf, 'state' => SmartcardStates::ACTIVE]);
+        $this->assertEquals(1, count($activeSmartcards));
+        $this->assertEquals($secondSmartcardCode, $activeSmartcards[0]->getSerialNumber());
+
+        $this->em->rollback();
+    }
+
+    public function testRegisterOldCardAgain(): void
+    {
+        $this->em->beginTransaction();
+
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
+        $firstSmartcardCode = '1111111';
+        $secondSmartcardCode = '2222222';
+        $bnf = self::getContainer()->get(BeneficiaryRepository::class)->findOneBy([], ['id' => 'asc']);
+        $smartcard1 = $this->getSmartcardForBeneficiary($firstSmartcardCode, $bnf);
+        $smartcard1->setState(SmartcardStates::ACTIVE);
+        $smartcardRepository->save($smartcard1);
+        $smartcard2 = $this->getSmartcardForBeneficiary($secondSmartcardCode, $bnf);
+        $smartcard2->setState(SmartcardStates::INACTIVE);
+        $smartcardRepository->save($smartcard2);
+
+        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
+            'serialNumber' => $secondSmartcardCode,
+            'beneficiaryId' => $bnf->getId(),
+            'createdAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $this->em->refresh($smartcard1);
+        $this->em->refresh($smartcard2);
+        $this->assertEquals(SmartcardStates::ACTIVE, $smartcard2->getState());
+        $this->assertEquals(SmartcardStates::INACTIVE, $smartcard1->getState());
+
+        $this->em->rollback();
+    }
+
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function testRegisterSmartcardDuplicity(): void
     {
-        $smartcardService = self::$container->get(SmartcardService::class);
+        $smartcardService = self::getContainer()->get(SmartcardService::class);
         $code = '1111111';
         $createdAt = '2005-02-02T12:00:00Z';
         $this->removeSmartcards($code);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
-        $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), $createdAt);
+        $registerInputType = SmartcardRegisterInputType::create($code, $bnf->getId(), DateTime::createFromFormat('Y-m-d\TH:i:sO', $createdAt));
         $smartcard = $smartcardService->register($registerInputType);
 
         $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
@@ -102,26 +174,10 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertSame(202, $this->client->getResponse()->getStatusCode());
+        $this->assertSame(\Symfony\Component\HttpFoundation\Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
 
         $this->em->remove($smartcard);
         $this->em->flush();
-    }
-
-    public function testRegisterDuplicateSmartcard()
-    {
-        $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
-
-        $this->request('POST', '/api/basic/offline-app/v1/smartcards', [
-            'serialNumber' => '1234ABC',
-            'beneficiaryId' => $bnf->getId(), // @todo replace for fixture
-            'createdAt' => '2020-02-02T12:00:00Z',
-        ]);
-
-        $this->assertTrue(
-            $this->client->getResponse()->isSuccessful(),
-            'Request should failed: ' . $this->client->getResponse()->getContent()
-        );
     }
 
     public function testPurchase()
@@ -136,13 +192,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
         $date = new DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash(
+        $deposit = $this->depositFactory->create(
             $smartcard->getSerialNumber(),
-            $date->getTimestamp(),
-            600,
-            $reliefPackage
+            DepositInputType::create($reliefPackage->getId(), 600, null, $date),
+            $depositor
         );
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash);
         $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
@@ -152,6 +206,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -166,7 +221,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'beneficiaryId' => $bnf->getId(),
             'createdAt' => '2020-02-02T11:11:11Z',
             'assistanceId' => $assistance->getId(),
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $this->client->request(
             'POST',
@@ -177,7 +232,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $content
         );
 
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
+        $smartcard = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -201,13 +256,11 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $reliefPackage = $this->createReliefPackage($assistanceBeneficiary);
 
         $date = new DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash(
+        $deposit = $this->depositFactory->create(
             $smartcard->getSerialNumber(),
-            $date->getTimestamp(),
-            600,
-            $reliefPackage
+            DepositInputType::create($reliefPackage->getId(), 600, null, $date),
+            $depositor
         );
-        $deposit = SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash);
         $smartcard->addDeposit($deposit);
 
         $this->em->persist($smartcard);
@@ -217,6 +270,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -232,7 +286,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'createdAt' => '2020-02-02T12:11:11Z',
             'balanceBefore' => 50,
             'balanceAfter' => 20,
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $this->client->request(
             'POST',
@@ -243,7 +297,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $content
         );
 
-        $smartcard = json_decode($this->client->getResponse()->getContent(), true);
+        $smartcard = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -268,14 +322,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
         $date = new DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash(
-            $smartcard->getSerialNumber(),
-            $date->getTimestamp(),
-            100,
-            $reliefPackage
-        );
         $smartcard->addDeposit(
-            SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, $date, $hash)
+            $this->depositFactory->create(
+                $smartcard->getSerialNumber(),
+                DepositInputType::create($reliefPackage->getId(), 100, null, $date),
+                $depositor
+            )
         );
 
         $this->em->persist($smartcard);
@@ -285,6 +337,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -299,7 +352,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'beneficiaryId' => $bnf->getId(),
             'createdAt' => '2020-02-02T12:00:00Z',
             'assistanceId' => $assistance->getId(),
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $this->client->request(
             'POST',
@@ -336,14 +389,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $smartcard->setState(SmartcardStates::INACTIVE);
         $date = new DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash(
-            $smartcard->getSerialNumber(),
-            $date->getTimestamp(),
-            100,
-            $reliefPackage
-        );
         $smartcard->addDeposit(
-            SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 100, null, $date, $hash)
+            $this->depositFactory->create(
+                $smartcard->getSerialNumber(),
+                DepositInputType::create($reliefPackage->getId(), 100, null, $date),
+                $depositor
+            )
         );
 
         $this->em->persist($smartcard);
@@ -353,6 +404,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -367,7 +419,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'beneficiaryId' => $bnf->getId(),
             'createdAt' => '2020-02-02T13:01:00Z',
             'assistanceId' => $assistance->getId(),
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $this->client->request(
             'POST',
@@ -399,6 +451,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $content = json_encode([
             'products' => [
@@ -415,7 +468,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'balanceBefore' => 20,
             'balanceAfter' => 10,
             'assistanceId' => $assistance->getId(),
-        ]);
+        ], JSON_THROW_ON_ERROR);
 
         $this->client->request(
             'POST',
@@ -443,7 +496,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
     public function testChangeStateToInactive()
     {
-        $smartcardRepository = self::$container->get(SmartcardRepository::class);
+        $smartcardRepository = self::getContainer()->get(SmartcardRepository::class);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
 
@@ -457,18 +510,18 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
         $smartcard = $smartcardRepository->find($smartcard->getId());
         $this->assertEquals(SmartcardStates::INACTIVE, $smartcard->getState());
     }
 
     public function testChangeStateToInactiveDoubled(): void
     {
-        $smartcardService = self::$container->get(SmartcardService::class);
+        $smartcardService = self::getContainer()->get(SmartcardService::class);
         $bnf = $this->em->getRepository(Beneficiary::class)->findOneBy([], ['id' => 'asc']);
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $date = '2005-02-02T12:00:00Z';
-        $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, $date);
+        $changeInputType = ChangeSmartcardInputType::create(SmartcardStates::INACTIVE, DateTime::createFromFormat('Y-m-d\TH:i:sO', $date));
         $smartcardService->change($smartcard, $changeInputType);
 
         $this->request('PATCH', '/api/basic/offline-app/v1/smartcards/' . $smartcard->getSerialNumber(), [
@@ -481,7 +534,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(202, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
     }
 
     /**
@@ -516,6 +569,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
 
         $this->client->request(
@@ -537,7 +591,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
                 'beneficiaryId' => $beneficiary->getId(),
                 'createdAt' => '2020-02-02T11:11:00Z',
                 'assistanceId' => $assistance->getId(),
-            ])
+            ], JSON_THROW_ON_ERROR)
         );
 
         $this->assertTrue(
@@ -586,7 +640,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
     /**
      * @depends testPurchasesShouldHaveCurrencyInNotPresentInRequestStep2
      */
-    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array)
+    public function testPurchasesShouldHaveCurrencyInNotPresentInRequestStep3($array): void
     {
         $this->markTestSkipped('This should be re-factorized to current deposit endpoint.');
 
@@ -638,14 +692,12 @@ class SmartcardControllerTest extends BMSServiceTestCase
 
         $smartcard = $this->getSmartcardForBeneficiary('1234ABC', $bnf);
         $date = new DateTime('now');
-        $hash = SmartcardDepositService::generateDepositHash(
-            $smartcard->getSerialNumber(),
-            $date->getTimestamp(),
-            600,
-            $reliefPackage
-        );
         $smartcard->addDeposit(
-            SmartcardDeposit::create($smartcard, $depositor, $reliefPackage, 600, null, $date, $hash)
+            $this->depositFactory->create(
+                $smartcard->getSerialNumber(),
+                DepositInputType::create($reliefPackage->getId(), 600, null, $date),
+                $depositor
+            )
         );
 
         $this->em->persist($smartcard);
@@ -655,6 +707,7 @@ class SmartcardControllerTest extends BMSServiceTestCase
             'HTTP_COUNTRY' => 'KHM',
             'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW' => 'pin1234',
+            'CONTENT_TYPE' => 'application/json',
         ];
         $requestBody = [
             'products' => [
@@ -678,13 +731,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             [],
             [],
             $headers,
-            json_encode($requestBody)
+            json_encode($requestBody, JSON_THROW_ON_ERROR)
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $content = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('value', $content);
         $smartCardPurchasesCount1 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
 
@@ -697,14 +750,14 @@ class SmartcardControllerTest extends BMSServiceTestCase
             [],
             [],
             $headers,
-            json_encode($requestBody)
+            json_encode($requestBody, JSON_THROW_ON_ERROR)
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
         $cnt = $this->client->getResponse()->getContent();
-        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $content = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('value', $content);
         $smartCardPurchasesCount2 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
         $this->assertEquals($smartCardPurchasesCount1, $smartCardPurchasesCount2);
@@ -719,13 +772,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             [],
             [],
             $headers,
-            json_encode($requestBody)
+            json_encode($requestBody, JSON_THROW_ON_ERROR)
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $content = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('value', $content);
         $smartCardPurchasesCount3 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
         $this->assertGreaterThan($smartCardPurchasesCount1, $smartCardPurchasesCount3);
@@ -740,13 +793,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             [],
             [],
             $headers,
-            json_encode($requestBody)
+            json_encode($requestBody, JSON_THROW_ON_ERROR)
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $content = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('value', $content);
         $smartCardPurchasesCount4 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
         $this->assertGreaterThan($smartCardPurchasesCount3, $smartCardPurchasesCount4);
@@ -761,13 +814,13 @@ class SmartcardControllerTest extends BMSServiceTestCase
             [],
             [],
             $headers,
-            json_encode($requestBody)
+            json_encode($requestBody, JSON_THROW_ON_ERROR)
         );
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $content = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $this->assertArrayHasKey('value', $content);
         $smartCardPurchasesCount5 = count($this->em->getRepository(SmartcardPurchase::class)->findAll());
         $this->assertGreaterThan($smartCardPurchasesCount3, $smartCardPurchasesCount5);
@@ -813,32 +866,6 @@ class SmartcardControllerTest extends BMSServiceTestCase
         $this->em->persist($assistanceBeneficiary);
 
         return $assistanceBeneficiary;
-    }
-
-    private function getSmartcardForBeneficiary(string $serialNumber, Beneficiary $beneficiary): Smartcard
-    {
-        /** @var Smartcard[] $smartcards */
-        $smartcards = $this->em->getRepository(Smartcard::class)->findBy(
-            ['serialNumber' => $serialNumber],
-            ['id' => 'asc']
-        );
-
-        foreach ($smartcards as $smartcard) {
-            if ($smartcard->getState() === SmartcardStates::ACTIVE) {
-                $smartcard->setBeneficiary($beneficiary);
-
-                return $smartcard;
-            }
-        }
-
-        $smartcard = new Smartcard($serialNumber, new DateTime('now'));
-        $smartcard->setBeneficiary($beneficiary);
-        $smartcard->setState(SmartcardStates::ACTIVE);
-
-        $this->em->persist($smartcard);
-        $this->em->flush();
-
-        return $smartcard;
     }
 
     private function createReliefPackage(AssistanceBeneficiary $ab): ReliefPackage

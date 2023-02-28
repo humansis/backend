@@ -7,7 +7,9 @@ use Entity\Household;
 use Entity\Assistance;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Enum\CacheTarget;
 use Exception;
+use Exception\ExportNoDataException;
 use InvalidArgumentException;
 use Entity\Import;
 use Exception\ConstraintViolationException;
@@ -19,6 +21,8 @@ use Entity\Project;
 use Symfony\Component\Validator\ConstraintViolation;
 use Entity\User;
 use Entity\UserProject;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class ProjectService
@@ -28,32 +32,36 @@ use Entity\UserProject;
 class ProjectService
 {
     /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /** @var ExportService */
-    private $exportService;
-
-    /**
      * ProjectService constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ExportService $exportService
      */
     public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
+        protected EntityManagerInterface $em,
+        private readonly ExportService $exportService,
+        private readonly CacheInterface $cache,
     ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
     }
 
     /**
-     * @param string $countryIso3
-     *
-     * @return int
+     * @throws \Psr\Cache\InvalidArgumentException
      */
+    public function getAssistanceCountByProject(Project $project): int
+    {
+        return $this->cache->get(
+            CacheTarget::assistanceCountInProject($project->getId()),
+            function (ItemInterface $item) use ($project) {
+                return $project->getDistributions()->count();
+            }
+        );
+    }
+
+    public function removeAssistanceCountCache(Project $project): void
+    {
+        try {
+            $this->cache->delete(CacheTarget::assistanceCountInProject($project->getId()));
+        } catch (\Psr\Cache\InvalidArgumentException) {
+        }
+    }
+
     public function countActive(string $countryIso3): int
     {
         $count = $this->em->getRepository(Project::class)->countActiveInCountry($countryIso3);
@@ -62,10 +70,7 @@ class ProjectService
     }
 
     /**
-     * @param ProjectCreateInputType $inputType
-     * @param User $user
      *
-     * @return Project
      * @throws EntityNotFoundException
      */
     public function create(ProjectCreateInputType $inputType, User $user): Project
@@ -120,13 +125,9 @@ class ProjectService
     }
 
     /**
-     * @param Project $project
-     * @param ProjectUpdateInputType $inputType
-     *
-     * @return Project
      * @throws EntityNotFoundException
      */
-    public function update(Project $project, ProjectUpdateInputType $inputType)
+    public function update(Project $project, ProjectUpdateInputType $inputType): Project
     {
         $existingProjects = $this->em->getRepository(Project::class)->findBy([
             'name' => $inputType->getName(),
@@ -175,10 +176,6 @@ class ProjectService
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param AddHouseholdsToProjectInputType $inputType
-     */
     public function addHouseholds(Project $project, AddHouseholdsToProjectInputType $inputType): void
     {
         foreach ($inputType->getHouseholdIds() as $householdId) {
@@ -196,11 +193,7 @@ class ProjectService
         $this->em->flush();
     }
 
-    /**
-     * @param Project $project
-     * @param User $user
-     */
-    public function addUser(Project $project, User $user)
+    public function addUser(Project $project, User $user): void
     {
         $right = $user->getRoles();
         if ($right[0] !== "ROLE_ADMIN") {
@@ -219,15 +212,13 @@ class ProjectService
         /** @var Paginator $assistance */
         $assistances = $this->em->getRepository(Assistance::class)->findByProject($project);
 
-        return 0 === count($assistances) || $this->checkIfAllDistributionClosed($assistances);
+        return 0 === (is_countable($assistances) ? count($assistances) : 0) || $this->checkIfAllDistributionClosed($assistances);
     }
 
     /**
-     * @param Project $project
-     * @return void
-     * @throws error if one or more distributions prevent the project from being deleted
+     * @throws Exception if one or more distributions prevent the project from being deleted
      */
-    public function delete(Project $project)
+    public function delete(Project $project): void
     {
         /** @var Paginator $assistance */
         $assistance = $this->em->getRepository(Assistance::class)->findByProject($project);
@@ -257,7 +248,7 @@ class ProjectService
 
                     $project->setArchived(true);
                     $this->em->persist($project);
-                } catch (Exception $error) {
+                } catch (Exception) {
                     throw new Exception("Error archiving project");
                 }
             }
@@ -267,11 +258,8 @@ class ProjectService
 
     /**
      * Check if all distributions allow for the project to be deleted
-     *
-     * @param Assistance[] $assistance
-     * @return bool
      */
-    private function checkIfAllDistributionClosed(iterable $assistances)
+    private function checkIfAllDistributionClosed(iterable $assistances): bool
     {
         foreach ($assistances as $distributionDatum) {
             if (!$distributionDatum->getArchived() && !$distributionDatum->getCompleted()) {
@@ -280,19 +268,5 @@ class ProjectService
         }
 
         return true;
-    }
-
-    /**
-     * Export all projects of the country in the CSV file
-     *
-     * @param $countryIso3
-     * @param string $type
-     * @return mixed
-     */
-    public function exportToCsv($countryIso3, string $type)
-    {
-        $exportableTable = $this->em->getRepository(Project::class)->getAllOfCountry($countryIso3);
-
-        return $this->exportService->export($exportableTable, 'projects', $type);
     }
 }

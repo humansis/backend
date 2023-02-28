@@ -12,32 +12,17 @@ use Entity\SynchronizationBatch\Deposits;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {
-    /** @var string */
-    private $environment;
-
-    /** @var SmartcardDepositService */
-    private $smartcardDepositService;
-
-    public const DEPOSIT_SYNC_DATA = [
+    final public const DEPOSIT_SYNC_DATA = [
         ['{"reliefPackageId":1024, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": null, "balanceAfter": 10.99}'],
         ['{"reliefPackageId":1, "createdAt": "2000-01-01T00:00:00+0200", "smartcardSerialNumber": "AAABBB123", "balanceBefore": 1000000.99, "balanceAfter": 10.99}'],
         ['{"reliefPackageId":null, "createdAt": "garbage", "smartcardSerialNumber": null, "balanceBefore": null, "balanceAfter": null}'],
         ['{"reliefPackageId":null}, {"somethingElse": "Dont know"}'],
     ];
 
-    /**
-     * @param string $environment
-     * @param SmartcardDepositService $smartcardDepositService
-     */
-    public function __construct(string $environment, SmartcardDepositService $smartcardDepositService)
+    public function __construct(private readonly string $environment, private readonly SmartcardDepositService $smartcardDepositService)
     {
-        $this->environment = $environment;
-        $this->smartcardDepositService = $smartcardDepositService;
     }
 
-    /**
-     * @param ObjectManager $manager
-     */
     public function load(ObjectManager $manager)
     {
         if ('prod' === $this->environment) {

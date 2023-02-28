@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Tests\Component\Assistance\Scoring\Model;
 
 use Component\Assistance\Scoring\Model\ScoringProtocol;
-use PHPStan\Testing\TestCase;
+use PHPStan\Testing\PHPStanTestCase;
 
-class ProtocolTest extends TestCase
+class ProtocolTest extends PHPStanTestCase
 {
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $protocol = new ScoringProtocol();
 
         $protocol->addScore('test', 5);
 
-        /** @var ScoringProtocol $recreatedProtocol */
-        $recreatedProtocol = unserialize(serialize($protocol));
+        $json = $protocol->serializeToJson();
 
-        $this->assertEquals(1, count($recreatedProtocol->getAllScores()));
+        $recreatedProtocol = ScoringProtocol::unserializeFromJson($json);
+
+        $this->assertCount(1, $recreatedProtocol->getAllScores());
         $this->assertEquals(5, $recreatedProtocol->getScore('test'));
     }
 }

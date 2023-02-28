@@ -33,6 +33,9 @@ class CrowdinPullCommand extends Command
     use CrowdinRequestTrait;
     use ZipError;
 
+    protected static $defaultName = 'crowdin:pull';
+
+
     //If set on true, the source english files will be downloaded from Crowdin.
     //You may want to set it to false if you made changes in versioned en source files.
     private const PULL_SOURCE_FILES = true;
@@ -40,28 +43,15 @@ class CrowdinPullCommand extends Command
     /** @var HttpClient $client */
     private $client;
 
-    /** @var string */
-    private $crowdinApiKey;
-
-    /** @var int */
-    private $crowdinProjectId;
-
     /** @var OutputInterface */
     private $output;
 
-    /** @var string */
-    private $translationsDir;
-
     public function __construct(
-        string $crowdinApiKey,
-        string $crowdinProjectId,
-        string $translationsDir
+        private readonly string $crowdinApiKey,
+        private readonly string $crowdinProjectId,
+        private readonly string $translationsDir
     ) {
         parent::__construct();
-
-        $this->crowdinApiKey = $crowdinApiKey;
-        $this->crowdinProjectId = $crowdinProjectId;
-        $this->translationsDir = $translationsDir;
 
         $this->client = HttpClient::create();
     }
@@ -69,9 +59,7 @@ class CrowdinPullCommand extends Command
     protected function configure(): void
     {
         parent::configure();
-        $this
-            ->setName('crowdin:pull')
-            ->setDescription('Get translations from Crowdin');
+        $this->setDescription('Get translations from Crowdin');
     }
 
     /**

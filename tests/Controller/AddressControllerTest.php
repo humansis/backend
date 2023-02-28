@@ -20,7 +20,7 @@ class AddressControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
     }
 
     /**
@@ -29,7 +29,7 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetAddress()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/' . $address->getId());
@@ -56,7 +56,7 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetAddresses()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $address = $em->getRepository(Address::class)->findBy([], ['id' => 'asc'])[0];
 
         $this->request('GET', '/api/basic/web-app/v1/addresses?filter[id][]=' . $address->getId());
@@ -74,12 +74,12 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamp()
+    public function testGetCamp(): void
     {
         $this->markTestSkipped('There is no camp');
 
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $camp = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_CAMP],
             ['id' => 'asc']
@@ -87,7 +87,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps/' . $camp->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -109,12 +109,12 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetCamps()
+    public function testGetCamps(): void
     {
         $this->markTestSkipped('There is no camp');
 
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $campAddress = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_CAMP],
             ['id' => 'asc']
@@ -122,7 +122,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/camps?filter[id][]=' . $campAddress->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -140,7 +140,7 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetResidence()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $residence = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE],
             ['id' => 'asc']
@@ -148,7 +148,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/residencies/' . $residence->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -174,7 +174,7 @@ class AddressControllerTest extends BMSServiceTestCase
     public function testGetResidences()
     {
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $residency = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_RESIDENCE],
             ['id' => 'asc']
@@ -195,12 +195,12 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlement()
+    public function testGetTemporarySettlement(): void
     {
         $this->markTestSkipped('There is no temporary settlement');
 
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $settlement = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT],
             ['id' => 'asc']
@@ -208,7 +208,7 @@ class AddressControllerTest extends BMSServiceTestCase
 
         $this->request('GET', '/api/basic/web-app/v1/addresses/temporary-settlements/' . $settlement->getId());
 
-        $result = json_decode($this->client->getResponse()->getContent(), true);
+        $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
@@ -231,12 +231,12 @@ class AddressControllerTest extends BMSServiceTestCase
     /**
      * @throws Exception
      */
-    public function testGetTemporarySettlements()
+    public function testGetTemporarySettlements(): void
     {
         $this->markTestSkipped('There is no temporary settlement');
 
         /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()->get('doctrine')->getManager();
+        $em = self::getContainer()->get('doctrine')->getManager();
         $settlement = $em->getRepository(HouseholdLocation::class)->findBy(
             ['type' => HouseholdLocation::LOCATION_TYPE_SETTLEMENT],
             ['id' => 'asc']

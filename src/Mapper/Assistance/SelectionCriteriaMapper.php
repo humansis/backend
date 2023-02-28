@@ -14,20 +14,12 @@ use Serializer\MapperInterface;
 
 class SelectionCriteriaMapper implements MapperInterface
 {
-    /** @var SelectionCriteria */
-    private $object;
+    private ?\Entity\Assistance\SelectionCriteria $object = null;
 
-    /** @var SelectionCriteriaDomain */
-    private $criteriaDomain;
+    private ?SelectionCriteriaDomain $criteriaDomain = null;
 
-    /**
-     * @var SelectionCriteriaFactory
-     */
-    private $criteriaFactory;
-
-    public function __construct(SelectionCriteriaFactory $criteriaFactory)
+    public function __construct(private readonly SelectionCriteriaFactory $criteriaFactory)
     {
-        $this->criteriaFactory = $criteriaFactory;
     }
 
     /**
@@ -51,9 +43,7 @@ class SelectionCriteriaMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . SelectionCriteria::class . ', ' . get_class(
-                $object
-            ) . ' given.'
+            'Invalid argument. It should be instance of ' . SelectionCriteria::class . ', ' . $object::class . ' given.'
         );
     }
 

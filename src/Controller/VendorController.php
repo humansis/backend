@@ -3,9 +3,9 @@
 namespace Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Enum\EnumValueNoFoundException;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -21,41 +21,34 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Entity\Vendor;
+use Utils\ExportTableServiceInterface;
 use Utils\VendorService;
+use Utils\VendorTransformData;
 
 class VendorController extends AbstractController
 {
-    /**
-     * @var VendorService
-     */
-    private $vendorService;
-
-    public function __construct(VendorService $vendorService)
+    public function __construct(private readonly VendorService $vendorService, private readonly VendorRepository $vendorRepository, private readonly VendorTransformData $vendorTransformData, private readonly ExportTableServiceInterface $exportTableService)
     {
-        $this->vendorService = $vendorService;
     }
 
     /**
      * @Rest\Get("/web-app/v1/vendors/exports")
      *
-     * @param Request $request
      *
      * @return JsonResponse
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['vendors' => true]);
-        $request->request->add(['__country' => $request->headers->get('country')]);
+        $vendors = $this->vendorRepository->findByCountry($request->headers->get('country'));
+        $exportableTable = $this->vendorTransformData->transformData($vendors);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        return $this->exportTableService->export($exportableTable, 'vendors', $request->query->get('type'));
     }
 
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
      *
-     * @return JsonResponse
      */
     public function item(Vendor $vendor): JsonResponse
     {
@@ -69,12 +62,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors")
      *
-     * @param Request $request
-     * @param VendorFilterInputType $filter
-     * @param Pagination $pagination
-     * @param VendorOrderInputType $orderBy
-     * @param VendorRepository $vendorRepository
-     * @return JsonResponse
      * @throws EnumValueNoFoundException
      */
     public function list(
@@ -96,8 +83,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/vendors")
      *
-     * @param VendorCreateInputType $inputType
-     * @return JsonResponse
      *
      * @throws EntityNotFoundException
      * @throws ORMException
@@ -113,9 +98,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
-     * @param VendorUpdateInputType $inputType
-     * @return JsonResponse
      * @throws EntityNotFoundException
      * @throws ORMException
      * @throws OptimisticLockException
@@ -134,9 +116,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/vendors/{id}")
      *
-     * @param Vendor $vendor
      *
-     * @return JsonResponse
      *
      * @throws Exception
      */
@@ -150,9 +130,7 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/invoice")
      *
-     * @param Vendor $vendor
      *
-     * @return Response
      *
      * @throws Exception
      */
@@ -164,9 +142,6 @@ class VendorController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/vendors/{id}/summaries")
      *
-     * @param Vendor $vendor
-     * @param SmartcardPurchaseRepository $smartcardPurchaseRepository
-     * @return Response
      *
      * @throws NonUniqueResultException
      */

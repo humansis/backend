@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace Repository\Assistance;
 
 use DateTime;
-use DateTimeInterface;
 use Doctrine\ORM\EntityRepository;
 use Entity\Location;
 use Entity\Beneficiary;
 use Entity\Assistance;
-use Entity\AssistanceBeneficiary;
 use Enum\AssistanceTargetType;
 use InputType\Assistance\ReliefPackageFilterInputType;
 use InvalidArgumentException;
+use Repository\Helper\TRepositoryHelper;
 use Repository\LocationRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Assistance\ReliefPackage;
-use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use InputType\Assistance\VendorReliefPackageFilterInputType;
 use Entity\Vendor;
@@ -28,48 +26,14 @@ use Enum\SmartcardStates;
 
 class ReliefPackageRepository extends EntityRepository
 {
-    /**
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param string|null $reliefPackageStatus
-     * @param DateTimeInterface|null $beforeDate
-     *
-     * @return ReliefPackage|null
-     * @throws NonUniqueResultException
-     */
-    public function findForSmartcardByAssistanceBeneficiary(
-        AssistanceBeneficiary $assistanceBeneficiary,
-        ?string $reliefPackageStatus = null,
-        ?DateTimeInterface $beforeDate = null
-    ): ?ReliefPackage {
-        $qb = $this->createQueryBuilder('rp')
-            ->andWhere('rp.modalityType = :smartcardModality')
-            ->andWhere('rp.assistanceBeneficiary = :ab')
-            ->setParameter('smartcardModality', ModalityType::SMART_CARD)
-            ->setParameter('ab', $assistanceBeneficiary);
-        if ($reliefPackageStatus) {
-            $qb->andWhere('rp.state = :state')
-                ->setParameter('state', $reliefPackageStatus);
-        }
-
-        if ($beforeDate) {
-            $qb->andWhere('rp.createdAt < :before')
-                ->setParameter('before', $beforeDate)
-                ->orderBy('rp.createdAt', 'DESC');
-        } else {
-            $qb->orderBy('rp.id', 'DESC');
-        }
-        $qb->setMaxResults(1);
-
-        return $qb->getQuery()->getOneOrNullResult();
-    }
+    use TRepositoryHelper;
 
     /**
      * @param Vendor $vendor
      * @param string $country
-     *
+     * @param VendorReliefPackageFilterInputType $filterInputType
      * @return Paginator
      */
-
     public function getForVendor(Vendor $vendor, string $country, VendorReliefPackageFilterInputType $filterInputType): Paginator
     {
         $vendorLocation = $vendor->getLocation();
@@ -153,12 +117,6 @@ class ReliefPackageRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Assistance $assistance
-     * @param ReliefPackageFilterInputType|null $filter
-     *
-     * @return Paginator
-     */
     public function findByAssistance(Assistance $assistance, ?ReliefPackageFilterInputType $filter = null): Paginator
     {
         $qb = $this->createQueryBuilder('rp')
@@ -175,9 +133,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param Beneficiary $beneficiary
-     *
      * @return float|int|mixed|string|null
      * @throws NonUniqueResultException
      */
@@ -193,15 +148,7 @@ class ReliefPackageRepository extends EntityRepository
             ->getQuery()->getResult();
     }
 
-    public function save(ReliefPackage $package): void
-    {
-        $this->_em->persist($package);
-        $this->_em->flush();
-    }
-
     /**
-     * @param Assistance $assistance
-     * @param array|null $reliefPackageStates
      *
      * @return float|int|mixed|string
      * @throws NoResultException
@@ -224,8 +171,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @param Assistance $assistance
-     * @param array|null $reliefPackageStates
      *
      * @return float|int|mixed|string
      * @throws NoResultException
@@ -255,7 +200,6 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @return ReliefPackage|null
      * @throws NonUniqueResultException
      */
     public function findRandomWithNotValidatedAssistance(): ?ReliefPackage

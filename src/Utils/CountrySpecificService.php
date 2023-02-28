@@ -8,22 +8,11 @@ use Exception;
 
 class CountrySpecificService
 {
-    /** @var EntityManagerInterface $em */
-    private $em;
-
-    /** @var ExportService */
-    private $exportService;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        ExportService $exportService
-    ) {
-        $this->em = $entityManager;
-        $this->exportService = $exportService;
+    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    {
     }
 
     /**
-     * @param CountrySpecific $countrySpecific
      * @return bool
      */
     public function delete(CountrySpecific $countrySpecific)
@@ -31,7 +20,7 @@ class CountrySpecificService
         try {
             $this->em->remove($countrySpecific);
             $this->em->flush();
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return false;
         }
 
@@ -41,8 +30,6 @@ class CountrySpecificService
     /**
      * Export all the countries specifics in a CSV file
      *
-     * @param string $type
-     * @param string $countryIso3
      * @return mixed
      */
     public function exportToCsv(string $type, string $countryIso3)

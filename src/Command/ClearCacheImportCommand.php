@@ -3,18 +3,14 @@
 namespace Command;
 
 use Exception;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ClearCacheImportCommand extends ContainerAwareCommand
+class ClearCacheImportCommand extends Command
 {
-    /** @var string */
-    private $rootDir;
-
-    public function __construct(string $rootDir)
+    public function __construct(private readonly string $rootDir)
     {
-        $this->rootDir = $rootDir;
         parent::__construct();
     }
 
@@ -27,12 +23,10 @@ class ClearCacheImportCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
      * @return int|null|void
      * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln([
             '',
@@ -50,6 +44,7 @@ class ClearCacheImportCommand extends ContainerAwareCommand
         $output->writeln([
             'END',
         ]);
+        return 0;
     }
 
     /**

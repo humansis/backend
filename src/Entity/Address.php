@@ -3,7 +3,6 @@
 namespace Entity;
 
 use Entity\Helper\StandardizedPrimaryKey;
-use Entity\Location;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,39 +16,25 @@ class Address
     use StandardizedPrimaryKey;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="number", type="string", length=45, nullable=true)
      */
-    private $number;
+    private string | null $number = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="street", type="string", length=255, nullable=true)
      */
-    private $street;
+    private string | null $street;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="postcode", type="string", length=45, nullable=true)
      */
-    private $postcode;
+    private string | null $postcode;
 
     /**
      * @ORM\ManyToOne(targetEntity="Entity\Location")
      */
-    private $location;
+    private Location | null $location;
 
-    /**
-     * @param string|null $street
-     * @param string|null $number
-     * @param string|null $postCode
-     * @param Location|null $location
-     *
-     * @return self
-     */
     public static function create(?string $street, ?string $number, ?string $postCode, ?Location $location = null): self
     {
         $address = new Address();
@@ -61,109 +46,50 @@ class Address
         return $address;
     }
 
-    public static function createFromArray(array $addressArray, Location $location): self
-    {
-        $address = new Address();
-        $address->setNumber($addressArray['number'])
-            ->setStreet($addressArray['street'])
-            ->setPostcode($addressArray['postcode'])
-            ->setLocation($location);
-
-        return $address;
-    }
-
-    /**
-     * Set number.
-     *
-     * @param string|null $number
-     *
-     * @return Address
-     */
-    public function setNumber($number = null)
+    public function setNumber(string | null $number = null): static
     {
         $this->number = $number;
 
         return $this;
     }
 
-    /**
-     * Get number.
-     *
-     * @return string|null
-     */
-    public function getNumber()
+    public function getNumber(): string | null
     {
         return $this->number;
     }
 
-    /**
-     * Set street.
-     *
-     * @param string $street
-     *
-     * @return Address
-     */
-    public function setStreet($street)
+    public function setStreet(string | null $street): static
     {
         $this->street = $street;
 
         return $this;
     }
 
-    /**
-     * Get street.
-     *
-     * @return string
-     */
-    public function getStreet()
+    public function getStreet(): string | null
     {
         return $this->street;
     }
 
-    /**
-     * Set postcode.
-     *
-     * @param string $postcode
-     *
-     * @return Address
-     */
-    public function setPostcode($postcode)
+    public function setPostcode(string | null $postcode): static
     {
         $this->postcode = $postcode;
 
         return $this;
     }
 
-    /**
-     * Get postcode.
-     *
-     * @return string
-     */
-    public function getPostcode()
+    public function getPostcode(): string | null
     {
         return $this->postcode;
     }
 
-    /**
-     * Set location.
-     *
-     * @param \Entity\Location|null $location
-     *
-     * @return Address
-     */
-    public function setLocation(\Entity\Location $location = null)
+    public function setLocation(Location | null $location = null): static
     {
         $this->location = $location;
 
         return $this;
     }
 
-    /**
-     * Get location.
-     *
-     * @return \Entity\Location|null
-     */
-    public function getLocation()
+    public function getLocation(): Location | null
     {
         return $this->location;
     }

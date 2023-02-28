@@ -10,8 +10,7 @@ use Serializer\MapperInterface;
 
 class CampMapper implements MapperInterface
 {
-    /** @var Camp */
-    private $object;
+    private ?\Entity\Camp $object = null;
 
     /**
      * {@inheritdoc}
@@ -34,7 +33,7 @@ class CampMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Camp::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Camp::class . ', ' . $object::class . ' given.'
         );
     }
 

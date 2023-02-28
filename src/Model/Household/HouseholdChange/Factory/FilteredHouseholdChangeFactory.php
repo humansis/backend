@@ -8,8 +8,6 @@ use Model\Household\HouseholdChange\FilteredHouseholdChange;
 class FilteredHouseholdChangeFactory implements HouseholdChangeFactoryInterface
 {
     /**
-     * @param HouseholdActivity $new
-     * @param HouseholdActivity $old
      * @return FilteredHouseholdChange
      */
     public function create(HouseholdActivity $new, HouseholdActivity $old)

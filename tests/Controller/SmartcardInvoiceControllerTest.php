@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Controller;
 
+use Component\Assistance\AssistanceFactory;
 use Component\Assistance\Domain\Assistance as AssistanceDomain;
+use Component\Smartcard\Deposit\DepositFactory;
+use Component\Smartcard\Invoice\InvoiceFactory;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Entity\AssistanceBeneficiary;
@@ -20,6 +23,10 @@ use Tests\ComponentHelper\ProjectHelper;
 use Tests\ComponentHelper\SmartcardInvoiceHelper;
 use Tests\ComponentHelper\SmartcardPurchaseHelper;
 use Tests\ComponentHelper\VendorHelper;
+use Utils\HouseholdService;
+use Utils\ProjectService;
+use Utils\SmartcardService;
+use Utils\VendorService;
 
 class SmartcardInvoiceControllerTest extends BMSServiceTestCase
 {
@@ -31,15 +38,9 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     use DepositHelper;
     use SmartcardInvoiceHelper;
 
-    /**
-     * @var Location
-     */
-    private $location;
+    private ?\Entity\Location $location;
 
-    /**
-     * @var Vendor
-     */
-    private $vendor;
+    private \Entity\Vendor $vendor;
 
     /**
      * @throws Exception
@@ -51,7 +52,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
         parent::setUpFunctionnal();
 
         // Get a Client instance for simulate a browser
-        $this->client = self::$container->get('test.client');
+        $this->client = self::getContainer()->get('test.client');
         $this->location = $this->em->getRepository(Location::class)->findOneBy(['countryIso3' => 'SYR']);
 
         $this->em->beginTransaction();
@@ -59,7 +60,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             self::buildVendorInputType(
                 $this->location->getId(),
                 $this->getTestUser('Vendor for testing ' . time())->getId()
-            )
+            ),
+            self::getContainer()->get(VendorService::class)
         );
     }
 
@@ -70,12 +72,11 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return AssistanceDomain
      * @throws Exception
      */
     private function createSmartcardAssistance(): AssistanceDomain
     {
-        $project = $this->createProject($this->getTestUser(), self::getCreateInputType('SYR'));
+        $project = $this->createProject($this->getTestUser(), self::getContainer()->get(ProjectService::class), self::getCreateInputType('SYR'));
 
         $this->createHousehold(
             self::buildHouseholdInputType(
@@ -90,7 +91,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                     ),
                 ]
             ),
-            'SYR'
+            'SYR',
+            self::getContainer()->get(HouseholdService::class),
         );
         $this->em->flush();
 
@@ -100,12 +102,12 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $this->location,
                 [self::buildCommoditiesType('USD', ModalityType::SMART_CARD, 100)],
                 [self::buildSelectionCriteriaInputType()]
-            )
+            ),
+            self::getContainer()->get(AssistanceFactory::class)
         );
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -130,7 +132,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(
@@ -154,7 +157,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $response
         );
 
-        $responseArray = json_decode($response, true);
+        $responseArray = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $data = $responseArray['data'][0];
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchase->getId(), $data['purchaseIds'][0]);
@@ -164,7 +167,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -198,13 +200,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -229,7 +233,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $response
         );
 
-        $responseArray = json_decode($response, true);
+        $responseArray = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $data = $responseArray['data'][0];
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchase->getId(), $data['purchaseIds'][0]);
@@ -239,7 +243,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function testPurchaseCanNotBeInvoicedBeforeSync(): void
@@ -261,7 +264,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(
@@ -280,7 +284,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws Exception
      */
     public function testCanBeInvoicedAfterSync(): void
@@ -312,13 +315,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -347,7 +352,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -381,20 +385,23 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
         $invoice = $this->createInvoice(
             $this->vendor,
             self::buildInvoiceCreateInputType([$purchase->getId()]),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(InvoiceFactory::class),
         );
 
         $this->request(
@@ -418,7 +425,7 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
             $content
         );
 
-        $data = json_decode($content, true)['data'][0];
+        $data = json_decode($content, true, 512, JSON_THROW_ON_ERROR)['data'][0];
         $this->assertEquals($invoice->getId(), $data['id']);
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data['projectId']);
         $this->assertEquals($purchaseValue, $data['value']);
@@ -426,7 +433,6 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -460,13 +466,15 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->createDeposit(
             $smartcardNumber,
             self::buildDepositInputType($reliefPackages->first()->getId(), $purchaseValue),
-            $this->getTestUser()
+            $this->getTestUser(),
+            self::getContainer()->get(DepositFactory::class),
         );
         $this->em->flush();
 
@@ -483,14 +491,13 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
 
         $this->assertJsonFragment('[{"projectId":"*","value":"*","currency":"*"}]', $response);
 
-        $data = json_decode($response, true);
+        $data = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         $this->assertEquals($assistanceDomain->getAssistanceRoot()->getProject()->getId(), $data[0]['projectId']);
         $this->assertEquals((float) ($purchaseValue), (float) $data[0]['value']);
         $this->assertEquals($purchaseCurrency, $data[0]['currency']);
     }
 
     /**
-     * @return void
      * @throws ORMException
      * @throws OptimisticLockException
      * @throws Exception
@@ -524,7 +531,8 @@ class SmartcardInvoiceControllerTest extends BMSServiceTestCase
                 $assistanceDomain->getBeneficiaries()[0]->getBeneficiary()->getId(),
                 $this->vendor->getId(),
                 self::buildPurchaseProductInputType($purchaseCurrency, $purchaseValue)
-            )
+            ),
+            self::getContainer()->get(SmartcardService::class),
         );
 
         $this->request(

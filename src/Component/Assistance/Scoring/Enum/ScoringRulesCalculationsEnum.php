@@ -20,6 +20,7 @@ final class ScoringRulesCalculationsEnum
     public const DEPENDENCY_RATIO_SYR_NES = 'dependencyRatioSyrNES';
     public const INCOME_SPENT_ON_FOOD = 'incomeSpentOnFood';
     public const VULNERABILITY_OF_HOUSEHOLD_MEMBERS = 'vulnerabilityOfHouseholdMembers';
+    public const VULNERABILITY_CRITERION = 'vulnerabilityCriterion';
 
     public static function values(): array
     {
@@ -35,6 +36,7 @@ final class ScoringRulesCalculationsEnum
             self::DEPENDENCY_RATIO_SYR_NES,
             self::INCOME_SPENT_ON_FOOD,
             self::VULNERABILITY_OF_HOUSEHOLD_MEMBERS,
+            self::VULNERABILITY_CRITERION,
         ];
     }
 }

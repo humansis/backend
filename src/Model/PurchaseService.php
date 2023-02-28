@@ -24,22 +24,12 @@ use InputType\VoucherPurchase as VoucherPurchaseInput;
 
 class PurchaseService
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    public function __construct(EntityManagerInterface $em, LoggerInterface $logger)
+    public function __construct(private readonly EntityManagerInterface $em, private readonly LoggerInterface $logger)
     {
-        $this->em = $em;
-        $this->logger = $logger;
     }
 
     /**
-     * @param VoucherPurchaseInput $input
      *
-     * @return VoucherPurchase
      *
      * @throws EntityNotFoundException
      */
@@ -69,15 +59,13 @@ class PurchaseService
     }
 
     /**
-     * @param Smartcard $smartcard
      * @param SmartcardPurchaseInputType|SmartcardPurchaseInput $input
      *
-     * @return SmartcardPurchase
      *
      * @throws EntityNotFoundException
      * @throws Exception
      */
-    public function purchaseSmartcard(Smartcard $smartcard, $input): SmartcardPurchase
+    public function purchaseSmartcard(Smartcard $smartcard, \InputType\SmartcardPurchaseInputType|SmartcardPurchaseInput $input): SmartcardPurchase
     {
         $hash = $this->hashPurchase(
             $smartcard->getBeneficiary(),
@@ -135,16 +123,9 @@ class PurchaseService
         return $purchase;
     }
 
-    /**
-     * @param Beneficiary|null $beneficiary
-     * @param Vendor $vendor
-     * @param DateTimeInterface $createdAt
-     *
-     * @return string
-     */
     public function hashPurchase(?Beneficiary $beneficiary, Vendor $vendor, DateTimeInterface $createdAt): string
     {
-        $stringToHash = ($beneficiary ? $beneficiary->getId() : null) . $vendor->getId() . $createdAt->getTimestamp();
+        $stringToHash = ($beneficiary?->getId()) . $vendor->getId() . $createdAt->getTimestamp();
 
         return md5($stringToHash);
     }
@@ -152,7 +133,6 @@ class PurchaseService
     /**
      * @param $id
      *
-     * @return Vendor
      *
      * @throws EntityNotFoundException
      */
@@ -170,7 +150,6 @@ class PurchaseService
     /**
      * @param $id
      *
-     * @return Product
      *
      * @throws EntityNotFoundException
      */
@@ -188,7 +167,6 @@ class PurchaseService
     /**
      * @param $id
      *
-     * @return Voucher
      *
      * @throws EntityNotFoundException
      */
@@ -220,9 +198,7 @@ class PurchaseService
      * Check, if booklet have all its voucher used.
      * Vouchers are used, if it's in some purchase.
      *
-     * @param Booklet $booklet
      *
-     * @return bool
      */
     private function isUsed(Booklet $booklet): bool
     {

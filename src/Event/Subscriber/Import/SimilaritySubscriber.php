@@ -25,36 +25,10 @@ use Symfony\Component\Workflow\TransitionBlocker;
 
 class SimilaritySubscriber implements EventSubscriberInterface
 {
-    public const GUARD_CODE_NOT_COMPLETE = '7135e866-fb87-4e4f-bfa6-c42f48cfebc9';
+    final public const GUARD_CODE_NOT_COMPLETE = '7135e866-fb87-4e4f-bfa6-c42f48cfebc9';
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var SimilarityChecker
-     */
-    private $similarityChecker;
-
-    /**
-     * @var EntityRepository|ObjectRepository|ImportQueueRepository
-     */
-    private $queueRepository;
-
-    /** @var MessageBusInterface */
-    private $messageBus;
-
-    public function __construct(
-        EntityManagerInterface $entityManager,
-        SimilarityChecker $similarityChecker,
-        ImportQueueRepository $queueRepository,
-        MessageBusInterface $messageBus
-    ) {
-        $this->entityManager = $entityManager;
-        $this->similarityChecker = $similarityChecker;
-        $this->queueRepository = $queueRepository;
-        $this->messageBus = $messageBus;
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly SimilarityChecker $similarityChecker, private readonly ImportQueueRepository $queueRepository, private readonly MessageBusInterface $messageBus)
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -109,9 +83,6 @@ class SimilaritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param EnteredEvent $enteredEvent
-     */
     public function completeSimilarity(EnteredEvent $enteredEvent): void
     {
         /** @var Import $import */
@@ -119,9 +90,6 @@ class SimilaritySubscriber implements EventSubscriberInterface
         // $this->similarityChecker->postCheck($import);
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardIfImportHasSuspiciousItems(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -131,9 +99,6 @@ class SimilaritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param GuardEvent $guardEvent
-     */
     public function guardIfImportHasNotSuspiciousItems(GuardEvent $guardEvent): void
     {
         /** @var Import $import */
@@ -143,9 +108,6 @@ class SimilaritySubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param CompletedEvent $enteredEvent
-     */
     public function checkSimilarityAgain(CompletedEvent $enteredEvent): void
     {
         /** @var Import $import */
@@ -153,14 +115,9 @@ class SimilaritySubscriber implements EventSubscriberInterface
         $this->fillQueue($import);
     }
 
-    /**
-     * @param Import $import
-     *
-     * @return bool
-     */
     private function checkImportSimilarity(Import $import): bool
     {
-        return count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) > 0;
+        return (is_countable($this->queueRepository->getSuspiciousItemsToUserCheck($import)) ? count($this->queueRepository->getSuspiciousItemsToUserCheck($import)) : 0) > 0;
     }
 
     private function fillQueue(Import $import)

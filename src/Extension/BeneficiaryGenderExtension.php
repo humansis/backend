@@ -15,19 +15,16 @@ class BeneficiaryGenderExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('gender', [$this, 'formatGender']),
+            new TwigFilter('gender', $this->formatGender(...)),
         ];
     }
 
     public function formatGender(Beneficiary $beneficiary): string
     {
-        switch ($beneficiary->getPerson()->getGender()) {
-            case PersonGender::FEMALE:
-                return 'Female';
-            case PersonGender::MALE:
-                return 'Male';
-            default:
-                return '~';
-        }
+        return match ($beneficiary->getPerson()->getGender()) {
+            PersonGender::FEMALE => 'Female',
+            PersonGender::MALE => 'Male',
+            default => '~',
+        };
     }
 }

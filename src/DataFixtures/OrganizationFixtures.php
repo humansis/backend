@@ -8,14 +8,12 @@ use Entity\Organization;
 
 class OrganizationFixtures extends Fixture
 {
-    private $data = [
+    private array $data = [
         ['YourOrganization', null, 'Arial', '#02617F', '#4AA896', 'What should be displayed in your pdf\'s footer'],
     ];
 
     /**
      * Load data fixtures with the passed EntityManager
-     *
-     * @param ObjectManager $manager
      */
     public function load(ObjectManager $manager)
     {

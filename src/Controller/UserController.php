@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
+use Doctrine\Persistence\ManagerRegistry;
 use Exception;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Exception\ConstraintViolationException;
@@ -20,38 +20,38 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\ConstraintViolation;
 use Entity\User;
 use Repository\UserRepository;
+use Utils\ExportTableServiceInterface;
 use Utils\UserService;
+use Utils\UserTransformData;
 
 class UserController extends AbstractController
 {
-    /** @var UserService */
-    private $userService;
-
-    public function __construct(UserService $userService)
-    {
-        $this->userService = $userService;
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly UserTransformData $userTransformData,
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly UserRepository $userRepository
+    ) {
     }
 
     /**
      * @Rest\Get("/web-app/v1/users/exports")
      *
-     * @param Request $request
      *
-     * @return Response
      */
     public function exports(Request $request): Response
     {
-        $request->query->add(['users' => true]);
-
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        $type = $request->query->get('type');
+        $users = $this->userRepository->findAll();
+        $exportableTable = $this->userTransformData->transformData($users);
+        return $this->exportTableService->export($exportableTable, 'users', $type);
     }
 
     /**
      * @Rest\Get("/web-app/v1/users/{id}")
      *
-     * @param User $object
      *
-     * @return JsonResponse
      */
     public function item(User $object): JsonResponse
     {
@@ -61,11 +61,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/users")
      *
-     * @param UserOrderInputType $userOderInputType
-     * @param UserFilterInputType $userFilterInputType
-     * @param Pagination $pagination
      *
-     * @return JsonResponse
      */
     public function list(
         UserOrderInputType $userOderInputType,
@@ -73,7 +69,7 @@ class UserController extends AbstractController
         Pagination $pagination
     ): JsonResponse {
         /** @var UserRepository $userRepository */
-        $userRepository = $this->getDoctrine()->getRepository(User::class);
+        $userRepository = $this->managerRegistry->getRepository(User::class);
 
         $users = $userRepository->findByParams($userOderInputType, $userFilterInputType, $pagination);
 
@@ -83,9 +79,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/users/initialize")
      *
-     * @param UserInitializeInputType $inputType
      *
-     * @return JsonResponse
      * @throws Exception
      */
     public function initialize(UserInitializeInputType $inputType): JsonResponse
@@ -98,10 +92,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Post("/web-app/v1/users/{id}")
      *
-     * @param User $user
-     * @param UserCreateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function create(User $user, UserCreateInputType $inputType): JsonResponse
     {
@@ -113,10 +104,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Put("/web-app/v1/users/{id}")
      *
-     * @param User $user
-     * @param UserUpdateInputType $inputType
      *
-     * @return JsonResponse
      */
     public function update(User $user, UserUpdateInputType $inputType): JsonResponse
     {
@@ -128,10 +116,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Patch("/web-app/v1/users/{id}")
      *
-     * @param User $user
-     * @param Request $request
      *
-     * @return JsonResponse
      */
     public function patch(User $user, Request $request): JsonResponse
     {
@@ -165,8 +150,8 @@ class UserController extends AbstractController
             $user->setTwoFactorAuthentication($request->request->getBoolean('2fa'));
         }
 
-        $this->getDoctrine()->getManager()->persist($user);
-        $this->getDoctrine()->getManager()->flush();
+        $this->managerRegistry->getManager()->persist($user);
+        $this->managerRegistry->getManager()->flush();
 
         return $this->json($user);
     }
@@ -174,9 +159,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Delete("/web-app/v1/users/{id}")
      *
-     * @param User $user
      *
-     * @return JsonResponse
      */
     public function delete(User $user): JsonResponse
     {
@@ -188,9 +171,7 @@ class UserController extends AbstractController
     /**
      * @Rest\Get("/web-app/v1/users/salt/{username}")
      *
-     * @param string $username
      *
-     * @return JsonResponse
      */
     public function getSalt(string $username): JsonResponse
     {

@@ -9,19 +9,13 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class ImportTemplate
 {
-    public const FIRST_ENTRY_ROW = 6;
-    public const ROW_NAME_STATUS = 'Humansis data';
-    public const ROW_NAME_MESSAGES = 'Humansis comment';
-    public const CURRENT_TEMPLATE_VERSION = ImportParser::VERSION_2_SRC;
+    final public const FIRST_ENTRY_ROW = 6;
+    final public const ROW_NAME_STATUS = 'Humansis data';
+    final public const ROW_NAME_MESSAGES = 'Humansis comment';
+    final public const CURRENT_TEMPLATE_VERSION = ImportParser::VERSION_2_SRC;
 
-    /**
-     * @var HouseholdExportCSVService
-     */
-    private $householdExportCSVService;
-
-    public function __construct(HouseholdExportCSVService $householdExportCSVService)
+    public function __construct(private readonly HouseholdExportCSVService $householdExportCSVService)
     {
-        $this->householdExportCSVService = $householdExportCSVService;
     }
 
     public function getTemplateHeader(string $iso3): array

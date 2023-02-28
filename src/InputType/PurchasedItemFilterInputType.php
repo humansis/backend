@@ -15,9 +15,7 @@ use Request\FilterInputType\AbstractFilterInputType;
 use Validator\Constraints\Iso8601;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @Assert\GroupSequence({"PurchasedItemFilterInputType", "Strict"})
- */
+#[Assert\GroupSequence(['PurchasedItemFilterInputType', 'Strict'])]
 class PurchasedItemFilterInputType extends AbstractFilterInputType
 {
     use FulltextFilterTrait;
@@ -29,7 +27,6 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
     use ModalityTypeFilterTrait;
 
     /**
-     * @Assert\Type("array")
      * @Assert\All(
      *     constraints={
      *         @Assert\Choice(callback={"Enum\BeneficiaryType", "values"})
@@ -37,6 +34,7 @@ class PurchasedItemFilterInputType extends AbstractFilterInputType
      *     groups={"Strict"}
      * )
      */
+    #[Assert\Type('array')]
     protected $beneficiaryTypes;
 
     public function hasBeneficiaryTypes(): bool

@@ -31,11 +31,10 @@ stages:
     - aws configure set default.region eu-central-1
 
 .deploy:
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
+  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind-buildx
   before_script: *prepare_ssh_aws
   script:
-    - ./ci/build-docker.sh
-    - ./ci/upload-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
+    - ./ci/build-docker.sh ${ARTIFACTORY_USER} ${ARTIFACTORY_PASS}
     - ./ci/report-slack.sh start ${ENVIRONMENT}
     - ./ci/deploy-docker.sh ${ENVIRONMENT} ${CLEAN_DATABASE} ${LOAD_FIXTURES} ${CACHE_CLEAR_MODE}
     - echo "Current import batch size is $IMPORT_BATCH_SIZE"
@@ -46,7 +45,7 @@ stages:
     - dind
 
 .test-setup:
-  image: artifactory.quanti.cz/docker/pin-php-test
+  image: artifactory.quanti.cz/docker/pin-php-test:8.1
   services:
     - name: mysql:8.0.21
       alias: db
@@ -63,10 +62,6 @@ stages:
     - sudo composer self-update
     - cp app/config/parameters.yml.test app/config/parameters.yml
     - composer install
-    - php bin/console doctrine:database:create --env=test || true
-    - php bin/console doctrine:migrations:migrate -n --env=test
-    - php bin/console doctrine:fixtures:load -n --env=dev
-    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
   except:
     - tags
   cache:
@@ -75,7 +70,7 @@ stages:
       - vendor/
 
 static_analysis:
-  image: php:7.3-fpm
+  image: php:8.1-fpm
   stage: static_analysis
   script:
     - apt-get update
@@ -85,7 +80,7 @@ static_analysis:
     - php -d memory_limit=-1 vendor/bin/phpstan analyse -l 1 src/
 
 code_analysis:
-  image: php:7.3-fpm
+  image: php:8.1-fpm
   stage: code_analysis
   script:
   - apt-get update
@@ -99,13 +94,17 @@ test:
   stage: test
   extends: .test-setup
   script:
-    - ./vendor/bin/phpunit
+    - php bin/console doctrine:database:create --env=test || true
+    - php bin/console doctrine:migrations:migrate -n --env=test
+    - php bin/console doctrine:fixtures:load -n --env=dev
+    - echo "Current import batch size is $IMPORT_BATCH_SIZE"
+    - php -d memory_limit=-1 ./vendor/bin/phpunit
 
 upload crowdin:
   stage: upload_crowdin
   extends: .test-setup
   script:
-    - php bin/console translation:update --force en
+    - php bin/console translation:extract --force en
     - php bin/console crowdin:push
   only:
     - develop
@@ -140,7 +139,7 @@ deploy dev1:
   extends: .deploy
   when: manual
 
-deploy dev2:
+deploy dev2 - clean db:
   stage: deploy_dev
   environment:
     name: dev2
@@ -149,6 +148,19 @@ deploy dev2:
     ENVIRONMENT: dev2
     CLEAN_DATABASE: "true"
     LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy dev2 - keep db:
+  stage: deploy_dev
+  environment:
+    name: dev2
+    url: https://apidev2.humansis.org
+  variables:
+    ENVIRONMENT: dev2
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
   when: manual
@@ -179,6 +191,19 @@ deploy dev3 - clean fixtures:
   extends: .deploy
   when: manual
 
+deploy arm:
+  stage: deploy_dev
+  environment:
+    name: arm
+    url: https://apiarm.humansis.org
+  variables:
+    ENVIRONMENT: arm
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: dev
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
 deploy test - keep db:
   stage: deploy_test
   environment:
@@ -194,7 +219,6 @@ deploy test - keep db:
 
 deploy test - clean fixtures:
   stage: deploy_test
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: test
     url: https://apitest.humansis.org
@@ -208,7 +232,6 @@ deploy test - clean fixtures:
 
 deploy test - anonymized db:
   stage: deploy_test
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: test
     url: https://apitest.humansis.org
@@ -270,7 +293,6 @@ deploy demo  - keep db:
 
 deploy demo - anonymized db:
   stage: deploy_demo
-  image: artifactory.quanti.cz/docker/alpine-ssh-git:dind
   environment:
     name: demo
     url: https://apidemo.humansis.org
@@ -318,7 +340,7 @@ make badge:
 
 deploy prod db to stage:
   stage: upload_db
-  image: artifactory.quanti.cz/docker/mysql-ssh-awscli
+  image: artifactory.quanti.cz/docker/mysql-ssh-awscli:8.0
   variables:
     HOSTNAME: apistage.humansis.org
     DATABASE_NAME: proddb

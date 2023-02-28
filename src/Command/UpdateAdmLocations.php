@@ -17,29 +17,12 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class UpdateAdmLocations extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
-    /**
-     * @var LocationService
-     */
-    private $locationService;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        LocationRepository $locationRepository,
-        LocationService $locationService
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LocationRepository $locationRepository,
+        private readonly LocationService $locationService
     ) {
         parent::__construct();
-        $this->entityManager = $entityManager;
-        $this->locationRepository = $locationRepository;
-        $this->locationService = $locationService;
     }
 
     protected function configure()
@@ -111,7 +94,7 @@ class UpdateAdmLocations extends Command
      */
     private function importLocations(InputInterface $input, OutputInterface $output, LocationImporter $importer): void
     {
-        $output->writeln(" - Importing by " . LocationImporter::class);
+        $output->writeln(" - Importing by " . $importer::class);
         if ($input->hasOption('limit')) {
             $importer->setLimit($input->getOption('limit'));
         }

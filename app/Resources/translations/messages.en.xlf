@@ -185,6 +185,10 @@
         <source>Close</source>
         <target>Close</target>
       </trans-unit>
+      <trans-unit id="w_77WNf" resname="closed">
+        <source>closed</source>
+        <target>Closed</target>
+      </trans-unit>
       <trans-unit id="NA9GMDP" resname="Code">
         <source>Code</source>
         <target>Code</target>
@@ -371,7 +375,7 @@
       </trans-unit>
       <trans-unit id="cqI_VJ0" resname="Distribution">
         <source>Distribution</source>
-        <target>distribution</target>
+        <target>Distribution</target>
       </trans-unit>
       <trans-unit id="UPGHjST" resname="District">
         <source>District</source>
@@ -743,6 +747,10 @@
         <source>New</source>
         <target>New</target>
       </trans-unit>
+      <trans-unit id="EVB6Di9" resname="new">
+        <source>new</source>
+        <target>New</target>
+      </trans-unit>
       <trans-unit id="zlooCeG" resname="New Assistance">
         <source>New Assistance</source>
         <target>New Assistance</target>
@@ -887,6 +895,10 @@
         <source>Profile</source>
         <target>Profile</target>
       </trans-unit>
+      <trans-unit id="tfkKlua" resname="progress">
+        <source>progress</source>
+        <target>Progress</target>
+      </trans-unit>
       <trans-unit id="mFlZeFM" resname="Project">
         <source>Project</source>
         <target>Project</target>
@@ -942,6 +954,10 @@
       <trans-unit id="rK7E7lg" resname="Re-Enter New Password">
         <source>Re-Enter New Password</source>
         <target>Re-Enter New Password</target>
+      </trans-unit>
+      <trans-unit id="UndGN4I" resname="reached">
+        <source>reached</source>
+        <target>Reached</target>
       </trans-unit>
       <trans-unit id="rrewBDM" resname="Referral">
         <source>Referral</source>
@@ -4768,6 +4784,10 @@ Size</source>
         <source>Valid</source>
         <target>Valid</target>
       </trans-unit>
+      <trans-unit id="4_Suw3N" resname="validated">
+        <source>validated</source>
+        <target>Validated</target>
+      </trans-unit>
       <trans-unit id="lsNKBxn" resname="Invalid">
         <source>Invalid</source>
         <target>Invalid</target>
@@ -5377,6 +5397,186 @@ the donation of the below specified items from People in Need.</target>
       <trans-unit id="LYBptc1" resname="cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.">
         <source>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
         <target>cannot be removed from assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
+      <trans-unit id="FCU8AXo" resname="Temporary Invoice No.">
+        <source>Temporary Invoice No.</source>
+        <target>Temporary Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="9OgGJ_d" resname="Humansis Invoice No.">
+        <source>Humansis Invoice No.</source>
+        <target>Humansis Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="8i3zpZb" resname="Invoice No.">
+        <source>Invoice No.</source>
+        <target>Invoice No.</target>
+      </trans-unit>
+      <trans-unit id="vzdjODq" resname="Customer">
+        <source>Customer</source>
+        <target>Customer</target>
+      </trans-unit>
+      <trans-unit id="cuLwM2f" resname="Supplier">
+        <source>Supplier</source>
+        <target>Supplier</target>
+      </trans-unit>
+      <trans-unit id="DyT8_zW" resname="Invoice Date">
+        <source>Invoice Date</source>
+        <target>Invoice Date</target>
+      </trans-unit>
+      <trans-unit id="_JpOF1V" resname="Payment Method">
+        <source>Payment Method</source>
+        <target>Payment Method</target>
+      </trans-unit>
+      <trans-unit id="cWZZc6D" resname="Cheque">
+        <source>Cheque</source>
+        <target>Cheque</target>
+      </trans-unit>
+      <trans-unit id="Z2xHG8j" resname="Bank">
+        <source>Bank</source>
+        <target>Bank</target>
+      </trans-unit>
+      <trans-unit id="FPYkjXF" resname="Unit Price">
+        <source>Unit Price</source>
+        <target>Unit Price</target>
+      </trans-unit>
+      <trans-unit id="bx8xXJ1" resname="Total Amount per Item">
+        <source>Total Amount per Item</source>
+        <target>Total Amount per Item</target>
+      </trans-unit>
+      <trans-unit id="iVACXl9" resname="SmartCards redemption payment - Food Items">
+        <source>SmartCards redemption payment - Food Items</source>
+        <target>SmartCards redemption payment - Food Items</target>
+      </trans-unit>
+      <trans-unit id="T1bIpID" resname="SmartCards redemption payment - Non-Food Items">
+        <source>SmartCards redemption payment - Non-Food Items</source>
+        <target>SmartCards redemption payment - Non-Food Items</target>
+      </trans-unit>
+      <trans-unit id="y3uJPMX" resname="SmartCards redemption payment - Cashback">
+        <source>SmartCards redemption payment - Cashback</source>
+        <target>SmartCards redemption payment - Cashback</target>
+      </trans-unit>
+      <trans-unit id="TpAHNBr" resname="Itemized breakdown in Annex I">
+        <source>Itemized breakdown in Annex I</source>
+        <target>Itemized breakdown in Annex I</target>
+      </trans-unit>
+      <trans-unit id="fjMO2la" resname="Total Amount to be Paid">
+        <source>Total Amount to be Paid</source>
+        <target>Total Amount to be Paid</target>
+      </trans-unit>
+      <trans-unit id="bOI4yzA" resname="Signature/Name">
+        <source>Signature/Name</source>
+        <target>Signature/Name</target>
+      </trans-unit>
+      <trans-unit id="6HpzzpM" resname="Signature/Name/Position">
+        <source>Signature/Name/Position</source>
+        <target>Signature/Name/Position</target>
+      </trans-unit>
+      <trans-unit id="S2jJDBu" resname="Supplier's Signature">
+        <source>Supplier's Signature</source>
+        <target>Supplier's Signature</target>
+      </trans-unit>
+      <trans-unit id="HGvEdQl" resname="People in Need">
+        <source>People in Need</source>
+        <target>People in Need</target>
+      </trans-unit>
+      <trans-unit id="hX1F.g1" resname="People In Need">
+        <source>People In Need</source>
+        <target>People In Need</target>
+      </trans-unit>
+      <trans-unit id="jdIi7eN" resname="People in Need Signature">
+        <source>People in Need Signature</source>
+        <target>People in Need Signature</target>
+      </trans-unit>
+      <trans-unit id="y2TT4el" resname="People In Need Signature">
+        <source>People In Need Signature</source>
+        <target>People In Need Signature</target>
+      </trans-unit>
+      <trans-unit id="o9H.Yk6" resname="Period Start">
+        <source>Period Start</source>
+        <target>Period Start</target>
+      </trans-unit>
+      <trans-unit id="EXNIfID" resname="Period End">
+        <source>Period End</source>
+        <target>Period End</target>
+      </trans-unit>
+      <trans-unit id="t7dX3uK" resname="Annex I">
+        <source>Annex I</source>
+        <target>Annex I</target>
+      </trans-unit>
+      <trans-unit id="9KbiF2F" resname="Itemized Breakdown">
+        <source>Itemized Breakdown</source>
+        <target>Itemized Breakdown</target>
+      </trans-unit>
+      <trans-unit id="ZSvMOke" resname="Item">
+        <source>Item</source>
+        <target>Item</target>
+      </trans-unit>
+      <trans-unit id="W3HFRsa" resname="Item type">
+        <source>Item type</source>
+        <target>Item type</target>
+      </trans-unit>
+      <trans-unit id="DmpcFnm" resname="Total per Vendor and Period">
+        <source>Total per Vendor and Period</source>
+        <target>Total per Vendor and Period</target>
+      </trans-unit>
+      <trans-unit id="6ROr5qP" resname="It is not possible to remove a beneficiary from validated and locked assistance">
+        <source>It is not possible to remove a beneficiary from validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="80VoLBb" resname="It is not possible to add a beneficiary to validated and locked assistance">
+        <source>It is not possible to add a beneficiary to validated and locked assistance</source>
+        <target>messages</target>
+      </trans-unit>
+      <trans-unit id="MjdvTAf" resname="cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.">
+        <source>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</source>
+        <target>cannot be moved in assistance: Assistance is targeted to households and the beneficiary is not household head.</target>
+      </trans-unit>
+      <trans-unit id="GJ08G1a" resname="Beneficiary %name% can't be removed from assistance. He has already received a relief package.">
+        <source>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</source>
+        <target>Beneficiary %name% can't be removed from assistance. He has already received a relief package.</target>
+      </trans-unit>
+      <trans-unit id="wnSoDHM" resname="Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.">
+        <source>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</source>
+        <target>Beneficiary %name% can't be added to assistance. His relief package is not in appropriate state.</target>
+      </trans-unit>
+      <trans-unit id="ApRCWbj" resname="Phone prefix should match any of the valid country prefix">
+        <source>Phone prefix should match any of the valid country prefix</source>
+        <target>Phone prefix should match any of the valid country prefix</target>
+      </trans-unit>
+      <trans-unit id="2xMVINM" resname="All required columns for Phone 2 should be set">
+        <source>All required columns for Phone 2 should be set</source>
+        <target>All required columns for Phone 2 should be set</target>
+      </trans-unit>
+      <trans-unit id="L9ptjmS" resname="All required columns for Phone 1 should be set">
+        <source>All required columns for Phone 1 should be set</source>
+        <target>All required columns for Phone 1 should be set</target>
+      </trans-unit>
+      <trans-unit id="WcrtTWg" resname="Primary ID Type">
+        <source>Primary ID Type</source>
+        <target>Primary ID Type</target>
+      </trans-unit>
+      <trans-unit id="aDSqfOq" resname="Primary ID Number">
+        <source>Primary ID Number</source>
+        <target>Primary ID Number</target>
+      </trans-unit>
+      <trans-unit id="mfOM9gT" resname="Secondary ID Type">
+        <source>Secondary ID Type</source>
+        <target>Secondary ID Type</target>
+      </trans-unit>
+      <trans-unit id="Hu037VI" resname="Secondary ID Number">
+        <source>Secondary ID Number</source>
+        <target>Secondary ID Number</target>
+      </trans-unit>
+      <trans-unit id="6xuj0uJ" resname="Tertiary ID Type">
+        <source>Tertiary ID Type</source>
+        <target>Tertiary ID Type</target>
+      </trans-unit>
+      <trans-unit id="9E9rU5Z" resname="Tertiary ID Number">
+        <source>Tertiary ID Number</source>
+        <target>Tertiary ID Number</target>
+      </trans-unit>
+      <trans-unit id="JXH076y" resname="was not found.">
+        <source>was not found.</source>
+        <target>__was not found.</target>
       </trans-unit>
     </body>
   </file>

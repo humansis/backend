@@ -3,8 +3,6 @@
 namespace Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Entity\Location;
 use Entity\Vendor;
@@ -14,6 +12,7 @@ use Generator;
 use InputType\VendorFilterInputType;
 use InputType\VendorOrderInputType;
 use InvalidArgumentException;
+use Repository\Helper\TRepositoryHelper;
 use Request\Pagination;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Entity\User;
@@ -28,10 +27,9 @@ use Entity\User;
  */
 class VendorRepository extends EntityRepository
 {
-    /**
-     * @var LocationRepository
-     */
-    private $locationRepository;
+    use TRepositoryHelper;
+
+    private ?LocationRepository $locationRepository = null;
 
     public function setLocationRepository(LocationRepository $locationRepository)
     {
@@ -50,12 +48,6 @@ class VendorRepository extends EntityRepository
     }
 
     /**
-     * @param string|null $iso3
-     * @param VendorFilterInputType|null $filter
-     * @param VendorOrderInputType|null $orderBy
-     * @param Pagination|null $pagination
-     *
-     * @return Paginator
      * @throws EnumValueNoFoundException
      */
     public function findByParams(
@@ -182,11 +174,6 @@ class VendorRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param array $vendors
-     * @param Pagination $pagination
-     * @return Paginator
-     */
     public function getVendorsPaginatorByEntityRoot(array $vendors, Pagination $pagination): Paginator
     {
         $qb = $this->createQueryBuilder('v');
@@ -198,28 +185,11 @@ class VendorRepository extends EntityRepository
         return new Paginator($qb);
     }
 
-    /**
-     * @param Location $location
-     *
-     * @return Generator
-     */
     private function getChildrenLocationIdListByLocation(Location $location): Generator
     {
         $children = $this->locationRepository->getChildrenLocations($location);
         foreach ($children as $childKey => $child) {
             yield $child->getId();
         }
-    }
-
-    /**
-     * @param Vendor $vendor
-     * @return void
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function save(Vendor $vendor): void
-    {
-        $this->_em->persist($vendor);
-        $this->_em->flush();
     }
 }

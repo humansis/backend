@@ -13,15 +13,14 @@ class BookletGeneratorTest extends KernelTestCase
     /** @var ObjectManager|null */
     private $em;
 
-    /** @var BookletGenerator */
-    private $generator;
+    private \Utils\BookletGenerator $generator;
 
     public function setUp(): void
     {
         self::bootKernel();
 
         //Preparing the EntityManager
-        $this->em = static::$kernel->getContainer()
+        $this->em = self::getContainer()
             ->get('doctrine')
             ->getManager();
 

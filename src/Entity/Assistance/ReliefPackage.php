@@ -16,6 +16,7 @@ use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Entity\User;
 use Entity\SmartcardDeposit;
+use Utils\DecimalNumber\DecimalNumberFactory;
 
 /**
  * @ORM\Entity(repositoryClass="Repository\Assistance\ReliefPackageRepository")
@@ -29,64 +30,46 @@ class ReliefPackage
     use LastModifiedAt;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="state", type="enum_relief_package_state", nullable=false)
      */
-    private $state;
+    private string $state;
 
     /**
-     * @var AssistanceBeneficiary
-     *
      * @ORM\ManyToOne(targetEntity="Entity\AssistanceBeneficiary", inversedBy="reliefPackages")
      */
-    private $assistanceBeneficiary;
+    private AssistanceBeneficiary $assistanceBeneficiary;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="modality_type", type="enum_modality_type", nullable=false)
      */
-    private $modalityType;
+    private string $modalityType;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="amount_to_distribute", type="decimal", precision=10, scale=2)
      */
-    private $amountToDistribute;
+    private string|float $amountToDistribute;
 
     /**
-     * @var string
      *
      * Not in use right now. Prepared for partial assists.
-     *
      * @ORM\Column(name="amount_distributed", type="decimal", precision=10, scale=2)
      */
-    private $amountDistributed;
+    private string $amountDistributed;
 
     /**
-     * @var string
-     *
-     * controlled by database triggers on smartcard_payment_record table
-     *
-     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2)
+     * @ORM\Column(name="amount_spent", type="decimal", precision=10, scale=2, nullable=true)
      */
-    private $amountSpent;
+    private string|null $amountSpent = null;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="unit", type="string", nullable=false)
      */
-    private $unit;
+    private string $unit;
 
     /**
-     * @var string|null
-     *
      * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      */
-    private $notes;
+    private ?string $notes = null;
 
     /**
      * @var Collection|SmartcardDeposit[]
@@ -95,40 +78,27 @@ class ReliefPackage
      *
      * @ORM\OneToMany(targetEntity="Entity\SmartcardDeposit", mappedBy="reliefPackage")
      */
-    private $smartcardDeposits;
+    private \Doctrine\Common\Collections\Collection|array $smartcardDeposits;
 
     /**
-     * @var DateTimeInterface|null
-     *
      * @ORM\Column(name="distributedAt", type="datetime", nullable=true)
      */
-    private $distributedAt;
+    private ?\DateTimeInterface $distributedAt = null;
 
     /**
-     * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="Entity\User")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $distributedBy;
+    private ?\Entity\User $distributedBy = null;
 
-
-
-    /**
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     * @param string $modalityType
-     * @param float|string|int $amountToDistribute
-     * @param string $unit
-     * @param string $state
-     * @param float|string|int $amountDistributed
-     */
     public function __construct(
         AssistanceBeneficiary $assistanceBeneficiary,
         string $modalityType,
-        $amountToDistribute,
+        float | int $amountToDistribute,
         string $unit,
         string $state = ReliefPackageState::TO_DISTRIBUTE,
-        $amountDistributed = 0.0
+        float | int $amountDistributed = 0.0
     ) {
         if (!in_array($modalityType, ModalityType::values())) {
             throw new InvalidArgumentException("Argument '$modalityType' isn't valid ModalityType");
@@ -145,19 +115,18 @@ class ReliefPackage
                 "amountDistributed has to bee numeric. Provided value: '$amountDistributed'"
             );
         }
-
         $this->assistanceBeneficiary = $assistanceBeneficiary;
-        $this->modalityType = $modalityType;
-        $this->amountToDistribute = (string) $amountToDistribute;
         $this->unit = $unit;
         $this->state = $state;
+        $this->modalityType = $modalityType;
+        $this->amountToDistribute = (string) $amountToDistribute;
         $this->amountDistributed = (string) $amountDistributed;
     }
 
     /**
      * @ORM\PreUpdate
      */
-    public function updateLastModified()
+    public function updateLastModified(): void
     {
         $this->setLastModifiedNow();
     }
@@ -170,33 +139,21 @@ class ReliefPackage
         return $this->state;
     }
 
-    /**
-     * @return AssistanceBeneficiary
-     */
     public function getAssistanceBeneficiary(): AssistanceBeneficiary
     {
         return $this->assistanceBeneficiary;
     }
 
-    /**
-     * @param AssistanceBeneficiary $assistanceBeneficiary
-     */
     public function setAssistanceBeneficiary(AssistanceBeneficiary $assistanceBeneficiary): void
     {
         $this->assistanceBeneficiary = $assistanceBeneficiary;
     }
 
-    /**
-     * @return string
-     */
     public function getModalityType(): string
     {
         return $this->modalityType;
     }
 
-    /**
-     * @param string $modalityType
-     */
     public function setModalityType(string $modalityType): void
     {
         if (!in_array($modalityType, ModalityType::values())) {
@@ -205,18 +162,12 @@ class ReliefPackage
         $this->modalityType = $modalityType;
     }
 
-    /**
-     * @return string
-     */
     public function getAmountToDistribute(): string
     {
         return $this->amountToDistribute;
     }
 
-    /**
-     * @param float|string|int $amountToDistribute
-     */
-    public function setAmountToDistribute($amountToDistribute): void
+    public function setAmountToDistribute(float|string|int $amountToDistribute): void
     {
         if (!is_numeric($amountToDistribute)) {
             throw new InvalidArgumentException(
@@ -224,47 +175,30 @@ class ReliefPackage
             );
         }
 
-        $this->amountToDistribute = $amountToDistribute;
+        $this->amountToDistribute = (string) $amountToDistribute;
     }
 
-    /**
-     * @return string
-     */
     public function getUnit(): string
     {
         return $this->unit;
     }
 
-    /**
-     * @param string $unit
-     */
     public function setUnit(string $unit): void
     {
         $this->unit = $unit;
     }
 
-    /**
-     * @return string
-     */
     public function getAmountDistributed(): string
     {
         return $this->amountDistributed;
     }
 
-    /**
-     * @param string $amountDistributed
-     */
     public function setAmountDistributed(string $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }
 
-    /**
-     * @param int|float|string $amountDistributed
-     *
-     * @return void
-     */
-    public function addDistributedAmount($amountDistributed): void
+    public function addDistributedAmount(int|float|string $amountDistributed): void
     {
         $this->setAmountDistributed((string) ((float) $this->amountDistributed + (float) $amountDistributed));
     }
@@ -274,41 +208,33 @@ class ReliefPackage
         $this->addDistributedAmount($this->getCurrentUndistributedAmount());
     }
 
-    /**
-     * @return float
-     */
     public function getCurrentUndistributedAmount(): float
     {
         return (float) $this->getAmountToDistribute() - $this->getAmountDistributed();
     }
 
-    /**
-     * @return bool
-     */
     public function isFullyDistributed(): bool
     {
         return round($this->getCurrentUndistributedAmount(), 2) == 0;
     }
 
-    /**
-     * @return string
-     */
-    public function getAmountSpent(): ?string
+    public function addSpent(string $amountSpent): void
+    {
+        $this->amountSpent = (DecimalNumberFactory::create($this->amountSpent ?? '0'))
+            ->plus(DecimalNumberFactory::create($amountSpent))
+            ->round(2);
+    }
+
+    public function getAmountSpent(): string|null
     {
         return $this->amountSpent;
     }
 
-    /**
-     * @return string|null
-     */
     public function getNotes(): ?string
     {
         return $this->notes;
     }
 
-    /**
-     * @param string|null $notes
-     */
     public function setNotes(?string $notes): void
     {
         $this->notes = $notes;
@@ -317,65 +243,51 @@ class ReliefPackage
     /**
      * @return Collection|SmartcardDeposit[]
      */
-    public function getSmartcardDeposits()
+    public function getSmartcardDeposits(): \Doctrine\Common\Collections\Collection|array
     {
         return $this->smartcardDeposits;
     }
 
-    /**
-     * @param string $state
-     */
     public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    /**
-     * @return DateTimeInterface|null
-     */
     public function getDistributedAt(): ?DateTimeInterface
     {
         return $this->distributedAt;
     }
 
-    /**
-     * @param DateTimeInterface|null $distributedAt
-     */
     public function setDistributedAt(?DateTimeInterface $distributedAt): void
     {
         $this->distributedAt = $distributedAt;
     }
 
-    /**
-     * @return User|null
-     */
     public function getDistributedBy(): ?User
     {
         return $this->distributedBy;
     }
 
-    /**
-     * @param User|null $distributedBy
-     */
     public function setDistributedBy(?User $distributedBy): void
     {
         $this->distributedBy = $distributedBy;
     }
 
-    /**
-     * @return bool
-     */
-    public function isOnStartupState(): bool
+    public function hasDistributedMoney(): bool
     {
-        return in_array($this->state, ReliefPackageState::startupValues());
+        return (double)$this->amountDistributed > 0.0;
     }
 
-    /**
-     * @param string $modalityName
-     * @param string $unit
-     *
-     * @return bool
-     */
+    public function hasDistributionStarted(): bool
+    {
+        return in_array($this->state, ReliefPackageState::distributionStartedStates());
+    }
+
+    public function isInDistributableState(): bool
+    {
+        return in_array($this->state, ReliefPackageState::distributableStates());
+    }
+
     public function isSameModalityAndUnit(string $modalityName, string $unit): bool
     {
         return $this->getModalityType() === $modalityName && $this->getUnit() === $unit;

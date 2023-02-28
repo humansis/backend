@@ -4,114 +4,74 @@ declare(strict_types=1);
 
 namespace Component\Smartcard\Deposit;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Component\ReliefPackage\ReliefPackageService;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Component\Smartcard\SmartcardDepositService;
 use Entity\Assistance\ReliefPackage;
 use Entity\User;
 use Enum\CacheTarget;
 use InputType\Smartcard\DepositInputType;
+use InputType\Smartcard\ManualDistributionInputType;
 use Repository\Assistance\ReliefPackageRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Repository\UserRepository;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Entity\Smartcard;
 use Entity\SmartcardDeposit;
-use Repository\SmartcardDepositRepository;
+use Utils\DecimalNumber\DecimalNumberFactory;
 use Utils\SmartcardService;
 
 class DepositFactory
 {
-    /**
-     * @var SmartcardService
-     */
-    private $smartcardService;
-
-    /**
-     * @var ReliefPackageRepository
-     */
-    private $reliefPackageRepository;
-
-    /**
-     * @var CacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var array
-     */
-    private $messages = [];
-
-    /**
-     * @var bool
-     */
-    private $suspicious = false;
-
-    /**
-     * @var ReliefPackageService
-     */
-    private $reliefPackageService;
-
-    /**
-     * @var SmartcardDepositRepository
-     */
-    private $smartcardDepositRepository;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(
-        SmartcardDepositRepository $smartcardDepositRepository,
-        SmartcardService $smartcardService,
-        ReliefPackageRepository $reliefPackageRepository,
-        CacheInterface $cache,
-        ReliefPackageService $reliefPackageService,
-        LoggerInterface $logger
+        private readonly SmartcardService $smartcardService,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly CacheInterface $cache,
+        private readonly ReliefPackageService $reliefPackageService,
+        private readonly LoggerInterface $logger,
+        private readonly UserRepository $userRepository,
+        private readonly SerializerInterface $serializer,
     ) {
-        $this->smartcardDepositRepository = $smartcardDepositRepository;
-        $this->smartcardService = $smartcardService;
-        $this->reliefPackageRepository = $reliefPackageRepository;
-        $this->cache = $cache;
-        $this->reliefPackageService = $reliefPackageService;
-        $this->logger = $logger;
     }
 
     /**
-     * @param string $smartcardSerialNumber
-     * @param DepositInputType $depositInputType
-     * @param User $user
-     *
-     * @return SmartcardDeposit
      * @throws DoubledDepositException
-     * @throws
-     * @throws ORMException
-     * @throws OptimisticLockException
      * @throws InvalidArgumentException
      */
     public function create(
         string $smartcardSerialNumber,
         DepositInputType $depositInputType,
-        User $user
+        User $user,
+        CreationContext | null $context = null,
     ): SmartcardDeposit {
         $reliefPackage = $this->reliefPackageRepository->find($depositInputType->getReliefPackageId());
-        $hash = SmartcardDepositService::generateDepositHash(
-            $smartcardSerialNumber,
-            $depositInputType->getCreatedAt()->getTimestamp(),
-            $depositInputType->getValue(),
-            $reliefPackage
-        );
-        $this->checkDepositDuplicity($hash);
-        $smartcard = $this->smartcardService->getActualSmartcardOrCreateNew(
+        $smartcard = $this->smartcardService->getOrCreateActiveSmartcardForBeneficiary(
             $smartcardSerialNumber,
             $reliefPackage->getAssistanceBeneficiary()->getBeneficiary(),
             $depositInputType->getCreatedAt()
         );
-        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType, $hash);
-        $this->reliefPackageService->addDeposit($reliefPackage, $deposit);
+        $deposit = $this->createNewDepositRoot($smartcard, $user, $reliefPackage, $depositInputType);
+
+        try {
+            $this->reliefPackageService->addDeposit($reliefPackage, $deposit, $context);
+        } catch (UniqueConstraintViolationException) {      // Warning, Entity manager is closed for this case
+            $message = sprintf(
+                "Deposit with same parameters already exists. Data: %s",
+                json_encode(
+                    array_merge(
+                        ['userId' => $user->getId()],
+                        $this->serializer->normalize($depositInputType),
+                        ['smartcardSerialNumber' => $smartcardSerialNumber]
+                    )
+                )
+            );
+            $this->logger->info($message);
+            throw new DoubledDepositException($message);
+        }
+
+        $this->addDepositToSmartcard($smartcard, $deposit);
         $this->smartcardService->setMissingCurrencyToSmartcardAndPurchases($smartcard, $reliefPackage);
         $this->cache->delete(
             CacheTarget::assistanceId($reliefPackage->getAssistanceBeneficiary()->getAssistance()->getId())
@@ -121,57 +81,61 @@ class DepositFactory
     }
 
     /**
-     * @param Smartcard $smartcard
-     * @param User $user
-     * @param ReliefPackage $reliefPackage
-     * @param DepositInputType $depositInputType
-     * @param string $hash
-     *
-     * @return SmartcardDeposit
+     * @throws DoubledDepositException
+     * @throws InvalidArgumentException
      */
+    public function createForSupportApp(
+        ManualDistributionInputType $manualDistributionInputType,
+    ): SmartcardDeposit {
+        $context = new CreationContext(
+            $manualDistributionInputType->isCheckState(),
+            $manualDistributionInputType->getSpent(),
+            $manualDistributionInputType->getNote()
+        );
+        if ($manualDistributionInputType->getValue()) {
+            $value = $manualDistributionInputType->getValue();
+        } else {
+            $reliefPackage = $this->reliefPackageRepository->find($manualDistributionInputType->getReliefPackageId());
+            $value = (DecimalNumberFactory::create($reliefPackage->getAmountToDistribute()))
+                ->minus(DecimalNumberFactory::create($reliefPackage->getAmountDistributed()))
+                ->round(2);
+        }
+
+        return $this->create(
+            $manualDistributionInputType->getSmartcardCode(),
+            DepositInputType::create(
+                $manualDistributionInputType->getReliefPackageId(),
+                (float) $value,
+                (float) $value,
+                $manualDistributionInputType->getCreatedAt()
+            ),
+            $this->userRepository->find($manualDistributionInputType->getCreatedBy()),
+            $context
+        );
+    }
+
     private function createNewDepositRoot(
         Smartcard $smartcard,
         User $user,
         ReliefPackage $reliefPackage,
         DepositInputType $depositInputType,
-        string $hash
     ): SmartcardDeposit {
-        $deposit = SmartcardDeposit::create(
+        return new SmartcardDeposit(
             $smartcard,
             $user,
             $reliefPackage,
             (float) $depositInputType->getValue(),
             (float) $depositInputType->getBalance(),
-            $depositInputType->getCreatedAt(),
-            $hash,
-            $this->suspicious,
-            $this->messages
+            $depositInputType->getCreatedAt()
         );
-
-        $smartcard->addDeposit($deposit);
-        if (!$smartcard->getBeneficiary()) {
-            $deposit->setSuspicious(true);
-            $deposit->addMessage('Smartcard does not have assigned beneficiary.');
-        }
-
-        return $deposit;
     }
 
-    /**
-     * @param string $hash
-     *
-     * @return void
-     * @throws DoubledDepositException
-     */
-    private function checkDepositDuplicity(string $hash): void
+    private function addDepositToSmartcard(Smartcard $smartcard, SmartcardDeposit $smartcardDeposit): void
     {
-        $deposit = $this->smartcardDepositRepository->findByHash($hash);
-
-        if ($deposit) {
-            $this->logger->info(
-                "Creation of deposit with hash {$deposit->getHash()} was omitted. It's already set in Deposit #{$deposit->getId()}"
-            );
-            throw new DoubledDepositException($deposit);
+        $smartcard->addDeposit($smartcardDeposit);
+        if (!$smartcard->getBeneficiary()) {
+            $smartcardDeposit->setSuspicious(true);
+            $smartcardDeposit->addMessage('Smartcard does not have assigned beneficiary.');
         }
     }
 }

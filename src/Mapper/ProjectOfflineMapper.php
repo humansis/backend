@@ -14,8 +14,7 @@ class ProjectOfflineMapper implements MapperInterface
 {
     use MapperContextTrait;
 
-    /** @var Project */
-    private $object;
+    private ?\Entity\Project $object = null;
 
     /**
      * {@inheritdoc}
@@ -37,7 +36,7 @@ class ProjectOfflineMapper implements MapperInterface
         }
 
         throw new InvalidArgumentException(
-            'Invalid argument. It should be instance of ' . Project::class . ', ' . get_class($object) . ' given.'
+            'Invalid argument. It should be instance of ' . Project::class . ', ' . $object::class . ' given.'
         );
     }
 
@@ -84,18 +83,14 @@ class ProjectOfflineMapper implements MapperInterface
     public function getSectors(): array
     {
         return array_values(
-            array_map(function (ProjectSector $item) {
-                return $item->getSector();
-            }, $this->object->getSectors()->toArray())
+            array_map(fn(ProjectSector $item) => $item->getSector(), $this->object->getSectors()->toArray())
         );
     }
 
     public function getDonorIds(): array
     {
         return array_values(
-            array_map(function ($item) {
-                return $item->getId();
-            }, $this->object->getDonors()->toArray())
+            array_map(fn($item) => $item->getId(), $this->object->getDonors()->toArray())
         );
     }
 

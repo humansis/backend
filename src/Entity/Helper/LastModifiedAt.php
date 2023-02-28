@@ -18,9 +18,6 @@ trait LastModifiedAt
      */
     protected $lastModifiedAt;
 
-    /**
-     * @return DateTimeInterface
-     */
     public function getLastModifiedAt(): DateTimeInterface
     {
         if (null === $this->lastModifiedAt) {

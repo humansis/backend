@@ -18,25 +18,19 @@ class UserCountry
     use StandardizedPrimaryKey;
 
     /**
-     * @var string
-     *
      * @ORM\Column(name="rights", type="string")
      */
-    private $rights;
+    private ?string $rights = null;
 
     /**
-     * @var User
-     *
      * @ORM\ManyToOne(targetEntity="Entity\User", inversedBy="countries", cascade={"persist"})
      */
-    private $user;
+    private ?\Entity\User $user = null;
 
     /**
      * Set rights.
      *
-     * @param string $rights
      *
-     * @return UserCountry
      */
     public function setRights(string $rights): UserCountry
     {
@@ -47,8 +41,6 @@ class UserCountry
 
     /**
      * Get rights.
-     *
-     * @return string
      */
     public function getRights(): string
     {
@@ -59,8 +51,6 @@ class UserCountry
      * Set user.
      *
      * @param User|null $user
-     *
-     * @return UserCountry
      */
     public function setUser(User $user = null): UserCountry
     {
@@ -71,8 +61,6 @@ class UserCountry
 
     /**
      * Get user.
-     *
-     * @return User|null
      */
     public function getUser(): ?User
     {

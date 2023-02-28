@@ -5,11 +5,11 @@ namespace Controller\SupportApp\Smartcard;
 use Component\Smartcard\Exception\SmartcardActivationDeactivatedException;
 use Component\Smartcard\Exception\SmartcardNotAllowedStateTransition;
 use Controller\AbstractController;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Entity\Smartcard;
+use Enum\RoleType;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use InputType\Smartcard\UpdateSmartcardInputType;
+use Repository\RoleRepository;
 use Repository\SmartcardRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -21,42 +21,16 @@ use Utils\SmartcardService;
  */
 class SmartcardController extends AbstractController
 {
-    /**
-     * @var SmartcardService
-     */
-    private $smartcardService;
-
-    /**
-     * @var SmartcardRepository
-     */
-    private $smartcardRepository;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @param SmartcardService $smartcardService
-     * @param TokenStorageInterface $tokenStorage
-     */
     public function __construct(
-        SmartcardService $smartcardService,
-        SmartcardRepository $smartcardRepository,
-        TokenStorageInterface $tokenStorage
+        private readonly SmartcardService $smartcardService,
+        private readonly SmartcardRepository $smartcardRepository,
+        private readonly RoleRepository $roleRepository,
+        private readonly TokenStorageInterface $tokenStorage
     ) {
-        $this->smartcardService = $smartcardService;
-        $this->smartcardRepository = $smartcardRepository;
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**
      * @Rest\Get("/{smartcardCode}")
-     *
-     * @param string $smartcardCode
-     *
-     * @return JsonResponse
-     * @throws ORMException
      */
     public function smartcard(string $smartcardCode): JsonResponse
     {
@@ -67,11 +41,6 @@ class SmartcardController extends AbstractController
 
     /**
      * @Rest\Get ("/{smartcardCode}/purchases")
-     *
-     * @param string $smartcardCode
-     *
-     * @return JsonResponse
-     * @throws ORMException
      */
     public function smartcardPurchases(string $smartcardCode): JsonResponse
     {
@@ -83,11 +52,6 @@ class SmartcardController extends AbstractController
 
     /**
      * @Rest\Get ("/{smartcardCode}/deposits")
-     *
-     * @param string $smartcardCode
-     *
-     * @return JsonnResponse
-     * @throws ORMException
      */
     public function smartcardDeposits(string $smartcardCode): JsonResponse
     {
@@ -100,15 +64,9 @@ class SmartcardController extends AbstractController
     /**
      * @Rest\Patch("/{id}")
      *
-     * @param Smartcard $smartcard
-     * @param UpdateSmartcardInputType $updateSmartcardInputType
-     * @param SmartcardService $smartcardService
      *
-     * @return JsonResponse
      * @throws SmartcardActivationDeactivatedException
      * @throws SmartcardNotAllowedStateTransition
-     * @throws ORMException
-     * @throws OptimisticLockException
      */
     public function update(
         Smartcard $smartcard,
@@ -117,7 +75,11 @@ class SmartcardController extends AbstractController
     ): JsonResponse {
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if ($user->hasRole('ROLE_ADMIN')) {
+        $role = $this->roleRepository->findOneBy([
+            'code' => RoleType::ADMIN,
+        ]);
+
+        if ($role && $user->hasRole($role)) {
             $smartcard = $this->smartcardRepository->find($smartcard);
             $smartcard = $smartcardService->update($smartcard, $updateSmartcardInputType);
 

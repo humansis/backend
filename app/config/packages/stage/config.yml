@@ -37,9 +37,12 @@ monolog:
             level: !php/const Monolog\Logger::ERROR
             hub_id: Sentry\State\HubInterface
 
-nelmio_cors:
-    defaults:
-        allow_origin: ['https://stage.humansis.org', 'https://stage-pin.humansis.org',  'http://localhost:8080']
-
 parameters:
     frontendUrl: 'https://stage.humansis.org'
+    cors:
+        allow_origin: [ 'https://stage.humansis.org', 'https://stage-pin.humansis.org',  'http://localhost:8080' ]
+        allow_credentials: 'true'
+        allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
+        allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]
+        expose_headers: [ ]
+        max_age: 3600
