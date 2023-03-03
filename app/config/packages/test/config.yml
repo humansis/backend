@@ -53,7 +53,7 @@ parameters:
     mailer_dsn: 'null://null'
     frontendUrl: 'https://test.humansis.org'
     cors:
-        allow_origin: ['https://test.humansis.org', 'https://test-pin.humansis.org',  'http://localhost:8080']
+        allow_origin: ['https://test.humansis.org', 'https://test2.humansis.org', 'https://test3.humansis.org', 'https://test-pin.humansis.org',  'http://localhost:8080']
         allow_credentials: 'true'
         allow_headers: [ 'authorization', 'content-type', 'access-control-allow-credentials', 'country' ]
         allow_methods: [ 'POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS' ]

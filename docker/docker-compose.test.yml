@@ -11,7 +11,8 @@ volumes:
 
 services:
     php:
-        image: artifactory.quanti.cz/docker/humansis-php:test
+        # CAREFUL: "__TEST__" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-php:__TEST__
         volumes:
             - /opt/humansis/var:/var/www/html/var
             - /opt/humansis/app/Resources/translations:/var/www/html/app/Resources/translations
@@ -24,7 +25,8 @@ services:
             ENVIRONMENT: test
 
     consumer:
-        image: artifactory.quanti.cz/docker/humansis-php:test
+        # CAREFUL: "__TEST__" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-php:__TEST__
         volumes:
             - /opt/humansis/var/sessions:/var/www/html/var/sessions
             - /opt/humansis/var/imports:/var/www/html/var/imports
@@ -52,10 +54,12 @@ services:
         environment:
             # CAREFUL: "%env(RDS_HOSTNAME)%" token is replaced in deployment script ci/apply-env-config.sh!
             PMA_HOST: %env(RDS_HOSTNAME)%
-            PMA_ABSOLUTE_URI: https://apitest.humansis.org/pma_yzixy37h/
+            # CAREFUL: "__TEST__" token is replaced in deployment script ci/deploy-docker.sh!
+            PMA_ABSOLUTE_URI: https://api__TEST__.humansis.org/pma_yzixy37h/
 
     nginx:
-        image: artifactory.quanti.cz/docker/humansis-nginx:test
+        # CAREFUL: "__TEST__" token is replaced in deployment script ci/deploy-docker.sh!
+        image: artifactory.quanti.cz/docker/humansis-nginx:__TEST__
         ports:
             - 8087:80
         depends_on:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # parameters:
-# $1: environment (dev[1:3], test, stage[1:2], demo, production)
+# $1: environment (dev1, test[1:3], stage, demo, production)
 # $2: clean database (true, false, database)
 # $3: load fixtures (dev, test, false)
 # $4: cache clear mode (normal, aggressive)
@@ -49,18 +49,18 @@ elif [[ $1 == "dev1" ]]; then
   mv docker/docker-compose.dev.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
   sed -i -e "s|__DEV__|dev1|g" docker-compose.yml
-elif [[ $1 == "dev2" ]]; then
-  EC2_ASG=dev2-asg
-  mv docker/docker-compose.dev.yml docker-compose.yml
+elif [[ $1 == "test2" ]]; then
+  EC2_ASG=test2-asg
+  mv docker/docker-compose.test.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
-  sed -i -e "s|__DEV__|dev2|g" docker-compose.yml
-elif [[ $1 == "dev3" ]]; then
-  EC2_ASG=dev3-asg
-  mv docker/docker-compose.dev.yml docker-compose.yml
+  sed -i -e "s|__TEST__|test2|g" docker-compose.yml
+elif [[ $1 == "test3" ]]; then
+  EC2_ASG=test3-asg
+  mv docker/docker-compose.test.yml docker-compose.yml
   # CAREFUL: replaces tokens in docker-compose.yml
-  sed -i -e "s|__DEV__|dev3|g" docker-compose.yml
+  sed -i -e "s|__TEST__|test3|g" docker-compose.yml
 else
-  echo "Wrong environment parameter. Options are: [dev1, dev2, dev3, test, stage, stage2, demo, production]"
+  echo "Wrong environment parameter. Options are: [dev1, test, test2, test3, stage, demo, production]"
   exit 1
 fi
 

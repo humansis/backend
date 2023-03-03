@@ -139,58 +139,6 @@ deploy dev1:
   extends: .deploy
   when: manual
 
-deploy dev2 - clean db:
-  stage: deploy_dev
-  environment:
-    name: dev2
-    url: https://apidev2.humansis.org
-  variables:
-    ENVIRONMENT: dev2
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: dev
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
-deploy dev2 - keep db:
-  stage: deploy_dev
-  environment:
-    name: dev2
-    url: https://apidev2.humansis.org
-  variables:
-    ENVIRONMENT: dev2
-    CLEAN_DATABASE: "false"
-    LOAD_FIXTURES: "false"
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
-deploy dev3 - keep db:
-  stage: deploy_test
-  environment:
-    name: dev3
-    url: https://apidev3.humansis.org
-  variables:
-    ENVIRONMENT: dev3
-    CLEAN_DATABASE: "false"
-    LOAD_FIXTURES: "false"
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
-deploy dev3 - clean fixtures:
-  stage: deploy_test
-  environment:
-    name: dev3
-    url: https://apidev3.humansis.org
-  variables:
-    ENVIRONMENT: dev3
-    CLEAN_DATABASE: "true"
-    LOAD_FIXTURES: "test"
-    CACHE_CLEAR_MODE: aggressive
-  extends: .deploy
-  when: manual
-
 deploy test - keep db:
   stage: deploy_test
   environment:
@@ -226,6 +174,58 @@ deploy test - anonymized db:
     ENVIRONMENT: test
     CLEAN_DATABASE: "database"
     LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy test2 - clean fixtures:
+  stage: deploy_test
+  environment:
+    name: test2
+    url: https://apitest2.humansis.org
+  variables:
+    ENVIRONMENT: test2
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy test2 - keep db:
+  stage: deploy_test
+  environment:
+    name: test2
+    url: https://apitest2.humansis.org
+  variables:
+    ENVIRONMENT: test2
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy test3 - keep db:
+  stage: deploy_test
+  environment:
+    name: test3
+    url: https://apitest3.humansis.org
+  variables:
+    ENVIRONMENT: test3
+    CLEAN_DATABASE: "false"
+    LOAD_FIXTURES: "false"
+    CACHE_CLEAR_MODE: aggressive
+  extends: .deploy
+  when: manual
+
+deploy test3 - clean fixtures:
+  stage: deploy_test
+  environment:
+    name: test3
+    url: https://apitest3.humansis.org
+  variables:
+    ENVIRONMENT: test3
+    CLEAN_DATABASE: "true"
+    LOAD_FIXTURES: "test"
     CACHE_CLEAR_MODE: aggressive
   extends: .deploy
   when: manual
