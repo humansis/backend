@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace InputType\Assistance;
 
 use Request\InputTypeInterface;
@@ -8,66 +10,44 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateReliefPackageInputType implements InputTypeInterface
 {
-    /**
-     * @Enum(enumClass="Enum\ReliefPackageState")
-     * @var string
-     */
+    #[Enum(options: [
+        'enumClass' => 'Enum\ReliefPackageState',
+    ])]
     private $state;
 
-    /**
-     * @Assert\Type(type="scalar")
-     */
+    #[Assert\Type(type: 'scalar')]
     private $amountDistributed;
 
-    /**
-     * @Assert\Type(type="string")
-     */
+    #[Assert\Type(type: 'string')]
+    #[Assert\NotBlank(allowNull: true)]
     private $notes;
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->state;
     }
 
-    /**
-     * @param string $state
-     */
     public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAmountDistributed()
+    public function getAmountDistributed(): mixed
     {
         return $this->amountDistributed;
     }
 
-    /**
-     * @param mixed $amountDistributed
-     */
-    public function setAmountDistributed($amountDistributed): void
+    public function setAmountDistributed(mixed $amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getNotes()
+    public function getNotes(): ?string
     {
         return $this->notes;
     }
 
-    /**
-     * @param mixed $notes
-     */
-    public function setNotes($notes): void
+    public function setNotes(?string $notes): void
     {
         $this->notes = $notes;
     }

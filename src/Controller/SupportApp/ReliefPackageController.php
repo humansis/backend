@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Controller\SupportApp;
 
 use Exception;
@@ -12,22 +14,14 @@ use InputType\Assistance\UpdateReliefPackageInputType;
 
 class ReliefPackageController extends AbstractController
 {
-    /**
-     * @param AssistanceDistributionService $assistanceDistributionService
-     */
     public function __construct(private readonly AssistanceDistributionService $assistanceDistributionService)
     {
     }
 
     /**
-     * @Rest\Patch("/support-app/v1/relief-packages/{id}")
-     *
-     * @param ReliefPackage $reliefpackage
-     * @param UpdateReliefPackageInputType $inputpackages
-     *
-     * @return JsonResponse
      * @throws Exception
      */
+    #[Rest\Patch('/support-app/v1/relief-packages/{id}')]
     public function update(ReliefPackage $reliefpackage, UpdateReliefPackageInputType $inputpackages): JsonResponse
     {
         $reliefpackage = $this->assistanceDistributionService->update($reliefpackage, $inputpackages);
