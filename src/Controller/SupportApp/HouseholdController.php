@@ -14,10 +14,8 @@ class HouseholdController extends AbstractSupportAppController
     {
     }
 
-    /**
-     * @Rest\Get("/support-app/v1/households/headStatistics")
-     *
-     */
+
+    #[Rest\Get('/support-app/v1/households/headStatistics')]
     public function getHeadStatistics()
     {
         $headStatistics = [];
@@ -25,7 +23,7 @@ class HouseholdController extends AbstractSupportAppController
             $headStatistics[$country->getIso3()] = 0;
         }
 
-        foreach ($this->beneficiaryRepository->getNumberHouseholdWithoutHead() as $obj) {
+        foreach ($this->beneficiaryRepository->getNumberOfHouseholdWithoutHeadByCountry() as $obj) {
             $headStatistics[$obj['countryIso3']] = $obj['total'];
         }
         return $this->json($headStatistics);
