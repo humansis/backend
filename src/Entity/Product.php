@@ -8,6 +8,7 @@ use Entity\Helper\CreatedAt;
 use Entity\Helper\LastModifiedAt;
 use Entity\ProductCategory;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
+
 /**
  * Product
  */
@@ -138,7 +139,6 @@ class Product
     {
         return $this->image;
     }
-
 
     public function getProductCategory(): ?ProductCategory
     {
