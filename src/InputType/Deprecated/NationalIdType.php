@@ -18,7 +18,7 @@ class NationalIdType implements InputTypeInterface
     #[Assert\Type('integer')]
     private ?int $priority = null;
 
-    #[Assert\Choice(callback: ['\\' . \Enum\NationalIdType::class, 'values'], strict: true, groups: ['Strict'])]
+    #[Assert\Choice(callback: [\Enum\NationalIdType::class, 'values'], strict: true, groups: ['Strict'])]
     public function getType(): ?string
     {
         return $this->type ? \Enum\NationalIdType::valueFromAPI($this->type) : null;

@@ -80,7 +80,7 @@ class BeneficiaryInputType implements InputTypeInterface
     ])]
     private $residencyStatus;
 
-    #[Assert\Choice(callback: ['\\' . Referral::class, 'types'], strict: true, groups: ['Strict'])]
+    #[Assert\Choice(callback: [Referral::class, 'types'], strict: true, groups: ['Strict'])]
     #[Assert\Length(max: 255)]
     private $referralType;
 
