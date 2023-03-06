@@ -23,7 +23,7 @@ services:
         environment:
             ENVIRONMENT: demo
 
-    consumer:
+    import_consumer:
         image: artifactory.quanti.cz/docker/humansis-php:demo
         volumes:
             - /opt/humansis/var/sessions:/var/www/html/var/sessions
@@ -31,6 +31,23 @@ services:
             - /opt/humansis/var/logs:/var/www/html/var/logs
             - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
         entrypoint: "php /var/www/html/bin/console messenger:consume incoming_big_data import --time-limit=3600 --limit=100"
+        networks:
+            - backend
+        restart: always
+        environment:
+            ENVIRONMENT: demo
+        logging:
+            driver: "syslog"
+            options:
+                tag: docker-consumer
+
+    smartcard_purchase_consumer:
+        image: artifactory.quanti.cz/docker/humansis-php:demo
+        volumes:
+            - /opt/humansis/var/sessions:/var/www/html/var/sessions
+            - /opt/humansis/var/logs:/var/www/html/var/logs
+            - /opt/humansis/parameters.yml:/var/www/html/app/config/parameters.yml:ro
+        entrypoint: "php /var/www/html/bin/console messenger:consume smartcard_purchase --time-limit=3600 --limit=100"
         networks:
             - backend
         restart: always
