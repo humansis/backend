@@ -44,6 +44,8 @@ elif [[ $1 == "stage2" ]]; then
 elif [[ $1 == "test" ]]; then
   EC2_ASG=test-asg
   mv docker/docker-compose.test.yml docker-compose.yml
+  # CAREFUL: replaces tokens in docker-compose.yml
+  sed -i -e "s|__TEST__|test|g" docker-compose.yml
 elif [[ $1 == "dev1" ]]; then
   EC2_ASG=dev-asg
   mv docker/docker-compose.dev.yml docker-compose.yml
