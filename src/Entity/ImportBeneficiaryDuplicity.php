@@ -31,7 +31,7 @@ class ImportBeneficiaryDuplicity
     /**
      * @var string[]
      */
-    #[ORM\Column(type: 'json', nullable: true)]
+    #[ORM\Column(type: 'array', nullable: true)]
     private array $reasons;
 
     public function __construct(

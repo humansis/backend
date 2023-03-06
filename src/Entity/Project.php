@@ -78,7 +78,7 @@ class Project
     /**
      * @var string[]
      */
-    #[ORM\Column(name: 'allowed_product_category_types', type: 'json', nullable: false)]
+    #[ORM\Column(name: 'allowed_product_category_types', type: 'array', nullable: false)]
     private array $allowedProductCategoryTypes;
 
     private ?\DateTimeInterface $lastModifiedAtIncludingBeneficiaries = null;
