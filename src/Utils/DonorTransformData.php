@@ -8,12 +8,8 @@ class DonorTransformData
 {
     /**
      * Returns an array representation of donors in order to prepare the export
-     *
-     * @param $donors
-     *
-     * @return array
      */
-    public function transformData($donors): array
+    public function transformData(array $donors): array
     {
         $exportableTable = [];
 

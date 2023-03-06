@@ -11,6 +11,7 @@ use InputType\DonorCreateInputType;
 use InputType\DonorFilterInputType;
 use InputType\DonorOrderInputType;
 use InputType\DonorUpdateInputType;
+use InputType\Export\FormatInputType;
 use Repository\DonorRepository;
 use Request\Pagination;
 use Entity\Donor;
@@ -36,13 +37,12 @@ class DonorController extends AbstractController
     }
 
     #[Rest\Get('/web-app/v1/donors/exports')]
-    public function exports(Request $request): Response
+    public function exports(FormatInputType $formatInputType): Response
     {
-        $type = $request->query->get('type');
         $donors = $this->donorRepository->findAll();
         $exportableTable = $this->donorTransformData->transformData($donors);
 
-        return $this->exportTableService->export($exportableTable, 'donors', $type);
+        return $this->exportTableService->export($exportableTable, 'donors', $formatInputType->getType());
     }
 
     #[Rest\Get('/web-app/v1/donors/{id}')]

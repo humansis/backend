@@ -16,7 +16,7 @@ use Entity\Helper\StandardizedPrimaryKey;
 #[ORM\Table(name: 'donor')]
 #[ORM\Entity(repositoryClass: 'Repository\DonorRepository')]
 #[ORM\HasLifecycleCallbacks]
-class Donor implements ExportableInterface
+class Donor
 {
     use CreatedAt;
     use LastModifiedAt;
