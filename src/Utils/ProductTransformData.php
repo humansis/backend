@@ -8,12 +8,8 @@ class ProductTransformData
 {
     /**
      * Returns an array representation of products in order to prepare the export
-     *
-     * @param $products
-     *
-     * @return array
      */
-    public function transformData($products): array
+    public function transformData(array $products): array
     {
         $exportableTable = [];
 
