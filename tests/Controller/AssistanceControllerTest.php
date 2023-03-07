@@ -4,6 +4,8 @@ namespace Tests\Controller;
 
 use DBAL\SectorEnum;
 use Doctrine\Common\Collections\Criteria;
+use Entity\Assistance\ReliefPackage;
+use Entity\AssistanceBeneficiary;
 use Entity\Commodity;
 use Entity\Community;
 use Entity\Location;
@@ -14,6 +16,8 @@ use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
 use Enum\ModalityType;
 use Enum\SelectionCriteriaTarget;
+use Repository\Assistance\ReliefPackageRepository;
+use Repository\AssistanceBeneficiaryRepository;
 use Repository\AssistanceRepository;
 use Exception;
 use Component\Assistance\Enum\CommodityDivision;
@@ -965,16 +969,36 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var AssistanceRepository $assistanceRepository */
         $assistanceRepository = self::getContainer()->get('doctrine')->getRepository(Assistance::class);
 
+        /** @var AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository */
+        $assistanceBeneficiaryRepository = self::getContainer()->get('doctrine')->getRepository(AssistanceBeneficiary::class);
+
+        /** @var ReliefPackageRepository $reliefPackageRepository */
+        $reliefPackageRepository = self::getContainer()->get('doctrine')->getRepository(ReliefPackage::class);
+
         $commodityData = [
             'value' => 1,
             'unit' => 'USD',
             'modality_type' => ModalityType::CASH,
             'description' => 'Note',
         ];
-        /** @var Assistance $assistance */
-        $assistance = $assistanceRepository->matching(
-            Criteria::create()->where(Criteria::expr()->neq('validatedBy', null))
-        )->first();
+        $qb = $assistanceBeneficiaryRepository->createQueryBuilder('db')
+            ->select('assistance.id as assistanceId')
+            ->addSelect('relief.id as reliefId')
+            ->leftJoin('db.reliefPackages', 'relief')
+            ->leftJoin('db.assistance', 'assistance')
+            ->andWhere('assistance.validatedBy != :validatedBy')
+            ->setParameter('validatedBy', 'null')
+            ->setMaxResults(1);
+        $result = $qb->getQuery()->getResult();
+
+        $reliefPackage = $reliefPackageRepository->find($result[0]['reliefId']);
+        $tempModalityType = $reliefPackage->getModalityType();
+        $reliefPackage->setModalityType(ModalityType::CASH);
+        $reliefPackageRepository->save($reliefPackage);
+
+        $assistanceId = $result[0]['assistanceId'];
+        $assistance = $assistanceRepository->find($assistanceId);
+
         $assistance->setAssistanceType(AssistanceType::DISTRIBUTION);
         $assistance->setSubSector(SubSectorEnum::MULTI_PURPOSE_CASH_ASSISTANCE);
         $assistance->addCommodity($this->commodityService->create($assistance, $commodityData, false));
@@ -983,6 +1007,10 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $this->request('GET', "/api/basic/web-app/v1/assistances/$id/bank-report/exports", [
             'type' => 'csv',
         ]);
+
+        $reliefPackage->setModalityType($tempModalityType);
+        $reliefPackageRepository->save($reliefPackage);
+
         $this->assertTrue(
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()

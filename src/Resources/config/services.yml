@@ -498,7 +498,6 @@ services:
             $serializer: "@serializer"
 
 
-    Export\AssistanceBankReportExport:
 
     workflow.import.integrity_subscriber:
         class: Event\Subscriber\Import\IntegritySubscriber
@@ -1249,6 +1248,9 @@ services:
     Utils\VendorTransformData:
         class: Utils\VendorTransformData
         public: true
+
+    Utils\AssistanceBankReportTransformData:
+        class: Utils\AssistanceBankReportTransformData
 
     Utils\SmartcardPurchasedItemTransformData:
         class: Utils\SmartcardPurchasedItemTransformData
