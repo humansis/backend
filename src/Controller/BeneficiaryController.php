@@ -8,6 +8,8 @@ use Entity\NationalId;
 use Entity\Phone;
 use Exception;
 use Exception\CsvParserException;
+use Repository\Assistance\ReliefPackageRepository;
+use Repository\AssistanceBeneficiaryRepository;
 use Repository\BeneficiaryRepository;
 use Repository\NationalIdRepository;
 use Repository\OrganizationRepository;
@@ -42,11 +44,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Export\AssistanceSpreadsheetExport;
+use Utils\ExportTableServiceInterface;
+use Utils\ReliefBeneficiaryTransformData;
 
 class BeneficiaryController extends AbstractController
 {
-    public function __construct(private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport, private readonly AssistanceService $assistanceService, private readonly BeneficiaryService $beneficiaryService, private readonly ScoringService $scoringService)
-    {
+    public function __construct(
+        private readonly AssistanceSpreadsheetExport $assistanceSpreadsheetExport,
+        private readonly AssistanceService $assistanceService,
+        private readonly BeneficiaryService $beneficiaryService,
+        private readonly ScoringService $scoringService,
+        private readonly AssistanceBeneficiaryRepository $assistanceBeneficiaryRepository,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+        private readonly ReliefBeneficiaryTransformData $reliefBeneficiaryTransformData,
+        private readonly ExportTableServiceInterface $exportTableService
+    ) {
     }
 
     /**
@@ -168,23 +180,19 @@ class BeneficiaryController extends AbstractController
     #[Rest\Get('/web-app/v1/assistances/{id}/beneficiaries/exports-raw')]
     public function exportsByAssistanceRaw(Assistance $assistance, Request $request): Response
     {
-        $file = $this->assistanceService->exportGeneralReliefDistributionToCsv(
-            $assistance,
-            $request->query->get('type')
-        );
-
-        $response = new BinaryFileResponse(getcwd() . '/' . $file);
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
-        $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
-        if ($mimeTypeGuesser->isGuesserSupported()) {
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType(getcwd() . '/' . $file));
-        } else {
-            $response->headers->set('Content-Type', 'text/plain');
+        $type = $request->query->get('type');
+        $distributionBeneficiaries = $this->assistanceBeneficiaryRepository->findByAssistance($assistance);
+        $packages = [];
+        foreach ($distributionBeneficiaries as $distributionBeneficiary) {
+            $relief = $this->reliefPackageRepository->findOneByAssistanceBeneficiary($distributionBeneficiary);
+            if ($relief) {
+                $packages[] = $relief;
+            }
         }
-        $response->deleteFileAfterSend(true);
 
-        return $response;
+        $exportableTable = $this->reliefBeneficiaryTransformData->transformData($packages);
+
+        return $this->exportTableService->export($exportableTable, 'relief', $type);
     }
 
     #[Rest\Get('/web-app/v1/beneficiaries/national-ids')]

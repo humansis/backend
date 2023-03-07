@@ -1247,6 +1247,8 @@ services:
 
     Utils\UserTransformData:
         class: Utils\UserTransformData
+    Utils\ReliefBeneficiaryTransformData:
+        class: Utils\ReliefBeneficiaryTransformData
         public: true
 
 #From VoucherBundle:
