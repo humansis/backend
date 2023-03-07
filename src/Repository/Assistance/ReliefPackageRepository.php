@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Repository\Assistance;
 
 use DateTime;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use DTO\ReliefPackageDTO;
 use Entity\Location;
@@ -267,5 +268,19 @@ class ReliefPackageRepository extends EntityRepository
             ->setParameter('reliefPackageIds', $reliefPackageIds);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $reliefPackageId): ReliefPackage
+    {
+        $reliefPackage = $this->find($reliefPackageId);
+
+        if ($reliefPackage === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(ReliefPackage::class, (array) $reliefPackageId);
+        }
+
+        return $reliefPackage;
     }
 }

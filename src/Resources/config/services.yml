@@ -477,6 +477,9 @@ services:
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Transaction")'
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Phone")'
 
+    Component\Smartcard\Messaging\Handler\SmartcardDepositMessageHandler:
+        tags: [ 'messenger.message_handler' ]
+
     Component\Smartcard\Messaging\Handler\SmartcardPurchaseMessageHandler:
         tags: [ 'messenger.message_handler' ]
         arguments:
@@ -487,9 +490,7 @@ services:
 
     Component\Smartcard\SmartcardDepositService:
         arguments:
-            - '@doctrine.orm.entity_manager'
             - '@workflow.registry'
-            - '@validator'
 
     Component\Smartcard\Deposit\DepositFactory:
         public: true
@@ -1184,7 +1185,6 @@ services:
         public: true
         arguments:
             - "@=service('kernel').getEnvironment()"
-            - '@Component\Smartcard\SmartcardDepositService'
         tags:
             - { name: doctrine.fixture.orm }
 

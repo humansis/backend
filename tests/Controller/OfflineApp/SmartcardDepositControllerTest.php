@@ -90,7 +90,7 @@ class SmartcardDepositControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
-        $this->assertEquals(Response::HTTP_ACCEPTED, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
 
         if (!$this->em->isOpen()) {     // this is expected, because checking of doubled hash closes Entity Manager
             $this->em = $this->em::create(

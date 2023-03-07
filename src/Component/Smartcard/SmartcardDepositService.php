@@ -5,26 +5,19 @@ declare(strict_types=1);
 namespace Component\Smartcard;
 
 use Component\ReliefPackage\ReliefPackageService;
-use Doctrine\ORM\Exception\ORMException;
+use Component\Smartcard\Exception\SmartcardDepositReliefPackageCanNotBeDistributedException;
+use Doctrine\ORM\EntityNotFoundException;
+use Entity\Assistance\ReliefPackage;
 use Entity\AssistanceBeneficiary;
 use Entity\SmartcardDeposit;
-use Entity\User;
 use Enum\ReliefPackageState;
-use InputType\RequestConverter;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\OptimisticLockException;
 use Component\Smartcard\Deposit\DepositFactory;
 use Component\Smartcard\Deposit\Exception\DoubledDepositException;
-use Entity\SynchronizationBatch\Deposits;
 use InputType\Smartcard\DepositInputType;
-use InputType\SynchronizationBatch\CreateDepositInputType;
 use Repository\Assistance\ReliefPackageRepository;
+use Repository\UserRepository;
 use Workflow\ReliefPackageTransitions;
-use Workflow\SynchronizationBatchTransitions;
 use Psr\Cache\InvalidArgumentException;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\TransitionBlocker;
 use Repository\SmartcardDepositRepository;
@@ -32,143 +25,68 @@ use Repository\SmartcardDepositRepository;
 class SmartcardDepositService
 {
     public function __construct(
-        private readonly EntityManager $em,
         private readonly Registry $workflowRegistry,
-        private readonly ValidatorInterface $validator,
         private readonly DepositFactory $depositFactory,
         private readonly ReliefPackageRepository $reliefPackageRepository,
-        private readonly LoggerInterface $logger,
         private readonly SmartcardDepositRepository $smartcardDepositRepository,
         private readonly ReliefPackageService $reliefPackageService,
+        private readonly UserRepository $userRepository,
     ) {
     }
 
     /**
-     * @param Deposits $deposits
+     * @throws DoubledDepositException
      * @throws InvalidArgumentException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws EntityNotFoundException
+     * @throws SmartcardDepositReliefPackageCanNotBeDistributedException
      */
-    public function validateSync(Deposits $deposits): void
+    public function processDeposit(int $userId, string $smartcardNumber, DepositInputType $inputType): void
     {
-        $workflow = $this->workflowRegistry->get($deposits);
-        if (
-            !$workflow->can($deposits, SynchronizationBatchTransitions::COMPLETE_VALIDATION)
-            || !$workflow->can($deposits, SynchronizationBatchTransitions::FAIL_VALIDATION)
-        ) {
-            return;
-        }
-        $anyError = false;
-        $violations = [];
-        $inputs = [];
-        foreach ($deposits->getRequestData() as $key => $depositData) {
-            $depositInput = RequestConverter::normalizeInputType($depositData, CreateDepositInputType::class);
-            $violation = $this->validator->validate($depositInput);
+        $user = $this->userRepository->getById($userId);
+        $reliefPackage = $this->reliefPackageRepository->getById($inputType->getReliefPackageId());
 
-            if ($depositInput->getReliefPackageId()) {
-                $reliefPackage = $this->reliefPackageRepository->find($depositInput->getReliefPackageId());
-                if (null == $reliefPackage) {
-                    $violation->add(
-                        new ConstraintViolation(
-                            "ReliefPackage #{$depositInput->getReliefPackageId()} doesn't exits",
-                            null,
-                            [],
-                            [],
-                            'reliefPackageId',
-                            $depositInput->getReliefPackageId()
-                        )
-                    );
-                } else {
-                    if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
-                        $this->reliefPackageService->tryReuse($reliefPackage);
-                    }
+        $inputType = $this->replaceMissingValueInDepositInputType($inputType, $reliefPackage);
+        $this->validateReliefPackageDistribution($reliefPackage);
 
-                    if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
-                        $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
-                        $tb = $reliefPackageWorkflow->buildTransitionBlockerList(
-                            $reliefPackage,
-                            ReliefPackageTransitions::DISTRIBUTE
-                        );
-
-                        $tbMessages = [];
-                        /** @var TransitionBlocker $item */
-                        foreach ($tb as $item) {
-                            $tbMessages[] = $item->getMessage();
-                        }
-
-                        $violation->add(
-                            new ConstraintViolation(
-                                "Relief package #{$depositInput->getReliefPackageId()} cannot be distributed. State of RP: '{$reliefPackage->getState()}'. Workflow blocker messages: [" . implode(
-                                    ', ',
-                                    $tbMessages
-                                ) . ']',
-                                null,
-                                [],
-                                [],
-                                'reliefPackageId',
-                                $depositInput->getReliefPackageId()
-                            )
-                        );
-                    }
-                }
-            }
-
-            if (count($violation) > 0) {
-                $anyError = true;
-                $violations[$key] = $violation;
-            } else {
-                $violations[$key] = null;
-                $inputs[$key] = $depositInput;
-            }
-        }
-
-        $deposits->setViolations($violations);
-        if ($anyError) {
-            $workflow->apply($deposits, SynchronizationBatchTransitions::FAIL_VALIDATION);
-        } else {
-            $workflow->apply($deposits, SynchronizationBatchTransitions::COMPLETE_VALIDATION);
-        }
-        $this->em->persist($deposits);
-        $this->em->flush();
-
-        foreach ($inputs as $input) {
-            $this->deposit($input, $deposits->getCreatedBy());
-        }
+        $this->depositFactory->create(
+            $smartcardNumber,
+            $inputType,
+            $user
+        );
     }
 
     /**
-     *
-     * @param CreateDepositInputType $input
-     * @param User $user
-     * @return void
-     * @throws InvalidArgumentException
-     * @throws OptimisticLockException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws SmartcardDepositReliefPackageCanNotBeDistributedException
      */
-    private function deposit(CreateDepositInputType $input, User $user): void
+    private function validateReliefPackageDistribution(ReliefPackage $reliefPackage): void
     {
-        $reliefPackage = $this->reliefPackageRepository->find($input->getReliefPackageId());
-        if (null == $reliefPackage) {
-            throw new \InvalidArgumentException("ReliefPackage #{$input->getReliefPackageId()} doesn't exits");
+        if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
+            $this->reliefPackageService->tryReuse($reliefPackage);
         }
 
-        try {
-            $this->depositFactory->create(
-                $input->getSmartcardSerialNumber(),
-                DepositInputType::create(
-                    $reliefPackage->getId(),
-                    $reliefPackage->getAmountToDistribute(),
-                    $input->getBalanceAfter(),
-                    $input->getCreatedAt()
-                ),
-                $user
+        if (!$this->reliefPackageService->canBeDistributed($reliefPackage)) {
+            $reliefPackageWorkflow = $this->workflowRegistry->get($reliefPackage);
+            $transitionBlockerList = $reliefPackageWorkflow->buildTransitionBlockerList(
+                $reliefPackage,
+                ReliefPackageTransitions::DISTRIBUTE
             );
-        } catch (DoubledDepositException $e) {
-            $this->logger->info(
-                "Creation of deposit with hash {$e->getDeposit()->getHash()} was omitted. It's already set in Deposit #{$e->getDeposit()->getId()}"
+
+            throw new SmartcardDepositReliefPackageCanNotBeDistributedException(
+                $reliefPackage,
+                $transitionBlockerList
             );
         }
+    }
+
+    private function replaceMissingValueInDepositInputType(
+        DepositInputType $inputType,
+        ReliefPackage $reliefPackage
+    ): DepositInputType {
+        if ($inputType->getValue() === null) {
+            $inputType->setValue($reliefPackage->getAmountToDistribute());
+        }
+
+        return $inputType;
     }
 
     /**

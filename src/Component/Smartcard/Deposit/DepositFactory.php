@@ -130,8 +130,10 @@ class DepositFactory
         );
     }
 
-    private function addDepositToSmartcard(SmartcardBeneficiary $smartcardBeneficiary, SmartcardDeposit $smartcardDeposit): void
-    {
+    private function addDepositToSmartcard(
+        SmartcardBeneficiary $smartcardBeneficiary,
+        SmartcardDeposit $smartcardDeposit
+    ): void {
         $smartcardBeneficiary->addDeposit($smartcardDeposit);
         if (!$smartcardBeneficiary->getBeneficiary()) {
             $smartcardDeposit->setSuspicious(true);

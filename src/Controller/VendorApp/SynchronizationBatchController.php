@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 namespace Controller\VendorApp;
 
-use Doctrine\Persistence\ManagerRegistry;
+use Component\Smartcard\Messaging\Message\SmartcardDepositMessage;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use Component\Smartcard\SmartcardDepositService;
-use Entity\SynchronizationBatch;
-use Enum\SourceType;
-use Enum\SynchronizationBatchValidationType;
+use InputType\SynchronizationBatch\CreateDepositInputType;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use InputType\SynchronizationBatch as API;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
+use Utils\UserService;
 
 class SynchronizationBatchController extends AbstractVendorAppController
 {
-    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private readonly LoggerInterface $logger)
     {
     }
+
     #[Rest\Post('/vendor-app/v1/syncs/deposit')]
-    public function create(Request $request, SmartcardDepositService $depositService): Response
-    {
-        $sync = new SynchronizationBatch\Deposits($request->request->all());
-        $sync->setSource(SourceType::VENDOR_APP);
-        $sync->setCreatedBy($this->getUser());
-        $this->managerRegistry->getManager()->persist($sync);
-        $this->managerRegistry->getManager()->flush();
+    public function create(
+        Request $request,
+        MessageBusInterface $bus,
+        UserService $userService
+    ): Response {
+        $user = $userService->getCurrentUser();
+        $batchRequest = $request->request->all();
 
-        $depositService->validateSync($sync);
+        foreach ($batchRequest as $depositRequest) {
+            try {
+                $smartcardDepositMessage = new SmartcardDepositMessage(
+                    $user->getId(),
+                    CreateDepositInputType::class,
+                    $depositRequest['smartcardSerialNumber'] ?? null,
+                    $depositRequest
+                );
 
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_NO_CONTENT);
+                $bus->dispatch($smartcardDepositMessage);
+            } catch (Throwable $throwable) {
+                $this->logger->error('Failed to dispatch SmartcardDepositMessage: ' . $throwable->getMessage());
+                throw new ServiceUnavailableHttpException(3600, 'Failed to dispatch message.', $throwable);
+            }
+        }
 
-        return $response;
+        return new Response();
     }
 }
