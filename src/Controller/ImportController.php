@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Controller;
 
-use Controller\ExportController;
 use Doctrine\DBAL\ConnectionException;
 use InputType\Import\FilterInputType;
 use InputType\Import\OrderInputType;
@@ -24,9 +23,6 @@ use Repository\ImportQueueRepository;
 use Repository\ImportRepository;
 use Request\Pagination;
 use RuntimeException;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,13 +32,24 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Entity\User;
+use Utils\ExportTableServiceInterface;
+use Utils\HouseholdExportCSVService;
 
 class ImportController extends AbstractController
 {
     final public const DISABLE_CRON = 'disable-cron-fast-forward';
 
-    public function __construct(private readonly ImportService $importService, private readonly UploadImportService $uploadImportService, private readonly string $importInvalidFilesDirectory, private readonly int $maxFileSizeToLoad, private readonly ImportRepository $importRepo, private readonly ImportQueueRepository $importQueueRepo, private readonly ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private readonly ImportService $importService,
+        private readonly UploadImportService $uploadImportService,
+        private readonly string $importInvalidFilesDirectory,
+        private readonly int $maxFileSizeToLoad,
+        private readonly ImportRepository $importRepo,
+        private readonly ImportQueueRepository $importQueueRepo,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly HouseholdExportCSVService $householdExportCSVService,
+        private readonly ExportTableServiceInterface $exportTableService
+    ) {
     }
 
     /**
@@ -52,10 +59,11 @@ class ImportController extends AbstractController
     #[Rest\Get('/web-app/v1/imports/template')]
     public function template(Request $request): Response
     {
-        $request->query->add(['householdsTemplate' => true]);
-        $request->request->add(['__country' => $request->headers->get('country')]);
+        $countryIso3 = $request->headers->get('country');
+        $type = $request->query->get('type');
+        $exportableTable = $this->householdExportCSVService->getHeaders($countryIso3);
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        return $this->exportTableService->export($exportableTable, 'pattern_household_' . $countryIso3, $type, true);
     }
 
     #[Rest\Get('/web-app/v1/imports/{id}')]
@@ -122,6 +130,7 @@ class ImportController extends AbstractController
 
     /**
      *BinaryFileResponse
+     *
      * @throws ConnectionException
      * @throws Exception
      */
@@ -130,10 +139,10 @@ class ImportController extends AbstractController
     {
         if (
             !in_array($import->getState(), [
-            ImportState::NEW,
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
+                ImportState::NEW,
+                ImportState::INTEGRITY_CHECKING,
+                ImportState::INTEGRITY_CHECK_CORRECT,
+                ImportState::INTEGRITY_CHECK_FAILED,
             ])
         ) {
             throw new InvalidArgumentException('You cannot upload file to this import.');
@@ -191,9 +200,9 @@ class ImportController extends AbstractController
     {
         if (
             !in_array($importFile->getImport()->getState(), [
-            ImportState::INTEGRITY_CHECKING,
-            ImportState::INTEGRITY_CHECK_CORRECT,
-            ImportState::INTEGRITY_CHECK_FAILED,
+                ImportState::INTEGRITY_CHECKING,
+                ImportState::INTEGRITY_CHECK_CORRECT,
+                ImportState::INTEGRITY_CHECK_FAILED,
             ])
         ) {
             throw new InvalidArgumentException('You cannot delete file from this import.');

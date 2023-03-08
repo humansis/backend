@@ -82,9 +82,6 @@ class ExportController extends \Symfony\Bundle\FrameworkBundle\Controller\Abstra
                     $arrayObjectBeneficiary,
                     $type
                 );
-            } elseif ($request->query->get('householdsTemplate')) {
-                $countryIso3 = $request->request->get("__country");
-                $filename = $this->householdExportCSVService->exportToCsv($type, $countryIso3);
             } elseif (
                 $request->query->get('transactionDistribution') ||
                 $request->query->get('smartcardDistribution') ||

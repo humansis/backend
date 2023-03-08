@@ -327,7 +327,7 @@ class HouseholdExportCSVService
         'M 60+' => 'm60',
     ];
 
-    public function __construct(private readonly EntityManagerInterface $em, private readonly ExportService $exportService)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
     }
 
@@ -368,21 +368,5 @@ class HouseholdExportCSVService
             array_merge(self::LINE_3_MAPPING, $specificDependent),
             array_merge(self::LINE_4_MAPPING, $specificDetails),
         ];
-    }
-
-    /**
-     * Export all projects of the country in the CSV file.
-     *
-     *
-     * @return mixed
-     */
-    public function exportToCsv(string $type, string $countryISO3)
-    {
-        return $this->exportService->export(
-            $this->getHeaders($countryISO3),
-            'pattern_household_' . $countryISO3,
-            $type,
-            true
-        );
     }
 }

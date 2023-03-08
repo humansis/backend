@@ -8,19 +8,15 @@ class VendorTransformData
 {
     /**
      * Returns an array representation of beneficiaries in order to prepare the export
-     *
-     * @param $vendors
-     *
-     * @return array
      */
-    public function transformData($vendors): array
+    public function transformData(array $vendors): array
     {
         $exportableTable = [];
         foreach ($vendors as $vendor) {
-            $adm1 = $vendor->getLocation() ? $vendor->getLocation()->getAdm1Name() : null;
-            $adm2 = $vendor->getLocation() ? $vendor->getLocation()->getAdm2Name() : null;
-            $adm3 = $vendor->getLocation() ? $vendor->getLocation()->getAdm3Name() : null;
-            $adm4 = $vendor->getLocation() ? $vendor->getLocation()->getAdm4Name() : null;
+            $adm1 = $vendor->getLocation()?->getAdm1Name();
+            $adm2 = $vendor->getLocation()?->getAdm2Name();
+            $adm3 = $vendor->getLocation()?->getAdm3Name();
+            $adm4 = $vendor->getLocation()?->getAdm4Name();
 
             $exportableTable [] = [
                 "Vendor's name" => $vendor->getUser()->getUsername(),

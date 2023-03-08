@@ -1220,10 +1220,6 @@ services:
         class: Utils\BasicExportService
         public: true
 
-    Utils\TransformDataService:
-        class:  Utils\TransformDataService
-        public: true
-
     Utils\BeneficiaryTransformData:
         class: Utils\BeneficiaryTransformData
         public: true
