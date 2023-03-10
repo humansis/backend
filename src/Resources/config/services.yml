@@ -108,6 +108,14 @@ services:
 
     Component\Assistance\AssistanceQuery:
 
+    Serializer\InputTypeObjectSerializerFactory:
+
+    serializer.input_type:
+        class: Symfony\Component\Serializer\SerializerInterface
+        factory:
+            - 'Serializer\InputTypeObjectSerializerFactory'
+            - 'createSerializer'
+
     Symfony\Component\Serializer\SerializerInterface:
         alias: serializer
 
@@ -282,6 +290,8 @@ services:
     Request\ParamConverter\InputTypeConverter:
         tags:
             - { name: 'request.param_converter', converter: 'input_type_converter' }
+        arguments:
+            $serializer: '@serializer.input_type'
 
     Listener\AcceptHeaderEventSubscriber:
         arguments: [ '%app.locales%' ]
@@ -297,6 +307,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, priority: 256 }
 
+    Listener\WorkerMessageSubscriber:
 
     Listener\VaryingEventSubscriber:
         arguments: [ '%kernel.debug%' ]
@@ -445,10 +456,7 @@ services:
 
     Controller\VendorApp\SmartcardController:
         arguments:
-            - '@serializer'
-            - '@validator'
             - '@monolog.logger'
-            - '@smartcard_service'
             - '%kernel.logs_dir%'
 
     Component\Product\ProductCategoryService:
@@ -468,6 +476,11 @@ services:
         arguments:
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Transaction")'
             - '@=service("doctrine.orm.entity_manager").getRepository("Entity\\Phone")'
+
+    Component\Smartcard\Messaging\Handler\SmartcardPurchaseMessageHandler:
+        tags: [ 'messenger.message_handler' ]
+        arguments:
+            $serializer: '@serializer.input_type'
 
     Component\Smartcard\SmartcardPurchaseService:
         arguments: [ '@smartcard_purchase.repository' ]
@@ -616,6 +629,11 @@ services:
     beneficiary.repository:
         alias: Repository\BeneficiaryRepository
         public: true
+
+    Repository\ProductRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\Product
 
     Repository\ProfileRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]

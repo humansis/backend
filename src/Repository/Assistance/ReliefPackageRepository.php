@@ -11,6 +11,7 @@ use Entity\Location;
 use Entity\Beneficiary;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
+use Enum\ModalityType;
 use InputType\Assistance\ReliefPackageFilterInputType;
 use InvalidArgumentException;
 use Repository\Helper\TRepositoryHelper;
@@ -134,19 +135,24 @@ class ReliefPackageRepository extends EntityRepository
     }
 
     /**
-     * @return float|int|mixed|string|null
      * @throws NonUniqueResultException
      */
-    public function findByAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary)
+    public function findByAssistanceAndBeneficiary(Assistance $assistance, Beneficiary $beneficiary, string $modalityType = null): mixed
     {
-        return $this->createQueryBuilder('rp')
+        $qb = $this->createQueryBuilder('rp')
             ->join('rp.assistanceBeneficiary', 'ab', Join::WITH, 'ab.removed = 0')
             ->join('ab.beneficiary', 'abstB', Join::WITH, 'abstB.archived = 0')
             ->andWhere('ab.assistance = :assistance')
             ->andWhere('ab.beneficiary = :beneficiary')
             ->setParameter('assistance', $assistance)
-            ->setParameter('beneficiary', $beneficiary)
-            ->getQuery()->getResult();
+            ->setParameter('beneficiary', $beneficiary);
+
+        if ($modalityType !== null) {
+            $qb->andWhere('rp.modalityType = :modalityType')
+                ->setParameter('modalityType', $modalityType);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

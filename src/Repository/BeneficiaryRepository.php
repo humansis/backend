@@ -4,6 +4,7 @@ namespace Repository;
 
 use DateInterval;
 use DateTimeInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
@@ -1089,5 +1090,19 @@ class BeneficiaryRepository extends EntityRepository
         }
 
         return new Paginator($qbr);
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $beneficiaryId): Beneficiary
+    {
+        $beneficiary = $this->find($beneficiaryId);
+
+        if ($beneficiary === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(Beneficiary::class, (array) $beneficiary);
+        }
+
+        return $beneficiary;
     }
 }

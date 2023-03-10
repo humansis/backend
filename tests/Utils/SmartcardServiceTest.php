@@ -6,6 +6,7 @@ use Component\Smartcard\Deposit\Exception\DoubledDepositException;
 use Component\Smartcard\Invoice\Exception\AlreadyRedeemedInvoiceException;
 use Component\Smartcard\Invoice\Exception\NotRedeemableInvoiceException;
 use Component\Smartcard\Invoice\InvoiceFactory;
+use Component\Smartcard\SmartcardPurchaseService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -22,9 +23,11 @@ use Entity\Smartcard\PreliminaryInvoice;
 use Enum\ModalityType;
 use Enum\ReliefPackageState;
 use Enum\SmartcardStates;
+use InputType\PurchaseProductInputType;
 use InputType\Smartcard\DepositInputType;
 use InputType\Smartcard\SmartcardRegisterInputType;
 use InputType\SmartcardInvoiceCreateInputType;
+use InputType\SmartcardPurchaseInputType;
 use Psr\Cache\InvalidArgumentException;
 use Repository\Assistance\ReliefPackageRepository;
 use Repository\RoleRepository;
@@ -52,6 +55,8 @@ class SmartcardServiceTest extends KernelTestCase
     private ?ObjectManager $em;
 
     private SmartcardService $smartcardService;
+
+    private SmartcardPurchaseService $smartcardPurchaseService;
 
     private ?Vendor $vendor = null;
 
@@ -81,6 +86,7 @@ class SmartcardServiceTest extends KernelTestCase
             ->getManager();
 
         $this->smartcardService = self::getContainer()->get('smartcard_service');
+        $this->smartcardPurchaseService = self::getContainer()->get(SmartcardPurchaseService::class);
         $this->depositFactory = self::getContainer()->get(DepositFactory::class);
         $this->invoiceFactory = self::getContainer()->get(InvoiceFactory::class);
         $this->roleRepository = self::getContainer()->get(RoleRepository::class);
@@ -240,20 +246,20 @@ class SmartcardServiceTest extends KernelTestCase
                     break;
                 case 'purchase':
                     [$beneficiaryId, $action, $value, $currency, $assistanceId] = $actionData;
-                    $purchase = new SmartcardPurchase();
+                    $purchase = new SmartcardPurchaseInputType();
                     $purchase->setVendorId($this->vendor->getId());
                     $purchase->setCreatedAt($date);
-                    $purchase->setProducts([
-                        [
+                    $purchase->addProduct(
+                        $this->getPurchaseProductInputType([
                             'id' => $product->getId(),
                             'quantity' => 2.5,
                             'value' => $value,
                             'currency' => $currency,
-                        ],
-                    ]);
+                        ])
+                    );
                     $purchase->setBeneficiaryId($beneficiaryId);
-                    $purchase = $this->smartcardService->purchase($this->smartcardNumber, $purchase);
-                    $purchase->setAssistance($assistanceRepository->find($assistanceId));
+                    $purchase->setAssistanceId($assistanceId);
+                    $purchase = $this->smartcardPurchaseService->purchase($this->smartcardNumber, $purchase);
                     $this->em->persist($purchase);
                     $this->em->flush();
                     break;
@@ -623,26 +629,28 @@ class SmartcardServiceTest extends KernelTestCase
                         break;
                     case 'purchase':
                         $vendorId = $preparedAction[3];
-                        $purchaseData = new SmartcardPurchase();
+                        $purchaseData = new SmartcardPurchaseInputType();
                         $purchaseData->setBeneficiaryId($beneficiaryId);
+                        $purchaseData->setAssistanceId($assistanceId);
                         $purchaseData->setCreatedAt(DateTime::createFromFormat('Y-m-d', $dateOfEvent));
                         $purchaseData->setVendorId($vendorId);
-                        $purchaseData->setProducts([
-                            [
+                        $purchaseData->addProduct(
+                            $this->getPurchaseProductInputType([
                                 'id' => 1,
                                 'quantity' => 1,
                                 'value' => 2,
                                 'currency' => 'USD',
-                            ],
-                            [
+                            ])
+                        );
+                        $purchaseData->addProduct(
+                            $this->getPurchaseProductInputType([
                                 'id' => 2,
                                 'quantity' => 1,
                                 'value' => 8,
                                 'currency' => 'USD',
-                            ],
-                        ]);
-                        $purchase = $this->smartcardService->purchase($serialNumber, $purchaseData);
-                        $purchase->setAssistance($this->em->getRepository(Assistance::class)->find($assistanceId));
+                            ])
+                        );
+                        $purchase = $this->smartcardPurchaseService->purchase($serialNumber, $purchaseData);
                         $this->em->persist($purchase);
                         $this->em->flush();
                         break;
@@ -801,5 +809,16 @@ class SmartcardServiceTest extends KernelTestCase
             ->setUser($this->user)
             ->setLocation($adm2);
         $this->vendor->setName("Test Vendor for " . self::class);
+    }
+
+    private function getPurchaseProductInputType(array $data): PurchaseProductInputType
+    {
+        $purchaseProductInputType = new PurchaseProductInputType();
+        $purchaseProductInputType->setId($data['id']);
+        $purchaseProductInputType->setQuantity($data['quantity']);
+        $purchaseProductInputType->setValue($data['value']);
+        $purchaseProductInputType->setCurrency($data['currency']);
+
+        return $purchaseProductInputType;
     }
 }

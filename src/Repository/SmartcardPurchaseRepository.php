@@ -153,4 +153,9 @@ class SmartcardPurchaseRepository extends EntityRepository
 
         return new Paginator($qbr);
     }
+
+    public function doesPurchaseWithHashExist(string $hash): bool
+    {
+        return $this->findOneBy(['hash' => $hash]) !== null;
+    }
 }

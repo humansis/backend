@@ -100,7 +100,7 @@ if [[ -z `ssh-keygen -F $ec2_host` ]]; then
 fi
 
 echo "Starting application containers"
-scp docker-compose.yml app/config/parameters.yml ci/cron.sh ci/cron-recalculate-spent.sh $ec2_user@$ec2_host:/opt/humansis
+scp docker-compose.yml app/config/parameters.yml ci/cron.sh $ec2_user@$ec2_host:/opt/humansis
 if [[ -f docker-compose.consumer.yml ]]; then
   scp docker-compose.consumer.yml $ec2_user@$ec2_host:/opt/humansis
 fi
@@ -110,8 +110,8 @@ start_app="cd /opt/humansis && sudo docker-compose pull && sudo docker-compose u
 ssh $ec2_user@$ec2_host $start_app
 
 if [[ ! -f docker-compose.consumer.yml ]]; then
-  stop_consumer="cd /opt/humansis && sudo docker-compose stop consumer"
-  ssh $ec2_user@$ec2_host $stop_consumer
+  stop_consumers="cd /opt/humansis && sudo docker-compose stop import_consumer smartcard_purchase_consumer"
+  ssh $ec2_user@$ec2_host $stop_consumers
 fi
 
 # clear cache
@@ -182,8 +182,8 @@ if [[ -f docker-compose.consumer.yml ]]; then
   # turn on consumer instance before deployment
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 1
 else
-  start_consumer="cd /opt/humansis && sudo docker-compose start consumer"
-  ssh $ec2_user@$ec2_host $start_consumer
+  start_consumers="cd /opt/humansis && sudo docker-compose start import_consumer smartcard_purchase_consumer"
+  ssh $ec2_user@$ec2_host $start_consumers
 fi
 
 rm_old_images="sudo docker system prune -f"
