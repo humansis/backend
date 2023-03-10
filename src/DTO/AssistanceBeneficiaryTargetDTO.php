@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace DTO;
 
+use DateTime;
 use DateTimeInterface;
 
 class AssistanceBeneficiaryTargetDTO
 {
+    private DateTimeInterface $distributedAt;
+
     /**
      * @var int[]
      */
@@ -25,7 +28,7 @@ class AssistanceBeneficiaryTargetDTO
         private readonly string $localGivenName,
         private readonly string | null $referralType,
         private readonly string | null $referralComment,
-        private readonly DateTimeInterface | null $distributedAt,
+        DateTimeInterface | null | string $distributedAt,
         private readonly string | null $smartcardSerialNumber,
         private readonly int $personId,
         string | null $reliefPackageIds,
@@ -37,6 +40,10 @@ class AssistanceBeneficiaryTargetDTO
 
         if (!is_null($bookletIds)) {
             $this->bookletIds = array_map('intval', explode(',', $bookletIds));
+        }
+
+        if (is_string($distributedAt)) {
+            $this->distributedAt = DateTime::createFromFormat('Y-m-d H:i:s', $distributedAt);
         }
     }
 
