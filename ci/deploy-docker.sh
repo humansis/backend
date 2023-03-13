@@ -106,13 +106,16 @@ if [[ -f docker-compose.consumer.yml ]]; then
 fi
 rsync --chmod=u+rw,g-rwx,o-rwx $JWT_KEY $ec2_user@$ec2_host:/opt/humansis/jwt/private.pem
 rsync --chmod=u+rw,g+rw,o+r $JWT_CERT $ec2_user@$ec2_host:/opt/humansis/jwt/public.pem
-start_app="cd /opt/humansis && sudo docker-compose pull && sudo docker-compose up -d"
-ssh $ec2_user@$ec2_host $start_app
 
+# stop consumer containers
 if [[ ! -f docker-compose.consumer.yml ]]; then
   stop_consumers="cd /opt/humansis && sudo docker-compose stop import_consumer smartcard_purchase_consumer smartcard_deposit_consumer"
   ssh $ec2_user@$ec2_host $stop_consumers
 fi
+
+# start main app (php-fpm, nginx, phpmyadmin)
+start_app="cd /opt/humansis && sudo docker-compose pull php nginx && sudo docker-compose up -d php nginx phpmyadmin"
+ssh $ec2_user@$ec2_host $start_app
 
 # clear cache
 # normal: php bin/console cache:clear --env=prod + php bin/console cache:clear
@@ -182,7 +185,7 @@ if [[ -f docker-compose.consumer.yml ]]; then
   # turn on consumer instance before deployment
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 1
 else
-  start_consumers="cd /opt/humansis && sudo docker-compose start import_consumer smartcard_purchase_consumer smartcard_deposit_consumer"
+  start_consumers="cd /opt/humansis && sudo docker-compose up -d import_consumer smartcard_purchase_consumer smartcard_deposit_consumer"
   ssh $ec2_user@$ec2_host $start_consumers
 fi
 
