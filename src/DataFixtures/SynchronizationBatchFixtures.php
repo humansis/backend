@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace DataFixtures;
 
+use Component\Smartcard\Messaging\Handler\SmartcardDepositMessageHandler;
+use Component\Smartcard\Messaging\Message\SmartcardDepositMessage;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Component\Smartcard\SmartcardDepositService;
 use Entity\SynchronizationBatch\Deposits;
+use Exception;
+use InputType\SynchronizationBatch\CreateDepositInputType;
 
 class SynchronizationBatchFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -19,8 +22,10 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
         ['{"reliefPackageId":null}, {"somethingElse": "Dont know"}'],
     ];
 
-    public function __construct(private readonly string $environment, private readonly SmartcardDepositService $smartcardDepositService)
-    {
+    public function __construct(
+        private readonly string $environment,
+        private readonly SmartcardDepositMessageHandler $smartcardDepositMessageHandler
+    ) {
     }
 
     public function load(ObjectManager $manager)
@@ -35,15 +40,26 @@ class SynchronizationBatchFixtures extends Fixture implements DependentFixtureIn
             $sync = new Deposits($syncData);
             $sync->setCreatedBy($user);
             $manager->persist($sync);
+
+            $smartcardDepositMessage = new SmartcardDepositMessage(
+                $user->getId(),
+                CreateDepositInputType::class,
+                $syncData['smartcardSerialNumber'] ?? null,
+                $syncData
+            );
+
+            try {
+                ($this->smartcardDepositMessageHandler)($smartcardDepositMessage);
+            } catch (Exception) {
+            }
         }
+
         $manager->flush();
         foreach (self::DEPOSIT_SYNC_DATA as $syncData) {
             $sync = new Deposits($syncData);
             $sync->setCreatedBy($user);
             $manager->persist($sync);
             $manager->flush();
-
-            $this->smartcardDepositService->validateSync($sync);
         }
     }
 

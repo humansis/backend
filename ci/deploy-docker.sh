@@ -110,7 +110,7 @@ start_app="cd /opt/humansis && sudo docker-compose pull && sudo docker-compose u
 ssh $ec2_user@$ec2_host $start_app
 
 if [[ ! -f docker-compose.consumer.yml ]]; then
-  stop_consumers="cd /opt/humansis && sudo docker-compose stop import_consumer smartcard_purchase_consumer"
+  stop_consumers="cd /opt/humansis && sudo docker-compose stop import_consumer smartcard_purchase_consumer smartcard_deposit_consumer"
   ssh $ec2_user@$ec2_host $stop_consumers
 fi
 
@@ -182,7 +182,7 @@ if [[ -f docker-compose.consumer.yml ]]; then
   # turn on consumer instance before deployment
   aws autoscaling set-desired-capacity --auto-scaling-group-name ${CONSUMER_EC2_ASG} --desired-capacity 1
 else
-  start_consumers="cd /opt/humansis && sudo docker-compose start import_consumer smartcard_purchase_consumer"
+  start_consumers="cd /opt/humansis && sudo docker-compose start import_consumer smartcard_purchase_consumer smartcard_deposit_consumer"
   ssh $ec2_user@$ec2_host $start_consumers
 fi
 

@@ -142,6 +142,13 @@ framework:
                 retry_strategy:
                     max_retries: 2
                     delay: 60000
+            smartcard_deposit:
+                dsn: 'doctrine://default'
+                options:
+                    queue_name: smartcard_deposit
+                retry_strategy:
+                    max_retries: 2
+                    delay: 60000
             import:
                 dsn: 'doctrine://default'
                 options:
@@ -155,6 +162,7 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
         routing:
+            'Component\Smartcard\Messaging\Message\SmartcardDepositMessage': smartcard_deposit
             'Component\Smartcard\Messaging\Message\SmartcardPurchaseMessage': smartcard_purchase
             'Component\Import\Messaging\Message\ImportCheck': import
             'Component\Import\Messaging\Message\ItemBatch': import

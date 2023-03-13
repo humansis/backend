@@ -2,6 +2,7 @@
 
 namespace Repository;
 
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -94,5 +95,19 @@ class UserRepository extends EntityRepository
         }
 
         return new Paginator($qb);
+    }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $userId): User
+    {
+        $user = $this->find($userId);
+
+        if ($user === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(User::class, (array) $userId);
+        }
+
+        return $user;
     }
 }
