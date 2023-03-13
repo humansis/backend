@@ -33,7 +33,7 @@ class Assistance implements ExportableInterface
     private string $assistanceType = AssistanceType::DISTRIBUTION;
 
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'FullBooklet', 'AssistanceOverview'])]
-    #[ORM\Column(name: 'name', type: 'string', length: 45)]
+    #[ORM\Column(name: 'name', type: 'string', length: 80)]
     private string $name;
 
     #[ORM\Column(name: 'UpdatedOn', type: 'datetime')]
