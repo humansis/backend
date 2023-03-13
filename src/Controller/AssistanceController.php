@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Controller;
 
 use Doctrine\ORM\Exception\ORMException;
-use Doctrine\Persistence\ManagerRegistry;
 use Entity\User;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -15,6 +14,8 @@ use Entity\Assistance;
 use Enum\AssistanceType;
 use PhpOffice\PhpSpreadsheet\Exception;
 use Repository\AssistanceRepository;
+use Repository\ProjectRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Utils\AssistanceService;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -43,6 +44,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Component\Assistance\Domain\Assistance as DomainAssistance;
+use Utils\ExportTableServiceInterface;
+use Utils\ProjectAssistancesTransformData;
 
 class AssistanceController extends AbstractController
 {
@@ -50,7 +53,10 @@ class AssistanceController extends AbstractController
         private readonly VulnerabilityScoreExport $vulnerabilityScoreExport,
         private readonly AssistanceService $assistanceService,
         private readonly AssistanceBankReportExport $assistanceBankReportExport,
-        private readonly ManagerRegistry $managerRegistry,
+        private readonly ProjectAssistancesTransformData $projectAssistancesTransformData,
+        private readonly ExportTableServiceInterface $exportTableService,
+        private readonly AssistanceRepository $assistanceRepository,
+        private readonly ProjectRepository $projectRepository
     ) {
     }
 
@@ -72,7 +78,7 @@ class AssistanceController extends AbstractController
                 $statistics[] = $assistanceQuery->find($id)->getStatistics($countryIso3);
             }
         } else {
-            $assistanceInCountry = $this->managerRegistry->getRepository(Assistance::class)->findByCountryIso3($countryIso3);
+            $assistanceInCountry = $this->assistanceRepository->findByCountryIso3($countryIso3);
             foreach ($assistanceInCountry as $assistance) {
                 $assistanceDomain = $assistanceFactory->hydrate($assistance);
                 $statistics[] = $assistanceDomain->getStatistics($countryIso3);
@@ -103,7 +109,7 @@ class AssistanceController extends AbstractController
             throw new BadRequestHttpException('Missing country header');
         }
 
-        $assistances = $this->managerRegistry->getRepository(Assistance::class)->findByParams(
+        $assistances = $this->assistanceRepository->findByParams(
             $countryIso3,
             $filter,
             $orderBy,
@@ -204,9 +210,22 @@ class AssistanceController extends AbstractController
     #[Rest\Get('/web-app/v1/projects/{id}/assistances/exports')]
     public function exports(Project $project, Request $request): Response
     {
-        $request->query->add(['officialDistributions' => $project->getId()]);
+        $projectId = $project->getId();
+        $type = $request->query->get('type');
 
-        return $this->forward(ExportController::class . '::exportAction', [], $request->query->all());
+        if ($type == "pdf") {
+            return $this->assistanceService->exportToPdf($projectId);
+        } else {
+            $project = $this->projectRepository->find($project->getId());
+            if (!$project) {
+                throw new NotFoundHttpException("Project #$projectId missing");
+            }
+
+            $assistances = $this->assistanceRepository->findBy(['project' => $projectId, 'archived' => 0]);
+            $exportableTable = $this->projectAssistancesTransformData->transformData($project, $assistances);
+
+            return $this->exportTableService->export($exportableTable, 'distributions', $type);
+        }
     }
 
     /**
@@ -289,10 +308,7 @@ class AssistanceController extends AbstractController
         ProjectsAssistanceFilterInputType $filter,
         AssistanceOrderInputType $orderBy
     ): JsonResponse {
-        /** @var AssistanceRepository $repository */
-        $repository = $this->managerRegistry->getRepository(Assistance::class);
-
-        $assistances = $repository->findByProject($project, null, $filter, $orderBy, $pagination);
+        $assistances = $this->assistanceRepository->findByProject($project, null, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
     }
