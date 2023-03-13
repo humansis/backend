@@ -19,8 +19,6 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
      * @var int
      */
     public const FLUSH_THRESHOLD = 100;
-    public const EXPORT_LIMIT = 10000;
-    public const EXPORT_LIMIT_CSV = 20000;
 
     /**
      * Export spreadsheet to a file in . format (csv, xlsx, ods).
@@ -43,14 +41,11 @@ class OpenSpoutExportService extends BasicExportService implements ExportTableSe
         bool $headerBold = false,
         bool $headerFontItalic = false
     ): StreamedResponse {
-        if ($format !== 'csv' && count($exportableTable) > self::EXPORT_LIMIT) {
+        $limit = $this->getLimit($name, $format);
+
+        if (count($exportableTable) > $limit) {
             $count = count($exportableTable);
-            throw new BadRequestHttpException("Too much records ($count) to export. Limit is " . self::EXPORT_LIMIT);
-        } elseif ($format == 'csv' && count($exportableTable) > self::EXPORT_LIMIT_CSV) {
-            $count = count($exportableTable);
-            throw new BadRequestHttpException(
-                "Too much records ($count) to export. Limit is for CSV is " . self::EXPORT_LIMIT_CSV
-            );
+            throw new BadRequestHttpException("Too much records ($count) to export. Limit is " . $limit);
         } elseif (0 === count($exportableTable)) {
             throw new ExportNoDataException('No data to export');
         }

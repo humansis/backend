@@ -33,4 +33,6 @@ interface ExportTableServiceInterface
         bool $headerBold = false,
         bool $headerFontItalic = false
     ): StreamedResponse;
+
+    public function getLimit(string $exportName, string $format = 'default'): int;
 }

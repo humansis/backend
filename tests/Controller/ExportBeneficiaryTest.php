@@ -27,7 +27,16 @@ class ExportBeneficiaryTest extends BMSServiceTestCase
      */
     public function testExport()
     {
-        $exportTableService = new OpenSpoutExportService();
+        $exportTableService = new OpenSpoutExportService(
+            [
+                'default' => [
+                    'limits' => [
+                        'default' => 5000000
+                    ]
+                ]
+            ]
+        );
+
         $this->beneficiaryTransformData = $this->getContainer()->get('Utils\BeneficiaryTransformData');
         $beneficiaries = $this->em->getRepository(Beneficiary::class)->findBy([], ['id' => 'asc'], 10);
         $exportableTable = $this->beneficiaryTransformData->transformData($beneficiaries, $this->iso3);

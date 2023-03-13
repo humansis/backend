@@ -12,22 +12,37 @@ class BasicExportService
     public const FORMAT_CSV = 'csv';
     public const FORMAT_XLSX = 'xlsx';
     public const FORMAT_ODS = 'ods';
-
     public const FLUSH_THRESHOLD = 1000;
-    public const EXPORT_LIMIT = 10000;
-    public const EXPORT_LIMIT_CSV = 20000;
+    private const DEFAULT = 'default';
 
-    /**
-     * Return list of header names.
-     *
-     * We get all the keys that will become the column names for the csv.
-     * We merge the results because some rows can have more or less columns
-     *
-     * @param array $exportableTable
-     *
-     * @return array list of all headers of exported table
-     */
-    public function getHeader($exportableTable)
+    public function __construct(
+        protected readonly array $exportConfig
+    ) {
+    }
+
+    public function getLimit(string $exportName, string $format = self::DEFAULT): int
+    {
+        $exportLimitsConfig = $this->getExportConfig($exportName, 'limits');
+
+        if (array_key_exists($format, $exportLimitsConfig)) {
+            return $exportLimitsConfig[$format];
+        }
+
+        return $exportLimitsConfig[self::DEFAULT];
+    }
+
+    private function getExportConfig(string $exportName, string $configName): array
+    {
+        if (array_key_exists($exportName, $this->exportConfig)) {
+            if (array_key_exists($configName, $this->exportConfig[$exportName])) {
+                return $this->exportConfig[$exportName][$configName];
+            }
+        }
+
+        return $this->exportConfig[self::DEFAULT][$configName];
+    }
+
+    public function getHeader($exportableTable): array
     {
         $headers = [];
 
@@ -40,14 +55,6 @@ class BasicExportService
         return array_keys($headers);
     }
 
-    /**
-     * It is possible to customize the style we need for the row and cell.
-     *
-     * @param bool $isBold
-     * @param bool $isItalic
-     *
-     * @return Style
-     */
     public function getTheStyle(bool $isBold = false, bool $isItalic = false): Style
     {
         $style = new Style();

@@ -87,6 +87,16 @@ parameters:
 
     app.translations_dir: '%kernel.project_dir%/app/Resources/translations'
 
+    exports:
+        default:
+            limits:
+                default: 10000
+                csv: 20000
+        purchased_items:
+            limits:
+                default: 125000
+                csv: 150000
+
     cors:
         allow_credentials: 'true'
         allow_origin: [ 'http://localhost:8080' ]

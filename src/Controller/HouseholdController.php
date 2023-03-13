@@ -56,8 +56,10 @@ class HouseholdController extends AbstractController
         $beneficiariesCount = $this->beneficiaryService->countBeneficiaries(
             $households
         );
-        if ($beneficiariesCount > BasicExportService::EXPORT_LIMIT) {
-            throw new BadRequestHttpException("Too much records ($beneficiariesCount) to export. Limit is " . BasicExportService::EXPORT_LIMIT);
+
+        $exportLimit = $this->exportTableService->getLimit('beneficiaryhousehoulds');
+        if ($beneficiariesCount > $exportLimit) {
+            throw new BadRequestHttpException("Too much records ($beneficiariesCount) to export. Limit is " . $exportLimit);
         }
 
         $beneficiaries = $this->beneficiaryService->getHouseholdBeneficiaries($households);

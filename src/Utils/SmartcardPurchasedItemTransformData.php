@@ -33,6 +33,7 @@ class SmartcardPurchasedItemTransformData
             IntlDateFormatter::SHORT,
             IntlDateFormatter::NONE
         );
+
         foreach ($purchasedItems as $purchasedItem) {
             $beneficiary = $purchasedItem->getBeneficiary();
             $assistance = $purchasedItem->getAssistance();
