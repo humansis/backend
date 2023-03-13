@@ -290,7 +290,7 @@ class HouseholdService
                     ->setHousehold($household);
             }
 
-            $countrySpecificAnswer->setAnswer($inputType->getAnswer());
+            $countrySpecificAnswer->setAnswer((string) $inputType->getAnswer());
 
             $this->em->persist($countrySpecificAnswer);
         } else {

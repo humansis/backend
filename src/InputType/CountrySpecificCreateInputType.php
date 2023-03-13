@@ -10,7 +10,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CountrySpecificCreateInputType extends CountrySpecificUpdateInputType
 {
     #[Assert\NotBlank]
-    #[Assert\NotNull]
     #[Country]
     private $iso3;
 

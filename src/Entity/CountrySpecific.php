@@ -1,51 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Entity\Helper\CountryDependent;
 use Entity\Helper\StandardizedPrimaryKey;
+use Repository\CountrySpecificRepository;
 use Utils\ExportableInterface;
 use Model\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * CountrySpecific
- */
 #[ORM\Table(name: 'country_specific')]
 #[ORM\UniqueConstraint(name: 'duplicity_check_idx', columns: ['field_string', 'iso3'])]
-#[ORM\Entity(repositoryClass: 'Repository\CountrySpecificRepository')]
+#[ORM\Entity(repositoryClass: CountrySpecificRepository::class)]
 class CountrySpecific extends Criteria implements ExportableInterface
 {
     use CountryDependent;
     use StandardizedPrimaryKey;
 
-    #[ORM\Column(name: 'field_string', type: 'string', length: 45)]
-    private ?string $fieldString = null;
+    #[ORM\Column(type: 'string', length: 45)]
+    private string $fieldString;
 
-    #[ORM\Column(name: 'type', type: 'string', length: 45)]
-    private ?string $type = null;
+    #[ORM\Column(type: 'string', length: 45)]
+    private string $type;
 
-    #[ORM\OneToMany(mappedBy: 'countrySpecific', targetEntity: 'Entity\CountrySpecificAnswer', cascade: ['remove'])]
-    private \Doctrine\Common\Collections\Collection|array $countrySpecificAnswers;
+    #[ORM\OneToMany(mappedBy: 'countrySpecific', targetEntity: CountrySpecificAnswer::class, cascade: ['remove'])]
+    private Collection $countrySpecificAnswers;
 
-    /**
-     * CountrySpecific constructor.
-     */
     public function __construct(string $field, string $type, string $countryIso3)
     {
         $this->setFieldString($field)
             ->setType($type)
             ->setCountryIso3($countryIso3);
+
         $this->countrySpecificAnswers = new ArrayCollection();
     }
 
-    /**
-     * Set type.
-     *
-     *
-     */
     public function setType(string $type): CountrySpecific
     {
         $this->type = $type;
@@ -53,19 +46,11 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this;
     }
 
-    /**
-     * Get type.
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * Add countrySpecificAnswer.
-     *
-     *
-     */
     public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): CountrySpecific
     {
         $this->countrySpecificAnswers[] = $countrySpecificAnswer;
@@ -74,9 +59,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
     }
 
     /**
-     * Remove countrySpecificAnswer.
-     *
-     *
      * @return bool TRUE if this collection contained the specified element, FALSE otherwise.
      */
     public function removeCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): bool
@@ -85,8 +67,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
     }
 
     /**
-     * Get countrySpecificAnswers.
-     *
      * @return Collection<CountrySpecificAnswer>
      */
     public function getCountrySpecificAnswers(): Collection
@@ -94,11 +74,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this->countrySpecificAnswers;
     }
 
-    /**
-     * Set fieldString.
-     *
-     *
-     */
     public function setFieldString(string $fieldString): CountrySpecific
     {
         $this->fieldString = $fieldString;
@@ -106,9 +81,6 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this;
     }
 
-    /**
-     * Get fieldString.
-     */
     public function getFieldString(): string
     {
         return $this->fieldString;

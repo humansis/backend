@@ -1,97 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\StandardizedPrimaryKey;
+use Repository\CountrySpecificAnswerRepository;
 
-/**
- * CountrySpecificAnswer
- */
 #[ORM\Table(name: 'country_specific_answer')]
 #[ORM\UniqueConstraint(name: 'only_one_household_answer', columns: ['country_specific_id', 'household_id'])]
-#[ORM\Entity(repositoryClass: 'Repository\CountrySpecificAnswerRepository')]
+#[ORM\Entity(repositoryClass: CountrySpecificAnswerRepository::class)]
 class CountrySpecificAnswer
 {
     use StandardizedPrimaryKey;
 
-    #[ORM\Column(name: 'answer', type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private string $answer;
 
-    #[ORM\ManyToOne(targetEntity: 'Entity\CountrySpecific', inversedBy: 'countrySpecificAnswers')]
-    private ?\Entity\CountrySpecific $countrySpecific = null;
+    #[ORM\ManyToOne(targetEntity: CountrySpecific::class, inversedBy: 'countrySpecificAnswers')]
+    private CountrySpecific $countrySpecific;
 
-    #[ORM\ManyToOne(targetEntity: 'Entity\Household', inversedBy: 'countrySpecificAnswers')]
-    private ?\Entity\Household $household = null;
+    #[ORM\ManyToOne(targetEntity: Household::class, inversedBy: 'countrySpecificAnswers')]
+    private Household $household;
 
-    /**
-     * Set answer.
-     *
-     * @param string $answer
-     *
-     * @return CountrySpecificAnswer
-     */
-    public function setAnswer($answer)
+    public function setAnswer(string $answer): self
     {
         $this->answer = $answer;
 
         return $this;
     }
 
-    /**
-     * Get answer.
-     *
-     * @return string
-     */
-    public function getAnswer()
+    public function getAnswer(): string
     {
         return $this->answer;
     }
 
-    /**
-     * Set countrySpecific.
-     *
-     * @param CountrySpecific|null $countrySpecific
-     *
-     * @return CountrySpecificAnswer
-     */
-    public function setCountrySpecific(CountrySpecific $countrySpecific = null)
+    public function setCountrySpecific(CountrySpecific $countrySpecific): self
     {
         $this->countrySpecific = $countrySpecific;
 
         return $this;
     }
 
-    /**
-     * Get countrySpecific.
-     *
-     * @return CountrySpecific|null
-     */
-    public function getCountrySpecific()
+    public function getCountrySpecific(): CountrySpecific
     {
         return $this->countrySpecific;
     }
 
-    /**
-     * Set household.
-     *
-     * @param Household|null $household
-     *
-     * @return CountrySpecificAnswer
-     */
-    public function setHousehold(Household $household = null)
+    public function setHousehold(Household $household): self
     {
         $this->household = $household;
 
         return $this;
     }
 
-    /**
-     * Get household.
-     *
-     * @return Household|null
-     */
-    public function getHousehold()
+    public function getHousehold(): Household
     {
         return $this->household;
     }

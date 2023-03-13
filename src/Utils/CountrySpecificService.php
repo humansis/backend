@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Utils;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -7,6 +9,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Entity\CountrySpecific;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use InputType\CountrySpecificCreateInputType;
+use InputType\CountrySpecificUpdateInputType;
 
 class CountrySpecificService
 {
@@ -17,7 +21,7 @@ class CountrySpecificService
     /**
      * @throws UniqueConstraintViolationException
      */
-    public function create($inputType): CountrySpecific
+    public function create(CountrySpecificCreateInputType $inputType): CountrySpecific
     {
         $countrySpecific = new CountrySpecific($inputType->getField(), $inputType->getType(), $inputType->getIso3());
 
@@ -30,7 +34,7 @@ class CountrySpecificService
     /**
      * @throws UniqueConstraintViolationException
      */
-    public function update($countrySpecific, $inputType): CountrySpecific
+    public function update(CountrySpecific $countrySpecific, CountrySpecificUpdateInputType $inputType): CountrySpecific
     {
         $countrySpecific->setFieldString($inputType->getField());
         $countrySpecific->setType($inputType->getType());
@@ -40,10 +44,8 @@ class CountrySpecificService
 
         return $countrySpecific;
     }
-    /**
-     * @return bool
-     */
-    public function delete(CountrySpecific $countrySpecific)
+
+    public function delete(CountrySpecific $countrySpecific): bool
     {
         try {
             $this->em->remove($countrySpecific);

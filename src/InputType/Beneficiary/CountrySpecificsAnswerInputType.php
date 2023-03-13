@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace InputType\Beneficiary;
 
-use Entity\CountrySpecific;
+use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Validator\Constraints\CountrySpecificDataType;
 
 class CountrySpecificsAnswerInputType implements InputTypeInterface
 {
-    #[Assert\Type('integer')]
-    #[Assert\GreaterThanOrEqual(0)]
-    #[Assert\NotBlank]
+    /**
+     * @EntityExist(entity="Entity\CountrySpecific")
+     */
     #[Assert\NotNull]
     private $countrySpecificId;
 

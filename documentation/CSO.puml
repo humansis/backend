@@ -1,0 +1,33 @@
+@startuml
+'External entities
+entity Country #eab676 {}
+entity Household #eab676 {}
+
+entity CountrySpecific {
+    * id: int
+    --
+    * field_string: string
+    * type: [number, string]
+}
+
+entity CountrySpecificAnswer {
+    * id: int
+    --
+    * answer: string
+}
+
+Country ||..{ CountrySpecific
+CountrySpecific ||..{ CountrySpecificAnswer
+Household ||..{ CountrySpecificAnswer
+
+note right of CountrySpecific
+    "field_string" is name
+    of the custom field
+end note
+
+note right of CountrySpecificAnswer
+    "answer" is the value of
+    custom field for a household
+end note
+
+@enduml
