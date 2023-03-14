@@ -6,6 +6,7 @@ use DateInterval;
 use DateTimeInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\EntityRepository;
+use Entity\AbstractBeneficiary;
 use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Entity\Household;
@@ -1104,5 +1105,25 @@ class BeneficiaryRepository extends EntityRepository
         }
 
         return $beneficiary;
+    }
+
+    public function getNumberOfHouseholdWithoutHeadByCountry(): mixed
+    {
+        $qbWithHead = $this->createQueryBuilder('bb');
+        $qbWithoutHead = $this->createQueryBuilder('bb1');
+
+        $queryHouseholdWithHead = $qbWithHead->select('DISTINCT hh.id')
+            ->leftJoin(Household::class, 'hh', Join::WITH, 'hh.id = bb.household')
+            ->join(AbstractBeneficiary::class, 'ab', Join::WITH, 'ab.id = hh.id')
+            ->where('ab.archived = 0')
+            ->andWhere('bb.status = 1');
+
+        $queryHouseholdWithoutHead = $qbWithoutHead->select('COUNT(DISTINCT hh1.id) as total, hh1.countryIso3')
+            ->leftJoin(Household::class, 'hh1', Join::WITH, 'hh1.id = bb1.household')
+            ->join(AbstractBeneficiary::class, 'ab1', Join::WITH, 'ab1.id = hh1.id')
+            ->where('ab1.archived = 0')
+            ->andWhere('hh1.id NOT IN(' . $queryHouseholdWithHead->getQuery()->getDQL() . ')')
+            ->groupBy('hh1.countryIso3');
+        return $queryHouseholdWithoutHead->getQuery()->getResult();
     }
 }
