@@ -9,7 +9,6 @@ use Entity\Helper\StandardizedPrimaryKey;
 use Repository\CountrySpecificAnswerRepository;
 
 #[ORM\Table(name: 'country_specific_answer')]
-#[ORM\UniqueConstraint(name: 'only_one_household_answer', columns: ['country_specific_id', 'household_id'])]
 #[ORM\Entity(repositoryClass: CountrySpecificAnswerRepository::class)]
 class CountrySpecificAnswer
 {

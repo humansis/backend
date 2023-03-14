@@ -16,9 +16,12 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     #[Assert\NotNull]
     private $countrySpecificId;
 
-    #[Assert\Type(type: ['string', 'numeric'], message: "Value '{{ value }}' should be of type {{ type }}")]
-    #[Assert\Length(max: 255)]
-    private $answer;
+    #[Assert\NotNull]
+    #[Assert\Type('array')]
+    #[Assert\All(constraints: [
+        new Assert\Type(['string', 'numeric'])])
+    ]
+    private $answers;
 
     /**
      * @return int
@@ -37,18 +40,18 @@ class CountrySpecificsAnswerInputType implements InputTypeInterface
     }
 
     /**
-     * @return string|null
+     * @return string[]
      */
-    public function getAnswer()
+    public function getAnswers()
     {
-        return $this->answer;
+        return $this->answers;
     }
 
     /**
-     * @param string|null $answer
+     * @param string[] $answers
      */
-    public function setAnswer($answer)
+    public function setAnswers($answers)
     {
-        $this->answer = $answer;
+        $this->answers = $answers;
     }
 }

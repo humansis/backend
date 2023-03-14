@@ -711,11 +711,11 @@ services:
     Utils\BeneficiaryService:
         alias: beneficiary.beneficiary_service
 
-    Utils\CountrySpecificService:
+    Component\CSO\Services\CountrySpecificService:
         alias: beneficiary.country_specific_service
 
     beneficiary.country_specific_service:
-        class: Utils\CountrySpecificService
+        class: Component\CSO\Services\CountrySpecificService
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@export_csv_service"
@@ -1256,7 +1256,7 @@ services:
 
     Utils\ProjectAssistancesTransformData:
         class: Utils\ProjectAssistancesTransformData
-        
+
     Utils\ProjectTransformData:
         class: Utils\ProjectTransformData
 
@@ -1495,3 +1495,8 @@ services:
 
     DataHelper\UserDataHelper:
         public: true
+
+    Repository\CountrySpecificAnswerRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\CountrySpecificAnswer

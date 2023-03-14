@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Enum;
+namespace Component\CSO\Enum;
+
+use Enum\EnumTrait;
 
 final class CountrySpecificType
 {

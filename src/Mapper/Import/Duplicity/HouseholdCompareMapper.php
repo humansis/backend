@@ -102,16 +102,22 @@ class HouseholdCompareMapper implements MapperInterface
     // countrySpecificAnswers
     public function getCountrySpecificAnswers(): ?array
     {
-        $currentAnswers = [];
+        $countrySpecifics = [];
+
         /** @var CountrySpecificAnswer $specificAnswer */
         foreach ($this->object->getCurrent()->getCountrySpecificAnswers() as $specificAnswer) {
-            $currentAnswers[] = $specificAnswer->getCountrySpecific()
-                    ->getFieldString() . ": " . $specificAnswer->getAnswer();
+            $countrySpecifics[$specificAnswer->getCountrySpecific()->getFieldString()][] = $specificAnswer->getAnswer();
         }
+
+        $currentAnswers = [];
+        foreach ($countrySpecifics as $fieldString => $answer) {
+            $currentAnswers[] = $fieldString . ': ' . implode(', ', $answer);
+        }
+
         $importedAnswers = [];
         foreach ($this->object->getImported()->getCountrySpecificAnswers() as $specificAnswer) {
             $countrySpecific = $this->countrySpecificsRepository->find($specificAnswer->getCountrySpecificId());
-            $importedAnswers[] = $countrySpecific->getFieldString() . ": " . $specificAnswer->getAnswer();
+            $importedAnswers[] = $countrySpecific->getFieldString() . ": " . implode(', ', $specificAnswer->getAnswers());
         }
 
         return $this->compareLists($currentAnswers, $importedAnswers);

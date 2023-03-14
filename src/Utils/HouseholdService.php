@@ -282,7 +282,7 @@ class HouseholdService
                 "household" => $household,
             ]);
 
-        if (!is_null($inputType->getAnswer())) {
+        if (!is_null($inputType->getAnswers())) {
             if (!$countrySpecificAnswer instanceof CountrySpecificAnswer) {
                 $countrySpecificAnswer = new CountrySpecificAnswer();
 
@@ -290,7 +290,7 @@ class HouseholdService
                     ->setHousehold($household);
             }
 
-            $countrySpecificAnswer->setAnswer((string) $inputType->getAnswer());
+            $countrySpecificAnswer->setAnswer((string) $inputType->getAnswers());
 
             $this->em->persist($countrySpecificAnswer);
         } else {

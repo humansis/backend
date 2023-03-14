@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Entity;
 
+use Component\CSO\Enum\CountrySpecificType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Entity\Helper\CountryDependent;
+use Entity\Helper\EnumTrait;
 use Entity\Helper\StandardizedPrimaryKey;
+use Model\Criteria;
 use Repository\CountrySpecificRepository;
 use Utils\ExportableInterface;
-use Model\Criteria;
-use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Table(name: 'country_specific')]
 #[ORM\UniqueConstraint(name: 'duplicity_check_idx', columns: ['field_string', 'iso3'])]
@@ -21,29 +23,38 @@ class CountrySpecific extends Criteria implements ExportableInterface
     use CountryDependent;
     use StandardizedPrimaryKey;
 
+    use EnumTrait;
+
     #[ORM\Column(type: 'string', length: 45)]
     private string $fieldString;
 
-    #[ORM\Column(type: 'string', length: 45)]
+    #[ORM\Column(type: 'enum_country_specific_type')]
     private string $type;
 
     #[ORM\OneToMany(mappedBy: 'countrySpecific', targetEntity: CountrySpecificAnswer::class, cascade: ['remove'])]
     private Collection $countrySpecificAnswers;
 
-    public function __construct(string $field, string $type, string $countryIso3)
+    /**
+     * If true, a household can have more than one answer for this CSO.
+     */
+    #[ORM\Column(type: 'boolean')]
+    private bool $multiValue;
+
+    public function __construct(string $field, string $type, string $countryIso3, bool $multiValue = false)
     {
-        $this->setFieldString($field)
-            ->setType($type)
-            ->setCountryIso3($countryIso3);
+        $this->fieldString = $field;
+        $this->setType($type);
+        $this->countryIso3 = $countryIso3;
+        $this->multiValue = $multiValue;
 
         $this->countrySpecificAnswers = new ArrayCollection();
     }
 
-    public function setType(string $type): CountrySpecific
+    public function setType(string $type): void
     {
-        $this->type = $type;
+        self::validateValue('type', CountrySpecificType::class, $type);
 
-        return $this;
+        $this->type = $type;
     }
 
     public function getType(): string
@@ -51,11 +62,9 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this->type;
     }
 
-    public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): CountrySpecific
+    public function addCountrySpecificAnswer(CountrySpecificAnswer $countrySpecificAnswer): void
     {
-        $this->countrySpecificAnswers[] = $countrySpecificAnswer;
-
-        return $this;
+        $this->countrySpecificAnswers->add($countrySpecificAnswer);
     }
 
     /**
@@ -74,16 +83,24 @@ class CountrySpecific extends Criteria implements ExportableInterface
         return $this->countrySpecificAnswers;
     }
 
-    public function setFieldString(string $fieldString): CountrySpecific
+    public function setFieldString(string $fieldString): void
     {
         $this->fieldString = $fieldString;
-
-        return $this;
     }
 
     public function getFieldString(): string
     {
         return $this->fieldString;
+    }
+
+    public function isMultiValue(): bool
+    {
+        return $this->multiValue;
+    }
+
+    public function setMultiValue(bool $multiValue): void
+    {
+        $this->multiValue = $multiValue;
     }
 
     public function getMappedValueForExport(): array

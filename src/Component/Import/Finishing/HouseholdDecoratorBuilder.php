@@ -82,7 +82,7 @@ class HouseholdDecoratorBuilder
         foreach ($this->householdLine->countrySpecifics as $countrySpecificId => $data) {
             $specificAnswer = new CountrySpecificsAnswerInputType();
             $specificAnswer->setCountrySpecificId($countrySpecificId);
-            $specificAnswer->setAnswer($data['value']);
+            $specificAnswer->setAnswers(explode(',', $data['value']));
             $household->addCountrySpecificAnswer($specificAnswer);
         }
 

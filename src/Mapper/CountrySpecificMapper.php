@@ -55,4 +55,9 @@ class CountrySpecificMapper implements MapperInterface
     {
         return $this->object->getCountryIso3();
     }
+
+    public function getMultiValue(): bool
+    {
+        return $this->object->isMultiValue();
+    }
 }

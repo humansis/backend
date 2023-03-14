@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace InputType;
 
-use Enum\CountrySpecificType;
+use Component\CSO\Enum\CountrySpecificType;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Validator\Constraints\Enum;
@@ -22,6 +22,10 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
     ])]
     private $type;
 
+    #[Assert\Type('bool')]
+    #[Assert\NotNull]
+    private $multiValue;
+
     /**
      * @return string
      */
@@ -30,7 +34,7 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
         return trim((string) $this->field);
     }
 
-    public function setField($field)
+    public function setField(mixed $field)
     {
         $this->field = $field;
     }
@@ -43,8 +47,21 @@ class CountrySpecificUpdateInputType implements InputTypeInterface
         return $this->type;
     }
 
-    public function setType($type)
+    public function setType(mixed $type)
     {
         $this->type = $type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getMultiValue()
+    {
+        return $this->multiValue;
+    }
+
+    public function setMultiValue(mixed $multiValue): void
+    {
+        $this->multiValue = $multiValue;
     }
 }

@@ -218,6 +218,7 @@ doctrine:
             enum_person_gender: DBAL\PersonGenderEnum
             enum_national_id_type: DBAL\NationalIdTypeEnum
             enum_assitance_commodity_division: DBAL\AssistanceCommodityDivisionEnum
+            enum_country_specific_type: Component\CSO\DBAL\CountrySpecificTypeEnum
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         entity_managers:
