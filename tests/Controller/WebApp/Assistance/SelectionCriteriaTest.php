@@ -48,6 +48,7 @@ class SelectionCriteriaTest extends BMSServiceTestCase
             'iso3' => 'KHM',
             'projectId' => 8,
             'locationId' => 30,
+            'name' => 'Test Assistance',
             'dateDistribution' => '2021-03-10T13:45:32.988Z',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,

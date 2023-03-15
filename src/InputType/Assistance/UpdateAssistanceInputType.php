@@ -40,6 +40,8 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     private int|string|null $note = self::UNSET_NUMBER;
 
+    private string|null $name = null;
+
     /**
      * @var string|null
      */
@@ -155,5 +157,26 @@ class UpdateAssistanceInputType implements InputTypeInterface
     public function hasRound(): bool
     {
         return !is_string($this->round);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string|null $name
+     */
+    public function setName(?string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function hasName(): bool
+    {
+        return !is_null($this->name);
     }
 }

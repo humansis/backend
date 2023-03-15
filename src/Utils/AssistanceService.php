@@ -95,6 +95,9 @@ class AssistanceService
         if ($updateAssistanceInputType->hasNote()) {
             $this->updateNote($assistanceRoot, $updateAssistanceInputType->getNote());
         }
+        if ($updateAssistanceInputType->hasName()) {
+            $this->updateName($assistanceRoot, $updateAssistanceInputType->getName());
+        }
 
         $this->assistanceRepository->save($assistance);
 
@@ -186,7 +189,6 @@ class AssistanceService
     {
         $assistance
             ->setDateDistribution($date)
-            ->setName(AssistanceFactory::generateName($assistance))
             ->setUpdatedOn(new DateTime());
     }
 
@@ -202,10 +204,15 @@ class AssistanceService
         $assistance->setUpdatedOn(new DateTime());
     }
 
+    public function updateName(Assistance $assistance, string $name): void
+    {
+        $assistance->setName($name);
+        $assistance->setUpdatedOn(new DateTime());
+    }
+
     public function updateRound(Assistance $assistance, ?int $round): void
     {
         $assistance->setRound($round);
-        $assistance->setName(AssistanceFactory::generateName($assistance));
         $assistance->setUpdatedOn(new DateTime());
     }
 

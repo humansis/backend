@@ -87,6 +87,7 @@ trait AssistanceHelper
         $assistanceInputType->setSubsector(SubSectorEnum::CASH_TRANSFERS);
         $assistanceInputType->setAllowedProductCategoryTypes([ProductCategoryType::FOOD]);
         $assistanceInputType->setFoodLimit(15);
+        $assistanceInputType->setName('Test Assistance');
 
         if ($commodityInputTypes) {
             foreach ($commodityInputTypes as $commodityInputType) {
