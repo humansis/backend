@@ -22,9 +22,7 @@ framework:
           from: !php/const Enum\ReliefPackageState::DISTRIBUTION_IN_PROGRESS
           to: !php/const Enum\ReliefPackageState::DISTRIBUTED
         !php/const Workflow\ReliefPackageTransitions::DISTRIBUTE:
-          from:
-            - !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
-            - !php/const Enum\ReliefPackageState::EXPIRED
+          from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE
           to: !php/const Enum\ReliefPackageState::DISTRIBUTED
         !php/const Workflow\ReliefPackageTransitions::EXPIRE:
           from: !php/const Enum\ReliefPackageState::TO_DISTRIBUTE

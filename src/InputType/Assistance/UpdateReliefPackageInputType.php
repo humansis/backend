@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Assistance;
 
+use Enum\ReliefPackageState;
 use Request\InputTypeInterface;
 use Validator\Constraints\Enum;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UpdateReliefPackageInputType implements InputTypeInterface
 {
     #[Enum(options: [
-        'enumClass' => 'Enum\ReliefPackageState',
+        'enumClass' => ReliefPackageState::class,
     ])]
     private $state;
 

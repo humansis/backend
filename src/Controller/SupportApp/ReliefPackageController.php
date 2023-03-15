@@ -18,9 +18,6 @@ class ReliefPackageController extends AbstractController
     {
     }
 
-    /**
-     * @throws Exception
-     */
     #[Rest\Patch('/support-app/v1/relief-packages/{id}')]
     public function update(ReliefPackage $reliefpackage, UpdateReliefPackageInputType $inputpackages): JsonResponse
     {

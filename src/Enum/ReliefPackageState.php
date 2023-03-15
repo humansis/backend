@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Enum;
 
-use Workflow\ReliefPackageTransitions;
-
 final class ReliefPackageState
 {
     use EnumTrait;
@@ -23,16 +21,6 @@ final class ReliefPackageState
         self::EXPIRED,
         self::CANCELED,
     ];
-
-    public static function transitionsMapper(): array
-    {
-        return [
-            self::TO_DISTRIBUTE => ReliefPackageTransitions::REUSE,
-            self::DISTRIBUTED => ReliefPackageTransitions::DISTRIBUTE,
-            self::EXPIRED => ReliefPackageTransitions::EXPIRE,
-            self::CANCELED => ReliefPackageTransitions::CANCEL,
-        ];
-    }
 
     public static function values(): array
     {

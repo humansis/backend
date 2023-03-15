@@ -9,7 +9,6 @@ use Entity\Beneficiary;
 use Entity\CountrySpecific;
 use Enum\ReliefPackageState;
 use InputType\Assistance\UpdateReliefPackageInputType;
-use LogicException;
 use Enum\ModalityType;
 use Exception\RemoveDistributionException;
 use InputType\ResetReliefPackageInputType;
@@ -327,33 +326,15 @@ class AssistanceDistributionService
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function update(ReliefPackage $reliefPackage, UpdateReliefPackageInputType $inputPackages): ReliefPackage
     {
-
-            $reliefPackageWorkflow = $this->registry->get($reliefPackage);
-        if ($reliefPackageWorkflow->can($reliefPackage, ReliefPackageState::transitionsMapper()[$inputPackages->getState()])) {
-            $reliefPackageWorkflow->apply($reliefPackage, ReliefPackageState::transitionsMapper()[$inputPackages->getState()]);
-        } else {
-            throw new LogicException(
-                sprintf(
-                    'Moving to state %s is not allowed for relief package ID( %s )',
-                    $inputPackages->getState(),
-                    $reliefPackage->getId()
-                )
-            );
-        }
-
+        $reliefPackage->setState($inputPackages->getState());
         if ($inputPackages->getNotes() != null) {
             $reliefPackage->setNotes($inputPackages->getNotes());
         }
 
         if ($inputPackages->getAmountDistributed() != null) {
-            if ($reliefPackage->getAmountDistributed() !== $inputPackages->getAmountDistributed()) {
-                $reliefPackage->setAmountDistributed($inputPackages->getAmountDistributed());
-            }
+            $reliefPackage->setAmountDistributed($inputPackages->getAmountDistributed());
         }
         $reliefPackage->setLastModifiedNow();
         $this->reliefPackageRepository->save($reliefPackage);
