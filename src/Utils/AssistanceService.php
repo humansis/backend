@@ -2,11 +2,15 @@
 
 namespace Utils;
 
+use Component\Assistance\Validator\AssistanceMove;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
+use Entity\Project;
 use Entity\User;
+use Exception\ConstraintViolationException;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
+use InputType\Assistance\MoveAssistanceInputType;
 use InputType\Assistance\UpdateAssistanceInputType;
 use Pagination\Paginator;
 use DateTime;
@@ -31,6 +35,8 @@ use Repository\BeneficiaryRepository;
 use Repository\ProjectRepository;
 use Request\Pagination;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -64,6 +70,7 @@ class AssistanceService
         private readonly ExportService $exportService,
         private readonly PdfService $pdfService,
         private readonly ProjectService $projectService,
+        private readonly ValidatorInterface $validator
     ) {
     }
 
@@ -214,6 +221,12 @@ class AssistanceService
     {
         $assistance->setRound($round);
         $assistance->setUpdatedOn(new DateTime());
+    }
+
+    public function prependNote(Assistance $assistance, string $note): void
+    {
+        $originalNote = $assistance->getNote() ?? '';
+        $assistance->setNote($note . ' ' . $originalNote);
     }
 
     /**
@@ -437,5 +450,47 @@ class AssistanceService
         $beneficiaries = $this->beneficiaryRepository->getNotRemovedofDistribution($assistance);
 
         return $this->exportService->export($beneficiaries, 'beneficiaryInDistribution', $type);
+    }
+
+    public function moveToAnotherProject(
+        Assistance $assistance,
+        MoveAssistanceInputType $moveAssistanceInputType
+    ): Assistance {
+        $assistanceMoveConstraint = new AssistanceMove();
+        $assistanceMoveConstraint->moveAssistanceInputType = $moveAssistanceInputType;
+
+        $errors = $this->validator->validate(
+            $assistance,
+            $assistanceMoveConstraint
+        );
+
+        if ($errors->count() > 0) {
+            throw new ConstraintViolationException($errors);
+        }
+
+        $newProject = $this->projectRepository->find($moveAssistanceInputType->getTargetProjectId());
+        $this->changeAssistanceProject($assistance, $newProject);
+
+        return $assistance;
+    }
+
+    private function changeAssistanceProject(Assistance $assistance, Project $newProject): void
+    {
+        $this->em->beginTransaction();
+        $originalProject = $assistance->getProject();
+
+        $this->prependNote(
+            $assistance,
+            "Assistance was moved from project {$originalProject->getName()} (ID: {$originalProject->getId()}) to project {$newProject->getName()} (ID: {$newProject->getId()})."
+        );
+        $assistance->setProject($newProject);
+        $assistance->setUpdatedOn(new DateTime());
+
+        foreach ($originalProject->getHouseholds() as $houseHold) {
+            $houseHold->addProject($newProject);
+        }
+
+        $this->em->flush();
+        $this->em->commit();
     }
 }

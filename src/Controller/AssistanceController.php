@@ -7,6 +7,7 @@ namespace Controller;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\User;
 use Exception\ExportNoDataException;
+use InputType\Assistance\MoveAssistanceInputType;
 use InputType\Assistance\UpdateAssistanceInputType;
 use InvalidArgumentException;
 use Pagination\Paginator;
@@ -311,5 +312,14 @@ class AssistanceController extends AbstractController
         $assistances = $this->assistanceRepository->findByProject($project, null, $filter, $orderBy, $pagination);
 
         return $this->json($assistances);
+    }
+
+    #[Rest\Post('/web-app/v1/assistances/{id}/move')]
+    public function move(
+        Assistance $assistanceRoot,
+        MoveAssistanceInputType $moveAssistanceInputType
+    ): JsonResponse {
+        $assistance = $this->assistanceService->moveToAnotherProject($assistanceRoot, $moveAssistanceInputType);
+        return $this->json($assistance, Response::HTTP_ACCEPTED);
     }
 }

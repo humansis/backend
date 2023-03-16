@@ -20,6 +20,7 @@ use Component\Assistance\Enum\CommodityDivision;
 use Enum\ProductCategoryType;
 use DBAL\SubSectorEnum;
 use Entity\Project;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\BMSServiceTestCase;
 
 class AssistanceControllerTest extends BMSServiceTestCase
@@ -1034,5 +1035,59 @@ class AssistanceControllerTest extends BMSServiceTestCase
             $this->client->getResponse()->isSuccessful(),
             'Request failed: ' . $this->client->getResponse()->getContent()
         );
+    }
+
+    public function testMoveAssistance()
+    {
+        /** @var Project $project */
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->find(1);
+
+        /** @var Assistance $assistance */
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findOneBy(
+            [
+                'project' => $project
+            ]
+        );
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/move', [
+            'originalProjectId' => 1,
+            'targetProjectId' => 8,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->isSuccessful(),
+            'Request failed: ' . $this->client->getResponse()->getContent()
+        );
+
+        /** @var Assistance $assistance */
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->find($assistance->getId());
+        $this->assertEquals(8, $assistance->getProject()->getId());
+    }
+
+    public function testMoveAssistanceValidationError()
+    {
+        /** @var Project $project */
+        $project = self::getContainer()->get('doctrine')->getRepository(Project::class)->find(1);
+
+        /** @var Assistance $assistance */
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->findOneBy(
+            [
+                'project' => $project
+            ]
+        );
+
+        $this->request('POST', '/api/basic/web-app/v1/assistances/' . $assistance->getId() . '/move', [
+            'originalProjectId' => 1,
+            'targetProjectId' => 2,
+        ]);
+
+        $this->assertTrue(
+            $this->client->getResponse()->getStatusCode() === Response::HTTP_BAD_REQUEST,
+            'Request should fail because target project is not compatible with original project.'
+        );
+
+        /** @var Assistance $assistance */
+        $assistance = self::getContainer()->get('doctrine')->getRepository(Assistance::class)->find($assistance->getId());
+        $this->assertEquals(1, $assistance->getProject()->getId());
     }
 }

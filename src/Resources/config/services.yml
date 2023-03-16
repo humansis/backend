@@ -573,6 +573,9 @@ services:
     Component\Assistance\Scoring\Model\Factory\ScoringFactory:
         public: true
 
+    Component\Assistance\Validator\AssistanceMoveValidator:
+        public: true
+
     Component\Assistance\Scoring\Validator\ScoringTypeValidator:
         public: true
 
@@ -1265,7 +1268,7 @@ services:
 
     Utils\ProjectAssistancesTransformData:
         class: Utils\ProjectAssistancesTransformData
-        
+
     Utils\ProjectTransformData:
         class: Utils\ProjectTransformData
 

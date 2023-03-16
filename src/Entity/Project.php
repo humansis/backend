@@ -413,7 +413,7 @@ class Project
     /**
      * Get households.
      *
-     * @return Collection
+     * @return Collection<Household>
      */
     public function getHouseholds()
     {
