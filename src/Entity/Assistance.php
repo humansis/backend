@@ -19,9 +19,6 @@ use DBAL\SectorEnum;
 use DBAL\SubSectorEnum;
 use Symfony\Component\Serializer\Annotation\Groups as SymfonyGroups;
 
-/**
- * Assistance
- */
 #[ORM\Table(name: 'assistance')]
 #[ORM\Entity(repositoryClass: 'Repository\AssistanceRepository')]
 class Assistance implements ExportableInterface
@@ -71,7 +68,7 @@ class Assistance implements ExportableInterface
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance'])]
     #[ORM\ManyToOne(targetEntity: 'Entity\User', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: true)]
-    private ?\Entity\User $validatedBy = null;
+    private ?User $validatedBy = null;
 
     #[SymfonyGroups(['FullAssistance', 'SmallAssistance', 'AssistanceOverview'])]
     #[ORM\Column(name: 'target_type', type: 'enum_assistance_target_type')]
@@ -160,6 +157,10 @@ class Assistance implements ExportableInterface
 
     #[ORM\Column(name: 'note', type: 'text', length: 65535, nullable: true)]
     private ?string $note = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private User|null $closedBy = null;
 
     /**
      * Constructor
@@ -867,5 +868,15 @@ class Assistance implements ExportableInterface
         }
 
         return $hasModalityTypeCommodity;
+    }
+
+    public function getClosedBy(): User|null
+    {
+        return $this->closedBy;
+    }
+
+    public function setClosedBy(User|null $closedBy): void
+    {
+        $this->closedBy = $closedBy;
     }
 }

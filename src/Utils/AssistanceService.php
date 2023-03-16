@@ -81,7 +81,7 @@ class AssistanceService
             }
         }
         if ($updateAssistanceInputType->isCompleted()) {
-            $assistance->complete();
+            $assistance->complete($user);
         }
         if ($updateAssistanceInputType->hasDateDistribution()) {
             $this->updateDateDistribution($assistanceRoot, $updateAssistanceInputType->getDateDistribution());

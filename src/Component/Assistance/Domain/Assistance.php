@@ -133,10 +133,14 @@ class Assistance
         return $this;
     }
 
-    public function complete(): self
+    /**
+     * Move to state CLOSED
+     */
+    public function complete(User $user): self
     {
         // TODO: checks
         $this->assistanceRoot->setCompleted();
+        $this->assistanceRoot->setClosedBy($user);
         $this->expireUnusedReliefPackages();
         $this->cleanCache();
 
