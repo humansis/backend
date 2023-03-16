@@ -46,6 +46,7 @@ class UserService
      */
     public function initialize(UserInitializeInputType $inputType, ?string $userDefinedSalt = null): array
     {
+        /** @var User|null $user */
         $user = $this->em->getRepository(User::class)
             ->findBy(['email' => $inputType->getUsername()]);
 
@@ -140,7 +141,7 @@ class UserService
             ->setLanguage($inputType->getLanguage())
             ->setChangePassword($inputType->isChangePassword())
             ->setPhonePrefix($inputType->getPhonePrefix())
-            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null)
+            ->setPhoneNumber($inputType->getPhoneNumber())
             ->setPassword($inputType->getPassword());
 
         if (!empty($inputType->getProjectIds())) {

@@ -66,7 +66,7 @@ class UserMapper implements MapperInterface
 
     public function getPhoneNumber(): ?string
     {
-        return (string) $this->object->getPhoneNumber();
+        return $this->object->getPhoneNumber();
     }
 
     public function getCountries(): array

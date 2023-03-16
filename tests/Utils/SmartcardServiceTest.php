@@ -791,7 +791,7 @@ class SmartcardServiceTest extends KernelTestCase
         $roles = $this->roleRepository->findByCodes(['ROLE_ADMIN']);
 
         $this->user = new User();
-        $this->user->setEnabled(1)
+        $this->user->setEnabled(true)
             ->setEmail($id . self::VENDOR_USERNAME)
             ->setUsername($id . self::VENDOR_USERNAME)
             ->setSalt('')

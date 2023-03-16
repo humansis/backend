@@ -151,7 +151,7 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
 
         $roles = $manager->getRepository(Role::class)->findByCodes(['ROLE_ADMIN']);
 
-        $instance->setEnabled(1)
+        $instance->setEnabled(true)
             ->setEmail($email)
             ->setUsername($email)
             ->setSalt('no salt')

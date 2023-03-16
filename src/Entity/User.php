@@ -1,111 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Entity;
 
+use Repository\UserRepository;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Entity\Helper\StandardizedPrimaryKey;
-use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * User
- */
-#[ORM\Table(name: '`user')]
-#[ORM\Entity(repositoryClass: 'Repository\UserRepository')]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @var string
-     */
-    #[Assert\NotBlank(message: "Username can't be empty")]
-    #[Assert\Length(min: 2, max: 50, minMessage: 'Your username must be at least {{ limit }} characters long', maxMessage: 'Your username cannot be longer than {{ limit }} characters')]
-    #[ORM\Column(name: 'username', type: 'string')]
-    protected $username;
+    #[ORM\Column(type: 'string')]
+    protected string $username;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'password', type: 'string', nullable: false)]
-    protected $password;
+    #[ORM\Column(type: 'string')]
+    protected string $password;
 
-    /**
-     * The salt to use for hashing.
-     *
-     * @var string|null
-     */
-    #[ORM\Column(name: 'salt', type: 'string', nullable: true)]
-    protected $salt;
+    #[ORM\Column(type: 'string', nullable: true)]
+    protected string|null $salt = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserCountry', cascade: ['persist', 'remove'])]
-    private $countries;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserCountry::class, cascade: ['persist', 'remove'])]
+    private Collection $countries;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserProject', cascade: ['remove'])]
-    private $projects;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserProject::class, cascade: ['remove'])]
+    private Collection $projects;
 
-    /**
-     * @var string
-     */
-    #[Assert\NotBlank(message: "Email can't be empty")]
-    #[ORM\Column(name: 'email', type: 'string')]
-    protected $email;
+    #[ORM\Column(type: 'string')]
+    protected string $email;
 
-    /**
-     * @var bool
-     */
-    #[ORM\Column(name: 'enabled', type: 'boolean')]
-    protected $enabled;
+    #[ORM\Column(type: 'boolean')]
+    protected bool $enabled;
 
-    /**
-     * @var Collection|Role[]
-     */
-    #[ORM\ManyToMany(targetEntity: 'Entity\Role', inversedBy: 'users')]
-    protected $roles;
+    #[ORM\ManyToMany(targetEntity: Role::class, inversedBy: 'users')]
+    protected Collection $roles;
 
-    /**
-     * @var Transaction
-     */
-    #[ORM\OneToMany(mappedBy: 'sentBy', targetEntity: 'Entity\Transaction')]
-    private $transactions;
+    #[ORM\OneToMany(mappedBy: 'sentBy', targetEntity: Transaction::class)]
+    private Collection $transactions;
 
-    #[ORM\OneToOne(mappedBy: 'user', targetEntity: '\Entity\Vendor', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: Vendor::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    private $vendor;
+    private Vendor|null $vendor = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    protected string|null $language = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    protected string|null $phonePrefix = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    protected string|null $phoneNumber;
 
     /**
-     * @var string
+     * If true, user has to change password when he logs in.
      */
-    #[ORM\Column(name: 'language', type: 'string', length: 255, nullable: true)]
-    protected $language;
+    #[ORM\Column(type: 'boolean')]
+    protected bool $changePassword = false;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'phonePrefix', type: 'string', nullable: true)]
-    protected $phonePrefix;
-
-    /**
-     * @var int|null
-     */
-    #[ORM\Column(name: 'phoneNumber', type: 'integer', nullable: true)]
-    protected $phoneNumber;
-
-    /**
-     * @var bool
-     */
-    #[ORM\Column(name: 'changePassword', type: 'boolean', options: ['default' => 0])]
-    protected $changePassword = false;
-
-    /**
-     * @var bool
-     */
-    #[ORM\Column(name: 'twoFactorAuthentication', type: 'boolean', options: ['default' => 0])]
-    protected $twoFactorAuthentication = false;
+    #[ORM\Column(type: 'boolean')]
+    protected bool $twoFactorAuthentication = false;
 
     public function __construct()
     {
@@ -113,76 +72,47 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
     }
 
-
-    /**
-     * Add country.
-     *
-     *
-     * @return User
-     */
-    public function addCountry(UserCountry $country): User
+    public function addCountry(UserCountry $country): void
     {
         $this->countries->add($country);
-
-        return $this;
     }
 
     /**
-     * Get countries.
-     *
-     * @return Collection
+     * @return Collection<UserCountry>
      */
-    public function getCountries()
+    public function getCountries(): Collection
     {
         return $this->countries;
     }
 
     /**
-     * Get projects.
-     *
-     * @return Collection
+     * @return Collection<Project>
      */
-    public function getProjects()
+    public function getProjects(): Collection
     {
         return $this->projects;
     }
 
-    /**
-     * Add a Transaction
-     *
-     * @param Transaction $transaction transaction
-     *
-     * @return self
-     */
-    public function addTransaction(Transaction $transaction): User
+    public function addTransaction(Transaction $transaction): void
     {
-        $this->transactions[] = $transaction;
-
-        return $this;
+        $this->transactions->add($transaction);
     }
 
-
-    public function getLanguage(): ?string
+    public function getLanguage(): string|null
     {
         return $this->language;
     }
 
-    public function setLanguage(?string $language): User
+    public function setLanguage(string|null $language): User
     {
         $this->language = $language;
 
         return $this;
     }
 
-    /**
-     * Set vendor.
-     *
-     * @param Vendor|null $vendor
-     *
-     * @return User
-     */
     public function setVendor(Vendor $vendor = null): User
     {
         $this->vendor = $vendor;
@@ -190,60 +120,31 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get vendor.
-     *
-     * @return Vendor|null
-     */
-    public function getVendor(): ?Vendor
+    public function getVendor(): Vendor|null
     {
         return $this->vendor;
     }
 
-    /**
-     * Set phonePrefix.
-     *
-     * @param string|null $phonePrefix
-     *
-     * @return User
-     */
-    public function setPhonePrefix(?string $phonePrefix): User
+    public function setPhonePrefix(string|null $phonePrefix): User
     {
         $this->phonePrefix = $phonePrefix;
 
         return $this;
     }
 
-    /**
-     * Get phonePrefix.
-     *
-     * @return string|null
-     */
-    public function getPhonePrefix(): ?string
+    public function getPhonePrefix(): string|null
     {
         return $this->phonePrefix;
     }
 
-    /**
-     * Set phoneNumber.
-     *
-     * @param int|null $phoneNumber
-     *
-     * @return User
-     */
-    public function setPhoneNumber(?int $phoneNumber): User
+    public function setPhoneNumber(string|null $phoneNumber): User
     {
         $this->phoneNumber = $phoneNumber;
 
         return $this;
     }
 
-    /**
-     * Get phoneNumber.
-     *
-     * @return int|null
-     */
-    public function getPhoneNumber(): ?int
+    public function getPhoneNumber(): string|null
     {
         return $this->phoneNumber;
     }
@@ -253,22 +154,14 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this->enabled;
     }
 
-    public function setEnabled($boolean): self
+    public function setEnabled(bool $enabled): self
     {
-        $this->enabled = (bool) $boolean;
+        $this->enabled = $enabled;
 
         return $this;
     }
 
-    /**
-     * Returns the password used to authenticate the user.
-     *
-     * This should be the encoded password. On authentication, a plain-text
-     * password will be salted, encoded, and then compared to this value.
-     *
-     * @return string|null The encoded password if any
-     */
-    public function getSalt(): ?string
+    public function getSalt(): string|null
     {
         return $this->salt;
     }
@@ -280,23 +173,10 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get changePassword.
-     *
-     * @return bool
-     */
     public function getChangePassword(): bool
     {
         return $this->changePassword;
     }
-
-    /**
-     * Set changePassword.
-     *
-     * @param bool $changePassword
-     *
-     * @return User
-     */
     public function setChangePassword(bool $changePassword): User
     {
         $this->changePassword = $changePassword;
@@ -304,23 +184,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get twoFactorAuthentication.
-     *
-     * @return bool
-     */
     public function getTwoFactorAuthentication(): bool
     {
         return $this->twoFactorAuthentication;
     }
 
-    /**
-     * Set twoFactorAuthentication.
-     *
-     * @param bool $twoFactorAuthentication
-     *
-     * @return User
-     */
     public function setTwoFactorAuthentication(bool $twoFactorAuthentication): User
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
@@ -328,9 +196,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function hasRole(Role $role): bool
     {
         return $this->roles->contains($role);
@@ -338,7 +203,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     /**
      * @param Role[] $roles
-     * @return $this
      */
     public function setRoles(array $roles): self
     {
@@ -353,7 +217,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     /**
      * {@inheritdoc}
-     *
      */
     public function getRoles(): array
     {
@@ -362,36 +225,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         );
     }
 
-    public function __serialize(): array
-    {
-        return [
-            $this->password,
-            $this->username,
-            $this->enabled,
-            $this->id,
-            $this->email,
-        ];
-    }
-
-    public function __unserialize($serialized): void
-    {
-        $data = $serialized;
-
-        [
-            $this->password,
-            $this->username,
-            $this->enabled,
-            $this->id,
-            $this->email,
-        ] = $data;
-    }
-
     public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function getPassword(): ?string
+    /**
+     * @inheritDoc
+     */
+    public function getPassword(): string|null
     {
         return $this->password;
     }
@@ -430,5 +272,30 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+
+    public function __serialize(): array
+    {
+        return [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ];
+    }
+
+    public function __unserialize($serialized): void
+    {
+        $data = $serialized;
+
+        [
+            $this->password,
+            $this->username,
+            $this->enabled,
+            $this->id,
+            $this->email,
+        ] = $data;
     }
 }
