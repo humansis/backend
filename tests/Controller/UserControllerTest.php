@@ -95,6 +95,9 @@ class UserControllerTest extends BMSServiceTestCase
                 $project->getId(),
             ],
             'changePassword' => false,
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'position' => 'HeHu'
         ]);
 
         $result = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -113,6 +116,9 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('language', $result);
         $this->assertArrayHasKey('roles', $result);
         $this->assertArrayHasKey('projectIds', $result);
+        $this->assertArrayHasKey('firstName', $result);
+        $this->assertArrayHasKey('lastName', $result);
+        $this->assertArrayHasKey('position', $result);
 
         return $result;
     }
@@ -174,6 +180,9 @@ class UserControllerTest extends BMSServiceTestCase
                 $project->getId(),
             ],
             'changePassword' => false,
+            'firstName' => 'John',
+            'lastName' => 'Doe',
+            'position' => 'HeHu'
         ];
 
         $this->request('PUT', '/api/basic/web-app/v1/users/' . $result['id'], $data);
@@ -195,6 +204,9 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('roles', $result);
         $this->assertArrayHasKey('projectIds', $result);
         $this->assertArrayHasKey('changePassword', $result);
+        $this->assertArrayHasKey('firstName', $result);
+        $this->assertArrayHasKey('lastName', $result);
+        $this->assertArrayHasKey('position', $result);
 
         $this->assertEquals($data['phoneNumber'], $result['phoneNumber']);
 
@@ -203,7 +215,6 @@ class UserControllerTest extends BMSServiceTestCase
 
     /**
      * @depends testUpdate
-     *
      *
      * @return int
      * @throws ORMException
@@ -230,6 +241,9 @@ class UserControllerTest extends BMSServiceTestCase
         $this->assertArrayHasKey('language', $result);
         $this->assertArrayHasKey('roles', $result);
         $this->assertArrayHasKey('projectIds', $result);
+        $this->assertArrayHasKey('firstName', $result);
+        $this->assertArrayHasKey('lastName', $result);
+        $this->assertArrayHasKey('position', $result);
 
         return $id;
     }

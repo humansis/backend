@@ -66,6 +66,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     protected bool $twoFactorAuthentication = false;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string|null $firstName = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string|null $lastName = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private string|null $position = null;
+
     public function __construct()
     {
         $this->enabled = false;
@@ -297,5 +306,35 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
             $this->id,
             $this->email,
         ] = $data;
+    }
+
+    public function getFirstName(): string|null
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(string|null $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    public function getLastName(): string|null
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string|null $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    public function getPosition(): string|null
+    {
+        return $this->position;
+    }
+
+    public function setPosition(string|null $position): void
+    {
+        $this->position = $position;
     }
 }

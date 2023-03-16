@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Utils;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,25 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Entity\User;
 use Entity\UserCountry;
 use Entity\UserProject;
 use Repository\UserRepository;
 
-/**
- * Class UserService
- *
- * @package Utils
- */
 class UserService
 {
-    /**
-     * UserService constructor.
-     */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly ExportService $exportService,
         private readonly RoleHierarchyInterface $roleHierarchy,
         private readonly Security $security,
         private readonly RoleRepository $roleRepository,
@@ -82,10 +74,9 @@ class UserService
     }
 
     /**
-     * @return mixed
      * @throws Exception
      */
-    public function login(string $username, string $saltedPassword)
+    public function login(string $username, string $saltedPassword): User
     {
         $repository = $this->em->getRepository(User::class);
 
@@ -124,15 +115,6 @@ class UserService
 
     public function create(User $initializedUser, UserCreateInputType $inputType): User
     {
-        /** @var UserRepository $userRepository */
-        $userRepository = $this->em->getRepository(User::class);
-
-        /*if ($userRepository->findOneBy(['email' => $inputType->getEmail()]) instanceof User) {
-            throw new InvalidArgumentException(
-                'The user with email ' . $inputType->getEmail() . ' has already been added'
-            );
-        }*/
-
         $roles = $this->roleRepository->findByCodes($inputType->getRoles());
 
         $initializedUser->setEmail($inputType->getEmail())
@@ -143,6 +125,10 @@ class UserService
             ->setPhonePrefix($inputType->getPhonePrefix())
             ->setPhoneNumber($inputType->getPhoneNumber())
             ->setPassword($inputType->getPassword());
+
+        $initializedUser->setFirstName($inputType->getFirstName());
+        $initializedUser->setLastName($inputType->getLastName());
+        $initializedUser->setPosition($inputType->getPosition());
 
         if (!empty($inputType->getProjectIds())) {
             foreach ($inputType->getProjectIds() as $projectId) {
@@ -209,7 +195,11 @@ class UserService
             ->setChangePassword($inputType->isChangePassword())
             ->setRoles($roles)
             ->setPhonePrefix($inputType->getPhonePrefix())
-            ->setPhoneNumber($inputType->getPhoneNumber() ? (int) $inputType->getPhoneNumber() : null);
+            ->setPhoneNumber($inputType->getPhoneNumber());
+
+        $user->setFirstName($inputType->getFirstName());
+        $user->setLastName($inputType->getLastName());
+        $user->setPosition($inputType->getPosition());
 
         if (null !== $inputType->getPassword()) {
             $user->setPassword($inputType->getPassword());
@@ -272,28 +262,18 @@ class UserService
 
     public function isGranted(User $user, string $role): bool
     {
-        foreach ($this->roleHierarchy->getReachableRoleNames($user->getRoles()) as $reachableRole) {
-            if ($reachableRole === $role) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($role, $this->roleHierarchy->getReachableRoleNames($user->getRoles()), true);
     }
 
     /**
-     * @return string
      * @throws Exception
      */
-    private function generateSalt()
+    private function generateSalt(): string
     {
         return rtrim(str_replace('+', '.', base64_encode(random_bytes(32))), '=');
     }
 
-    /**
-     * @return object|User|null
-     */
-    public function getCurrentUser()
+    public function getCurrentUser(): User|null
     {
         return $this->em->getRepository(User::class)->findOneBy(
             ['username' => $this->security->getUser()->getUserIdentifier()]

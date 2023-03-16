@@ -1,24 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mapper;
 
-use Component\Country\Countries;
-use Component\Country\Country;
 use InvalidArgumentException;
 use Serializer\MapperInterface;
-use Entity\Project;
-use Repository\ProjectRepository;
 use Entity\User;
 use Entity\UserCountry;
 use Entity\UserProject;
 
 class UserMapper implements MapperInterface
 {
-    private ?\Entity\User $object = null;
-
-    public function __construct(private readonly Countries $countries, private readonly ProjectRepository $projectRepository)
-    {
-    }
+    private User|null $object = null;
 
     /**
      * {@inheritdoc}
@@ -101,5 +95,20 @@ class UserMapper implements MapperInterface
     public function get2fa(): bool
     {
         return $this->object->getTwoFactorAuthentication();
+    }
+
+    public function getFirstName(): string|null
+    {
+        return $this->object->getFirstName();
+    }
+
+    public function getLastName(): string|null
+    {
+        return $this->object->getLastName();
+    }
+
+    public function getPosition(): string|null
+    {
+        return $this->object->getPosition();
     }
 }

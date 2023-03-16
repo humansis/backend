@@ -59,6 +59,21 @@ class UserUpdateInputType implements InputTypeInterface
     #[Assert\NotNull]
     private ?bool $changePassword = null;
 
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    private string|null $firstName = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    private string|null $lastName = null;
+
+    #[Assert\Length(max: 255)]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank]
+    private string|null $position = null;
+
     /**
      * @return string
      */
@@ -208,5 +223,54 @@ class UserUpdateInputType implements InputTypeInterface
     public function setChangePassword(bool $changePassword): void
     {
         $this->changePassword = $changePassword;
+    }
+
+
+    /**
+     * @return string|null
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @param string|null $firstName
+     */
+    public function setFirstName($firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param string|null $lastName
+     */
+    public function setLastName($lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param string|null $position
+     */
+    public function setPosition($position): void
+    {
+        $this->position = $position;
     }
 }
