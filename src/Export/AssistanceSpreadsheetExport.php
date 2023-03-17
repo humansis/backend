@@ -419,8 +419,6 @@ class AssistanceSpreadsheetExport
 
         $countDistributedByVendor = $this->reliefPackageRepository->countByAssistanceDistributedByVendors($assistance);
 
-        dump($countDistributedByVendor);
-
         if ($assistance->isRemoteDistributionAllowed() && $countDistributedByVendor > 0) {
             $rows[] = 'Vendors';
         }
