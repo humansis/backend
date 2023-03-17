@@ -61,17 +61,17 @@ class UserUpdateInputType implements InputTypeInterface
 
     #[Assert\Length(max: 255)]
     #[Assert\Type('string')]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(allowNull: true)]
     private string|null $firstName = null;
 
     #[Assert\Length(max: 255)]
     #[Assert\Type('string')]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(allowNull: true)]
     private string|null $lastName = null;
 
     #[Assert\Length(max: 255)]
     #[Assert\Type('string')]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(allowNull: true)]
     private string|null $position = null;
 
     /**
