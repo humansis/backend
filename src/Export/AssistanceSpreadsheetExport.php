@@ -13,9 +13,11 @@ use Entity\Organization;
 use Entity\Assistance;
 use Entity\AssistanceBeneficiary;
 use Entity\SmartcardDeposit;
+use Entity\User;
 use Exception;
 use InvalidArgumentException;
 use Enum\ReliefPackageState;
+use Repository\Assistance\ReliefPackageRepository;
 use Services\CountryLocaleResolverService;
 use Utils\FileSystem\Exception\ImageException;
 use Utils\FileSystem\Image;
@@ -39,10 +41,21 @@ class AssistanceSpreadsheetExport
     private const GDPR_TEXT_1 = "Privacy notice: Please note that PIN as the Personal Data Controller (contact details of the Data Protection Officer: dpo@clovekvtisni.cz), will be processing your above-mentioned personal data. PIN will use the data only for the purpose of providing assistance within the project you agreed to participate in. PIN needs these data because 1) it is necessary for the provision of assistance to you according to the project terms, and 2) PIN has a legitimate interest in reporting of the project results to the donor. PIN will keep the data only for the period required by the donors financing the project, or by the legislation binding for PIN; however, the maximum period of storage is 10 years. Your data may also be shared with other persons for the purpose of implementation and verification of the project, i.e. the service providers of PIN's systems and software, where your data are stored, our project partners, donors and the auditors.";
     private const GDPR_TEXT_2 = "You have the following rights: 1) right to request information on which personal data of yours PIN is processing, 2) right to request explanation from PIN regarding the processing of personal data, 3) right to request access to such data from PIN, right to have the data updated, corrected or restricted, as the case may be, and right to object to processing, 4) the right to obtain personal data in a structured, commonly used and machine-readable format, 5) right to request the deletion of such personal data from PIN, 6) right to address the Controller or lodge a complaint to the Office for Personal Data Protection in case of doubt regarding the compliance with the obligations related to the processing of personal data.";
 
-    public function __construct(private readonly TranslatorInterface $translator, private readonly SmartcardDepositService $smartcardDepositService, private readonly CountryLocaleResolverService $countryLocaleResolverService, private readonly LoggerInterface $logger)
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly SmartcardDepositService $smartcardDepositService,
+        private readonly CountryLocaleResolverService $countryLocaleResolverService,
+        private readonly LoggerInterface $logger,
+        private readonly ReliefPackageRepository $reliefPackageRepository,
+    )
     {
     }
 
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws Exception
+     */
     public function export(Assistance $assistance, Organization $organization, string $filetype): string
     {
         if (!in_array($filetype, ['ods', 'xlsx', 'csv'], true)) {
@@ -67,7 +80,7 @@ class AssistanceSpreadsheetExport
         return $filename;
     }
 
-    private function formatCells(Worksheet $worksheet)
+    private function formatCells(Worksheet $worksheet): void
     {
         $style = [
             'font' => [
@@ -96,12 +109,15 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('A1:K10000')->applyFromArray($style);
     }
 
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     */
     private function buildHeader(
         Worksheet $worksheet,
         Assistance $assistance,
         Organization $organization,
         string $languageCode
-    ) {
+    ): void {
         $userInputStyle = [
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -313,9 +329,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C11')->getStyle()->applyFromArray($labelStyle);
 
         $worksheet->getCell('D10')->getStyle()->applyFromArray($userInputStyle);
-        $worksheet->getCell('D10')->setValue(
-            $assistance->isValidated() ? $assistance->getValidatedBy()->getUserIdentifier() : ""
-        );
+        $worksheet->getCell('D10')->setValue($this->getValidatedByContent($assistance));
         $worksheet->mergeCells('D10:F11');
 
         $worksheet->getCell('C13')->setValue("Distributed by:");
@@ -331,6 +345,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('C16')->getStyle()->applyFromArray($labelStyle);
         $worksheet->getCell('C16')->getStyle()->getFont()->setSize(8);
 
+        $worksheet->getCell('D13')->setValue($this->getDistributedByContent($assistance));
         $worksheet->mergeCells('D13:F16');
         $worksheet->getStyle('D13')->applyFromArray($userInputStyle);
 
@@ -348,6 +363,7 @@ class AssistanceSpreadsheetExport
         $worksheet->getCell('G16')->getStyle()->getFont()->setSize(8);
 
         $worksheet->getStyle('H13')->applyFromArray($userInputStyle);
+        $worksheet->getCell('H13')->setValue($this->getApprovedByContent($assistance));
         $worksheet->mergeCells('H13:J16');
 
         $worksheet->getCell('B19')->setValue(
@@ -393,10 +409,93 @@ class AssistanceSpreadsheetExport
         $worksheet->getStyle('B23')->getFont()->setSize(8);
     }
 
+    private function getDistributedByContent(Assistance $assistance): string
+    {
+        if (!$assistance->isSmartcardDistribution()) {
+            return '';
+        }
+
+        $rows = [];
+
+        $countDistributedByVendor = $this->reliefPackageRepository->countByAssistanceDistributedByVendors($assistance);
+
+        dump($countDistributedByVendor);
+
+        if ($assistance->isRemoteDistributionAllowed() && $countDistributedByVendor > 0) {
+            $rows[] = 'Vendors';
+        }
+
+        $distributedReliefPackages = $this
+            ->reliefPackageRepository
+            ->findByAssistanceDistributedByFieldApp($assistance);
+
+        $distributedByUsers = [];
+        foreach ($distributedReliefPackages as $reliefPackage) {
+            if (!array_key_exists($reliefPackage->getDistributedBy()->getId(), $distributedByUsers)) {
+                $distributedByUsers[$reliefPackage->getDistributedBy()->getId()] = $reliefPackage->getDistributedBy();
+            }
+        }
+
+        foreach ($distributedByUsers as $user) {
+            $rows[] = $this->getUserInformationString($user);
+        }
+
+        return trim(implode("\n", $rows));
+    }
+
+    private function getValidatedByContent(Assistance $assistance): string
+    {
+        if (!$assistance->isSmartcardDistribution()) {
+            return '';
+        }
+
+        if (!$assistance->isValidated()) {
+            return '';
+        }
+
+        return $this->getUserInformationString($assistance->getValidatedBy());
+    }
+
+    private function getApprovedByContent(Assistance $assistance): string
+    {
+        if (!$assistance->isSmartcardDistribution()) {
+            return '';
+        }
+
+        if (!$assistance->getCompleted()) {
+            return '';
+        }
+
+        return $this->getUserInformationString($assistance->getClosedBy());
+    }
+
+    private function getUserInformationString(User $user): string
+    {
+        $informationString = '';
+
+        if ($user->getFirstName() !== null) {
+            $informationString .= $user->getFirstName();
+        }
+
+        if ($user->getLastName() !== null) {
+            $informationString .= ' ' .$user->getLastName();
+        }
+
+        if ($user->getPosition() !== null) {
+            $informationString .= ' (' . $user->getPosition() . ')';
+        }
+
+        if ($informationString === '') {
+            $informationString = $user->getEmail();
+        }
+
+        return trim($informationString);
+    }
+
     /**
      * @throws Exception
      */
-    private function buildBody(Worksheet $worksheet, Assistance $assistance, string $languageCode)
+    private function buildBody(Worksheet $worksheet, Assistance $assistance, string $languageCode): void
     {
         $rowStyle = [
             'borders' => [
@@ -491,6 +590,9 @@ class AssistanceSpreadsheetExport
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function createBeneficiaryRow(
         Worksheet $worksheet,
         AssistanceBeneficiary $distributionBeneficiary,
@@ -543,6 +645,9 @@ class AssistanceSpreadsheetExport
         ) . ' & ' . implode(', ', $donors);
     }
 
+    /**
+     * @throws Exception
+     */
     private static function getNationalId(Person $person): ?string
     {
         $ids = [];

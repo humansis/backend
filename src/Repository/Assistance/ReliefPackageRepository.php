@@ -12,7 +12,6 @@ use Entity\Location;
 use Entity\Beneficiary;
 use Entity\Assistance;
 use Enum\AssistanceTargetType;
-use Enum\ModalityType;
 use InputType\Assistance\ReliefPackageFilterInputType;
 use InvalidArgumentException;
 use Repository\Helper\TRepositoryHelper;
@@ -154,6 +153,40 @@ class ReliefPackageRepository extends EntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Returns only packages which were distributed by user that is not vendor
+     *
+     * @return ReliefPackage[]
+     */
+    public function findByAssistanceDistributedByFieldApp(Assistance $assistance): array
+    {
+        return $this->createQueryBuilder('rp')
+            ->join('rp.assistanceBeneficiary', 'ab')
+            ->join('rp.distributedBy', 'u')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('u.vendor IS NULL')
+            ->setParameter('assistance', $assistance)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function countByAssistanceDistributedByVendors(Assistance $assistance): int
+    {
+        return $this->createQueryBuilder('rp')
+            ->select('COUNT(rp.id)')
+            ->join('rp.assistanceBeneficiary', 'ab')
+            ->join('rp.distributedBy', 'u')
+            ->andWhere('ab.assistance = :assistance')
+            ->andWhere('u.vendor IS NOT NULL')
+            ->setParameter('assistance', $assistance)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

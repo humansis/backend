@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Entity\Helper\StandardizedPrimaryKey;
 use Enum\AssistanceState;
 use Enum\Livelihood;
+use Enum\ModalityType;
 use Utils\ExportableInterface;
 use Enum\AssistanceTargetType;
 use Enum\AssistanceType;
@@ -878,5 +879,16 @@ class Assistance implements ExportableInterface
     public function setClosedBy(User|null $closedBy): void
     {
         $this->closedBy = $closedBy;
+    }
+
+    public function isSmartcardDistribution(): bool
+    {
+        foreach ($this->commodities as $commodity) {
+            if ($commodity->getModalityType() === ModalityType::SMART_CARD) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
