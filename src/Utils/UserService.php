@@ -16,7 +16,7 @@ use Services\CountryLocaleResolverService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Entity\User;
 use Entity\UserCountry;
 use Entity\UserProject;
