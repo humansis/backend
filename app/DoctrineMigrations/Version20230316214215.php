@@ -30,6 +30,12 @@ final class Version20230316214215 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-       $this->abortIf(true, 'no downgrade');
+       $this->addSql('
+                ALTER TABLE user
+                CHANGE phone_number phoneNumber int DEFAULT NULL,
+                CHANGE phone_prefix phonePrefix VARCHAR(255) DEFAULT NULL,
+                CHANGE change_password changePassword TINYINT(1) NOT NULL,
+                CHANGE two_factor_authentication twoFactorAuthentication TINYINT(1) NOT NULL
+       ');
     }
 }
