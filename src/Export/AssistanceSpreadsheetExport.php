@@ -47,8 +47,7 @@ class AssistanceSpreadsheetExport
         private readonly CountryLocaleResolverService $countryLocaleResolverService,
         private readonly LoggerInterface $logger,
         private readonly ReliefPackageRepository $reliefPackageRepository,
-    )
-    {
+    ) {
     }
 
     /**
@@ -476,7 +475,7 @@ class AssistanceSpreadsheetExport
         }
 
         if ($user->getLastName() !== null) {
-            $informationString .= ' ' .$user->getLastName();
+            $informationString .= ' ' . $user->getLastName();
         }
 
         if ($user->getPosition() !== null) {
