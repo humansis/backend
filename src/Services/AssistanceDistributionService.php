@@ -326,6 +326,10 @@ class AssistanceDistributionService
         }
     }
 
+    /**
+     * IMPORTANT WARNING: This function updates the status of the relief package directly
+     * without checking transition states, and was used just in the support app.
+     */
     public function update(ReliefPackage $reliefPackage, UpdateReliefPackageInputType $inputPackages): ReliefPackage
     {
         $reliefPackage->setState($inputPackages->getState());

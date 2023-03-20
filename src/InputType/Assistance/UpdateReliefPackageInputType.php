@@ -23,32 +23,32 @@ class UpdateReliefPackageInputType implements InputTypeInterface
     #[Assert\NotBlank(allowNull: true)]
     private $notes;
 
-    public function getState(): string
+    public function getState()
     {
         return $this->state;
     }
 
-    public function setState(string $state): void
+    public function setState($state): void
     {
         $this->state = $state;
     }
 
-    public function getAmountDistributed(): mixed
+    public function getAmountDistributed()
     {
         return $this->amountDistributed;
     }
 
-    public function setAmountDistributed(mixed $amountDistributed): void
+    public function setAmountDistributed($amountDistributed): void
     {
         $this->amountDistributed = $amountDistributed;
     }
 
-    public function getNotes(): ?string
+    public function getNotes()
     {
         return $this->notes;
     }
 
-    public function setNotes(?string $notes): void
+    public function setNotes($notes): void
     {
         $this->notes = $notes;
     }
