@@ -58,24 +58,23 @@ class BeneficiaryDuplicityMapper implements MapperInterface
         );
     }
 
-    public function getOriginFullName(): string
+    public function getGivenName(): string
     {
         $person = $this->object->getBeneficiary()->getPerson();
-        if (!empty($person->getLocalFamilyName()) || !empty($person->getLocalGivenName())) {
-            return $person->getLocalGivenName() . ' ' . $person->getLocalFamilyName();
+        if (!empty($person->getLocalGivenName())) {
+            return $person->getLocalGivenName();
         } else {
-            return $person->getEnGivenName() . ' ' . $person->getEnFamilyName();
+            return $person->getEnGivenName();
         }
     }
 
-    public function getDuplicityFullName(): string
+    public function getFamilyName(): string
     {
-        $importLine = $this->importLineFactory->create($this->object->getQueue(), $this->object->getMemberIndex());
-
-        if (!empty($importLine->localFamilyName) || !empty($importLine->localGivenName)) {
-            return $importLine->localGivenName . ' ' . $importLine->localFamilyName;
+        $person = $this->object->getBeneficiary()->getPerson();
+        if (!empty($person->getLocalFamilyName())) {
+            return $person->getLocalFamilyName();
         } else {
-            return $importLine->englishGivenName . ' ' . $importLine->englishFamilyName;
+            return $person->getEnFamilyName();
         }
     }
 }

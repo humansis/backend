@@ -189,6 +189,11 @@ services:
         arguments:
             - Entity\ImportFile
 
+    Repository\ImportHouseholdDuplicityRepository:
+        factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
+        arguments:
+            - Entity\ImportHouseholdDuplicity
+
     Repository\ImportQueueRepository:
         factory: [ '@doctrine.orm.default_entity_manager', getRepository ]
         arguments:
