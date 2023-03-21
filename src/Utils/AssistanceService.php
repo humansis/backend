@@ -7,7 +7,7 @@ use Entity\AbstractBeneficiary;
 use Entity\User;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
-use InputType\Assistance\UpdateAssistanceInputType;
+use InputType\Assistance\AssistanceUpdateInputType;
 use Pagination\Paginator;
 use DateTime;
 use DateTimeInterface;
@@ -69,7 +69,7 @@ class AssistanceService
 
     public function update(
         Assistance $assistanceRoot,
-        UpdateAssistanceInputType $updateAssistanceInputType,
+        AssistanceUpdateInputType $updateAssistanceInputType,
         User $user
     ): AssistanceDomain {
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);

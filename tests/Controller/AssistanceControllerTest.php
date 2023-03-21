@@ -596,7 +596,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         $date = new DateTime('+1 year');
 
         $this->request('PATCH', "/api/basic/web-app/v1/assistances/" . $assistance->getId(), [
-            'dateExpiration' => $date->format(DateTimeInterface::ATOM),
+            'dateExpiration' => $date->format(DateTimeFormat::DATE),
         ]);
 
         $this->assertTrue(
@@ -605,7 +605,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         );
 
         $contentArray = json_decode($this->client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertEquals($date->format(DateTimeInterface::ATOM), $contentArray['dateExpiration']);
+        $this->assertEquals($date->format(DateTimeFormat::DATE), $contentArray['dateExpiration']);
     }
 
     /**
@@ -647,7 +647,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10',
-            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'dateExpiration' => '2022-10-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
@@ -686,7 +686,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "2021-03-10",
-            "dateExpiration": "2022-10-10T03:45:00+00:00",
+            "dateExpiration": "2022-10-10",
             "projectId": "*",
             "location": "*",
             "target": "*",
@@ -852,7 +852,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'locationId' => $location->getId(),
             'name' => 'test distribution',
             'dateDistribution' => '2021-03-10',
-            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'dateExpiration' => '2022-10-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,
@@ -904,7 +904,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             "id": "*",
             "name": "*",
             "dateDistribution": "2021-03-10",
-            "dateExpiration": "2022-10-10T03:45:00+00:00",
+            "dateExpiration": "2022-10-10",
             "projectId": "*",
             "location": "*",
             "target": "*",
@@ -942,7 +942,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'projectId' => $project->getId(),
             'locationId' => $location->getId(),
             'dateDistribution' => '2021-03-10',
-            'dateExpiration' => '2022-10-10T03:45:00.000Z',
+            'dateExpiration' => '2022-10-10',
             'sector' => SectorEnum::FOOD_SECURITY,
             'subsector' => SubSectorEnum::FOOD_CASH_FOR_WORK,
             'scoringBlueprint' => null,

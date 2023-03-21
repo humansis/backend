@@ -7,7 +7,7 @@ namespace Controller;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\User;
 use Exception\ExportNoDataException;
-use InputType\Assistance\UpdateAssistanceInputType;
+use InputType\Assistance\AssistanceUpdateInputType;
 use InvalidArgumentException;
 use Pagination\Paginator;
 use Entity\Assistance;
@@ -142,7 +142,7 @@ class AssistanceController extends AbstractController
     public function item(Assistance $assistance): JsonResponse
     {
         if ($assistance->getArchived()) {
-            $this->createNotFoundException();
+            throw $this->createNotFoundException();
         }
 
         return $this->json($assistance);
@@ -151,7 +151,7 @@ class AssistanceController extends AbstractController
     #[Rest\Patch('/web-app/v1/assistances/{id}')]
     public function update(
         Assistance $assistanceRoot,
-        UpdateAssistanceInputType $updateAssistanceInputType
+        AssistanceUpdateInputType $updateAssistanceInputType
     ): JsonResponse {
         /**
          * @var User $user
@@ -163,7 +163,6 @@ class AssistanceController extends AbstractController
     }
 
     /**
-     *
      * @throws InvalidArgumentException
      */
     #[Rest\Delete('/web-app/v1/assistances/{id}')]

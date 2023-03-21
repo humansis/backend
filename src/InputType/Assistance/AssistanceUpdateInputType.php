@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpMissingParamTypeInspection */
+/** @noinspection PhpMissingReturnTypeInspection */
+/** @noinspection PhpMissingFieldTypeInspection */
 
 declare(strict_types=1);
 
@@ -8,69 +11,83 @@ use DateTimeInterface;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Utils\DateTime\Iso8601Converter;
-use Validator\Constraints\Iso8601;
 
-#[Assert\GroupSequence(['UpdateAssistanceInputType', 'Strict'])]
-class UpdateAssistanceInputType implements InputTypeInterface
+#[Assert\GroupSequence(['AssistanceUpdateInputType', 'Strict'])]
+class AssistanceUpdateInputType implements InputTypeInterface
 {
     private const UNSET_STRING = 'undefined';
     private const UNSET_NUMBER = 0;
 
     #[Assert\Type(type: 'bool')]
-    private bool | null $validated = null;
+    private $validated = null;
 
     #[Assert\Type(type: 'bool')]
-    private bool $completed = false;
+    private $completed = false;
 
+    /** @var string | null  */
     #[Assert\Date]
     #[Assert\NotBlank(allowNull: true)]
-    private string | null $dateDistribution = null;
+    private $dateDistribution = null;
 
-    private string | null $dateExpiration = self::UNSET_STRING;
+    private $dateExpiration = self::UNSET_STRING;
 
+    /** @var string | null  */
     #[Assert\NotBlank(allowNull: true)]
-    #[Iso8601]
-    private string | null $dateExpirationToSave = null;
+    #[Assert\Date]
+    private $dateExpirationToSave = null;
 
-    private string | int | null $round = self::UNSET_STRING;
+    private $round = self::UNSET_STRING;
 
     #[Assert\Range(notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.', min: 1, max: 99)]
-    private int | null $roundToSave = null;
+    private $roundToSave = null;
 
-    private int | string | null $note = self::UNSET_NUMBER;
+    private $note = self::UNSET_NUMBER;
 
-    private string|null $name = null;
+    #[Assert\Type('string')]
+    private $name = null;
 
     /**
      * @var string|null
      */
     #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private string | null $noteToSave;
+    private $noteToSave;
 
-    public function getValidated(): bool | null
+    /**
+     * @return bool | null
+     */
+    public function getValidated()
     {
         return $this->validated;
     }
 
-    public function setValidated(bool | null $validated): void
+    /**
+     * @param $validated bool | null
+     */
+    public function setValidated($validated): void
     {
         $this->validated = $validated;
     }
 
-    public function isCompleted(): bool
+    /**
+     * @return bool | null
+     */
+    public function isCompleted()
     {
         return $this->completed;
     }
 
-    public function setCompleted(bool $completed): void
+    /**
+     * @param $completed bool | null
+     */
+    public function setCompleted($completed): void
     {
         $this->completed = $completed;
     }
 
     public function getDateDistribution(): DateTimeInterface | null
     {
-        return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
+        return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution, true) : null;
     }
 
     public function setDateDistribution(string | null $dateDistribution): void
@@ -80,7 +97,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     public function getDateExpiration(): DateTimeInterface | null
     {
-        return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
+        return $this->dateExpirationToSave !== null ? Iso8601Converter::toDateTime($this->dateExpirationToSave, true) : null;
     }
 
     public function setDateExpiration(string $dateExpiration): void
@@ -89,23 +106,35 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->dateExpirationToSave = $this->dateExpiration;
     }
 
-    public function getRound(): int | null
+    /**
+     * @return int | null
+     */
+    public function getRound()
     {
         return $this->roundToSave;
     }
 
-    public function setRound(int | null $round): void
+    /**
+     * @param $round int | null
+     */
+    public function setRound($round): void
     {
         $this->round = $round;
         $this->roundToSave = $round;
     }
 
-    public function getNote(): string | null
+    /**
+     * @return string | null
+     */
+    public function getNote()
     {
         return $this->noteToSave;
     }
 
-    public function setNote(string | null $note): void
+    /**
+     * @param $note string | null
+     */
+    public function setNote($note): void
     {
         $note = ($note === "") ? null : $note;
 
@@ -141,7 +170,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
     /**
      * @return string|null
      */
-    public function getName(): ?string
+    public function getName()
     {
         return $this->name;
     }
@@ -149,7 +178,7 @@ class UpdateAssistanceInputType implements InputTypeInterface
     /**
      * @param string|null $name
      */
-    public function setName(?string $name): void
+    public function setName($name): void
     {
         $this->name = $name;
     }

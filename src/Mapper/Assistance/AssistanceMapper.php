@@ -81,7 +81,7 @@ class AssistanceMapper implements MapperInterface
 
     public function getDateExpiration(): ?string
     {
-        return $this->object->getDateExpiration()?->format(DateTimeInterface::ATOM);
+        return $this->object->getDateExpiration()?->format(DateTimeFormat::DATE);
     }
 
     public function getProjectId(): int
