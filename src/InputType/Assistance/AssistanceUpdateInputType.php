@@ -97,7 +97,7 @@ class AssistanceUpdateInputType implements InputTypeInterface
 
     public function getDateExpiration(): DateTimeInterface | null
     {
-        return $this->dateExpirationToSave !== null ? Iso8601Converter::toDateTime($this->dateExpirationToSave, true) : null;
+        return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave, true) : null;
     }
 
     public function setDateExpiration(string $dateExpiration): void
