@@ -144,6 +144,7 @@ class RoleFixtures extends Fixture
         'countrySettings' => ['ROLE_ADMIN'],
         'addEditUsers' => ['ROLE_ADMIN'],
         'adminSettings' => ['ROLE_ADMIN'],
+        'moveAssistance' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],
     ];
 
     public function load(ObjectManager $manager)
