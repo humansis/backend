@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpMissingParamTypeInspection */
 /** @noinspection PhpMissingReturnTypeInspection */
 /** @noinspection PhpMissingFieldTypeInspection */
