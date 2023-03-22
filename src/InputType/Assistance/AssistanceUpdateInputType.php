@@ -1,7 +1,9 @@
 <?php
 
 /** @noinspection PhpMissingParamTypeInspection */
+
 /** @noinspection PhpMissingReturnTypeInspection */
+
 /** @noinspection PhpMissingFieldTypeInspection */
 
 declare(strict_types=1);
