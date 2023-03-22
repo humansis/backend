@@ -30,7 +30,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private string $dateDistribution;
 
     #[Iso8601]
-    private string | null $dateExpiration;
+    private string | null $dateExpiration = null;
 
     #[Assert\Type('string')]
     private ?string $description;
@@ -85,23 +85,23 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private array $selectionCriteria = [];
 
     #[Assert\Type('integer')]
-    private ?int $threshold;
+    private int|null $threshold = null;
 
     #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
-    private array | null $communities;
+    private array $communities = [];
 
     #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
-    private array | null $institutions;
+    private array $institutions = [];
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
-    private int | null $householdsTargeted;
+    private int $householdsTargeted = 0;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
-    private int | null $individualsTargeted;
+    private int $individualsTargeted = 0;
 
     #[Assert\Type('boolean')]
     private bool $completed = false;
@@ -119,7 +119,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private int | float | null $cashbackLimit = null;
 
     #[Assert\Type('boolean')]
-    private bool | null $remoteDistributionAllowed;
+    private bool | null $remoteDistributionAllowed = null;
 
     #[Assert\Type('string')]
     private string | null $note;
@@ -373,7 +373,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->completed = $completed;
     }
 
-    public function getCommunities(): array | null
+    public function getCommunities(): array
     {
         return $this->communities;
     }
@@ -387,9 +387,9 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     }
 
     /**
-     * @return int[]|null
+     * @return int[]
      */
-    public function getInstitutions(): array | null
+    public function getInstitutions(): array
     {
         return $this->institutions;
     }
@@ -402,7 +402,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->institutions = $institutions;
     }
 
-    public function getHouseholdsTargeted(): int | null
+    public function getHouseholdsTargeted(): int
     {
         return $this->householdsTargeted;
     }
@@ -412,7 +412,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         $this->householdsTargeted = $householdsTargeted;
     }
 
-    public function getIndividualsTargeted(): int | null
+    public function getIndividualsTargeted(): int
     {
         return $this->individualsTargeted;
     }
