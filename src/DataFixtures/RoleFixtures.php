@@ -86,7 +86,7 @@ class RoleFixtures extends Fixture
             'ROLE_ENUMERATOR',
         ],
         'importBeneficiaries' => ['ROLE_ADMIN', 'ROLE_PROJECT_MANAGER', 'ROLE_PROJECT_OFFICER'],
-        'exportBeneficiaries' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER'],
+        'exportBeneficiaries' => ['ROLE_ADMIN', 'ROLE_COUNTRY_MANAGER', 'ROLE_PROJECT_MANAGER', 'ROLE_PROJECT_OFFICER'],
         'viewVouchers' => [
             'ROLE_ADMIN',
             'ROLE_REGIONAL_MANAGER',
