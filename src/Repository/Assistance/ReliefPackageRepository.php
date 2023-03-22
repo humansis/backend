@@ -72,7 +72,7 @@ class ReliefPackageRepository extends EntityRepository
                 $qb->expr()->orX(
                     $qb->expr()->eq('l.id', ':adm2Id'), //assistance in adm2
                     $qb->expr()->eq('l.id', ':adm1Id'),  //assistance in adm1 only
-                    $qb->expr()->exists($qbLoc->getDQL()) //assistance in adm > 2
+                    $qb->expr()->in('l.id', $qbLoc->getDQL()) //assistance in adm > 2
                 )
             )->setParameters([
                 'adm2Id' => $vendorLocationAdm2->getId(),
@@ -82,7 +82,7 @@ class ReliefPackageRepository extends EntityRepository
             $qbLoc = $locationRepository->addChildrenLocationsQueryBuilder($vendorLocation, 'lc', true);
 
             $qb->andWhere(
-                $qb->expr()->exists($qbLoc->getDQL())
+                $qb->expr()->in('l.id', $qbLoc->getDQL())
             );
         }
 
