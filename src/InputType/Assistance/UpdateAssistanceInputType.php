@@ -26,45 +26,47 @@ class UpdateAssistanceInputType implements InputTypeInterface
 
     private ?string $originalDateDistribution = null;
 
-    private string|null $dateExpiration = self::UNSET_STRING;
+    private string | null $dateExpiration = self::UNSET_STRING;
 
     private ?string $originalDateExpiration = null;
 
     #[Assert\NotBlank(allowNull: true)]
     private ?string $dateExpirationToSave = null;
 
-    private string|int|null $round = self::UNSET_STRING;
+    private string | int | null $round = self::UNSET_STRING;
 
     #[Assert\Range(notInRangeMessage: 'Supported round range is from {{ min }} to {{ max }}.', min: 1, max: 99)]
     private ?int $roundToSave = null;
 
-    private int|string|null $note = self::UNSET_NUMBER;
+    private int | string | null $note = self::UNSET_NUMBER;
 
-    private string|null $name = null;
+    private string | null $name = null;
 
-    /**
-     * @var string|null
-     */
     #[Assert\Type(type: 'string')]
     #[Assert\NotBlank(allowNull: true)]
-    private $noteToSave;
+    private string | null $noteToSave = null;
 
     #[Assert\IsTrue(message: 'Expiration date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
     public function isValidExpirationDate(): bool
     {
-        if (is_null($this->originalDateExpiration)) {
-            return true;
-        }
-        return !is_null(Iso8601Converter::toDateTime($this->originalDateExpiration));
+        return is_null($this->originalDateExpiration) || !is_null(
+            Iso8601Converter::toDateTime($this->originalDateExpiration)
+        );
     }
 
     #[Assert\IsTrue(message: 'Distribution date is not in valid format. Valid format is Y-m-d\TH:i:sP', groups: ['Strict'])]
     public function isValidDateDistribution(): bool
     {
-        if (is_null($this->originalDateDistribution)) {
-            return true;
-        }
-        return !is_null(Iso8601Converter::toDateTime($this->originalDateDistribution));
+        return is_null($this->originalDateDistribution) || !is_null(
+            Iso8601Converter::toDateTime($this->originalDateDistribution)
+        );
+    }
+
+    #[Assert\IsTrue(message: 'Expiration date cannot be before Distribution date', groups: ['Strict'])]
+    public function isExpirationDateAfterDistributionDate(): bool
+    {
+        return !($this->hasDateDistribution() && $this->hasDateExpiration()) ||
+            $this->getDateExpiration() >= $this->getDateDistribution();
     }
 
     public function getValidated(): ?bool
@@ -87,23 +89,23 @@ class UpdateAssistanceInputType implements InputTypeInterface
         $this->completed = $completed;
     }
 
-    public function getDateDistribution()
+    public function getDateDistribution(): DateTimeInterface | null
     {
         return $this->dateDistribution ? Iso8601Converter::toDateTime($this->dateDistribution) : null;
     }
 
-    public function setDateDistribution($dateDistribution): void
+    public function setDateDistribution(?string $dateDistribution): void
     {
         $this->originalDateDistribution = $dateDistribution;
         $this->dateDistribution = $dateDistribution;
     }
 
-    public function getDateExpiration()
+    public function getDateExpiration(): DateTimeInterface | null
     {
         return $this->dateExpirationToSave ? Iso8601Converter::toDateTime($this->dateExpirationToSave) : null;
     }
 
-    public function setDateExpiration($dateExpiration): void
+    public function setDateExpiration(?string $dateExpiration): void
     {
         $this->originalDateExpiration = $dateExpiration;
         $this->dateExpiration = $dateExpiration;
