@@ -38,6 +38,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private $dateDistribution;
 
     #[Assert\NotBlank(allowNull: true)]
+    #[Assert\Date]
     private $dateExpiration;
 
     #[Assert\Type('string')]
