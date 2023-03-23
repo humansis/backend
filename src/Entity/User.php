@@ -63,7 +63,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: '\Entity\Vendor', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    private Vendor | null $vendor;
+    private Vendor | null $vendor = null;
 
     #[ORM\Column(name: 'language', type: 'string', length: 255, nullable: true)]
     protected string | null $language;
