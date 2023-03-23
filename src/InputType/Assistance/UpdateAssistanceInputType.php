@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace InputType\Assistance;
 
-use DateTimeInterface;
+use Happyr\Validator\Constraint\EntityExist;
 use Request\InputTypeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Utils\DateTime\Iso8601Converter;
@@ -41,6 +41,12 @@ class UpdateAssistanceInputType implements InputTypeInterface
     private int|string|null $note = self::UNSET_NUMBER;
 
     private string|null $name = null;
+
+    /**
+     * @EntityExist(entity="Entity\Location")
+     */
+    #[Assert\Type('integer')]
+    private $locationId = null;
 
     /**
      * @var string|null
@@ -178,5 +184,26 @@ class UpdateAssistanceInputType implements InputTypeInterface
     public function hasName(): bool
     {
         return !is_null($this->name);
+    }
+
+    /**
+     * @return int
+     */
+    public function getLocationId()
+    {
+        return $this->locationId;
+    }
+
+    /**
+     * @param int $locationId
+     */
+    public function setLocationId($locationId): void
+    {
+        $this->locationId = $locationId;
+    }
+
+    public function hasLocationId(): bool
+    {
+        return !is_null($this->locationId);
     }
 }

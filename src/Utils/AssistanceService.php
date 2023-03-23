@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Utils;
 
+use Component\Assistance\Validator\AssistanceUpdate;
 use Doctrine\ORM\Exception\ORMException;
 use Entity\AbstractBeneficiary;
+use Entity\Location;
 use Entity\User;
+use Exception\ConstraintViolationException;
 use Exception\CsvParserException;
 use Exception\ExportNoDataException;
 use InputType\Assistance\UpdateAssistanceInputType;
@@ -28,9 +33,11 @@ use Entity\Assistance\ReliefPackage;
 use Enum\CacheTarget;
 use InputType\AssistanceCreateInputType;
 use Repository\BeneficiaryRepository;
+use Repository\LocationRepository;
 use Repository\ProjectRepository;
 use Request\Pagination;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -64,14 +71,30 @@ class AssistanceService
         private readonly ExportService $exportService,
         private readonly PdfService $pdfService,
         private readonly ProjectService $projectService,
+        private readonly LocationRepository $locationRepository,
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function update(
         Assistance $assistanceRoot,
         UpdateAssistanceInputType $updateAssistanceInputType,
         User $user
     ): AssistanceDomain {
+        $assistanceUpdateConstraint = new AssistanceUpdate($assistanceRoot);
+
+        $errors = $this->validator->validate(
+            $updateAssistanceInputType,
+            $assistanceUpdateConstraint
+        );
+
+        if ($errors->count() > 0) {
+            throw new ConstraintViolationException($errors);
+        }
+
         $assistance = $this->assistanceFactory->hydrate($assistanceRoot);
         if ($updateAssistanceInputType->hasValidated()) {
             if ($updateAssistanceInputType->getValidated()) {
@@ -97,6 +120,12 @@ class AssistanceService
         }
         if ($updateAssistanceInputType->hasName()) {
             $this->updateName($assistanceRoot, $updateAssistanceInputType->getName());
+        }
+
+        if ($updateAssistanceInputType->hasLocationId()) {
+            $location = $this->locationRepository->getById($updateAssistanceInputType->getLocationId());
+
+            $this->updateLocation($assistanceRoot, $location);
         }
 
         $this->assistanceRepository->save($assistance);
@@ -213,6 +242,12 @@ class AssistanceService
     public function updateRound(Assistance $assistance, ?int $round): void
     {
         $assistance->setRound($round);
+        $assistance->setUpdatedOn(new DateTime());
+    }
+
+    public function updateLocation(Assistance $assistance, Location $location): void
+    {
+        $assistance->setLocation($location);
         $assistance->setUpdatedOn(new DateTime());
     }
 

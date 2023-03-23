@@ -285,4 +285,18 @@ class LocationRepository extends EntityRepository
 
         return $location;
     }
+
+    /**
+     * @throws EntityNotFoundException
+     */
+    public function getById(int $id): Location
+    {
+        $location = $this->find($id);
+
+        if ($location === null) {
+            throw EntityNotFoundException::fromClassNameAndIdentifier(Location::class, [$id]);
+        }
+
+        return $location;
+    }
 }

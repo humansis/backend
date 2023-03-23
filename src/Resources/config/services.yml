@@ -1265,7 +1265,7 @@ services:
 
     Utils\ProjectAssistancesTransformData:
         class: Utils\ProjectAssistancesTransformData
-        
+
     Utils\ProjectTransformData:
         class: Utils\ProjectTransformData
 
@@ -1504,3 +1504,5 @@ services:
 
     DataHelper\UserDataHelper:
         public: true
+
+    Component\Assistance\Validator\AssistanceUpdateValidator:
