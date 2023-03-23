@@ -21,8 +21,7 @@ final class AssistanceUpdateValidator extends ConstraintValidator
 
     public function __construct(
         private readonly LocationRepository $locationRepository,
-    )
-    {
+    ) {
     }
 
     /**
