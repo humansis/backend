@@ -147,17 +147,19 @@ class VendorFixtures extends Fixture implements DependentFixtureInterface
         static $genericUserCount = 0;
         $userIndex = ++$genericUserCount;
         $email = "vendor$userIndex.$country@example.org";
-        $instance = new User();
+        $instance = new User(
+            username: $email,
+            email: $email,
+            password: 'no passwd',
+            enabled: true,
+            salt: 'no salt',
+        );
 
         $roles = $manager->getRepository(Role::class)->findByCodes(['ROLE_ADMIN']);
 
-        $instance->setEnabled(1)
-            ->setEmail($email)
-            ->setUsername($email)
-            ->setSalt('no salt')
+        $instance
             ->setRoles($roles)
             ->setChangePassword(0);
-        $instance->setPassword('no passwd');
         $manager->persist($instance);
 
         return $instance;

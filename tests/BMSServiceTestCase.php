@@ -329,11 +329,10 @@ class BMSServiceTestCase extends KernelTestCase
     /**
      * Require Functional tests and real Entity Manager
      *
-     * @return null|object|User {[type] [description]
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    protected function getTestUser(string $username = self::USER_TESTER)
+    protected function getTestUser(string $username = self::USER_TESTER): User
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['username' => $username]);
 
@@ -341,10 +340,13 @@ class BMSServiceTestCase extends KernelTestCase
             return $user;
         }
 
-        $user = new User();
-        $user->setUsername($username)
-            ->setEmail($username)
-            ->setPassword("");
+        $user = new User(
+            username: $username,
+            email: $username,
+            password: '',
+            enabled: true,
+            salt: ''
+        );
         $user->setPhoneNumber(null)
             ->setPhonePrefix(null)
             ->setTwoFactorAuthentication(0);

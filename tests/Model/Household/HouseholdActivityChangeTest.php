@@ -27,7 +27,7 @@ class HouseholdActivityChangeTest extends TestCase
     public function providerChanges()
     {
         $household = new Household();
-        $author = new User();
+        $author = new User('test', 'test', '');
 
         return [
             'no change' => [

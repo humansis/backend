@@ -55,13 +55,13 @@ class UserService
 
         $salt = $userDefinedSalt ?: $this->generateSalt();
 
-        $user = new User();
-
-        $user->setUsername($inputType->getUsername())
-            ->setEmail($inputType->getUsername())
-            ->setEnabled(false)
-            ->setSalt($salt)
-            ->setPassword('');
+        $user = new User(
+            username: $inputType->getUsername(),
+            email: $inputType->getUsername(),
+            password: '',
+            enabled: false,
+            salt: $salt,
+        );
 
         $this->em->persist($user);
         $this->em->flush();

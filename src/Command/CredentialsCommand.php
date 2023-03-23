@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Command;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
-use Doctrine\ORM\OptimisticLockException;
 use Component\Country\Countries;
-use Entity\Role;
 use Entity\User;
 use Entity\UserCountry;
 use Enum\RoleType;
@@ -71,29 +67,22 @@ class CredentialsCommand extends Command
         }
     }
 
-    /**
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     private function createAccount(): void
     {
         $roles = $this->roleRepository->findByCodes([RoleType::ADMIN]);
-        $user = new User();
-        $user->setUsername($this->account)
-            ->setEnabled(true)
-            ->setSalt($this->salt)
-            ->setPassword($this->encodedPassword)
-            ->setRoles($roles);
+        $user = new User(
+            username: $this->account,
+            email: $this->account,
+            password: $this->encodedPassword,
+            enabled: true,
+            salt: $this->salt,
+        );
+        $user->setRoles($roles);
 
         $this->userRepository->save($user);
         $this->setCountries($user);
     }
 
-    /**
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     private function setCountries(User $user): void
     {
         foreach ($this->countries->getAll() as $country) {

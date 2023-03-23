@@ -13,10 +13,10 @@ class HouseholdActivityChangeCollectionTest extends KernelTestCase
     public function testChangesGenerated()
     {
         $collection = new HouseholdActivityChangesCollection([
-            new HouseholdActivity(new Household(), new User(), '{"livelihood": 0, "notes": "init"}'),
-            new HouseholdActivity(new Household(), new User(), '{"livelihood": 2, "notes": "xxx"}'),
-            new HouseholdActivity(new Household(), new User(), '{"livelihood": 2, "notes": "xxx"}'),
-            new HouseholdActivity(new Household(), new User(), '{"livelihood": 2, "notes": "yyy"}'),
+            new HouseholdActivity(new Household(), new User('test', 'test', ''), '{"livelihood": 0, "notes": "init"}'),
+            new HouseholdActivity(new Household(), new User('test', 'test', ''), '{"livelihood": 2, "notes": "xxx"}'),
+            new HouseholdActivity(new Household(), new User('test', 'test', ''), '{"livelihood": 2, "notes": "xxx"}'),
+            new HouseholdActivity(new Household(), new User('test', 'test', ''), '{"livelihood": 2, "notes": "yyy"}'),
         ]);
 
         // we want to check only changes in collection
