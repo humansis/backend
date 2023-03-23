@@ -33,7 +33,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private string | null $dateExpiration = null;
 
     #[Assert\Type('string')]
-    private ?string $description;
+    private ?string $description = null;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThanOrEqual(0)]
