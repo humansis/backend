@@ -85,7 +85,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private array $selectionCriteria = [];
 
     #[Assert\Type('integer')]
-    private int|null $threshold = null;
+    private int | null $threshold = null;
 
     #[Assert\All(constraints: [new Assert\Type('integer', groups: ['Strict'])], groups: ['Strict'])]
     #[Assert\Type('array')]
@@ -148,17 +148,10 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return count($this->getSmartcardCommodities()) > 0 || $this->getDateExpiration() === null;
     }
 
-    #[Assert\IsTrue(message: 'Expiration date cannot be null for Smartcard distribution.', groups: ['Strict'])]
-    public function isExpirationDateForSmartcardDistribution(): bool
-    {
-        return count($this->getSmartcardCommodities()) === 0 || $this->getDateExpiration();
-    }
-
     #[Assert\IsTrue(message: 'Expiration date must be greater than distribution date', groups: ['AdditionalChecks'])]
     public function isExpirationDateValid(): bool
     {
-        return count($this->getSmartcardCommodities()) === 0 ||
-            $this->getDateExpiration() >= $this->getDateDistribution();
+        return $this->getDateExpiration() == null || $this->getDateExpiration() >= $this->getDateDistribution();
     }
 
     #[Assert\IsTrue(message: 'Please add BNF has valid card criterion for each group', groups: ['AdditionalChecks'])]
