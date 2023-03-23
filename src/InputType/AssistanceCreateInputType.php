@@ -410,7 +410,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
         return $this->individualsTargeted;
     }
 
-    public function setIndividualsTargeted(int | null $individualsTargeted)
+    public function setIndividualsTargeted(int $individualsTargeted)
     {
         $this->individualsTargeted = $individualsTargeted;
     }

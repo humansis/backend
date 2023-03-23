@@ -638,7 +638,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
         /** @var Location $location */
         $location = self::getContainer()->get('doctrine')->getRepository(Location::class)->findBy([], ['id' => 'asc'])[0];
 
-        $modalityType = ModalityType::CASH;
+        $modalityType = ModalityType::SMART_CARD;
 
         $this->request('POST', '/api/basic/web-app/v1/assistances', [
             'iso3' => 'KHM',
@@ -674,6 +674,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'nonFoodLimit' => null,
             'cashbackLimit' => null,
             'allowedProductCategoryTypes' => [],
+            'remoteDistributionAllowed' => false,
         ]);
 
         $this->assertTrue(
@@ -804,7 +805,7 @@ class AssistanceControllerTest extends BMSServiceTestCase
             'communities' => [$community->getId()],
             'description' => 'test construction activity',
             'householdsTargeted' => 10,
-            'individualsTargeted' => null,
+            'individualsTargeted' => 0,
             'allowedProductCategoryTypes' => [ProductCategoryType::CASHBACK, ProductCategoryType::NONFOOD],
         ]);
 
