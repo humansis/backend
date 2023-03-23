@@ -43,14 +43,13 @@ class AuthControllerTest extends BMSServiceTestCase
     {
         $user = $this->userRepository->findOneBy(['username' => self::USER]);
         if (is_null($user)) {
-            $user = new User();
-            $user->setUsername('test-no-vendor@test.org');
-            $user->setEmail('test-no-vendor@test.org');
-            $user->setSalt('fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9');
-            $user->setPassword(
-                'WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw=='
+            $user = new User(
+                username: 'test-no-vendor@test.org',
+                email: 'test-no-vendor@test.org',
+                password: 'WvbKrt5YeWcDtzWg4C8uUW9a3pmHi6SkXvnvvCisIbNQqUVtaTm8Myv/Hst1IEUDv3NtrqyUDC4BygbjQ/zePw==',
+                enabled: true,
+                salt: 'fhn91jwIbBnFAgZjQZA3mE4XUrjYzWfOoZDcjt/9',
             );
-            $user->setEnabled(true);
             $this->em->persist($user);
             $this->em->flush();
         }

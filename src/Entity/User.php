@@ -5,7 +5,6 @@ namespace Entity;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Entity\Helper\StandardizedPrimaryKey;
-use Utils\ExportableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,108 +19,84 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 {
     use StandardizedPrimaryKey;
 
-    /**
-     * @var string
-     */
     #[Assert\NotBlank(message: "Username can't be empty")]
     #[Assert\Length(min: 2, max: 50, minMessage: 'Your username must be at least {{ limit }} characters long', maxMessage: 'Your username cannot be longer than {{ limit }} characters')]
     #[ORM\Column(name: 'username', type: 'string')]
-    protected $username;
+    protected string $username;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'password', type: 'string', nullable: false)]
-    protected $password;
+    protected string $password;
 
-    /**
-     * The salt to use for hashing.
-     *
-     * @var string|null
-     */
     #[ORM\Column(name: 'salt', type: 'string', nullable: true)]
-    protected $salt;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserCountry', cascade: ['persist', 'remove'])]
-    private $countries;
-
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserProject', cascade: ['remove'])]
-    private $projects;
+    protected string | null $salt;
 
     /**
-     * @var string
+     * @var Collection|UserCountry[]
      */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserCountry', cascade: ['persist', 'remove'])]
+    private Collection | array $countries;
+
+    /**
+     * @var Collection|UserProject[]
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'Entity\UserProject', cascade: ['remove'])]
+    private Collection | array $projects;
+
     #[Assert\NotBlank(message: "Email can't be empty")]
     #[ORM\Column(name: 'email', type: 'string')]
-    protected $email;
+    protected string $email;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'enabled', type: 'boolean')]
-    protected $enabled;
+    protected bool $enabled;
 
     /**
      * @var Collection|Role[]
      */
     #[ORM\ManyToMany(targetEntity: 'Entity\Role', inversedBy: 'users')]
-    protected $roles;
+    protected Collection | array $roles;
 
     /**
-     * @var Transaction
+     * @var Collection|Transaction[]
      */
     #[ORM\OneToMany(mappedBy: 'sentBy', targetEntity: 'Entity\Transaction')]
-    private $transactions;
+    private Collection | array $transactions;
 
     #[ORM\OneToOne(mappedBy: 'user', targetEntity: '\Entity\Vendor', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
-    private $vendor;
+    private Vendor | null $vendor;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'language', type: 'string', length: 255, nullable: true)]
-    protected $language;
+    protected string | null $language;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'phonePrefix', type: 'string', nullable: true)]
-    protected $phonePrefix;
+    protected string | null $phonePrefix;
 
-    /**
-     * @var int|null
-     */
     #[ORM\Column(name: 'phoneNumber', type: 'integer', nullable: true)]
-    protected $phoneNumber;
+    protected int | null $phoneNumber;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'changePassword', type: 'boolean', options: ['default' => 0])]
-    protected $changePassword = false;
+    protected bool $changePassword = false;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(name: 'twoFactorAuthentication', type: 'boolean', options: ['default' => 0])]
-    protected $twoFactorAuthentication = false;
+    protected bool $twoFactorAuthentication = false;
 
-    public function __construct()
-    {
-        $this->enabled = false;
+    public function __construct(
+        string $username,
+        string $email,
+        string $password,
+        bool $enabled = false,
+        string | null $salt = null,
+    ) {
+        $this->username = $username;
+        $this->email = $email;
+        $this->password = $password;
+        $this->enabled = $enabled;
+        $this->salt = $salt;
         $this->countries = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->roles = new ArrayCollection();
     }
 
-
-    /**
-     * Add country.
-     *
-     *
-     * @return User
-     */
     public function addCountry(UserCountry $country): User
     {
         $this->countries->add($country);
@@ -130,39 +105,27 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
     }
 
     /**
-     * Get countries.
-     *
-     * @return Collection
+     * @return Collection|UserCountry[]
      */
-    public function getCountries()
+    public function getCountries(): Collection | array
     {
         return $this->countries;
     }
 
     /**
-     * Get projects.
-     *
-     * @return Collection
+     * @return Collection|Project[]
      */
-    public function getProjects()
+    public function getProjects(): Collection | array
     {
         return $this->projects;
     }
 
-    /**
-     * Add a Transaction
-     *
-     * @param Transaction $transaction transaction
-     *
-     * @return self
-     */
     public function addTransaction(Transaction $transaction): User
     {
         $this->transactions[] = $transaction;
 
         return $this;
     }
-
 
     public function getLanguage(): ?string
     {
@@ -176,13 +139,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Set vendor.
-     *
-     * @param Vendor|null $vendor
-     *
-     * @return User
-     */
     public function setVendor(Vendor $vendor = null): User
     {
         $this->vendor = $vendor;
@@ -190,23 +146,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get vendor.
-     *
-     * @return Vendor|null
-     */
     public function getVendor(): ?Vendor
     {
         return $this->vendor;
     }
 
-    /**
-     * Set phonePrefix.
-     *
-     * @param string|null $phonePrefix
-     *
-     * @return User
-     */
     public function setPhonePrefix(?string $phonePrefix): User
     {
         $this->phonePrefix = $phonePrefix;
@@ -214,23 +158,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get phonePrefix.
-     *
-     * @return string|null
-     */
     public function getPhonePrefix(): ?string
     {
         return $this->phonePrefix;
     }
 
-    /**
-     * Set phoneNumber.
-     *
-     * @param int|null $phoneNumber
-     *
-     * @return User
-     */
     public function setPhoneNumber(?int $phoneNumber): User
     {
         $this->phoneNumber = $phoneNumber;
@@ -238,11 +170,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get phoneNumber.
-     *
-     * @return int|null
-     */
     public function getPhoneNumber(): ?int
     {
         return $this->phoneNumber;
@@ -280,23 +207,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get changePassword.
-     *
-     * @return bool
-     */
     public function getChangePassword(): bool
     {
         return $this->changePassword;
     }
 
-    /**
-     * Set changePassword.
-     *
-     * @param bool $changePassword
-     *
-     * @return User
-     */
     public function setChangePassword(bool $changePassword): User
     {
         $this->changePassword = $changePassword;
@@ -304,23 +219,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Get twoFactorAuthentication.
-     *
-     * @return bool
-     */
     public function getTwoFactorAuthentication(): bool
     {
         return $this->twoFactorAuthentication;
     }
 
-    /**
-     * Set twoFactorAuthentication.
-     *
-     * @param bool $twoFactorAuthentication
-     *
-     * @return User
-     */
     public function setTwoFactorAuthentication(bool $twoFactorAuthentication): User
     {
         $this->twoFactorAuthentication = $twoFactorAuthentication;
@@ -328,9 +231,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function hasRole(Role $role): bool
     {
         return $this->roles->contains($role);
@@ -338,7 +238,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
 
     /**
      * @param Role[] $roles
-     * @return $this
      */
     public function setRoles(array $roles): self
     {
@@ -351,10 +250,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     */
     public function getRoles(): array
     {
         return array_values(

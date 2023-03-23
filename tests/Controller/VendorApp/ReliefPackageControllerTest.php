@@ -59,14 +59,14 @@ class ReliefPackageControllerTest extends BMSServiceTestCase
         $assistance->setRemoteDistributionAllowed(true);
         $assistance->setDateExpiration(null);
 
-        $user = new User();
         $username = __METHOD__ . random_int(100, 10000);
-        $user->setUsername($username)
-            ->setEmail($username)
-            ->setEnabled(true)
-            ->setSalt('')
-            ->setPassword('');
-
+        $user = new User(
+            username: $username,
+            email: $username,
+            password: '',
+            enabled: true,
+            salt: '',
+        );
         $vendor = new Vendor();
         $vendor
             ->setName($username)
