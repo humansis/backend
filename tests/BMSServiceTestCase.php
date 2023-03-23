@@ -344,6 +344,8 @@ class BMSServiceTestCase extends KernelTestCase
             username: $username,
             email: $username,
             password: '',
+            enabled: true,
+            salt: ''
         );
         $user->setPhoneNumber(null)
             ->setPhonePrefix(null)

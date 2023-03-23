@@ -28,7 +28,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface
     protected string $password;
 
     #[ORM\Column(name: 'salt', type: 'string', nullable: true)]
-    protected string | null $salt;
+    protected string | null $salt = null;
 
     /**
      * @var Collection|UserCountry[]
