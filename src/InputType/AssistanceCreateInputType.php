@@ -122,7 +122,7 @@ class AssistanceCreateInputType implements InputTypeNullableDenormalizer
     private bool | null $remoteDistributionAllowed = null;
 
     #[Assert\Type('string')]
-    private string | null $note;
+    private string | null $note = null;
 
     #[Assert\Type('integer')]
     #[Assert\GreaterThan(0)]
